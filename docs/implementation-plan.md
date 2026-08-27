@@ -1,3 +1,7 @@
+> **SUPERSEDED.** This plan scoped a single subject (WAEC/NECO Mathematics → Linear Equations).
+> The product is a multi-subject learning platform. See [mindspark-build-guide.md](mindspark-build-guide.md)
+> for the authoritative scope, domain model, and build plan. Retained for historical context only.
+
 # Mindspark implementation plan
 
 ## 1. Product boundary
