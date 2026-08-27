@@ -1,0 +1,113 @@
+{
+  "id": "ug.computer-science.discrete-mathematics.combinatorics.lesson",
+  "subtopicId": "ug.computer-science.discrete-mathematics.combinatorics",
+  "title": "Combinatorics",
+  "estimatedMinutes": 18,
+  "objectiveIds": [
+    "ug.computer-science.discrete-mathematics.combinatorics.o1",
+    "ug.computer-science.discrete-mathematics.combinatorics.o2",
+    "ug.computer-science.discrete-mathematics.combinatorics.o3",
+    "ug.computer-science.discrete-mathematics.combinatorics.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A team decides to test their software against \"every combination\" of 4 operating systems, 3 browsers, 5 screen sizes and 6 locales. That is 360 configurations, not 18. Combinatorics is the discipline of getting that number right before you commit to running the suite — and of recognising when the number is $2^{40}$ and the plan must change."
+    },
+    {
+      "type": "text",
+      "markdown": "## The two counting rules\n\nEverything else is built from these, and choosing between them correctly is most of the skill.\n\n**Product rule.** If an outcome is formed by making a choice from *each* of $k$ independent categories, with $n_i$ options in category $i$, the number of outcomes is $n_1 \\times n_2 \\times \\cdots \\times n_k$. Use it when the word joining the categories is \"and\".\n\n**Sum rule.** If an outcome comes from exactly *one* of $k$ **disjoint** categories, the count is $n_1 + n_2 + \\cdots + n_k$. Use it when the word joining the categories is \"or\" and the categories cannot overlap. If they can overlap, the sum rule is invalid and inclusion–exclusion is needed.\n\nFrom the product rule, the number of strings of length $r$ over an alphabet of size $n$ is $n^r$ — 256 bit strings of length 8, $26^4 = 456{,}976$ four-letter lowercase passwords."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Permutations and combinations",
+      "text": "A **permutation** is an ordered selection without repetition: $P(n,r) = \\frac{n!}{(n-r)!}$. A **combination** is an unordered selection without repetition: $\\binom{n}{r} = \\frac{n!}{r!\\,(n-r)!}$. They differ by exactly the factor $r!$, the number of ways to order a chosen set, which is why $\\binom{n}{r} = P(n,r)/r!$."
+    },
+    {
+      "type": "math",
+      "latex": "P(n,r) = \\frac{n!}{(n-r)!}, \\qquad \\binom{n}{r} = \\frac{n!}{r!\\,(n-r)!} = \\frac{P(n,r)}{r!}, \\qquad \\binom{n}{r} = \\binom{n}{n-r}",
+      "caption": "The last identity says that choosing r to include is the same as choosing n − r to exclude"
+    },
+    {
+      "type": "table",
+      "headers": ["Situation", "Order matters?", "Repetition allowed?", "Formula", "$n=10$, $r=3$"],
+      "rows": [
+        ["String / password / test config", "Yes", "Yes", "$n^r$", "1000"],
+        ["Assigning $r$ distinct roles", "Yes", "No", "$P(n,r) = \\frac{n!}{(n-r)!}$", "720"],
+        ["Choosing a committee or subset", "No", "No", "$\\binom{n}{r}$", "120"],
+        ["Multiset / distributing identical items", "No", "Yes", "$\\binom{n+r-1}{r}$", "220"],
+        ["Arranging all $n$ distinct items", "Yes", "No", "$n!$", "3,628,800"]
+      ],
+      "caption": "Fix the two questions — does order matter, is repetition allowed — and the row is determined."
+    },
+    {
+      "type": "text",
+      "markdown": "### Inclusion–exclusion\n\nThe sum rule fails when categories overlap, because shared elements are counted more than once. The correction for two and three sets:\n\n$$|A \\cup B| = |A| + |B| - |A \\cap B|$$\n\n$$|A \\cup B \\cup C| = |A| + |B| + |C| - |A \\cap B| - |A \\cap C| - |B \\cap C| + |A \\cap B \\cap C|$$\n\nThe pattern continues with alternating signs over all $2^k - 1$ non-empty intersections. Note the triple intersection is *added back*: it was included three times by the singletons and removed three times by the pairs, leaving it uncounted until restored.\n\n**Complementary counting** is often the shortest route: count everything, then subtract what violates the constraint. For committees of 3 from 6 men and 4 women with at least one woman, computing $\\binom{10}{3} - \\binom{6}{3} = 120 - 20 = 100$ is one line, whereas summing the one-, two- and three-woman cases takes three."
+    },
+    {
+      "type": "worked_example",
+      "title": "Counting a constrained committee two ways",
+      "prompt": "From 6 men and 4 women, choose a committee of 3 containing at least one woman. Count it by complement and then verify by cases.",
+      "steps": [
+        { "text": "Method 1 — complement. Count all committees with no constraint. Order does not matter and nobody serves twice, so this is a combination:", "latex": "\\binom{10}{3} = \\frac{10 \\times 9 \\times 8}{3 \\times 2 \\times 1} = 120" },
+        { "text": "Identify the committees that violate the constraint. \"At least one woman\" fails exactly when the committee is all male, chosen from the 6 men:", "latex": "\\binom{6}{3} = \\frac{6 \\times 5 \\times 4}{3 \\times 2 \\times 1} = 20" },
+        { "text": "Subtract. The valid committees number $120 - 20 = 100$." },
+        { "text": "Method 2 — cases. Split by the number of women, which gives three disjoint categories, so the sum rule applies. Exactly 1 woman: $\\binom{4}{1}\\binom{6}{2} = 4 \\times 15 = 60$." },
+        { "text": "Exactly 2 women: $\\binom{4}{2}\\binom{6}{1} = 6 \\times 6 = 36$. Exactly 3 women: $\\binom{4}{3}\\binom{6}{0} = 4 \\times 1 = 4$." },
+        { "text": "Add the disjoint cases: $60 + 36 + 4 = 100$. The two methods agree, which is the standard way to check a combinatorial argument.", "latex": "60 + 36 + 4 = 100 = 120 - 20" },
+        { "text": "Note why the product rule appears *inside* each case: choosing the women and choosing the men are independent sub-choices that together determine one committee. Mixing up which rule applies at which level is the commonest source of error in these problems." }
+      ],
+      "answer": "100 committees, obtained either as $\\binom{10}{3} - \\binom{6}{3}$ or as $\\binom{4}{1}\\binom{6}{2} + \\binom{4}{2}\\binom{6}{1} + \\binom{4}{3}$."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.discrete-mathematics.combinatorics.q005"
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "The pigeonhole principle",
+      "text": "If $n$ objects are placed into $m$ boxes and $n > m$, some box holds at least two objects. Generalised: some box holds at least $\\lceil n/m \\rceil$. It is trivially obvious and disproportionately powerful, because it proves *existence* without constructing anything — 1000 keys hashed into 500 buckets must collide, no matter how the hash function is designed."
+    },
+    {
+      "type": "list",
+      "style": "bullet",
+      "items": [
+        "**Hash collisions are unavoidable** whenever the key universe exceeds the bucket count — pigeonhole, and the reason a hash table is defined by its collision strategy.",
+        "**Lossless compression cannot shrink every input**: there are $2^n$ strings of length $n$ but fewer than $2^n$ shorter strings, so some input must grow.",
+        "**Subset enumeration is $\\Theta(2^n)$** and permutation search is $\\Theta(n!)$, which is why brute force fails past $n \\approx 40$ and $n \\approx 12$ respectively.",
+        "**Test-suite sizing**: full combinatorial coverage of $k$ parameters multiplies out, which is why pairwise (all-pairs) testing is used instead of exhaustive coverage.",
+        "**Birthday bound**: among $n$ items drawn from $m$ possibilities, a collision becomes likely once $n \\approx \\sqrt{m}$ — so a 64-bit hash starts colliding in practice around $2^{32}$ items, far below the pigeonhole guarantee.",
+        "**Counting the search space** before choosing an algorithm tells you immediately whether exhaustive search is even an option."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Three habitual errors",
+      "text": "First, using the sum rule on overlapping categories — always check disjointness or apply inclusion–exclusion. Second, using a permutation where the roles are interchangeable, which overcounts by $r!$. Third, forgetting whether repetition is allowed: $n^r$, $P(n,r)$ and $\\binom{n}{r}$ answer three different questions, and only one of them is yours."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "The product rule multiplies independent choices (\"and\"); the sum rule adds disjoint alternatives (\"or\").",
+        "Strings of length $r$ over an alphabet of size $n$ number $n^r$, since repetition is allowed at every position.",
+        "$P(n,r) = n!/(n-r)!$ counts ordered selections; $\\binom{n}{r} = P(n,r)/r!$ counts unordered ones.",
+        "Decide two questions — does order matter, is repetition allowed — and the correct formula follows.",
+        "Inclusion–exclusion corrects the sum rule for overlapping sets, alternating signs across all non-empty intersections.",
+        "Complementary counting — total minus violations — is usually shorter than summing cases.",
+        "The pigeonhole principle proves existence without construction: $n$ objects in $m$ boxes force some box to hold $\\lceil n/m \\rceil$.",
+        "Counting the search space first tells you whether exhaustive search is viable, since $2^n$ and $n!$ become infeasible very quickly."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Discrete Structures, Basics of Counting", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}
