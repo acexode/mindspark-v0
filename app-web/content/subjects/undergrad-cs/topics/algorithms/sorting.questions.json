@@ -1,0 +1,239 @@
+{
+  "subtopicId": "ug.computer-science.algorithms.sorting",
+  "questions": [
+    {
+      "id": "ug.computer-science.algorithms.sorting.q001",
+      "subtopicId": "ug.computer-science.algorithms.sorting",
+      "objectiveIds": ["ug.computer-science.algorithms.sorting.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "What is the best-case running time of insertion sort, and on what input does it occur?",
+      "options": [
+        { "id": "a", "text": "$\\Theta(n)$, on an already sorted array" },
+        { "id": "b", "text": "$\\Theta(n \\log n)$, on a randomly ordered array" },
+        { "id": "c", "text": "$\\Theta(n^2)$, on every input" },
+        { "id": "d", "text": "$\\Theta(n)$, on a reverse-sorted array" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "On sorted input each key is already in place, so the inner `while` guard fails after a single comparison and no shifting occurs — $n - 1$ comparisons and zero moves, giving $\\Theta(n)$. This adaptivity to nearly sorted data is insertion sort's distinguishing virtue and the reason production hybrid sorts use it for small or nearly ordered runs.",
+      "distractorRationale": {
+        "b": "$\\Theta(n \\log n)$ is unattainable for insertion sort, whose average case is $\\Theta(n^2)$",
+        "c": "Confuses insertion sort with selection sort, which is $\\Theta(n^2)$ regardless of input",
+        "d": "Reverse-sorted input is the *worst* case: every key must travel the whole sorted prefix, giving $\\Theta(n^2)$"
+      },
+      "misconceptionTags": ["insertion-sort-bounds", "adaptive-sorting"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.sorting.q002",
+      "subtopicId": "ug.computer-science.algorithms.sorting",
+      "objectiveIds": ["ug.computer-science.algorithms.sorting.o4"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A sorting algorithm is **stable**. What does that guarantee?",
+      "options": [
+        { "id": "a", "text": "It never exceeds its worst-case time bound" },
+        { "id": "b", "text": "Records with equal keys appear in the output in the same relative order as in the input" },
+        { "id": "c", "text": "It uses only $O(1)$ auxiliary space" },
+        { "id": "d", "text": "It produces the same output regardless of the input order" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Stability preserves the input order among records that compare equal. It matters whenever sorting is applied in stages: sorting a student list by name and then stably by department leaves each department's students still in name order. Without stability the first sort's work is destroyed. Merge sort and insertion sort are stable; quicksort and heapsort are not.",
+      "distractorRationale": {
+        "a": "Predictable timing is a separate property; merge sort has both, quicksort has neither",
+        "c": "That is being in place, and it often conflicts with stability — merge sort is stable but needs $\\Theta(n)$ extra space",
+        "d": "Any correct sort produces the same key sequence; stability concerns the order of *equal* keys"
+      },
+      "misconceptionTags": ["stability"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.sorting.q003",
+      "subtopicId": "ug.computer-science.algorithms.sorting",
+      "objectiveIds": ["ug.computer-science.algorithms.sorting.o1"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Insertion sort runs on [5, 2, 4, 6, 1, 3], processing keys left to right from index 1. What is the array after **three** passes (that is, after the key originally at index 3 has been placed)?",
+      "options": [
+        { "id": "a", "text": "[2, 4, 5, 6, 1, 3]" },
+        { "id": "b", "text": "[1, 2, 3, 6, 5, 4]" },
+        { "id": "c", "text": "[1, 2, 4, 5, 6, 3]" },
+        { "id": "d", "text": "[2, 4, 5, 1, 3, 6]" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Pass 1 inserts 2 before 5, giving [2, 5, 4, 6, 1, 3]. Pass 2 inserts 4 between 2 and 5, giving [2, 4, 5, 6, 1, 3]. Pass 3 finds 6 already greater than 5, so nothing moves. The signature of insertion sort is visible here: the prefix is sorted but contains only the elements *seen so far*, and the untouched suffix still holds the original values 1 and 3.",
+      "distractorRationale": {
+        "b": "This is the state after three passes of **selection** sort, whose prefix holds the three globally smallest elements",
+        "c": "This is insertion sort after *four* passes, once 1 has also been inserted",
+        "d": "This is a bubble-sort state, which pushes the largest element to the end on the first pass"
+      },
+      "misconceptionTags": ["insertion-sort-trace", "insertion-vs-selection"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.sorting.q004",
+      "subtopicId": "ug.computer-science.algorithms.sorting",
+      "objectiveIds": ["ug.computer-science.algorithms.sorting.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Which recurrence describes merge sort, and what does it solve to?",
+      "options": [
+        { "id": "a", "text": "$T(n) = 2T(n/2) + \\Theta(n)$, giving $\\Theta(n \\log n)$" },
+        { "id": "b", "text": "$T(n) = 2T(n/2) + \\Theta(1)$, giving $\\Theta(n)$" },
+        { "id": "c", "text": "$T(n) = T(n/2) + \\Theta(n)$, giving $\\Theta(n)$" },
+        { "id": "d", "text": "$T(n) = T(n-1) + \\Theta(n)$, giving $\\Theta(n^2)$" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Merge sort splits the array in half ($\\Theta(1)$), sorts both halves recursively (two subproblems of size $n/2$) and merges them in $\\Theta(n)$. The recursion tree has $\\log_2 n$ levels and every level performs $\\Theta(n)$ merging work, so the total is $\\Theta(n \\log n)$ — and because the split is always even, this bound is the best, worst *and* average case.",
+      "distractorRationale": {
+        "b": "A constant combine step would make the total linear, but merging two sorted halves inherently touches every element",
+        "c": "One recursive call describes binary search, not a sort of both halves",
+        "d": "That is the insertion sort recurrence, which shrinks the problem by one element"
+      },
+      "misconceptionTags": ["recurrence-relations", "merge-sort"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.sorting.q005",
+      "subtopicId": "ug.computer-science.algorithms.sorting",
+      "objectiveIds": ["ug.computer-science.algorithms.sorting.o2"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "Merging a sorted array of 4 elements with a sorted array of 5 elements into one sorted sequence requires at most how many comparisons? Give a number only.",
+      "correctValue": 8,
+      "explanation": "Each comparison emits exactly one element, and once either input is exhausted the remainder of the other is copied without any further comparison. So the worst case is $m + n - 1 = 4 + 5 - 1 = 8$ comparisons, reached when the two runs interleave. This linear merge cost is the $\\Theta(n)$ combine step in the merge sort recurrence.",
+      "misconceptionTags": ["merge-step", "comparison-counting"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.sorting.q006",
+      "subtopicId": "ug.computer-science.algorithms.sorting",
+      "objectiveIds": ["ug.computer-science.algorithms.sorting.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Quicksort is usually quoted as $\\Theta(n \\log n)$. What is its worst-case running time, and on what input does it arise?",
+      "options": [
+        { "id": "a", "text": "$\\Theta(n \\log n)$ — the bound holds for every input" },
+        { "id": "b", "text": "$\\Theta(n^2)$, when every partition is maximally unbalanced — for example an already sorted array with the first or last element as pivot" },
+        { "id": "c", "text": "$\\Theta(n^2)$, only when the array contains duplicate keys" },
+        { "id": "d", "text": "$\\Theta(2^n)$, when the recursion depth reaches $n$" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "If the pivot is the minimum or maximum of its range, one side of the partition is empty and the other has $n-1$ elements, giving $T(n) = T(n-1) + \\Theta(n) = \\Theta(n^2)$ — and the recursion depth becomes $n$, risking stack exhaustion. Choosing the last element as pivot makes sorted input trigger exactly this, which is why practical implementations use a randomised or median-of-three pivot, or fall back to heapsort as introsort does.",
+      "distractorRationale": {
+        "a": "$\\Theta(n \\log n)$ is quicksort's average case over random pivots, not a worst-case guarantee",
+        "c": "Duplicates cause quadratic behaviour only with a naive two-way partition; three-way partitioning handles them in linear time and the sorted-input case is the classical worst case",
+        "d": "Each level of recursion does $O(n)$ work over depth at most $n$, so the total is bounded by $O(n^2)$"
+      },
+      "misconceptionTags": ["quicksort-worst-case", "pivot-selection"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.sorting.q007",
+      "subtopicId": "ug.computer-science.algorithms.sorting",
+      "objectiveIds": ["ug.computer-science.algorithms.sorting.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "Lomuto partitioning is applied to [7, 2, 9, 4, 1, 5] with the last element, 5, as pivot. What is the array after the single partition pass, and at which index does the pivot end up?",
+      "options": [
+        { "id": "a", "text": "[2, 4, 1, 5, 9, 7], pivot at index 3" },
+        { "id": "b", "text": "[1, 2, 4, 5, 7, 9], pivot at index 3" },
+        { "id": "c", "text": "[2, 4, 1, 5, 7, 9], pivot at index 3" },
+        { "id": "d", "text": "[7, 2, 9, 4, 1, 5], pivot at index 5" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Scanning with a boundary index $i$ initially before the array: 7 > 5, no action; 2 ≤ 5 so swap into position 0 giving [2, 7, 9, 4, 1, 5]; 9 > 5, no action; 4 ≤ 5 so swap into position 1 giving [2, 4, 9, 7, 1, 5]; 1 ≤ 5 so swap into position 2 giving [2, 4, 1, 7, 9, 5]. Finally the pivot is swapped into position 3, giving [2, 4, 1, 5, 9, 7]. The postcondition is only that everything left of the pivot is ≤ 5 and everything right is > 5 — neither partition is itself sorted.",
+      "distractorRationale": {
+        "b": "This is the fully sorted array; one partition pass places only the pivot correctly",
+        "c": "Assumes the right partition emerges sorted; the swaps leave 9 before 7",
+        "d": "Assumes the pass performs no swaps, which would require every element to exceed the pivot"
+      },
+      "misconceptionTags": ["partition-trace", "partition-postcondition"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.sorting.q008",
+      "subtopicId": "ug.computer-science.algorithms.sorting",
+      "objectiveIds": ["ug.computer-science.algorithms.sorting.o4"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "Why can no comparison-based sorting algorithm beat $\\Omega(n \\log n)$ in the worst case?",
+      "options": [
+        { "id": "a", "text": "Because every known algorithm has been tested and none is faster" },
+        { "id": "b", "text": "Because a comparison tree must have at least $n!$ leaves to distinguish all input permutations, so its height is at least $\\log_2(n!) = \\Theta(n \\log n)$" },
+        { "id": "c", "text": "Because each element must be compared with every other element" },
+        { "id": "d", "text": "Because merging two sorted halves costs $\\Theta(n)$" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Model the algorithm as a binary decision tree whose internal nodes are comparisons and whose leaves are output permutations. Since any of the $n!$ input orderings must be sortable, the tree needs at least $n!$ leaves, and a binary tree with $L$ leaves has height at least $\\log_2 L$. By Stirling's approximation $\\log_2(n!) = \\Theta(n \\log n)$, and the worst-case comparison count is the tree's height. Counting sort and radix sort beat this bound precisely because they do not compare keys — they exploit the keys' structure instead.",
+      "distractorRationale": {
+        "a": "An empirical observation is not a proof; the bound is an information-theoretic argument that no future algorithm can evade",
+        "c": "All-pairs comparison would give $\\Omega(n^2)$, which is far stronger than the true bound and is not required",
+        "d": "That explains merge sort's particular cost, not a lower bound over all algorithms"
+      },
+      "misconceptionTags": ["comparison-lower-bound", "decision-tree-argument"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.sorting.q009",
+      "subtopicId": "ug.computer-science.algorithms.sorting",
+      "objectiveIds": ["ug.computer-science.algorithms.sorting.o4"],
+      "type": "true_false",
+      "difficulty": 2,
+      "stem": "Merge sort on an array can be implemented using only $O(1)$ auxiliary space while retaining its $\\Theta(n \\log n)$ time bound and its simplicity.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "False. The standard array merge writes into a scratch buffer of size $\\Theta(n)$, and that buffer is why merge sort loses to quicksort in memory-constrained settings. In-place merge algorithms do exist, but they are intricate and carry constant factors large enough that they are rarely used in practice. On a *linked list*, however, merge sort genuinely needs only $O(1)$ extra space, since merging relinks nodes rather than copying them — which is why it is the standard choice for sorting lists.",
+      "misconceptionTags": ["merge-sort-space", "in-place"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

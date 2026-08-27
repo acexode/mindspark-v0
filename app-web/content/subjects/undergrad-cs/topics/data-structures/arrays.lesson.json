@@ -1,0 +1,111 @@
+{
+  "id": "ug.computer-science.data-structures.arrays.lesson",
+  "subtopicId": "ug.computer-science.data-structures.arrays",
+  "title": "Arrays and Dynamic Arrays",
+  "estimatedMinutes": 16,
+  "objectiveIds": [
+    "ug.computer-science.data-structures.arrays.o1",
+    "ug.computer-science.data-structures.arrays.o2",
+    "ug.computer-science.data-structures.arrays.o3",
+    "ug.computer-science.data-structures.arrays.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "An examinations officer keeps 500 student scores in a spreadsheet column. Reading row 312 takes no longer than reading row 1 — she jumps straight to it. But inserting a new student at the top means dragging all 500 rows down one place. The array is the spreadsheet column of computer science, and it has exactly those two properties: instant access, expensive insertion at the front."
+    },
+    {
+      "type": "text",
+      "markdown": "## Contiguous storage and address arithmetic\n\nAn **array** is a fixed-length sequence of elements of a single type held in *contiguous* memory. Because every element has the same width, the location of any element is computable rather than searchable:\n\nFor a zero-indexed array, element $i$ lives at $\\text{base} + i \\times w$, where $w$ is the element width in bytes. There is no traversal and no comparison — one multiplication, one addition, one memory read. This is the **random access** property, and it is the entire reason arrays remain the default sequential container."
+    },
+    {
+      "type": "math",
+      "latex": "\\mathrm{addr}(a[i]) = \\mathrm{base}(a) + i \\times w \\qquad \\text{(zero-indexed)}",
+      "caption": "One-indexed languages such as Fortran use base + (i − 1) × w; the index is scaled by the width, never added to the base"
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Random access",
+      "text": "A container has random access when the cost of reaching element $i$ is independent of $i$ and of the container's length. Contiguous storage of fixed-width elements provides it; pointer-linked storage does not, because reaching a node requires following the chain."
+    },
+    {
+      "type": "text",
+      "markdown": "### What contiguity costs\n\nThe same property that makes access $O(1)$ makes structural change expensive. Order in an array *is* position, so inserting or deleting anywhere but the end forces the remaining elements to move.\n\n- **Insert at the end** (spare capacity available) — write one slot, $O(1)$.\n- **Insert at index $k$** — shift $n - k$ elements right, $O(n - k)$, so $O(n)$ at the front.\n- **Delete at index $k$** — shift $n - k - 1$ elements left, again $O(n)$ at the front.\n- **Search, unsorted** — $\\Theta(n)$; an algorithm that skipped an element could be defeated by placing the target there.\n- **Search, sorted** — $\\Theta(\\log n)$ by bisection, which requires random access and so is unavailable on a linked list."
+    },
+    {
+      "type": "table",
+      "headers": ["Operation", "Static array", "Dynamic array (doubling)", "Note"],
+      "rows": [
+        ["Access `a[i]`", "$O(1)$", "$O(1)$", "Address arithmetic"],
+        ["Update `a[i] = v`", "$O(1)$", "$O(1)$", "In place"],
+        ["Search (unsorted)", "$O(n)$", "$O(n)$", "Must be prepared to scan all"],
+        ["Search (sorted)", "$O(\\log n)$", "$O(\\log n)$", "Binary search"],
+        ["Append at end", "not supported", "$O(1)$ amortised, $O(n)$ worst case", "Worst case is the resize"],
+        ["Insert at front", "$O(n)$", "$O(n)$", "Shift every element"],
+        ["Delete at front", "$O(n)$", "$O(n)$", "Shift every element"],
+        ["Delete at end", "$O(1)$", "$O(1)$ amortised", "Shrink policy permitting"],
+        ["Extra space", "$O(1)$", "$O(n)$, up to ~50% slack", "Capacity above size"]
+      ],
+      "caption": "Costs for an array of n elements. Only the end of the array is cheap to modify."
+    },
+    {
+      "type": "text",
+      "markdown": "### The dynamic array\n\nA **dynamic array** (`vector`, `ArrayList`, Python `list`, Go slice) wraps a fixed buffer and tracks two numbers: the **size** (elements in use) and the **capacity** (slots allocated). Appending writes at index `size` and increments it. When `size == capacity`, the array must grow:\n\n```\nappend(v):\n    if size == capacity:\n        newCapacity = max(1, 2 * capacity)\n        newBuffer   = allocate(newCapacity)\n        copy elements 0 .. size-1 into newBuffer   # this is the Theta(n) step\n        free old buffer; buffer = newBuffer; capacity = newCapacity\n    buffer[size] = v\n    size = size + 1\n```\n\nA single append can therefore cost $\\Theta(n)$. The claim that append is **amortised** $O(1)$ is a claim about any *sequence* of appends, not about each one."
+    },
+    {
+      "type": "worked_example",
+      "title": "Amortised analysis of a doubling append",
+      "prompt": "Starting from capacity 1, show that appending n elements one at a time performs fewer than 2n element copies in total, so the amortised cost per append is O(1).",
+      "steps": [
+        { "text": "Identify when copying happens. A resize is triggered by the append that finds the buffer full, so the capacity sequence is $1, 2, 4, 8, \\dots$ and the resizes occur at sizes $1, 2, 4, \\dots, 2^k$ where $2^k < n$." },
+        { "text": "Cost of one resize. Growing from capacity $c$ copies exactly $c$ elements, so the resize costs $c$ element moves." },
+        { "text": "Sum the copies as a geometric series over all resizes:", "latex": "1 + 2 + 4 + \\cdots + 2^{k} = 2^{k+1} - 1" },
+        { "text": "Bound the series using $2^k < n$, so $2^{k+1} < 2n$:", "latex": "\\sum_{j=0}^{k} 2^{j} = 2^{k+1} - 1 < 2n" },
+        { "text": "Add the unavoidable work. Each of the $n$ appends also performs one write, contributing $n$. The total is therefore under $3n$, which is $\\Theta(n)$." },
+        { "text": "Divide by the number of operations: $\\Theta(n)/n = \\Theta(1)$ per append. Note this is a worst-case guarantee over the sequence — no assumption about the input distribution was used, which is what distinguishes amortised from average-case analysis." }
+      ],
+      "answer": "Copying totals fewer than $2n$ element moves across $n$ appends, so the amortised cost per append is $O(1)$ while the worst case for a single append remains $\\Theta(n)$."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "The growth factor must be geometric",
+      "text": "Any factor $g > 1$ gives amortised $O(1)$ append, because the resize count is $\\log_g n$ and the copy total is $\\frac{g}{g-1} n$. Growing by a *fixed increment* instead produces $\\Theta(n)$ resizes each costing $\\Theta(n)$, so $n$ appends cost $\\Theta(n^2)$. Increasing the constant increment does not help; only geometric growth does."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.data-structures.arrays.q004"
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Shrink at a quarter, not a half",
+      "text": "If the array halves its capacity as soon as it is half empty, an alternating append/remove sequence at the boundary forces a resize on every operation — $\\Theta(n)$ each, destroying the amortised bound. Shrinking only when the size falls to a quarter of capacity leaves hysteresis between the grow and shrink thresholds and restores amortised $O(1)$."
+    },
+    {
+      "type": "text",
+      "markdown": "### Beyond asymptotics: locality\n\nTwo containers can share a $\\Theta$ class and differ by an order of magnitude in wall-clock time. A 64-byte cache line holds sixteen 4-byte integers, so an array traversal incurs roughly one cache miss per sixteen elements and is further helped by hardware prefetching, which recognises the sequential stride. Separately allocated list nodes are scattered, so each pointer dereference risks a miss and the pointer field itself inflates memory traffic.\n\nThe practical consequence is that for sequential access, and even for insertion into small or medium sequences, a dynamic array usually beats a linked list despite the shifting — the shift is a contiguous `memmove` running at memory bandwidth, whereas the list's advantage is only realised when you already hold a reference to the insertion point."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "An array stores fixed-width elements contiguously, so element $i$ sits at $\\text{base} + i \\times w$ and access is $O(1)$.",
+        "Contiguity makes insertion and deletion $O(n)$ everywhere except at the end, because order is encoded as position.",
+        "A dynamic array tracks size and capacity, and reallocates by copying when full; a single append is $O(n)$ in the worst case.",
+        "Doubling makes resizes exponentially rare, so $n$ appends copy fewer than $2n$ elements and the amortised cost is $O(1)$.",
+        "Amortisation is a worst-case guarantee over a sequence of operations, not an average over an input distribution.",
+        "Growth must be geometric: a fixed increment makes $n$ appends cost $\\Theta(n^2)$ regardless of the increment size.",
+        "Cache locality gives arrays a large constant-factor advantage that asymptotic notation deliberately hides."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Algorithms and Complexity, Fundamental Data Structures", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

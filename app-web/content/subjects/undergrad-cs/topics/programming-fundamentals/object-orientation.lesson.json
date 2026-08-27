@@ -1,0 +1,112 @@
+{
+  "id": "ug.computer-science.programming-fundamentals.object-orientation.lesson",
+  "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+  "title": "Object Orientation",
+  "estimatedMinutes": 18,
+  "objectiveIds": [
+    "ug.computer-science.programming-fundamentals.object-orientation.o1",
+    "ug.computer-science.programming-fundamentals.object-orientation.o2",
+    "ug.computer-science.programming-fundamentals.object-orientation.o3",
+    "ug.computer-science.programming-fundamentals.object-orientation.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A university portal must compute fees for undergraduates, postgraduates, part-time students and foreign students, and a new category appears almost every session. Written as one long chain of conditionals, every new category means editing code that already works. Written with a polymorphic interface, a new category is a new class and nothing existing is touched. That difference is the entire argument for object orientation."
+    },
+    {
+      "type": "text",
+      "markdown": "## Objects, classes and state\n\nAn **object** is a bundle of state together with the operations permitted on that state. A **class** is a description from which objects are instantiated: it fixes the fields each instance holds and the methods each instance responds to.\n\nThe critical notion is the **class invariant** — a predicate over the fields that must hold whenever a method is not mid-execution. For an `Account`, a plausible invariant is `balance >= 0 && transactions.sum() == balance`. A constructor must establish the invariant, and every public method must preserve it. Only the class itself can be responsible for this, which is why the representation must not be publicly writable."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Encapsulation",
+      "text": "Bundling state with the operations on that state, and restricting external access to the representation so that the class is the sole enforcer of its invariants. Encapsulation is a claim about who may break the invariant, not merely a claim about the `private` keyword."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Getters and setters are not encapsulation",
+      "text": "Declaring every field private and then publishing a getter and setter for each simply renames the representation. Callers still depend on the exact field set, and any invariant spanning two fields can still be violated between two setter calls. Expose operations in the language of the domain — `withdraw(amount)`, not `setBalance(newValue)`."
+    },
+    {
+      "type": "text",
+      "markdown": "### Inheritance and composition\n\n**Inheritance** creates a subtype: `class Postgraduate extends Student` asserts that a `Postgraduate` *is a* `Student` and may be used wherever a `Student` is expected. **Composition** creates a part-of relationship: `Course` holding a `Timetable` field asserts that a course *has a* timetable.\n\nThe test is substitutability, not vocabulary. Ask: is every operation valid on the supertype also meaningful, with the same guarantees, on the subtype? If not, the relationship is not inheritance, however natural the English sounds.\n\nInheritance used purely to reuse an implementation is the most common structural error in object-oriented code. It couples the subclass to the superclass's internals, publishes every inherited method on the subclass's interface, and consumes the single inheritance slot most languages provide. Delegation through a field achieves the reuse with none of these costs."
+    },
+    {
+      "type": "table",
+      "headers": ["Criterion", "Inheritance (`extends`)", "Composition (field + delegation)"],
+      "rows": [
+        ["Relationship asserted", "is-a — subtype substitutable for supertype", "has-a — one object uses another"],
+        ["Coupling", "Tight; subclass depends on superclass internals", "Loose; only the delegate's public interface"],
+        ["Bound when", "Compile time, fixed for the object's lifetime", "Run time; the delegate can be swapped"],
+        ["Effect on interface", "Every public superclass method is inherited", "Only the methods you choose to forward"],
+        ["Multiplicity", "Usually one superclass only", "Any number of collaborators"],
+        ["Correct use", "The subtype genuinely honours every supertype guarantee", "Reuse of behaviour without a subtype claim"]
+      ],
+      "caption": "Prefer composition to inheritance unless the is-a claim survives the substitutability test"
+    },
+    {
+      "type": "text",
+      "markdown": "### Polymorphism and dynamic dispatch\n\n**Subtype polymorphism** lets one piece of code operate on any object satisfying a declared interface. The mechanism is **dynamic dispatch**: the method body invoked is chosen from the receiver's *run-time* class, typically by an indirect jump through a virtual method table stored with the object.\n\nThis is what removes the conditional chain:\n\n```\nabstract class FeePolicy { abstract Money computeFee(Student s) }\nclass UndergraduatePolicy extends FeePolicy { ... }\nclass PostgraduatePolicy  extends FeePolicy { ... }\nclass ForeignStudentPolicy extends FeePolicy { ... }\n\n// caller, unchanged forever:\nMoney total = policy.computeFee(student)\n```\n\nAdding a category adds a class. The call site is closed to modification and the hierarchy is open to extension.\n\n**Overriding is not overloading.** Overloading selects among same-named methods with different parameter lists, and it is resolved **statically** from the declared types of the arguments. Overriding replaces a method body in a subtype, and it is resolved **dynamically** from the run-time class of the receiver. Conflating them produces genuinely surprising results."
+    },
+    {
+      "type": "worked_example",
+      "title": "Tracing static overload resolution against dynamic override resolution",
+      "prompt": "class Base { void f(Object o) { print(\"Base-Object\") } }; class Derived extends Base { void f(String s) { print(\"Derived-String\") } }. Given Base b = new Derived(), what does b.f(\"hello\") print?",
+      "steps": [
+        { "text": "Step 1 — overload resolution, at compile time. The compiler knows only the *static* type of `b`, which is `Base`. It collects the applicable methods named `f` visible on `Base`: just `f(Object)`. The signature `f(Object)` is therefore baked into the call site." },
+        { "text": "Step 2 — note what was *not* considered. `Derived.f(String)` is a different signature, so it does not override `f(Object)`; it is an overload that the compiler never sees, because it is not declared on `Base`." },
+        { "text": "Step 3 — override resolution, at run time. The virtual machine looks up `f(Object)` in the run-time class `Derived`. `Derived` provides no override for that signature, so the inherited `Base` implementation is found." },
+        { "text": "Step 4 — the body runs and prints `Base-Object`." },
+        { "text": "Step 5 — check the counterfactual. Had `Derived` declared `void f(Object o)`, step 3 would have found the override and printed the derived version. And had `b` been declared `Derived b = new Derived()`, step 1 would have selected the more specific `f(String)`." }
+      ],
+      "answer": "`Base-Object`. Overloading is resolved statically from the declared type; overriding is resolved dynamically from the run-time class."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.programming-fundamentals.object-orientation.q004"
+    },
+    {
+      "type": "text",
+      "markdown": "### Abstraction: interfaces and abstract classes\n\nAn **interface** declares a capability with no implementation and no state. An **abstract class** may supply both a partial implementation and shared state, but cannot be instantiated.\n\nChoose an interface when you are specifying a contract that unrelated types should be able to satisfy — a class can implement many interfaces but usually extend only one class, so interfaces compose freely. Choose an abstract class when subtypes must share state or a partial algorithm, as in the *template method* pattern where the base class fixes the algorithm's skeleton and defers individual steps to overridable methods."
+    },
+    {
+      "type": "list",
+      "style": "number",
+      "items": [
+        "Name the invariant the class must maintain before you write a single field.",
+        "Make fields private and immutable by default; add mutability only where the domain demands it.",
+        "Publish operations phrased in the domain vocabulary, not accessors mirroring the field list.",
+        "Apply the substitutability test before writing `extends`; if it fails, use a field and delegate.",
+        "Depend on the abstraction, not the concrete class, so implementations can be substituted at run time."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "The Liskov substitution principle",
+      "text": "If $S$ is a subtype of $T$, any program written against $T$ must behave correctly when given an $S$. Concretely, an override may weaken the precondition and strengthen the postcondition, never the reverse. `Square extends Rectangle` fails this test: `Rectangle` promises that setting the width leaves the height unchanged, and `Square` cannot honour that promise."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "An object bundles state with its operations; the class invariant is the predicate that every public method must preserve.",
+        "Encapsulation restricts access to the representation so the class alone can enforce its invariants — a getter and setter per field defeats this.",
+        "Inheritance asserts a substitutable is-a relationship; composition with delegation is the correct tool for reuse without that claim.",
+        "Dynamic dispatch selects the method body from the receiver's run-time class, which is what replaces conditional chains with extensible hierarchies.",
+        "Overloading is resolved statically from declared types; overriding is resolved dynamically from the run-time class.",
+        "The Liskov substitution principle constrains overrides: weaken preconditions, strengthen postconditions, never the reverse."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Software Design and Programming Languages", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

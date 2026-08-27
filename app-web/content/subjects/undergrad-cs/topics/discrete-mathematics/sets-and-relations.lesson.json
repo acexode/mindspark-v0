@@ -1,0 +1,109 @@
+{
+  "id": "ug.computer-science.discrete-mathematics.sets-and-relations.lesson",
+  "subtopicId": "ug.computer-science.discrete-mathematics.sets-and-relations",
+  "title": "Sets, Relations and Functions",
+  "estimatedMinutes": 18,
+  "objectiveIds": [
+    "ug.computer-science.discrete-mathematics.sets-and-relations.o1",
+    "ug.computer-science.discrete-mathematics.sets-and-relations.o2",
+    "ug.computer-science.discrete-mathematics.sets-and-relations.o3",
+    "ug.computer-science.discrete-mathematics.sets-and-relations.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Every table in a relational database is literally a relation in the mathematical sense — a subset of a Cartesian product. Every `SELECT DISTINCT` is a set. Every primary key is an injective function. Discrete mathematics is not a prerequisite you pass and forget; it is the notation the rest of computer science is written in."
+    },
+    {
+      "type": "text",
+      "markdown": "## Sets\n\nA **set** is an unordered collection of distinct elements. Two consequences follow immediately and are worth stating: order carries no information, so $\\{1, 2\\} = \\{2, 1\\}$; and multiplicity carries none either, so $\\{1, 1, 2\\} = \\{1, 2\\}$. A collection that *does* track multiplicity is a multiset or bag, and one that tracks order is a sequence or tuple.\n\nThe fundamental operations, with $A = \\{1,2,3,4,5\\}$ and $B = \\{4,5,6,7\\}$:\n\n| Operation | Notation | Definition | Result |\n|---|---|---|---|\n| Union | $A \\cup B$ | in $A$ **or** in $B$ | $\\{1,2,3,4,5,6,7\\}$ |\n| Intersection | $A \\cap B$ | in $A$ **and** in $B$ | $\\{4,5\\}$ |\n| Difference | $A \\setminus B$ | in $A$ but not in $B$ | $\\{1,2,3\\}$ |\n| Symmetric difference | $A \\triangle B$ | in exactly one of the two | $\\{1,2,3,6,7\\}$ |\n| Complement | $\\bar{A}$ | in the universe but not in $A$ | depends on $U$ |\n\nUnion and intersection are commutative and associative; difference is **neither**, since $B \\setminus A = \\{6,7\\} \\ne A \\setminus B$."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Power set and Cartesian product",
+      "text": "The power set $\\mathcal{P}(S)$ is the set of *all* subsets of $S$, including $\\varnothing$ and $S$ itself, and $|\\mathcal{P}(S)| = 2^{|S|}$ because each element is independently in or out. The Cartesian product $A \\times B$ is the set of ordered pairs $(a, b)$ with $a \\in A$ and $b \\in B$, and $|A \\times B| = |A| \\cdot |B|$."
+    },
+    {
+      "type": "math",
+      "latex": "|A \\cup B| = |A| + |B| - |A \\cap B|, \\qquad |\\mathcal{P}(S)| = 2^{|S|}, \\qquad |A \\times B| = |A| \\cdot |B|",
+      "caption": "The three cardinality identities used most often in algorithm analysis"
+    },
+    {
+      "type": "text",
+      "markdown": "### Why the power set matters computationally\n\nThe bijection between subsets of an $n$-element set and bit strings of length $n$ is not a curiosity — it is how sets are represented. Bit $i$ is 1 exactly when element $i$ is present, so union becomes bitwise OR, intersection becomes bitwise AND, and difference becomes AND with a complement. For $n \\le 64$ these are single machine instructions.\n\nThe same bijection explains why exhaustive search over subsets is $\\Theta(2^n)$ and therefore infeasible past roughly $n = 40$. When a problem's natural formulation is \"consider every subset\", the $2^n$ is not an implementation weakness but a statement about the size of the search space."
+    },
+    {
+      "type": "text",
+      "markdown": "## Relations\n\nA **binary relation** from $A$ to $B$ is any subset $R \\subseteq A \\times B$; we write $a\\,R\\,b$ for $(a,b) \\in R$. Because a relation is *any* subset of the product, there are $2^{|A| \\cdot |B|}$ relations from $A$ to $B$.\n\nFor a relation on a single set $A$, four properties are decisive:\n\n- **Reflexive** — $\\forall a \\in A,\\; a\\,R\\,a$.\n- **Symmetric** — $\\forall a, b,\\; a\\,R\\,b \\Rightarrow b\\,R\\,a$.\n- **Antisymmetric** — $\\forall a, b,\\; (a\\,R\\,b \\wedge b\\,R\\,a) \\Rightarrow a = b$.\n- **Transitive** — $\\forall a, b, c,\\; (a\\,R\\,b \\wedge b\\,R\\,c) \\Rightarrow a\\,R\\,c$.\n\nSymmetric and antisymmetric are *not* opposites. Equality on any set is both, and $<$ on $\\mathbb{Z}$ is antisymmetric vacuously, because $a < b$ and $b < a$ never hold together."
+    },
+    {
+      "type": "table",
+      "headers": ["Relation", "Reflexive", "Symmetric", "Antisymmetric", "Transitive", "Classification"],
+      "rows": [
+        ["$=$ on $\\mathbb{Z}$", "Yes", "Yes", "Yes", "Yes", "Equivalence and partial order"],
+        ["$\\le$ on $\\mathbb{Z}$", "Yes", "No", "Yes", "Yes", "Total order"],
+        ["$<$ on $\\mathbb{Z}$", "No", "No", "Yes (vacuously)", "Yes", "Strict order"],
+        ["$a \\mid b$ on $\\mathbb{Z}^{+}$", "Yes", "No", "Yes", "Yes", "Partial order, not total"],
+        ["$a - b$ even, on $\\mathbb{Z}$", "Yes", "Yes", "No", "Yes", "Equivalence, 2 classes"],
+        ["$\\subseteq$ on $\\mathcal{P}(S)$", "Yes", "No", "Yes", "Yes", "Partial order, not total"]
+      ],
+      "caption": "Divisibility and subset inclusion are partial but not total orders: 4 and 6 are incomparable under divisibility, as are {1} and {2} under inclusion."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Two combinations that name themselves",
+      "text": "Reflexive + symmetric + transitive = **equivalence relation**, which partitions the set into disjoint equivalence classes. Reflexive + antisymmetric + transitive = **partial order**, which arranges the set into a hierarchy and is *total* only if every pair is comparable. Dropping symmetry from an equivalence relation gives a preorder, which orders rather than groups."
+    },
+    {
+      "type": "worked_example",
+      "title": "Testing a relation and identifying its equivalence classes",
+      "prompt": "Let R on the integers be defined by a R b if and only if a − b is divisible by 3. Determine whether R is an equivalence relation and describe its classes.",
+      "steps": [
+        { "text": "Reflexivity. For any integer $a$, $a - a = 0$ and $3 \\mid 0$, so $a\\,R\\,a$ holds for every $a$. Reflexive." },
+        { "text": "Symmetry. Suppose $a\\,R\\,b$, so $a - b = 3k$ for some integer $k$. Then $b - a = -3k = 3(-k)$, which is also a multiple of 3, so $b\\,R\\,a$. Symmetric.", "latex": "a - b = 3k \\;\\Longrightarrow\\; b - a = 3(-k)" },
+        { "text": "Transitivity. Suppose $a\\,R\\,b$ and $b\\,R\\,c$, so $a - b = 3j$ and $b - c = 3k$. Adding the two equations gives $a - c = 3(j + k)$, so $a\\,R\\,c$. Transitive.", "latex": "(a - b) + (b - c) = a - c = 3(j+k)" },
+        { "text": "All three properties hold, so $R$ is an equivalence relation. By the fundamental theorem on equivalence relations it therefore partitions $\\mathbb{Z}$ into disjoint classes." },
+        { "text": "Identify the classes. Two integers are related exactly when they leave the same remainder on division by 3, so the classes are the residue classes $[0] = \\{\\dots, -3, 0, 3, 6, \\dots\\}$, $[1] = \\{\\dots, -2, 1, 4, 7, \\dots\\}$ and $[2] = \\{\\dots, -1, 2, 5, 8, \\dots\\}$." },
+        { "text": "Verify the partition properties: the three classes are pairwise disjoint, none is empty, and their union is all of $\\mathbb{Z}$. This is exactly the structure a hash table with $m = 3$ buckets imposes on integer keys under $h(k) = k \\bmod 3$ — collisions are precisely membership in a common equivalence class." }
+      ],
+      "answer": "$R$ is an equivalence relation and partitions $\\mathbb{Z}$ into the 3 residue classes modulo 3."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.discrete-mathematics.sets-and-relations.q006"
+    },
+    {
+      "type": "text",
+      "markdown": "## Functions\n\nA **function** $f : A \\to B$ is a relation in which every element of the domain $A$ is paired with exactly one element of the codomain $B$. \"Exactly one\" carries two obligations: totality (no input is left unmapped) and single-valuedness (no input has two images).\n\n- **Injective** (one-to-one) — distinct inputs give distinct outputs: $f(x) = f(y) \\Rightarrow x = y$.\n- **Surjective** (onto) — every element of the codomain is hit: the image equals $B$.\n- **Bijective** — both. Exactly the bijections have inverse functions, and two finite sets have the same cardinality if and only if a bijection between them exists.\n\nSurjectivity is a claim about the *stated* codomain, not about the formula. $f(x) = 2x$ from $\\mathbb{Z}$ to $\\mathbb{Z}$ is injective but not surjective, since nothing maps to 3; the very same rule from $\\mathbb{Z}$ to the even integers is bijective.\n\nCounting: the number of total functions from $A$ to $B$ is $|B|^{|A|}$ — one independent choice of image per domain element. The exponent is the domain size, which is the direction most often confused."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Where this bites in code",
+      "text": "A hash function is a function in exactly this sense, and it cannot be injective when the key universe exceeds the bucket count — which is the pigeonhole principle and the reason collisions are unavoidable. A database primary key must be injective from rows to key values, and a `UNIQUE` constraint is the engine enforcing that claim. When either property fails silently, the resulting bug is a data-integrity bug, not a performance one."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A set is unordered with no repeated elements; union and intersection commute but difference does not.",
+        "$|A \\cup B| = |A| + |B| - |A \\cap B|$, $|\\mathcal{P}(S)| = 2^{|S|}$ and $|A \\times B| = |A| \\cdot |B|$.",
+        "The subset-to-bit-string bijection makes set operations single machine instructions and explains why subset enumeration is $\\Theta(2^n)$.",
+        "A relation from $A$ to $B$ is any subset of $A \\times B$, so there are $2^{|A||B|}$ of them.",
+        "Symmetric and antisymmetric are not opposites: equality is both, and $<$ is antisymmetric vacuously.",
+        "Reflexive, symmetric and transitive gives an equivalence relation, which partitions the set into disjoint classes.",
+        "Reflexive, antisymmetric and transitive gives a partial order, total only when every pair is comparable.",
+        "Surjectivity depends on the stated codomain, and the number of total functions from $A$ to $B$ is $|B|^{|A|}$."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Discrete Structures", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

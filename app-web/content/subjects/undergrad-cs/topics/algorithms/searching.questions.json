@@ -1,0 +1,200 @@
+{
+  "subtopicId": "ug.computer-science.algorithms.searching",
+  "questions": [
+    {
+      "id": "ug.computer-science.algorithms.searching.q001",
+      "subtopicId": "ug.computer-science.algorithms.searching",
+      "objectiveIds": ["ug.computer-science.algorithms.searching.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "For linear search over an array of $n$ elements, what are the best-case and worst-case numbers of comparisons?",
+      "options": [
+        { "id": "a", "text": "Best 1, worst $n$" },
+        { "id": "b", "text": "Best 1, worst $\\log_2 n$" },
+        { "id": "c", "text": "Best $n/2$, worst $n$" },
+        { "id": "d", "text": "Best 1, worst $n/2$" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The best case is one comparison, when the target is the first element examined. The worst case is $n$ comparisons, occurring both when the target is last and when it is absent — and absence is the more important of the two, because a correct algorithm must inspect every element before it can report \"not found\". The average for a successful search on a uniformly distributed target is about $(n+1)/2$, which is still $\\Theta(n)$.",
+      "distractorRationale": {
+        "b": "Quotes the binary search bound, which requires a sorted array",
+        "c": "Confuses the average case with the best case",
+        "d": "Reports the average as the worst case; an unsuccessful search alone forces $n$ comparisons"
+      },
+      "misconceptionTags": ["linear-search-bounds", "average-vs-worst-case"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.searching.q002",
+      "subtopicId": "ug.computer-science.algorithms.searching",
+      "objectiveIds": ["ug.computer-science.algorithms.searching.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "What precondition must hold before binary search may be applied, and what happens if it is violated?",
+      "options": [
+        { "id": "a", "text": "The array must be sorted; otherwise the algorithm may report \"not found\" for a value that is present" },
+        { "id": "b", "text": "The array length must be a power of two; otherwise the midpoint calculation fails" },
+        { "id": "c", "text": "The array must contain no duplicates; otherwise the algorithm loops forever" },
+        { "id": "d", "text": "The array must be stored in a linked list; otherwise halving is impossible" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Binary search discards half the range after one comparison, and the only justification for discarding it is the sortedness assumption: if the target is less than the midpoint value, sortedness guarantees it cannot lie to the right. On unsorted input the algorithm still terminates in $O(\\log n)$ steps but its answer is unreliable — a silent wrong answer, which is worse than a slow one.",
+      "distractorRationale": {
+        "b": "Integer division handles any length; a power of two is not required",
+        "c": "Duplicates are fine — the search simply finds some matching index rather than a specified one",
+        "d": "The reverse is true: binary search *requires* random access, which a linked list cannot provide"
+      },
+      "misconceptionTags": ["binary-search-precondition"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.searching.q003",
+      "subtopicId": "ug.computer-science.algorithms.searching",
+      "objectiveIds": ["ug.computer-science.algorithms.searching.o2"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "Binary search runs on the sorted array [11, 22, 33, 44, 55, 66, 77, 88, 99] with indices 0 to 8, using `mid = floor((lo + hi) / 2)`. How many elements are examined while searching for 33? Give a number only.",
+      "correctValue": 3,
+      "explanation": "Probe 1: lo = 0, hi = 8, mid = 4, value 55. Since $33 < 55$, set hi = 3. Probe 2: mid = floor(3/2) = 1, value 22. Since $33 > 22$, set lo = 2. Probe 3: mid = floor(5/2) = 2, value 33 — found. Three elements are examined, consistent with the worst-case bound $\\lfloor \\log_2 9 \\rfloor + 1 = 4$.",
+      "misconceptionTags": ["binary-search-trace"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.searching.q004",
+      "subtopicId": "ug.computer-science.algorithms.searching",
+      "objectiveIds": ["ug.computer-science.algorithms.searching.o3"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "What is the maximum number of elements binary search examines in a sorted array of 1,000,000 elements? Give a number only.",
+      "correctValue": 20,
+      "explanation": "Each probe at most halves the candidate range, so after $k$ probes the range has size at most $n/2^k$. The search terminates once that reaches 0, needing $k = \\lfloor \\log_2 n \\rfloor + 1$ probes. Here $2^{19} = 524{,}288 < 10^6 \\le 2^{20} = 1{,}048{,}576$, so 20 probes suffice. Compare 1,000,000 for linear search — a factor of 50,000.",
+      "misconceptionTags": ["logarithmic-bound", "halving-recurrence"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.searching.q005",
+      "subtopicId": "ug.computer-science.algorithms.searching",
+      "objectiveIds": ["ug.computer-science.algorithms.searching.o4"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "You must perform $k$ searches on a static array of $n$ elements. When is sorting once and then using binary search preferable to performing $k$ linear searches?",
+      "options": [
+        { "id": "a", "text": "Always, because $O(\\log n)$ beats $O(n)$" },
+        { "id": "b", "text": "Never, because the sort costs more than any number of searches" },
+        { "id": "c", "text": "When $k$ is large enough that $n \\log n + k \\log n < kn$ — roughly when $k$ exceeds $\\log n$" },
+        { "id": "d", "text": "Only when $k$ equals 1, so the sort cost is incurred once" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "The two totals are $\\Theta(kn)$ for repeated linear search and $\\Theta(n \\log n + k \\log n)$ for sort-then-bisect. Since $k \\log n$ is dominated by $kn$, the comparison reduces to $n \\log n$ against $kn$, so sorting pays off once $k \\gtrsim \\log n$. For $n = 10^6$ that threshold is about 20 searches — very low, which is why static lookup tables are almost always kept sorted or indexed.",
+      "distractorRationale": {
+        "a": "Ignores the one-off $\\Theta(n \\log n)$ preprocessing, which dominates when $k$ is small; for a single search a linear scan is genuinely cheaper",
+        "b": "The sort is amortised over all $k$ searches, so its cost per search falls as $k$ grows",
+        "d": "Inverts the argument — $k = 1$ is precisely the case where sorting is *not* worthwhile"
+      },
+      "misconceptionTags": ["preprocessing-tradeoff", "amortised-preprocessing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.searching.q006",
+      "subtopicId": "ug.computer-science.algorithms.searching",
+      "objectiveIds": ["ug.computer-science.algorithms.searching.o2"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "A binary search implementation computes `mid = (lo + hi) / 2` using fixed-width signed integers. Why is `mid = lo + (hi - lo) / 2` preferred?",
+      "options": [
+        { "id": "a", "text": "It produces a different midpoint that converges faster" },
+        { "id": "b", "text": "It avoids overflow: for large `lo` and `hi` the sum can exceed the integer range, whereas the difference cannot" },
+        { "id": "c", "text": "It avoids division, which is slower than subtraction" },
+        { "id": "d", "text": "It is required when the array length is odd" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Both expressions are algebraically equal, but `lo + hi` can exceed the maximum representable integer when both indices are large — the sum silently wraps negative and the resulting index is out of bounds. Since `hi >= lo`, the quantity `hi - lo` is bounded by the array length and cannot overflow. This bug survived in the JDK's `Arrays.binarySearch` for nine years, which is a useful reminder that a correct algorithm and a correct implementation are different achievements.",
+      "distractorRationale": {
+        "a": "For non-overflowing values the two expressions yield the identical midpoint",
+        "c": "Both forms perform one division; the change is about range, not arithmetic cost",
+        "d": "Integer division handles odd lengths identically in both forms"
+      },
+      "misconceptionTags": ["integer-overflow", "implementation-correctness"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.searching.q007",
+      "subtopicId": "ug.computer-science.algorithms.searching",
+      "objectiveIds": ["ug.computer-science.algorithms.searching.o1", "ug.computer-science.algorithms.searching.o3"],
+      "type": "true_false",
+      "difficulty": 2,
+      "stem": "Binary search applied to a **sorted singly linked list** of $n$ nodes still runs in $O(\\log n)$ time.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "False. Binary search performs $O(\\log n)$ *comparisons*, but reaching each midpoint requires random access. On a linked list the midpoint of a range must be reached by traversing links, which costs $\\Theta(n)$ in total across the halvings, so the running time is $\\Theta(n)$ — no better than a linear scan, and with more code. This is why sorted sequences that must support bisection are stored contiguously or in a balanced tree, which provides the halving structurally.",
+      "misconceptionTags": ["random-access-requirement", "comparisons-vs-time"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.searching.q008",
+      "subtopicId": "ug.computer-science.algorithms.searching",
+      "objectiveIds": ["ug.computer-science.algorithms.searching.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Which recurrence describes binary search, and what does it solve to?",
+      "options": [
+        { "id": "a", "text": "$T(n) = T(n/2) + \\Theta(1)$, giving $T(n) = \\Theta(\\log n)$" },
+        { "id": "b", "text": "$T(n) = 2T(n/2) + \\Theta(1)$, giving $T(n) = \\Theta(n)$" },
+        { "id": "c", "text": "$T(n) = T(n-1) + \\Theta(1)$, giving $T(n) = \\Theta(n)$" },
+        { "id": "d", "text": "$T(n) = 2T(n/2) + \\Theta(n)$, giving $T(n) = \\Theta(n \\log n)$" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Binary search makes one constant-time comparison and then recurses on **one** half of the range, so the recurrence is $T(n) = T(n/2) + \\Theta(1)$. Unrolling it gives a sum of $\\Theta(1)$ terms over $\\log_2 n$ levels, so $T(n) = \\Theta(\\log n)$. The single recursive call is the essential feature: recursing on both halves would visit every element.",
+      "distractorRationale": {
+        "b": "Two subproblems would mean examining both halves, which is a full traversal rather than a search",
+        "c": "That is the recurrence for linear search, which shrinks the range by one element",
+        "d": "That is the merge sort recurrence, where both halves are solved and merged in linear time"
+      },
+      "misconceptionTags": ["recurrence-relations", "divide-and-conquer"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

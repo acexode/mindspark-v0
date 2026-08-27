@@ -1,0 +1,222 @@
+{
+  "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+  "questions": [
+    {
+      "id": "ug.computer-science.programming-fundamentals.object-orientation.q001",
+      "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.object-orientation.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which statement best defines **encapsulation**?",
+      "options": [
+        { "id": "a", "text": "Bundling state with the operations on that state, and restricting external access to the representation" },
+        { "id": "b", "text": "Deriving a new class from an existing one to reuse its code" },
+        { "id": "c", "text": "Allowing one interface to be satisfied by many implementations" },
+        { "id": "d", "text": "Declaring every field `private` and generating a getter and setter for each" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Encapsulation combines two ideas: the object owns both its data and the operations that maintain it, and the representation is reachable only through a published interface. That boundary is what lets the class enforce its invariants, because no external code can put the object into an inconsistent state.",
+      "distractorRationale": {
+        "b": "That is inheritance",
+        "c": "That is polymorphism",
+        "d": "A public getter and setter for every private field re-exposes the representation, so it provides the syntax of encapsulation with none of the benefit"
+      },
+      "misconceptionTags": ["encapsulation", "oop-pillars"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.object-orientation.q002",
+      "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.object-orientation.o3"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "With **dynamic dispatch**, which implementation of an overridden method is invoked by a call?",
+      "options": [
+        { "id": "a", "text": "The one in the declared (static) type of the reference" },
+        { "id": "b", "text": "The one in the actual (run-time) class of the receiving object" },
+        { "id": "c", "text": "The one in the root of the class hierarchy" },
+        { "id": "d", "text": "The one in whichever class textually appears last in the source file" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Dynamic dispatch resolves an overridden method against the object's run-time class, typically by an indirect jump through a virtual method table stored with the object. This is exactly what makes subtype polymorphism useful: the caller writes against the supertype and each subtype supplies its own behaviour.",
+      "distractorRationale": {
+        "a": "The static type determines only which methods are *visible* to the compiler, not which body runs",
+        "c": "The root implementation runs only when no subclass overrides it",
+        "d": "Source order has no bearing on dispatch"
+      },
+      "misconceptionTags": ["dynamic-dispatch", "static-vs-runtime-type"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.object-orientation.q003",
+      "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.object-orientation.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A `Course` needs the behaviour of a `Timetable` in order to publish its schedule, but a course is not a kind of timetable. Which design is appropriate?",
+      "options": [
+        { "id": "a", "text": "`Course` extends `Timetable`, inheriting its methods" },
+        { "id": "b", "text": "`Course` holds a `Timetable` as a field and delegates to it" },
+        { "id": "c", "text": "`Timetable` extends `Course`, so courses gain scheduling" },
+        { "id": "d", "text": "Both classes extend a common abstract `Schedulable` base to share the code" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Inheritance expresses an **is-a** relationship and should be used only where a subclass is substitutable for its supertype everywhere. Here the relationship is **has-a**, so composition with delegation is correct: `Course` keeps a `Timetable` field and forwards the scheduling calls. This also keeps `Timetable` replaceable without touching `Course`'s own interface.",
+      "distractorRationale": {
+        "a": "Inheriting purely to reuse code creates a false is-a claim and exposes every `Timetable` method on `Course`'s interface",
+        "c": "Inverts the dependency and is an even weaker is-a claim",
+        "d": "Introducing a shared base to reuse an implementation is inheritance-for-reuse again; a common base is justified only when both genuinely are subtypes of it"
+      },
+      "misconceptionTags": ["inheritance-vs-composition", "is-a-vs-has-a"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.object-orientation.q004",
+      "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.object-orientation.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "What is printed?\n\n`class A { describe() { print(\"code=\" + this.tag()) }  tag() { return \"A\" } }`\n`class B extends A { tag() { return \"B\" } }`\n`A obj = new B(); obj.describe();`",
+      "options": [
+        { "id": "a", "text": "`code=A`" },
+        { "id": "b", "text": "`code=B`" },
+        { "id": "c", "text": "`code=AB`" },
+        { "id": "d", "text": "A compile error, because `B` does not define `describe`" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "`describe` is inherited from `A`, so the body executing is `A`'s. But the call `this.tag()` inside it is itself dynamically dispatched on the run-time class of the receiver, which is `B`, so `B.tag()` runs. This is the *template method* mechanism: a fixed algorithm in the base class calling overridable steps in the subclass.",
+      "distractorRationale": {
+        "a": "Assumes that because the executing body lives in `A`, the nested call is resolved statically in `A` too",
+        "c": "Assumes both implementations run and are concatenated; overriding replaces rather than appends",
+        "d": "`B` inherits `describe` from `A`, so the call type-checks"
+      },
+      "misconceptionTags": ["dynamic-dispatch", "template-method"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.object-orientation.q005",
+      "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.object-orientation.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "In a language with single implementation inheritance but multiple interface implementation, what is the principal advantage of declaring a pure **interface** rather than an abstract class?",
+      "options": [
+        { "id": "a", "text": "Interfaces are dispatched faster because they hold no state" },
+        { "id": "b", "text": "A class may implement many interfaces but extend only one class, so interfaces compose without constraining the hierarchy" },
+        { "id": "c", "text": "Interfaces can declare fields, whereas abstract classes cannot" },
+        { "id": "d", "text": "Interfaces are checked at run time only, so they impose no compile-time cost" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "An interface specifies a capability without consuming the single inheritance slot, so a class can be `Comparable`, `Serializable` and `Printable` at once. An abstract class is the right choice when you must share state or a partial implementation among subtypes, which an interface cannot do.",
+      "distractorRationale": {
+        "a": "Interface dispatch typically costs the same as or slightly more than class virtual dispatch, since the target may need a lookup in an interface method table",
+        "c": "The reverse is true: abstract classes may declare instance fields, interfaces generally may not",
+        "d": "Interface conformance is a compile-time check in statically typed languages"
+      },
+      "misconceptionTags": ["interface-vs-abstract-class"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.object-orientation.q006",
+      "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.object-orientation.o2"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "`Rectangle` has independent `setWidth` and `setHeight`. `Square extends Rectangle` and overrides both so that setting either dimension sets both. Why is this a design defect?",
+      "options": [
+        { "id": "a", "text": "It violates the Liskov substitution principle: code relying on `Rectangle`'s postcondition that setting width leaves height unchanged breaks when handed a `Square`" },
+        { "id": "b", "text": "It violates encapsulation, because `Square` accesses the fields of `Rectangle`" },
+        { "id": "c", "text": "It is invalid because a subclass may not override more than one inherited method" },
+        { "id": "d", "text": "It causes infinite recursion between the two setters" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Substitutability is a statement about behaviour, not just signatures. `Rectangle` promises that `setWidth(5)` leaves the height alone; `Square` cannot honour that promise, so a `Square` is not a behavioural subtype however natural the geometric \"is-a\" sounds. The standard remedies are to make the shapes immutable, so no setter exists to contradict, or to drop the inheritance relationship entirely.",
+      "distractorRationale": {
+        "b": "A subclass legitimately accessing protected state is not the problem here",
+        "c": "There is no such rule; overriding several methods is routine",
+        "d": "A correct implementation assigns the fields directly and does not recurse"
+      },
+      "misconceptionTags": ["liskov-substitution", "behavioural-subtyping"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.object-orientation.q007",
+      "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.object-orientation.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "`class Base { void f(Object o) { print(\"Base-Object\") } }` and `class Derived extends Base { void f(String s) { print(\"Derived-String\") } }`. Given `Base b = new Derived();` what does `b.f(\"hello\")` print?",
+      "options": [
+        { "id": "a", "text": "`Base-Object`" },
+        { "id": "b", "text": "`Derived-String`" },
+        { "id": "c", "text": "Both lines, in declaration order" },
+        { "id": "d", "text": "A compile error, because `Derived` does not override `f(Object)`" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Two separate resolutions happen. **Overload resolution** is static: the compiler sees only the static type `Base`, whose sole applicable method is `f(Object)`, so it fixes that signature. **Override resolution** is then dynamic, but `Derived` does not override `f(Object)` — `f(String)` is an unrelated overload — so `Base`'s body runs. Overloading is chosen at compile time, overriding at run time; conflating the two produces exactly this error.",
+      "distractorRationale": {
+        "b": "Assumes the more specific overload in the run-time class is selected, which would require overload resolution to be dynamic",
+        "c": "Only one method body is invoked per call",
+        "d": "No override is required; `Derived` inherits `f(Object)` and simply adds an overload"
+      },
+      "misconceptionTags": ["overloading-vs-overriding", "static-dispatch"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.object-orientation.q008",
+      "subtopicId": "ug.computer-science.programming-fundamentals.object-orientation",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.object-orientation.o1", "ug.computer-science.programming-fundamentals.object-orientation.o4"],
+      "type": "true_false",
+      "difficulty": 2,
+      "stem": "A class whose every private field has a public getter and a public setter is well encapsulated.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "False. A getter and setter for every field publishes the representation under a slightly longer name; callers still depend on the exact field set, and the class still cannot enforce any invariant that spans two fields. Real encapsulation means exposing operations expressed in the domain — `withdraw(amount)` rather than `setBalance(...)` — so the class remains the sole enforcer of its invariants.",
+      "misconceptionTags": ["encapsulation", "anaemic-class"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

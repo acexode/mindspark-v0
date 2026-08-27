@@ -1,0 +1,102 @@
+{
+  "id": "ug.computer-science.data-structures.linked-lists.lesson",
+  "subtopicId": "ug.computer-science.data-structures.linked-lists",
+  "title": "Linked Lists",
+  "estimatedMinutes": 17,
+  "objectiveIds": [
+    "ug.computer-science.data-structures.linked-lists.o1",
+    "ug.computer-science.data-structures.linked-lists.o2",
+    "ug.computer-science.data-structures.linked-lists.o3",
+    "ug.computer-science.data-structures.linked-lists.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Passengers boarding a Lagos danfo do not have numbered seats. Each one simply remembers who is next in the queue. Adding somebody in the middle costs two people changing who they point at — nobody has to move. But finding the fourteenth passenger means asking thirteen people in turn. That is a linked list: cheap surgery, expensive indexing."
+    },
+    {
+      "type": "text",
+      "markdown": "## Nodes and links\n\nA **linked list** represents a sequence as a chain of separately allocated **nodes**, each holding a payload and one or more references to neighbours. Order is encoded in the links rather than in memory position, which inverts every cost relative to an array.\n\nThe structure is defined recursively: a list is either empty (null) or a node whose `next` field is a list. A traversal is therefore a loop that follows `next` until it reaches null.\n\n```\nnode := { value : T, next : node or null }\nlist := reference to first node, or null if empty\n```\n\nA four-element singly linked list, drawn with each node's link:\n\n```\nhead\n  |\n  v\n[ 12 | * ] --> [ 7 | * ] --> [ 41 | * ] --> [ 3 | null ]\n```"
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Sequential access",
+      "text": "A container has sequential access when reaching element $i$ requires traversing the $i$ preceding elements, so the cost depends on the position. Pointer-linked storage necessarily has sequential access, since no arithmetic relates a position to an address. One consequence is that binary search, which needs the midpoint in $O(1)$, cannot be run on a linked list."
+    },
+    {
+      "type": "text",
+      "markdown": "### Three variants\n\n**Singly linked.** One `next` field per node; the last node's link is null. Minimal overhead, but a node cannot reach its predecessor, so deletion given only a node reference costs $O(n)$.\n\n**Doubly linked.** Both `next` and `prev`. Bidirectional traversal, and deletion of a known node becomes $O(1)$ because the predecessor is immediately available. The cost is one extra reference per node and two extra assignments per structural change — every update must maintain both directions consistently.\n\n**Circular.** The last node links back to the first (and, if doubly linked, the first's `prev` points to the last). There is no null terminator, so traversal must stop when it returns to the starting node. This suits round-robin schedulers and ring buffers, where the sequence has no natural end.\n\nA **sentinel** (dummy) header node that is never removed eliminates the special cases for the empty list and for insertion at the head, at the cost of one extra node. Production implementations almost always use one, because the special-case branches are where the bugs live."
+    },
+    {
+      "type": "table",
+      "headers": ["Operation", "Singly linked", "Doubly linked", "Dynamic array"],
+      "rows": [
+        ["Access position $k$", "$O(n)$", "$O(n)$", "$O(1)$"],
+        ["Search by value", "$O(n)$", "$O(n)$", "$O(n)$ unsorted, $O(\\log n)$ sorted"],
+        ["Insert at head", "$O(1)$", "$O(1)$", "$O(n)$"],
+        ["Insert at tail", "$O(1)$ with a tail pointer, else $O(n)$", "$O(1)$ with a tail pointer", "$O(1)$ amortised"],
+        ["Insert after a known node", "$O(1)$", "$O(1)$", "$O(n)$"],
+        ["Delete a known node", "$O(n)$ — predecessor unknown", "$O(1)$", "$O(n)$"],
+        ["Delete at head", "$O(1)$", "$O(1)$", "$O(n)$"],
+        ["Link overhead per element", "1 reference", "2 references", "none (but up to ~50% capacity slack)"],
+        ["Cache locality", "Poor", "Poor", "Excellent"]
+      ],
+      "caption": "Costs for n elements. A linked list wins only where you already hold a reference to the point of modification."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "The rule for all pointer surgery",
+      "text": "Set the new node's **outgoing** links first, then redirect the **incoming** link last. Reversing this order overwrites the only reference to the rest of the list. In `q.next = p.next; p.next = q` the order is correct; writing `p.next = q; q.next = p.next` reads the already-modified field, produces the self-loop `q.next = q`, and leaks the entire tail."
+    },
+    {
+      "type": "worked_example",
+      "title": "Reversing a singly linked list in place",
+      "prompt": "Reverse the list [12, 7, 41] in place using three references — prev, cur and nxt — and confirm the time and space cost.",
+      "steps": [
+        { "text": "Initialise. `prev = null`, `cur = head` (the node holding 12). The invariant is that the nodes from the original head up to but excluding `cur` have already been reversed, and `prev` is the head of that reversed prefix." },
+        { "text": "Pass 1, cur = [12]. Save `nxt = cur.next` = [7]. Redirect `cur.next = prev` = null, so [12] is now a tail. Advance `prev = [12]`, `cur = [7]`. Reversed prefix: 12." },
+        { "text": "Pass 2, cur = [7]. Save `nxt = [41]`. Redirect `7.next = [12]`. Advance `prev = [7]`, `cur = [41]`. Reversed prefix: 7 → 12." },
+        { "text": "Pass 3, cur = [41]. Save `nxt = null`. Redirect `41.next = [7]`. Advance `prev = [41]`, `cur = null`. Reversed prefix: 41 → 7 → 12." },
+        { "text": "The guard `cur != null` now fails, so the loop exits. Set `head = prev`, giving 41 → 7 → 12." },
+        { "text": "Cost: each node is visited exactly once and each visit performs a fixed number of assignments, so the algorithm is $\\Theta(n)$ time. Only three references are held regardless of $n$, so it is $\\Theta(1)$ auxiliary space — an in-place reversal, which the same operation on an array also achieves but by swapping rather than relinking." }
+      ],
+      "answer": "The list becomes 41 → 7 → 12 in $\\Theta(n)$ time and $\\Theta(1)$ extra space; saving `nxt` before overwriting `cur.next` is what keeps the tail reachable."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.data-structures.linked-lists.q003"
+    },
+    {
+      "type": "text",
+      "markdown": "### When is a linked list actually the right choice?\n\nThe honest answer is: less often than textbooks imply, and for specific reasons.\n\nUse one when you **already hold a reference** to the point of modification, so the $O(n)$ search is not incurred — intrusive kernel lists, free lists in allocators, and the recency chain of an LRU cache all have this property. Use one when references to elements must **remain valid** across insertions, which a reallocating dynamic array cannot promise. Use one when splicing whole sublists in $O(1)$ matters, as in a mergeable queue.\n\nAvoid one when you index by position, when you need binary search, when memory is tight (two 8-byte links around a 4-byte payload is 400% overhead), or when you traverse repeatedly — the scattered nodes defeat both the cache and the hardware prefetcher, and the measured gap against an array can be an order of magnitude despite both being $\\Theta(n)$."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Losing the last reference is a leak",
+      "text": "In a manually managed language, unlinking a node without freeing it leaks its storage; freeing it while another reference survives creates a dangling pointer. In a garbage-collected language neither happens, but a *circular* list keeps every node reachable, so failing to break the cycle when discarding the list can keep the whole chain alive under a reference-counting collector."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A linked list encodes order in links rather than in memory position, so structural change is cheap and indexing is not.",
+        "A singly linked node holds a payload and one successor link; a doubly linked node adds a predecessor link; a circular list has no null terminator.",
+        "Indexing and searching are $\\Theta(n)$, and binary search is impossible because there is no $O(1)$ access to the midpoint.",
+        "Insertion or deletion at a node you already hold is $O(1)$ — except deletion in a singly linked list, which is $O(n)$ because the predecessor must be found.",
+        "In pointer surgery, always set the new node's outgoing links before redirecting the incoming link.",
+        "A sentinel header removes the empty-list and head-insertion special cases, which is where most list bugs occur.",
+        "Link overhead and poor cache locality mean a dynamic array usually wins in practice unless you exploit a property only a list offers."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Fundamental Data Structures", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "id": "ug.computer-science.discrete-mathematics.propositional-logic.lesson",
+  "subtopicId": "ug.computer-science.discrete-mathematics.propositional-logic",
+  "title": "Propositional Logic",
+  "estimatedMinutes": 18,
+  "objectiveIds": [
+    "ug.computer-science.discrete-mathematics.propositional-logic.o1",
+    "ug.computer-science.discrete-mathematics.propositional-logic.o2",
+    "ug.computer-science.discrete-mathematics.propositional-logic.o3",
+    "ug.computer-science.discrete-mathematics.propositional-logic.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A developer writes `if (authenticated && tokenValid)` and then, in the `else` branch, guards a log message with `if (!authenticated && !tokenValid)`. The message never appears when only one of the two conditions fails, and nobody notices for months. The bug is not in the code — it is in the negation. De Morgan's law would have caught it in ten seconds."
+    },
+    {
+      "type": "text",
+      "markdown": "## Propositions and connectives\n\nA **proposition** is a statement with a definite truth value. \"Nigeria has 36 states\" is a proposition; \"sort the array\" is not, since it is a command rather than a claim.\n\nCompound propositions are built with connectives:\n\n| Connective | Symbol | Code | True when |\n|---|---|---|---|\n| Negation | $\\lnot p$ | `!p` | $p$ is false |\n| Conjunction | $p \\wedge q$ | `p && q` | both are true |\n| Disjunction | $p \\vee q$ | `p \\|\\| q` | at least one is true (inclusive) |\n| Exclusive or | $p \\oplus q$ | `p != q` | exactly one is true |\n| Implication | $p \\to q$ | `!p \\|\\| q` | *not* ($p$ true and $q$ false) |\n| Biconditional | $p \\leftrightarrow q$ | `p == q` | both have the same value |\n\nDisjunction is **inclusive**: $p \\vee q$ is true when both hold. Everyday English often means exclusive or (\"tea or coffee\"), and the mismatch is a steady source of specification errors."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Implication",
+      "text": "$p \\to q$ asserts only that a true $p$ guarantees a true $q$. It is false on exactly one assignment — $p$ true, $q$ false — and *vacuously true* whenever $p$ is false. So \"if $n < 0$ then the array is sorted\" is a true statement about every non-negative $n$, which is why a loop body that never executes cannot violate its postcondition."
+    },
+    {
+      "type": "table",
+      "headers": ["$p$", "$q$", "$p \\wedge q$", "$p \\vee q$", "$p \\oplus q$", "$p \\to q$", "$p \\leftrightarrow q$"],
+      "rows": [
+        ["T", "T", "T", "T", "F", "T", "T"],
+        ["T", "F", "F", "T", "T", "**F**", "F"],
+        ["F", "T", "F", "T", "T", "T", "F"],
+        ["F", "F", "F", "F", "F", "T", "T"]
+      ],
+      "caption": "The one false row of the implication column is the whole content of the connective — memorise its position and the rest follows."
+    },
+    {
+      "type": "text",
+      "markdown": "### Tautology, contradiction, satisfiability\n\nA formula with $n$ distinct variables has $2^n$ assignments. It is a **tautology** if true under all of them, a **contradiction** if false under all, and **satisfiable** if true under at least one. Two formulae are **logically equivalent**, written $\\varphi \\equiv \\psi$, when their truth tables agree — equivalently, when $\\varphi \\leftrightarrow \\psi$ is a tautology.\n\nThe exponential row count is not a presentational inconvenience. Deciding satisfiability of a propositional formula is the **boolean satisfiability problem**, the first problem proved NP-complete, and no algorithm is known that avoids exponential worst-case behaviour. Modern SAT solvers nevertheless handle formulae with millions of variables on structured instances, which is why they now sit inside compilers, verification tools and package dependency resolvers."
+    },
+    {
+      "type": "text",
+      "markdown": "### The equivalences worth knowing by heart\n\n**De Morgan's laws** — the negation of a conjunction is a disjunction, and conversely:\n\n$$\\lnot(p \\wedge q) \\equiv \\lnot p \\vee \\lnot q \\qquad \\lnot(p \\vee q) \\equiv \\lnot p \\wedge \\lnot q$$\n\nThis is the rule the opening example broke. Negating a guard means negating each operand **and** flipping the connective.\n\n**Implication as disjunction** — $p \\to q \\equiv \\lnot p \\vee q$. Both formulae are false only when $p$ is true and $q$ false. This identity eliminates implication entirely and is the first step in converting a formula to conjunctive normal form.\n\n**Contrapositive** — $p \\to q \\equiv \\lnot q \\to \\lnot p$. Negate *and* swap. Distinguish it carefully from the two non-equivalent variants:\n\n- **Converse** $q \\to p$ — swap only. Not equivalent.\n- **Inverse** $\\lnot p \\to \\lnot q$ — negate only. Not equivalent.\n\nThe contrapositive is a legitimate proof strategy; the converse and inverse are the two commonest fallacies in informal reasoning."
+    },
+    {
+      "type": "math",
+      "latex": "p \\to q \\;\\equiv\\; \\lnot p \\vee q \\;\\equiv\\; \\lnot q \\to \\lnot p, \\qquad \\lnot (p \\to q) \\;\\equiv\\; p \\wedge \\lnot q",
+      "caption": "Four ways of saying the same thing. The last is how you negate an implication — and note there is no arrow in the result."
+    },
+    {
+      "type": "worked_example",
+      "title": "Verifying De Morgan's law by exhaustive truth table",
+      "prompt": "Prove that ¬(p ∧ q) ≡ ¬p ∨ ¬q by constructing the full truth table, and state the practical consequence for negating a compound guard.",
+      "steps": [
+        { "text": "Enumerate the assignments. With two variables there are $2^2 = 4$ rows: (T,T), (T,F), (F,T), (F,F)." },
+        { "text": "Compute the left-hand side, $\\lnot(p \\wedge q)$. The conjunction is T, F, F, F across the four rows, so its negation is **F, T, T, T**." },
+        { "text": "Compute the right-hand side, $\\lnot p \\vee \\lnot q$. Row 1: $\\text{F} \\vee \\text{F} = \\text{F}$. Row 2: $\\text{F} \\vee \\text{T} = \\text{T}$. Row 3: $\\text{T} \\vee \\text{F} = \\text{T}$. Row 4: $\\text{T} \\vee \\text{T} = \\text{T}$. So **F, T, T, T**." },
+        { "text": "Compare. The two columns agree in all four rows, so the formulae are logically equivalent and the biconditional between them is a tautology." },
+        { "text": "Check the tempting wrong answer. $\\lnot p \\wedge \\lnot q$ gives F, F, F, **T** — it agrees only in rows 1 and 4 and is false in the two rows where exactly one operand fails. That is precisely the case the opening example silently dropped." },
+        { "text": "Practical consequence: `!(authenticated && tokenValid)` must be written `!authenticated || !tokenValid`. When negating a guard, negate every operand *and* swap `&&` with `||`. For nested guards, apply the law from the outside inwards until no negation sits in front of a bracket." }
+      ],
+      "answer": "Both sides evaluate to F, T, T, T, so $\\lnot(p \\wedge q) \\equiv \\lnot p \\vee \\lnot q$; negating a conjunction requires flipping the connective, not only the operands."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.discrete-mathematics.propositional-logic.q003"
+    },
+    {
+      "type": "text",
+      "markdown": "### Valid inference and its two famous fallacies\n\nAn argument is **valid** when the conclusion is true in every assignment where all premises are true. Validity is a property of the *form*, so an argument can be valid with false premises and invalid with true ones.\n\n| Form | Premises | Conclusion | Status |\n|---|---|---|---|\n| Modus ponens | $p \\to q$, $p$ | $q$ | **Valid** |\n| Modus tollens | $p \\to q$, $\\lnot q$ | $\\lnot p$ | **Valid** |\n| Hypothetical syllogism | $p \\to q$, $q \\to r$ | $p \\to r$ | **Valid** |\n| Disjunctive syllogism | $p \\vee q$, $\\lnot p$ | $q$ | **Valid** |\n| Affirming the consequent | $p \\to q$, $q$ | $p$ | *Invalid* |\n| Denying the antecedent | $p \\to q$, $\\lnot p$ | $\\lnot q$ | *Invalid* |\n\nBoth fallacies come from the same misreading — treating $p \\to q$ as though it were $p \\leftrightarrow q$. \"If the build is broken the tests fail; the tests failed; therefore the build is broken\" affirms the consequent, and it is wrong because a flaky test also makes the tests fail. Debugging is largely applied modus tollens: predict a consequence of your hypothesis, observe that it does not hold, and eliminate the hypothesis."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Logic is the specification language of programs",
+      "text": "A precondition, a postcondition and a loop invariant are all propositions. A type system is a proof system. A short-circuit `&&` is a conjunction whose right operand is evaluated lazily. When you simplify a boolean guard using De Morgan or the implication identity, you are performing a formally justified program transformation, not a stylistic tidy-up."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A proposition has a definite truth value; connectives build compound propositions from simpler ones.",
+        "Disjunction is inclusive, unlike much everyday use of \"or\", which usually means exclusive.",
+        "$p \\to q$ is false on exactly one assignment, $p$ true with $q$ false, and is vacuously true whenever $p$ is false.",
+        "A formula with $n$ variables has $2^n$ assignments, which is why satisfiability checking is exponential in the worst case.",
+        "De Morgan: negating a conjunction yields a disjunction of negations, and vice versa — flip the connective as well as the operands.",
+        "$p \\to q \\equiv \\lnot p \\vee q$, and its negation is $p \\wedge \\lnot q$ with no arrow remaining.",
+        "The contrapositive $\\lnot q \\to \\lnot p$ is equivalent to the original; the converse and inverse are not.",
+        "Modus ponens and modus tollens are valid; affirming the consequent and denying the antecedent are fallacies caused by reading an implication as a biconditional."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Discrete Structures, Basic Logic", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

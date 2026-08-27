@@ -1,0 +1,116 @@
+{
+  "id": "ug.computer-science.data-structures.stacks-and-queues.lesson",
+  "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+  "title": "Stacks and Queues",
+  "estimatedMinutes": 16,
+  "objectiveIds": [
+    "ug.computer-science.data-structures.stacks-and-queues.o1",
+    "ug.computer-science.data-structures.stacks-and-queues.o2",
+    "ug.computer-science.data-structures.stacks-and-queues.o3",
+    "ug.computer-science.data-structures.stacks-and-queues.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "At a bank in Ibadan, customers are served in the order they arrived — that is a queue, and it is what everyone considers fair. On the same counter sits a tray of forms where the clerk always picks up whichever was placed last — that is a stack, and it is exactly what your processor does with function calls. Two structures, one difference: which end you remove from."
+    },
+    {
+      "type": "text",
+      "markdown": "## Abstract data types, not implementations\n\nA stack and a queue are **abstract data types**: they are defined by an interface and a behavioural contract, not by a representation. Both can be built over an array or a linked list, and both offer $O(1)$ operations when built correctly.\n\nThe discipline is the whole definition:\n\n- A **stack** is **LIFO** — last in, first out. Insertion and removal happen at the same end, called the top.\n- A **queue** is **FIFO** — first in, first out. Insertion happens at the rear and removal at the front.\n\nDeliberately restricting the interface is the point. Because a stack exposes no indexing, its invariants are trivial to reason about and its implementation can be swapped freely."
+    },
+    {
+      "type": "table",
+      "headers": ["ADT", "Insert", "Remove", "Inspect", "Discipline", "All operations"],
+      "rows": [
+        ["Stack", "`push(v)`", "`pop()`", "`peek()`", "LIFO", "$O(1)$"],
+        ["Queue", "`enqueue(v)`", "`dequeue()`", "`front()`", "FIFO", "$O(1)$"],
+        ["Deque", "`pushFront`, `pushBack`", "`popFront`, `popBack`", "both ends", "either", "$O(1)$"],
+        ["Priority queue", "`insert(v, p)`", "`extractMin()`", "`min()`", "by priority", "$O(\\log n)$ with a binary heap"]
+      ],
+      "caption": "A priority queue is included for contrast: it is the one member of the family whose operations are not constant time."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Abstract data type",
+      "text": "A specification of a set of values together with the operations on them, stated in terms of observable behaviour and independent of any representation. A *data structure* is a concrete representation that implements an ADT. \"Stack\" is an ADT; \"array-backed stack with a top index\" is a data structure."
+    },
+    {
+      "type": "text",
+      "markdown": "### Implementing a stack\n\nOver an array, keep an integer `top` holding the index of the next free slot. `push` writes at `top` and increments; `pop` decrements and reads. Both are $O(1)$, and with a doubling buffer `push` is $O(1)$ amortised. Over a singly linked list, push and pop at the head — both $O(1)$ worst case, at the cost of a pointer per element and poor locality.\n\nEither way, the two error conditions must be handled explicitly: `pop` or `peek` on an empty stack is an **underflow**, and `push` onto a full fixed-capacity stack is an **overflow**.\n\nThe call stack is the canonical instance. Each call pushes an activation record and each return pops one, and the LIFO discipline is exactly what makes recursion work: the most recently suspended call is always the next to resume."
+    },
+    {
+      "type": "text",
+      "markdown": "### Implementing a queue: the circular buffer\n\nA naive array queue with a moving `front` and `rear` leaks capacity — after $c$ enqueues and $c$ dequeues, `rear` has reached the end of the array while every slot is free. The fix is to let the indices **wrap**:\n\n```\nenqueue(v):\n    if count == capacity: grow or reject\n    buffer[rear] = v\n    rear  = (rear + 1) mod capacity\n    count = count + 1\n\ndequeue():\n    if count == 0: underflow\n    v     = buffer[front]\n    front = (front + 1) mod capacity\n    count = count - 1\n    return v\n```\n\nWith $c$ slots there are $c + 1$ possible occupancies but only $c$ distinct values of $(\\text{rear} - \\text{front}) \\bmod c$, so index comparison alone cannot distinguish full from empty — both give $\\text{front} = \\text{rear}$. Hence the explicit `count` above. The alternative is to sacrifice one slot and declare the buffer full at $c - 1$ elements."
+    },
+    {
+      "type": "math",
+      "latex": "\\text{rear}_{\\text{new}} = (\\text{rear} + 1) \\bmod c, \\qquad \\text{front}_{\\text{new}} = (\\text{front} + 1) \\bmod c",
+      "caption": "Modular index advance: the arithmetic that makes a fixed array behave as a ring"
+    },
+    {
+      "type": "worked_example",
+      "title": "Evaluating a postfix expression with a stack",
+      "prompt": "Evaluate the reverse Polish expression 5 3 2 * + 4 - using a single stack, showing the stack contents after each token.",
+      "steps": [
+        { "text": "Rule: an operand is pushed; an operator pops two operands, applies itself, and pushes the result. Critically, the *first* value popped is the **right-hand** operand, which matters for the non-commutative operators $-$ and $/$." },
+        { "text": "Token `5` → push. Stack (bottom to top): [5]." },
+        { "text": "Token `3` → push. Stack: [5, 3]. Token `2` → push. Stack: [5, 3, 2]." },
+        { "text": "Token `*` → pop 2 (right), pop 3 (left), push $3 \\times 2$. Stack: [5, 6].", "latex": "3 \\times 2 = 6" },
+        { "text": "Token `+` → pop 6 (right), pop 5 (left), push $5 + 6$. Stack: [11].", "latex": "5 + 6 = 11" },
+        { "text": "Token `4` → push. Stack: [11, 4]. Token `-` → pop 4 (right), pop 11 (left), push $11 - 4$. Stack: [7].", "latex": "11 - 4 = 7" },
+        { "text": "Input is exhausted and the stack holds exactly one value, which is the result. Two validity checks fall out of the trace: an operator finding fewer than two operands means the expression is malformed, and more than one value left at the end means the same. The equivalent infix expression is $5 + 3 \\times 2 - 4$, and postfix needs no parentheses because token order alone fixes the grouping." }
+      ],
+      "answer": "7"
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.data-structures.stacks-and-queues.q004"
+    },
+    {
+      "type": "list",
+      "style": "bullet",
+      "items": [
+        "**Stack — call management.** Each invocation pushes an activation record; each return pops one. Unbounded recursion exhausts the region and raises a stack overflow.",
+        "**Stack — delimiter matching.** Push each opening bracket, pop and compare on each closing one. Acceptance also requires the stack to be empty at end of input, otherwise `([` is wrongly accepted.",
+        "**Stack — expression handling.** Postfix evaluation as above, and Dijkstra's shunting-yard algorithm for converting infix to postfix.",
+        "**Stack — depth-first search.** A LIFO frontier drives the traversal along one branch until it dead-ends.",
+        "**Stack — undo.** The most recent action must be the first reversed, which is the LIFO contract exactly.",
+        "**Queue — breadth-first search.** A FIFO frontier finishes distance $d$ before starting distance $d+1$, which is why BFS finds shortest paths in unweighted graphs.",
+        "**Queue — scheduling and buffering.** Round-robin CPU scheduling, print spooling, and producer–consumer pipelines all require arrival order to be preserved."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "The frontier's discipline *is* the traversal",
+      "text": "Breadth-first and depth-first search are the same algorithm; the only difference is whether the frontier is a queue or a stack. If you can state that sentence and justify it, you understand both algorithms and both ADTs."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Check emptiness before you remove",
+      "text": "`pop` and `dequeue` are partial operations — they have a precondition. Silently returning a sentinel such as 0 or −1 on an empty container hides the error at the point where it can still be diagnosed and surfaces it much later as a wrong answer. Either raise, or return an explicit optional the caller must unwrap."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A stack is LIFO with insertion and removal at one end; a queue is FIFO with insertion at the rear and removal at the front.",
+        "Both are abstract data types: the contract is the definition, and array or linked implementations are interchangeable.",
+        "All stack and queue operations are $O(1)$; a priority queue is the exception at $O(\\log n)$ with a binary heap.",
+        "A circular buffer advances indices modulo the capacity, which prevents a queue from drifting off the end of its array.",
+        "Full and empty give the same index configuration, so an explicit count or one sacrificed slot is required.",
+        "Postfix evaluation pushes operands and applies operators to the top two, with the first value popped being the right-hand operand.",
+        "A queue frontier yields breadth-first search and a stack frontier yields depth-first search — otherwise the algorithms are identical."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Fundamental Data Structures", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

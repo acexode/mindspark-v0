@@ -1,0 +1,108 @@
+{
+  "id": "ug.computer-science.data-structures.binary-search-trees.lesson",
+  "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+  "title": "Binary Search Trees",
+  "estimatedMinutes": 20,
+  "objectiveIds": [
+    "ug.computer-science.data-structures.binary-search-trees.o1",
+    "ug.computer-science.data-structures.binary-search-trees.o2",
+    "ug.computer-science.data-structures.binary-search-trees.o3",
+    "ug.computer-science.data-structures.binary-search-trees.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A sorted array supports binary search in $O(\\log n)$ but insertion in $O(n)$. A linked list supports insertion in $O(1)$ but search in $O(n)$. The binary search tree is the structure that asks whether you can have both — and the answer, it turns out, depends entirely on one number: the height."
+    },
+    {
+      "type": "text",
+      "markdown": "## Rooted tree terminology\n\nA **rooted tree** is a set of nodes with one distinguished **root**, in which every other node has exactly one parent and there are no cycles. A **binary** tree restricts each node to at most two children, distinguished as *left* and *right* — and the distinction matters even when only one child is present.\n\n- **Depth** of a node: the number of edges from the root to it. The root has depth 0.\n- **Height** of a node: the number of edges on the longest path from it down to a leaf. A leaf has height 0.\n- **Height of the tree**: the height of the root.\n- **Leaf** (external node): a node with no children. **Internal node**: a node with at least one child.\n- **Subtree** rooted at $v$: $v$ together with all its descendants.\n- **Size**: the number of nodes.\n\nBe explicit about the height convention. Counting *edges* is standard in the algorithms literature and is used throughout this lesson; some texts count *nodes* on the path, giving values one larger."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Height bounds the size, and therefore the cost",
+      "text": "A binary tree of height $h$ has at least $h + 1$ nodes (a chain) and at most $2^{h+1} - 1$ nodes (a perfect tree). Inverting the upper bound, a tree of $n$ nodes has height at least $\\lceil \\log_2(n+1) \\rceil - 1$. Every BST operation costs $O(h)$, so the whole engineering problem is keeping $h$ near that logarithmic floor."
+    },
+    {
+      "type": "math",
+      "latex": "\\lceil \\log_2 (n+1) \\rceil - 1 \\;\\le\\; h \\;\\le\\; n - 1",
+      "caption": "The attainable range of heights for a binary tree on n nodes: balanced at the left end, a degenerate chain at the right"
+    },
+    {
+      "type": "text",
+      "markdown": "## The ordering invariant\n\nA **binary search tree** is a binary tree in which, for every node $v$:\n\n> every key in the **entire** left subtree of $v$ is less than $v$'s key, and every key in the **entire** right subtree of $v$ is greater.\n\nThe word *entire* carries the weight. A weaker, local condition — merely that the left child is smaller and the right child larger — is not sufficient, and the difference is not academic. Consider root 50 with left child 30 whose *right* child is 60. Every parent–child pair is locally ordered, yet a search for 60 compares with 50, goes right, and never finds it. The global invariant is what licenses discarding a whole subtree after a single comparison.\n\nOur running example, built by inserting 50, 30, 70, 20, 40, 60, 80:\n\n```\n            50\n          /    \\\n        30      70\n       /  \\    /  \\\n     20   40  60   80\n```\n\nSize 7, height 2, four leaves. This is a *perfect* tree: every level is full, so $n = 2^{h+1} - 1 = 2^3 - 1 = 7$."
+    },
+    {
+      "type": "worked_example",
+      "title": "Inserting 65 into the running tree",
+      "prompt": "Insert the key 65 into the BST above, showing each comparison, and state where the new node lands and what the height becomes.",
+      "steps": [
+        { "text": "Insertion always creates a leaf, so the algorithm walks down as if searching for 65 and attaches the node where the search falls off the tree. Start at the root." },
+        { "text": "At 50: $65 > 50$, so 65 must belong in the right subtree. Move to 70." },
+        { "text": "At 70: $65 < 70$, so 65 belongs in 70's left subtree. Move to 60." },
+        { "text": "At 60: $65 > 60$, so 65 belongs in 60's right subtree. But 60's right child is null — the search has fallen off the tree." },
+        { "text": "Attach 65 as the right child of 60. Three comparisons were made, one per node on the path." },
+        { "text": "Verify the invariant along the whole path, which is the only place it could break. 65 is in 50's right subtree and $65 > 50$; it is in 70's left subtree and $65 < 70$; it is in 60's right subtree and $65 > 60$. All three hold, so the tree is still a BST.", "latex": "50 < 65 < 70 \\quad\\text{and}\\quad 60 < 65" },
+        { "text": "The resulting shape has 60 with a right child 65, so the path 50 → 70 → 60 → 65 has three edges and the height rises from 2 to 3. The in-order traversal is now 20, 30, 40, 50, 60, 65, 70, 80 — still sorted, as it must be." }
+      ],
+      "answer": "65 becomes the right child of 60, after three comparisons; the height increases from 2 to 3."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.data-structures.binary-search-trees.q002"
+    },
+    {
+      "type": "text",
+      "markdown": "## Traversals\n\nThe three depth-first traversals differ only in *when* the node itself is emitted relative to its subtrees. Each visits every node once, so each is $\\Theta(n)$ time and $O(h)$ auxiliary space for the recursion stack.\n\n```\ninorder(v):   if v != null: inorder(v.left);  emit(v); inorder(v.right)\npreorder(v):  if v != null: emit(v); preorder(v.left);  preorder(v.right)\npostorder(v): if v != null: postorder(v.left); postorder(v.right); emit(v)\n```\n\nFor the running tree:\n\n| Traversal | Order | Output | Typical use |\n|---|---|---|---|\n| In-order | left, node, right | 20, 30, 40, 50, 60, 70, 80 | Reading keys in sorted order; validating the BST invariant |\n| Pre-order | node, left, right | 50, 30, 20, 40, 70, 60, 80 | Serialising the tree; re-inserting in this order rebuilds the identical shape |\n| Post-order | left, right, node | 20, 40, 30, 60, 80, 70, 50 | Freeing the tree; evaluating an expression tree bottom-up |\n| Level-order | by increasing depth | 50, 30, 70, 20, 40, 60, 80 | Breadth-first printing; uses a queue, not recursion |\n\nThat in-order traversal yields sorted output is not a coincidence but a restatement of the invariant, and it gives an $O(n)$ correctness check: a binary tree is a BST if and only if its in-order output is strictly increasing."
+    },
+    {
+      "type": "text",
+      "markdown": "### Deletion: three cases\n\nDeletion is the only non-obvious operation, because removing an internal node leaves a hole that must be filled without breaking the ordering.\n\n1. **Leaf.** Detach it. Nothing else changes.\n2. **One child.** Splice the child into the removed node's position. The child's subtree already sits entirely on the correct side of every ancestor, so the invariant survives.\n3. **Two children.** Neither child can simply be promoted. Instead copy the **in-order successor** — the minimum key of the right subtree, found by going right once then left as far as possible — into the node, then delete that successor from the right subtree. The successor has no left child by construction, so the recursive deletion is case 1 or case 2 and cannot recurse further.\n\nThe successor is the correct choice because it is the smallest key greater than the deleted one: every key remaining in the left subtree is still smaller, and every key remaining in the right subtree is still larger. The mirror-image choice, the in-order **predecessor** (maximum of the left subtree), is equally valid; alternating between the two is a cheap way to reduce the height skew that repeated deletions otherwise induce."
+    },
+    {
+      "type": "table",
+      "headers": ["Operation", "Balanced BST ($h = \\Theta(\\log n)$)", "Degenerate BST ($h = n-1$)", "Sorted array", "Hash table"],
+      "rows": [
+        ["Search", "$O(\\log n)$", "$O(n)$", "$O(\\log n)$", "$O(1)$ expected"],
+        ["Insert", "$O(\\log n)$", "$O(n)$", "$O(n)$", "$O(1)$ expected"],
+        ["Delete", "$O(\\log n)$", "$O(n)$", "$O(n)$", "$O(1)$ expected"],
+        ["Minimum / maximum", "$O(\\log n)$", "$O(n)$", "$O(1)$", "$O(n)$"],
+        ["Predecessor / successor", "$O(\\log n)$", "$O(n)$", "$O(1)$", "$O(n)$"],
+        ["Report all keys in order", "$O(n)$", "$O(n)$", "$O(n)$", "$O(n \\log n)$"],
+        ["Range query $[a, b]$", "$O(\\log n + k)$", "$O(n)$", "$O(\\log n + k)$", "$O(n)$"]
+      ],
+      "caption": "Why the BST survives despite the hash table's faster lookup: only the ordered structures answer successor and range queries efficiently."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Sorted input is the worst case",
+      "text": "Insert 10, 20, 30, 40, 50 in ascending order and every key becomes the right child of its predecessor. The result is a chain of height $n - 1$ on which every operation is $\\Theta(n)$ — a linked list carrying a wasted null pointer per node. Since real data arrives sorted disturbingly often, an unbalanced BST is not a safe production structure."
+    },
+    {
+      "type": "text",
+      "markdown": "### Restoring the logarithmic guarantee\n\n**Self-balancing** trees perform $O(1)$ local restructurings, called *rotations*, after each update to keep the height in $O(\\log n)$:\n\n- **AVL trees** require the two subtree heights of every node to differ by at most 1. The tightest balance, so the fastest lookups, at the cost of more rotations on update.\n- **Red-black trees** enforce a colouring discipline that bounds the height by $2\\log_2(n+1)$. Looser balance, fewer rotations — which is why they back most standard-library ordered maps.\n- **B-trees** raise the branching factor to hundreds so that the height is 3 or 4 even for millions of keys, minimising disk or page reads. This is the structure behind essentially every relational database index.\n\nA rotation changes the shape while preserving the in-order sequence exactly — which is the reason it cannot break the BST invariant."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Depth counts edges from the root down; height counts edges from a node to its deepest leaf, so a leaf has height 0.",
+        "A binary tree of height $h$ holds between $h+1$ and $2^{h+1}-1$ nodes, so $n$ nodes require height at least $\\lceil \\log_2(n+1) \\rceil - 1$.",
+        "The BST invariant constrains entire subtrees, not just immediate children — the local-only version permits trees in which search fails.",
+        "Search and insertion walk one root-to-leaf path, so both cost $O(h)$; insertion always creates a leaf.",
+        "In-order traversal yields sorted output, pre-order serialises the shape, and post-order processes children before parents.",
+        "Deleting a node with two children copies in its in-order successor, the minimum of the right subtree, then deletes that successor.",
+        "Sorted insertion degenerates a BST into a chain of height $n-1$; AVL, red-black and B-trees use rotations to keep the height logarithmic."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Fundamental Data Structures and Algorithms", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

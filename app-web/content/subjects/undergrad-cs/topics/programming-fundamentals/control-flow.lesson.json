@@ -1,0 +1,115 @@
+{
+  "id": "ug.computer-science.programming-fundamentals.control-flow.lesson",
+  "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+  "title": "Control Flow",
+  "estimatedMinutes": 16,
+  "objectiveIds": [
+    "ug.computer-science.programming-fundamentals.control-flow.o1",
+    "ug.computer-science.programming-fundamentals.control-flow.o2",
+    "ug.computer-science.programming-fundamentals.control-flow.o3",
+    "ug.computer-science.programming-fundamentals.control-flow.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Two students write code to find a name in a register of 100,000 entries. One writes a single loop that stops on a match. The other writes two nested loops that compare every entry with every other entry. Both programs give the right answer, and one of them finishes ten billion operations later. The difference is nothing but the shape of the control flow."
+    },
+    {
+      "type": "text",
+      "markdown": "## Structured control flow\n\nThe **structured programming theorem** (Böhm–Jacopini) states that any computable function can be expressed using only three composition rules:\n\n1. **Sequence** — execute $S_1$, then $S_2$.\n2. **Selection** — evaluate a boolean guard $B$ and execute one of two alternatives.\n3. **Iteration** — repeat $S$ while $B$ holds.\n\nEvery construct a modern language offers — `switch`, `for`, `do...while`, `foreach`, exception handling — is sugar over these three. The reason to prefer them to arbitrary `goto` is analysability: each has a single entry and a single exit, so you can reason about a block from its precondition and postcondition without tracing the whole program."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Guard",
+      "text": "The boolean expression that determines which branch a selection takes, or whether an iteration performs another pass. A guard must be a total expression: it must be defined and side-effect-free for every state in which it can be evaluated."
+    },
+    {
+      "type": "text",
+      "markdown": "### Selection\n\nA two-way selection is `if B then S1 else S2`. Nesting composes them, and the crucial point when tracing is that **only one branch is evaluated**: the discarded branch's conditions are never tested and its side effects never occur.\n\nA multi-way `switch` on a discrete value differs from a chain of `else if` in an important respect. A chain performs up to $k$ comparisons for $k$ arms, so it is $O(k)$. A dense `switch` can be compiled to a jump table indexed by the value, giving $O(1)$ dispatch.\n\n**Short-circuit evaluation** makes operand order semantically significant. With short-circuit `&&`, the right operand is evaluated only when the left is true, so\n\n```\nif (i < n && a[i] == target) { ... }\n```\n\nis safe when `i == n`, whereas swapping the operands reads `a[n]` before the bound is tested. Placing the guard first is a correctness requirement, not a stylistic one."
+    },
+    {
+      "type": "text",
+      "markdown": "### Iteration: definite and indefinite\n\n**Definite iteration** has a trip count computable before the first pass — a counting `for` over a range, or a `foreach` over a finite collection. **Indefinite iteration** has a trip count that depends on data discovered during execution, so it needs a condition-controlled `while`.\n\nThe distinction matters for termination proofs. A definite loop terminates by construction. An indefinite loop terminates only if you can exhibit a **loop variant**: an integer expression that is bounded below and strictly decreases on every pass."
+    },
+    {
+      "type": "table",
+      "headers": ["Construct", "Guard tested", "Minimum executions of body", "Typical use"],
+      "rows": [
+        ["`for (i = 0; i < n; i++)`", "Before each pass", "0", "Definite iteration over a known range"],
+        ["`foreach x in C`", "Before each pass", "0", "Definite iteration over a collection"],
+        ["`while (B)`", "Before each pass", "0", "Indefinite iteration; may not run at all"],
+        ["`do { } while (B)`", "After each pass", "1", "Input validation, where one attempt is always needed"],
+        ["`while (true)` with `break`", "Inside the body", "1 partial pass", "Loops whose exit point is naturally mid-body"]
+      ],
+      "caption": "The guard's position determines whether the body can be skipped entirely"
+    },
+    {
+      "type": "text",
+      "markdown": "### Loop structure determines running time\n\nRead loop nesting as multiplication and loop sequencing as addition.\n\n| Shape | Trip count | Class |\n|---|---|---|\n| single loop `i = 1..n` | $n$ | $O(n)$ |\n| two sequential loops | $n + n = 2n$ | $O(n)$ |\n| two nested loops, both `1..n` | $n \\times n$ | $O(n^2)$ |\n| nested with inner `j = i..n` | $\\frac{n(n+1)}{2}$ | $O(n^2)$ |\n| halving loop `n = n / 2` | $\\lfloor \\log_2 n \\rfloor$ | $O(\\log n)$ |\n| outer `1..n`, inner halving | $n \\log_2 n$ | $O(n \\log n)$ |\n\nNote the fourth row: starting the inner loop at $i$ rather than 1 halves the constant factor but leaves the growth class unchanged. Asymptotic analysis deliberately discards that constant."
+    },
+    {
+      "type": "math",
+      "latex": "\\sum_{i=1}^{n} (n - i + 1) \\;=\\; n + (n-1) + \\cdots + 1 \\;=\\; \\frac{n(n+1)}{2} \\;=\\; \\Theta(n^2)",
+      "caption": "The triangular sum produced by a nested loop whose inner bound depends on the outer counter"
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.programming-fundamentals.control-flow.q003"
+    },
+    {
+      "type": "worked_example",
+      "title": "Proving a summation loop correct with an invariant",
+      "prompt": "Prove that this loop leaves `sum` equal to the total of all n elements of a[0..n-1].  `sum = 0; i = 0; while (i < n) { sum = sum + a[i]; i = i + 1 }`",
+      "steps": [
+        { "text": "State the invariant. At the top of every iteration, `sum` holds the total of the elements already consumed:", "latex": "I: \\quad \\mathtt{sum} = \\sum_{k=0}^{i-1} a[k] \\;\\wedge\\; 0 \\le i \\le n" },
+        { "text": "Initialisation. Before the first test, $i = 0$ and $\\mathtt{sum} = 0$. The sum over the empty range $k = 0$ to $-1$ is 0, so $I$ holds." },
+        { "text": "Maintenance. Assume $I$ holds with counter value $i < n$. The body adds $a[i]$ to `sum` and then increments $i$ to $i + 1$. So the new `sum` is $\\sum_{k=0}^{i-1} a[k] + a[i] = \\sum_{k=0}^{i} a[k]$, which is exactly $I$ restated for the new counter value.", "latex": "\\sum_{k=0}^{i-1} a[k] + a[i] = \\sum_{k=0}^{(i+1)-1} a[k]" },
+        { "text": "Termination. The variant $n - i$ is a non-negative integer that strictly decreases by 1 each pass, so the loop must exit, and it exits only when the guard fails, giving $i \\ge n$. Combined with $i \\le n$ from the invariant, this forces $i = n$." },
+        { "text": "Conclusion. Substituting $i = n$ into $I$ gives $\\mathtt{sum} = \\sum_{k=0}^{n-1} a[k]$, the required postcondition." }
+      ],
+      "answer": "The invariant $\\mathtt{sum} = \\sum_{k=0}^{i-1} a[k]$ with $0 \\le i \\le n$, together with the variant $n - i$, establishes total correctness."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "The fence-post error",
+      "text": "`for (i = 0; i < n; i++)` performs $n$ iterations and touches indices 0 through $n-1$. `for (i = 0; i <= n; i++)` performs $n + 1$ iterations and reads one element past the end of the array. Fix the half-open convention $[0, n)$ in your head and use it everywhere; almost every buffer overrun in production C code is a violation of it."
+    },
+    {
+      "type": "list",
+      "style": "bullet",
+      "items": [
+        "`break` exits the innermost enclosing loop immediately, skipping the remainder of the body and any further passes.",
+        "`continue` abandons the remainder of the current body but performs the update step and re-tests the guard.",
+        "Both weaken the single-exit property, so a loop containing them needs its invariant restated at each exit point.",
+        "An early `return` inside a loop is a `break` that also unwinds the activation record of the enclosing function."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Analyse before you optimise",
+      "text": "Before rewriting a loop for speed, count its trip count symbolically and identify its complexity class. Removing a constant factor from an $O(n^2)$ loop is almost always worth less than finding an $O(n \\log n)$ formulation of the same problem."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Sequence, selection and iteration suffice to express any computable function; every richer construct is sugar over them.",
+        "Only the taken branch of a selection is evaluated, so tracing means following exactly one path down the nest.",
+        "Short-circuit `&&` and `||` make operand order semantically significant — place the guard before the expression it guards.",
+        "Definite iteration has a trip count fixed in advance; indefinite iteration needs a decreasing variant to prove termination.",
+        "A loop invariant is established at initialisation, preserved by maintenance, and combined with the negated guard at termination to give the postcondition.",
+        "Nesting multiplies trip counts and sequencing adds them, so loop shape determines the complexity class directly."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Software Development Fundamentals", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

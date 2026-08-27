@@ -1,0 +1,239 @@
+{
+  "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+  "questions": [
+    {
+      "id": "ug.computer-science.algorithms.complexity-analysis.q001",
+      "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+      "objectiveIds": ["ug.computer-science.algorithms.complexity-analysis.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which statement is the formal definition of $f(n) = O(g(n))$?",
+      "options": [
+        { "id": "a", "text": "There exist constants $c > 0$ and $n_0$ such that $0 \\le f(n) \\le c \\, g(n)$ for all $n \\ge n_0$" },
+        { "id": "b", "text": "There exist constants $c > 0$ and $n_0$ such that $f(n) \\ge c \\, g(n)$ for all $n \\ge n_0$" },
+        { "id": "c", "text": "$f(n) \\le g(n)$ for every value of $n$" },
+        { "id": "d", "text": "$\\lim_{n \\to \\infty} f(n)/g(n) = 1$" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Big-O is an asymptotic **upper** bound up to a constant factor. Two quantifiers matter: the constant $c$ lets the bound ignore implementation-dependent factors, and the threshold $n_0$ lets it ignore small inputs where lower-order terms dominate. Without both, $2n$ would not be $O(n)$ and $n + 1000$ would not be $O(n)$.",
+      "distractorRationale": {
+        "b": "That is the definition of $f(n) = \\Omega(g(n))$, an asymptotic lower bound",
+        "c": "Omits the constant and the threshold, so it would deny that $2n = O(n)$",
+        "d": "That is asymptotic equivalence $f \\sim g$, which is far stronger than $O$ and would exclude $n = O(n^2)$"
+      },
+      "misconceptionTags": ["big-o-definition"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.complexity-analysis.q002",
+      "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+      "objectiveIds": ["ug.computer-science.algorithms.complexity-analysis.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which list places the functions in order of **increasing** asymptotic growth?",
+      "options": [
+        { "id": "a", "text": "$\\log n,\\; n,\\; n \\log n,\\; n^2,\\; 2^n$" },
+        { "id": "b", "text": "$\\log n,\\; n \\log n,\\; n,\\; n^2,\\; 2^n$" },
+        { "id": "c", "text": "$n,\\; \\log n,\\; n^2,\\; n \\log n,\\; 2^n$" },
+        { "id": "d", "text": "$\\log n,\\; n,\\; n^2,\\; 2^n,\\; n \\log n$" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The standard hierarchy is $1 \\prec \\log n \\prec n \\prec n \\log n \\prec n^2 \\prec n^3 \\prec 2^n \\prec n!$. Two anchors are worth memorising: any polylogarithm grows more slowly than any positive power of $n$, and any polynomial grows more slowly than any exponential with base greater than 1.",
+      "distractorRationale": {
+        "b": "Places $n \\log n$ below $n$; since $\\log n \\to \\infty$, $n \\log n$ dominates $n$",
+        "c": "Places $n$ below $\\log n$ and $n^2$ below $n \\log n$, inverting both comparisons",
+        "d": "Places $n \\log n$ above $2^n$; exponentials dominate every $n \\log^k n$"
+      },
+      "misconceptionTags": ["growth-hierarchy"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.complexity-analysis.q003",
+      "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+      "objectiveIds": ["ug.computer-science.algorithms.complexity-analysis.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "What is the running time of this fragment in terms of $n$?\n\n`for i = 1 to n:`\n`    for j = 1 to 100:`\n`        x = x + 1`",
+      "options": [
+        { "id": "a", "text": "$\\Theta(n^2)$" },
+        { "id": "b", "text": "$\\Theta(n)$" },
+        { "id": "c", "text": "$\\Theta(100^n)$" },
+        { "id": "d", "text": "$\\Theta(n \\log n)$" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The inner loop's trip count is 100 — a constant that does not depend on $n$ — so the body executes exactly $100n$ times. Constant factors are discarded, giving $\\Theta(n)$. Nesting alone does not imply a quadratic bound; what matters is whether the inner bound *grows with the input*.",
+      "distractorRationale": {
+        "a": "Assumes any two nested loops are quadratic, ignoring that the inner bound is a constant",
+        "c": "Confuses nesting with exponentiation; the trip counts multiply, they do not exponentiate",
+        "d": "There is no halving or doubling anywhere in the fragment to produce a logarithmic factor"
+      },
+      "misconceptionTags": ["nested-loops", "constant-bounds"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.complexity-analysis.q004",
+      "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+      "objectiveIds": ["ug.computer-science.algorithms.complexity-analysis.o1"],
+      "type": "true_false",
+      "difficulty": 2,
+      "stem": "The statement $3n^2 + 5n = O(n^3)$ is correct.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "True. Big-O asserts an upper bound, and it need not be tight: taking $c = 8$ and $n_0 = 1$ gives $3n^2 + 5n \\le 8n^3$ for all $n \\ge 1$. The bound is correct but *uninformative*, since $\\Theta(n^2)$ describes the function exactly. Reserve $\\Theta$ for claims that the bound is tight, and note that $3n^2 + 5n \\ne \\Theta(n^3)$ because the required lower bound fails.",
+      "misconceptionTags": ["tight-vs-loose-bounds", "big-o-vs-theta"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.complexity-analysis.q005",
+      "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+      "objectiveIds": ["ug.computer-science.algorithms.complexity-analysis.o2"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "An algorithm runs in $\\Theta(n^2)$ time. On an input of size 1000 it takes 2 seconds. Approximately how many seconds will it take on an input of size 3000? Give a number only.",
+      "correctValue": 18,
+      "explanation": "For a quadratic algorithm the running time scales with the square of the input size. Tripling $n$ multiplies the time by $3^2 = 9$, so the estimate is $2 \\times 9 = 18$ seconds. This scaling argument is the practical value of asymptotic analysis: it predicts how a program responds to growth in the data without any knowledge of the hidden constant.",
+      "misconceptionTags": ["scaling-behaviour", "quadratic-growth"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.complexity-analysis.q006",
+      "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+      "objectiveIds": ["ug.computer-science.algorithms.complexity-analysis.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Which relationship between $n \\log n$ and $n^{1.5}$ holds asymptotically?",
+      "options": [
+        { "id": "a", "text": "$n \\log n$ grows more slowly, because $\\log n$ grows more slowly than $n^{0.5}$" },
+        { "id": "b", "text": "$n^{1.5}$ grows more slowly, because the exponent 1.5 is less than 2" },
+        { "id": "c", "text": "They grow at the same rate, so $n \\log n = \\Theta(n^{1.5})$" },
+        { "id": "d", "text": "Neither dominates; the comparison depends on the base of the logarithm" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Divide both by $n$ and compare $\\log n$ with $n^{0.5}$. Since $\\log n / n^{\\varepsilon} \\to 0$ for every $\\varepsilon > 0$, the logarithm is dominated by any positive power, so $n \\log n = o(n^{1.5})$. Concretely at $n = 10^6$, $n \\log_2 n \\approx 2 \\times 10^7$ while $n^{1.5} = 10^9$.",
+      "distractorRationale": {
+        "b": "Compares 1.5 with the wrong reference; the question is 1.5 against 1, not against 2",
+        "c": "$\\Theta$ requires matching upper and lower bounds, and here the ratio diverges",
+        "d": "Changing the logarithm's base multiplies it by a constant, which asymptotic notation absorbs"
+      },
+      "misconceptionTags": ["log-vs-polynomial", "growth-comparison"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.complexity-analysis.q007",
+      "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+      "objectiveIds": ["ug.computer-science.algorithms.complexity-analysis.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "What is the running time of this fragment?\n\n`for i = 1 to n:`\n`    j = n`\n`    while j > 1:`\n`        j = j / 2`\n`        count = count + 1`",
+      "options": [
+        { "id": "a", "text": "$\\Theta(n)$" },
+        { "id": "b", "text": "$\\Theta(n \\log n)$" },
+        { "id": "c", "text": "$\\Theta(n^2)$" },
+        { "id": "d", "text": "$\\Theta(\\log^2 n)$" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The outer loop runs $n$ times. The inner loop resets `j` to $n$ on every pass and halves it until it reaches 1, which takes $\\lfloor \\log_2 n \\rfloor$ iterations independently of $i$. Nesting multiplies the trip counts, so the total is $n \\lfloor \\log_2 n \\rfloor = \\Theta(n \\log n)$.",
+      "distractorRationale": {
+        "a": "Treats the inner loop as constant-time, missing that its trip count grows with $n$",
+        "c": "Assumes the inner loop runs $n$ times, which would be true only if `j` were decremented rather than halved",
+        "d": "Applies the logarithm to both loops; the outer loop is linear, not logarithmic"
+      },
+      "misconceptionTags": ["nested-loops", "logarithmic-loop"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.complexity-analysis.q008",
+      "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+      "objectiveIds": ["ug.computer-science.algorithms.complexity-analysis.o2"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "What is the tightest correct big-O bound for $T(n) = n^{100} + 2^{\\,n}$?",
+      "options": [
+        { "id": "a", "text": "$O(n^{100})$" },
+        { "id": "b", "text": "$O(2^{\\,n})$" },
+        { "id": "c", "text": "$O(n^{100} \\cdot 2^{\\,n})$" },
+        { "id": "d", "text": "$O(n^{102})$" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "In a sum, the asymptotically dominant term determines the class, and every exponential with base greater than 1 eventually dominates every polynomial: $n^{100}/2^n \\to 0$. So $T(n) = \\Theta(2^n)$ and the tightest big-O bound is $O(2^n)$. The crossover is at a large $n$ — around $n \\approx 1000$ here — but asymptotic classification concerns the limit, not the crossover point.",
+      "distractorRationale": {
+        "a": "Picks the term with the larger *coefficient in the exponent notation*; a polynomial cannot bound an exponential from above",
+        "c": "A correct upper bound but not tight, since the product grossly overstates a sum",
+        "d": "Adds the exponents as if the terms were multiplied, and remains polynomial"
+      },
+      "misconceptionTags": ["dominant-term", "polynomial-vs-exponential"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.complexity-analysis.q009",
+      "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+      "objectiveIds": ["ug.computer-science.algorithms.complexity-analysis.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A student writes: \"Big-O gives the worst case and big-Omega gives the best case.\" Why is this wrong?",
+      "options": [
+        { "id": "a", "text": "It is correct as stated" },
+        { "id": "b", "text": "$O$ and $\\Omega$ bound a *function* from above and below, whereas best, worst and average case select *which function* is being bounded — the two ideas are independent" },
+        { "id": "c", "text": "Because $\\Omega$ is only defined for recursive algorithms" },
+        { "id": "d", "text": "Because the worst case is always $\\Theta$, never $O$" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "First choose the case, which fixes a function of $n$ — for instance $W(n)$, the maximum cost over all inputs of size $n$. Then bound that function asymptotically, from above with $O$, from below with $\\Omega$, or tightly with $\\Theta$. Both notions apply to every case: insertion sort's *best*-case running time is $\\Theta(n)$, and its *worst*-case running time is $\\Omega(n^2)$ as well as $O(n^2)$.",
+      "distractorRationale": {
+        "a": "Conflates two orthogonal dimensions, which is why claims like \"quicksort is $O(n \\log n)$\" are so often stated imprecisely",
+        "c": "$\\Omega$ is a statement about functions and has nothing to do with recursion",
+        "d": "The worst case is often bounded loosely with $O$, and $\\Theta$ applies only when matching bounds are known"
+      },
+      "misconceptionTags": ["case-vs-bound", "asymptotic-notation"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

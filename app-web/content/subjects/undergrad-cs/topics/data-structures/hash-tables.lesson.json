@@ -1,0 +1,106 @@
+{
+  "id": "ug.computer-science.data-structures.hash-tables.lesson",
+  "subtopicId": "ug.computer-science.data-structures.hash-tables",
+  "title": "Hash Tables",
+  "estimatedMinutes": 18,
+  "objectiveIds": [
+    "ug.computer-science.data-structures.hash-tables.o1",
+    "ug.computer-science.data-structures.hash-tables.o2",
+    "ug.computer-science.data-structures.hash-tables.o3",
+    "ug.computer-science.data-structures.hash-tables.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A university has 40,000 students and matriculation numbers 12 characters long. There are far too many possible strings to give each one an array slot, yet the portal must resolve a matric number to a record in constant time. Hashing is the trick that makes an impossibly large key space behave like a small array index — and it works so well that it underpins every dictionary, set, cache and symbol table you will ever use."
+    },
+    {
+      "type": "text",
+      "markdown": "## From key space to index space\n\nA direct-address table gives every possible key its own slot. It is $O(1)$ but needs $|U|$ slots for a key universe $U$, which is hopeless for strings or 64-bit integers.\n\nA **hash table** instead allocates $m$ buckets and uses a **hash function** $h : U \\to \\{0, 1, \\dots, m-1\\}$ to *compute* the bucket for a key. Because $|U| \\gg m$, the function cannot be injective, so by the pigeonhole principle distinct keys must sometimes share a bucket. Such a coincidence is a **collision**, and the design of a hash table is entirely the design of a response to collisions.\n\nA usable hash function must be:\n\n- **deterministic** — the same key always yields the same index, within one run of the program;\n- **uniform** — keys spread evenly over all $m$ buckets, so no bucket is systematically favoured;\n- **fast** — $O(|k|)$ in the key's length, since it runs on every operation;\n- **avalanching** — a one-bit change in the key changes many bits of the digest, so near-identical keys separate."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Load factor",
+      "text": "$\\alpha = n/m$, the number of stored entries divided by the number of buckets. Under separate chaining $\\alpha$ may exceed 1 and simply means the mean chain exceeds one node. Under open addressing every entry occupies its own slot, so $\\alpha \\le 1$ is a structural limit and the table is resized long before it is reached."
+    },
+    {
+      "type": "math",
+      "latex": "h(k) = \\left( \\sum_{i=0}^{L-1} d_i \\cdot b^{\\,i} \\right) \\bmod m",
+      "caption": "A polynomial rolling hash over the L characters of a key, with base b and a prime modulus m — every character influences the result"
+    },
+    {
+      "type": "text",
+      "markdown": "### Two ways to resolve a collision\n\n**Separate chaining.** Each bucket holds a secondary container — normally a linked list. Insertion prepends to the bucket's list in $O(1)$; search scans the list. Under uniform hashing the expected chain length is $\\alpha$, so a search costs $\\Theta(1 + \\alpha)$. Chaining tolerates $\\alpha > 1$ and degrades linearly rather than catastrophically, at the cost of a pointer per entry and poor locality.\n\n**Open addressing.** Every entry lives in the bucket array itself. On a collision the insertion **probes** a deterministic sequence of alternative slots until it finds a free one:\n\n- *Linear probing* — try $h(k) + 1, h(k) + 2, \\dots$ modulo $m$. Excellent cache behaviour, but occupied runs merge into ever-longer **primary clusters** which then attract further collisions.\n- *Quadratic probing* — try $h(k) + 1^2, h(k) + 2^2, \\dots$. Breaks up primary clustering, but keys with the same initial bucket still follow the same path, which is *secondary* clustering.\n- *Double hashing* — step by $h_2(k)$, a second hash whose value must be coprime to $m$. Different keys follow different step sizes, which comes closest to the uniform hashing ideal.\n\nUnder uniform hashing an unsuccessful search in an open-addressed table needs about $1/(1-\\alpha)$ probes. That expression has a pole at $\\alpha = 1$: two probes at $\\alpha = 0.5$, four at $0.75$, ten at $0.9$, a hundred at $0.99$. Cost does not decay gradually, it explodes."
+    },
+    {
+      "type": "table",
+      "headers": ["Property", "Separate chaining", "Linear probing", "Double hashing"],
+      "rows": [
+        ["Expected successful search", "$\\Theta(1 + \\alpha)$", "grows with clustering", "$\\approx \\frac{1}{\\alpha}\\ln\\frac{1}{1-\\alpha}$"],
+        ["Expected unsuccessful search", "$\\Theta(1 + \\alpha)$", "$\\approx \\frac{1}{2}\\left(1 + \\frac{1}{(1-\\alpha)^2}\\right)$", "$\\approx \\frac{1}{1-\\alpha}$"],
+        ["Worst case (all keys collide)", "$\\Theta(n)$", "$\\Theta(n)$", "$\\Theta(n)$"],
+        ["Maximum load factor", "unbounded", "$< 1$, resize near 0.7", "$< 1$, resize near 0.7"],
+        ["Extra space", "one pointer per entry", "none, but slack slots", "none, but slack slots"],
+        ["Cache locality", "poor — nodes scattered", "excellent — sequential probes", "moderate — strided probes"],
+        ["Deletion", "unlink from the list", "needs tombstones", "needs tombstones"]
+      ],
+      "caption": "Both families share the same Θ(n) worst case; they differ in the constant factors and in how gracefully they degrade."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Deletion under open addressing needs a tombstone",
+      "text": "A search stops at the first genuinely empty slot, because an empty slot proves the key was never placed beyond it. Clearing a slot in the middle of a probe run therefore hides every later entry in that run. Mark it instead with a tombstone — occupied for search, free for insertion. Tombstones accumulate and lengthen runs, so the table must eventually be rehashed to purge them."
+    },
+    {
+      "type": "worked_example",
+      "title": "Building a chained table for six matriculation keys",
+      "prompt": "Insert the keys 20, 34, 47, 54, 61, 68 into a hash table with m = 7 buckets using h(k) = k mod 7 and separate chaining. Show the buckets and compute the load factor and expected search cost.",
+      "steps": [
+        { "text": "Compute each index. $20 \\bmod 7 = 6$; $34 \\bmod 7 = 6$; $47 \\bmod 7 = 5$; $54 \\bmod 7 = 5$; $61 \\bmod 7 = 5$; $68 \\bmod 7 = 5$.", "latex": "20 = 2(7) + 6,\\quad 34 = 4(7) + 6,\\quad 47 = 6(7) + 5" },
+        { "text": "Place each key, prepending to its bucket's list. The resulting table is:\n\n```\n0: -\n1: -\n2: -\n3: -\n4: -\n5: 68 -> 61 -> 54 -> 47\n6: 34 -> 20\n```" },
+        { "text": "Load factor: $\\alpha = n/m = 6/7 \\approx 0.86$, which for chaining is a perfectly ordinary occupancy." },
+        { "text": "Expected cost under uniform hashing would be $\\Theta(1 + \\alpha) \\approx 1.86$ nodes inspected — but this table is not uniformly loaded. Five of seven buckets are empty and one holds four of the six keys, so a search for 47 inspects all four nodes." },
+        { "text": "Diagnose the cause. The keys 47, 54, 61, 68 differ by exactly 7, and a modulus of 7 maps any arithmetic progression of step 7 to a single bucket. The hash function has collided with the structure of the data, not with bad luck." },
+        { "text": "Fix it. Choose a modulus that shares no factor with the stride in the data — $m = 11$ here would give indices 9, 10, 3, 1, 6, 2, spreading all six keys into six distinct buckets. This is the practical reason table sizes are chosen prime, and why a hash must mix all of a key's information rather than a low-entropy fragment of it." }
+      ],
+      "answer": "Bucket 5 holds 68 → 61 → 54 → 47 and bucket 6 holds 34 → 20, with $\\alpha \\approx 0.86$; the pile-up is caused by the keys' stride of 7 matching the modulus, and a prime modulus coprime to the stride disperses them."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.data-structures.hash-tables.q006"
+    },
+    {
+      "type": "text",
+      "markdown": "### Resizing, and what \"expected $O(1)$\" really claims\n\nA hash table maintains its performance by rehashing when $\\alpha$ crosses a threshold: allocate a larger bucket array (typically double, often the next prime), then reinsert every entry, since each key's index depends on $m$. A single rehash is $\\Theta(n)$, but because it happens after geometrically growing intervals, the amortised cost per insertion remains $O(1)$ — exactly the doubling argument used for the dynamic array.\n\nTwo distinct caveats sit behind the headline bound:\n\n- **Expected, not worst case.** The $O(1)$ figure assumes the hash spreads the keys. If every key collides, chaining leaves one list of length $n$ and open addressing one probe run of length $n$, so lookup is $\\Theta(n)$. Hash-flooding denial-of-service attacks construct such key sets deliberately, which is why production hash functions are randomly seeded per process and some implementations promote a long chain to a balanced tree for an $O(\\log n)$ floor.\n- **Amortised, not per-operation.** The insertion that triggers a rehash costs $\\Theta(n)$, which matters for latency-sensitive systems even when the average is fine."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Hashing destroys order — that is the real trade-off",
+      "text": "A hash table beats a balanced BST on single-key lookup, $O(1)$ expected against $O(\\log n)$. But it cannot report the minimum, find a successor, answer a range query, or iterate in sorted order in better than $O(n)$ or $O(n \\log n)$. Choose a hash table for membership and exact lookup; choose an ordered tree whenever the *ordering* of keys is part of the query."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A hash function maps a key from a large universe onto one of $m$ bucket indices, so the bucket is computed rather than searched for.",
+        "Collisions are unavoidable by the pigeonhole principle, so a hash table is defined by its collision strategy.",
+        "The load factor $\\alpha = n/m$ may exceed 1 under separate chaining but is structurally capped at 1 under open addressing.",
+        "Chaining costs $\\Theta(1 + \\alpha)$ expected and degrades gracefully; open addressing needs about $1/(1-\\alpha)$ probes and explodes as $\\alpha \\to 1$.",
+        "Deletion under open addressing requires tombstones, because an empty slot terminates a probe sequence.",
+        "Rehashing on a load-factor threshold keeps insertion amortised $O(1)$ by the same geometric-growth argument as the dynamic array.",
+        "The $O(1)$ bound is expected, not worst case: a poor or adversarial hash makes every operation $\\Theta(n)$.",
+        "Hashing destroys key order, so successor, minimum and range queries need an ordered structure instead."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Fundamental Data Structures", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

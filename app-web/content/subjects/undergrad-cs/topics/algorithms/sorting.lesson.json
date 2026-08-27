@@ -1,0 +1,124 @@
+{
+  "id": "ug.computer-science.algorithms.sorting.lesson",
+  "subtopicId": "ug.computer-science.algorithms.sorting",
+  "title": "Sorting Algorithms",
+  "estimatedMinutes": 22,
+  "objectiveIds": [
+    "ug.computer-science.algorithms.sorting.o1",
+    "ug.computer-science.algorithms.sorting.o2",
+    "ug.computer-science.algorithms.sorting.o3",
+    "ug.computer-science.algorithms.sorting.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Sorting a million examination records with an $O(n^2)$ algorithm needs about $10^{12}$ operations — several days on a laptop. An $O(n \\log n)$ algorithm needs about $2 \\times 10^7$ — under a second. Same machine, same data, same problem. This is the single most convincing demonstration in the whole of computer science that algorithm choice dominates everything else."
+    },
+    {
+      "type": "text",
+      "markdown": "## The problem and its dimensions\n\nGiven a sequence of $n$ records with a total order on their keys, produce a permutation in which the keys are non-decreasing.\n\nAlgorithms are compared along five axes, and the last three are as decisive in practice as the first two:\n\n- **Time**, in comparisons and in data movements, for best, average and worst case.\n- **Space**, meaning auxiliary space; an algorithm is *in place* when this is $O(1)$ or $O(\\log n)$.\n- **Stability** — whether records with equal keys keep their input order.\n- **Adaptivity** — whether nearly sorted input is handled faster.\n- **Predictability** — whether the worst case is guaranteed or merely unlikely."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Stability",
+      "text": "A sort is stable when records that compare equal appear in the output in the same relative order as in the input. This is what makes multi-key sorting compositional: sort by name, then stably by department, and each department's records remain in name order. Without stability the first pass is destroyed."
+    },
+    {
+      "type": "text",
+      "markdown": "### The quadratic family\n\n**Insertion sort.** Maintain a sorted prefix; take the next key and shift the prefix right until the key's position is found.\n\n```\nfor i = 1 to n-1:\n    key = A[i]; j = i - 1\n    while j >= 0 and A[j] > key:\n        A[j+1] = A[j]; j = j - 1\n    A[j+1] = key\n```\n\nThe invariant is that `A[0..i-1]` is a sorted permutation of the original first $i$ elements. On sorted input the inner guard fails immediately, so the cost is $\\Theta(n)$; on reverse-sorted input each key travels the whole prefix, giving $\\Theta(n^2)$. It is stable (because the guard is `>` and not `>=`), in place, adaptive, and unbeatable for small $n$.\n\n**Selection sort.** Repeatedly select the minimum of the unsorted suffix and swap it into place. Always makes exactly $\\frac{n(n-1)}{2}$ comparisons — so $\\Theta(n^2)$ even on sorted input, with no adaptivity — but only $n-1$ swaps, which matters when records are large. The swap of distant elements is what makes it unstable.\n\n**Bubble sort.** Repeatedly sweep, swapping adjacent out-of-order pairs. With an early-exit flag it is $\\Theta(n)$ on sorted input, but it performs many more data moves than insertion sort for no benefit. It has pedagogical value and no practical use."
+    },
+    {
+      "type": "text",
+      "markdown": "### Merge sort — divide and conquer\n\nSplit the array in half, sort each half recursively, then merge the two sorted halves.\n\n```\nmergeSort(A, lo, hi):\n    if lo >= hi: return                 # 0 or 1 element is sorted\n    mid = lo + (hi - lo) / 2\n    mergeSort(A, lo, mid)\n    mergeSort(A, mid + 1, hi)\n    merge(A, lo, mid, hi)               # Theta(n) into a scratch buffer\n```\n\nThe merge repeatedly takes the smaller of the two front elements, so it emits one element per comparison and needs at most $m + n - 1$ comparisons for runs of length $m$ and $n$. Taking the *left* element when the two are equal is what makes the whole sort stable.\n\nBecause the split is always even, the recursion tree has exactly $\\lceil \\log_2 n \\rceil$ levels, each doing $\\Theta(n)$ merging work. The bound is therefore $\\Theta(n \\log n)$ in the best, average **and** worst case — merge sort is the predictable choice. Its cost is $\\Theta(n)$ auxiliary space for the scratch buffer. On a *linked list* that cost vanishes, since merging relinks nodes instead of copying them, which is why merge sort is the standard list sort."
+    },
+    {
+      "type": "math",
+      "latex": "T(n) = 2T\\!\\left(\\frac{n}{2}\\right) + \\Theta(n) \\quad\\Longrightarrow\\quad T(n) = \\Theta(n \\log n)",
+      "caption": "Two subproblems of half the size with a linear combine step: log₂ n levels, Θ(n) work per level"
+    },
+    {
+      "type": "text",
+      "markdown": "### Quicksort — divide and conquer the other way round\n\nQuicksort does the hard work *before* recursing. Choose a pivot and **partition** the range so that everything $\\le$ the pivot precedes it and everything $>$ precedes nothing before it; the pivot is then in its final position, and the two sides are sorted recursively with no combine step at all.\n\nThe partition's postcondition is weak but sufficient: the pivot is final, the left side is all $\\le$ pivot, the right side all $>$ pivot. Neither side is itself sorted.\n\nOn balanced partitions the recurrence is $T(n) = 2T(n/2) + \\Theta(n) = \\Theta(n \\log n)$. On maximally unbalanced ones it is $T(n) = T(n-1) + \\Theta(n) = \\Theta(n^2)$, and the recursion depth becomes $n$. Choosing the last element as pivot makes *already sorted* input hit exactly that case — a catastrophic pairing, since real data is often sorted. The standard defences are a randomised pivot, median-of-three, or introsort's fallback to heapsort once the depth exceeds $2\\log_2 n$.\n\nDespite the worse worst case, quicksort usually beats merge sort in measured time: it sorts in place, its inner loop is a tight sequential scan with excellent cache behaviour, and it needs no scratch buffer."
+    },
+    {
+      "type": "worked_example",
+      "title": "One Lomuto partition pass",
+      "prompt": "Partition A = [7, 2, 9, 4, 1, 5] using the last element, 5, as pivot. Track the boundary index i, which marks the end of the region known to be ≤ pivot.",
+      "steps": [
+        { "text": "Initialise $i = -1$, meaning the $\\le$ region is empty. The scanning index $j$ runs from 0 to 4, stopping before the pivot itself. Invariant: $A[0..i] \\le 5$ and $A[i+1..j-1] > 5$." },
+        { "text": "$j = 0$: $A[0] = 7 > 5$. The element belongs in the $>$ region, which it already occupies. No swap; $i$ stays $-1$. Array unchanged: [7, 2, 9, 4, 1, 5]." },
+        { "text": "$j = 1$: $A[1] = 2 \\le 5$. Advance $i$ to 0 and swap $A[0] \\leftrightarrow A[1]$. Array: [2, 7, 9, 4, 1, 5]. The 7 has been pushed rightwards into the $>$ region." },
+        { "text": "$j = 2$: $A[2] = 9 > 5$. No swap; $i$ stays 0. Array: [2, 7, 9, 4, 1, 5]." },
+        { "text": "$j = 3$: $A[3] = 4 \\le 5$. Advance $i$ to 1 and swap $A[1] \\leftrightarrow A[3]$. Array: [2, 4, 9, 7, 1, 5]." },
+        { "text": "$j = 4$: $A[4] = 1 \\le 5$. Advance $i$ to 2 and swap $A[2] \\leftrightarrow A[4]$. Array: [2, 4, 1, 7, 9, 5]." },
+        { "text": "The scan is finished. Place the pivot at the boundary by swapping $A[i+1] \\leftrightarrow A[5]$, that is $A[3] \\leftrightarrow A[5]$. Final array: [2, 4, 1, 5, 9, 7], pivot at index 3." },
+        { "text": "Verify the postcondition: $A[0..2] = [2, 4, 1]$ are all $\\le 5$; $A[4..5] = [9, 7]$ are all $> 5$; and index 3 holds the pivot's final value. Neither side is sorted, and that is expected — the recursion on [2, 4, 1] and [9, 7] will handle them. This pass performed 5 comparisons and 4 swaps, and the partition sizes 3 and 2 are reasonably balanced, so this pivot was a good one." }
+      ],
+      "answer": "[2, 4, 1, 5, 9, 7] with the pivot 5 at index 3; the two sides satisfy the partition postcondition but are not themselves sorted."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.algorithms.sorting.q006"
+    },
+    {
+      "type": "table",
+      "headers": ["Algorithm", "Best", "Average", "Worst", "Auxiliary space", "Stable", "Adaptive"],
+      "rows": [
+        ["Insertion sort", "$\\Theta(n)$", "$\\Theta(n^2)$", "$\\Theta(n^2)$", "$O(1)$", "Yes", "Yes"],
+        ["Selection sort", "$\\Theta(n^2)$", "$\\Theta(n^2)$", "$\\Theta(n^2)$", "$O(1)$", "No", "No"],
+        ["Bubble sort", "$\\Theta(n)$", "$\\Theta(n^2)$", "$\\Theta(n^2)$", "$O(1)$", "Yes", "Yes"],
+        ["Merge sort (array)", "$\\Theta(n \\log n)$", "$\\Theta(n \\log n)$", "$\\Theta(n \\log n)$", "$\\Theta(n)$", "Yes", "No"],
+        ["Quicksort", "$\\Theta(n \\log n)$", "$\\Theta(n \\log n)$", "$\\Theta(n^2)$", "$O(\\log n)$ stack", "No", "No"],
+        ["Heapsort", "$\\Theta(n \\log n)$", "$\\Theta(n \\log n)$", "$\\Theta(n \\log n)$", "$O(1)$", "No", "No"],
+        ["Counting sort", "$\\Theta(n + k)$", "$\\Theta(n + k)$", "$\\Theta(n + k)$", "$\\Theta(n + k)$", "Yes", "No"],
+        ["Radix sort (LSD)", "$\\Theta(d(n + b))$", "$\\Theta(d(n + b))$", "$\\Theta(d(n + b))$", "$\\Theta(n + b)$", "Yes", "No"]
+      ],
+      "caption": "Counting sort's k is the key range and radix sort's d and b are the digit count and base. Both are non-comparison sorts and so are not bound by Ω(n log n)."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "The comparison lower bound",
+      "text": "Model a comparison sort as a binary decision tree: internal nodes are comparisons, leaves are output permutations. All $n!$ input orderings must be distinguishable, so the tree needs at least $n!$ leaves, and a binary tree with $L$ leaves has height at least $\\log_2 L$. Since $\\log_2(n!) = \\Theta(n \\log n)$ by Stirling's approximation, no comparison sort can do better in the worst case. Merge sort and heapsort attain this bound, so they are asymptotically optimal."
+    },
+    {
+      "type": "text",
+      "markdown": "### Beating the bound by not comparing\n\nThe lower bound constrains only algorithms whose sole operation on keys is comparison. If the keys have exploitable structure, it does not apply.\n\n**Counting sort** tallies occurrences of each key in an array of size $k$, then reconstructs the output from the running totals: $\\Theta(n + k)$, stable, and genuinely linear when $k = O(n)$. Useful for examination scores in $[0, 100]$; useless for 64-bit keys, where $k = 2^{64}$.\n\n**Radix sort** applies a stable counting sort digit by digit, least significant first: $\\Theta(d(n + b))$ for $d$ digits in base $b$. Stability is not a nicety here but a correctness requirement — if a pass reordered keys that agree on the current digit, it would destroy the ordering established by the previous passes."
+    },
+    {
+      "type": "list",
+      "style": "bullet",
+      "items": [
+        "**Small $n$, or nearly sorted data** — insertion sort. Its adaptivity and tiny constant beat any $\\Theta(n \\log n)$ algorithm below a few dozen elements.",
+        "**General purpose, in place, speed matters** — quicksort with a randomised or median-of-three pivot, ideally as introsort with a heapsort fallback.",
+        "**Stability required, or worst case must be guaranteed** — merge sort, accepting the $\\Theta(n)$ scratch buffer.",
+        "**Sorting a linked list** — merge sort, which needs only $O(1)$ extra space there.",
+        "**Guaranteed bound with no extra space** — heapsort, at the cost of poor locality and no stability.",
+        "**Small integer keys in a bounded range** — counting or radix sort, which escape the comparison bound entirely.",
+        "**Only the $k$ smallest needed** — do not sort at all; use a bounded heap in $O(n \\log k)$ or quickselect in $O(n)$ expected time."
+      ]
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Insertion sort is $\\Theta(n)$ on sorted input and $\\Theta(n^2)$ in the worst case; it is stable, in place and adaptive, which makes it the right choice for small inputs.",
+        "Selection sort is $\\Theta(n^2)$ on every input but performs only $n-1$ swaps, and it is not stable.",
+        "Merge sort satisfies $T(n) = 2T(n/2) + \\Theta(n) = \\Theta(n \\log n)$ in all cases, is stable, and needs $\\Theta(n)$ auxiliary space on arrays.",
+        "Quicksort partitions before recursing, averages $\\Theta(n \\log n)$, and degrades to $\\Theta(n^2)$ when partitions are maximally unbalanced — as sorted input with a first or last pivot causes.",
+        "A partition pass guarantees only that the pivot is final and the two sides are on the correct side of it; neither side is sorted.",
+        "Stability preserves the input order of equal keys, which is what makes multi-pass and radix sorting correct.",
+        "The decision-tree argument gives $\\Omega(n \\log n)$ for any comparison sort, and merge sort and heapsort attain it.",
+        "Counting and radix sort achieve linear time by exploiting key structure rather than comparing, so the lower bound does not apply to them."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Algorithms and Complexity", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

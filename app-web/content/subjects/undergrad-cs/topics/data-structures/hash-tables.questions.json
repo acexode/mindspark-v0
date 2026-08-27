@@ -1,0 +1,207 @@
+{
+  "subtopicId": "ug.computer-science.data-structures.hash-tables",
+  "questions": [
+    {
+      "id": "ug.computer-science.data-structures.hash-tables.q001",
+      "subtopicId": "ug.computer-science.data-structures.hash-tables",
+      "objectiveIds": ["ug.computer-science.data-structures.hash-tables.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "What is the role of the hash function in a hash table?",
+      "options": [
+        { "id": "a", "text": "To compress the key so that it occupies less storage" },
+        { "id": "b", "text": "To map a key of arbitrary type onto a bucket index in the range $0$ to $m-1$" },
+        { "id": "c", "text": "To encrypt the key so that stored data cannot be read" },
+        { "id": "d", "text": "To keep the keys in sorted order within the table" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The hash function turns a key into an array index, so the bucket holding a key can be *computed* rather than searched for. That is the whole source of the expected $O(1)$ lookup. A good hash function distributes keys as uniformly as possible over the $m$ buckets and is deterministic, so the same key always maps to the same index.",
+      "distractorRationale": {
+        "a": "The digest is a small integer, but the key itself is still stored in the bucket — it must be, in order to confirm a match after a collision",
+        "c": "Cryptographic hashes exist, but a table's hash function is chosen for speed and uniformity, not secrecy",
+        "d": "Hashing destroys key order, which is exactly why a hash table cannot answer successor or range queries"
+      },
+      "misconceptionTags": ["hash-function-role"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.hash-tables.q002",
+      "subtopicId": "ug.computer-science.data-structures.hash-tables",
+      "objectiveIds": ["ug.computer-science.data-structures.hash-tables.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A hash table holds $n$ entries in $m$ buckets. How is the **load factor** $\\alpha$ defined, and what may it exceed?",
+      "options": [
+        { "id": "a", "text": "$\\alpha = n / m$; it may exceed 1 under separate chaining but not under open addressing" },
+        { "id": "b", "text": "$\\alpha = m / n$; it may never exceed 1" },
+        { "id": "c", "text": "$\\alpha = n \\times m$; it may take any value" },
+        { "id": "d", "text": "$\\alpha = n / m$; it may never exceed 1 under any collision strategy" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The load factor is entries per bucket, $\\alpha = n/m$. Under separate chaining each bucket holds an unbounded list, so $\\alpha > 1$ is legal and simply means the average chain is longer than one node. Under open addressing every entry occupies a distinct slot, so $n \\le m$ and $\\alpha \\le 1$ is a hard structural limit — in practice the table is resized well before that, typically around $\\alpha = 0.7$.",
+      "distractorRationale": {
+        "b": "Inverts the ratio, so a lightly loaded table would report a large value",
+        "c": "A product has no meaningful interpretation as occupancy",
+        "d": "Gets the formula right but wrongly applies open addressing's structural limit to chaining"
+      },
+      "misconceptionTags": ["load-factor"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.hash-tables.q003",
+      "subtopicId": "ug.computer-science.data-structures.hash-tables",
+      "objectiveIds": ["ug.computer-science.data-structures.hash-tables.o2"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "A hash table with 400 buckets currently stores 300 entries. What is its load factor? Give the value as a decimal.",
+      "correctValue": 0.75,
+      "explanation": "The load factor is $\\alpha = n/m = 300/400 = 0.75$. Under separate chaining the expected number of nodes inspected on a successful search is $\\Theta(1 + \\alpha)$, so 0.75 is comfortable. Under open addressing this is already at the usual resize threshold, since the expected probe count $1/(1-\\alpha) = 4$ and rises sharply beyond it.",
+      "misconceptionTags": ["load-factor"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.hash-tables.q004",
+      "subtopicId": "ug.computer-science.data-structures.hash-tables",
+      "objectiveIds": ["ug.computer-science.data-structures.hash-tables.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "What distinguishes **separate chaining** from **open addressing** as a collision resolution strategy?",
+      "options": [
+        { "id": "a", "text": "Separate chaining stores colliding entries in an auxiliary structure per bucket; open addressing places every entry in the bucket array itself, probing for a free slot" },
+        { "id": "b", "text": "Separate chaining avoids collisions entirely; open addressing tolerates them" },
+        { "id": "c", "text": "Separate chaining requires a prime table size; open addressing does not" },
+        { "id": "d", "text": "Separate chaining is $O(1)$ in the worst case; open addressing is $O(n)$" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Chaining hangs a secondary container — usually a linked list, sometimes a tree once a chain grows long — off each bucket, so all colliding keys live outside the array. Open addressing keeps everything in the array and resolves a collision by probing a deterministic sequence of alternative slots. The trade-off is memory locality and slack against pointer overhead: open addressing is faster when the load factor is kept low, chaining degrades more gracefully when it is not.",
+      "distractorRationale": {
+        "b": "Neither strategy avoids collisions; by the pigeonhole principle collisions are unavoidable whenever the key space exceeds $m$",
+        "c": "A prime modulus helps both strategies; it is particularly associated with double hashing, not chaining",
+        "d": "Both are $\\Theta(n)$ in the worst case, when every key hashes to the same bucket"
+      },
+      "misconceptionTags": ["collision-resolution"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.hash-tables.q005",
+      "subtopicId": "ug.computer-science.data-structures.hash-tables",
+      "objectiveIds": ["ug.computer-science.data-structures.hash-tables.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Lookup in a hash table is usually quoted as $O(1)$. What is the **worst-case** cost, and what causes it?",
+      "options": [
+        { "id": "a", "text": "$O(1)$ — the bound is unconditional" },
+        { "id": "b", "text": "$O(\\log n)$, because chains are kept balanced" },
+        { "id": "c", "text": "$O(n)$, when every key hashes to the same bucket so the structure degenerates to a single linear chain or probe run" },
+        { "id": "d", "text": "$O(n^2)$, because each probe may itself require a rehash" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "The $O(1)$ figure is an *expected* cost under the assumption that the hash function distributes keys roughly uniformly. If every key collides, chaining leaves one list of length $n$ and open addressing leaves one probe run of length $n$, so lookup becomes $\\Theta(n)$. This is not merely theoretical: hash-flooding denial-of-service attacks deliberately construct such key sets, which is why production tables use randomly seeded hash functions and some promote long chains to balanced trees for an $O(\\log n)$ floor.",
+      "distractorRationale": {
+        "a": "Confuses an expected bound with a worst-case one — the same error as claiming quicksort is $O(n \\log n)$ in the worst case",
+        "b": "$O(\\log n)$ holds only for implementations that treeify long chains, and even then it is a mitigation rather than the general bound",
+        "d": "A rehash is amortised across insertions and does not multiply the lookup cost"
+      },
+      "misconceptionTags": ["expected-vs-worst-case", "hash-flooding"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.hash-tables.q006",
+      "subtopicId": "ug.computer-science.data-structures.hash-tables",
+      "objectiveIds": ["ug.computer-science.data-structures.hash-tables.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "In an open-addressed table using linear probing, why must a deleted slot be marked with a tombstone rather than simply emptied?",
+      "options": [
+        { "id": "a", "text": "To keep the load factor calculation accurate" },
+        { "id": "b", "text": "Because an empty slot terminates a probe sequence, so clearing a slot in the middle of a run would make later entries in that run unreachable" },
+        { "id": "c", "text": "Because the memory cannot be reused until the table is rehashed" },
+        { "id": "d", "text": "To preserve the insertion order of the remaining entries" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "A search stops at the first genuinely empty slot, since under linear probing an empty slot proves the key was never inserted beyond that point. If a mid-run slot were emptied, keys further along the run would sit past an apparent terminator and could never be found. A tombstone says \"occupied for search purposes, free for insertion purposes\", which preserves both operations. The cost is that tombstones accumulate and lengthen probe runs, so the table must eventually be rehashed to clear them.",
+      "distractorRationale": {
+        "a": "Tombstones actually complicate the load factor, since they occupy slots without holding entries",
+        "c": "The slot is immediately reusable by an insertion; that is the point of distinguishing a tombstone from an occupied slot",
+        "d": "An open-addressed table preserves no insertion order at all"
+      },
+      "misconceptionTags": ["tombstones", "linear-probing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.hash-tables.q007",
+      "subtopicId": "ug.computer-science.data-structures.hash-tables",
+      "objectiveIds": ["ug.computer-science.data-structures.hash-tables.o1", "ug.computer-science.data-structures.hash-tables.o4"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "A student hashes Nigerian mobile numbers into 1000 buckets using the **first three digits** of the number as the index. Almost every number in the dataset begins 080, 081, 070 or 090. What happens, and what is the fix?",
+      "options": [
+        { "id": "a", "text": "Nothing — the hash is deterministic, so lookup stays $O(1)$" },
+        { "id": "b", "text": "Keys concentrate in four buckets, so lookups degrade towards $\\Theta(n)$; the fix is a hash that mixes **all** digits, such as a polynomial rolling hash reduced modulo the table size" },
+        { "id": "c", "text": "The table will overflow and raise an error; the fix is to enlarge it to 10,000 buckets" },
+        { "id": "d", "text": "Lookups stay fast but insertions become $\\Theta(n)$; the fix is to switch to open addressing" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Determinism is necessary but not sufficient — a hash function must also spread keys uniformly. Here the prefix carries almost no entropy, so roughly $n/4$ keys land in each of four buckets and 996 buckets stay empty. Every search walks a chain of length $\\Theta(n)$. The remedy is to derive the index from the whole key, for example $h = \\left(\\sum_i d_i \\cdot b^{\\,i}\\right) \\bmod m$ with a prime $m$, so that the varying low-order digits influence the result.",
+      "distractorRationale": {
+        "a": "Determinism guarantees correctness, never performance; a constant hash function is perfectly deterministic and catastrophically slow",
+        "c": "Enlarging the table cannot help when the hash cannot distinguish the keys — 9,996 buckets would then sit empty instead of 996",
+        "d": "The degradation hits lookups just as hard as insertions, and open addressing turns long chains into long probe runs rather than fixing them"
+      },
+      "misconceptionTags": ["hash-uniformity", "poor-hash-function"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.hash-tables.q008",
+      "subtopicId": "ug.computer-science.data-structures.hash-tables",
+      "objectiveIds": ["ug.computer-science.data-structures.hash-tables.o2", "ug.computer-science.data-structures.hash-tables.o4"],
+      "type": "numeric",
+      "difficulty": 3,
+      "stem": "Under the uniform hashing assumption, an unsuccessful search in an open-addressed table with load factor $\\alpha$ requires about $1/(1-\\alpha)$ probes. How many probes are expected when $\\alpha = 0.9$? Give a number only.",
+      "correctValue": 10,
+      "explanation": "Substituting gives $1/(1 - 0.9) = 1/0.1 = 10$ probes. Contrast $\\alpha = 0.5$, which needs only 2. Because the expression has a pole at $\\alpha = 1$, cost does not degrade gradually but explodes as the table fills — which is precisely why open-addressed tables resize at a threshold near 0.7 rather than waiting until they are nearly full.",
+      "misconceptionTags": ["open-addressing-probes", "load-factor"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "id": "ug.computer-science.algorithms.recursion.lesson",
+  "subtopicId": "ug.computer-science.algorithms.recursion",
+  "title": "Recursion and Divide and Conquer",
+  "estimatedMinutes": 20,
+  "objectiveIds": [
+    "ug.computer-science.algorithms.recursion.o1",
+    "ug.computer-science.algorithms.recursion.o2",
+    "ug.computer-science.algorithms.recursion.o3",
+    "ug.computer-science.algorithms.recursion.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "The naive recursive definition of the Fibonacci numbers is three lines long, obviously correct, and takes longer than the age of the universe to compute the hundredth term. Adding a five-line cache makes it instantaneous. Nothing about the mathematics changed — what changed was the recognition that the recursion was solving the same subproblem again and again."
+    },
+    {
+      "type": "text",
+      "markdown": "## The anatomy of a recursive definition\n\nA recursive routine solves a problem by solving smaller instances of the same problem. Two components are mandatory:\n\n- The **base case** handles inputs small enough to answer directly.\n- The **recursive case** reduces the input and combines the sub-answers.\n\nTermination requires a **well-founded measure**: a quantity that strictly decreases at every call and is bounded below, with the base case covering every value the measure can reach. Both failure modes are common — omitting the base case, and failing to decrease the measure, as in `f(n) { return f(n) }`. Both exhaust the stack.\n\nCorrectness is proved by induction on that measure. Assume the recursive calls are correct on smaller inputs (the inductive hypothesis), then show the combine step yields the correct answer for $n$. The base case discharges the induction. Trusting the recursive call rather than tracing it is the mental habit worth developing."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Recurrence relation",
+      "text": "An equation defining $T(n)$, the cost on input size $n$, in terms of $T$ at smaller arguments plus the non-recursive work done at this level. For a routine making $a$ calls on inputs of size $n/b$ with driving function $f(n)$ of extra work, the recurrence is $T(n) = a\\,T(n/b) + f(n)$."
+    },
+    {
+      "type": "text",
+      "markdown": "### Recursion consumes stack space\n\nEvery pending call holds an activation record, and none can be popped until the call it is waiting on returns. A recursion of depth $d$ therefore uses $\\Theta(d)$ stack space. Recursive factorial on $n$ is $\\Theta(n)$ time *and* $\\Theta(n)$ space, which is why summing a million-element list recursively overflows the stack while the equivalent loop does not.\n\nA call in **tail position** — the last action of the function, with no pending work after it returns — can reuse the current frame instead of pushing a new one, giving $O(1)$ space. Scheme and most functional languages guarantee this optimisation; C and C++ compilers usually perform it; the JVM and CPython do not. So on the JVM, deep recursion must be converted to iteration by hand."
+    },
+    {
+      "type": "math",
+      "latex": "T(n) = a\\,T\\!\\left(\\frac{n}{b}\\right) + f(n), \\qquad a \\ge 1,\\; b > 1",
+      "caption": "The divide-and-conquer recurrence. The critical exponent is log_b a, and everything depends on how f(n) compares with n^{log_b a}."
+    },
+    {
+      "type": "text",
+      "markdown": "## The master theorem\n\nCompare the driving function $f(n)$ with the **watershed** $n^{\\log_b a}$, which is the total cost of the leaves.\n\n| Case | Condition | Result | Reading |\n|---|---|---|---|\n| 1 | $f(n) = O(n^{\\log_b a - \\varepsilon})$ for some $\\varepsilon > 0$ | $T(n) = \\Theta(n^{\\log_b a})$ | The leaves dominate |\n| 2 | $f(n) = \\Theta(n^{\\log_b a} \\log^k n)$, $k \\ge 0$ | $T(n) = \\Theta(n^{\\log_b a} \\log^{k+1} n)$ | Every level costs the same |\n| 3 | $f(n) = \\Omega(n^{\\log_b a + \\varepsilon})$ and $a f(n/b) \\le c f(n)$ for some $c < 1$ | $T(n) = \\Theta(f(n))$ | The root dominates |\n\nWorked comparisons:\n\n- **Merge sort**, $T(n) = 2T(n/2) + \\Theta(n)$. Watershed $n^{\\log_2 2} = n$; $f(n) = \\Theta(n)$ matches it, so case 2 with $k = 0$ gives $\\Theta(n \\log n)$.\n- **Binary search**, $T(n) = T(n/2) + \\Theta(1)$. Watershed $n^{\\log_2 1} = n^0 = 1$; $f(n) = \\Theta(1)$ matches, so case 2 gives $\\Theta(\\log n)$.\n- **Four-way split**, $T(n) = 4T(n/2) + n$. Watershed $n^{\\log_2 4} = n^2$; $f(n) = n$ is polynomially smaller, so case 1 gives $\\Theta(n^2)$.\n- **Heavy combine**, $T(n) = 2T(n/2) + n^2$. Watershed $n$; $f(n) = n^2$ is polynomially larger and regularity holds since $2(n/2)^2 = n^2/2$, so case 3 gives $\\Theta(n^2)$.\n\nThe theorem does not cover every recurrence — $T(n) = 2T(n/2) + n/\\log n$ falls in the gap between cases 1 and 2, and $T(n) = T(n-1) + n$ is not of the required form at all. For those, unroll the recurrence or build the recursion tree directly."
+    },
+    {
+      "type": "worked_example",
+      "title": "From exponential to linear: memoising Fibonacci",
+      "prompt": "The definition fib(n) = fib(n-1) + fib(n-2) with fib(0) = 0 and fib(1) = 1 takes exponential time. Quantify the waste and remove it.",
+      "steps": [
+        { "text": "Count the invocations. Let $C(n)$ be the total calls to compute `fib(n)`. Then $C(0) = C(1) = 1$ and $C(n) = 1 + C(n-1) + C(n-2)$, giving $C(2) = 3$, $C(3) = 5$, $C(4) = 9$, $C(5) = 15$." },
+        { "text": "Recognise the growth. The recurrence has the same shape as the Fibonacci recurrence itself, so $C(n) = 2F(n+1) - 1 = \\Theta(\\varphi^{\\,n})$ with $\\varphi = \\frac{1+\\sqrt{5}}{2} \\approx 1.618$.", "latex": "T(n) = T(n-1) + T(n-2) + \\Theta(1) \\;=\\; \\Theta(\\varphi^{\\,n})" },
+        { "text": "Locate the waste. Expanding `fib(5)` shows `fib(3)` evaluated twice, `fib(2)` three times and `fib(1)` five times. The tree has exponentially many nodes but only $n+1$ *distinct* subproblems — the subproblems **overlap**." },
+        { "text": "Memoise. Keep a table, return the stored value if present, otherwise compute and store it:\n\n```\nmemo = empty map\nfib(n):\n    if n <= 1: return n\n    if n in memo: return memo[n]\n    memo[n] = fib(n-1) + fib(n-2)\n    return memo[n]\n```" },
+        { "text": "Re-count. Each of the $n+1$ distinct subproblems is computed once, at $O(1)$ cost given its two predecessors; every further request is a lookup. So the running time falls to $\\Theta(n)$ and the space rises to $\\Theta(n)$ — a deliberate time–space trade.", "latex": "\\Theta(\\varphi^{\\,n}) \\;\\longrightarrow\\; \\Theta(n)" },
+        { "text": "Optionally convert to bottom-up iteration. Fill the table from 0 upwards, and observe that only the two most recent values are ever needed, so the space drops to $\\Theta(1)$ while the time stays $\\Theta(n)$. This is the standard top-down-to-bottom-up transformation of dynamic programming." }
+      ],
+      "answer": "Naive evaluation makes $2F(n+1) - 1$ calls — 15 for `fib(5)` — and runs in $\\Theta(\\varphi^n)$; memoisation reduces this to $\\Theta(n)$ time and $\\Theta(n)$ space, and a bottom-up loop reduces the space to $\\Theta(1)$."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.algorithms.recursion.q006"
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Memoisation helps only when subproblems overlap",
+      "text": "Merge sort splits its input into *disjoint* halves, so every subproblem is distinct and already solved exactly once — a cache would add overhead and never hit. Dynamic programming applies when the recursion has **overlapping subproblems** and **optimal substructure**. Establish overlap before reaching for a table."
+    },
+    {
+      "type": "table",
+      "headers": ["Algorithm", "Recurrence", "Master theorem case", "Solution"],
+      "rows": [
+        ["Binary search", "$T(n) = T(n/2) + \\Theta(1)$", "2, $k=0$", "$\\Theta(\\log n)$"],
+        ["Linear recursion (factorial)", "$T(n) = T(n-1) + \\Theta(1)$", "not applicable — unroll", "$\\Theta(n)$"],
+        ["Merge sort", "$T(n) = 2T(n/2) + \\Theta(n)$", "2, $k=0$", "$\\Theta(n \\log n)$"],
+        ["Quicksort, balanced pivots", "$T(n) = 2T(n/2) + \\Theta(n)$", "2, $k=0$", "$\\Theta(n \\log n)$"],
+        ["Quicksort, worst pivots", "$T(n) = T(n-1) + \\Theta(n)$", "not applicable — unroll", "$\\Theta(n^2)$"],
+        ["Karatsuba multiplication", "$T(n) = 3T(n/2) + \\Theta(n)$", "1", "$\\Theta(n^{\\log_2 3}) \\approx \\Theta(n^{1.585})$"],
+        ["Strassen matrix product", "$T(n) = 7T(n/2) + \\Theta(n^2)$", "1", "$\\Theta(n^{\\log_2 7}) \\approx \\Theta(n^{2.807})$"],
+        ["Naive Fibonacci", "$T(n) = T(n-1) + T(n-2) + \\Theta(1)$", "not applicable", "$\\Theta(\\varphi^{\\,n})$"]
+      ],
+      "caption": "Karatsuba and Strassen both beat the naive algorithm by reducing the number of subproblems a, not by making the combine step cheaper."
+    },
+    {
+      "type": "list",
+      "style": "number",
+      "items": [
+        "State the problem so that a smaller instance of the *same* problem is a genuine subproblem.",
+        "Identify the base case, and check it covers every input the recursion can actually reach.",
+        "Write the recursive case assuming the calls are correct — do not trace them mentally.",
+        "Write down the recurrence, then solve it with the master theorem or by unrolling.",
+        "Check the recursion depth against the available stack, and convert to iteration if it is $\\Theta(n)$ on large input.",
+        "Ask whether subproblems overlap. If they do, memoise; if they do not, do not."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Recursion is a description, not a cost model",
+      "text": "An elegant recursive definition can hide catastrophic cost. Naive Fibonacci, the naive recursive subset-sum, and quicksort on sorted input with a last-element pivot are all short, readable and unusable. Always derive the recurrence before trusting the implementation."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A recursive definition needs a base case and a recursive case that strictly decreases a well-founded measure; correctness follows by induction on that measure.",
+        "Recursion of depth $d$ costs $\\Theta(d)$ stack space, since no frame is released until the base case returns.",
+        "A tail call can reuse its frame for $O(1)$ space, but the JVM and CPython do not perform that optimisation.",
+        "The divide-and-conquer recurrence is $T(n) = a T(n/b) + f(n)$, with critical exponent $\\log_b a$.",
+        "Master theorem case 1 gives $\\Theta(n^{\\log_b a})$ when the leaves dominate, case 2 gives an extra log factor when levels are balanced, and case 3 gives $\\Theta(f(n))$ when the root dominates.",
+        "The theorem does not cover every recurrence; unroll or draw the recursion tree when it does not apply.",
+        "Naive Fibonacci is $\\Theta(\\varphi^n)$ purely because of recomputation; memoisation reduces it to $\\Theta(n)$.",
+        "Memoisation pays off only when subproblems overlap — merge sort's disjoint halves gain nothing from a cache."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Algorithms and Complexity", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

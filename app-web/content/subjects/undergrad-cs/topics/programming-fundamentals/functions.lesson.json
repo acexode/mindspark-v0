@@ -1,0 +1,111 @@
+{
+  "id": "ug.computer-science.programming-fundamentals.functions.lesson",
+  "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+  "title": "Functions, Scope and Parameter Passing",
+  "estimatedMinutes": 18,
+  "objectiveIds": [
+    "ug.computer-science.programming-fundamentals.functions.o1",
+    "ug.computer-science.programming-fundamentals.functions.o2",
+    "ug.computer-science.programming-fundamentals.functions.o3",
+    "ug.computer-science.programming-fundamentals.functions.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Almost every student writes a `swap` procedure at some point, calls it, and finds that the two variables are unchanged. The code is not wrong; the mental model is. What a function receives when you call it — a copy of a value, a reference to an object, or the caller's variable itself — decides whether that procedure can work at all."
+    },
+    {
+      "type": "text",
+      "markdown": "## Functions as contracts\n\nA function is a named, parameterised abstraction. Its **contract** has four parts:\n\n- **Signature** — the name, the parameter types, the return type.\n- **Precondition** — what the caller must guarantee on entry.\n- **Postcondition** — what the function guarantees on exit, given the precondition.\n- **Frame** — which parts of the program state the function may modify.\n\nThe value of the contract is that it makes the body irrelevant to the caller. You may rewrite `sort` from insertion sort to merge sort, and no call site changes, because the contract — *returns a permutation of the input in non-decreasing order* — is unchanged. This substitutability is the whole point of **procedural abstraction**."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Referential transparency (purity)",
+      "text": "A function is referentially transparent when its result depends only on its arguments and it produces no observable side effect. Any call may then be replaced by its result value in any context. This is the property that licenses memoisation, common-subexpression elimination, reordering and parallel evaluation."
+    },
+    {
+      "type": "text",
+      "markdown": "### Scope, extent and shadowing\n\nTwo distinct questions are often collapsed into one:\n\n- **Scope** is a *spatial* question: over which region of program text is a binding visible?\n- **Extent** (lifetime) is a *temporal* question: over which period of execution does the storage exist?\n\nUnder **lexical (static) scoping**, a free variable is resolved by searching the enclosing regions of program text outward, at compile time. Under **dynamic scoping**, it is resolved by searching the chain of active calls at run time. Consider:\n\n```\nx = 10\nprocedure g(): print(x)\nprocedure f(): { var x = 20; g() }\nf()\n```\n\nLexical scoping prints **10**, because `g` is *written* at top level and its `x` binds to the global. Dynamic scoping would print 20. Lexical scoping won because it lets you understand a function by reading it, without knowing who calls it.\n\nWhen an inner binding has the same name as an outer one, the inner **shadows** the outer for the extent of the inner region. Shadowing is legal but is a common source of bugs when the shadowed name was intended."
+    },
+    {
+      "type": "text",
+      "markdown": "### The call stack\n\nEach call pushes an **activation record** (stack frame) containing the call's private state. Frames are pushed and popped in last-in-first-out order, which is exactly what makes recursion and reentrancy possible: each call gets its own locals.\n\nA frame typically holds:\n\n- the arguments, in the order the calling convention specifies\n- the local variables\n- the **return address** — where in the caller execution resumes\n- saved caller registers and, on many architectures, a saved frame pointer\n\nThe function's *machine instructions* are not in the frame. They live once in the read-only text segment and are shared across all calls. Because stack space is bounded, unbounded recursion exhausts it and raises a stack overflow — the frame count, not the total work, is the binding constraint."
+    },
+    {
+      "type": "table",
+      "headers": ["Mechanism", "What the parameter is", "Assignment to the parameter visible to caller?", "Mutation through the parameter visible to caller?"],
+      "rows": [
+        ["Pass-by-value", "A fresh copy of the argument's value", "No", "No (there is nothing shared to mutate)"],
+        ["Pass-by-reference", "An alias for the caller's variable itself", "Yes", "Yes"],
+        ["Pass-by-object-reference", "A fresh name bound to the same object", "No", "Yes, if the object is mutable"],
+        ["Pass-by-name (Algol 60)", "The unevaluated argument expression, re-evaluated at each use", "Yes", "Yes"]
+      ],
+      "caption": "Java, Python, JavaScript and Ruby all use pass-by-object-reference for objects; C is pass-by-value throughout, with pointers used to simulate references."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Mutation propagates; rebinding does not",
+      "text": "Under pass-by-object-reference, `v.append(4)` changes the object both names share, so the caller sees it. `v = [9]` rebinds only the callee's local name, so the caller sees nothing. Nearly every confusion about \"pass by value or pass by reference\" in Python and Java dissolves once this distinction is held firmly."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.programming-fundamentals.functions.q005"
+    },
+    {
+      "type": "worked_example",
+      "title": "Why pass-by-value swap fails, and three ways to fix it",
+      "prompt": "In a pass-by-value language, `procedure swap(a, b) { t = a; a = b; b = t }` is called as swap(x, y) with x = 1, y = 2. Explain the outcome and give correct alternatives.",
+      "steps": [
+        { "text": "At the call, two fresh locations are created in the callee's frame and initialised by copying: `a` receives 1, `b` receives 2. Nothing links them to `x` and `y`." },
+        { "text": "The body executes on the copies: `t` becomes 1, `a` becomes 2, `b` becomes 1." },
+        { "text": "On return the frame is popped, destroying `a`, `b` and `t`. The caller's `x` is still 1 and `y` is still 2 — the procedure had no effect whatsoever." },
+        { "text": "Fix 1, explicit indirection (C). Pass addresses and dereference: `void swap(int *a, int *b) { int t = *a; *a = *b; *b = t; }`, called as `swap(&x, &y)`. The pointers are still copied, but they point at the caller's storage." },
+        { "text": "Fix 2, true reference parameters (C++, Pascal `var`, C# `ref`). Declare `void swap(int &a, int &b)`; the parameters alias the caller's variables directly." },
+        { "text": "Fix 3, return instead of mutate. Make the function pure: `function swapped(a, b) { return (b, a) }`, called as `(x, y) = swapped(x, y)`. This is preferable where the language supports it, because the contract is visible in the signature." }
+      ],
+      "answer": "`x = 1` and `y = 2` are unchanged: the swap operates on copies that are destroyed when the frame is popped. Correct versions need pointers, reference parameters, or a returned pair."
+    },
+    {
+      "type": "text",
+      "markdown": "### Closures\n\nWhen a language allows nested functions to be returned or stored, a returned inner function may still refer to bindings from its defining environment. Such a pair — code plus captured environment — is a **closure**.\n\n```\nfunction makeCounter():\n    count = 0\n    function increment():\n        count = count + 1\n        return count\n    return increment\n```\n\nThe captured `count` cannot live on the stack, because `makeCounter`'s frame is popped before `increment` is ever called. The environment is therefore heap-allocated and kept alive as long as the closure is reachable. Note also that capture is **by binding, not by value**: three calls to the returned counter yield 1, 2, 3, because all three share the same `count`."
+    },
+    {
+      "type": "list",
+      "style": "bullet",
+      "items": [
+        "Keep functions **cohesive**: one function, one responsibility that can be named in a short phrase.",
+        "Prefer explicit parameters to implicit dependence on global state — globals are invisible arguments that defeat the contract.",
+        "Keep the parameter list short; a long list usually signals a missing record type or a function doing two jobs.",
+        "Make purity the default and confine side effects to a thin, clearly labelled layer.",
+        "Document the precondition. A function that silently misbehaves on out-of-range input has no usable contract."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "exam-tip",
+      "title": "Answering parameter-passing questions",
+      "text": "Draw the frames. Put the caller's variables in one box and the callee's parameters in another, then draw an arrow for every reference. The answer to \"what does the caller see?\" is then simply whether any arrow reaches an object the callee modified."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A function's contract — signature, precondition, postcondition, frame — is what callers depend on, which is why the implementation can be replaced freely.",
+        "Referential transparency means a call can be replaced by its value, which is what licenses memoisation and reordering.",
+        "Lexical scoping resolves free variables through enclosing program text; dynamic scoping searches the active call chain and is almost never used.",
+        "Each call pushes an activation record holding arguments, locals, the return address and saved registers; the code itself is shared, not copied.",
+        "Pass-by-value copies the value, pass-by-reference aliases the caller's variable, and pass-by-object-reference shares the object — so mutation propagates but rebinding does not.",
+        "A closure is code plus a captured environment, and capture is by binding, so successive calls observe updates to the captured variable."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Software Development Fundamentals and Programming Languages", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}
