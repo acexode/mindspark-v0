@@ -1,0 +1,229 @@
+{
+  "subtopicId": "ug.computer-science.databases.sql-basics",
+  "questions": [
+    {
+      "id": "ug.computer-science.databases.sql-basics.q001",
+      "subtopicId": "ug.computer-science.databases.sql-basics",
+      "objectiveIds": ["ug.computer-science.databases.sql-basics.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "In `SELECT DISTINCT deptCode FROM Student WHERE level = 200 ORDER BY deptCode;`, which clause implements *selection* in the relational-algebra sense?",
+      "options": [
+        { "id": "a", "text": "`WHERE level = 200`" },
+        { "id": "b", "text": "`SELECT DISTINCT deptCode`" },
+        { "id": "c", "text": "`FROM Student`" },
+        { "id": "d", "text": "`ORDER BY deptCode`" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Selection ($\\sigma$) keeps the tuples that satisfy a predicate — that is exactly `WHERE`. The SELECT list is projection ($\\pi$), FROM names the operand, and ORDER BY is a presentation operator that relations do not have. DISTINCT is the extra bag-to-set conversion SQL needs because tables are bags by default.",
+      "distractorRationale": {
+        "b": "The SELECT list is projection, possibly with duplicate elimination; it does not filter rows by a predicate",
+        "c": "FROM names the input relation; it does not filter it",
+        "d": "ORDER BY sorts the output; it neither filters nor projects"
+      },
+      "misconceptionTags": ["selection-vs-projection"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.sql-basics.q002",
+      "subtopicId": "ug.computer-science.databases.sql-basics",
+      "objectiveIds": ["ug.computer-science.databases.sql-basics.o4"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "`score` is nullable. Which predicate is the correct test for 'score is missing'?",
+      "options": [
+        { "id": "a", "text": "`score IS NULL`" },
+        { "id": "b", "text": "`score = NULL`" },
+        { "id": "c", "text": "`score = 0`" },
+        { "id": "d", "text": "`score <> score`" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Any comparison with NULL — including `= NULL` and `NULL = NULL` — evaluates to UNKNOWN, and WHERE keeps only TRUE, so `score = NULL` never matches. `IS NULL` is the dedicated test. `score = 0` finds recorded zeros, which are not missing values. `score <> score` is UNKNOWN for NULL and FALSE for every actual number, so it matches nothing.",
+      "distractorRationale": {
+        "b": "Equality with NULL is UNKNOWN, never TRUE; this is the classic trap",
+        "c": "Zero is a recorded value, not a missing one",
+        "d": "A number is equal to itself, and NULL compared with itself is UNKNOWN, so no row survives"
+      },
+      "misconceptionTags": ["null-comparison", "three-valued-logic"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.sql-basics.q003",
+      "subtopicId": "ug.computer-science.databases.sql-basics",
+      "objectiveIds": ["ug.computer-science.databases.sql-basics.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "`Student` has 400 rows and `Enrolment` has 1200. Assuming every enrolment references an existing student, what is the cardinality of `Student s INNER JOIN Enrolment e ON s.matricNo = e.matricNo`?",
+      "options": [
+        { "id": "a", "text": "1200" },
+        { "id": "b", "text": "400" },
+        { "id": "c", "text": "1600" },
+        { "id": "d", "text": "480000" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "This is a many-to-one inner join from child to parent: every enrolment matches exactly one student, so the result has one row per enrolment. Cardinality equals the child table, 1200. 400 would be true only if each student had exactly one enrolment *and* we projected students, or if we used a semi-join. 480000 is the Cartesian product, which the ON predicate filters down.",
+      "distractorRationale": {
+        "b": "Confuses the join with a listing of students; unmatched students would be dropped anyway, but the join is driven by enrolments",
+        "c": "Adds the two cardinalities, which no join operator does",
+        "d": "That is `|Student| × |Enrolment|`, the cross join before the ON filter"
+      },
+      "misconceptionTags": ["join-cardinality", "inner-join"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.sql-basics.q004",
+      "subtopicId": "ug.computer-science.databases.sql-basics",
+      "objectiveIds": ["ug.computer-science.databases.sql-basics.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "You need every student, including those with no enrolment, together with their scores when present. Which join is required?",
+      "options": [
+        { "id": "a", "text": "`Student s LEFT JOIN Enrolment e ON s.matricNo = e.matricNo`" },
+        { "id": "b", "text": "`Student s INNER JOIN Enrolment e ON s.matricNo = e.matricNo`" },
+        { "id": "c", "text": "`Student s RIGHT JOIN Enrolment e ON s.matricNo = e.matricNo`" },
+        { "id": "d", "text": "`Student s CROSS JOIN Enrolment e`" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The preserved table is `Student` (the left operand), so a left outer join keeps unmatched students and pads enrolment columns with NULL. An inner join drops them. A right join with this operand order preserves `Enrolment`, which is the opposite of what was asked. A cross join invents pairings that are not enrolments.",
+      "distractorRationale": {
+        "b": "Inner join drops students who have no matching enrolment — the rows the question wants to keep",
+        "c": "RIGHT JOIN preserves the right operand (`Enrolment`), so students without enrolments still vanish",
+        "d": "Cross join ignores the foreign key and multiplies cardinalities"
+      },
+      "misconceptionTags": ["outer-join", "join-direction"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.sql-basics.q005",
+      "subtopicId": "ug.computer-science.databases.sql-basics",
+      "objectiveIds": ["ug.computer-science.databases.sql-basics.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Consider `SELECT s.name FROM Student s LEFT JOIN Enrolment e ON s.matricNo = e.matricNo WHERE e.score >= 70;`. A student with no enrolment rows is missing from the result. Why?",
+      "options": [
+        { "id": "a", "text": "The WHERE predicate is UNKNOWN for that student's padded NULL score, so the left join is effectively reduced to an inner join" },
+        { "id": "b", "text": "LEFT JOIN never keeps unmatched left rows; only FULL OUTER JOIN does" },
+        { "id": "c", "text": "`score >= 70` is evaluated before the join, so unmatched students are never generated" },
+        { "id": "d", "text": "SQL forbids referencing the inner table in WHERE after a left join, and the engine drops those rows as a syntax error" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The left join *does* produce a padded row with `e.score` NULL. WHERE then evaluates `NULL >= 70`, which is UNKNOWN, and UNKNOWN is not TRUE, so the row is discarded. The net effect is an inner join. The fix is to move the score test into ON if unmatched students should still appear, or to accept that you only wanted students who actually scored 70+.",
+      "distractorRationale": {
+        "b": "LEFT JOIN is defined to keep unmatched left rows — until WHERE throws them away",
+        "c": "ON is applied during the join; WHERE is applied after. The padded row is generated, then filtered",
+        "d": "The syntax is legal; the behaviour is three-valued logic, not a parse error"
+      },
+      "misconceptionTags": ["outer-join-where", "three-valued-logic"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.sql-basics.q006",
+      "subtopicId": "ug.computer-science.databases.sql-basics",
+      "objectiveIds": ["ug.computer-science.databases.sql-basics.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Which query lists each `deptCode` whose students have an average enrolment score of at least 55, together with that average?",
+      "options": [
+        { "id": "a", "text": "`SELECT s.deptCode, AVG(e.score) AS mean FROM Student s JOIN Enrolment e ON s.matricNo = e.matricNo GROUP BY s.deptCode HAVING AVG(e.score) >= 55;`" },
+        { "id": "b", "text": "`SELECT s.deptCode, AVG(e.score) AS mean FROM Student s JOIN Enrolment e ON s.matricNo = e.matricNo WHERE AVG(e.score) >= 55 GROUP BY s.deptCode;`" },
+        { "id": "c", "text": "`SELECT s.deptCode, AVG(e.score) AS mean FROM Student s JOIN Enrolment e ON s.matricNo = e.matricNo HAVING AVG(e.score) >= 55;`" },
+        { "id": "d", "text": "`SELECT s.deptCode, AVG(e.score) AS mean FROM Student s JOIN Enrolment e ON s.matricNo = e.matricNo GROUP BY e.score HAVING AVG(e.score) >= 55;`" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The average is a property of a *group* of rows (all enrolments of students in a department), so you GROUP BY `deptCode` and filter groups with HAVING. WHERE is evaluated before grouping and cannot contain aggregates. Omitting GROUP BY while selecting `deptCode` alongside `AVG` is illegal on standard SQL. Grouping by `score` answers a different question: one bucket per distinct score, not per department.",
+      "distractorRationale": {
+        "b": "Aggregates are illegal in WHERE; that clause filters rows, not groups",
+        "c": "SELECT mixes a non-grouped column with an aggregate and has no GROUP BY",
+        "d": "GROUP BY e.score partitions by the numeric score itself, not by department"
+      },
+      "misconceptionTags": ["having-vs-where", "group-by"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.sql-basics.q007",
+      "subtopicId": "ug.computer-science.databases.sql-basics",
+      "objectiveIds": ["ug.computer-science.databases.sql-basics.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Five enrolment scores are `40, 60, NULL, 80, 20`. What do `COUNT(*)`, `COUNT(score)` and `AVG(score)` return?",
+      "options": [
+        { "id": "a", "text": "`COUNT(*) = 5`, `COUNT(score) = 4`, `AVG(score) = 50`" },
+        { "id": "b", "text": "`COUNT(*) = 5`, `COUNT(score) = 5`, `AVG(score) = 40`" },
+        { "id": "c", "text": "`COUNT(*) = 4`, `COUNT(score) = 4`, `AVG(score) = 50`" },
+        { "id": "d", "text": "`COUNT(*) = 5`, `COUNT(score) = 4`, `AVG(score) = 40`" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "`COUNT(*)` counts rows, NULL or not, so 5. `COUNT(score)` ignores NULL, so 4. `AVG` also ignores NULL, so $(40+60+80+20)/4 = 50$. Treating NULL as zero would give 40 and is a common mistake; SQL does not do that. Dropping the NULL row from `COUNT(*)` would give 4, which is `COUNT(score)`, not `COUNT(*)`.",
+      "distractorRationale": {
+        "b": "Treats NULL as a numeric 0 both for COUNT(score) and for the average",
+        "c": "Confuses COUNT(*) with COUNT(score)",
+        "d": "Gets the two counts right but then treats NULL as zero in the average: $(40+60+0+80+20)/5 = 40$"
+      },
+      "misconceptionTags": ["null-aggregates", "count-star"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.sql-basics.q008",
+      "subtopicId": "ug.computer-science.databases.sql-basics",
+      "objectiveIds": ["ug.computer-science.databases.sql-basics.o4"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "`score` holds `NULL, 0, 40`. How many rows does `SELECT score FROM Enrolment WHERE score <> 0 OR score = 0;` return, and how many does `SELECT score FROM Enrolment;` return?",
+      "options": [
+        { "id": "a", "text": "The filtered query returns 2 rows; the unfiltered query returns 3" },
+        { "id": "b", "text": "Both return 3 rows, because `score <> 0 OR score = 0` is a tautology" },
+        { "id": "c", "text": "Both return 2 rows, because NULL is not a value and is never stored in the result of SELECT" },
+        { "id": "d", "text": "The filtered query returns 3 rows; the unfiltered query returns 2" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "For `0`: `FALSE OR TRUE` is TRUE. For `40`: `TRUE OR FALSE` is TRUE. For NULL: `UNKNOWN OR UNKNOWN` is UNKNOWN, and WHERE discards UNKNOWN. So the filter keeps two rows even though in two-valued logic the predicate would be a tautology. SELECT without WHERE returns every stored row, including the NULL. This is the standard demonstration that three-valued logic does not have excluded middle.",
+      "distractorRationale": {
+        "b": "The predicate *looks* like a tautology, but UNKNOWN OR UNKNOWN is UNKNOWN, so the NULL row is lost",
+        "c": "SELECT without WHERE does return NULL rows; they are values in the result, just not equal to anything",
+        "d": "Reverses the two cardinalities"
+      },
+      "misconceptionTags": ["three-valued-logic", "excluded-middle", "null-filter"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

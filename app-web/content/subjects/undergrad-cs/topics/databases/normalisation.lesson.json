@@ -1,0 +1,99 @@
+{
+  "id": "ug.computer-science.databases.normalisation.lesson",
+  "subtopicId": "ug.computer-science.databases.normalisation",
+  "title": "Functional Dependencies and Normalisation",
+  "estimatedMinutes": 18,
+  "objectiveIds": [
+    "ug.computer-science.databases.normalisation.o1",
+    "ug.computer-science.databases.normalisation.o2",
+    "ug.computer-science.databases.normalisation.o3",
+    "ug.computer-science.databases.normalisation.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A registry clerk at a Nigerian university stores every enrolment in one spreadsheet: matric number, name, course code, course title, lecturer and score. When Chioma changes her surname, twelve rows have to be edited. One is missed. The database now claims she has two names. That is not a typing error — it is a design error, and normalisation is the theory that predicts it."
+    },
+    {
+      "type": "text",
+      "markdown": "## Functional dependencies\n\nA **functional dependency** (FD) $X \\rightarrow Y$ on a relation $R$ asserts: whenever two tuples agree on the attributes $X$, they must also agree on the attributes $Y$. In other words, the $X$ values *determine* the $Y$ values.\n\nThe dependency is a statement about the *meaning* of the data, not about the rows that happen to be stored today. You establish it from the domain — a matric number identifies one student, a course code identifies one title — and then every legal instance must obey it.\n\nDirection matters. $X \\rightarrow Y$ says nothing about $Y \\rightarrow X$. `matricNo → studentName` holds; `studentName → matricNo` does not, because two students may share a name.\n\nA set of attributes $X$ is a **superkey** precisely when $X$ determines every other attribute of $R$. That is the same uniqueness test you already know, restated in FD language."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Functional dependency",
+      "text": "X → Y holds in R if, in every legal instance, any two tuples that agree on X also agree on Y. It is a constraint on the schema, read from the real world, not inferred by glancing at a sample table."
+    },
+    {
+      "type": "text",
+      "markdown": "## Anomalies: the cost of mixing entities\n\nWhen one relation stores facts about two different things, redundancy appears and three **anomalies** follow.\n\nTake `Enrolment(matricNo, courseCode, studentName, courseTitle, lecturer, score)` with candidate key `(matricNo, courseCode)`.\n\n- **Update anomaly.** Chioma's name is repeated in every course row. Update one copy and miss another, and the relation contradicts itself.\n- **Insertion anomaly.** You cannot record that CSC401 is taught by Dr Adeyemi until at least one student enrols, because the candidate key needs a `matricNo`.\n- **Deletion anomaly.** When the last student withdraws from CSC401, deleting that row also deletes the course title and lecturer — facts that should have survived.\n\nAll three are symptoms of the same disease: the relation is describing *students*, *courses* and *enrolments* at once. Normalisation separates them."
+    },
+    {
+      "type": "table",
+      "headers": ["Anomaly", "What goes wrong", "In the enrolment spreadsheet"],
+      "rows": [
+        ["Update", "The same fact is stored many times; copies drift apart", "Chioma's surname is edited in 11 of 12 rows"],
+        ["Insertion", "A fact cannot be stored until an unrelated fact exists", "A new course cannot be added until a student enrols"],
+        ["Deletion", "Removing one fact silently removes another", "The last withdrawal deletes the course record"]
+      ],
+      "caption": "Three anomalies, one cause: independent facts bundled into a single relation."
+    },
+    {
+      "type": "text",
+      "markdown": "## The normal forms\n\nEach normal form forbids a more specific kind of redundancy. They form a ladder: BCNF $\\Rightarrow$ 3NF $\\Rightarrow$ 2NF $\\Rightarrow$ 1NF. You test from the bottom up.\n\n**First normal form (1NF).** Every attribute is atomic. No repeating groups, no lists in a cell, no nested tables. `phones = '0803…, 0901…'` fails 1NF; two rows, or a separate `Phone` relation, fix it.\n\n**Second normal form (2NF).** The relation is in 1NF, and no non-prime attribute is determined by a *proper subset* of a candidate key. Partial dependencies only arise when a candidate key is composite. In `Enrolment(matricNo, courseCode, studentName, score)`, `matricNo → studentName` is partial, so the relation is not in 2NF.\n\n**Third normal form (3NF).** The relation is in 2NF, and no non-prime attribute is determined by another non-prime attribute — no transitive dependency $K \\rightarrow A \\rightarrow B$ with $A$ not a key. In `Staff(staffId, deptCode, deptName)` with `staffId → deptCode → deptName`, `deptName` is transitively dependent on the key.\n\n**Boyce–Codd normal form (BCNF).** For every non-trivial FD $X \\rightarrow Y$, $X$ is a superkey. BCNF is 3NF plus a ban on a peculiar case: an attribute that is prime (part of some candidate key) but determined by something that is not a superkey. 3NF allows that case; BCNF does not.\n\nA **prime** attribute is one that belongs to *some* candidate key. A **non-prime** attribute belongs to none."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "What each form actually forbids",
+      "text": "1NF forbids structured values. 2NF forbids a non-key attribute depending on part of a composite key. 3NF forbids a non-key attribute depending on another non-key attribute. BCNF forbids any determinant that is not a superkey, even if the determined attributes are prime."
+    },
+    {
+      "type": "worked_example",
+      "title": "Decomposing an enrolment relation into 3NF",
+      "prompt": "`Enrolment(matricNo, courseCode, studentName, courseTitle, lecturer, score)` has sole candidate key `(matricNo, courseCode)`. The FDs that hold are: `matricNo → studentName`; `courseCode → courseTitle, lecturer`; `(matricNo, courseCode) → score`. Decompose losslessly into 3NF and state the highest normal form of the original.",
+      "steps": [
+        { "text": "1NF. Every attribute is a single value, so the original is in 1NF." },
+        { "text": "2NF. `studentName` depends on `matricNo` alone, a proper subset of the candidate key. `courseTitle` and `lecturer` depend on `courseCode` alone. Both are partial dependencies, so the original is not in 2NF — its highest form is 1NF." },
+        { "text": "Project the partial dependencies into their own relations. `Student(matricNo, studentName)` with key `matricNo`. `Course(courseCode, courseTitle, lecturer)` with key `courseCode`. What remains is `Enrolment(matricNo, courseCode, score)` with key `(matricNo, courseCode)`." },
+        { "text": "Check 2NF on each projection. Every non-prime attribute now depends on the *whole* of its relation's candidate key, so all three are in 2NF." },
+        { "text": "Check 3NF. In `Student` and the new `Enrolment` there is no transitive chain. In `Course`, if `lecturer` determined `courseTitle` we would have a problem, but a lecturer teaches many courses, so `lecturer → courseTitle` does not hold. All three relations are in 3NF (and in fact BCNF)." },
+        { "text": "Lossless join. Each decomposition shares a candidate key of one side (`matricNo`, `courseCode`), so joining the three projections reconstructs the original tuples and invents none." }
+      ],
+      "answer": "Original is 1NF only. 3NF decomposition: `Student(matricNo, studentName)`, `Course(courseCode, courseTitle, lecturer)`, `Enrolment(matricNo, courseCode, score)`, joined on the keys `matricNo` and `courseCode`."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.databases.normalisation.q004"
+    },
+    {
+      "type": "text",
+      "markdown": "## Lossless decomposition\n\nSplitting a relation is only legal if you can put it back together. A decomposition of $R$ into $R_1$ and $R_2$ is **lossless-join** when $R_1 \\bowtie R_2$ yields exactly the original tuples of $R$ — no extras, no missing rows.\n\nA sufficient test: if the common attributes $R_1.attrs \\cap R_2.attrs$ form a superkey of *at least one* of the two projections, the join is lossless. That is why we always keep a candidate key on one side of the cut.\n\nA decomposition can be lossless and still be a bad idea if it is not **dependency-preserving**: if some FD of the original can no longer be checked without joining the pieces back. 3NF synthesis is designed to be both lossless and dependency-preserving. BCNF decomposition is always lossless but not always dependency-preserving, which is why 3NF is sometimes preferred in practice."
+    },
+    {
+      "type": "callout",
+      "variant": "exam-tip",
+      "title": "How to attack a normalisation question",
+      "text": "Write down the candidate keys first, then every FD you are given (and any that follow from the domain). Test 1NF (atomicity), then look for a partial dependency (2NF), then a transitive one (3NF), then any determinant that is not a superkey (BCNF). Decompose by projecting each offending FD into its own relation and leaving the rest, always keeping a key so the join stays lossless."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "X → Y means that agreeing on X forces agreement on Y, in every legal instance, not just the current rows.",
+        "Update, insertion and deletion anomalies are the observable cost of storing independent facts in one relation.",
+        "1NF requires atomic values; 2NF forbids partial dependency of a non-prime attribute on a composite key; 3NF forbids transitive dependency of a non-prime attribute; BCNF requires every determinant to be a superkey.",
+        "Decompose by projecting each offending FD into its own relation, keeping a candidate key on one side so the join is lossless.",
+        "3NF synthesis preserves dependencies; BCNF decomposition is lossless but may force you to join before you can check an FD."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Data Management knowledge area", "type": "syllabus" },
+      { "id": "nuc-bmas-cs", "title": "Nigerian Universities Commission Benchmark Minimum Academic Standards — Computer Science", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}
