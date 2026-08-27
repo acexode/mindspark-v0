@@ -2,20 +2,25 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests/e2e",
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   workers: 1,
-  reporter: "list",
+  reporter: [["list"]],
+  timeout: 60_000,
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: process.env.E2E_BASE_URL ?? "http://127.0.0.1:3100",
     trace: "on-first-retry",
+    // Each test onboards afresh; a shared session would leak state between them.
+    storageState: { cookies: [], origins: [] },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
-  webServer: {
-    command: "npm run dev",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  webServer: process.env.E2E_BASE_URL
+    ? undefined
+    : {
+        command: "npm run dev -- --port 3100",
+        url: "http://127.0.0.1:3100",
+        reuseExistingServer: !process.env.CI,
+        timeout: 120_000,
+      },
 });
