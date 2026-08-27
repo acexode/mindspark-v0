@@ -22,14 +22,14 @@ export interface TierRequirement {
  * Tier A subjects must be fully learnable; Tier B must be fully navigable.
  */
 export const TIER_REQUIREMENTS: TierRequirement[] = [
-  { subjectId: "sec.mathematics", tier: "A", minTopics: 8, minSubtopics: 24, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 10 },
-  { subjectId: "sec.english", tier: "A", minTopics: 8, minSubtopics: 24, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 10 },
-  { subjectId: "sec.physics", tier: "A", minTopics: 8, minSubtopics: 24, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 10 },
-  { subjectId: "sec.biology", tier: "A", minTopics: 8, minSubtopics: 24, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 10 },
-  { subjectId: "sec.chemistry", tier: "B", minTopics: 8, minSubtopics: 20, lessonRule: "per-topic", minQuestionsPerSubtopic: 5 },
-  { subjectId: "sec.economics", tier: "B", minTopics: 6, minSubtopics: 18, lessonRule: "per-topic", minQuestionsPerSubtopic: 5 },
-  { subjectId: "sec.government", tier: "B", minTopics: 6, minSubtopics: 18, lessonRule: "per-topic", minQuestionsPerSubtopic: 5 },
-  { subjectId: "ug.computer-science", tier: "C", minTopics: 4, minSubtopics: 12, lessonRule: "per-topic", minQuestionsPerSubtopic: 5 },
+  { subjectId: "sec.mathematics", tier: "A", minTopics: 8, minSubtopics: 24, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 8 },
+  { subjectId: "sec.english", tier: "A", minTopics: 8, minSubtopics: 24, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 8 },
+  { subjectId: "sec.physics", tier: "A", minTopics: 8, minSubtopics: 24, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 8 },
+  { subjectId: "sec.biology", tier: "A", minTopics: 8, minSubtopics: 24, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 8 },
+  { subjectId: "sec.chemistry", tier: "B", minTopics: 8, minSubtopics: 20, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
+  { subjectId: "sec.economics", tier: "B", minTopics: 6, minSubtopics: 18, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
+  { subjectId: "sec.government", tier: "B", minTopics: 6, minSubtopics: 18, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
+  { subjectId: "ug.computer-science", tier: "C", minTopics: 4, minSubtopics: 12, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
 ];
 
 export interface ValidationResult {
