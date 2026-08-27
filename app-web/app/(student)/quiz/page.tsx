@@ -24,7 +24,7 @@ export default async function QuizPickerPage() {
   }
 
   const mine = subjects.filter((s) => profile.selectedSubjectIds.includes(s.id));
-  const shown = mine.length > 0 ? mine : subjects;
+  const others = subjects.filter((s) => !profile.selectedSubjectIds.includes(s.id));
 
   return (
     <section className="page">
@@ -36,8 +36,22 @@ export default async function QuizPickerPage() {
         </div>
       </header>
 
-      <div className="picker-grid">
-        {shown.map((subject) => {
+      <QuizCards subjects={mine.length > 0 ? mine : others} />
+
+      {mine.length > 0 && others.length > 0 && (
+        <section className="library-more">
+          <h2>Other subjects</h2>
+          <QuizCards subjects={others} />
+        </section>
+      )}
+    </section>
+  );
+}
+
+function QuizCards({ subjects }: { subjects: ReturnType<typeof getSubjects> }) {
+  return (
+    <div className="picker-grid">
+      {subjects.map((subject) => {
           const slug = idSlug(subject.id);
           const total = getQuestionsForSubject(subject.id).length;
 
@@ -59,7 +73,6 @@ export default async function QuizPickerPage() {
             </article>
           );
         })}
-      </div>
-    </section>
+    </div>
   );
 }

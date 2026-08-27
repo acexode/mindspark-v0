@@ -27,7 +27,7 @@ export default async function PracticePickerPage() {
   }
 
   const mine = subjects.filter((s) => profile.selectedSubjectIds.includes(s.id));
-  const shown = mine.length > 0 ? mine : subjects;
+  const others = subjects.filter((s) => !profile.selectedSubjectIds.includes(s.id));
 
   return (
     <section className="page">
@@ -39,8 +39,22 @@ export default async function PracticePickerPage() {
         </div>
       </header>
 
-      <div className="picker-grid">
-        {shown.map((subject) => {
+      <SubjectPickers subjects={mine.length > 0 ? mine : others} />
+
+      {mine.length > 0 && others.length > 0 && (
+        <section className="library-more">
+          <h2>Other subjects</h2>
+          <SubjectPickers subjects={others} />
+        </section>
+      )}
+    </section>
+  );
+}
+
+function SubjectPickers({ subjects }: { subjects: ReturnType<typeof getSubjects> }) {
+  return (
+    <div className="picker-grid">
+      {subjects.map((subject) => {
           const subjectSlug = idSlug(subject.id);
           const total = getQuestionsForSubject(subject.id).length;
 
@@ -72,7 +86,6 @@ export default async function PracticePickerPage() {
             </article>
           );
         })}
-      </div>
-    </section>
+    </div>
   );
 }

@@ -10,7 +10,9 @@ export function ContentBlockView({ block }: { block: ContentBlock }) {
     case "hook":
       return (
         <section className="block-hook">
-          <p>{block.text}</p>
+          <p>
+            <MathText text={block.text} />
+          </p>
         </section>
       );
 
@@ -98,7 +100,9 @@ export function ContentBlockView({ block }: { block: ContentBlock }) {
     case "callout":
       return (
         <aside className={`block-callout is-${block.variant}`}>
-          <h3>{block.title}</h3>
+          <h3>
+            <MathText text={block.title} />
+          </h3>
           <p>
             <MathText text={block.text} />
           </p>
@@ -108,14 +112,18 @@ export function ContentBlockView({ block }: { block: ContentBlock }) {
     case "worked_example":
       return (
         <section className="block-worked-example">
-          <h3>{block.title}</h3>
+          <h3>
+            <MathText text={block.title} />
+          </h3>
           <p className="worked-prompt">
             <MathText text={block.prompt} />
           </p>
           <ol>
             {block.steps.map((step, i) => (
               <li key={i}>
-                <span>{step.text}</span>
+                <span>
+                  <MathText text={step.text} />
+                </span>
                 {step.latex && <MathBlock latex={step.latex} />}
               </li>
             ))}
