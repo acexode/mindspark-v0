@@ -1,0 +1,65 @@
+import Link from "next/link";
+import type { Route } from "next";
+import { getQuestionsForSubject, getSubjects, idSlug } from "@/lib/content/loader";
+import { EmptyState } from "@/components/ui/empty-state";
+import { readProfileOrDefault } from "@/lib/server/profile/store";
+
+export const metadata = { title: "Quiz — Mindspark" };
+
+export default async function QuizPickerPage() {
+  const profile = await readProfileOrDefault();
+  const subjects = getSubjects(profile.educationLevel).filter((s) => getQuestionsForSubject(s.id).length >= 5);
+
+  if (subjects.length === 0) {
+    return (
+      <section className="page">
+        <EmptyState
+          title="No quizzes available yet"
+          description="A subject needs at least five questions before it can be quizzed."
+          actionLabel="Browse the library"
+          actionHref="/library"
+        />
+      </section>
+    );
+  }
+
+  const mine = subjects.filter((s) => profile.selectedSubjectIds.includes(s.id));
+  const shown = mine.length > 0 ? mine : subjects;
+
+  return (
+    <section className="page">
+      <header className="page-header">
+        <div>
+          <span className="eyebrow">Quiz</span>
+          <h1>Test yourself under exam conditions</h1>
+          <p>Timed, no hints, no feedback until you submit — just like the real thing.</p>
+        </div>
+      </header>
+
+      <div className="picker-grid">
+        {shown.map((subject) => {
+          const slug = idSlug(subject.id);
+          const total = getQuestionsForSubject(subject.id).length;
+
+          return (
+            <article key={subject.id} className="picker-card" style={{ ["--accent" as string]: subject.accentColor }}>
+              <header>
+                <h2>{subject.name}</h2>
+                <span className="picker-count">{total} questions available</span>
+              </header>
+              <p>{subject.curricula.join(" · ")}</p>
+              <div className="quiz-modes">
+                <Link className="primary-action" href={`/quiz/${slug}/subject` as Route}>
+                  Subject quiz · 20 questions
+                </Link>
+                <Link className="secondary-action" href={`/quiz/${slug}/exam` as Route}>
+                  Exam mock · 40 questions
+                </Link>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
