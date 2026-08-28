@@ -6,7 +6,7 @@ import type { NextRequest } from "next/server";
  * session cookie set during onboarding; Clerk slots in here later without
  * changing any page or feature code.
  */
-export function middleware(request: NextRequest) {
+export function middleware(_request: NextRequest) {
   return NextResponse.next();
 }
 
