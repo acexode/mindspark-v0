@@ -31,7 +31,11 @@ export async function saveOnboarding(input: OnboardingInput): Promise<{ ok: bool
     lastActiveDate: new Date().toISOString().slice(0, 10),
   }));
 
-  revalidatePath("/", "layout");
+  revalidatePath("/home");
+  revalidatePath("/library");
+  revalidatePath("/practice");
+  revalidatePath("/quiz");
+  revalidatePath("/progress");
   return { ok: true };
 }
 

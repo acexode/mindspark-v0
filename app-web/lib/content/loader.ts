@@ -32,6 +32,9 @@ export interface ContentError {
 }
 
 let cached: ContentIndex | null = null;
+let cachedAt = 0;
+/** In development, reuse the index briefly so a page load does not re-parse every JSON file on each lookup. */
+const DEV_CACHE_MS = 2_000;
 
 function listDirs(dir: string): string[] {
   if (!existsSync(dir)) return [];
@@ -139,14 +142,18 @@ function formatZod(error: { issues: Array<{ path: (string | number)[]; message: 
 }
 
 export function getContentIndex(): ContentIndex {
-  if (!cached || process.env.NODE_ENV === "development") {
-    cached = buildContentIndex();
+  if (cached) {
+    if (process.env.NODE_ENV !== "development") return cached;
+    if (Date.now() - cachedAt < DEV_CACHE_MS) return cached;
   }
+  cached = buildContentIndex();
+  cachedAt = Date.now();
   return cached;
 }
 
 export function clearContentCache(): void {
   cached = null;
+  cachedAt = 0;
 }
 
 /* ------------------------------------------------------------------ queries */

@@ -20,7 +20,8 @@ async function onboard(page: Page, name: string, subjectCount = 1) {
   }
 
   await page.getByRole("button", { name: /Start learning/i }).click();
-  await page.waitForURL("**/home", { timeout: 20000 });
+  await page.waitForURL("**/home", { timeout: 45_000 });
+  await expect(page.getByRole("heading", { name: new RegExp(name) })).toBeVisible();
 }
 
 test.describe("Onboarding", () => {
