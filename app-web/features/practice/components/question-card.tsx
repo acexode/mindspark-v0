@@ -66,23 +66,22 @@ export function QuestionCard({
       )}
 
       {hasOptions ? (
-        <ul className="option-list" role="radiogroup" aria-label="Answer options">
+        <div className="option-list" role="radiogroup" aria-label="Answer options">
           {question.options?.map((option) => (
-            <li key={option.id}>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={selected === option.id}
-                disabled={answered || pending}
-                className={`option ${selected === option.id ? "is-selected" : ""}`}
-                onClick={() => select(option.id)}
-              >
-                <span className="option-key">{option.id.toUpperCase()}</span>
-                <MathText text={option.text} />
-              </button>
-            </li>
+            <button
+              key={option.id}
+              type="button"
+              role="radio"
+              aria-checked={selected === option.id}
+              disabled={answered || pending}
+              className={`option ${selected === option.id ? "is-selected" : ""}`}
+              onClick={() => select(option.id)}
+            >
+              <span className="option-key">{option.id.toUpperCase()}</span>
+              <MathText text={option.text} />
+            </button>
           ))}
-        </ul>
+        </div>
       ) : (
         <label className="numeric-answer">
           <span className="sr-only">Your answer</span>

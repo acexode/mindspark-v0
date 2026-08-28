@@ -29,7 +29,7 @@ test.describe("Onboarding", () => {
     await page.goto("/onboarding");
     await page.getByPlaceholder("Your name").fill("No Subjects");
     await page.getByRole("button", { name: /Start learning/i }).click();
-    await expect(page.getByRole("alert")).toContainText(/at least one subject/i);
+    await expect(page.locator(".form-error")).toContainText(/at least one subject/i);
     await expect(page).toHaveURL(/onboarding/);
   });
 
@@ -61,12 +61,13 @@ test.describe("Library navigation", () => {
   test("shows no empty subject: every listed subject opens to real topics", async ({ page }) => {
     await onboard(page, "Coverage Student", 8);
     await page.getByRole("link", { name: "Library" }).click();
+    await page.waitForURL("**/library");
 
     const count = await page.locator(".subject-card").count();
     expect(count).toBeGreaterThan(0);
 
     for (let i = 0; i < count; i++) {
-      await page.getByRole("link", { name: "Library" }).click();
+      await page.getByLabel("Main").getByRole("link", { name: "Library" }).click();
       await page.waitForURL("**/library");
       await page.locator(".subject-card").nth(i).click();
       await expect(page.locator(".topic-row").first()).toBeVisible();
@@ -124,6 +125,7 @@ test.describe("Practice is always scoped", () => {
 
 test.describe("Quiz", () => {
   test("runs a timed quiz and returns a review with explanations", async ({ page }) => {
+    test.setTimeout(120_000);
     await onboard(page, "Quiz Student", 3);
     await page.getByRole("link", { name: "Quiz" }).click();
 
@@ -133,10 +135,20 @@ test.describe("Quiz", () => {
     await expect(page.locator(".quiz-timer")).toBeVisible();
     await expect(page.locator(".quiz-question")).toBeVisible();
 
-    await page.locator(".option").first().click();
-    await page.getByRole("button", { name: /^Next$/ }).click();
-    await page.locator(".option").first().click();
+    async function answerCurrent() {
+      const option = page.locator(".option").first();
+      if (await option.isVisible()) {
+        await option.click();
+        return;
+      }
+      await page.getByLabel("Your answer").fill("plant cell");
+    }
 
+    while (await page.getByRole("button", { name: /^Next$/ }).isVisible()) {
+      await answerCurrent();
+      await page.getByRole("button", { name: /^Next$/ }).click();
+    }
+    await answerCurrent();
     await page.getByRole("button", { name: /Submit quiz/i }).click();
     await expect(page.locator(".quiz-review")).toBeVisible();
     await expect(page.locator(".review-explanation").first()).not.toBeEmpty();

@@ -75,22 +75,21 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
         </p>
 
         {question.options?.length ? (
-          <ul className="option-list" role="radiogroup" aria-label="Answer options">
+          <div className="option-list" role="radiogroup" aria-label="Answer options">
             {question.options.map((option) => (
-              <li key={option.id}>
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={answers[question.id]?.optionId === option.id}
-                  className={`option ${answers[question.id]?.optionId === option.id ? "is-selected" : ""}`}
-                  onClick={() => record({ optionId: option.id })}
-                >
-                  <span className="option-key">{option.id.toUpperCase()}</span>
-                  <MathText text={option.text} />
-                </button>
-              </li>
+              <button
+                key={option.id}
+                type="button"
+                role="radio"
+                aria-checked={answers[question.id]?.optionId === option.id}
+                className={`option ${answers[question.id]?.optionId === option.id ? "is-selected" : ""}`}
+                onClick={() => record({ optionId: option.id })}
+              >
+                <span className="option-key">{option.id.toUpperCase()}</span>
+                <MathText text={option.text} />
+              </button>
             ))}
-          </ul>
+          </div>
         ) : (
           <label className="numeric-answer">
             <span className="sr-only">Your answer</span>
