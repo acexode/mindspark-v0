@@ -1,0 +1,120 @@
+{
+  "id": "ug.computer-science.algorithms.complexity-analysis.lesson",
+  "subtopicId": "ug.computer-science.algorithms.complexity-analysis",
+  "title": "Asymptotic Complexity Analysis",
+  "estimatedMinutes": 20,
+  "objectiveIds": [
+    "ug.computer-science.algorithms.complexity-analysis.o1",
+    "ug.computer-science.algorithms.complexity-analysis.o2",
+    "ug.computer-science.algorithms.complexity-analysis.o3",
+    "ug.computer-science.algorithms.complexity-analysis.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A student times two programs on 1,000 records. The first takes 0.8 seconds, the second 1.2, so she ships the first. In production the dataset is 5,000,000 records: the first now needs eleven days and the second finishes in under a minute. Timing on small inputs measured the constant factor. Asymptotic analysis measures the thing that actually decided the outcome."
+    },
+    {
+      "type": "text",
+      "markdown": "## What we measure, and why we abstract\n\nWe want to compare algorithms independently of language, compiler, processor and input. So we count **elementary operations** as a function of **input size** $n$, then classify that function by its growth rate.\n\nTwo abstractions are deliberate:\n\n1. **Discard constant factors.** They depend on the machine, not the algorithm. An implementation twice as fast on one processor is not a different algorithm.\n2. **Discard lower-order terms.** For large $n$ the dominant term swamps everything else: at $n = 10^6$, the $n^2$ term of $n^2 + 1000n$ exceeds the linear term by a factor of a thousand.\n\nBoth abstractions cost real information, and it is worth being honest about it. $\\Theta$ classes rank algorithms; they do not predict wall-clock time. A $\\Theta(n)$ array traversal can beat a $\\Theta(n)$ linked-list traversal by an order of magnitude on cache behaviour alone."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "The three asymptotic bounds",
+      "text": "$f(n) = O(g(n))$ iff there exist $c > 0$ and $n_0$ with $0 \\le f(n) \\le c\\,g(n)$ for all $n \\ge n_0$ — an upper bound. $f(n) = \\Omega(g(n))$ iff $f(n) \\ge c\\,g(n)$ under the same quantifiers — a lower bound. $f(n) = \\Theta(g(n))$ iff both hold, with possibly different constants — a tight bound. The constant $c$ absorbs machine-dependent factors and the threshold $n_0$ lets small inputs misbehave."
+    },
+    {
+      "type": "math",
+      "latex": "f(n) = \\Theta(g(n)) \\iff \\exists\\, c_1, c_2 > 0,\\; n_0 : \\quad c_1 g(n) \\le f(n) \\le c_2 g(n) \\quad \\forall n \\ge n_0",
+      "caption": "Theta sandwiches f between two constant multiples of g, so it is the only one of the three that pins down the growth rate"
+    },
+    {
+      "type": "text",
+      "markdown": "### Big-O is an upper bound, and need not be tight\n\n$3n^2 + 5n = O(n^3)$ is a **correct** statement — take $c = 8$, $n_0 = 1$ — but it is uninformative, because $\\Theta(n^2)$ describes the function exactly. Two consequences follow:\n\n- Saying \"the algorithm is $O(n^3)$\" claims only that it is no worse than cubic. It does not claim it is cubic.\n- Writing $\\Theta$ is a stronger commitment, so use it only when you have both bounds.\n\nThere is a second, independent axis that is constantly confused with the first. **Best, worst and average case** select *which function of $n$* you are analysing; $O$, $\\Omega$ and $\\Theta$ then *bound* that function. Both apply to every case. Insertion sort's best-case time is $\\Theta(n)$ and its worst-case time is $\\Theta(n^2)$; both statements are also $O(n^2)$."
+    },
+    {
+      "type": "table",
+      "headers": ["Class", "Name", "Typical source", "$n = 10^3$", "$n = 10^6$"],
+      "rows": [
+        ["$O(1)$", "Constant", "Array index, hash lookup (expected)", "1", "1"],
+        ["$O(\\log n)$", "Logarithmic", "Binary search, balanced tree operation", "≈ 10", "≈ 20"],
+        ["$O(n)$", "Linear", "Single scan, linear search", "$10^3$", "$10^6$"],
+        ["$O(n \\log n)$", "Linearithmic", "Merge sort, heapsort, FFT", "≈ $10^4$", "≈ $2 \\times 10^7$"],
+        ["$O(n^2)$", "Quadratic", "Two nested scans, insertion sort", "$10^6$", "$10^{12}$"],
+        ["$O(n^3)$", "Cubic", "Naive matrix multiplication", "$10^9$", "$10^{18}$"],
+        ["$O(2^n)$", "Exponential", "Exhaustive subset enumeration", "astronomical", "astronomical"],
+        ["$O(n!)$", "Factorial", "Brute-force permutation search", "astronomical", "astronomical"]
+      ],
+      "caption": "The hierarchy 1 ≺ log n ≺ n ≺ n log n ≺ n² ≺ n³ ≺ 2ⁿ ≺ n!. Note that the gap between quadratic and linearithmic is what separates a feasible program from an infeasible one at n = 10⁶."
+    },
+    {
+      "type": "list",
+      "style": "number",
+      "items": [
+        "**Sequential statements add.** A $\\Theta(n)$ loop followed by a $\\Theta(n^2)$ loop is $\\Theta(n + n^2) = \\Theta(n^2)$.",
+        "**Nested loops multiply.** Trip counts compose, so an outer loop of $n$ around an inner loop of $\\log n$ gives $\\Theta(n \\log n)$.",
+        "**Constant bounds vanish.** An inner loop running exactly 100 times contributes a constant factor, so two nested loops are not automatically quadratic.",
+        "**Halving or doubling gives a logarithm.** A loop whose counter is multiplied or divided by a constant factor runs $\\Theta(\\log n)$ times.",
+        "**Dependent bounds give a sum.** An inner loop from $i$ to $n$ yields $\\sum_{i=1}^{n}(n-i+1) = \\frac{n(n+1)}{2} = \\Theta(n^2)$.",
+        "**In a sum, keep only the dominant term.** $n^{100} + 2^n = \\Theta(2^n)$, because every exponential with base above 1 eventually dominates every polynomial."
+      ]
+    },
+    {
+      "type": "worked_example",
+      "title": "Analysing a fragment from first principles",
+      "prompt": "Derive an exact operation count and then a tight asymptotic bound for: for i = 1 to n { for j = 1 to n { s = s + 1 } }; for k = 1 to n { t = t * 2 }; m = n; while m > 1 { m = m / 2 }",
+      "steps": [
+        { "text": "Take the first construct. The outer loop runs $n$ times and the inner loop runs $n$ times per pass, and neither bound depends on the other counter, so the increment executes $n \\times n = n^2$ times." },
+        { "text": "Take the second construct. A single loop with bound $n$ executes its body $n$ times." },
+        { "text": "Take the third construct. `m` starts at $n$ and is halved until it is 1, so the body executes $\\lfloor \\log_2 n \\rfloor$ times.", "latex": "n \\to \\tfrac{n}{2} \\to \\tfrac{n}{4} \\to \\cdots \\to 1 \\quad\\Longrightarrow\\quad \\lfloor \\log_2 n \\rfloor \\text{ iterations}" },
+        { "text": "The three constructs are sequential, so add their costs:", "latex": "T(n) = n^2 + n + \\lfloor \\log_2 n \\rfloor" },
+        { "text": "Identify the dominant term. Since $n = o(n^2)$ and $\\log_2 n = o(n^2)$, the quadratic term dominates and the lower-order terms may be discarded." },
+        { "text": "Confirm the bound formally. For $n \\ge 2$ we have $n^2 \\le T(n) \\le 3n^2$, so with $c_1 = 1$, $c_2 = 3$ and $n_0 = 2$ the definition of $\\Theta$ is satisfied.", "latex": "1 \\cdot n^2 \\;\\le\\; n^2 + n + \\log_2 n \\;\\le\\; 3 \\cdot n^2 \\quad (n \\ge 2)" },
+        { "text": "Conclude $T(n) = \\Theta(n^2)$. Note that the logarithmic loop, though intellectually the most interesting part of the fragment, contributes nothing to the classification — a useful reminder that optimisation effort belongs on the dominant term." }
+      ],
+      "answer": "$T(n) = n^2 + n + \\lfloor \\log_2 n \\rfloor = \\Theta(n^2)$."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.algorithms.complexity-analysis.q003"
+    },
+    {
+      "type": "text",
+      "markdown": "### Amortised analysis, and space\n\n**Amortised** analysis bounds the total cost of a *sequence* of operations and divides by the sequence length. This is not the same as average-case analysis: amortisation is a worst-case guarantee over the sequence and makes no assumption about the input distribution. Appending to a doubling dynamic array is the standard example — a single append can cost $\\Theta(n)$, yet any $m$ appends cost $O(m)$ in total.\n\n**Space complexity** is measured the same way, usually counting *auxiliary* space — memory used beyond the input itself. An algorithm is **in place** when its auxiliary space is $O(1)$ or $O(\\log n)$. Time and space frequently trade against each other: memoisation converts exponential time into polynomial time by spending polynomial space, and a hash index buys $O(1)$ lookup with $O(n)$ storage."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Input *size*, not input *value*",
+      "text": "Testing whether $n$ is prime by trial division up to $\\sqrt{n}$ is often called $O(\\sqrt{n})$, but that is measured in the *value* of $n$. The input size is the number of bits, $b = \\log_2 n$, and $\\sqrt{n} = 2^{b/2}$ — exponential in the input size. This distinction is exactly what separates the pseudo-polynomial algorithms from the genuinely polynomial ones, and it is the crux of why factoring is believed to be hard."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Asymptotics rank algorithms; measurement ranks implementations",
+      "text": "Use complexity analysis to choose the algorithm, because it predicts behaviour as the data grows and no amount of profiling on small inputs will. Then use profiling to tune the implementation, because the constants that asymptotic notation discards are exactly what remains once the class is right."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Complexity counts elementary operations as a function of input size, discarding constant factors and lower-order terms.",
+        "$O$ is an upper bound, $\\Omega$ a lower bound and $\\Theta$ a tight bound; each requires a constant $c$ and a threshold $n_0$.",
+        "A big-O claim need not be tight: $3n^2 + 5n = O(n^3)$ is correct but uninformative.",
+        "Best, worst and average case choose which function to analyse; $O$, $\\Omega$ and $\\Theta$ then bound it — the two axes are independent.",
+        "Sequential code adds costs, nested loops multiply trip counts, and halving loops contribute a logarithmic factor.",
+        "In a sum, only the dominant term survives, and every exponential eventually dominates every polynomial.",
+        "Amortised analysis is a worst-case guarantee over a sequence of operations, unlike average-case analysis which assumes a distribution.",
+        "Complexity is measured in the input's *size*, not its numeric value — a distinction that reclassifies trial-division primality testing as exponential."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Algorithms and Complexity", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

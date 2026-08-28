@@ -1,0 +1,122 @@
+{
+  "id": "ug.computer-science.discrete-mathematics.graph-theory.lesson",
+  "subtopicId": "ug.computer-science.discrete-mathematics.graph-theory",
+  "title": "Graph Theory",
+  "estimatedMinutes": 20,
+  "objectiveIds": [
+    "ug.computer-science.discrete-mathematics.graph-theory.o1",
+    "ug.computer-science.discrete-mathematics.graph-theory.o2",
+    "ug.computer-science.discrete-mathematics.graph-theory.o3",
+    "ug.computer-science.discrete-mathematics.graph-theory.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Route a journey from Yaba to Ikeja, schedule courses so no student has a clash, detect a deadlock between database transactions, decide whether a compiler can order two instructions: four unrelated-sounding problems, all of which reduce to a question about a graph. The graph is the most widely applicable structure in computing, and its vocabulary is worth getting exactly right."
+    },
+    {
+      "type": "text",
+      "markdown": "## Definitions\n\nA **graph** is a pair $G = (V, E)$ where $V$ is a set of **vertices** and $E$ a set of **edges**. In an *undirected* graph an edge is an unordered pair $\\{u, v\\}$; in a *directed* graph it is an ordered pair $(u, v)$. A **simple** graph has no self-loops and no repeated edges.\n\n- **Adjacent** — two vertices joined by an edge. **Incident** — the relation between an edge and its endpoints.\n- **Degree** $\\deg(v)$ — the number of edge-endpoints at $v$. In a digraph this splits into **in-degree** and **out-degree**.\n- **Path** — a sequence of distinct vertices with consecutive ones adjacent. Its **length** is the edge count, not the vertex count.\n- **Cycle** — a path of length at least 3 whose first and last vertices coincide.\n- **Connected** — every pair of vertices is joined by some path. Otherwise the graph splits into **connected components**.\n- **Tree** — a connected acyclic graph. **Forest** — an acyclic graph, connected or not.\n- **Weighted** — each edge carries a numeric cost.\n\nOur running example, with six vertices and six edges:\n\n```\n    A ------- B\n    |         |\n    |         |\n    C ------- D ------- E ------- F\n```\n\nEdges: A–B, A–C, B–D, C–D, D–E, E–F. Degrees: A = 2, B = 2, C = 2, D = 3, E = 2, F = 1. The cycle A–B–D–C–A is present, so this is not a tree."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "The handshaking lemma",
+      "text": "$\\sum_{v \\in V} \\deg(v) = 2|E|$. Each edge contributes exactly one to the degree of each of its two endpoints, so the degree sum double-counts the edges. Two corollaries follow: the degree sum is always even, and therefore the number of odd-degree vertices in any graph is even. Checking our example: $2+2+2+3+2+1 = 12 = 2 \\times 6$."
+    },
+    {
+      "type": "math",
+      "latex": "\\sum_{v \\in V} \\deg(v) = 2|E|, \\qquad |E|_{\\max} = \\binom{n}{2} = \\frac{n(n-1)}{2}, \\qquad |E|_{\\text{tree}} = n - 1",
+      "caption": "The three counting facts used constantly: degree sum, the complete-graph bound, and the tree identity"
+    },
+    {
+      "type": "text",
+      "markdown": "### Dense and sparse, and why it decides the representation\n\nA simple undirected graph on $n$ vertices has at most $\\binom{n}{2} = \\Theta(n^2)$ edges, attained by the complete graph $K_n$. A graph is **dense** when $|E| = \\Theta(V^2)$ and **sparse** when $|E| = O(V)$. Most graphs arising in practice are sparse: a road network with 100,000 junctions has about 250,000 segments, an average degree near 5, against a theoretical maximum of $5 \\times 10^9$ edges.\n\nThis single fact decides the representation."
+    },
+    {
+      "type": "table",
+      "headers": ["Operation", "Adjacency matrix", "Adjacency list"],
+      "rows": [
+        ["Space", "$\\Theta(V^2)$", "$\\Theta(V + E)$"],
+        ["Test whether edge $(u,v)$ exists", "$O(1)$", "$O(\\deg(u))$"],
+        ["Enumerate all neighbours of $u$", "$\\Theta(V)$", "$\\Theta(\\deg(u))$"],
+        ["Add an edge", "$O(1)$", "$O(1)$"],
+        ["Remove an edge", "$O(1)$", "$O(\\deg(u))$"],
+        ["Add a vertex", "$\\Theta(V^2)$ (reallocate)", "$O(1)$ amortised"],
+        ["Iterate over all edges", "$\\Theta(V^2)$", "$\\Theta(V + E)$"],
+        ["Best suited to", "Dense graphs, frequent edge queries", "Sparse graphs, traversal-heavy workloads"]
+      ],
+      "caption": "For the road network above, a matrix needs 10¹⁰ cells and a list needs 3.5 × 10⁵ references — five orders of magnitude apart."
+    },
+    {
+      "type": "text",
+      "markdown": "## Traversal\n\nBoth traversals are the same algorithm with a different frontier container, and both are $O(V + E)$ on an adjacency list.\n\n```\ntraverse(G, s):\n    mark s discovered\n    frontier = { s }\n    while frontier is not empty:\n        u = remove from frontier          # queue -> BFS, stack -> DFS\n        process u\n        for each v adjacent to u:\n            if v is not discovered:\n                mark v discovered\n                add v to frontier\n```\n\nThe `discovered` marking must happen at the moment of *insertion*, not at removal; otherwise a vertex reachable by two paths is enqueued twice.\n\n**Breadth-first search** uses a queue. Every vertex at distance $d$ is dequeued before any at distance $d+1$, so BFS explores in expanding shells and the first path it finds to any vertex uses the fewest possible edges. That is why BFS solves single-source shortest paths in an **unweighted** graph — and why it is simply wrong on a weighted one, where Dijkstra's algorithm replaces the queue with a priority queue.\n\n**Depth-first search** uses a stack, or equivalently recursion. It plunges along one branch until it dead-ends, then backtracks. Its paths are not shortest, but its edge classification and finish-time ordering give cycle detection, topological sorting, strongly connected components and articulation points."
+    },
+    {
+      "type": "worked_example",
+      "title": "Tracing BFS and DFS from A on the running graph",
+      "prompt": "For the graph with edges A–B, A–C, B–D, C–D, D–E, E–F, trace breadth-first and depth-first search from A, taking neighbours in alphabetical order, and read off the shortest distance to F.",
+      "steps": [
+        { "text": "**BFS.** Discover A, distance 0. Queue: [A]." },
+        { "text": "Dequeue A, process it. Its neighbours B and C are undiscovered, so mark both at distance 1 and enqueue them. Queue: [B, C]." },
+        { "text": "Dequeue B, process it. Neighbours are A (discovered) and D (new), so mark D at distance 2 and enqueue. Queue: [C, D]." },
+        { "text": "Dequeue C, process it. Neighbours A and D are both already discovered, so nothing is enqueued — note that D is *not* enqueued twice, because marking happened at insertion. Queue: [D]." },
+        { "text": "Dequeue D, process it. Neighbour E is new, at distance 3. Queue: [E]. Dequeue E; neighbour F is new, at distance 4. Queue: [F]. Dequeue F; no new neighbours. Queue empty." },
+        { "text": "BFS visit order: **A, B, C, D, E, F**, with distances A = 0, B = C = 1, D = 2, E = 3, F = 4. The distances are non-decreasing in visit order, which is the property that makes BFS a shortest-path algorithm here." },
+        { "text": "**DFS.** Visit A. Take B first. From B take D. From D the unvisited neighbours are C and E, so take C. C's neighbours A and D are both visited, so backtrack to D and take E. From E take F. F has no unvisited neighbours, so unwind." },
+        { "text": "DFS visit order: **A, B, D, C, E, F**. Observe that DFS reached C at depth 3 by the route A–B–D–C, whereas the shortest route is the single edge A–C. Both traversals visited all six vertices in $O(V+E)$ time, but only BFS recorded correct distances." }
+      ],
+      "answer": "BFS visits A, B, C, D, E, F and gives the shortest distance to F as 4 edges; DFS visits A, B, D, C, E, F and reaches C by a 3-edge detour rather than the 1-edge path."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.discrete-mathematics.graph-theory.q007"
+    },
+    {
+      "type": "list",
+      "style": "bullet",
+      "items": [
+        "**Shortest route on a road network** — Dijkstra's algorithm on a weighted graph, or BFS if all segments count equally.",
+        "**Examination timetabling** — vertex colouring: vertices are courses, edges join courses sharing a student, and each colour is a time slot.",
+        "**Deadlock detection** — cycle detection by DFS in the wait-for graph; a cycle is a deadlock.",
+        "**Build and dependency ordering** — topological sort of a directed acyclic graph; failure to produce one reveals a circular dependency.",
+        "**Social and citation networks** — connected components, degree distribution, shortest-path distances.",
+        "**Network reliability** — articulation points and bridges, the vertices and edges whose removal disconnects the graph.",
+        "**Instruction scheduling in a compiler** — the data-dependence graph, whose topological orders are the legal schedules."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Model first, then reach for an algorithm",
+      "text": "Most of the difficulty in applying graph theory is choosing what the vertices and edges represent. In timetabling, making courses the vertices and clashes the edges turns an unstructured scheduling problem into graph colouring. Once the model is right, the algorithm is usually a textbook one — and once it is wrong, no algorithm will help."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Do not use BFS on a weighted graph",
+      "text": "BFS minimises the *number of edges*, which coincides with minimal cost only when all edges cost the same. On a weighted graph a two-edge path may be far cheaper than a one-edge path, and BFS will return the wrong answer confidently. Use Dijkstra for non-negative weights and Bellman–Ford when negative weights are possible."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A graph is a vertex set with an edge set; edges are unordered in an undirected graph and ordered in a digraph.",
+        "Path length counts edges, not vertices, and a tree is a connected acyclic graph.",
+        "The handshaking lemma gives $\\sum_v \\deg(v) = 2|E|$, so the degree sum is always even and odd-degree vertices come in pairs.",
+        "A simple graph on $n$ vertices has at most $n(n-1)/2$ edges, and every tree on $n$ vertices has exactly $n-1$.",
+        "An adjacency matrix costs $\\Theta(V^2)$ space with $O(1)$ edge tests; an adjacency list costs $\\Theta(V+E)$ and suits the sparse graphs that occur in practice.",
+        "BFS and DFS are one algorithm distinguished only by whether the frontier is a queue or a stack, and both run in $O(V+E)$.",
+        "BFS discovers vertices in non-decreasing distance order, which is why it solves unweighted shortest paths — and why it fails on weighted graphs.",
+        "DFS underpins cycle detection, topological sorting and strongly connected components, none of which need shortest paths."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Discrete Structures, Graphs and Trees", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

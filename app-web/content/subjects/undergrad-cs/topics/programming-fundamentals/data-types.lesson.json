@@ -1,0 +1,119 @@
+{
+  "id": "ug.computer-science.programming-fundamentals.data-types.lesson",
+  "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+  "title": "Data Types and Variables",
+  "estimatedMinutes": 16,
+  "objectiveIds": [
+    "ug.computer-science.programming-fundamentals.data-types.o1",
+    "ug.computer-science.programming-fundamentals.data-types.o2",
+    "ug.computer-science.programming-fundamentals.data-types.o3",
+    "ug.computer-science.programming-fundamentals.data-types.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A fintech team in Lagos stored transaction amounts in kobo as signed 32-bit integers. The system worked for two years, then a single ₦25,000,000 transfer produced a negative balance. Nothing was hacked and no line of logic was wrong — the value simply exceeded what 32 bits can represent. Understanding types is understanding exactly what a variable can and cannot hold."
+    },
+    {
+      "type": "text",
+      "markdown": "## What a type actually is\n\nA **data type** is a set of values together with the operations defined on those values. `int` is not merely \"a whole number\": it is a finite subset of $\\mathbb{Z}$ closed under a set of operations that behave like integer arithmetic only while results stay inside that subset.\n\nA **variable** is a name bound to a storage location. Three things are distinct and are routinely confused:\n\n- the **name** (the identifier `balance`)\n- the **location** (the address the name is bound to)\n- the **value** (the bit pattern currently stored there)\n\nThe type constrains which bit patterns are legal at that location and which operations the compiler will permit on the name."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Type system",
+      "text": "A tractable syntactic method for proving the absence of certain program behaviours by classifying expressions according to the kinds of value they compute. A type system is sound when a well-typed program cannot commit the errors the system is designed to exclude."
+    },
+    {
+      "type": "text",
+      "markdown": "### Primitive and composite types\n\n**Primitive** (atomic) types have values the language treats as indivisible: `int`, `float`, `char`, `boolean`. **Composite** (structured) types aggregate other types, so their values can be decomposed:\n\n- **Product types** — a record or struct holds one value of *each* field type. A `Student` with `name`, `matricNo` and `cgpa` is a product.\n- **Sum types** — a variant, union or tagged enum holds one value of *one* of several types.\n- **Array types** — a fixed-length homogeneous sequence indexed by integers.\n- **Reference types** — a value that denotes the location of another value."
+    },
+    {
+      "type": "table",
+      "headers": ["Type", "Typical width", "Representable range or domain", "Category"],
+      "rows": [
+        ["`boolean`", "1 byte (1 bit of information)", "{true, false}", "Primitive"],
+        ["`char` (ASCII)", "1 byte", "0 to 127 code points", "Primitive"],
+        ["`int` (signed)", "4 bytes", "$-2^{31}$ to $2^{31} - 1$", "Primitive"],
+        ["`long` (signed)", "8 bytes", "$-2^{63}$ to $2^{63} - 1$", "Primitive"],
+        ["`float` (IEEE 754 single)", "4 bytes", "≈ 7 significant decimal digits", "Primitive"],
+        ["`double` (IEEE 754 double)", "8 bytes", "≈ 15–17 significant decimal digits", "Primitive"],
+        ["`record` / `struct`", "sum of field widths plus padding", "Cartesian product of the field domains", "Composite"],
+        ["`array[n] of T`", "$n \\times$ width of `T`", "$n$-tuples of `T` values", "Composite"]
+      ],
+      "caption": "Common types on a conventional 64-bit platform. Exact widths are implementation-defined in C but fixed in Java and Rust."
+    },
+    {
+      "type": "math",
+      "latex": "\\text{signed } n \\text{ bits (two's complement)}: \\quad -2^{\\,n-1} \\;\\le\\; v \\;\\le\\; 2^{\\,n-1} - 1",
+      "caption": "The range is asymmetric because zero occupies one of the non-negative bit patterns"
+    },
+    {
+      "type": "worked_example",
+      "title": "Diagnosing the fintech overflow",
+      "prompt": "Transaction amounts are held in kobo in a signed 32-bit integer. Show that ₦25,000,000 overflows, and state the value actually stored.",
+      "steps": [
+        { "text": "Convert to the stored unit. One naira is 100 kobo, so the amount in kobo is:", "latex": "25{,}000{,}000 \\times 100 = 2{,}500{,}000{,}000" },
+        { "text": "Compute the upper bound of a signed 32-bit integer.", "latex": "2^{31} - 1 = 2{,}147{,}483{,}647" },
+        { "text": "Compare. Since $2{,}500{,}000{,}000 > 2{,}147{,}483{,}647$, the value is not representable and the addition overflows." },
+        { "text": "Two's complement addition wraps modulo $2^{32}$, so reduce the value into range by subtracting $2^{32} = 4{,}294{,}967{,}296$:", "latex": "2{,}500{,}000{,}000 - 4{,}294{,}967{,}296 = -1{,}794{,}967{,}296" },
+        { "text": "The stored value is therefore negative, which is why the balance inverted. The fix is a 64-bit integer (`long`) or a fixed-point decimal type — never a `double`, which would introduce rounding error into money." }
+      ],
+      "answer": "The amount is 2,500,000,000 kobo, which exceeds $2^{31} - 1$; the stored value wraps to −1,794,967,296 kobo."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Floating point is not the decimal system",
+      "text": "IEEE 754 stores a binary fraction, so a decimal fraction is exact only when its denominator is a power of two. 0.1 and 0.2 are both inexact, which is why `0.1 + 0.2 == 0.3` is false. Never test floating-point values for equality; test whether $|a - b| < \\varepsilon$ for a tolerance appropriate to the magnitudes involved, and never store currency in a binary float."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.programming-fundamentals.data-types.q003"
+    },
+    {
+      "type": "text",
+      "markdown": "### Static versus dynamic, strong versus weak\n\nThese are two independent axes and conflating them is the most common error in this material.\n\n**When is the check performed?**\n\n- *Static* — at compile time. Type errors are found before the program runs, but the checker must reject some programs that would in fact have run correctly.\n- *Dynamic* — at run time. Every value carries a tag, checked at the point of use.\n\n**How strictly are the rules enforced?**\n\n- *Strong* — the language refuses nonsensical operations rather than silently coercing. Python's `1 + \"2\"` raises `TypeError`.\n- *Weak* — the language coerces or reinterprets. C permits `(int *) &someDouble`, and JavaScript evaluates `1 + \"2\"` as `\"12\"`.\n\nAll four combinations exist: Java is static and comparatively strong, C is static and weak, Python is dynamic and comparatively strong, JavaScript is dynamic and weak."
+    },
+    {
+      "type": "text",
+      "markdown": "### Value semantics and reference semantics\n\nWhat does `b = a` mean? Under **value semantics** the value is copied, so `a` and `b` are independent afterwards. Under **reference semantics** the *reference* is copied, so both names denote the same object — they are **aliases** — and mutating one is observable through the other.\n\nGiven a list under reference semantics:\n\n```\na = [1, 2, 3]\nb = a          # b and a now reference the same list object\nb.append(4)\nprint(a)       # [1, 2, 3, 4]\n```\n\nTo get an independent object you must copy explicitly. A **shallow** copy duplicates the outer container but shares the nested objects; a **deep** copy duplicates recursively. Most languages mix the two disciplines: Java and Python both use value semantics for primitives and reference semantics for objects."
+    },
+    {
+      "type": "list",
+      "style": "number",
+      "items": [
+        "Fix the unit and the precision the domain requires — kobo, milliseconds, basis points — before you choose a type.",
+        "Choose the narrowest type whose range strictly contains every value the domain admits, then justify the headroom.",
+        "For money and any exact decimal quantity, use an integer of the smallest unit or a fixed-point decimal type, never a binary float.",
+        "Establish whether assignment copies the value or the reference, because that determines whether aliasing is possible.",
+        "State the invariant a variable must satisfy, and prefer a type that makes violating it unrepresentable."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Types are a proof obligation, not decoration",
+      "text": "Every type annotation you write is a claim the compiler will hold you to. Choosing a type that cannot represent an illegal state converts a class of run-time bug into a compile-time error, which is the cheapest place to find it."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A data type is a set of values together with the operations defined on them; a variable is a name bound to a location that holds one such value.",
+        "Primitive types have indivisible values; composite types aggregate them as products, sums, arrays or references.",
+        "A signed $n$-bit two's complement integer spans $-2^{n-1}$ to $2^{n-1} - 1$, and arithmetic outside that range wraps modulo $2^n$ silently.",
+        "IEEE 754 floating point stores binary fractions, so decimal values such as 0.1 are inexact and equality comparison is unsafe.",
+        "Static versus dynamic describes *when* types are checked; strong versus weak describes *how strictly* the rules are enforced. The axes are independent.",
+        "Under reference semantics assignment creates an alias, so mutation through one name is visible through the other."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Software Development Fundamentals", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

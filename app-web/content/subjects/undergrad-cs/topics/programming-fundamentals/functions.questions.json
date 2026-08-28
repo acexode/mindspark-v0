@@ -1,0 +1,218 @@
+{
+  "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+  "questions": [
+    {
+      "id": "ug.computer-science.programming-fundamentals.functions.q001",
+      "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.functions.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "What does **procedural abstraction** provide to a caller?",
+      "options": [
+        { "id": "a", "text": "A guarantee that the routine executes faster than inline code" },
+        { "id": "b", "text": "A specification of what the routine computes, allowing its implementation to be replaced without changing callers" },
+        { "id": "c", "text": "Automatic removal of duplicated statements from the source file" },
+        { "id": "d", "text": "A private copy of every global variable for the duration of the call" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Procedural abstraction separates the *what* from the *how*. The caller depends only on the contract — signature, precondition and postcondition — so any implementation satisfying that contract can be substituted. This is what makes independent testing and optimisation possible.",
+      "distractorRationale": {
+        "a": "A call has non-zero overhead; abstraction is a design benefit, not a performance one",
+        "c": "Reducing duplication is a *consequence* of factoring code into procedures, not what abstraction means",
+        "d": "Globals are shared, not copied; that is precisely why relying on them breaks the abstraction"
+      },
+      "misconceptionTags": ["procedural-abstraction"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.functions.q002",
+      "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.functions.o3"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which of the following is **not** normally stored in a function's activation record (stack frame)?",
+      "options": [
+        { "id": "a", "text": "The return address in the caller" },
+        { "id": "b", "text": "The function's parameters and local variables" },
+        { "id": "c", "text": "The machine instructions that make up the function body" },
+        { "id": "d", "text": "Saved register values belonging to the caller" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "An activation record holds the *per-call* state: arguments, locals, the return address, and saved caller registers. The instructions themselves live once in the read-only text segment and are shared by every call, which is exactly why a thousand simultaneous calls cost a thousand frames but only one copy of the code.",
+      "distractorRationale": {
+        "a": "The return address must be per-call, since different callers resume at different points",
+        "b": "Locals must be per-call, which is what makes recursion and reentrancy possible",
+        "d": "Callee-saved registers are spilled into the frame so the caller's values survive the call"
+      },
+      "misconceptionTags": ["activation-record", "memory-segments"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.functions.q003",
+      "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.functions.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A language uses **lexical (static) scoping**. What does this program print?\n\n`x = 10`\n`procedure g(): print(x)`\n`procedure f(): { var x = 20; g() }`\n`f()`",
+      "options": [
+        { "id": "a", "text": "10" },
+        { "id": "b", "text": "20" },
+        { "id": "c", "text": "Nothing — `x` is unbound inside `g`" },
+        { "id": "d", "text": "Both 10 and 20" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Under lexical scoping a free variable is resolved by searching the enclosing regions of *program text*, not the chain of active calls. `g` is written at top level, so its `x` binds to the global 10, regardless of who calls it. The local `x = 20` inside `f` is invisible to `g`. Printing 20 would require dynamic scoping, which almost no modern language uses because it destroys local reasoning.",
+      "distractorRationale": {
+        "b": "This is the dynamic-scoping answer: resolving `x` in the caller's active environment rather than the enclosing text",
+        "c": "The global binding is in scope throughout the program text, so `x` is bound",
+        "d": "`print` executes once, so exactly one value is output"
+      },
+      "misconceptionTags": ["lexical-vs-dynamic-scope"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.functions.q004",
+      "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.functions.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "In a strictly **pass-by-value** language, `procedure swap(a, b) { t = a; a = b; b = t }` is called as `swap(x, y)` with `x = 1` and `y = 2`. What are `x` and `y` afterwards?",
+      "options": [
+        { "id": "a", "text": "`x = 2`, `y = 1`" },
+        { "id": "b", "text": "`x = 1`, `y = 2`" },
+        { "id": "c", "text": "`x = 1`, `y = 1`" },
+        { "id": "d", "text": "`x = 2`, `y = 2`" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Pass-by-value copies each argument into a fresh parameter location in the callee's frame. `a` and `b` are those copies, so the swap rearranges values that are discarded when the frame is popped; `x` and `y` are untouched. To write a working swap you need pass-by-reference, an explicit pointer parameter, or a return of both values as a tuple.",
+      "distractorRationale": {
+        "a": "Assumes the parameters alias the arguments, which is pass-by-reference behaviour",
+        "c": "Describes the classic bug of omitting the temporary — but that would corrupt the local copies only, not the caller's variables",
+        "d": "Same aliasing assumption as option a, combined with a lost temporary"
+      },
+      "misconceptionTags": ["pass-by-value", "parameter-passing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.functions.q005",
+      "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.functions.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A language passes arguments by **object reference** (as Python and Java do for objects). `L = [1, 2, 3]`. Which call changes what `L` names as seen by the caller?\n\nI. `def f(v): v.append(4)`  —  `f(L)`\nII. `def g(v): v = [9]`  —  `g(L)`",
+      "options": [
+        { "id": "a", "text": "I only" },
+        { "id": "b", "text": "II only" },
+        { "id": "c", "text": "Both I and II" },
+        { "id": "d", "text": "Neither I nor II" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The parameter is a fresh name bound to the *same* object. In I, `append` mutates that shared object, so the caller observes `[1, 2, 3, 4]`. In II, the assignment rebinds the local parameter name to a different object; the caller's binding is unaffected and `L` remains `[1, 2, 3]`. Mutation propagates, rebinding does not.",
+      "distractorRationale": {
+        "b": "Inverts the rule — assignment to a parameter is exactly the operation that does *not* propagate",
+        "c": "Would be true under genuine pass-by-reference, where the parameter aliases the caller's variable itself",
+        "d": "Would be true under pure pass-by-value with a deep copy of the list"
+      },
+      "misconceptionTags": ["pass-by-object-reference", "mutation-vs-rebinding"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.functions.q006",
+      "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.functions.o3"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "`factorial(n)` returns 1 when `n = 0` and otherwise returns `n * factorial(n - 1)`. When `factorial(5)` is evaluated, how many activation records of `factorial` are simultaneously live on the stack at the deepest point? Give a number only.",
+      "correctValue": 6,
+      "explanation": "No call returns until the base case is reached, so all frames coexist at maximum depth. The live calls are `factorial(5)`, `factorial(4)`, `factorial(3)`, `factorial(2)`, `factorial(1)` and `factorial(0)` — that is $n + 1 = 6$ frames. This linear stack growth is why the space complexity of naive recursive factorial is $O(n)$, not $O(1)$.",
+      "misconceptionTags": ["recursion-depth", "stack-space"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.functions.q007",
+      "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.functions.o2", "ug.computer-science.programming-fundamentals.functions.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "What does this program print?\n\n`function makeCounter():`\n`    count = 0`\n`    function increment():`\n`        count = count + 1`\n`        return count`\n`    return increment`\n`c = makeCounter()`\n`c(); c(); print(c())`",
+      "options": [
+        { "id": "a", "text": "1" },
+        { "id": "b", "text": "3" },
+        { "id": "c", "text": "0" },
+        { "id": "d", "text": "An error, because `count` is out of scope once `makeCounter` returns" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "`increment` is a **closure**: it captures the binding of `count` from its defining environment, not a snapshot of its value. Because a live closure still refers to that binding, the environment outlives the activation record of `makeCounter` and is heap-allocated rather than discarded. The three calls increment the same shared `count`, so the third returns 3.",
+      "distractorRationale": {
+        "a": "Assumes `count` is re-initialised on each call, which would be true only if `count = 0` were inside `increment`",
+        "c": "Assumes the closure captures the value 0 by copy and never updates it",
+        "d": "Describes what would happen with pure stack allocation; closure capture is precisely the mechanism that prevents it"
+      },
+      "misconceptionTags": ["closures", "environment-capture"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.functions.q008",
+      "subtopicId": "ug.computer-science.programming-fundamentals.functions",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.functions.o1"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "A function is **referentially transparent** (pure). Which consequence follows directly?",
+      "options": [
+        { "id": "a", "text": "Any call can be replaced by its result value without changing program behaviour" },
+        { "id": "b", "text": "The function is guaranteed to terminate on every input" },
+        { "id": "c", "text": "The function needs no parameters" },
+        { "id": "d", "text": "The function cannot be recursive" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Referential transparency means the result depends only on the arguments and no observable side effect occurs, so a call and its value are interchangeable in every context. That single property is what licenses memoisation, common-subexpression elimination, safe reordering and parallel evaluation.",
+      "distractorRationale": {
+        "b": "Purity says nothing about termination; `f(n) = f(n) + 1` is pure and diverges",
+        "c": "A pure function typically has parameters — they are its only source of input",
+        "d": "Recursion is orthogonal to purity, and pure recursive functions are the norm in functional languages"
+      },
+      "misconceptionTags": ["referential-transparency", "side-effects"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

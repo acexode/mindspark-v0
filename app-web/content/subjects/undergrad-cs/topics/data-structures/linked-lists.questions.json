@@ -1,0 +1,211 @@
+{
+  "subtopicId": "ug.computer-science.data-structures.linked-lists",
+  "questions": [
+    {
+      "id": "ug.computer-science.data-structures.linked-lists.q001",
+      "subtopicId": "ug.computer-science.data-structures.linked-lists",
+      "objectiveIds": ["ug.computer-science.data-structures.linked-lists.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "What does a single node of a **singly** linked list contain?",
+      "options": [
+        { "id": "a", "text": "A payload and a reference to the next node" },
+        { "id": "b", "text": "A payload, a reference to the next node and a reference to the previous node" },
+        { "id": "c", "text": "A payload and its integer index within the list" },
+        { "id": "d", "text": "A payload and a reference to the head of the list" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "A singly linked node stores its payload plus exactly one link, to its successor; the final node's link is null. The absence of a backward link is precisely what makes traversal one-directional and what makes deleting a node awkward when you hold only a reference to that node.",
+      "distractorRationale": {
+        "b": "That is a doubly linked node, which pays an extra pointer per node for bidirectional traversal",
+        "c": "Nodes carry no index — positions are implicit in the chain, which is why indexing costs $O(n)$",
+        "d": "A link to the head would make every node a circular reference to the front and would not permit traversal at all"
+      },
+      "misconceptionTags": ["node-structure"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.linked-lists.q002",
+      "subtopicId": "ug.computer-science.data-structures.linked-lists",
+      "objectiveIds": ["ug.computer-science.data-structures.linked-lists.o3"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "What is the worst-case time complexity of retrieving the $k$-th element of a singly linked list of $n$ elements?",
+      "options": [
+        { "id": "a", "text": "$O(1)$" },
+        { "id": "b", "text": "$O(\\log n)$" },
+        { "id": "c", "text": "$O(n)$" },
+        { "id": "d", "text": "$O(k \\log n)$" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "Nodes are separately allocated, so there is no arithmetic relationship between a position and an address. Reaching position $k$ means following $k$ links from the head, and in the worst case $k = n - 1$, giving $O(n)$. This loss of random access is the price paid for cheap structural modification, and it is also why binary search cannot be run on a linked list.",
+      "distractorRationale": {
+        "a": "$O(1)$ indexing requires contiguous fixed-width storage, which a linked list does not have",
+        "b": "Bisection needs random access to the midpoint, which is unavailable here",
+        "d": "There is no logarithmic factor; the traversal is a single linear walk"
+      },
+      "misconceptionTags": ["sequential-access", "no-random-access"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.linked-lists.q003",
+      "subtopicId": "ug.computer-science.data-structures.linked-lists",
+      "objectiveIds": ["ug.computer-science.data-structures.linked-lists.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A new node `q` is to be inserted immediately after an existing node `p` in a singly linked list. Which sequence of assignments is correct?",
+      "options": [
+        { "id": "a", "text": "`q.next = p.next` then `p.next = q`" },
+        { "id": "b", "text": "`p.next = q` then `q.next = p.next`" },
+        { "id": "c", "text": "`p.next = q` then `q.next = p`" },
+        { "id": "d", "text": "`q.next = p` then `p.next = q.next`" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The tail of the list beyond `p` is reachable only through `p.next`, so that reference must be copied into `q.next` *before* `p.next` is overwritten. Sequence a preserves it; the general rule for all pointer surgery is to establish the new node's outgoing links first, then redirect the incoming link last.",
+      "distractorRationale": {
+        "b": "Overwrites `p.next` first, so the subsequent read of `p.next` already yields `q` — `q.next = q` creates a self-loop and the rest of the list is leaked",
+        "c": "Makes `q` point back at `p`, producing a two-node cycle and detaching the remainder of the list",
+        "d": "Points `q` backwards at `p` and then sets `p.next = p`, corrupting the list entirely"
+      },
+      "misconceptionTags": ["pointer-update-order", "dangling-reference"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.linked-lists.q004",
+      "subtopicId": "ug.computer-science.data-structures.linked-lists",
+      "objectiveIds": ["ug.computer-science.data-structures.linked-lists.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "You hold a reference to a node `x` in the middle of a **singly** linked list, but not to the head. What is the cost of removing `x` from the list?",
+      "options": [
+        { "id": "a", "text": "$O(1)$ — just set `x.next` to null" },
+        { "id": "b", "text": "$O(n)$ — the predecessor of `x` must be found by traversing from the head" },
+        { "id": "c", "text": "$O(\\log n)$ — bisect the list to find the predecessor" },
+        { "id": "d", "text": "Impossible without the head reference" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Removing `x` requires redirecting its predecessor's link past it, and a singly linked node offers no way to reach its predecessor, so it must be located by a linear scan from the head. In a **doubly** linked list the same removal is $O(1)$, because `x.prev` is available — this is exactly why LRU caches and intrusive kernel lists use doubly linked nodes.",
+      "distractorRationale": {
+        "a": "Nulling `x.next` truncates the list after `x` and leaves `x` itself still linked in",
+        "c": "Bisection requires random access, which a linked list does not provide",
+        "d": "It is possible: the copy-successor-then-delete-successor trick even achieves $O(1)$, though it fails when `x` is the tail and invalidates any external reference to the successor node"
+      },
+      "misconceptionTags": ["singly-vs-doubly-linked", "predecessor-access"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.linked-lists.q005",
+      "subtopicId": "ug.computer-science.data-structures.linked-lists",
+      "objectiveIds": ["ug.computer-science.data-structures.linked-lists.o3", "ug.computer-science.data-structures.linked-lists.o4"],
+      "type": "true_false",
+      "difficulty": 2,
+      "stem": "Inserting at the head is $O(1)$ for a singly linked list but $\\Theta(n)$ for an array holding $n$ elements.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "True. Head insertion in a linked list allocates a node, sets its `next` to the current head and updates the head reference — a constant number of operations independent of $n$. In an array, order is encoded as position, so all $n$ existing elements must shift one slot right. This asymmetry is the strongest argument for a linked list, and it holds for deletion at the head as well.",
+      "misconceptionTags": ["head-insertion", "array-vs-list-tradeoff"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.linked-lists.q006",
+      "subtopicId": "ug.computer-science.data-structures.linked-lists",
+      "objectiveIds": ["ug.computer-science.data-structures.linked-lists.o4"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "A **doubly** linked list holds 1000 nodes on a platform where every reference occupies 8 bytes. How many bytes are consumed by link fields alone? Give a number only.",
+      "correctValue": 16000,
+      "explanation": "Each doubly linked node carries two references, `next` and `prev`, so the link overhead per node is $2 \\times 8 = 16$ bytes, giving $1000 \\times 16 = 16000$ bytes in total. If the payload were a single 4-byte integer, the structure would spend four times as much memory on bookkeeping as on data — before allocator headers and alignment padding are even counted.",
+      "misconceptionTags": ["pointer-overhead", "space-complexity"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.linked-lists.q007",
+      "subtopicId": "ug.computer-science.data-structures.linked-lists",
+      "objectiveIds": ["ug.computer-science.data-structures.linked-lists.o2"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "The iterative reversal of a singly linked list uses three references. In the loop body `nxt = cur.next; cur.next = prev; prev = cur; cur = nxt`, why must `nxt = cur.next` come first?",
+      "options": [
+        { "id": "a", "text": "Because `cur.next` is about to be overwritten, and without a saved copy the remainder of the list becomes unreachable" },
+        { "id": "b", "text": "Because `prev` must be initialised before the loop begins" },
+        { "id": "c", "text": "Because reversal would otherwise take $O(n^2)$ time" },
+        { "id": "d", "text": "Because `cur.next` must be set to null before reassignment" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The only reference to the unprocessed tail is `cur.next`. The next statement redirects that field backwards to `prev`, so if the value has not been captured in `nxt` first, every node after `cur` is orphaned and the list is truncated after one pass. The reversal visits each node once and performs a constant number of assignments per node, so it is $\\Theta(n)$ time and $\\Theta(1)$ extra space.",
+      "distractorRationale": {
+        "b": "`prev` is initialised to null before the loop, which is true but has nothing to do with the ordering inside the body",
+        "c": "Ordering the statements wrongly produces an incorrect result, not a slower one",
+        "d": "No nulling is required; the old value of `cur.next` is needed, which is why it is saved rather than cleared"
+      },
+      "misconceptionTags": ["pointer-update-order", "list-reversal"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.linked-lists.q008",
+      "subtopicId": "ug.computer-science.data-structures.linked-lists",
+      "objectiveIds": ["ug.computer-science.data-structures.linked-lists.o1", "ug.computer-science.data-structures.linked-lists.o4"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "An LRU cache must support lookup by key, promotion of an entry to most-recently-used, and eviction of the least-recently-used entry, all in $O(1)$ expected time. Which structure achieves this?",
+      "options": [
+        { "id": "a", "text": "A dynamic array of entries ordered by recency" },
+        { "id": "b", "text": "A hash table mapping keys to nodes of a doubly linked list holding the recency order" },
+        { "id": "c", "text": "A singly linked list in recency order, scanned on each lookup" },
+        { "id": "d", "text": "A binary search tree keyed on last-access timestamp" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The hash table gives expected $O(1)$ lookup from key to node. Because the node is doubly linked, unlinking it from its current position and relinking it at the front is $O(1)$ — no predecessor search is needed. Eviction removes the tail node, also $O(1)$ via the `prev` link. Neither structure alone suffices: the hash table has no order and the list has no fast lookup.",
+      "distractorRationale": {
+        "a": "Promotion in an array requires shifting elements, which is $\\Theta(n)$",
+        "c": "Both the lookup and the predecessor search for unlinking are $\\Theta(n)$",
+        "d": "A BST gives $O(\\log n)$ rather than $O(1)$, and every access would additionally require a delete and reinsert to update the key"
+      },
+      "misconceptionTags": ["composite-data-structures", "lru-cache"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

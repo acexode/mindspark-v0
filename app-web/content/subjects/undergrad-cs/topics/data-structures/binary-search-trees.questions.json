@@ -1,0 +1,235 @@
+{
+  "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+  "questions": [
+    {
+      "id": "ug.computer-science.data-structures.binary-search-trees.q001",
+      "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+      "objectiveIds": ["ug.computer-science.data-structures.binary-search-trees.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A binary tree has root 50 with children 30 and 70; 30 has children 20 and 40; 70 has children 60 and 80; all four of 20, 40, 60, 80 are leaves. Taking height as the number of **edges** on the longest root-to-leaf path, what are the height and the number of leaves?",
+      "options": [
+        { "id": "a", "text": "Height 2, four leaves" },
+        { "id": "b", "text": "Height 3, four leaves" },
+        { "id": "c", "text": "Height 2, seven leaves" },
+        { "id": "d", "text": "Height 7, one leaf" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The longest root-to-leaf path is 50 → 30 → 20, which traverses two edges, so the height is 2. A leaf is a node with no children, and exactly four nodes qualify: 20, 40, 60 and 80. Beware the competing convention that counts *nodes* on the path and would give 3 — always state which convention you are using, and note that the perfect tree of height $h$ has $2^{h+1} - 1$ nodes, here $2^3 - 1 = 7$.",
+      "distractorRationale": {
+        "b": "Counts nodes on the longest path rather than edges",
+        "c": "Counts every node as a leaf; internal nodes 50, 30 and 70 have children",
+        "d": "Confuses the total node count with the height"
+      },
+      "misconceptionTags": ["tree-terminology", "height-convention"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.binary-search-trees.q002",
+      "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+      "objectiveIds": ["ug.computer-science.data-structures.binary-search-trees.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which statement is the **binary search tree ordering invariant**?",
+      "options": [
+        { "id": "a", "text": "The left child's key is less than the node's key and the right child's key is greater" },
+        { "id": "b", "text": "Every key in the node's entire left subtree is less than the node's key, and every key in its entire right subtree is greater" },
+        { "id": "c", "text": "The two subtrees of every node differ in height by at most one" },
+        { "id": "d", "text": "Every level of the tree is completely filled except possibly the last" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The invariant constrains whole subtrees, not just immediate children. That global scope is what licenses the search algorithm: on comparing the target with a node, one entire subtree can be discarded. A tree satisfying only the local condition in option a can still be searched incorrectly — for instance, root 50 with left child 30 whose right child is 60 is locally fine, yet searching for 60 would go right at the root and never find it.",
+      "distractorRationale": {
+        "a": "The classic local-only misconception; it permits trees in which search fails despite the key being present",
+        "c": "That is the AVL height-balance condition, an additional property that a BST need not have",
+        "d": "That is the definition of a complete binary tree, the shape property of a binary heap"
+      },
+      "misconceptionTags": ["bst-invariant", "local-vs-global-condition"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.binary-search-trees.q003",
+      "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+      "objectiveIds": ["ug.computer-science.data-structures.binary-search-trees.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Which traversal of a binary **search** tree visits the keys in non-decreasing order?",
+      "options": [
+        { "id": "a", "text": "Pre-order (node, left, right)" },
+        { "id": "b", "text": "In-order (left, node, right)" },
+        { "id": "c", "text": "Post-order (left, right, node)" },
+        { "id": "d", "text": "Level-order (breadth-first by depth)" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "In-order traversal emits everything smaller than a node, then the node, then everything larger — which is exactly what the BST invariant guarantees about its subtrees, so the output is sorted by induction. This gives a linear-time way to read a BST out in order, and it also gives an $O(n)$ check that a candidate tree really is a BST: verify the in-order output is strictly increasing.",
+      "distractorRationale": {
+        "a": "Pre-order emits the root first, so it starts with a middle-valued key; it is useful for serialising a tree's shape",
+        "c": "Post-order emits the root last; it is the correct order for deleting or evaluating a tree bottom-up",
+        "d": "Level-order groups by depth, which bears no relation to key order"
+      },
+      "misconceptionTags": ["traversal-orders"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.binary-search-trees.q004",
+      "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+      "objectiveIds": ["ug.computer-science.data-structures.binary-search-trees.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A BST has root 50; 50's children are 30 and 70; 30's children are 20 and 40; 70's children are 60 and 80. What is the **pre-order** traversal?",
+      "options": [
+        { "id": "a", "text": "20, 30, 40, 50, 60, 70, 80" },
+        { "id": "b", "text": "50, 30, 20, 40, 70, 60, 80" },
+        { "id": "c", "text": "20, 40, 30, 60, 80, 70, 50" },
+        { "id": "d", "text": "50, 30, 70, 20, 40, 60, 80" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Pre-order visits the node, then recurses left, then right. So: 50, then the left subtree rooted at 30 giving 30, 20, 40, then the right subtree rooted at 70 giving 70, 60, 80. Pre-order is the traversal used to serialise a tree, because re-inserting the keys in pre-order rebuilds the identical shape.",
+      "distractorRationale": {
+        "a": "This is the in-order traversal, which yields sorted output",
+        "c": "This is the post-order traversal, with each root emitted after both its subtrees",
+        "d": "This is the level-order (breadth-first) traversal, grouping nodes by depth"
+      },
+      "misconceptionTags": ["traversal-orders", "preorder"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.binary-search-trees.q005",
+      "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+      "objectiveIds": ["ug.computer-science.data-structures.binary-search-trees.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "For the same BST — root 50, children 30 and 70, with 30's children 20 and 40 and 70's children 60 and 80 — what is the **post-order** traversal?",
+      "options": [
+        { "id": "a", "text": "20, 40, 30, 60, 80, 70, 50" },
+        { "id": "b", "text": "50, 30, 20, 40, 70, 60, 80" },
+        { "id": "c", "text": "20, 30, 40, 50, 60, 70, 80" },
+        { "id": "d", "text": "80, 70, 60, 50, 40, 30, 20" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Post-order visits the left subtree, then the right subtree, then the node. The left subtree rooted at 30 yields 20, 40, 30; the right subtree rooted at 70 yields 60, 80, 70; the root 50 comes last. Post-order is the correct order for freeing a tree or evaluating an expression tree, because a node is processed only after everything it depends on.",
+      "distractorRationale": {
+        "b": "This is the pre-order traversal, emitting each root before its subtrees",
+        "c": "This is the in-order traversal, which is sorted",
+        "d": "This is the reverse in-order traversal (right, node, left), which yields descending order"
+      },
+      "misconceptionTags": ["traversal-orders", "postorder"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.binary-search-trees.q006",
+      "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+      "objectiveIds": ["ug.computer-science.data-structures.binary-search-trees.o2"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "In the BST with root 50, children 30 and 70, and 70's children 60 and 80, how many key comparisons does a search for 60 perform if each node visited counts as one comparison? Give a number only.",
+      "correctValue": 3,
+      "explanation": "The search compares at 50 (60 > 50, so go right), at 70 (60 < 70, so go left) and at 60 (equal, found) — three comparisons, one per node on the root-to-target path. In general the number of comparisons equals the depth of the target plus one, which is why BST search costs $O(h)$ where $h$ is the height, not $O(n)$.",
+      "misconceptionTags": ["bst-search-path", "height-dependent-cost"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.binary-search-trees.q007",
+      "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+      "objectiveIds": ["ug.computer-science.data-structures.binary-search-trees.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "The keys 10, 20, 30, 40, 50 are inserted into an initially empty **unbalanced** BST in ascending order. What are the resulting height (in edges) and the worst-case search cost?",
+      "options": [
+        { "id": "a", "text": "Height 2, search $O(\\log n)$" },
+        { "id": "b", "text": "Height 4, search $O(n)$" },
+        { "id": "c", "text": "Height 4, search $O(\\log n)$" },
+        { "id": "d", "text": "Height 1, search $O(1)$" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Every key is larger than all its predecessors, so each insertion becomes the right child of the previous node. The tree degenerates into a right-leaning chain: 10 → 20 → 30 → 40 → 50, with height $n - 1 = 4$. Search must walk the chain, so the cost is $\\Theta(n)$ — the structure has become a linked list with an extra unused pointer per node. This is precisely the failure that self-balancing trees such as AVL and red-black trees exist to prevent.",
+      "distractorRationale": {
+        "a": "Height 2 is what a *balanced* tree on five keys achieves; insertion order here forbids it",
+        "c": "Correctly identifies the degenerate height but then quotes the balanced cost; $O(\\log n)$ holds only when the height is $O(\\log n)$",
+        "d": "Would require all five keys at depth 1 or less, which a binary tree cannot do"
+      },
+      "misconceptionTags": ["degenerate-bst", "balance-matters"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.binary-search-trees.q008",
+      "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+      "objectiveIds": ["ug.computer-science.data-structures.binary-search-trees.o2", "ug.computer-science.data-structures.binary-search-trees.o4"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "In the BST with root 50, children 30 and 70, 30's children 20 and 40, and 70's children 60 and 80, the root 50 is deleted using the **in-order successor** convention. Which key becomes the new root?",
+      "options": [
+        { "id": "a", "text": "30" },
+        { "id": "b", "text": "40" },
+        { "id": "c", "text": "60" },
+        { "id": "d", "text": "70" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "The in-order successor of a node with a right subtree is the minimum key of that subtree — here the leftmost node under 70, which is 60. Copying 60 into the root and then deleting the original 60 (a leaf, so trivially removed) preserves the invariant, because 60 is greater than every key in the left subtree and less than every remaining key on the right. The symmetric alternative is the in-order predecessor, 40.",
+      "distractorRationale": {
+        "a": "30 is the left child, not the predecessor; promoting it would place 40 on the wrong side of the new root",
+        "b": "40 is the in-order *predecessor* — a valid alternative convention, but not the one the question specifies",
+        "d": "Promoting the right child 70 would leave 60 and 80 needing to be reinserted and does not preserve the invariant in general"
+      },
+      "misconceptionTags": ["bst-deletion", "inorder-successor"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.binary-search-trees.q009",
+      "subtopicId": "ug.computer-science.data-structures.binary-search-trees",
+      "objectiveIds": ["ug.computer-science.data-structures.binary-search-trees.o1", "ug.computer-science.data-structures.binary-search-trees.o4"],
+      "type": "numeric",
+      "difficulty": 3,
+      "stem": "What is the minimum possible height, measured in edges, of a binary tree containing exactly 15 nodes? Give a number only.",
+      "correctValue": 3,
+      "explanation": "A binary tree of height $h$ holds at most $2^{h+1} - 1$ nodes, achieved when every level is full. For 15 nodes we need $2^{h+1} - 1 \\ge 15$, so $2^{h+1} \\ge 16$ and $h \\ge 3$. Height 3 is attainable — the perfect tree on $2^4 - 1 = 15$ nodes — so the minimum is exactly 3. This bound is the source of the $O(\\log n)$ target: a balanced tree on $n$ keys has height $\\Theta(\\log n)$.",
+      "misconceptionTags": ["tree-height-bound", "perfect-binary-tree"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

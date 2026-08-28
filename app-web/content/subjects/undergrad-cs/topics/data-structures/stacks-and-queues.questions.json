@@ -1,0 +1,211 @@
+{
+  "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+  "questions": [
+    {
+      "id": "ug.computer-science.data-structures.stacks-and-queues.q001",
+      "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+      "objectiveIds": ["ug.computer-science.data-structures.stacks-and-queues.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "The operations `push(4)`, `push(9)`, `push(2)`, `pop()`, `push(7)`, `pop()` are applied to an initially empty stack. What does the **second** `pop()` return?",
+      "options": [
+        { "id": "a", "text": "2" },
+        { "id": "b", "text": "4" },
+        { "id": "c", "text": "7" },
+        { "id": "d", "text": "9" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "A stack is last-in-first-out, so `pop` always removes the most recent surviving push. After pushing 4, 9, 2 the top is 2, which the first `pop` removes. Pushing 7 then makes 7 the top, so the second `pop` returns 7. The stack afterwards holds 4 and 9 with 9 on top.",
+      "distractorRationale": {
+        "a": "2 was returned by the *first* pop, not the second",
+        "b": "4 is at the bottom and would be returned last under LIFO discipline",
+        "d": "9 becomes the top only *after* the second pop removes 7"
+      },
+      "misconceptionTags": ["lifo-discipline"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.stacks-and-queues.q002",
+      "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+      "objectiveIds": ["ug.computer-science.data-structures.stacks-and-queues.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A queue is initially empty. After `enqueue(A)`, `enqueue(B)`, `enqueue(C)`, `dequeue()`, `enqueue(D)`, `dequeue()`, which element is at the front?",
+      "options": [
+        { "id": "a", "text": "A" },
+        { "id": "b", "text": "B" },
+        { "id": "c", "text": "C" },
+        { "id": "d", "text": "D" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "A queue is first-in-first-out, so `dequeue` removes the oldest element. The contents evolve as [A, B, C] → [B, C] after the first dequeue → [B, C, D] after enqueuing D → [C, D] after the second dequeue. C is therefore at the front and D at the rear.",
+      "distractorRationale": {
+        "a": "A was removed by the first dequeue",
+        "b": "B was removed by the second dequeue",
+        "d": "D is the newest element, so under FIFO it is at the rear; it would be at the front only under LIFO discipline"
+      },
+      "misconceptionTags": ["fifo-discipline"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.stacks-and-queues.q003",
+      "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+      "objectiveIds": ["ug.computer-science.data-structures.stacks-and-queues.o3"],
+      "type": "numeric",
+      "difficulty": 3,
+      "stem": "Evaluate the postfix (reverse Polish) expression `5 3 2 * + 4 -` using a stack. Give the result as a number only.",
+      "correctValue": 7,
+      "explanation": "Push operands and, on each operator, pop two operands and push the result — taking care that the *first* value popped is the right-hand operand. Trace: push 5, 3, 2; `*` pops 2 then 3 and pushes $3 \\times 2 = 6$; `+` pops 6 then 5 and pushes $5 + 6 = 11$; push 4; `-` pops 4 then 11 and pushes $11 - 4 = 7$. The stack holds exactly one value, 7, which is the result. Postfix needs no parentheses because the operator order fixes the grouping.",
+      "misconceptionTags": ["postfix-evaluation", "operand-order"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.stacks-and-queues.q004",
+      "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+      "objectiveIds": ["ug.computer-science.data-structures.stacks-and-queues.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A parser checks that brackets are correctly nested using a stack: push each opening bracket, and on each closing bracket pop and compare. Which additional condition must be checked for the input to be accepted?",
+      "options": [
+        { "id": "a", "text": "Nothing further — matching every closing bracket is sufficient" },
+        { "id": "b", "text": "The stack must be empty when the input is exhausted" },
+        { "id": "c", "text": "The stack must contain exactly one item when the input is exhausted" },
+        { "id": "d", "text": "The total number of brackets must be even" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Two failure modes exist and the loop detects only one of them. A closing bracket with an empty stack or a mismatched top is caught inside the loop. But unclosed openings such as `([]` leave residue on the stack and never trigger a comparison, so acceptance requires the additional postcondition that the stack is empty at end of input.",
+      "distractorRationale": {
+        "a": "Accepts `([]`, which has every closing bracket matched but one opening bracket unclosed",
+        "c": "Would reject the correctly balanced `()`, whose stack is empty at the end",
+        "d": "An even count is necessary but not sufficient: `)(` has two brackets and is not balanced"
+      },
+      "misconceptionTags": ["delimiter-matching", "postcondition"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.stacks-and-queues.q005",
+      "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+      "objectiveIds": ["ug.computer-science.data-structures.stacks-and-queues.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A queue is implemented as a circular buffer over an array of capacity 8. The rear index is currently 7 and a slot is free. What is the rear index after the next `enqueue`?",
+      "options": [
+        { "id": "a", "text": "0" },
+        { "id": "b", "text": "8" },
+        { "id": "c", "text": "1" },
+        { "id": "d", "text": "7 — the buffer must be reallocated instead" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Indices advance modulo the capacity: $\\text{rear} = (\\text{rear} + 1) \\bmod 8 = (7 + 1) \\bmod 8 = 0$. Wrapping is what makes the circular buffer work — without it the queue would drift towards the end of the array and report itself full while low-numbered slots stood empty, which is the defect of the naive two-index implementation.",
+      "distractorRationale": {
+        "b": "Index 8 is out of bounds for a capacity-8 array; the modulo is exactly what prevents this",
+        "c": "Applies the modulo to the wrong quantity, as if the increment were 2",
+        "d": "Reallocation is needed only when the buffer is genuinely full, and the question states a slot is free"
+      },
+      "misconceptionTags": ["circular-buffer", "modular-indexing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.stacks-and-queues.q006",
+      "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+      "objectiveIds": ["ug.computer-science.data-structures.stacks-and-queues.o2"],
+      "type": "true_false",
+      "difficulty": 2,
+      "stem": "In a circular buffer that tracks only a front and a rear index, the completely full and completely empty states are indistinguishable, so an explicit count or one sacrificed slot is required.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "True. With $c$ slots there are $c + 1$ possible occupancies (0 to $c$) but only $c$ distinct values of the difference $(\\text{rear} - \\text{front}) \\bmod c$, so by counting alone two states must collide — and the colliding pair is full and empty, both giving $\\text{front} = \\text{rear}$. The two standard remedies are to store the element count explicitly, or to declare the buffer full at $c - 1$ elements so that $\\text{front} = \\text{rear}$ unambiguously means empty.",
+      "misconceptionTags": ["circular-buffer", "full-empty-ambiguity"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.stacks-and-queues.q007",
+      "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+      "objectiveIds": ["ug.computer-science.data-structures.stacks-and-queues.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A graph traversal keeps a frontier of discovered-but-unexplored vertices. Which choice of container yields which traversal?",
+      "options": [
+        { "id": "a", "text": "A stack gives breadth-first search; a queue gives depth-first search" },
+        { "id": "b", "text": "A queue gives breadth-first search; a stack gives depth-first search" },
+        { "id": "c", "text": "Both containers give breadth-first search; the difference is only in memory use" },
+        { "id": "d", "text": "Neither: the traversal order depends solely on the adjacency list ordering" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The frontier's removal discipline is the traversal. A queue removes the oldest discovered vertex, so the search finishes all vertices at distance $d$ before any at distance $d+1$ — that is breadth-first, and it is why BFS finds shortest paths in an unweighted graph. A stack removes the newest, so the search plunges along one branch until it dead-ends — that is depth-first. The two algorithms are otherwise identical code.",
+      "distractorRationale": {
+        "a": "Inverts the correspondence: LIFO deepens the search, FIFO widens it",
+        "c": "The orders differ fundamentally; only BFS visits vertices in non-decreasing distance from the source",
+        "d": "Adjacency ordering decides which sibling is visited first, but not whether the search proceeds by level or by branch"
+      },
+      "misconceptionTags": ["bfs-vs-dfs", "adt-selection"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.stacks-and-queues.q008",
+      "subtopicId": "ug.computer-science.data-structures.stacks-and-queues",
+      "objectiveIds": ["ug.computer-science.data-structures.stacks-and-queues.o1"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "The values 1, 2, 3, 4 are pushed onto a stack in that order, with `pop` operations interleaved freely. Which output sequence is **impossible**?",
+      "options": [
+        { "id": "a", "text": "4, 3, 2, 1" },
+        { "id": "b", "text": "3, 2, 1, 4" },
+        { "id": "c", "text": "2, 4, 3, 1" },
+        { "id": "d", "text": "4, 1, 2, 3" }
+      ],
+      "correctOptionId": "d",
+      "explanation": "For 4 to be output first, 1, 2 and 3 must all be on the stack with 3 on top, so the remaining outputs are forced to be 3, 2, 1. The sequence 4, 1, 2, 3 would require reaching 1 from the bottom of the stack while 2 and 3 sit above it, which LIFO forbids. The general rule is that a sequence is achievable exactly when no output value is followed later by two values in increasing order that were both pushed before it.",
+      "distractorRationale": {
+        "a": "Push 1, 2, 3, 4 then pop four times",
+        "b": "Push 1, 2, 3; pop three times; push 4; pop",
+        "c": "Push 1, 2; pop (2); push 3, 4; pop (4); pop (3); pop (1)"
+      },
+      "misconceptionTags": ["lifo-discipline", "achievable-permutations"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

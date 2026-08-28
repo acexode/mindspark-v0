@@ -1,0 +1,123 @@
+{
+  "id": "ug.computer-science.databases.relational-model.lesson",
+  "subtopicId": "ug.computer-science.databases.relational-model",
+  "title": "The Relational Model",
+  "estimatedMinutes": 18,
+  "objectiveIds": [
+    "ug.computer-science.databases.relational-model.o1",
+    "ug.computer-science.databases.relational-model.o2",
+    "ug.computer-science.databases.relational-model.o3",
+    "ug.computer-science.databases.relational-model.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Every table in a relational database is literally a relation in the mathematical sense — a subset of a Cartesian product. Every `SELECT DISTINCT` restores set semantics. Every primary key is an injective map from tuples to identifiers. The discrete mathematics you met earlier is not a prerequisite you pass and forget; it is the notation this entire subject is written in."
+    },
+    {
+      "type": "text",
+      "markdown": "## Relations, attributes and tuples\n\nCodd's **relational model** represents all data as **relations**. Given domains $D_1, D_2, \\dots, D_n$ — the sets of permitted values for each column — a relation is a subset of $D_1 \\times D_2 \\times \\dots \\times D_n$. Informally, a relation is a table.\n\n- An **attribute** is a named column. The named attribute set is the relation **schema**, written `Student(matricNo, name, deptCode, level)`.\n- A **tuple** is a row: one value drawn from each attribute's domain.\n- The **degree** of a relation is its number of attributes — a property of the *schema*, fixed by the design.\n- The **cardinality** of a relation is its number of tuples — a property of the *instance*, changing with every insertion and deletion.\n\nTwo consequences follow from the definition and catch students out. First, a relation is a **set**, so no two tuples may be identical and no tuple order is defined; if you need a particular order you must ask for it explicitly. Second, attributes are identified by name rather than position, so column order carries no meaning either."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Relation",
+      "text": "A finite subset of the Cartesian product of a list of domains, where each attribute draws its values from one domain. Domains are atomic: a single cell holds one indivisible value, never a list or a nested table."
+    },
+    {
+      "type": "text",
+      "markdown": "## Keys\n\nA key answers the question *which attributes let me pick out one specific tuple?* The definitions form a hierarchy, and the distinctions between them are examined constantly.\n\n- A **superkey** is any attribute set whose values uniquely identify each tuple. For `Student`, `{matricNo, name}` is a superkey, and so is the full attribute set — trivially, because relations contain no duplicate tuples.\n- A **candidate key** is a **minimal** superkey: removing any attribute from it destroys uniqueness. `{matricNo}` is a candidate key; `{matricNo, name}` is not, because `name` is redundant.\n- The **primary key** is the one candidate key the designer nominates as the official identifier. Entity integrity applies to it, and foreign keys reference it. Where several candidates exist — `matricNo` and `email`, say — the remaining ones are **alternate keys** and are usually declared `UNIQUE`.\n- A **composite key** is any key of two or more attributes. `Enrolment(matricNo, courseCode, session, score)` needs the composite `(matricNo, courseCode, session)` if a student may repeat a course in a later session.\n- A **foreign key** is an attribute set in one relation whose values must appear as primary key values in another (or the same) relation. `Student.deptCode` referencing `Department.deptCode` links a child to its parent.\n\nA foreign key is a *reference*, not an identifier: `Student.deptCode` says which department a student belongs to and is deliberately non-unique, since a department has many students."
+    },
+    {
+      "type": "table",
+      "headers": ["Key type", "Definition", "Example on `Student(matricNo, name, email, deptCode)`", "Unique?"],
+      "rows": [
+        ["Superkey", "Any uniquely identifying attribute set", "`{matricNo, name}`", "Yes"],
+        ["Candidate key", "Minimal superkey", "`{matricNo}`, `{email}`", "Yes"],
+        ["Primary key", "Nominated candidate key", "`matricNo`", "Yes, and non-NULL"],
+        ["Alternate key", "Candidate key not nominated", "`email`", "Yes"],
+        ["Foreign key", "Reference to a primary key elsewhere", "`deptCode` → `Department.deptCode`", "No — many students per department"]
+      ],
+      "caption": "The key hierarchy. Every candidate key is a superkey; only one candidate key becomes primary."
+    },
+    {
+      "type": "text",
+      "markdown": "## Integrity constraints\n\nConstraints are the rules the engine enforces so that no transaction can leave the database in a state the design forbids. Two are built into the model itself.\n\n**Entity integrity.** No attribute of a primary key may be NULL. The reason is not arbitrary: NULL means *unknown or inapplicable*, and comparison with an unknown value yields `UNKNOWN` rather than `TRUE`, so uniqueness could not be tested and the tuple could not be referenced. An insertion omitting any part of the primary key is therefore rejected.\n\n**Referential integrity.** Every non-NULL foreign key value must match an existing primary key value in the referenced relation. This forbids **dangling references** — a student row naming a department that does not exist. Note the asymmetry: the constraint runs from child to parent only, so a department with no students is perfectly legal.\n\nWhen an operation would break referential integrity, the declared policy decides the outcome:\n\n- `NO ACTION` / `RESTRICT` — reject the operation. The safe default.\n- `CASCADE` — propagate it, deleting or updating the dependent child rows too. Powerful and dangerous; a single delete can remove a great deal of data.\n- `SET NULL` — clear the reference in the children, which requires the foreign key column to be nullable.\n\nBeyond these, **domain constraints** restrict a column's permitted values (`level IN (100, 200, 300, 400)`) and **general constraints** express arbitrary business rules (`score BETWEEN 0 AND 100`)."
+    },
+    {
+      "type": "worked_example",
+      "title": "Identifying keys and locating an integrity violation",
+      "prompt": "A university keeps `Department(deptCode, deptName, facultyCode)` with `deptCode` unique and `deptName` also unique, and `Course(courseCode, title, credits, deptCode)` with `courseCode` unique and `deptCode` a foreign key to `Department`. Identify the candidate keys of each relation, choose primary keys, and give two distinct operations that would violate referential integrity.",
+      "steps": [
+        { "text": "Candidate keys of `Department`. Two attributes are stated unique, and each is minimal because it is a single attribute, so `{deptCode}` and `{deptName}` are both candidate keys. Choose `deptCode` as primary: it is short, stable and already used as the reference elsewhere. `deptName` becomes an alternate key, declared `UNIQUE`." },
+        { "text": "Candidate keys of `Course`. Only `courseCode` is stated unique, so `{courseCode}` is the sole candidate key and hence the primary key. `{title}` is not a candidate key — two departments may both offer a course titled 'Data Structures'." },
+        { "text": "Why `deptCode` is not a key of `Course`. A department offers many courses, so `deptCode` values repeat. It is a foreign key: a reference, not an identifier." },
+        { "text": "First violation — orphaning children. Deleting the `Department` row for 'CSC' while `Course` rows still carry `deptCode = 'CSC'` leaves those courses referencing a non-existent department. Under `RESTRICT` the delete is rejected; under `CASCADE` the courses are deleted with it." },
+        { "text": "Second violation — inserting an unmatched child. Inserting `Course('PHY301', 'Quantum Mechanics', 3, 'PHY')` when no `Department` row has `deptCode = 'PHY'` is rejected, because the foreign key value has no matching parent." },
+        { "text": "A non-violation, for contrast. Inserting a `Department` row that no course references breaks nothing. The constraint obliges children to have parents, never parents to have children." }
+      ],
+      "answer": "`Department`: candidate keys `{deptCode}` and `{deptName}`, primary key `deptCode`. `Course`: candidate key and primary key `{courseCode}`, with `deptCode` as a foreign key. Referential integrity is violated by deleting a department that still has courses, or by inserting a course whose `deptCode` has no matching department."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.databases.relational-model.q004"
+    },
+    {
+      "type": "text",
+      "markdown": "## Relational algebra\n\n**Relational algebra** is a procedural query language whose operators take relations as input and return a relation as output. That closure property is what makes operators composable, and the algebra is the formal target a query optimiser rewrites when it plans a SQL statement.\n\n- **Selection** $\\sigma_{P}(R)$ keeps the tuples of $R$ satisfying predicate $P$. A *horizontal* operation: cardinality may fall, degree is unchanged. SQL's `WHERE`.\n- **Projection** $\\pi_{A_1, \\dots, A_k}(R)$ keeps the named attributes. A *vertical* operation: degree falls, and cardinality may fall too, because dropping a distinguishing attribute can make tuples identical and a relation is a set. SQL's `SELECT DISTINCT`.\n- **Union** $R \\cup S$, **intersection** $R \\cap S$ and **difference** $R - S$ require the operands to be *union-compatible*: equal degree, with corresponding attributes drawn from the same domains.\n- **Rename** $\\rho_{S}(R)$ gives a relation or its attributes new names, which is what makes a self-join expressible.\n- **Cartesian product** $R \\times S$ pairs every tuple of $R$ with every tuple of $S$. Degrees add and cardinalities multiply, so $|R \\times S| = |R| \\cdot |S|$.\n- **Join** $R \\bowtie_{P} S$ is a product followed by a selection: $\\sigma_{P}(R \\times S)$. The **natural join** $R \\bowtie S$ equates all attributes the two schemas share and keeps one copy of each.\n\nDefining the join as product-then-select is correct but a poor implementation strategy. No engine materialises the product; it uses a nested-loop, hash or merge join to produce only the matching tuples. The algebra says *what* the answer is, the optimiser decides *how*."
+    },
+    {
+      "type": "math",
+      "latex": "R \\bowtie_{P} S = \\sigma_{P}(R \\times S), \\qquad |R \\times S| = |R| \\cdot |S|",
+      "caption": "A join is a filtered Cartesian product; the product's cardinality is the product of the cardinalities."
+    },
+    {
+      "type": "table",
+      "headers": ["Operator", "Notation", "Effect on degree", "Effect on cardinality", "SQL counterpart"],
+      "rows": [
+        ["Selection", "$\\sigma_{P}(R)$", "Unchanged", "Falls or unchanged", "`WHERE` clause"],
+        ["Projection", "$\\pi_{A}(R)$", "Falls", "Falls or unchanged (duplicates removed)", "`SELECT DISTINCT` list"],
+        ["Union", "$R \\cup S$", "Unchanged", "Up to $|R| + |S|$", "`UNION`"],
+        ["Difference", "$R - S$", "Unchanged", "At most $|R|$", "`EXCEPT`"],
+        ["Cartesian product", "$R \\times S$", "Sum of degrees", "$|R| \\cdot |S|$", "`CROSS JOIN`"],
+        ["Natural join", "$R \\bowtie S$", "Sum minus shared attributes", "At most $|R| \\cdot |S|$; equals $|R|$ for a many-to-one foreign key join", "`NATURAL JOIN` / `INNER JOIN ... USING`"]
+      ],
+      "caption": "Core relational algebra operators and their effect on the shape of the result."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Foreign key joins preserve child cardinality",
+      "text": "If every tuple of the child relation has a non-NULL foreign key matching exactly one parent, the join returns exactly one row per child tuple. So joining 480 students to 12 departments yields 480 rows, not 5760. Recognising this is the difference between trusting a join and fearing it."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "SQL tables are bags, not sets",
+      "text": "The formal model defines a relation as a set, so duplicate tuples cannot exist. SQL tables are multisets: duplicates are allowed unless a primary key or `UNIQUE` constraint forbids them, plain `SELECT` retains them, and `UNION ALL` preserves them. Whenever a query result surprises you, ask first whether set or bag semantics apply."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A relation is a set of tuples over named attributes; degree counts attributes and belongs to the schema, cardinality counts tuples and belongs to the instance.",
+        "A superkey identifies tuples uniquely; a candidate key is a minimal superkey; the primary key is the nominated candidate key; remaining candidates are alternate keys.",
+        "A foreign key references a primary key elsewhere and is deliberately non-unique — it expresses a relationship, not an identity.",
+        "Entity integrity forbids NULL in any primary key attribute, because an unknown value cannot be tested for uniqueness or referenced.",
+        "Referential integrity forbids dangling references; violations are handled by RESTRICT, CASCADE or SET NULL, and the constraint runs from child to parent only.",
+        "Selection filters rows and preserves the schema; projection selects columns and eliminates the duplicates it may create.",
+        "The Cartesian product adds degrees and multiplies cardinalities; a join is the product followed by a selection, though no engine implements it that way.",
+        "A many-to-one join across a foreign key returns exactly one row per child tuple, so it preserves the child relation's cardinality.",
+        "Formal relations are sets; SQL tables are bags, which is why DISTINCT exists."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Data Management knowledge area", "type": "syllabus" },
+      { "id": "nuc-bmas-cs", "title": "Nigerian Universities Commission Benchmark Minimum Academic Standards — Computer Science", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

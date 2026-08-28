@@ -1,0 +1,100 @@
+{
+  "id": "ug.computer-science.databases.sql-basics.lesson",
+  "subtopicId": "ug.computer-science.databases.sql-basics",
+  "title": "SQL: Querying Relational Data",
+  "estimatedMinutes": 18,
+  "objectiveIds": [
+    "ug.computer-science.databases.sql-basics.o1",
+    "ug.computer-science.databases.sql-basics.o2",
+    "ug.computer-science.databases.sql-basics.o3",
+    "ug.computer-science.databases.sql-basics.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "The registry's three normalised tables are useless until someone can ask them a question. SQL is that question language: a declarative notation in which you describe the result you want and the engine decides how to compute it. Every SELECT you write is a relational-algebra expression wearing a more readable coat."
+    },
+    {
+      "type": "text",
+      "markdown": "## SELECT: projection, filtering and order\n\nThe skeleton of a query is:\n\n```sql\nSELECT DISTINCT column_list\nFROM   table\nWHERE  predicate\nORDER BY column [ASC|DESC];\n```\n\n- The **SELECT list** is projection. Without `DISTINCT`, SQL tables are *bags* — duplicate rows survive. With `DISTINCT`, they behave like relations again.\n- **WHERE** is selection: a predicate evaluated per row. Only rows for which it is `TRUE` survive. `UNKNOWN` is not `TRUE`, which is why `WHERE score >= 40` silently drops rows whose `score` is NULL.\n- **ORDER BY** is *not* a relational-algebra operator. Relations have no order; the clause is a presentation instruction applied last.\n\nComparison operators (`=`, `<>`, `<`, `<=`, `>`, `>=`), `BETWEEN`, `IN`, `LIKE` (`%` any string, `_` one character) and the logical connectives `AND`, `OR`, `NOT` build predicates. `AND` binds tighter than `OR`; when in doubt, bracket."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Three-valued logic",
+      "text": "SQL predicates evaluate to TRUE, FALSE or UNKNOWN. Any comparison with NULL yields UNKNOWN, including `NULL = NULL`. Use `IS NULL` and `IS NOT NULL` to test for missing values; never `= NULL`."
+    },
+    {
+      "type": "text",
+      "markdown": "## Joins\n\nA join reconstructs the associations that normalisation split apart.\n\n```sql\nSELECT s.matricNo, s.name, e.courseCode, e.score\nFROM   Student s\nJOIN   Enrolment e ON s.matricNo = e.matricNo;\n```\n\n- **INNER JOIN** (plain `JOIN`) keeps only matching pairs. A student with no enrolment disappears; an enrolment whose matric number is missing from `Student` disappears too.\n- **LEFT OUTER JOIN** keeps every row of the left table. Non-matching right-side columns are padded with NULL. `Student LEFT JOIN Enrolment` lists every student, including those yet to register a course.\n- **RIGHT OUTER JOIN** is the symmetric case; **FULL OUTER JOIN** keeps unmatched rows from both sides.\n- **CROSS JOIN** is the Cartesian product: every row of A paired with every row of B. Cardinality multiplies. You almost never want it unfiltered.\n\nA join predicate belongs in `ON`. A filter that applies to the *result* belongs in `WHERE`. The difference is visible on outer joins: `WHERE e.score >= 70` after a left join turns it back into an inner join, because unmatched students have `score` NULL and fail the test. Write that condition in `ON` if you still want those students listed."
+    },
+    {
+      "type": "table",
+      "headers": ["Join", "Keeps unmatched left?", "Keeps unmatched right?", "Algebra"],
+      "rows": [
+        ["INNER JOIN", "No", "No", "Filtered Cartesian product"],
+        ["LEFT OUTER JOIN", "Yes (right cols NULL)", "No", "Inner join ∪ dangling left rows"],
+        ["RIGHT OUTER JOIN", "No", "Yes (left cols NULL)", "Inner join ∪ dangling right rows"],
+        ["FULL OUTER JOIN", "Yes", "Yes", "Union of left and right outers"],
+        ["CROSS JOIN", "Every pairing", "Every pairing", "Cartesian product"]
+      ],
+      "caption": "Which rows survive each join. Outer joins introduce NULLs; inner joins do not."
+    },
+    {
+      "type": "worked_example",
+      "title": "Students who have not enrolled in any course",
+      "prompt": "`Student(matricNo, name, deptCode)` and `Enrolment(matricNo, courseCode, score)` share `matricNo`. Write a query that returns the matric number and name of every student who currently has no enrolment row.",
+      "steps": [
+        { "text": "An inner join would drop exactly the rows we want, because those students have no match in `Enrolment`." },
+        { "text": "Left-join students to enrolments so unmatched students survive with NULL enrolment columns: `FROM Student s LEFT JOIN Enrolment e ON s.matricNo = e.matricNo`." },
+        { "text": "Keep only the unmatched ones by testing the right-side key for NULL: `WHERE e.matricNo IS NULL`. Testing `e.score IS NULL` would also catch enrolled students whose score has not been entered, which is a different question." },
+        { "text": "Project the student attributes only: `SELECT s.matricNo, s.name`. `DISTINCT` is unnecessary if `matricNo` is unique in `Student` and we filtered to rows with no enrolment." }
+      ],
+      "answer": "`SELECT s.matricNo, s.name FROM Student s LEFT JOIN Enrolment e ON s.matricNo = e.matricNo WHERE e.matricNo IS NULL;`"
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.databases.sql-basics.q004"
+    },
+    {
+      "type": "text",
+      "markdown": "## Aggregation, GROUP BY and HAVING\n\nAggregate functions collapse a set of rows into a scalar: `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`. `COUNT(*)` counts rows including those with NULLs; `COUNT(column)` ignores NULL in that column; `SUM` and `AVG` also ignore NULLs.\n\nWithout `GROUP BY`, the whole result is one group. With `GROUP BY deptCode`, each distinct department becomes a group, and the SELECT list may contain only grouping columns and aggregates.\n\n**HAVING** filters *groups*, after aggregation. **WHERE** filters *rows*, before grouping. You cannot mention `COUNT(*)` in WHERE; you can in HAVING.\n\n```sql\nSELECT deptCode, COUNT(*) AS n, AVG(score) AS mean\nFROM   Student s JOIN Enrolment e ON s.matricNo = e.matricNo\nWHERE  e.score IS NOT NULL\nGROUP BY deptCode\nHAVING COUNT(*) >= 10\nORDER BY mean DESC;\n```\n\nEvaluation order is the one that surprises people: `FROM` / `JOIN` → `WHERE` → `GROUP BY` → `HAVING` → `SELECT` → `DISTINCT` → `ORDER BY`. An alias defined in SELECT is therefore illegal in WHERE and, on many engines, in HAVING too."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "NULL in aggregates and groups",
+      "text": "SUM and AVG skip NULL. COUNT(*) does not. GROUP BY treats all NULLs as one group, so a missing deptCode produces a single extra bucket rather than one bucket per unknown department. Two NULLs are not equal under =, but they do group together — another of SQL's small cruelties."
+    },
+    {
+      "type": "text",
+      "markdown": "## Predicting results that involve NULL\n\nA comparison with NULL is UNKNOWN, and WHERE keeps only TRUE. So:\n\n- `WHERE score <> 0` drops both zeros *and* NULLs.\n- `WHERE NOT (score <> 0)` is not the complement of the previous filter, because rows with UNKNOWN fail both.\n- `WHERE score IN (40, 50, NULL)` is equivalent to `score = 40 OR score = 50 OR score = NULL`. The last term is UNKNOWN, so it never helps a row in — and a row whose score *is* NULL still fails, because `NULL = NULL` is UNKNOWN.\n\nThe safe tests are `IS NULL`, `IS NOT NULL`, and `COALESCE(score, 0)` when you genuinely want to treat missing as zero (rarely the right move for an exam score)."
+    },
+    {
+      "type": "callout",
+      "variant": "exam-tip",
+      "title": "Reading a query in exam conditions",
+      "text": "Rewrite the query in evaluation order, not in the order it is written. Start with the product of the FROM items, apply ON, then WHERE, then group, then HAVING, then the SELECT list. When NULL appears, ask 'is this comparison UNKNOWN?' before you decide whether the row survives. For joins, draw two tiny instance tables and walk one pair at a time."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "SELECT projects, WHERE selects, ORDER BY only sorts the presentation; DISTINCT restores set semantics.",
+        "Comparisons with NULL yield UNKNOWN; WHERE keeps TRUE only; test missing values with IS NULL.",
+        "INNER JOIN drops unmatched rows; LEFT JOIN keeps the left table and pads the right with NULL.",
+        "A WHERE predicate on the inner table of a left join can silently turn it into an inner join — put that predicate in ON if you still want unmatched left rows.",
+        "WHERE filters rows before grouping; HAVING filters groups after aggregation; SELECT aliases are not visible to WHERE.",
+        "COUNT(*) counts rows; COUNT(column), SUM and AVG ignore NULL; GROUP BY collapses all NULLs into one group."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Data Management knowledge area", "type": "syllabus" },
+      { "id": "nuc-bmas-cs", "title": "Nigerian Universities Commission Benchmark Minimum Academic Standards — Computer Science", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

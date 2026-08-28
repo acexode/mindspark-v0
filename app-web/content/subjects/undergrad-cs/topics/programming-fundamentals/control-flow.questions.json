@@ -1,0 +1,211 @@
+{
+  "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+  "questions": [
+    {
+      "id": "ug.computer-science.programming-fundamentals.control-flow.q001",
+      "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.control-flow.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Trace this nested selection with `x = 5` and `y = 20`. What is the final value of `r`?\n\n`if x > 10: { if y > 10: r = 1 else: r = 2 } else: { if y > 10: r = 3 else: r = 4 }`",
+      "options": [
+        { "id": "a", "text": "1" },
+        { "id": "b", "text": "2" },
+        { "id": "c", "text": "3" },
+        { "id": "d", "text": "4" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "Evaluate the outer condition first: `x > 10` is `5 > 10`, which is false, so control enters the outer `else` branch. Inside it, `y > 10` is `20 > 10`, which is true, so `r = 3`. The inner tests in the discarded branch are never evaluated at all.",
+      "distractorRationale": {
+        "a": "Takes the `then` branch of both tests, ignoring that `x > 10` is false",
+        "b": "Evaluates the outer test correctly as false but then follows the inner `else`, ignoring that `y > 10` is true",
+        "d": "Follows the `else` branch at both levels, treating `y > 10` as false"
+      },
+      "misconceptionTags": ["nested-selection-tracing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.control-flow.q002",
+      "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.control-flow.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A program must read lines from a file until it reaches a sentinel line reading `END`. Which iteration construct is appropriate, and why?",
+      "options": [
+        { "id": "a", "text": "A counting `for` loop, because file reading is always definite iteration" },
+        { "id": "b", "text": "A `while` loop, because the number of iterations is not known before the loop begins" },
+        { "id": "c", "text": "A `for` loop over the integers 1 to 1000, because files are bounded in size" },
+        { "id": "d", "text": "Recursion, because loops cannot test a condition on data read inside the body" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "This is **indefinite iteration**: the trip count depends on data discovered during execution, so it cannot be computed in advance. A condition-controlled `while` loop is the correct construct. A counting `for` loop expresses **definite iteration**, where the trip count is fixed before the first iteration.",
+      "distractorRationale": {
+        "a": "Iterating a file line by line is definite only when the line count is known beforehand, which it is not here",
+        "c": "An arbitrary upper bound is a guess; it either truncates a long file or performs useless iterations",
+        "d": "Recursion would work but is not required — a `while` loop tests its condition on data read in the previous iteration perfectly well"
+      },
+      "misconceptionTags": ["definite-vs-indefinite-iteration"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.control-flow.q003",
+      "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.control-flow.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "How many times does the statement `count = count + 1` execute?\n\n`for i = 1 to n:`\n`    for j = i to n:`\n`        count = count + 1`",
+      "options": [
+        { "id": "a", "text": "$n^2$" },
+        { "id": "b", "text": "$\\frac{n(n+1)}{2}$" },
+        { "id": "c", "text": "$\\frac{n(n-1)}{2}$" },
+        { "id": "d", "text": "$2n$" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The inner loop starts at $j = i$, not at 1, so for a given $i$ it executes $n - i + 1$ times. Summing over $i = 1, \\dots, n$ gives $n + (n-1) + \\dots + 1 = \\frac{n(n+1)}{2}$. Note that this is still $\\Theta(n^2)$ — halving the constant does not change the growth class.",
+      "distractorRationale": {
+        "a": "Assumes the inner loop always runs $n$ times, which would be correct only if it started at $j = 1$",
+        "c": "Off by one: this counts $n - i$ iterations per pass, forgetting that $j = i$ itself is executed",
+        "d": "Adds the two loop bounds instead of summing the nested trip counts"
+      },
+      "misconceptionTags": ["nested-loop-counting", "off-by-one"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.control-flow.q004",
+      "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.control-flow.o1"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "For a positive integer `n`, how many times does the body of `for (i = 0; i <= n; i = i + 1)` execute?",
+      "options": [
+        { "id": "a", "text": "$n - 1$" },
+        { "id": "b", "text": "$n$" },
+        { "id": "c", "text": "$n + 1$" },
+        { "id": "d", "text": "$n + 2$" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "The counter takes every integer value from 0 to $n$ inclusive, and the number of integers in the closed interval $[0, n]$ is $n + 1$. This is the classic fence-post error: the half-open form `i < n` runs $n$ times, whereas the closed form `i <= n` runs one extra time and will index one past the end of an $n$-element array.",
+      "distractorRationale": {
+        "a": "Counts the interval as open at both ends",
+        "b": "Applies the trip count of the half-open idiom `i < n` to a closed condition",
+        "d": "Adds the fence post twice"
+      },
+      "misconceptionTags": ["off-by-one", "fence-post-error"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.control-flow.q005",
+      "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.control-flow.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "What is a **loop invariant**?",
+      "options": [
+        { "id": "a", "text": "A variable whose value never changes anywhere inside the loop body" },
+        { "id": "b", "text": "A condition that holds before the first iteration and is preserved by every iteration" },
+        { "id": "c", "text": "The condition that causes the loop to terminate" },
+        { "id": "d", "text": "The number of iterations the loop will perform" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "An invariant is an assertion true at the loop's entry point on every pass. Proving a loop correct requires three parts: **initialisation** (the invariant holds before the first iteration), **maintenance** (if it holds at the start of an iteration it holds at the start of the next), and **termination** (when the loop exits, the invariant plus the negated guard imply the desired postcondition).",
+      "distractorRationale": {
+        "a": "Confuses an invariant with a loop constant. A useful invariant almost always mentions variables that do change, such as \"`sum` equals the total of the first `i` elements\"",
+        "c": "That is the negation of the loop guard, which is used alongside the invariant at termination, not in place of it",
+        "d": "That is the trip count or a loop variant, used to prove termination rather than partial correctness"
+      },
+      "misconceptionTags": ["loop-invariant"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.control-flow.q006",
+      "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.control-flow.o1"],
+      "type": "true_false",
+      "difficulty": 2,
+      "stem": "In a language with short-circuit `&&`, the guard `if (i < n && a[i] == target)` is safe when `i` equals `n`, but `if (a[i] == target && i < n)` is not.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "True. Short-circuit `&&` evaluates its right operand only if the left operand is true. In the first form, `i < n` is false when `i == n`, so `a[i]` is never evaluated and the out-of-bounds access cannot occur. In the second form the index expression is evaluated first, so it reads `a[n]` before the bound is ever tested. Ordering a short-circuit conjunction so the guard precedes the guarded expression is a correctness requirement, not a style preference.",
+      "misconceptionTags": ["short-circuit-evaluation", "operand-order"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.control-flow.q007",
+      "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.control-flow.o4"],
+      "type": "numeric",
+      "difficulty": 3,
+      "stem": "The loop `while (n > 1) { n = floor(n / 2); k = k + 1 }` starts with `n = 1000` and `k = 0`. What is the final value of `k`? Give a number only.",
+      "correctValue": 9,
+      "explanation": "The sequence of values `n` takes is 1000, 500, 250, 125, 62, 31, 15, 7, 3, 1, so the body executes nine times. In general a halving loop from $n$ performs $\\lfloor \\log_2 n \\rfloor$ iterations, and $\\lfloor \\log_2 1000 \\rfloor = 9$ because $2^9 = 512 \\le 1000 < 1024 = 2^{10}$. This is why halving loops are $O(\\log n)$.",
+      "misconceptionTags": ["logarithmic-loop", "integer-division"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.control-flow.q008",
+      "subtopicId": "ug.computer-science.programming-fundamentals.control-flow",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.control-flow.o1"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "What is the final value of `total`?\n\n`total = 0`\n`for i = 1 to 6:`\n`    if i mod 2 == 0: continue`\n`    if i > 4: break`\n`    total = total + i`",
+      "options": [
+        { "id": "a", "text": "4" },
+        { "id": "b", "text": "6" },
+        { "id": "c", "text": "9" },
+        { "id": "d", "text": "21" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "`continue` skips the rest of the current iteration and advances the counter; `break` exits the loop entirely. So $i = 1$ adds 1 (total 1); $i = 2$ is even and is skipped; $i = 3$ adds 3 (total 4); $i = 4$ is skipped; $i = 5$ is odd but $5 > 4$, so the loop breaks before the addition. The final total is 4.",
+      "distractorRationale": {
+        "b": "Sums the even values 2 and 4, inverting the `mod 2 == 0` test",
+        "c": "Sums 1, 3 and 5, treating `break` as `continue` and adding 5 before exiting",
+        "d": "Sums every value from 1 to 6, ignoring both `continue` and `break`"
+      },
+      "misconceptionTags": ["break-vs-continue", "loop-tracing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

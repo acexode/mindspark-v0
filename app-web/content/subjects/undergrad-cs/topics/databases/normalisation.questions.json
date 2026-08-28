@@ -1,0 +1,278 @@
+{
+  "subtopicId": "ug.computer-science.databases.normalisation",
+  "questions": [
+    {
+      "id": "ug.computer-science.databases.normalisation.q001",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "The functional dependency $X \\rightarrow Y$ holds in a relation $R$. What exactly does this assert?",
+      "options": [
+        { "id": "a", "text": "Any two tuples of $R$ that agree on $X$ must also agree on $Y$" },
+        { "id": "b", "text": "Any two tuples of $R$ that agree on $Y$ must also agree on $X$" },
+        { "id": "c", "text": "$X$ and $Y$ are both candidate keys of $R$" },
+        { "id": "d", "text": "$X$ is a foreign key in $R$ referencing $Y$ in another relation" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "A functional dependency is a constraint on *every legal instance* of the relation: if $t_1[X] = t_2[X]$ then necessarily $t_1[Y] = t_2[Y]$. In other words $X$ *determines* $Y$ — knowing the $X$ value fixes the $Y$ value. Note two things. The dependency is a statement about the meaning of the data, not about the rows that happen to be stored today, so you establish it from the domain rather than by inspecting an instance. And it is directional: $X \\rightarrow Y$ says nothing about whether $Y \\rightarrow X$.",
+      "distractorRationale": {
+        "b": "Reverses the arrow; $X \\rightarrow Y$ and $Y \\rightarrow X$ are independent claims and only one may hold",
+        "c": "Confuses dependency with key-hood; $X$ need not identify tuples uniquely, only determine $Y$",
+        "d": "Describes a foreign key, an inter-relation reference rather than an intra-relation dependency"
+      },
+      "misconceptionTags": ["functional-dependency", "fd-direction"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.normalisation.q002",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A single table stores `Enrolment(matricNo, courseCode, studentName, score)`, so a student's name is repeated in every row for every course she takes. She changes her surname, and only some of those rows are updated. Which anomaly is this?",
+      "options": [
+        { "id": "a", "text": "An update anomaly" },
+        { "id": "b", "text": "An insertion anomaly" },
+        { "id": "c", "text": "A deletion anomaly" },
+        { "id": "d", "text": "A referential integrity violation" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "An update anomaly arises when one real-world fact is stored redundantly in many places, so changing it requires many synchronised writes. Miss one and the database now holds two contradictory answers to the same question, with no principled way to say which is right. The cure is not discipline or a trigger but decomposition: store the name once in a `Student` relation and let `Enrolment` reference it by `matricNo`.",
+      "distractorRationale": {
+        "b": "An insertion anomaly is being unable to record a fact — such as a new student with no enrolments yet",
+        "c": "A deletion anomaly is losing an unrelated fact as a side effect of a legitimate deletion",
+        "d": "No foreign key is involved; the redundancy sits inside a single relation"
+      },
+      "misconceptionTags": ["update-anomaly", "redundancy"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.normalisation.q003",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o3"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A `Student` table has a `phoneNumbers` column holding values such as `'08031234567, 08079876543'`. Which normal form does this violate, and why?",
+      "options": [
+        { "id": "a", "text": "First normal form, because the column value is not atomic" },
+        { "id": "b", "text": "Second normal form, because of a partial dependency" },
+        { "id": "c", "text": "Third normal form, because of a transitive dependency" },
+        { "id": "d", "text": "No normal form is violated; the value is a single string" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "First normal form requires every attribute value to be atomic — one indivisible value from the domain, with no lists, repeating groups or nested structure. Packing two numbers into one string breaks this, and the practical consequences are immediate: you cannot index a phone number, cannot join on one, and must resort to string parsing to answer 'who owns 08031234567?'. The fix is a separate `StudentPhone(matricNo, phoneNumber)` relation with `(matricNo, phoneNumber)` as its key, giving one tuple per number.",
+      "distractorRationale": {
+        "b": "Partial dependency concerns non-prime attributes depending on part of a composite key, not the internal structure of a value",
+        "c": "Transitive dependency concerns one non-prime attribute determining another",
+        "d": "It is stored as one string, but it *represents* two facts — and 1NF constrains meaning, not storage type"
+      },
+      "misconceptionTags": ["first-normal-form", "atomicity"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.normalisation.q004",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "`Enrolment(matricNo, courseCode, courseTitle, lecturer, score)` is the only place course titles and lecturers are stored. The last student enrolled in CSC401 withdraws, so that row is deleted. What has gone wrong?",
+      "options": [
+        { "id": "a", "text": "A deletion anomaly: the title and lecturer of CSC401 have been lost as a side effect" },
+        { "id": "b", "text": "An update anomaly: the remaining rows now hold inconsistent titles" },
+        { "id": "c", "text": "Nothing: deleting a withdrawn enrolment is exactly the intended behaviour" },
+        { "id": "d", "text": "A 1NF violation: the relation now has a repeating group" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Two independent facts — 'this student takes this course' and 'CSC401 is titled X and taught by Y' — are stored in the same tuple, so deleting one destroys the other. That is a deletion anomaly, and it is the clearest symptom that a relation is describing more than one entity. Decomposing into `Course(courseCode, courseTitle, lecturer)` and `Enrolment(matricNo, courseCode, score)` lets the course survive the loss of its last student.",
+      "distractorRationale": {
+        "b": "No inconsistency has been introduced; information has been lost outright",
+        "c": "Deleting the enrolment is intended, but silently losing the course record is not",
+        "d": "All values remain atomic; the fault is in what the relation bundles together, not in a value"
+      },
+      "misconceptionTags": ["deletion-anomaly", "mixed-entities"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.normalisation.q005",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "In `Enrolment(matricNo, courseCode, studentName, score)` the only candidate key is `(matricNo, courseCode)`, and `matricNo` $\\rightarrow$ `studentName` holds. All values are atomic. What is the highest normal form this relation satisfies?",
+      "options": [
+        { "id": "a", "text": "1NF only" },
+        { "id": "b", "text": "2NF but not 3NF" },
+        { "id": "c", "text": "3NF but not BCNF" },
+        { "id": "d", "text": "BCNF" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "`studentName` is non-prime (it belongs to no candidate key) and it depends on `matricNo`, which is a *proper subset* of the only candidate key. That is a partial dependency, so 2NF fails and 1NF — satisfied, since all values are atomic — is the highest form reached. The practical reading of the failure is that `studentName` is a fact about the student alone, yet it is stored in a relation keyed by student *and* course, so it is repeated once per enrolment. Splitting off `Student(matricNo, studentName)` removes the partial dependency and reaches BCNF.",
+      "distractorRationale": {
+        "b": "2NF requires no partial dependency, and `matricNo` $\\rightarrow$ `studentName` is exactly one",
+        "c": "3NF is strictly stronger than 2NF, so it cannot hold where 2NF fails",
+        "d": "BCNF requires every non-trivial determinant to be a superkey, and `matricNo` alone is not"
+      },
+      "misconceptionTags": ["second-normal-form", "partial-dependency"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.normalisation.q006",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "In `Student(matricNo, name, deptCode, deptName)` the only candidate key is `matricNo`, and `deptCode` $\\rightarrow$ `deptName` holds. All values are atomic. What is the highest normal form satisfied?",
+      "options": [
+        { "id": "a", "text": "1NF only" },
+        { "id": "b", "text": "2NF but not 3NF" },
+        { "id": "c", "text": "3NF but not BCNF" },
+        { "id": "d", "text": "BCNF" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "2NF holds automatically here: the candidate key is a single attribute, so it has no proper non-empty subset and a partial dependency is impossible. But `matricNo` $\\rightarrow$ `deptCode` $\\rightarrow$ `deptName` makes `deptName` transitively dependent on the key through the non-prime attribute `deptCode`, which 3NF forbids. Hence 2NF is the highest form. The redundancy is visible in the data: every student in Computer Science repeats the full department name. Decomposing into `Student(matricNo, name, deptCode)` and `Department(deptCode, deptName)` stores it once.",
+      "distractorRationale": {
+        "a": "Understates the case; 2NF cannot fail when the candidate key is a single attribute",
+        "c": "3NF is precisely what the transitive dependency breaks",
+        "d": "BCNF is stronger than 3NF, so it also fails"
+      },
+      "misconceptionTags": ["third-normal-form", "transitive-dependency"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.normalisation.q007",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "Relation `Tutorial(student, subject, tutor)` obeys two rules: each tutor teaches exactly one subject, and for a given student and subject there is exactly one tutor. So the functional dependencies are `(student, subject)` $\\rightarrow$ `tutor` and `tutor` $\\rightarrow$ `subject`, and the candidate keys are `(student, subject)` and `(student, tutor)`. Which statement is correct?",
+      "options": [
+        { "id": "a", "text": "The relation is in 3NF but not in BCNF, because `tutor` determines `subject` without being a superkey" },
+        { "id": "b", "text": "The relation is in BCNF, because every attribute belongs to some candidate key" },
+        { "id": "c", "text": "The relation fails 2NF, because `tutor` $\\rightarrow$ `subject` is a partial dependency" },
+        { "id": "d", "text": "The relation fails 1NF, because it has two candidate keys" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "This is the textbook relation that separates 3NF from BCNF. BCNF demands that the left side of every non-trivial dependency be a superkey; `tutor` is not, so BCNF fails. 3NF is more forgiving: it permits a dependency whose right side is a *prime* attribute, and `subject` is prime because it belongs to the candidate key `(student, subject)`. So 3NF holds. The trade-off matters in practice — the only BCNF decomposition, into `(student, tutor)` and `(tutor, subject)`, is lossless but no longer enforces `(student, subject)` $\\rightarrow$ `tutor` within a single relation, so it is not dependency-preserving. This is why 3NF is often where designers stop.",
+      "distractorRationale": {
+        "b": "Every attribute being prime satisfies 3NF, not BCNF; BCNF constrains determinants, not attributes",
+        "c": "A partial dependency has part of a candidate key on the left, and `tutor` is a whole candidate key attribute set only in combination with `student`",
+        "d": "1NF concerns atomic values; multiple candidate keys are perfectly normal"
+      },
+      "misconceptionTags": ["bcnf", "3nf-vs-bcnf", "prime-attribute", "dependency-preservation"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.normalisation.q008",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "`Enrolment(matricNo, courseCode, studentName, courseTitle, lecturer, score)` has candidate key `(matricNo, courseCode)`, with `matricNo` $\\rightarrow$ `studentName` and `courseCode` $\\rightarrow$ `courseTitle, lecturer`. Which decomposition is in 3NF and lossless?",
+      "options": [
+        { "id": "a", "text": "`Student(matricNo, studentName)`, `Course(courseCode, courseTitle, lecturer)`, `Enrolment(matricNo, courseCode, score)`" },
+        { "id": "b", "text": "`Student(matricNo, studentName, courseCode)`, `Course(courseCode, courseTitle, lecturer, score)`" },
+        { "id": "c", "text": "`Student(matricNo, studentName)`, `Course(courseCode, courseTitle, lecturer)`, `Score(matricNo, score)`" },
+        { "id": "d", "text": "`People(matricNo, studentName, lecturer)`, `Enrolment(matricNo, courseCode, courseTitle, score)`" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "The rule of thumb is one relation per determinant: give each left-hand side its own relation carrying the attributes it determines, and keep a relation on the full key for what genuinely depends on the whole key. `studentName` follows `matricNo`, the title and lecturer follow `courseCode`, and only `score` depends on both — so three relations result, each in BCNF. The decomposition is lossless because `Enrolment` retains the full original key and each fragment joins back through a determinant that is the key of its own relation.",
+      "distractorRationale": {
+        "b": "Puts `score` under `courseCode` alone, which cannot identify a score, and leaves `courseCode` in `Student` where a student has many courses",
+        "c": "`Score(matricNo, score)` drops `courseCode`, so a student with several courses has several indistinguishable scores — lossy",
+        "d": "Groups `lecturer` with students, misattributing a course fact, and keeps `courseTitle` transitively dependent inside `Enrolment`"
+      },
+      "misconceptionTags": ["decomposition", "lossless-join", "third-normal-form"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.normalisation.q009",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o4"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "`Result(matricNo, courseCode, score)` has candidate key `(matricNo, courseCode)` and no other dependencies. It is decomposed into `R1(matricNo, courseCode)` and `R2(matricNo, score)`. Why is this decomposition **lossy**?",
+      "options": [
+        { "id": "a", "text": "The common attribute `matricNo` is a superkey of neither fragment, so rejoining fabricates score-to-course pairings that were never recorded" },
+        { "id": "b", "text": "It is not lossy; every original tuple can still be recovered from the join" },
+        { "id": "c", "text": "It is lossy because `R2` has fewer attributes than the original relation" },
+        { "id": "d", "text": "It is lossy because `score` is not part of any candidate key" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "A binary decomposition is lossless exactly when the shared attributes form a superkey of at least one fragment. Here the shared attribute is `matricNo`, which is a superkey of neither. Take a student with rows (S1, CSC101, 70) and (S1, CSC201, 45). `R1` holds both pairs and `R2` holds both scores, but the association between them is gone, so the natural join on `matricNo` yields four tuples — including the spurious (S1, CSC101, 45). Note the direction of the failure: information is lost through the *appearance of extra tuples*, because a join can no longer tell which score belonged to which course.",
+      "distractorRationale": {
+        "b": "Every original tuple does reappear, but so do spurious ones, and a result you cannot trust has lost information",
+        "c": "Every fragment of a decomposition has fewer attributes; that alone says nothing about losslessness",
+        "d": "Non-prime attributes are normal, and the correct decomposition into `(matricNo, courseCode, score)` keeps `score` non-prime while staying lossless"
+      },
+      "misconceptionTags": ["lossy-decomposition", "spurious-tuples", "lossless-join-condition"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.normalisation.q010",
+      "subtopicId": "ug.computer-science.databases.normalisation",
+      "objectiveIds": ["ug.computer-science.databases.normalisation.o3"],
+      "type": "true_false",
+      "difficulty": 2,
+      "stem": "Every relation in BCNF is necessarily also in 3NF.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "True. The normal forms are nested: BCNF $\\subset$ 3NF $\\subset$ 2NF $\\subset$ 1NF, each being strictly stronger than the next. BCNF requires the determinant of every non-trivial dependency to be a superkey, which rules out both the partial dependencies 2NF forbids and the transitive dependencies 3NF forbids. The converse fails, as `Tutorial(student, subject, tutor)` shows — 3NF's concession for dependencies whose right side is a prime attribute is exactly the gap between the two forms.",
+      "misconceptionTags": ["normal-form-hierarchy"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

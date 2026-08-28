@@ -1,0 +1,211 @@
+{
+  "subtopicId": "ug.computer-science.algorithms.recursion",
+  "questions": [
+    {
+      "id": "ug.computer-science.algorithms.recursion.q001",
+      "subtopicId": "ug.computer-science.algorithms.recursion",
+      "objectiveIds": ["ug.computer-science.algorithms.recursion.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which two properties must a recursive definition have in order to terminate?",
+      "options": [
+        { "id": "a", "text": "At least one base case, and a recursive case that strictly reduces the input towards a base case" },
+        { "id": "b", "text": "Exactly one recursive call, and a return value of the same type as the parameter" },
+        { "id": "c", "text": "A loop guarding the recursive call, and a global counter" },
+        { "id": "d", "text": "Tail position for the recursive call, and no local variables" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Termination requires a well-founded measure: the recursive case must decrease some quantity that is bounded below, and the base case must handle every value that measure can reach. Omitting the base case gives infinite descent and stack exhaustion; failing to decrease the measure — as in `f(n) { return f(n) }` — does the same even with a base case present.",
+      "distractorRationale": {
+        "b": "Many correct recursive functions make two or more calls, as merge sort and the Fibonacci definition do",
+        "c": "A recursive function needs no loop and no mutable global state",
+        "d": "Tail position affects whether the compiler can reuse the frame; it is irrelevant to termination"
+      },
+      "misconceptionTags": ["base-case", "termination"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.recursion.q002",
+      "subtopicId": "ug.computer-science.algorithms.recursion",
+      "objectiveIds": ["ug.computer-science.algorithms.recursion.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A recursive routine reduces a problem of size $n$ to one subproblem of size $n-1$ and does $\\Theta(1)$ additional work. Which recurrence and solution are correct?",
+      "options": [
+        { "id": "a", "text": "$T(n) = T(n-1) + \\Theta(1)$, giving $\\Theta(n)$" },
+        { "id": "b", "text": "$T(n) = T(n/2) + \\Theta(1)$, giving $\\Theta(\\log n)$" },
+        { "id": "c", "text": "$T(n) = T(n-1) + \\Theta(n)$, giving $\\Theta(n^2)$" },
+        { "id": "d", "text": "$T(n) = 2T(n-1) + \\Theta(1)$, giving $\\Theta(2^n)$" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "One subproblem of size $n-1$ with constant extra work unrolls to $n$ levels, each contributing $\\Theta(1)$, so $T(n) = \\Theta(n)$. Recursive factorial and recursive list length both have this shape. Note that the *space* cost is also $\\Theta(n)$, because none of the $n$ activation records can be popped until the base case is reached.",
+      "distractorRationale": {
+        "b": "Halving the input gives a logarithmic recurrence, but this routine decrements by one",
+        "c": "That is linear extra work per level, as in selection sort, not constant work",
+        "d": "Two calls per level would produce exponential growth; only one is made here"
+      },
+      "misconceptionTags": ["recurrence-relations", "linear-recursion"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.recursion.q003",
+      "subtopicId": "ug.computer-science.algorithms.recursion",
+      "objectiveIds": ["ug.computer-science.algorithms.recursion.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Apply the master theorem to $T(n) = 4T(n/2) + n$. What is $T(n)$?",
+      "options": [
+        { "id": "a", "text": "$\\Theta(n)$" },
+        { "id": "b", "text": "$\\Theta(n \\log n)$" },
+        { "id": "c", "text": "$\\Theta(n^2)$" },
+        { "id": "d", "text": "$\\Theta(n^2 \\log n)$" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "With $a = 4$ and $b = 2$, the critical exponent is $\\log_b a = \\log_2 4 = 2$, so the watershed function is $n^2$. The driving function $f(n) = n$ is polynomially *smaller* than $n^2$, which is case 1, and the answer is $\\Theta(n^{\\log_b a}) = \\Theta(n^2)$. Intuitively the recursion tree's leaves dominate: there are $4^{\\log_2 n} = n^2$ of them, and that count swamps the linear work done higher up.",
+      "distractorRationale": {
+        "a": "Reads off the driving function $f(n) = n$, which dominates only in case 3, not case 1",
+        "b": "Case 2 applies when $f(n) = \\Theta(n^{\\log_b a})$, which would require $f(n) = \\Theta(n^2)$ here",
+        "d": "Adds a logarithmic factor that only case 2 produces"
+      },
+      "misconceptionTags": ["master-theorem", "case-1"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.recursion.q004",
+      "subtopicId": "ug.computer-science.algorithms.recursion",
+      "objectiveIds": ["ug.computer-science.algorithms.recursion.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "Apply the master theorem to $T(n) = 2T(n/2) + n^2$. What is $T(n)$?",
+      "options": [
+        { "id": "a", "text": "$\\Theta(n \\log n)$" },
+        { "id": "b", "text": "$\\Theta(n^2)$" },
+        { "id": "c", "text": "$\\Theta(n^2 \\log n)$" },
+        { "id": "d", "text": "$\\Theta(n^3)$" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Here $\\log_b a = \\log_2 2 = 1$, so the watershed is $n^1$. The driving function $n^2$ is polynomially *larger*, and the regularity condition holds because $2(n/2)^2 = n^2/2 \\le \\frac{1}{2} n^2$. This is case 3, so $T(n) = \\Theta(f(n)) = \\Theta(n^2)$. The work at the root dominates: the top level alone costs $n^2$ and each level below costs half as much, so the geometric series sums to $\\Theta(n^2)$.",
+      "distractorRationale": {
+        "a": "That is the merge sort answer, which arises when $f(n) = \\Theta(n)$ rather than $\\Theta(n^2)$",
+        "c": "The logarithmic factor appears only in case 2, when $f$ matches the watershed exactly",
+        "d": "Multiplies the root work by the depth as if every level cost $n^2$; in fact the costs decay geometrically"
+      },
+      "misconceptionTags": ["master-theorem", "case-3"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.recursion.q005",
+      "subtopicId": "ug.computer-science.algorithms.recursion",
+      "objectiveIds": ["ug.computer-science.algorithms.recursion.o4"],
+      "type": "numeric",
+      "difficulty": 3,
+      "stem": "`fib(n)` returns `n` when `n <= 1` and otherwise returns `fib(n-1) + fib(n-2)`, with no memoisation. How many times is `fib` invoked in total when evaluating `fib(5)`, counting the initial call? Give a number only.",
+      "correctValue": 15,
+      "explanation": "Let $C(n)$ be the total invocations. Then $C(0) = C(1) = 1$ and $C(n) = 1 + C(n-1) + C(n-2)$. So $C(2) = 3$, $C(3) = 5$, $C(4) = 9$ and $C(5) = 15$. The closed form is $C(n) = 2F(n+1) - 1$, which grows as $\\Theta(\\varphi^n)$ with $\\varphi \\approx 1.618$ — exponential, because the same subproblems are recomputed along different branches. `fib(3)` alone is evaluated twice here, and `fib(2)` three times.",
+      "misconceptionTags": ["overlapping-subproblems", "exponential-recursion"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.recursion.q006",
+      "subtopicId": "ug.computer-science.algorithms.recursion",
+      "objectiveIds": ["ug.computer-science.algorithms.recursion.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "The naive recursive Fibonacci is $\\Theta(\\varphi^{\\,n})$. What is the time complexity once results are memoised in a table, and why?",
+      "options": [
+        { "id": "a", "text": "$\\Theta(\\log n)$, because the table is searched by bisection" },
+        { "id": "b", "text": "$\\Theta(n)$, because each of the $n$ distinct subproblems is computed once and thereafter returned from the table in $O(1)$" },
+        { "id": "c", "text": "$\\Theta(n^2)$, because the table must be rebuilt at each level" },
+        { "id": "d", "text": "Still $\\Theta(\\varphi^{\\,n})$, since memoisation only saves space" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "There are only $n+1$ distinct subproblems, `fib(0)` through `fib(n)`. Memoisation ensures each is *computed* once, at $O(1)$ cost given its two predecessors, and every subsequent request is a table lookup. Total time is therefore $\\Theta(n)$, with $\\Theta(n)$ space. The exponential blow-up came entirely from recomputing overlapping subproblems, not from the arithmetic.",
+      "distractorRationale": {
+        "a": "The table is indexed directly by $n$, so lookup is $O(1)$ and no search is involved",
+        "c": "The table persists across the whole computation; that is the point of memoising",
+        "d": "Memoisation trades space *for* time — it is the classic time–space trade-off"
+      },
+      "misconceptionTags": ["memoisation", "dynamic-programming"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.recursion.q007",
+      "subtopicId": "ug.computer-science.algorithms.recursion",
+      "objectiveIds": ["ug.computer-science.algorithms.recursion.o4"],
+      "type": "true_false",
+      "difficulty": 3,
+      "stem": "Memoising merge sort's recursive calls would reduce its running time below $\\Theta(n \\log n)$.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "False. Memoisation helps only when subproblems **overlap** — when the same subproblem is reached by more than one path through the recursion. Merge sort partitions its input into disjoint halves, so every subproblem is distinct and each is solved exactly once already. A cache would add space and lookup overhead with no hits. Overlapping subproblems plus optimal substructure is precisely the condition that distinguishes dynamic programming from ordinary divide and conquer.",
+      "misconceptionTags": ["overlapping-subproblems", "when-memoisation-helps"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.algorithms.recursion.q008",
+      "subtopicId": "ug.computer-science.algorithms.recursion",
+      "objectiveIds": ["ug.computer-science.algorithms.recursion.o1", "ug.computer-science.algorithms.recursion.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A recursive routine descends $n$ levels before reaching its base case. What is its **space** complexity on a language without tail-call optimisation, and why?",
+      "options": [
+        { "id": "a", "text": "$O(1)$, because each call returns before the next begins" },
+        { "id": "b", "text": "$O(\\log n)$, because the stack is a balanced structure" },
+        { "id": "c", "text": "$O(n)$, because all $n$ activation records remain live until the base case returns" },
+        { "id": "d", "text": "$O(n^2)$, because each frame stores a copy of the input" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "No frame can be popped until the call it is waiting on returns, so at maximum depth all $n$ activation records coexist on the stack. This is why a recursive sum over a million-element list overflows the stack while the equivalent loop does not. Converting the recursion to a tail call lets a compiler that supports the optimisation reuse a single frame, restoring $O(1)$ space.",
+      "distractorRationale": {
+        "a": "Describes sequential calls; in recursion the caller is suspended, not finished",
+        "b": "The call stack is a linear LIFO structure, so its depth is the recursion depth",
+        "d": "Each frame stores parameters and locals of constant size, not a copy of the whole input"
+      },
+      "misconceptionTags": ["recursion-space", "tail-call-optimisation"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

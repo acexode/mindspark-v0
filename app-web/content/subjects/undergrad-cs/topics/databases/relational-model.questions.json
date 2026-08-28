@@ -1,0 +1,239 @@
+{
+  "subtopicId": "ug.computer-science.databases.relational-model",
+  "questions": [
+    {
+      "id": "ug.computer-science.databases.relational-model.q001",
+      "subtopicId": "ug.computer-science.databases.relational-model",
+      "objectiveIds": ["ug.computer-science.databases.relational-model.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A relation `Student(matricNo, name, deptCode, level)` currently holds 480 rows. What are its **degree** and **cardinality**?",
+      "options": [
+        { "id": "a", "text": "Degree 4, cardinality 480" },
+        { "id": "b", "text": "Degree 480, cardinality 4" },
+        { "id": "c", "text": "Degree 4, cardinality 4" },
+        { "id": "d", "text": "Degree 484, cardinality 1920" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Degree is the number of attributes in the relation *schema*, which is fixed by the design — here 4. Cardinality is the number of tuples in the current relation *instance*, which changes with every insertion or deletion — here 480. The distinction between schema and instance is worth holding firmly: degree is a property of the design, cardinality of the data.",
+      "distractorRationale": {
+        "b": "Swaps the two terms; degree describes columns, cardinality rows",
+        "c": "Uses the attribute count for both",
+        "d": "Adds and multiplies the two figures, which has no meaning here"
+      },
+      "misconceptionTags": ["degree-vs-cardinality", "schema-vs-instance"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.relational-model.q002",
+      "subtopicId": "ug.computer-science.databases.relational-model",
+      "objectiveIds": ["ug.computer-science.databases.relational-model.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "What is a **candidate key** of a relation?",
+      "options": [
+        { "id": "a", "text": "Any set of attributes whose values uniquely identify each tuple" },
+        { "id": "b", "text": "A **minimal** set of attributes whose values uniquely identify each tuple, so that no proper subset also does" },
+        { "id": "c", "text": "The attribute the designer has chosen as the primary key" },
+        { "id": "d", "text": "An attribute referencing the primary key of another relation" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Minimality is the whole point. Any uniquely identifying set is a **superkey**; a candidate key is a superkey with no redundant attribute, so removing any attribute destroys uniqueness. A relation may have several candidate keys — `matricNo` and `email` for a student — and the designer promotes exactly one of them to primary key.",
+      "distractorRationale": {
+        "a": "That is a superkey; `{matricNo, name}` identifies uniquely but is not minimal",
+        "c": "That is the primary key, one candidate key selected from possibly several",
+        "d": "That is a foreign key, which serves referential integrity rather than identification"
+      },
+      "misconceptionTags": ["candidate-key", "superkey-minimality"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.relational-model.q003",
+      "subtopicId": "ug.computer-science.databases.relational-model",
+      "objectiveIds": ["ug.computer-science.databases.relational-model.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Which rule does the **entity integrity** constraint state?",
+      "options": [
+        { "id": "a", "text": "No attribute of a primary key may be NULL" },
+        { "id": "b", "text": "Every foreign key value must match an existing primary key value" },
+        { "id": "c", "text": "Every relation must have at least one foreign key" },
+        { "id": "d", "text": "No two relations may share an attribute name" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Entity integrity requires the primary key to be fully non-NULL in every tuple. The reason is that NULL means \"unknown or inapplicable\", and an unknown identifier cannot be compared for equality, so uniqueness could not be enforced and the tuple could not be referenced. This is why a relational engine rejects an insertion that omits any part of the primary key.",
+      "distractorRationale": {
+        "b": "That is **referential** integrity, a distinct constraint governing foreign keys",
+        "c": "Foreign keys are optional; a standalone lookup table has none",
+        "d": "Shared attribute names are normal and are exactly what a natural join exploits"
+      },
+      "misconceptionTags": ["entity-integrity", "null-semantics"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.relational-model.q004",
+      "subtopicId": "ug.computer-science.databases.relational-model",
+      "objectiveIds": ["ug.computer-science.databases.relational-model.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "`Student.deptCode` is a foreign key referencing `Department.deptCode`. Which operation would violate **referential integrity** if the engine permitted it?",
+      "options": [
+        { "id": "a", "text": "Inserting a student whose `deptCode` is 'CSC', when 'CSC' exists in `Department`" },
+        { "id": "b", "text": "Deleting the `Department` row for 'CSC' while students still reference 'CSC'" },
+        { "id": "c", "text": "Inserting a new `Department` row that no student references yet" },
+        { "id": "d", "text": "Updating a student's `level` from 200 to 300" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Referential integrity requires every non-NULL foreign key value to match an existing primary key value in the referenced relation. Deleting the 'CSC' department would leave those student rows pointing at a non-existent parent — a dangling reference. Engines respond according to the declared policy: `RESTRICT` or `NO ACTION` rejects the delete, `CASCADE` deletes the dependent rows, and `SET NULL` clears the references.",
+      "distractorRationale": {
+        "a": "This is the well-formed case: the referenced parent exists",
+        "c": "A parent with no children is perfectly legal; the constraint runs from child to parent only",
+        "d": "`level` participates in no foreign key, so the constraint is unaffected"
+      },
+      "misconceptionTags": ["referential-integrity", "dangling-reference"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.relational-model.q005",
+      "subtopicId": "ug.computer-science.databases.relational-model",
+      "objectiveIds": ["ug.computer-science.databases.relational-model.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "In relational algebra, which pair of statements correctly describes selection $\\sigma$ and projection $\\pi$?",
+      "options": [
+        { "id": "a", "text": "$\\sigma$ chooses tuples satisfying a predicate; $\\pi$ chooses attributes" },
+        { "id": "b", "text": "$\\sigma$ chooses attributes; $\\pi$ chooses tuples satisfying a predicate" },
+        { "id": "c", "text": "Both choose tuples, differing only in whether duplicates are removed" },
+        { "id": "d", "text": "$\\sigma$ combines two relations; $\\pi$ removes duplicates" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Selection is a horizontal operation, keeping the rows for which the predicate holds and leaving the schema unchanged. Projection is vertical, keeping the named attributes and leaving the row count unchanged or *smaller* — because a relation is a set, projection must eliminate the duplicate tuples that dropping a distinguishing column can create. SQL's `SELECT` list is a projection and its `WHERE` clause a selection, so the SQL keyword unfortunately names the wrong operator.",
+      "distractorRationale": {
+        "b": "Reverses the two operators, a slip encouraged by SQL's naming",
+        "c": "Projection changes the schema, which selection never does",
+        "d": "Combining relations is the join or Cartesian product, not selection"
+      },
+      "misconceptionTags": ["selection-vs-projection", "relational-algebra"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.relational-model.q006",
+      "subtopicId": "ug.computer-science.databases.relational-model",
+      "objectiveIds": ["ug.computer-science.databases.relational-model.o4"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "Relation $R$ has degree 3 and 5 tuples; relation $S$ has degree 4 and 6 tuples. How many tuples does $R \\times S$ contain? Give a number only.",
+      "correctValue": 30,
+      "explanation": "The Cartesian product pairs every tuple of $R$ with every tuple of $S$, so its cardinality is $5 \\times 6 = 30$ and its degree is $3 + 4 = 7$. Cardinalities multiply while degrees add. This multiplicative blow-up is why an accidental cross join — a `FROM` clause with two tables and no join predicate — turns two modest tables into an unusable result.",
+      "misconceptionTags": ["cartesian-product", "cross-join"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.relational-model.q007",
+      "subtopicId": "ug.computer-science.databases.relational-model",
+      "objectiveIds": ["ug.computer-science.databases.relational-model.o4"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "`Student` has 480 rows and `Department` has 12 rows. Every student's `deptCode` is non-NULL and references an existing department. How many rows does the natural join `Student ⋈ Department` on `deptCode` produce?",
+      "options": [
+        { "id": "a", "text": "12" },
+        { "id": "b", "text": "480" },
+        { "id": "c", "text": "492" },
+        { "id": "d", "text": "5760" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Each student row matches exactly one department row, because `deptCode` is the primary key of `Department` and so identifies at most one parent, and referential integrity plus the non-NULL guarantee ensure at least one. So each of the 480 student rows contributes exactly one result row. A many-to-one join across a foreign key preserves the cardinality of the child relation — a fact worth internalising, since it is what makes such joins safe to compose.",
+      "distractorRationale": {
+        "a": "12 is the department count; the join is driven by the many side, not the one side",
+        "c": "$480 + 12$ treats the join as a union rather than a matching operation",
+        "d": "$480 \\times 12$ is the Cartesian product, which is what you get only if the join predicate is omitted"
+      },
+      "misconceptionTags": ["join-cardinality", "many-to-one-join"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.relational-model.q008",
+      "subtopicId": "ug.computer-science.databases.relational-model",
+      "objectiveIds": ["ug.computer-science.databases.relational-model.o1"],
+      "type": "true_false",
+      "difficulty": 3,
+      "stem": "In the formal relational model, a relation may contain two identical tuples.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "False. A relation is defined as a **set** of tuples, and a set has no repeated elements, so duplicate tuples are impossible by definition — which is also why every relation has at least one candidate key, namely the full attribute set. SQL departs from the model here: a table is a *bag*, so duplicates are permitted unless a key constraint forbids them, which is why `SELECT` retains duplicates and `SELECT DISTINCT` exists to restore set semantics.",
+      "misconceptionTags": ["set-vs-bag-semantics", "relational-model-vs-sql"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.databases.relational-model.q009",
+      "subtopicId": "ug.computer-science.databases.relational-model",
+      "objectiveIds": ["ug.computer-science.databases.relational-model.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "In `Enrolment(matricNo, courseCode, session, score)`, a student may take a given course in different sessions but only once per session. What is the primary key?",
+      "options": [
+        { "id": "a", "text": "`matricNo`" },
+        { "id": "b", "text": "`(matricNo, courseCode)`" },
+        { "id": "c", "text": "`(matricNo, courseCode, session)`" },
+        { "id": "d", "text": "`(matricNo, courseCode, session, score)`" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "The key must be exactly the smallest attribute set that uniquely identifies a row given the stated rule. A student takes many courses, so `matricNo` alone is insufficient; a student may repeat a course in another session, so `(matricNo, courseCode)` is also insufficient. Adding `session` makes the combination unique, and no proper subset of the three does — so this is a minimal composite key.",
+      "distractorRationale": {
+        "a": "One student has many enrolment rows, so this cannot identify a single row",
+        "b": "Fails precisely on the repeat case the question describes",
+        "d": "Uniquely identifying but not minimal, since `session` already suffices without `score`; including a mutable measured value in a key is also a serious design error"
+      },
+      "misconceptionTags": ["composite-key", "key-minimality"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

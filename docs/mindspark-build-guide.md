@@ -603,15 +603,19 @@ Demonstrable end-to-end, with real data, before anything is called done:
 
 ---
 
-## 13. Open decisions — needed before Wave 1
+## 13. Decisions — resolved
 
-| # | Decision | Options | Recommendation |
-|---|----------|---------|----------------|
-| **D1** | Past-question sourcing | A: you supply files · B: exam-pattern authoring · C: open-licensed | **B now + build importer for A** |
-| **D2** | Subject list for this sprint | Confirm the 7 secondary subjects in §6.2 | Confirm or amend |
-| **D3** | Undergraduate scope | Include CS proof-of-concept, or secondary-only | Include if time permits (first to cut) |
-| **D4** | App directory rename | `maths-studio/` → `app-web/` | Yes, in Wave 0 |
-| **D5** | Class-level filtering | Filter content by JSS/SS class, or show all topics per subject | Tag now, filter in UI later |
+| # | Decision | Outcome |
+|---|----------|---------|
+| **D1** | Past-question sourcing | **Exam-pattern authoring.** Questions are LLM-authored to match each board's syllabus, format and difficulty, and every one carries an explanation of why the answer is right. Each is tagged `examMeta.style: "exam-pattern"` and `provenance.verified`, so verbatim past papers can replace them later without touching application code. Openly available question sets may also be ingested, but the explanation layer is always added on top. |
+| **D2** | Subject list | **Tier A (full depth):** Mathematics, English Language, Physics, Biology. **Tier B (navigable):** Chemistry, Government, Economics. |
+| **D3** | Undergraduate scope | **Included as proof of concept** — Computer Science, Tier C. |
+| **D4** | App directory rename | Done. `maths-studio/` → `app-web/`; "Maths Studio" → "Mindspark". |
+| **D5** | Class-level filtering | Content is tagged with class levels now; UI filtering comes later. |
+
+Tier targets are enforced in code by `TIER_REQUIREMENTS` in
+[app-web/lib/content/validate.ts](app-web/lib/content/validate.ts) and reported by
+`npm run content:report`.
 
 ---
 

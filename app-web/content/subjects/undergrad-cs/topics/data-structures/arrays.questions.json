@@ -1,0 +1,200 @@
+{
+  "subtopicId": "ug.computer-science.data-structures.arrays",
+  "questions": [
+    {
+      "id": "ug.computer-science.data-structures.arrays.q001",
+      "subtopicId": "ug.computer-science.data-structures.arrays",
+      "objectiveIds": ["ug.computer-science.data-structures.arrays.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "What is the worst-case time complexity of reading `a[i]` from an array of $n$ elements, given a valid index $i$?",
+      "options": [
+        { "id": "a", "text": "$O(1)$" },
+        { "id": "b", "text": "$O(\\log n)$" },
+        { "id": "c", "text": "$O(n)$" },
+        { "id": "d", "text": "$O(n \\log n)$" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Array elements occupy contiguous storage of equal width, so the address of element $i$ is computed arithmetically as $\\text{base} + i \\times \\text{width}$. That is one multiplication, one addition and one memory read regardless of $n$, so access is constant time. This random-access property is the defining advantage of contiguous storage.",
+      "distractorRationale": {
+        "b": "$O(\\log n)$ is the cost of *searching* a sorted array by bisection, not of indexing it",
+        "c": "$O(n)$ is the cost of traversing the array or of indexing a linked list",
+        "d": "$O(n \\log n)$ is a sorting bound and does not arise from a single access"
+      },
+      "misconceptionTags": ["array-random-access"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.arrays.q002",
+      "subtopicId": "ug.computer-science.data-structures.arrays",
+      "objectiveIds": ["ug.computer-science.data-structures.arrays.o1"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "A zero-indexed array of 4-byte integers begins at address 2000. What is the address of element `a[7]`? Give a number only.",
+      "correctValue": 2028,
+      "explanation": "The address is $\\text{base} + i \\times \\text{width} = 2000 + 7 \\times 4 = 2028$. The index is multiplied by the element width, not added to the base, and because indexing is zero-based no adjustment term is needed. If the array were one-indexed the formula would be $\\text{base} + (i - 1) \\times \\text{width}$.",
+      "misconceptionTags": ["address-arithmetic", "zero-vs-one-indexing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.arrays.q003",
+      "subtopicId": "ug.computer-science.data-structures.arrays",
+      "objectiveIds": ["ug.computer-science.data-structures.arrays.o2"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "An array holds $n$ elements in a buffer with spare capacity. A new element must be inserted at index 0, preserving the order of the rest. What is the worst-case cost?",
+      "options": [
+        { "id": "a", "text": "$O(1)$, because there is spare capacity" },
+        { "id": "b", "text": "$O(\\log n)$, by bisecting to find the insertion point" },
+        { "id": "c", "text": "$O(n)$, because all $n$ existing elements must shift one position right" },
+        { "id": "d", "text": "$O(n^2)$, because each shift itself costs $O(n)$" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "Contiguity is the constraint. To free index 0 while keeping the sequence in order, every existing element must move one slot to the right, which is $n$ element moves. Spare capacity avoids a reallocation but does not avoid the shifting. Insertion at the *end* is the only position that is $O(1)$, which is why an array is a poor list but an excellent stack.",
+      "distractorRationale": {
+        "a": "Confuses having room in the buffer with having room at the front; capacity removes the reallocation, not the shift",
+        "b": "The insertion point is given as index 0, so no search is needed; bisection would not reduce the movement cost anyway",
+        "d": "Each shift is a single element move, so the total is $n$ moves, not $n$ operations of cost $n$"
+      },
+      "misconceptionTags": ["array-insertion-cost", "contiguity"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.arrays.q004",
+      "subtopicId": "ug.computer-science.data-structures.arrays",
+      "objectiveIds": ["ug.computer-science.data-structures.arrays.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Appending to a doubling dynamic array is described as **amortised** $O(1)$. What does that claim mean?",
+      "options": [
+        { "id": "a", "text": "Every individual append runs in constant time" },
+        { "id": "b", "text": "Any sequence of $m$ appends costs $O(m)$ in total, so the average cost per append is constant even though some single appends cost $O(n)$" },
+        { "id": "c", "text": "Appending is constant time on average over random inputs, but could be $O(n)$ on adversarial input" },
+        { "id": "d", "text": "Appending is constant time only when the array's capacity is a power of two" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Amortised analysis bounds the total cost of a *sequence* of operations and divides by the sequence length. A resize does cost $\\Theta(n)$, but doubling makes resizes exponentially rare, so the copying performed across $m$ appends totals fewer than $2m$ element moves. Note that this is a worst-case guarantee over the sequence, not a probabilistic one — no assumption about input distribution is involved.",
+      "distractorRationale": {
+        "a": "That is worst-case $O(1)$ per operation, a strictly stronger claim that a doubling array does not satisfy",
+        "c": "That describes *expected* time under a distributional assumption; amortisation makes no such assumption",
+        "d": "Powers of two are an implementation convenience; any constant growth factor greater than 1 gives the same amortised bound"
+      },
+      "misconceptionTags": ["amortised-vs-average-case"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.arrays.q005",
+      "subtopicId": "ug.computer-science.data-structures.arrays",
+      "objectiveIds": ["ug.computer-science.data-structures.arrays.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "A dynamic array grows by adding a **fixed 10 slots** each time it fills, instead of doubling. What is the total cost of $n$ appends?",
+      "options": [
+        { "id": "a", "text": "$\\Theta(n)$ — unchanged, since 10 is a constant" },
+        { "id": "b", "text": "$\\Theta(n \\log n)$" },
+        { "id": "c", "text": "$\\Theta(n^2)$" },
+        { "id": "d", "text": "$\\Theta(n \\sqrt{n})$" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "With a fixed increment there are about $n/10$ reallocations, and the $k$-th copies roughly $10k$ elements. The total is $\\sum_{k=1}^{n/10} 10k = 10 \\cdot \\frac{(n/10)(n/10+1)}{2} = \\Theta(n^2)$, giving amortised $\\Theta(n)$ per append. Geometric growth is what makes the resize count logarithmic and the copy total linear; arithmetic growth destroys the guarantee no matter how large the constant increment.",
+      "distractorRationale": {
+        "a": "The constant increment makes each individual resize cheap in a sense, but the *number* of resizes becomes linear in $n$, so the costs compound",
+        "b": "$\\Theta(n \\log n)$ would arise if each of $\\log n$ resizes cost $\\Theta(n)$; here the resize count is linear, not logarithmic",
+        "d": "$\\Theta(n\\sqrt{n})$ is the total for growth by a $\\sqrt{n}$-sized increment, not a fixed one"
+      },
+      "misconceptionTags": ["geometric-vs-arithmetic-growth", "amortised-analysis"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.arrays.q006",
+      "subtopicId": "ug.computer-science.data-structures.arrays",
+      "objectiveIds": ["ug.computer-science.data-structures.arrays.o2"],
+      "type": "numeric",
+      "difficulty": 3,
+      "stem": "A dynamic array starts with capacity 1 and doubles whenever an append finds it full. How many reallocations occur while appending 17 elements one at a time? Give a number only.",
+      "correctValue": 5,
+      "explanation": "The capacity sequence is 1, 2, 4, 8, 16, 32, so a reallocation is triggered by the 2nd, 3rd, 5th, 9th and 17th appends — five in all. In general appending $n$ elements from capacity 1 causes $\\lceil \\log_2 n \\rceil$ reallocations, and $\\lceil \\log_2 17 \\rceil = 5$. Because the count grows only logarithmically, the copied elements total under $2n$.",
+      "misconceptionTags": ["doubling-resize-count", "amortised-analysis"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.arrays.q007",
+      "subtopicId": "ug.computer-science.data-structures.arrays",
+      "objectiveIds": ["ug.computer-science.data-structures.arrays.o2"],
+      "type": "true_false",
+      "difficulty": 1,
+      "stem": "Searching an **unsorted** array of $n$ elements for a given value requires $\\Theta(n)$ comparisons in the worst case.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "True. With no ordering to exploit, any correct algorithm must be prepared to examine every element: if it skipped one, an adversary could place the target there. So the worst case is $n$ comparisons, and it is also the cost of concluding that the value is absent. Sortedness is exactly the precondition that allows bisection to reduce this to $\\Theta(\\log n)$.",
+      "misconceptionTags": ["linear-search", "sortedness-precondition"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.data-structures.arrays.q008",
+      "subtopicId": "ug.computer-science.data-structures.arrays",
+      "objectiveIds": ["ug.computer-science.data-structures.arrays.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Two implementations store one million integers and traverse them sequentially, summing every value. Both perform $\\Theta(n)$ work, yet the array version is measured several times faster than the linked list version. What is the principal reason?",
+      "options": [
+        { "id": "a", "text": "The array version performs asymptotically fewer operations" },
+        { "id": "b", "text": "Contiguous storage gives spatial locality, so each cache line fetched supplies many consecutive elements, whereas list nodes are scattered and each visit risks a cache miss" },
+        { "id": "c", "text": "Linked list traversal is $O(n^2)$" },
+        { "id": "d", "text": "Arrays are stored in registers rather than in main memory" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Both traversals are $\\Theta(n)$; the difference is the constant factor, which asymptotic notation deliberately hides. A 64-byte cache line holds sixteen 4-byte integers, so an array traversal incurs roughly one miss per sixteen elements and benefits from hardware prefetching. List nodes are separately allocated, so each `next` dereference may miss, and the pointer field also inflates memory traffic. This is why $\\Theta$ classes rank algorithms but do not predict wall-clock time.",
+      "distractorRationale": {
+        "a": "The operation counts are the same order; the gap is in cost per operation, not count",
+        "c": "Traversing a linked list once visits each node once, which is $\\Theta(n)$",
+        "d": "A million integers cannot fit in the register file; both live in memory"
+      },
+      "misconceptionTags": ["cache-locality", "constant-factors"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}

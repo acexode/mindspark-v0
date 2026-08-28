@@ -1,0 +1,106 @@
+{
+  "id": "ug.computer-science.algorithms.searching.lesson",
+  "subtopicId": "ug.computer-science.algorithms.searching",
+  "title": "Searching Algorithms",
+  "estimatedMinutes": 16,
+  "objectiveIds": [
+    "ug.computer-science.algorithms.searching.o1",
+    "ug.computer-science.algorithms.searching.o2",
+    "ug.computer-science.algorithms.searching.o3",
+    "ug.computer-science.algorithms.searching.o4"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Looking up a name in a printed telephone directory of a million entries takes about twenty page-checks, because you exploit the alphabetical order at every step. Looking up the same name in an unsorted stack of a million business cards takes, on average, half a million checks. The algorithm is not the difference. The precondition is."
+    },
+    {
+      "type": "text",
+      "markdown": "## The search problem\n\nGiven a sequence $A$ of $n$ elements and a target $t$, report an index $i$ with $A[i] = t$, or report that no such index exists.\n\nWhat is achievable depends entirely on the structure available:\n\n- **No structure.** $\\Theta(n)$ is optimal. Any algorithm that skipped an element could be defeated by an adversary placing the target there, so linear search is not merely adequate but provably best.\n- **Sorted, with random access.** $\\Theta(\\log n)$ by bisection, and this is optimal for comparison-based search.\n- **Hashed.** $O(1)$ expected, but key order is destroyed, so successor and range queries are lost.\n\nThe recurring engineering question is therefore not \"which search is fastest?\" but \"is the preprocessing that unlocks the faster search worth its cost?\""
+    },
+    {
+      "type": "text",
+      "markdown": "### Linear search\n\n```\nlinearSearch(A, n, t):\n    for i = 0 to n - 1:\n        if A[i] == t: return i\n    return NOT_FOUND\n```\n\nBest case 1 comparison, worst case $n$, average about $(n+1)/2$ for a successful search on a uniformly distributed target. Note that the worst case arises in two ways: the target is last, or the target is absent. Absence is the more important case in practice, because it *always* costs $n$.\n\nLinear search has three virtues worth keeping in mind: it requires no preconditions, it works on any sequential container including linked lists and streams, and its constant factor is tiny with perfectly predictable memory access. For small $n$ — often up to a few dozen elements — it beats binary search in measured time despite the worse asymptotic class."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Binary search",
+      "text": "Maintain a candidate range $[\\mathit{lo}, \\mathit{hi}]$ known to contain the target if it is present anywhere. Compare $t$ with the element at the midpoint. If equal, report it; if $t$ is smaller, the entire right half including the midpoint can be discarded; if larger, the entire left half is discarded. Sortedness is the sole justification for that discard, and it is why the precondition cannot be relaxed."
+    },
+    {
+      "type": "text",
+      "markdown": "### Binary search\n\n```\nbinarySearch(A, n, t):\n    lo = 0; hi = n - 1\n    while lo <= hi:\n        mid = lo + (hi - lo) / 2        # not (lo + hi) / 2 -- see below\n        if   A[mid] == t: return mid\n        elif A[mid] <  t: lo = mid + 1  # the +1 is essential for termination\n        else:             hi = mid - 1\n    return NOT_FOUND\n```\n\nThe **loop invariant** is: if $t$ appears in $A$ at all, its index lies in $[\\mathit{lo}, \\mathit{hi}]$. Every branch preserves it, using sortedness to justify the half being discarded. The **variant** is $\\mathit{hi} - \\mathit{lo}$, which strictly decreases because the midpoint is excluded from the surviving range — writing `lo = mid` instead of `lo = mid + 1` makes a two-element range loop forever.\n\nTwo implementation details are worth internalising:\n\n- Use `mid = lo + (hi - lo) / 2`. The algebraically identical `(lo + hi) / 2` can overflow a fixed-width integer when both indices are large. This bug sat in the JDK's `Arrays.binarySearch` for nine years.\n- On unsorted input, binary search still terminates quickly but returns a *wrong* answer. A silently incorrect result is a worse failure mode than a slow one, so assert the precondition in debug builds."
+    },
+    {
+      "type": "worked_example",
+      "title": "Tracing binary search for 77, then for 50",
+      "prompt": "Search the sorted array A = [11, 22, 33, 44, 55, 66, 77, 88, 99], indices 0 to 8, for the target 77 and then for the absent target 50.",
+      "steps": [
+        { "text": "Search for 77. Probe 1: lo = 0, hi = 8, mid = 0 + 4 = 4, A[4] = 55. Since $77 > 55$, the target cannot be at index 4 or below, so lo = 5." },
+        { "text": "Probe 2: lo = 5, hi = 8, mid = 5 + floor(3/2) = 6, A[6] = 77. Equal — return index 6. Two probes, against six comparisons for a linear scan." },
+        { "text": "Search for 50. Probe 1: lo = 0, hi = 8, mid = 4, A[4] = 55. Since $50 < 55$, set hi = 3, leaving the range [0, 3]." },
+        { "text": "Probe 2: mid = 0 + floor(3/2) = 1, A[1] = 22. Since $50 > 22$, set lo = 2, leaving [2, 3]." },
+        { "text": "Probe 3: mid = 2 + floor(1/2) = 2, A[2] = 33. Since $50 > 33$, set lo = 3, leaving [3, 3]." },
+        { "text": "Probe 4: mid = 3, A[3] = 44. Since $50 > 44$, set lo = 4. Now $\\mathit{lo} > \\mathit{hi}$, the range is empty, and the invariant tells us the target was never present. Return NOT_FOUND after four probes." },
+        { "text": "Check against the bound. The worst case is $\\lfloor \\log_2 n \\rfloor + 1 = \\lfloor \\log_2 9 \\rfloor + 1 = 4$ probes, which the unsuccessful search attains — as unsuccessful searches always do, since they must shrink the range to empty. Note also that on exit `lo` = 4 is exactly the index at which 50 should be inserted to keep the array sorted, which is why this variant is called *lower bound* and is used for insertion points." }
+      ],
+      "answer": "77 is found at index 6 in two probes; 50 is reported absent after four probes, with `lo` = 4 giving its correct insertion position."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.computer-science.algorithms.searching.q003"
+    },
+    {
+      "type": "math",
+      "latex": "T(n) = T\\!\\left(\\frac{n}{2}\\right) + \\Theta(1) \\quad\\Longrightarrow\\quad T(n) = \\Theta(\\log n)",
+      "caption": "Binary search recurses on one half only. Recursing on both halves would give T(n) = 2T(n/2) + Θ(1) = Θ(n), which is a traversal, not a search."
+    },
+    {
+      "type": "table",
+      "headers": ["Algorithm", "Precondition", "Best", "Worst", "Space", "Works on a linked list?"],
+      "rows": [
+        ["Linear search", "none", "$\\Theta(1)$", "$\\Theta(n)$", "$O(1)$", "Yes"],
+        ["Binary search (iterative)", "sorted, random access", "$\\Theta(1)$", "$\\Theta(\\log n)$", "$O(1)$", "No — midpoint access is $\\Theta(n)$"],
+        ["Binary search (recursive)", "sorted, random access", "$\\Theta(1)$", "$\\Theta(\\log n)$", "$O(\\log n)$ stack", "No"],
+        ["Balanced BST lookup", "ordered keys", "$\\Theta(1)$", "$\\Theta(\\log n)$", "$O(n)$ structure", "Structural, not applicable"],
+        ["Hash table lookup", "hashable keys", "$\\Theta(1)$", "$\\Theta(n)$", "$O(n)$ structure", "Structural, not applicable"],
+        ["Interpolation search", "sorted **and** near-uniform", "$\\Theta(1)$", "$\\Theta(n)$", "$O(1)$", "No"]
+      ],
+      "caption": "Interpolation search averages Θ(log log n) on uniformly distributed keys but degrades to Θ(n) on skewed data — a reminder that a distributional assumption is a much weaker guarantee than a structural one."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Count the preprocessing",
+      "text": "For $k$ searches on $n$ elements, repeated linear search costs $\\Theta(kn)$ while sorting once and bisecting costs $\\Theta(n \\log n + k \\log n)$. The crossover is near $k \\approx \\log n$ — about 20 searches for a million elements. A single search on unsorted data should always be linear; anything repeated should be indexed."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Comparisons are not time",
+      "text": "Binary search performs $O(\\log n)$ comparisons on any sorted sequence, but its $O(\\log n)$ *running time* additionally requires $O(1)$ access to the midpoint. On a sorted linked list the comparisons are still logarithmic while the traversals total $\\Theta(n)$, so the algorithm is no faster than a scan. Always check that the access-cost assumption holds before quoting a bound."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Linear search needs no precondition and is $\\Theta(n)$, which is optimal on unstructured data; absence always costs the full $n$ comparisons.",
+        "Binary search requires a sorted sequence with random access and runs in $\\Theta(\\log n)$.",
+        "Sortedness is the sole justification for discarding half the range; on unsorted input binary search returns a silently wrong answer.",
+        "The invariant is that the target, if present, lies in $[\\mathit{lo}, \\mathit{hi}]$; excluding the midpoint from the surviving range is what guarantees termination.",
+        "Compute the midpoint as $\\mathit{lo} + (\\mathit{hi} - \\mathit{lo})/2$ to avoid integer overflow on large indices.",
+        "The recurrence $T(n) = T(n/2) + \\Theta(1)$ solves to $\\Theta(\\log n)$; recursing on both halves would give $\\Theta(n)$.",
+        "Sorting first pays off once the number of searches exceeds roughly $\\log n$.",
+        "A logarithmic comparison count does not imply logarithmic time — the structure must also provide $O(1)$ midpoint access."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      { "id": "acm-ieee-cs2023", "title": "ACM/IEEE-CS Computer Science Curricula — Algorithms and Complexity", "type": "syllabus" },
+      { "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }
+    ],
+    "reviewStatus": "published",
+    "verified": true
+  }
+}

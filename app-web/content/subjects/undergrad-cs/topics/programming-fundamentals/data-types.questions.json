@@ -1,0 +1,211 @@
+{
+  "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+  "questions": [
+    {
+      "id": "ug.computer-science.programming-fundamentals.data-types.q001",
+      "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.data-types.o1"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which of the following is a **composite** (structured) data type rather than a primitive one?",
+      "options": [
+        { "id": "a", "text": "`boolean`" },
+        { "id": "b", "text": "`char`" },
+        { "id": "c", "text": "`record` (struct)" },
+        { "id": "d", "text": "`double`" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "A composite type is built by aggregating other types, so its values have internal structure that can be decomposed into named or indexed parts. A record aggregates fields of possibly different types; `boolean`, `char` and `double` are atomic values the language treats as indivisible.",
+      "distractorRationale": {
+        "a": "`boolean` has exactly two indivisible values, true and false",
+        "b": "`char` holds a single indivisible code point, not an aggregate",
+        "d": "`double` is a single indivisible IEEE 754 value; having internal bit fields is a representation detail, not a language-level structure"
+      },
+      "misconceptionTags": ["primitive-vs-composite"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.data-types.q002",
+      "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.data-types.o2"],
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A language is described as **statically typed**. What does this mean?",
+      "options": [
+        { "id": "a", "text": "Every expression's type is known and checked before the program runs" },
+        { "id": "b", "text": "Variables cannot have their values changed once assigned" },
+        { "id": "c", "text": "All variables are allocated in static (global) memory" },
+        { "id": "d", "text": "The language refuses all implicit conversions between types" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Static typing means type checking happens at compile time: the compiler assigns a type to every expression and rejects the program if an operation is applied to an incompatible type. Dynamic typing defers the same check to run time, when the value's tag is inspected.",
+      "distractorRationale": {
+        "b": "That is immutability, a property of bindings and values; a statically typed variable can still be reassigned",
+        "c": "That is the `static` storage class, an unrelated use of the word",
+        "d": "That is strong typing. Static and strong are independent axes — C is static but weak, Python is dynamic but comparatively strong"
+      },
+      "misconceptionTags": ["static-vs-strong-typing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.data-types.q003",
+      "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.data-types.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A signed 32-bit integer is stored in two's complement. What is its range of representable values?",
+      "options": [
+        { "id": "a", "text": "$-2^{31}$ to $2^{31} - 1$" },
+        { "id": "b", "text": "$-2^{31} + 1$ to $2^{31}$" },
+        { "id": "c", "text": "$0$ to $2^{32} - 1$" },
+        { "id": "d", "text": "$-2^{32}$ to $2^{32} - 1$" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Thirty-two bits encode $2^{32}$ distinct bit patterns. Two's complement devotes exactly half of them to negatives, so the range is $-2^{31}$ to $2^{31} - 1$. The asymmetry arises because zero occupies one of the non-negative patterns, leaving one fewer positive value than negative.",
+      "distractorRationale": {
+        "b": "Shifts the asymmetry the wrong way; two's complement has one extra negative, not one extra positive",
+        "c": "This is the range of an **unsigned** 32-bit integer",
+        "d": "Uses $2^{32}$ as the half-range, which double-counts the available bit patterns"
+      },
+      "misconceptionTags": ["twos-complement-range", "off-by-one"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.data-types.q004",
+      "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.data-types.o3"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "In most languages the expression `0.1 + 0.2 == 0.3` evaluates to false. Why?",
+      "options": [
+        { "id": "a", "text": "Floating-point addition is not commutative" },
+        { "id": "b", "text": "0.1 and 0.2 have no exact finite representation in binary floating point, so each is stored with rounding error" },
+        { "id": "c", "text": "The comparison operator cannot be applied to floating-point values" },
+        { "id": "d", "text": "The compiler evaluates the left-hand side using integer arithmetic" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "IEEE 754 stores a value as a binary fraction. A decimal fraction is exactly representable only when its denominator is a power of two, so 0.1, 0.2 and 0.3 are each rounded to the nearest representable double. The rounded sum differs from the rounded 0.3 in the last bits, so exact equality fails. Compare with a tolerance instead: $|a - b| < \\varepsilon$.",
+      "distractorRationale": {
+        "a": "Floating-point addition is commutative; it is **associativity** that fails",
+        "c": "Comparison is perfectly legal on floats — it is just rarely what you want",
+        "d": "Both operands are floating-point literals, so the arithmetic is floating point throughout"
+      },
+      "misconceptionTags": ["floating-point-precision"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.data-types.q005",
+      "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.data-types.o4"],
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "In a language with reference semantics for lists, consider `a = [1, 2, 3]`, then `b = a`, then `b.append(4)`. What is the value of `a`?",
+      "options": [
+        { "id": "a", "text": "`[1, 2, 3]`" },
+        { "id": "b", "text": "`[1, 2, 3, 4]`" },
+        { "id": "c", "text": "`[4]`" },
+        { "id": "d", "text": "Undefined — appending through an alias is an error" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Under reference semantics, `b = a` copies the reference, not the object. Both names are now aliases for the same list, so mutating through `b` is observable through `a`. To obtain an independent list you must copy explicitly, for example `b = a[:]` or `b = list(a)`.",
+      "distractorRationale": {
+        "a": "Assumes value semantics, in which assignment deep-copies the object",
+        "c": "Confuses `append` with reassigning `b` to a fresh single-element list",
+        "d": "Aliased mutation is well defined; it is a frequent source of bugs, not an error"
+      },
+      "misconceptionTags": ["value-vs-reference-semantics", "aliasing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.data-types.q006",
+      "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.data-types.o2"],
+      "type": "true_false",
+      "difficulty": 2,
+      "stem": "A dynamically typed language must also be a weakly typed language.",
+      "options": [
+        { "id": "a", "text": "True" },
+        { "id": "b", "text": "False" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "False. *When* types are checked (static versus dynamic) is independent of *how strictly* type rules are enforced (strong versus weak). Python is dynamically typed yet raises a `TypeError` for `1 + \"2\"`, which is strong behaviour, while C is statically typed yet permits wide implicit conversions and unchecked casts, which is weak behaviour.",
+      "misconceptionTags": ["static-vs-strong-typing"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.data-types.q007",
+      "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.data-types.o3"],
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "A record field is declared as an unsigned integer of 12 bits. How many distinct values can it hold? Give a number only.",
+      "correctValue": 4096,
+      "explanation": "Each bit independently takes one of two states, so $n$ bits give $2^n$ distinct patterns. Here $2^{12} = 4096$. Because the field is unsigned, those patterns represent the integers 0 to 4095 inclusive — 4096 values in total.",
+      "misconceptionTags": ["bit-width-cardinality"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    },
+    {
+      "id": "ug.computer-science.programming-fundamentals.data-types.q008",
+      "subtopicId": "ug.computer-science.programming-fundamentals.data-types",
+      "objectiveIds": ["ug.computer-science.programming-fundamentals.data-types.o3"],
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "An unsigned 8-bit counter currently holds 255. The program executes `counter = counter + 1`. In a language whose unsigned arithmetic wraps modulo $2^n$, what value does the counter hold afterwards?",
+      "options": [
+        { "id": "a", "text": "0" },
+        { "id": "b", "text": "255" },
+        { "id": "c", "text": "256" },
+        { "id": "d", "text": "-1" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Unsigned arithmetic on $n$ bits is arithmetic modulo $2^n$. Here $(255 + 1) \\bmod 256 = 0$, so the counter wraps to zero. This silent wrap-around is why loop counters and buffer-length computations must be bounds-checked rather than trusted to saturate.",
+      "distractorRationale": {
+        "b": "Assumes the value saturates at the maximum, which is the behaviour of saturating arithmetic in DSP libraries, not of ordinary unsigned integer arithmetic",
+        "c": "The value 256 needs nine bits and cannot be stored in the field",
+        "d": "$-1$ is the two's complement interpretation of the all-ones pattern, but the counter is unsigned and the pattern after wrapping is all zeros"
+      },
+      "misconceptionTags": ["integer-overflow", "modular-arithmetic"],
+      "examMeta": { "board": "internal", "style": "exam-pattern" },
+      "provenance": {
+        "sources": [{ "id": "authored-ugcs", "title": "Mindspark undergraduate Computer Science pack", "type": "authored" }],
+        "reviewStatus": "published",
+        "verified": true
+      }
+    }
+  ]
+}
