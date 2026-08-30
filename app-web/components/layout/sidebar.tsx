@@ -10,6 +10,7 @@ import {
   Exam,
   PencilSimpleLine,
   Sparkle,
+  User,
 } from "@phosphor-icons/react";
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/quiz", label: "Quiz", icon: Exam },
   { href: "/tutor", label: "Tutor", icon: ChatsCircle },
   { href: "/progress", label: "Progress", icon: ChartBar },
+  { href: "/profile", label: "Profile", icon: User },
 ];
 
 interface SidebarProps {

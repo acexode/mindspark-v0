@@ -9,6 +9,7 @@ import {
   resolveTopicSlug,
 } from "./loader";
 import type { EducationLevel, Subject, Subtopic, Topic } from "./schema";
+import { filterSubjectsForClass } from "./class-visibility";
 import type { RecommendationCandidate } from "@/lib/domain/recommendations/recommend";
 
 export interface ResolvedPath {
@@ -54,12 +55,14 @@ export function quizHref(subject: Subject, mode: "topic" | "subject" | "exam" = 
 }
 
 /** Flattens every subtopic across the given subjects into recommendation candidates. */
-export function buildCandidates(subjectIds: string[]): RecommendationCandidate[] {
+export function buildCandidates(subjectIds: string[], studentClass?: string): RecommendationCandidate[] {
   const subjects = subjectIds.length > 0
     ? subjectIds.map((id) => getSubject(id)).filter((s): s is Subject => Boolean(s))
     : getSubjects();
 
-  return subjects.flatMap((subject) =>
+  const scoped = studentClass ? filterSubjectsForClass(subjects, studentClass) : subjects;
+
+  return scoped.flatMap((subject) =>
     subject.topics.flatMap((topic) =>
       topic.subtopics.map((subtopic) => ({
         subtopicId: subtopic.id,

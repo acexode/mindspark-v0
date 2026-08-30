@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { getQuestionsForSubject, idSlug, resolveSubjectSlug } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
+import { filterQuestionsByClass } from "@/lib/content/class-visibility";
+import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { QuizSession } from "@/features/quiz/components/quiz-session";
 import { EmptyState } from "@/components/ui/empty-state";
 
@@ -22,7 +24,8 @@ export default async function QuizPage({
   const subject = resolveSubjectSlug(subjectSlug);
   if (!subject) notFound();
 
-  const pool = getQuestionsForSubject(subject.id);
+  const profile = await readProfileOrDefault();
+  const pool = filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel);
   if (pool.length < 5) {
     return (
       <section className="page">

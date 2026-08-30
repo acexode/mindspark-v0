@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { getQuestionsForSubject, getSubjects, idSlug } from "@/lib/content/loader";
+import { filterQuestionsByClass, filterSubjectsForClass } from "@/lib/content/class-visibility";
 import { EmptyState } from "@/components/ui/empty-state";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 
@@ -8,7 +9,9 @@ export const metadata = { title: "Quiz — Mindspark" };
 
 export default async function QuizPickerPage() {
   const profile = await readProfileOrDefault();
-  const subjects = getSubjects(profile.educationLevel).filter((s) => getQuestionsForSubject(s.id).length >= 5);
+  const subjects = filterSubjectsForClass(getSubjects(profile.educationLevel), profile.classLevel).filter(
+    (s) => filterQuestionsByClass(getQuestionsForSubject(s.id), s, profile.classLevel).length >= 5,
+  );
 
   if (subjects.length === 0) {
     return (
@@ -36,24 +39,30 @@ export default async function QuizPickerPage() {
         </div>
       </header>
 
-      <QuizCards subjects={mine.length > 0 ? mine : others} />
+      <QuizCards subjects={mine.length > 0 ? mine : others} studentClass={profile.classLevel} />
 
       {mine.length > 0 && others.length > 0 && (
         <section className="library-more">
           <h2>Other subjects</h2>
-          <QuizCards subjects={others} />
+          <QuizCards subjects={others} studentClass={profile.classLevel} />
         </section>
       )}
     </section>
   );
 }
 
-function QuizCards({ subjects }: { subjects: ReturnType<typeof getSubjects> }) {
+function QuizCards({
+  subjects,
+  studentClass,
+}: {
+  subjects: ReturnType<typeof getSubjects>;
+  studentClass: string;
+}) {
   return (
     <div className="picker-grid">
       {subjects.map((subject) => {
           const slug = idSlug(subject.id);
-          const total = getQuestionsForSubject(subject.id).length;
+          const total = filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, studentClass).length;
 
           return (
             <article key={subject.id} className="picker-card" style={{ ["--accent" as string]: subject.accentColor }}>

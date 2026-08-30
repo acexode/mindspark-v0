@@ -77,6 +77,8 @@ export const subtopicSchema = z.object({
   summary: z.string().min(10),
   prerequisites: z.array(subtopicId).default([]),
   objectives: z.array(objectiveSchema).min(1, "Each subtopic needs at least one objective"),
+  /** Defaults to the parent topic's classLevels when omitted. */
+  classLevels: z.array(classLevelSchema).optional(),
 });
 
 export const topicSchema = z.object({

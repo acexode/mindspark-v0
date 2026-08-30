@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { getSubjects, getSubjectStats, idSlug } from "@/lib/content/loader";
 import { allSubtopicIds } from "@/lib/content/navigation";
+import { filterSubjectsForClass } from "@/lib/content/class-visibility";
 import { aggregateMastery } from "@/lib/domain/mastery/mastery";
 import { MasteryBar, masteryLabel } from "@/components/ui/mastery-badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -12,7 +13,7 @@ export const metadata = { title: "Library — Mindspark" };
 export default async function LibraryPage() {
   const profile = await readProfileOrDefault();
   const level = profile.educationLevel;
-  const all = getSubjects(level);
+  const all = filterSubjectsForClass(getSubjects(level), profile.classLevel);
   const mine = all.filter((s) => profile.selectedSubjectIds.includes(s.id));
   const others = all.filter((s) => !profile.selectedSubjectIds.includes(s.id));
 

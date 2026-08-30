@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getQuestionById } from "@/lib/content/loader";
+import { getQuestionById, getSubject } from "@/lib/content/loader";
+import { filterSubjectForClass } from "@/lib/content/class-visibility";
 import { gradeAnswer, type SubmittedAnswer } from "@/lib/domain/assessment/grading";
 import { applyEvidence, getRecord } from "@/lib/domain/mastery/mastery";
 import type { StudentProfile } from "@/lib/domain/student/types";
@@ -19,23 +20,74 @@ export interface OnboardingInput {
   goal: StudentProfile["goal"];
 }
 
-export async function saveOnboarding(input: OnboardingInput): Promise<{ ok: boolean }> {
-  if (!input.preferredName.trim()) return { ok: false };
-  if (input.selectedSubjectIds.length === 0) return { ok: false };
+function subjectsVisibleForClass(subjectIds: string[], classLevel: string): string[] {
+  return subjectIds.filter((id) => {
+    const subject = getSubject(id);
+    return subject !== null && filterSubjectForClass(subject, classLevel).topics.length > 0;
+  });
+}
 
-  await updateProfile((current) => ({
-    ...current,
-    ...input,
-    preferredName: input.preferredName.trim(),
-    onboarded: true,
-    lastActiveDate: new Date().toISOString().slice(0, 10),
-  }));
+function normalizeProfileInput(input: OnboardingInput) {
+  const preferredName = input.preferredName.trim();
+  const isUndergraduate = input.educationLevel === "undergraduate";
+  const selectedSubjectIds = subjectsVisibleForClass(input.selectedSubjectIds, input.classLevel);
 
+  return {
+    preferredName,
+    ageBand: input.ageBand,
+    educationLevel: input.educationLevel,
+    classLevel: input.classLevel,
+    institution: isUndergraduate ? input.institution?.trim() || undefined : undefined,
+    programme: isUndergraduate ? input.programme?.trim() || undefined : undefined,
+    examTargets: isUndergraduate
+      ? (["none"] as StudentProfile["examTargets"])
+      : input.examTargets.length > 0
+        ? input.examTargets
+        : (["none"] as StudentProfile["examTargets"]),
+    selectedSubjectIds,
+    goal: input.goal,
+  };
+}
+
+function revalidateStudentPaths() {
   revalidatePath("/home");
   revalidatePath("/library");
   revalidatePath("/practice");
   revalidatePath("/quiz");
   revalidatePath("/progress");
+  revalidatePath("/profile");
+}
+
+export async function saveOnboarding(input: OnboardingInput): Promise<{ ok: boolean }> {
+  if (!input.preferredName.trim()) return { ok: false };
+
+  const next = normalizeProfileInput(input);
+  if (next.selectedSubjectIds.length === 0) return { ok: false };
+
+  await updateProfile((current) => ({
+    ...current,
+    ...next,
+    onboarded: true,
+    lastActiveDate: new Date().toISOString().slice(0, 10),
+  }));
+
+  revalidateStudentPaths();
+  return { ok: true };
+}
+
+export async function updateStudentProfile(input: OnboardingInput): Promise<{ ok: boolean }> {
+  if (!input.preferredName.trim()) return { ok: false };
+
+  const next = normalizeProfileInput(input);
+  if (next.selectedSubjectIds.length === 0) return { ok: false };
+
+  await updateProfile((current) => ({
+    ...current,
+    ...next,
+    lastActiveDate: new Date().toISOString().slice(0, 10),
+  }));
+
+  revalidateStudentPaths();
   return { ok: true };
 }
 

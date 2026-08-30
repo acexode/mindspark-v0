@@ -5,6 +5,7 @@ import "@fontsource/source-serif-4/600.css";
 import "@fontsource/caveat/500.css";
 import "katex/dist/katex.min.css";
 import "@/src/styles.css";
+import { DevServiceWorkerCleanup } from "@/components/layout/dev-sw-cleanup";
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
@@ -23,7 +24,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <DevServiceWorkerCleanup />
+        {children}
+      </body>
     </html>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { getLesson, getQuestions, idSlug, resolveSubjectSlug, resolveTopicSlug } from "@/lib/content/loader";
+import { filterTopicsForClass } from "@/lib/content/class-visibility";
 import { getRecord, isUnlocked, lockReason } from "@/lib/domain/mastery/mastery";
 import { MasteryBadge } from "@/components/ui/mastery-badge";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
@@ -14,10 +15,12 @@ export default async function TopicPage({
   const { subject: subjectSlug, topic: topicSlug } = await params;
   const subject = resolveSubjectSlug(subjectSlug);
   if (!subject) notFound();
-  const topic = resolveTopicSlug(subject, topicSlug);
-  if (!topic) notFound();
+  const rawTopic = resolveTopicSlug(subject, topicSlug);
+  if (!rawTopic) notFound();
 
   const profile = await readProfileOrDefault();
+  const topic = filterTopicsForClass([rawTopic], profile.classLevel)[0];
+  if (!topic) notFound();
   const nameById = new Map(
     subject.topics.flatMap((t) => t.subtopics.map((s) => [s.id, s.name] as const)),
   );

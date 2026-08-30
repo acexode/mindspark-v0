@@ -4,18 +4,17 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { saveOnboarding } from "@/features/learning/server/actions";
 import {
+  subjectsForClass,
+  type SelectableSubject,
+} from "@/features/onboarding/lib/selectable-subjects";
+import {
   SECONDARY_CLASS_LEVELS,
   UNDERGRADUATE_CLASS_LEVELS,
   type EducationLevel,
   type ExamTarget,
 } from "@/lib/domain/student/types";
 
-export interface SelectableSubject {
-  id: string;
-  name: string;
-  level: EducationLevel;
-  accentColor: string;
-}
+export type { SelectableSubject };
 
 const EXAM_TARGETS: ExamTarget[] = ["WAEC", "NECO", "JAMB"];
 
@@ -23,23 +22,44 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [level, setLevel] = useState<EducationLevel>("secondary");
+  const [classLevel, setClassLevel] = useState<string>("SS2");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [examTargets, setExamTargets] = useState<ExamTarget[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const available = subjects.filter((s) => s.level === level);
+  const available = subjectsForClass(subjects, level, classLevel);
+  const availableIds = new Set(available.map((subject) => subject.id));
   const classLevels = level === "secondary" ? SECONDARY_CLASS_LEVELS : UNDERGRADUATE_CLASS_LEVELS;
+
+  function pruneSelection(nextLevel: EducationLevel, nextClass: string, current: string[]) {
+    const nextAvailable = subjectsForClass(subjects, nextLevel, nextClass);
+    const ids = new Set(nextAvailable.map((subject) => subject.id));
+    return current.filter((id) => ids.has(id));
+  }
 
   function toggle<T>(list: T[], value: T, setter: (next: T[]) => void) {
     setter(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
+  }
+
+  function handleLevelChange(nextLevel: EducationLevel) {
+    setLevel(nextLevel);
+    const nextClass = nextLevel === "secondary" ? "SS2" : "Year2";
+    setClassLevel(nextClass);
+    setSelectedSubjects((current) => pruneSelection(nextLevel, nextClass, current));
+  }
+
+  function handleClassChange(nextClass: string) {
+    setClassLevel(nextClass);
+    setSelectedSubjects((current) => pruneSelection(level, nextClass, current));
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
-    if (selectedSubjects.length === 0) {
-      setError("Choose at least one subject so we can build your learning path.");
+    const visibleSelected = selectedSubjects.filter((id) => availableIds.has(id));
+    if (visibleSelected.length === 0) {
+      setError("Choose at least one subject available for your class.");
       return;
     }
 
@@ -49,11 +69,11 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
         preferredName: String(form.get("preferredName") ?? ""),
         ageBand: String(form.get("ageBand") ?? "14-16") as "12-13" | "14-16" | "17-20" | "21+",
         educationLevel: level,
-        classLevel: String(form.get("classLevel") ?? classLevels[0]),
+        classLevel,
         institution: String(form.get("institution") ?? "") || undefined,
         programme: String(form.get("programme") ?? "") || undefined,
         examTargets: examTargets.length > 0 ? examTargets : ["none"],
-        selectedSubjectIds: selectedSubjects,
+        selectedSubjectIds: visibleSelected,
         goal: String(form.get("goal") ?? "school") as "foundations" | "school" | "exam" | "research",
       });
 
@@ -87,10 +107,7 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
             <select
               name="educationLevel"
               value={level}
-              onChange={(e) => {
-                setLevel(e.target.value as EducationLevel);
-                setSelectedSubjects([]);
-              }}
+              onChange={(e) => handleLevelChange(e.target.value as EducationLevel)}
             >
               <option value="secondary">Secondary school</option>
               <option value="undergraduate">Undergraduate</option>
@@ -99,7 +116,7 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
 
           <label>
             {level === "secondary" ? "Class" : "Year"}
-            <select name="classLevel" defaultValue={level === "secondary" ? "SS2" : "Year2"}>
+            <select name="classLevel" value={classLevel} onChange={(e) => handleClassChange(e.target.value)}>
               {classLevels.map((value) => (
                 <option key={value} value={value}>
                   {value}
@@ -155,7 +172,7 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
         <fieldset className="field-group">
           <legend>Which subjects do you study?</legend>
           {available.length === 0 ? (
-            <p className="field-hint">No subjects published for this level yet.</p>
+            <p className="field-hint">No subjects published for {classLevel} yet.</p>
           ) : (
             <div className="subject-chip-grid">
               {available.map((subject) => {
@@ -175,7 +192,10 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
               })}
             </div>
           )}
-          <p className="field-hint">{selectedSubjects.length} selected · you can add more later.</p>
+          <p className="field-hint">
+            {selectedSubjects.filter((id) => availableIds.has(id)).length} selected for {classLevel} · you can
+            add more later.
+          </p>
         </fieldset>
 
         <fieldset className="field-group">

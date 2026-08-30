@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { getSubject, getSubjectStats, idSlug } from "@/lib/content/loader";
 import { allSubtopicIds, buildCandidates } from "@/lib/content/navigation";
+import { filterSubjectForClass } from "@/lib/content/class-visibility";
 import { aggregateMastery } from "@/lib/domain/mastery/mastery";
 import { recommendNext } from "@/lib/domain/recommendations/recommend";
 import { MasteryBar, masteryLabel } from "@/components/ui/mastery-badge";
@@ -12,7 +13,7 @@ export const metadata = { title: "Today — Mindspark" };
 
 export default async function HomePage() {
   const profile = await readProfileOrDefault();
-  const candidates = buildCandidates(profile.selectedSubjectIds);
+  const candidates = buildCandidates(profile.selectedSubjectIds, profile.classLevel);
   const recommendation = recommendNext(candidates, profile.mastery);
   const subjects = profile.selectedSubjectIds.map((id) => getSubject(id)).filter((s) => s !== null);
 
@@ -64,8 +65,9 @@ export default async function HomePage() {
           <h2>Your subjects</h2>
           <div className="home-subject-grid">
             {subjects.map((subject) => {
-              const agg = aggregateMastery(profile.mastery, allSubtopicIds(subject));
-              const stats = getSubjectStats(subject);
+              const scoped = filterSubjectForClass(subject, profile.classLevel);
+              const agg = aggregateMastery(profile.mastery, allSubtopicIds(scoped));
+              const stats = getSubjectStats(scoped);
               return (
                 <Link
                   key={subject.id}

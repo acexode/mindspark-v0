@@ -8,7 +8,9 @@ import {
   resolveTopicSlug,
 } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
+import { classLevelsForSubtopic, isClassVisible } from "@/lib/content/class-visibility";
 import { LessonPlayer } from "@/features/lesson/components/lesson-player";
+import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { EmptyState } from "@/components/ui/empty-state";
 
 export default async function LessonPage({
@@ -24,6 +26,11 @@ export default async function LessonPage({
   if (!topic) notFound();
   const subtopic = resolveSubtopicSlug(topic, subtopicSlug);
   if (!subtopic) notFound();
+
+  const profile = await readProfileOrDefault();
+  if (!isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) {
+    notFound();
+  }
 
   const lesson = getLesson(subtopic.id);
   if (!lesson) {

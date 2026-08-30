@@ -1,15 +1,11 @@
 import { getSubjects } from "@/lib/content/loader";
 import { OnboardingForm } from "@/features/onboarding/components/onboarding-form";
+import { toSelectableSubjects } from "@/features/onboarding/lib/selectable-subjects";
 
 export const metadata = { title: "Get started — Mindspark" };
 
 export default function OnboardingPage() {
-  const subjects = getSubjects().map((subject) => ({
-    id: subject.id,
-    name: subject.name,
-    level: subject.level,
-    accentColor: subject.accentColor,
-  }));
+  const subjects = toSelectableSubjects(getSubjects());
 
   return <OnboardingForm subjects={subjects} />;
 }

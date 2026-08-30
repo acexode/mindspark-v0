@@ -2,16 +2,19 @@ import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { getLesson, getQuestions, idSlug, resolveSubjectSlug } from "@/lib/content/loader";
+import { filterSubjectForClass } from "@/lib/content/class-visibility";
 import { aggregateMastery, getRecord } from "@/lib/domain/mastery/mastery";
 import { MasteryBar, MasteryBadge } from "@/components/ui/mastery-badge";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 
 export default async function SubjectPage({ params }: { params: Promise<{ subject: string }> }) {
   const { subject: subjectSlug } = await params;
-  const subject = resolveSubjectSlug(subjectSlug);
-  if (!subject) notFound();
+  const raw = resolveSubjectSlug(subjectSlug);
+  if (!raw) notFound();
 
   const profile = await readProfileOrDefault();
+  const subject = filterSubjectForClass(raw, profile.classLevel);
+  if (subject.topics.length === 0) notFound();
 
   return (
     <section className="page" style={{ ["--accent" as string]: subject.accentColor }}>
@@ -24,6 +27,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
           </nav>
           <h1>{subject.name}</h1>
           <p>{subject.description}</p>
+          <p className="topic-meta">Showing topics for {profile.classLevel}. Other classes stay hidden so you only study what matches your year.</p>
           <p className="curricula-tags">
             {subject.curricula.map((c) => (
               <span key={c} className="tag">

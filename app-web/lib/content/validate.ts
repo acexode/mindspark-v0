@@ -29,6 +29,9 @@ export const TIER_REQUIREMENTS: TierRequirement[] = [
   { subjectId: "sec.chemistry", tier: "B", minTopics: 8, minSubtopics: 20, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
   { subjectId: "sec.economics", tier: "B", minTopics: 6, minSubtopics: 18, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
   { subjectId: "sec.government", tier: "B", minTopics: 6, minSubtopics: 18, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
+  { subjectId: "sec.accounting", tier: "B", minTopics: 6, minSubtopics: 18, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
+  { subjectId: "sec.commerce", tier: "B", minTopics: 6, minSubtopics: 18, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
+  { subjectId: "sec.marketing", tier: "B", minTopics: 6, minSubtopics: 18, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
   { subjectId: "ug.computer-science", tier: "C", minTopics: 4, minSubtopics: 12, lessonRule: "per-subtopic", minQuestionsPerSubtopic: 5 },
 ];
 

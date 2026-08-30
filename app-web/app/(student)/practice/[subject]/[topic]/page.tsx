@@ -8,6 +8,8 @@ import {
   resolveTopicSlug,
 } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
+import { classLevelsForSubtopic, filterQuestionsByClass, isClassVisible, isTopicVisibleToClass } from "@/lib/content/class-visibility";
+import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { PracticeSession } from "@/features/practice/components/practice-session";
 import { EmptyState } from "@/components/ui/empty-state";
 
@@ -26,8 +28,15 @@ export default async function TopicPracticePage({
   const topic = resolveTopicSlug(subject, topicSlug);
   if (!topic) notFound();
 
+  const profile = await readProfileOrDefault();
+  if (!isTopicVisibleToClass(profile.classLevel, topic)) notFound();
   const subtopic = subtopicSlug ? resolveSubtopicSlug(topic, subtopicSlug) : null;
-  const questions = subtopic ? getQuestions(subtopic.id) : getQuestionsForTopic(topic.id);
+  if (subtopic && !isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) notFound();
+  const questions = filterQuestionsByClass(
+    subtopic ? getQuestions(subtopic.id) : getQuestionsForTopic(topic.id),
+    subject,
+    profile.classLevel,
+  );
   const scopeLabel = subtopic ? `${subject.name} · ${subtopic.name}` : `${subject.name} · ${topic.name}`;
 
   if (questions.length === 0) {
