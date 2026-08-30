@@ -55,10 +55,9 @@ export function ProfileForm({ profile, subjects }: ProfileFormProps) {
   function handleLevelChange(nextLevel: EducationLevel) {
     setLevel(nextLevel);
     setSaved(false);
-    const nextClassLevels = nextLevel === "secondary" ? SECONDARY_CLASS_LEVELS : UNDERGRADUATE_CLASS_LEVELS;
-    const nextClass = nextClassLevels.includes(classLevel as (typeof nextClassLevels)[number])
-      ? classLevel
-      : nextClassLevels[0];
+    const nextClassLevels: readonly string[] =
+      nextLevel === "secondary" ? SECONDARY_CLASS_LEVELS : UNDERGRADUATE_CLASS_LEVELS;
+    const nextClass = nextClassLevels.includes(classLevel) ? classLevel : nextClassLevels[0];
     setClassLevel(nextClass);
     setSelectedSubjects((current) => pruneSelection(nextLevel, nextClass, current));
     if (nextLevel === "undergraduate") {
