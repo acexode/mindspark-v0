@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import type { PublicQuestion } from "@/lib/content/schema";
 import { MathText } from "@/components/ui/math-text";
+import { shuffle } from "@/lib/domain/assessment/shuffle";
 import { submitAnswer, type AnswerResult } from "@/features/learning/server/actions";
 
 interface QuestionCardProps {
@@ -25,8 +26,9 @@ export function QuestionCard({
   const [value, setValue] = useState("");
   const [result, setResult] = useState<AnswerResult | null>(null);
   const [pending, startTransition] = useTransition();
+  const [options] = useState(() => (question.options?.length ? shuffle(question.options) : []));
 
-  const hasOptions = Boolean(question.options?.length);
+  const hasOptions = options.length > 0;
   const answered = result !== null;
 
   function select(optionId: string) {
@@ -67,7 +69,7 @@ export function QuestionCard({
 
       {hasOptions ? (
         <div className="option-list" role="radiogroup" aria-label="Answer options">
-          {question.options?.map((option) => (
+          {options.map((option, index) => (
             <button
               key={option.id}
               type="button"
@@ -77,7 +79,7 @@ export function QuestionCard({
               className={`option ${selected === option.id ? "is-selected" : ""}`}
               onClick={() => select(option.id)}
             >
-              <span className="option-key">{option.id.toUpperCase()}</span>
+              <span className="option-key">{String.fromCharCode(65 + index)}</span>
               <MathText text={option.text} />
             </button>
           ))}

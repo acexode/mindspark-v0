@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import type { PublicQuestion } from "@/lib/content/schema";
 import type { AnswerResult } from "@/features/learning/server/actions";
 import { advanceSelection, initialSelectionState, selectNextQuestion } from "@/lib/domain/assessment/grading";
+import { shuffle } from "@/lib/domain/assessment/shuffle";
 import { QuestionCard } from "./question-card";
 
 interface PracticeSessionProps {
@@ -26,13 +27,14 @@ export function PracticeSession({
   sessionLength = 8,
 }: PracticeSessionProps) {
   const total = Math.min(sessionLength, questions.length);
+  const [pool] = useState(() => shuffle(questions));
   const [state, setState] = useState(() => initialSelectionState(1));
   const [results, setResults] = useState<AnswerResult[]>([]);
   const [answeredCurrent, setAnsweredCurrent] = useState(false);
 
   const current = useMemo(
-    () => selectNextQuestion(questions as never, state) as PublicQuestion | null,
-    [questions, state],
+    () => selectNextQuestion(pool as never, state) as PublicQuestion | null,
+    [pool, state],
   );
 
   const finished = results.length >= total || current === null;

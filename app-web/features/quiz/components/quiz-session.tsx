@@ -5,6 +5,7 @@ import type { Route } from "next";
 import { useEffect, useState, useTransition } from "react";
 import type { PublicQuestion } from "@/lib/content/schema";
 import { MathText } from "@/components/ui/math-text";
+import { shuffle } from "@/lib/domain/assessment/shuffle";
 import { submitQuiz, type QuizReviewItem } from "@/features/quiz/server/actions";
 
 interface QuizSessionProps {
@@ -18,13 +19,19 @@ interface QuizSessionProps {
 type Answers = Record<string, { optionId?: string; value?: string }>;
 
 export function QuizSession({ title, subjectName, subjectSlug, questions, durationSeconds }: QuizSessionProps) {
+  const [paper] = useState(() =>
+    shuffle(questions).map((question) => ({
+      ...question,
+      options: question.options?.length ? shuffle(question.options) : question.options,
+    })),
+  );
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [remaining, setRemaining] = useState(durationSeconds);
   const [review, setReview] = useState<QuizReviewItem[] | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const question = questions[index];
+  const question = paper[index];
   const answeredCount = Object.keys(answers).length;
 
   useEffect(() => {
@@ -45,7 +52,7 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
   function handleSubmit() {
     startTransition(async () => {
       const result = await submitQuiz(
-        questions.map((q) => ({ questionId: q.id, answer: answers[q.id] ?? {} })),
+        paper.map((q) => ({ questionId: q.id, answer: answers[q.id] ?? {} })),
       );
       setReview(result.items);
     });
@@ -66,7 +73,7 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
       </header>
 
       <p className="quiz-progress-text">
-        Question {index + 1} of {questions.length} · {answeredCount} answered
+        Question {index + 1} of {paper.length} · {answeredCount} answered
       </p>
 
       <div className="quiz-question">
@@ -76,7 +83,7 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
 
         {question.options?.length ? (
           <div className="option-list" role="radiogroup" aria-label="Answer options">
-            {question.options.map((option) => (
+            {question.options.map((option, optionIndex) => (
               <button
                 key={option.id}
                 type="button"
@@ -85,7 +92,7 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
                 className={`option ${answers[question.id]?.optionId === option.id ? "is-selected" : ""}`}
                 onClick={() => record({ optionId: option.id })}
               >
-                <span className="option-key">{option.id.toUpperCase()}</span>
+                <span className="option-key">{String.fromCharCode(65 + optionIndex)}</span>
                 <MathText text={option.text} />
               </button>
             ))}
@@ -108,7 +115,7 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
         <button type="button" className="secondary-action" disabled={index === 0} onClick={() => setIndex(index - 1)}>
           Previous
         </button>
-        {index < questions.length - 1 ? (
+        {index < paper.length - 1 ? (
           <button type="button" className="primary-action" onClick={() => setIndex(index + 1)}>
             Next
           </button>
@@ -120,7 +127,7 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
       </nav>
 
       <ol className="quiz-palette" aria-label="Question navigator">
-        {questions.map((q, i) => (
+        {paper.map((q, i) => (
           <li key={q.id}>
             <button
               type="button"

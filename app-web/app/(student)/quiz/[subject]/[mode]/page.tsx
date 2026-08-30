@@ -2,9 +2,12 @@ import { notFound } from "next/navigation";
 import { getQuestionsForSubject, idSlug, resolveSubjectSlug } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
 import { filterQuestionsByClass } from "@/lib/content/class-visibility";
+import { balancedSample } from "@/lib/domain/assessment/shuffle";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { QuizSession } from "@/features/quiz/components/quiz-session";
 import { EmptyState } from "@/components/ui/empty-state";
+
+export const dynamic = "force-dynamic";
 
 const MODES = {
   subject: { label: "Subject quiz", count: 20, minutesPerQuestion: 1.5 },
@@ -52,27 +55,4 @@ export default async function QuizPage({
       />
     </div>
   );
-}
-
-/** Spreads the sample across difficulties so a quiz is never all easy or all hard. */
-function balancedSample<T extends { difficulty: number }>(pool: T[], count: number): T[] {
-  const byDifficulty = new Map<number, T[]>();
-  for (const item of pool) {
-    byDifficulty.set(item.difficulty, [...(byDifficulty.get(item.difficulty) ?? []), item]);
-  }
-
-  const selected: T[] = [];
-  const difficulties = [...byDifficulty.keys()].sort();
-  let index = 0;
-
-  while (selected.length < Math.min(count, pool.length)) {
-    const difficulty = difficulties[index % difficulties.length];
-    const bucket = byDifficulty.get(difficulty);
-    const next = bucket?.shift();
-    if (next) selected.push(next);
-    index += 1;
-    if (difficulties.every((d) => (byDifficulty.get(d)?.length ?? 0) === 0)) break;
-  }
-
-  return selected;
 }

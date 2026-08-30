@@ -1,4 +1,5 @@
 import type { Question } from "@/lib/content/schema";
+import { pickRandom } from "./shuffle";
 
 export interface SubmittedAnswer {
   optionId?: string;
@@ -117,14 +118,21 @@ export function advanceSelection(state: SelectionState, questionId: string, corr
   };
 }
 
-export function selectNextQuestion(pool: Question[], state: SelectionState): Question | null {
+export function selectNextQuestion(
+  pool: Question[],
+  state: SelectionState,
+  random: () => number = Math.random,
+): Question | null {
   const remaining = pool.filter((q) => !state.answeredIds.includes(q.id));
   if (remaining.length === 0) return null;
 
   const exact = remaining.filter((q) => q.difficulty === state.difficulty);
-  if (exact.length > 0) return exact[0];
+  if (exact.length > 0) return pickRandom(exact, random) ?? null;
 
-  return [...remaining].sort(
+  const ranked = [...remaining].sort(
     (a, b) => Math.abs(a.difficulty - state.difficulty) - Math.abs(b.difficulty - state.difficulty),
-  )[0];
+  );
+  const closestGap = Math.abs(ranked[0]!.difficulty - state.difficulty);
+  const nearest = ranked.filter((q) => Math.abs(q.difficulty - state.difficulty) === closestGap);
+  return pickRandom(nearest, random) ?? null;
 }

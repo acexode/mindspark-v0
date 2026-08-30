@@ -13,6 +13,8 @@ import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { PracticeSession } from "@/features/practice/components/practice-session";
 import { EmptyState } from "@/components/ui/empty-state";
 
+export const dynamic = "force-dynamic";
+
 export default async function TopicPracticePage({
   params,
   searchParams,
