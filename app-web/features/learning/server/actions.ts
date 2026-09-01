@@ -5,6 +5,7 @@ import { getQuestionById, getSubject } from "@/lib/content/loader";
 import { filterSubjectForClass } from "@/lib/content/class-visibility";
 import { gradeAnswer, type SubmittedAnswer } from "@/lib/domain/assessment/grading";
 import { applyEvidence, getRecord } from "@/lib/domain/mastery/mastery";
+import { TOPIC_PRACTICE_UNLOCK_PERCENT } from "@/lib/domain/mastery/progression";
 import type { StudentProfile } from "@/lib/domain/student/types";
 import { readProfileOrDefault, resetProfile, updateProfile, writeProfile } from "@/lib/server/profile/store";
 
@@ -153,6 +154,35 @@ export async function recordLessonVisit(subjectId: string, subtopicId: string): 
     lastVisited: { ...current.lastVisited, [subjectId]: subtopicId },
     lastActiveDate: new Date().toISOString().slice(0, 10),
   }));
+}
+
+export interface TopicPracticeRecordResult {
+  best: number;
+  passed: boolean;
+  justUnlocked: boolean;
+}
+
+/** Records a finished topic-practice session. Best score wins; 50% unlocks the next topic. */
+export async function recordTopicPracticeScore(
+  topicId: string,
+  accuracyPercent: number,
+): Promise<TopicPracticeRecordResult> {
+  const clamped = Math.max(0, Math.min(100, Math.round(accuracyPercent)));
+  let previous = 0;
+
+  await updateProfile((current) => {
+    previous = current.topicPracticeBest[topicId] ?? 0;
+    if (clamped <= previous) return current;
+    return {
+      ...current,
+      topicPracticeBest: { ...current.topicPracticeBest, [topicId]: clamped },
+    };
+  });
+
+  const best = Math.max(previous, clamped);
+    const passed = best >= TOPIC_PRACTICE_UNLOCK_PERCENT;
+    revalidateStudentPaths();
+    return { best, passed, justUnlocked: previous < TOPIC_PRACTICE_UNLOCK_PERCENT && passed };
 }
 
 export async function addSubject(subjectId: string): Promise<void> {

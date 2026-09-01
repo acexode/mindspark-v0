@@ -40,7 +40,9 @@ export async function readProfile(): Promise<StudentProfile | null> {
   const sessionId = await getSessionId();
   if (!sessionId) return null;
   const profile = readAll()[sessionId];
-  return profile ? { ...DEFAULT_STUDENT_PROFILE, ...profile } : null;
+  return profile
+    ? { ...DEFAULT_STUDENT_PROFILE, ...profile, topicPracticeBest: profile.topicPracticeBest ?? {} }
+    : null;
 }
 
 export async function readProfileOrDefault(): Promise<StudentProfile> {

@@ -2,8 +2,11 @@ import Link from "next/link";
 import type { Route } from "next";
 import { getQuestionsForSubject, getQuestionsForTopic, getSubjects, idSlug } from "@/lib/content/loader";
 import { filterQuestionsByClass, filterSubjectsForClass } from "@/lib/content/class-visibility";
+import { subjectProgression } from "@/lib/content/topic-progress";
 import { EmptyState } from "@/components/ui/empty-state";
+import { LockNotice } from "@/components/ui/lock-notice";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
+import type { StudentProfile } from "@/lib/domain/student/types";
 
 export const metadata = { title: "Practice — Mindspark" };
 
@@ -36,16 +39,16 @@ export default async function PracticePickerPage() {
         <div>
           <span className="eyebrow">Practice</span>
           <h1>What would you like to practise?</h1>
-          <p>Choose a subject, then a topic. You decide what to work on.</p>
+          <p>Choose a subject, then a topic. Topics unlock in order — score at least 50% on the current topic’s practice to open the next one.</p>
         </div>
       </header>
 
-      <SubjectPickers subjects={mine.length > 0 ? mine : others} studentClass={profile.classLevel} />
+      <SubjectPickers subjects={mine.length > 0 ? mine : others} studentClass={profile.classLevel} profile={profile} />
 
       {mine.length > 0 && others.length > 0 && (
         <section className="library-more">
           <h2>Other subjects</h2>
-          <SubjectPickers subjects={others} studentClass={profile.classLevel} />
+          <SubjectPickers subjects={others} studentClass={profile.classLevel} profile={profile} />
         </section>
       )}
     </section>
@@ -55,14 +58,17 @@ export default async function PracticePickerPage() {
 function SubjectPickers({
   subjects,
   studentClass,
+  profile,
 }: {
   subjects: ReturnType<typeof getSubjects>;
   studentClass: string;
+  profile: StudentProfile;
 }) {
   return (
     <div className="picker-grid">
       {subjects.map((subject) => {
           const subjectSlug = idSlug(subject.id);
+          const progression = subjectProgression(subject, studentClass, profile.mastery, profile.topicPracticeBest);
           const total = filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, studentClass).length;
 
           return (
@@ -73,9 +79,22 @@ function SubjectPickers({
               </header>
 
               <ul className="picker-topics">
-                {subject.topics.map((topic) => {
+                {progression.subject.topics.map((topic) => {
                   const count = filterQuestionsByClass(getQuestionsForTopic(topic.id), subject, studentClass).length;
                   if (count === 0) return null;
+                  const unlocked = progression.isUnlocked(topic.id);
+                  const reason = progression.lockReason(topic.id);
+                  if (!unlocked) {
+                    return (
+                      <li key={topic.id} className="picker-topic-locked">
+                        <span className="is-locked">
+                          {topic.name}
+                          <small>Locked</small>
+                        </span>
+                        {reason && <LockNotice reason={reason} />}
+                      </li>
+                    );
+                  }
                   return (
                     <li key={topic.id}>
                       <Link href={`/practice/${subjectSlug}/${idSlug(topic.id)}` as Route}>
@@ -88,7 +107,7 @@ function SubjectPickers({
               </ul>
 
               <Link className="secondary-action" href={`/practice/${subjectSlug}` as Route}>
-                Mixed practice across {subject.name}
+                Mixed practice across unlocked topics
               </Link>
             </article>
           );

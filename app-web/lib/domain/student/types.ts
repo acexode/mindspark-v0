@@ -32,6 +32,8 @@ export interface StudentProfile {
   mastery: MasteryMap;
   /** Last visited subtopic per subject, for "Continue where you left off". */
   lastVisited: Record<string, string>;
+  /** Best topic-practice accuracy (0–100), keyed by topic ID. Unlocks the next topic at 50%. */
+  topicPracticeBest: Record<string, number>;
   accessibilityPreferences: AccessibilityPreferences;
 }
 
@@ -56,6 +58,7 @@ export const DEFAULT_STUDENT_PROFILE: StudentProfile = {
   lastActiveDate: null,
   mastery: {},
   lastVisited: {},
+  topicPracticeBest: {},
   accessibilityPreferences: DEFAULT_ACCESSIBILITY,
 };
 

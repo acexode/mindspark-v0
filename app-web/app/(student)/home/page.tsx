@@ -3,6 +3,7 @@ import type { Route } from "next";
 import { getSubject, getSubjectStats, idSlug } from "@/lib/content/loader";
 import { allSubtopicIds, buildCandidates } from "@/lib/content/navigation";
 import { filterSubjectForClass } from "@/lib/content/class-visibility";
+import { subjectProgression } from "@/lib/content/topic-progress";
 import { aggregateMastery } from "@/lib/domain/mastery/mastery";
 import { recommendNext } from "@/lib/domain/recommendations/recommend";
 import { MasteryBar, masteryLabel } from "@/components/ui/mastery-badge";
@@ -13,9 +14,16 @@ export const metadata = { title: "Today — Mindspark" };
 
 export default async function HomePage() {
   const profile = await readProfileOrDefault();
-  const candidates = buildCandidates(profile.selectedSubjectIds, profile.classLevel);
-  const recommendation = recommendNext(candidates, profile.mastery);
   const subjects = profile.selectedSubjectIds.map((id) => getSubject(id)).filter((s) => s !== null);
+  const unlockedTopicIds = new Set(
+    subjects.flatMap((subject) => [
+      ...subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest).unlockedTopicIds,
+    ]),
+  );
+  const candidates = buildCandidates(profile.selectedSubjectIds, profile.classLevel).filter((candidate) =>
+    unlockedTopicIds.has(candidate.topicId),
+  );
+  const recommendation = recommendNext(candidates, profile.mastery);
 
   return (
     <section className="page">

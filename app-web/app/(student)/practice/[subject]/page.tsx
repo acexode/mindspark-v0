@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getQuestionsForSubject, resolveSubjectSlug, idSlug } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
 import { filterQuestionsByClass } from "@/lib/content/class-visibility";
+import { filterQuestionsByUnlockedTopics, subjectProgression } from "@/lib/content/topic-progress";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { PracticeSession } from "@/features/practice/components/practice-session";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -18,7 +19,11 @@ export default async function SubjectPracticePage({
   if (!subject) notFound();
 
   const profile = await readProfileOrDefault();
-  const questions = filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel);
+  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  const questions = filterQuestionsByUnlockedTopics(
+    filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel),
+    progression.unlockedSubtopicIds,
+  );
   if (questions.length === 0) {
     return (
       <section className="page">

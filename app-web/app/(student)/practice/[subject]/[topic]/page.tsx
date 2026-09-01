@@ -9,6 +9,7 @@ import {
 } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
 import { classLevelsForSubtopic, filterQuestionsByClass, isClassVisible, isTopicVisibleToClass } from "@/lib/content/class-visibility";
+import { subjectProgression } from "@/lib/content/topic-progress";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { PracticeSession } from "@/features/practice/components/practice-session";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -32,6 +33,26 @@ export default async function TopicPracticePage({
 
   const profile = await readProfileOrDefault();
   if (!isTopicVisibleToClass(profile.classLevel, topic)) notFound();
+  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  if (!progression.isUnlocked(topic.id)) {
+    const reason = progression.lockReason(topic.id);
+    const blocker = progression.blocker(topic.id);
+    return (
+      <section className="page">
+        <EmptyState
+          title={`${topic.name} is locked`}
+          description={reason ?? "Finish the previous topic first."}
+          descriptionLabel="Why this is locked"
+          actionLabel={blocker ? `Practise ${blocker.name}` : `Back to ${subject.name}`}
+          actionHref={
+            blocker
+              ? (`/practice/${subjectSlug}/${idSlug(blocker.id)}` as never)
+              : (`/library/${subjectSlug}` as never)
+          }
+        />
+      </section>
+    );
+  }
   const subtopic = subtopicSlug ? resolveSubtopicSlug(topic, subtopicSlug) : null;
   if (subtopic && !isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) notFound();
   const questions = filterQuestionsByClass(
@@ -54,6 +75,8 @@ export default async function TopicPracticePage({
     );
   }
 
+  const nextTopic = progression.items[progression.items.findIndex((item) => item.id === topic.id) + 1];
+
   return (
     <div className="page" style={{ ["--accent" as string]: subject.accentColor }}>
       <PracticeSession
@@ -62,6 +85,8 @@ export default async function TopicPracticePage({
         questions={questions.map(toPublicQuestion)}
         backHref={`/library/${subjectSlug}/${topicSlug}`}
         subjectSlug={idSlug(subject.id)}
+        checkpointTopicId={subtopic ? undefined : topic.id}
+        nextTopicName={subtopic ? undefined : (nextTopic?.name ?? null)}
       />
     </div>
   );

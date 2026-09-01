@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getQuestionsForSubject, idSlug, resolveSubjectSlug } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
 import { filterQuestionsByClass } from "@/lib/content/class-visibility";
+import { filterQuestionsByUnlockedTopics, subjectProgression } from "@/lib/content/topic-progress";
 import { balancedSample } from "@/lib/domain/assessment/shuffle";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { QuizSession } from "@/features/quiz/components/quiz-session";
@@ -28,7 +29,11 @@ export default async function QuizPage({
   if (!subject) notFound();
 
   const profile = await readProfileOrDefault();
-  const pool = filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel);
+  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  const pool = filterQuestionsByUnlockedTopics(
+    filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel),
+    progression.unlockedSubtopicIds,
+  );
   if (pool.length < 5) {
     return (
       <section className="page">

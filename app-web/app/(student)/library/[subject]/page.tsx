@@ -2,9 +2,10 @@ import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { getLesson, getQuestions, idSlug, resolveSubjectSlug } from "@/lib/content/loader";
-import { filterSubjectForClass } from "@/lib/content/class-visibility";
+import { subjectProgression } from "@/lib/content/topic-progress";
 import { aggregateMastery, getRecord } from "@/lib/domain/mastery/mastery";
 import { MasteryBar, MasteryBadge } from "@/components/ui/mastery-badge";
+import { LockNotice } from "@/components/ui/lock-notice";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 
 export default async function SubjectPage({ params }: { params: Promise<{ subject: string }> }) {
@@ -13,7 +14,8 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
   if (!raw) notFound();
 
   const profile = await readProfileOrDefault();
-  const subject = filterSubjectForClass(raw, profile.classLevel);
+  const progression = subjectProgression(raw, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  const subject = progression.subject;
   if (subject.topics.length === 0) notFound();
 
   return (
@@ -28,6 +30,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
           <h1>{subject.name}</h1>
           <p>{subject.description}</p>
           <p className="topic-meta">Showing topics for {profile.classLevel}. Other classes stay hidden so you only study what matches your year.</p>
+          <p className="topic-meta">Topics unlock in order. Master the current topic and score at least 50% in its practice to open the next one.</p>
           <p className="curricula-tags">
             {subject.curricula.map((c) => (
               <span key={c} className="tag">
@@ -50,17 +53,27 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
         {subject.topics.map((topic) => {
           const agg = aggregateMastery(profile.mastery, topic.subtopics.map((s) => s.id));
           const topicSlug = idSlug(topic.id);
+          const unlocked = progression.isUnlocked(topic.id);
+          const reason = progression.lockReason(topic.id);
+          const best = progression.practiceBest[topic.id] ?? 0;
 
           return (
-            <li key={topic.id} className="topic-row">
+            <li key={topic.id} className={`topic-row ${unlocked ? "" : "is-locked"}`}>
               <div className="topic-row-head">
                 <div>
                   <h2>
-                    <Link href={`/library/${subjectSlug}/${topicSlug}` as Route}>{topic.name}</Link>
+                    {unlocked ? (
+                      <Link href={`/library/${subjectSlug}/${topicSlug}` as Route}>{topic.name}</Link>
+                    ) : (
+                      <span>
+                        {topic.name} <span className="topic-lock-badge">Locked</span>
+                      </span>
+                    )}
                   </h2>
                   <p>{topic.summary}</p>
                   <p className="topic-meta">
                     {topic.subtopics.length} subtopics · {topic.classLevels.join(", ")}
+                    {unlocked && best > 0 ? ` · Best practice ${best}%` : ""}
                   </p>
                 </div>
                 <div className="topic-row-mastery">
@@ -69,6 +82,8 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
                 </div>
               </div>
 
+              {!unlocked && reason && <LockNotice reason={reason} />}
+
               <ul className="subtopic-chips">
                 {topic.subtopics.map((subtopic) => {
                   const record = getRecord(profile.mastery, subtopic.id);
@@ -76,19 +91,26 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
                   const questionCount = getQuestions(subtopic.id).length;
                   return (
                     <li key={subtopic.id}>
-                      <Link
-                        href={
-                          hasLesson
-                            ? (`/learn/${subjectSlug}/${topicSlug}/${idSlug(subtopic.id)}` as Route)
-                            : (`/library/${subjectSlug}/${topicSlug}` as Route)
-                        }
-                        className={`subtopic-chip is-${record.state.replace("_", "-")}`}
-                      >
-                        {subtopic.name}
-                        <small>
-                          {hasLesson ? "Lesson" : "No lesson yet"} · {questionCount} Q
-                        </small>
-                      </Link>
+                      {unlocked ? (
+                        <Link
+                          href={
+                            hasLesson
+                              ? (`/learn/${subjectSlug}/${topicSlug}/${idSlug(subtopic.id)}` as Route)
+                              : (`/library/${subjectSlug}/${topicSlug}` as Route)
+                          }
+                          className={`subtopic-chip is-${record.state.replace("_", "-")}`}
+                        >
+                          {subtopic.name}
+                          <small>
+                            {hasLesson ? "Lesson" : "No lesson yet"} · {questionCount} Q
+                          </small>
+                        </Link>
+                      ) : (
+                        <span className="subtopic-chip is-locked" title={reason ?? "Locked"}>
+                          {subtopic.name}
+                          <small>Locked</small>
+                        </span>
+                      )}
                     </li>
                   );
                 })}

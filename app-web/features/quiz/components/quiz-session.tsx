@@ -6,6 +6,7 @@ import { useEffect, useState, useTransition } from "react";
 import type { PublicQuestion } from "@/lib/content/schema";
 import { MathText } from "@/components/ui/math-text";
 import { shuffle } from "@/lib/domain/assessment/shuffle";
+import { ScoreCelebration } from "@/components/ui/score-celebration";
 import { submitQuiz, type QuizReviewItem } from "@/features/quiz/server/actions";
 
 interface QuizSessionProps {
@@ -156,6 +157,7 @@ function QuizReview({ title, items, subjectSlug }: { title: string; items: QuizR
         <p className="quiz-score">
           {correct}/{items.length} · {percentage}%
         </p>
+        <ScoreCelebration percent={percentage} />
       </header>
 
       <ol className="review-list">

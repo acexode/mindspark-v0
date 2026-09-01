@@ -9,6 +9,7 @@ import {
 } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
 import { classLevelsForSubtopic, isClassVisible } from "@/lib/content/class-visibility";
+import { subjectProgression } from "@/lib/content/topic-progress";
 import { LessonPlayer } from "@/features/lesson/components/lesson-player";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -30,6 +31,26 @@ export default async function LessonPage({
   const profile = await readProfileOrDefault();
   if (!isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) {
     notFound();
+  }
+  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  if (!progression.isUnlocked(topic.id)) {
+    const reason = progression.lockReason(topic.id);
+    const blocker = progression.blocker(topic.id);
+    return (
+      <section className="page">
+        <EmptyState
+          title={`${topic.name} is locked`}
+          description={reason ?? "Finish the previous topic first."}
+          descriptionLabel="Why this is locked"
+          actionLabel={blocker ? `Go to ${blocker.name}` : `Back to ${subject.name}`}
+          actionHref={
+            blocker
+              ? (`/library/${subjectSlug}/${idSlug(blocker.id)}` as never)
+              : (`/library/${subjectSlug}` as never)
+          }
+        />
+      </section>
+    );
   }
 
   const lesson = getLesson(subtopic.id);

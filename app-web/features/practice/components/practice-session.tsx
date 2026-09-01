@@ -2,11 +2,17 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { PublicQuestion } from "@/lib/content/schema";
-import type { AnswerResult } from "@/features/learning/server/actions";
+import {
+  recordTopicPracticeScore,
+  type AnswerResult,
+  type TopicPracticeRecordResult,
+} from "@/features/learning/server/actions";
 import { advanceSelection, initialSelectionState, selectNextQuestion } from "@/lib/domain/assessment/grading";
 import { shuffle } from "@/lib/domain/assessment/shuffle";
+import { TOPIC_PRACTICE_UNLOCK_PERCENT } from "@/lib/domain/mastery/progression";
+import { ScoreCelebration } from "@/components/ui/score-celebration";
 import { QuestionCard } from "./question-card";
 
 interface PracticeSessionProps {
@@ -16,6 +22,9 @@ interface PracticeSessionProps {
   backHref: string;
   subjectSlug: string;
   sessionLength?: number;
+  /** When set, this session is the topic checkpoint that can unlock the next topic. */
+  checkpointTopicId?: string;
+  nextTopicName?: string | null;
 }
 
 export function PracticeSession({
@@ -25,12 +34,15 @@ export function PracticeSession({
   backHref,
   subjectSlug,
   sessionLength = 8,
+  checkpointTopicId,
+  nextTopicName,
 }: PracticeSessionProps) {
   const total = Math.min(sessionLength, questions.length);
   const [pool] = useState(() => shuffle(questions));
   const [state, setState] = useState(() => initialSelectionState(1));
   const [results, setResults] = useState<AnswerResult[]>([]);
   const [answeredCurrent, setAnsweredCurrent] = useState(false);
+  const [checkpoint, setCheckpoint] = useState<TopicPracticeRecordResult | null>(null);
 
   const current = useMemo(
     () => selectNextQuestion(pool as never, state) as PublicQuestion | null,
@@ -39,6 +51,18 @@ export function PracticeSession({
 
   const finished = results.length >= total || current === null;
   const correctCount = results.filter((r) => r.correct).length;
+  const accuracy = results.length > 0 ? Math.round((correctCount / results.length) * 100) : 0;
+
+  useEffect(() => {
+    if (!finished || !checkpointTopicId || results.length === 0) return;
+    let cancelled = false;
+    void recordTopicPracticeScore(checkpointTopicId, accuracy).then((result) => {
+      if (!cancelled) setCheckpoint(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [finished, checkpointTopicId, results.length, accuracy]);
 
   function handleAnswered(result: AnswerResult) {
     setResults((prev) => [...prev, result]);
@@ -52,14 +76,15 @@ export function PracticeSession({
   }
 
   if (finished) {
-    const accuracy = results.length > 0 ? Math.round((correctCount / results.length) * 100) : 0;
     const masteryGain = results.reduce((sum, r) => sum + r.masteryDelta, 0);
     const xp = results.reduce((sum, r) => sum + r.xpAwarded, 0);
+    const passed = checkpoint?.passed ?? accuracy >= TOPIC_PRACTICE_UNLOCK_PERCENT;
 
     return (
       <section className="practice-summary">
         <span className="eyebrow">Session complete</span>
         <h1>{title}</h1>
+        {results.length > 0 && <ScoreCelebration percent={accuracy} />}
         <dl className="summary-stats">
           <div>
             <dt>Score</dt>
@@ -83,6 +108,17 @@ export function PracticeSession({
             <dd>+{xp}</dd>
           </div>
         </dl>
+
+        {checkpointTopicId && results.length > 0 && (
+          <p className={`checkpoint-note ${passed ? "is-passed" : ""}`}>
+            {passed
+              ? nextTopicName
+                ? `You scored ${accuracy}%. ${nextTopicName} is now unlocked.`
+                : `You scored ${accuracy}%. You have completed the last topic in this sequence.`
+              : `You scored ${accuracy}%. Score at least ${TOPIC_PRACTICE_UNLOCK_PERCENT}% to master this topic and unlock the next one.`}
+          </p>
+        )}
+
         <div className="summary-actions">
           <Link className="primary-action" href={backHref as Route}>
             Back to {scopeLabel}

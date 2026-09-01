@@ -3,8 +3,10 @@ import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { getLesson, getQuestions, idSlug, resolveSubjectSlug, resolveTopicSlug } from "@/lib/content/loader";
 import { filterTopicsForClass } from "@/lib/content/class-visibility";
+import { subjectProgression } from "@/lib/content/topic-progress";
 import { getRecord, isUnlocked, lockReason } from "@/lib/domain/mastery/mastery";
 import { MasteryBadge } from "@/components/ui/mastery-badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 
 export default async function TopicPage({
@@ -21,6 +23,26 @@ export default async function TopicPage({
   const profile = await readProfileOrDefault();
   const topic = filterTopicsForClass([rawTopic], profile.classLevel)[0];
   if (!topic) notFound();
+  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  if (!progression.isUnlocked(topic.id)) {
+    const reason = progression.lockReason(topic.id);
+    const blocker = progression.blocker(topic.id);
+    return (
+      <section className="page">
+        <EmptyState
+          title={`${topic.name} is locked`}
+          description={reason ?? "Finish the previous topic first."}
+          descriptionLabel="Why this is locked"
+          actionLabel={blocker ? `Go to ${blocker.name}` : `Back to ${subject.name}`}
+          actionHref={
+            blocker
+              ? (`/library/${subjectSlug}/${idSlug(blocker.id)}` as never)
+              : (`/library/${subjectSlug}` as never)
+          }
+        />
+      </section>
+    );
+  }
   const nameById = new Map(
     subject.topics.flatMap((t) => t.subtopics.map((s) => [s.id, s.name] as const)),
   );
