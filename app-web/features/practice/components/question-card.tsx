@@ -57,7 +57,11 @@ export function QuestionCard({
   }
 
   return (
-    <div className={`question-card ${compact ? "is-compact" : ""} ${answered ? (result.correct ? "is-correct" : "is-incorrect") : ""}`}>
+    <div
+      className={`question-card ${compact ? "is-compact" : ""} ${
+        answered ? (result.pendingReview ? "is-pending" : result.correct ? "is-correct" : "is-incorrect") : ""
+      }`}
+    >
       <p className="question-stem">
         <MathText text={question.stem} />
       </p>
@@ -112,17 +116,23 @@ export function QuestionCard({
       {answered && (
         <div className="feedback" role="status">
           <p className="feedback-verdict">
-            {result.correct ? "Correct" : `Not quite — the answer is ${result.correctAnswerLabel}`}
+            {result.pendingReview
+              ? "Submitted — compare your answer with the explanation below"
+              : result.correct
+                ? "Correct"
+                : `Not quite — the answer is ${result.correctAnswerLabel}`}
           </p>
           {result.distractorNote && <p className="feedback-distractor">{result.distractorNote}</p>}
           <p className="feedback-explanation">
             <MathText text={result.explanation} />
           </p>
-          <p className="feedback-mastery">
-            Mastery {result.masteryDelta >= 0 ? "+" : ""}
-            {result.masteryDelta} → {result.masteryScore}%
-            {result.xpAwarded > 0 && ` · +${result.xpAwarded} XP`}
-          </p>
+          {!result.pendingReview && (
+            <p className="feedback-mastery">
+              Mastery {result.masteryDelta >= 0 ? "+" : ""}
+              {result.masteryDelta} → {result.masteryScore}%
+              {result.xpAwarded > 0 && ` · +${result.xpAwarded} XP`}
+            </p>
+          )}
         </div>
       )}
     </div>

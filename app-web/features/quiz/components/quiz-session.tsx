@@ -146,8 +146,10 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
 }
 
 function QuizReview({ title, items, subjectSlug }: { title: string; items: QuizReviewItem[]; subjectSlug: string }) {
-  const correct = items.filter((i) => i.correct).length;
-  const percentage = Math.round((correct / items.length) * 100);
+  /** Manual-review questions carry no correctness signal, so the score excludes them. */
+  const scored = items.filter((i) => !i.pendingReview);
+  const correct = scored.filter((i) => i.correct).length;
+  const percentage = scored.length > 0 ? Math.round((correct / scored.length) * 100) : 0;
 
   return (
     <section className="quiz-review">
@@ -155,20 +157,24 @@ function QuizReview({ title, items, subjectSlug }: { title: string; items: QuizR
         <span className="eyebrow">Results</span>
         <h1>{title}</h1>
         <p className="quiz-score">
-          {correct}/{items.length} · {percentage}%
+          {correct}/{scored.length} · {percentage}%
         </p>
         <ScoreCelebration percent={percentage} />
       </header>
 
       <ol className="review-list">
         {items.map((item, i) => (
-          <li key={item.questionId} className={item.correct ? "is-correct" : "is-incorrect"}>
+          <li key={item.questionId} className={item.pendingReview ? "is-pending" : item.correct ? "is-correct" : "is-incorrect"}>
             <p className="review-index">Question {i + 1}</p>
             <p className="question-stem">
               <MathText text={item.stem} />
             </p>
             <p className="review-verdict">
-              {item.correct ? "Correct" : `Your answer: ${item.yourAnswerLabel || "not answered"} · Correct: ${item.correctAnswerLabel}`}
+              {item.pendingReview
+                ? "Needs manual review — compare your answer with the explanation below"
+                : item.correct
+                  ? "Correct"
+                  : `Your answer: ${item.yourAnswerLabel || "not answered"} · Correct: ${item.correctAnswerLabel}`}
             </p>
             <p className="review-explanation">
               <MathText text={item.explanation} />

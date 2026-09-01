@@ -6,10 +6,10 @@ import { readProfileOrDefault } from "@/lib/server/profile/store";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const subject = resolveSubjectSlug(slug);
+  const profile = await readProfileOrDefault();
+  const subject = resolveSubjectSlug(slug, profile.educationLevel);
   if (!subject) return NextResponse.json({ error: "Subject not found" }, { status: 404 });
 
-  const profile = await readProfileOrDefault();
   const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
   const nameById = new Map(
     subject.topics.flatMap((t) => t.subtopics.map((s) => [s.id, s.name] as const)),

@@ -25,10 +25,10 @@ export default async function QuizPage({
   const config = MODES[mode as keyof typeof MODES];
   if (!config) notFound();
 
-  const subject = resolveSubjectSlug(subjectSlug);
+  const profile = await readProfileOrDefault();
+  const subject = resolveSubjectSlug(subjectSlug, profile.educationLevel);
   if (!subject) notFound();
 
-  const profile = await readProfileOrDefault();
   const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
   const pool = filterQuestionsByUnlockedTopics(
     filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel),

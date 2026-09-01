@@ -94,6 +94,8 @@ export async function updateStudentProfile(input: OnboardingInput): Promise<{ ok
 
 export interface AnswerResult {
   correct: boolean;
+  /** Theory/matching/ordering answers cannot be auto-graded; mastery and XP are left untouched. */
+  pendingReview: boolean;
   explanation: string;
   correctAnswerLabel: string;
   distractorNote?: string;
@@ -120,6 +122,21 @@ export async function submitAnswer(
   const profile = await readProfileOrDefault();
   const currentRecord = getRecord(profile.mastery, question.subtopicId);
 
+  if (grade.requiresManualReview) {
+    return {
+      correct: false,
+      pendingReview: true,
+      explanation: grade.explanation,
+      correctAnswerLabel: grade.correctAnswerLabel,
+      distractorNote: grade.distractorNote,
+      masteryScore: currentRecord.score,
+      masteryDelta: 0,
+      masteryState: currentRecord.state,
+      xpAwarded: 0,
+      reason: "This question needs manual review — compare your answer with the explanation. Mastery is not affected.",
+    };
+  }
+
   const update = applyEvidence(currentRecord, {
     subtopicId: question.subtopicId,
     correct: grade.correct,
@@ -137,6 +154,7 @@ export async function submitAnswer(
 
   return {
     correct: grade.correct,
+    pendingReview: false,
     explanation: grade.explanation,
     correctAnswerLabel: grade.correctAnswerLabel,
     distractorNote: grade.distractorNote,

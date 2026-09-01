@@ -15,12 +15,12 @@ export default async function TopicPage({
   params: Promise<{ subject: string; topic: string }>;
 }) {
   const { subject: subjectSlug, topic: topicSlug } = await params;
-  const subject = resolveSubjectSlug(subjectSlug);
+  const profile = await readProfileOrDefault();
+  const subject = resolveSubjectSlug(subjectSlug, profile.educationLevel);
   if (!subject) notFound();
   const rawTopic = resolveTopicSlug(subject, topicSlug);
   if (!rawTopic) notFound();
 
-  const profile = await readProfileOrDefault();
   const topic = filterTopicsForClass([rawTopic], profile.classLevel)[0];
   if (!topic) notFound();
   const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);

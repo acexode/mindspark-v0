@@ -26,12 +26,12 @@ export default async function TopicPracticePage({
   const { subject: subjectSlug, topic: topicSlug } = await params;
   const { subtopic: subtopicSlug } = await searchParams;
 
-  const subject = resolveSubjectSlug(subjectSlug);
+  const profile = await readProfileOrDefault();
+  const subject = resolveSubjectSlug(subjectSlug, profile.educationLevel);
   if (!subject) notFound();
   const topic = resolveTopicSlug(subject, topicSlug);
   if (!topic) notFound();
 
-  const profile = await readProfileOrDefault();
   if (!isTopicVisibleToClass(profile.classLevel, topic)) notFound();
   const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
   if (!progression.isUnlocked(topic.id)) {

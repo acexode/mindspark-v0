@@ -15,10 +15,10 @@ export default async function SubjectPracticePage({
   params: Promise<{ subject: string }>;
 }) {
   const { subject: subjectSlug } = await params;
-  const subject = resolveSubjectSlug(subjectSlug);
+  const profile = await readProfileOrDefault();
+  const subject = resolveSubjectSlug(subjectSlug, profile.educationLevel);
   if (!subject) notFound();
 
-  const profile = await readProfileOrDefault();
   const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
   const questions = filterQuestionsByUnlockedTopics(
     filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel),

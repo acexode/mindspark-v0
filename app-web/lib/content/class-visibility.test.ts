@@ -26,4 +26,15 @@ describe("isClassVisible", () => {
     expect(isClassVisible("SS1", ["JSS3", "SS1"])).toBe(true);
     expect(isClassVisible("JSS1", ["JSS3", "SS1"])).toBe(false);
   });
+
+  it("lets a Year2 student see Year1 and Year2 but not Year3", () => {
+    expect(isClassVisible("Year2", ["Year1"])).toBe(true);
+    expect(isClassVisible("Year2", ["Year2"])).toBe(true);
+    expect(isClassVisible("Year2", ["Year3"])).toBe(false);
+  });
+
+  it("keeps undergraduate years out of the secondary band and vice versa", () => {
+    expect(isClassVisible("Year1", ["SS3"])).toBe(false);
+    expect(isClassVisible("SS3", ["Year1"])).toBe(false);
+  });
 });

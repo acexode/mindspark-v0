@@ -9,6 +9,8 @@ export interface QuizReviewItem {
   questionId: string;
   stem: string;
   correct: boolean;
+  /** Theory/matching/ordering answers cannot be auto-graded; excluded from scoring. */
+  pendingReview: boolean;
   yourAnswerLabel: string;
   correctAnswerLabel: string;
   explanation: string;
@@ -36,23 +38,27 @@ export async function submitQuiz(submissions: QuizSubmission[]): Promise<{ items
 
     const answered = Boolean(submission.answer.optionId || submission.answer.value);
     const grade = gradeAnswer(question, submission.answer);
-    const correct = answered && grade.correct;
+    const pendingReview = grade.requiresManualReview;
+    const correct = !pendingReview && answered && grade.correct;
 
-    const update = applyEvidence(getRecord(mastery, question.subtopicId), {
-      subtopicId: question.subtopicId,
-      correct,
-      difficulty: question.difficulty,
-      attempts: 1,
-      hintsUsed: 0,
-    });
+    if (!pendingReview) {
+      const update = applyEvidence(getRecord(mastery, question.subtopicId), {
+        subtopicId: question.subtopicId,
+        correct,
+        difficulty: question.difficulty,
+        attempts: 1,
+        hintsUsed: 0,
+      });
 
-    mastery[question.subtopicId] = update.record;
-    xpEarned += update.xpAwarded;
+      mastery[question.subtopicId] = update.record;
+      xpEarned += update.xpAwarded;
+    }
 
     items.push({
       questionId: question.id,
       stem: question.stem,
       correct,
+      pendingReview,
       yourAnswerLabel: labelFor(question, submission.answer),
       correctAnswerLabel: grade.correctAnswerLabel,
       explanation: grade.explanation,

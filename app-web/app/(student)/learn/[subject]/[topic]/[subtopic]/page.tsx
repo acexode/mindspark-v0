@@ -21,14 +21,14 @@ export default async function LessonPage({
 }) {
   const { subject: subjectSlug, topic: topicSlug, subtopic: subtopicSlug } = await params;
 
-  const subject = resolveSubjectSlug(subjectSlug);
+  const profile = await readProfileOrDefault();
+  const subject = resolveSubjectSlug(subjectSlug, profile.educationLevel);
   if (!subject) notFound();
   const topic = resolveTopicSlug(subject, topicSlug);
   if (!topic) notFound();
   const subtopic = resolveSubtopicSlug(topic, subtopicSlug);
   if (!subtopic) notFound();
 
-  const profile = await readProfileOrDefault();
   if (!isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) {
     notFound();
   }

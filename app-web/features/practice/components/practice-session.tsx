@@ -50,11 +50,13 @@ export function PracticeSession({
   );
 
   const finished = results.length >= total || current === null;
-  const correctCount = results.filter((r) => r.correct).length;
-  const accuracy = results.length > 0 ? Math.round((correctCount / results.length) * 100) : 0;
+  /** Manual-review questions carry no correctness signal, so accuracy and the topic checkpoint exclude them. */
+  const scoredResults = results.filter((r) => !r.pendingReview);
+  const correctCount = scoredResults.filter((r) => r.correct).length;
+  const accuracy = scoredResults.length > 0 ? Math.round((correctCount / scoredResults.length) * 100) : 0;
 
   useEffect(() => {
-    if (!finished || !checkpointTopicId || results.length === 0) return;
+    if (!finished || !checkpointTopicId || scoredResults.length === 0) return;
     let cancelled = false;
     void recordTopicPracticeScore(checkpointTopicId, accuracy).then((result) => {
       if (!cancelled) setCheckpoint(result);
@@ -62,7 +64,7 @@ export function PracticeSession({
     return () => {
       cancelled = true;
     };
-  }, [finished, checkpointTopicId, results.length, accuracy]);
+  }, [finished, checkpointTopicId, scoredResults.length, accuracy]);
 
   function handleAnswered(result: AnswerResult) {
     setResults((prev) => [...prev, result]);
@@ -89,7 +91,7 @@ export function PracticeSession({
           <div>
             <dt>Score</dt>
             <dd>
-              {correctCount}/{results.length}
+              {correctCount}/{scoredResults.length}
             </dd>
           </div>
           <div>

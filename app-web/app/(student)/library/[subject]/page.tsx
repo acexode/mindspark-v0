@@ -10,10 +10,10 @@ import { readProfileOrDefault } from "@/lib/server/profile/store";
 
 export default async function SubjectPage({ params }: { params: Promise<{ subject: string }> }) {
   const { subject: subjectSlug } = await params;
-  const raw = resolveSubjectSlug(subjectSlug);
+  const profile = await readProfileOrDefault();
+  const raw = resolveSubjectSlug(subjectSlug, profile.educationLevel);
   if (!raw) notFound();
 
-  const profile = await readProfileOrDefault();
   const progression = subjectProgression(raw, profile.classLevel, profile.mastery, profile.topicPracticeBest);
   const subject = progression.subject;
   if (subject.topics.length === 0) notFound();
