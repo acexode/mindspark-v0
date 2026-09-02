@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getLesson, getQuestions, idSlug, resolveSubjectSlug } from "@/lib/content/loader";
 import { aggregateMastery, getRecord, isUnlocked, lockReason } from "@/lib/domain/mastery/mastery";
-import { subjectProgression } from "@/lib/content/topic-progress";
+import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
@@ -10,7 +10,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   const subject = resolveSubjectSlug(slug, profile.educationLevel);
   if (!subject) return NextResponse.json({ error: "Subject not found" }, { status: 404 });
 
-  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  const progression = subjectProgression(subject, progressionContextFor(profile));
   const nameById = new Map(
     subject.topics.flatMap((t) => t.subtopics.map((s) => [s.id, s.name] as const)),
   );

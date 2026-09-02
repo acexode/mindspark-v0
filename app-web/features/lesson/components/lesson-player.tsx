@@ -9,6 +9,11 @@ import { QuestionCard } from "@/features/practice/components/question-card";
 import { recordLessonVisit } from "@/features/learning/server/actions";
 import { useEffect } from "react";
 
+interface AdjacentUnit {
+  name: string;
+  href: string;
+}
+
 interface LessonPlayerProps {
   lesson: Lesson;
   checkQuestions: PublicQuestion[];
@@ -18,6 +23,10 @@ interface LessonPlayerProps {
   subtopicName: string;
   practiceHref: string;
   breadcrumb: { subjectHref: string; topicHref: string };
+  /** This unit's position within its module, e.g. { index: 2, total: 5 }. */
+  unitPosition?: { index: number; total: number } | null;
+  prevUnit?: AdjacentUnit | null;
+  nextUnit?: AdjacentUnit | null;
 }
 
 export function LessonPlayer({
@@ -29,6 +38,9 @@ export function LessonPlayer({
   subtopicName,
   practiceHref,
   breadcrumb,
+  unitPosition,
+  prevUnit,
+  nextUnit,
 }: LessonPlayerProps) {
   const [completedChecks, setCompletedChecks] = useState<string[]>([]);
 
@@ -52,6 +64,7 @@ export function LessonPlayer({
         </nav>
         <h1>{lesson.title}</h1>
         <p className="lesson-meta">
+          {unitPosition && `Unit ${unitPosition.index} of ${unitPosition.total} · `}
           {lesson.estimatedMinutes} min read · {lesson.objectiveIds.length} objectives
           {checkCount > 0 && ` · ${completedChecks.length}/${checkCount} checks done`}
         </p>
@@ -76,6 +89,23 @@ export function LessonPlayer({
           Practise {subtopicName}
         </Link>
       </footer>
+
+      {(prevUnit || nextUnit) && (
+        <nav className="lesson-unit-nav" aria-label="Unit navigation">
+          {prevUnit ? (
+            <Link href={prevUnit.href as Route} className="secondary-action">
+              ← {prevUnit.name}
+            </Link>
+          ) : (
+            <span />
+          )}
+          {nextUnit && (
+            <Link href={nextUnit.href as Route} className="secondary-action">
+              {nextUnit.name} →
+            </Link>
+          )}
+        </nav>
+      )}
     </article>
   );
 }

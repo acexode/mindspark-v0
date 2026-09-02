@@ -13,23 +13,31 @@ import {
   type EducationLevel,
   type ExamTarget,
 } from "@/lib/domain/student/types";
+import type { Programme } from "@/lib/content/schema";
 
 export type { SelectableSubject };
 
 const EXAM_TARGETS: ExamTarget[] = ["WAEC", "NECO", "JAMB"];
 
-export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) {
+export function OnboardingForm({ subjects, programmes }: { subjects: SelectableSubject[]; programmes: Programme[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [level, setLevel] = useState<EducationLevel>("secondary");
   const [classLevel, setClassLevel] = useState<string>("SS2");
+  const [programmeId, setProgrammeId] = useState<string>(programmes[0]?.slug ?? "");
+  const [semester, setSemester] = useState<1 | 2>(1);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [examTargets, setExamTargets] = useState<ExamTarget[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const available = subjectsForClass(subjects, level, classLevel);
+  const available = subjectsForClass(subjects, level, classLevel).filter(
+    (subject) => level !== "undergraduate" || !programmeId || subject.programmes.includes(programmeId),
+  );
   const availableIds = new Set(available.map((subject) => subject.id));
   const classLevels = level === "secondary" ? SECONDARY_CLASS_LEVELS : UNDERGRADUATE_CLASS_LEVELS;
+  const totalUnits = selectedSubjects
+    .map((id) => subjects.find((s) => s.id === id))
+    .reduce((sum, s) => sum + (s?.creditUnits ?? 0), 0);
 
   function pruneSelection(nextLevel: EducationLevel, nextClass: string, current: string[]) {
     const nextAvailable = subjectsForClass(subjects, nextLevel, nextClass);
@@ -43,7 +51,7 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
 
   function handleLevelChange(nextLevel: EducationLevel) {
     setLevel(nextLevel);
-    const nextClass = nextLevel === "secondary" ? "SS2" : "Year2";
+    const nextClass = nextLevel === "secondary" ? "SS2" : "Year1";
     setClassLevel(nextClass);
     setSelectedSubjects((current) => pruneSelection(nextLevel, nextClass, current));
   }
@@ -64,6 +72,7 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
     }
 
     const form = new FormData(event.currentTarget);
+    const programme = programmes.find((p) => p.slug === programmeId);
     startTransition(async () => {
       const result = await saveOnboarding({
         preferredName: String(form.get("preferredName") ?? ""),
@@ -71,7 +80,9 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
         educationLevel: level,
         classLevel,
         institution: String(form.get("institution") ?? "") || undefined,
-        programme: String(form.get("programme") ?? "") || undefined,
+        programme: programme?.name,
+        programmeId: level === "undergraduate" ? programmeId || undefined : undefined,
+        currentSemester: level === "undergraduate" ? semester : undefined,
         examTargets: examTargets.length > 0 ? examTargets : ["none"],
         selectedSubjectIds: visibleSelected,
         goal: String(form.get("goal") ?? "school") as "foundations" | "school" | "exam" | "research",
@@ -143,7 +154,21 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
               </label>
               <label>
                 Programme
-                <input name="programme" placeholder="e.g. Computer Science" />
+                <select value={programmeId} onChange={(e) => setProgrammeId(e.target.value)}>
+                  {programmes.length === 0 && <option value="">No programmes published yet</option>}
+                  {programmes.map((programme) => (
+                    <option key={programme.slug} value={programme.slug}>
+                      {programme.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Semester
+                <select value={semester} onChange={(e) => setSemester(Number(e.target.value) as 1 | 2)}>
+                  <option value={1}>Semester 1</option>
+                  <option value={2}>Semester 2</option>
+                </select>
               </label>
             </>
           )}
@@ -170,9 +195,11 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
         )}
 
         <fieldset className="field-group">
-          <legend>Which subjects do you study?</legend>
+          <legend>{level === "undergraduate" ? "Which courses are you enrolled in?" : "Which subjects do you study?"}</legend>
           {available.length === 0 ? (
-            <p className="field-hint">No subjects published for {classLevel} yet.</p>
+            <p className="field-hint">
+              {level === "undergraduate" ? "No courses published for this programme yet." : `No subjects published for ${classLevel} yet.`}
+            </p>
           ) : (
             <div className="subject-chip-grid">
               {available.map((subject) => {
@@ -186,15 +213,17 @@ export function OnboardingForm({ subjects }: { subjects: SelectableSubject[] }) 
                     style={{ ["--accent" as string]: subject.accentColor }}
                     onClick={() => toggle(selectedSubjects, subject.id, setSelectedSubjects)}
                   >
-                    {subject.name}
+                    {subject.courseCode ? `${subject.courseCode} · ${subject.name}` : subject.name}
+                    {subject.creditUnits ? ` (${subject.creditUnits}u)` : ""}
                   </button>
                 );
               })}
             </div>
           )}
           <p className="field-hint">
-            {selectedSubjects.filter((id) => availableIds.has(id)).length} selected for {classLevel} · you can
-            add more later.
+            {level === "undergraduate"
+              ? `${selectedSubjects.filter((id) => availableIds.has(id)).length} courses selected · ${totalUnits} units · you can add more later.`
+              : `${selectedSubjects.filter((id) => availableIds.has(id)).length} selected for ${classLevel} · you can add more later.`}
           </p>
         </fieldset>
 

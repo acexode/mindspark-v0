@@ -2,10 +2,12 @@ import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import path from "node:path";
 import {
   lessonSchema,
+  programmeSchema,
   questionFileSchema,
   subjectSchema,
   type EducationLevel,
   type Lesson,
+  type Programme,
   type Question,
   type Subject,
   type Subtopic,
@@ -14,6 +16,7 @@ import {
 
 export const CONTENT_ROOT = path.join(process.cwd(), "content");
 const SUBJECTS_DIR = path.join(CONTENT_ROOT, "subjects");
+const PROGRAMMES_DIR = path.join(CONTENT_ROOT, "programmes");
 
 export interface ContentIndex {
   subjects: Subject[];
@@ -23,6 +26,8 @@ export interface ContentIndex {
   lessonBySubtopicId: Map<string, Lesson>;
   questionsBySubtopicId: Map<string, Question[]>;
   questionById: Map<string, Question>;
+  programmes: Programme[];
+  programmeBySlug: Map<string, Programme>;
   errors: ContentError[];
 }
 
@@ -66,8 +71,20 @@ export function buildContentIndex(): ContentIndex {
     lessonBySubtopicId: new Map(),
     questionsBySubtopicId: new Map(),
     questionById: new Map(),
+    programmes: [],
+    programmeBySlug: new Map(),
     errors: [],
   };
+
+  for (const file of listFiles(PROGRAMMES_DIR, ".json")) {
+    const parsed = programmeSchema.safeParse(readJson(file, index));
+    if (!parsed.success) {
+      index.errors.push({ file: relative(file), message: formatZod(parsed.error) });
+      continue;
+    }
+    index.programmes.push(parsed.data);
+    index.programmeBySlug.set(parsed.data.slug, parsed.data);
+  }
 
   for (const subjectDir of listDirs(SUBJECTS_DIR)) {
     const dir = path.join(SUBJECTS_DIR, subjectDir);
@@ -214,6 +231,27 @@ export function resolveSubtopicSlug(topic: Topic, slug: string): Subtopic | null
 
 export function idSlug(id: string): string {
   return id.split(".").pop() ?? id;
+}
+
+export function getProgrammes(): Programme[] {
+  return getContentIndex().programmes;
+}
+
+export function getProgramme(slug: string): Programme | null {
+  return getContentIndex().programmeBySlug.get(slug) ?? null;
+}
+
+/** Undergraduate courses (subjects) belonging to a programme, optionally narrowed to a year and/or semester. */
+export function getCoursesForProgramme(
+  slug: string,
+  opts: { classLevel?: string; semester?: 1 | 2 } = {},
+): Subject[] {
+  return getSubjects("undergraduate").filter((subject) => {
+    if (!subject.programmes?.includes(slug)) return false;
+    if (opts.classLevel && !subject.classLevels.includes(opts.classLevel as Subject["classLevels"][number])) return false;
+    if (opts.semester && subject.semester !== opts.semester) return false;
+    return true;
+  });
 }
 
 /* ------------------------------------------------------------------ summary */

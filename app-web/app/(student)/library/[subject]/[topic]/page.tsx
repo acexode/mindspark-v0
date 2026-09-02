@@ -3,7 +3,7 @@ import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { getLesson, getQuestions, idSlug, resolveSubjectSlug, resolveTopicSlug } from "@/lib/content/loader";
 import { filterTopicsForClass } from "@/lib/content/class-visibility";
-import { subjectProgression } from "@/lib/content/topic-progress";
+import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { getRecord, isUnlocked, lockReason } from "@/lib/domain/mastery/mastery";
 import { MasteryBadge } from "@/components/ui/mastery-badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -23,7 +23,7 @@ export default async function TopicPage({
 
   const topic = filterTopicsForClass([rawTopic], profile.classLevel)[0];
   if (!topic) notFound();
-  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  const progression = subjectProgression(subject, progressionContextFor(profile));
   if (!progression.isUnlocked(topic.id)) {
     const reason = progression.lockReason(topic.id);
     const blocker = progression.blocker(topic.id);

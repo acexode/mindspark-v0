@@ -20,6 +20,10 @@ export interface StudentProfile {
   classLevel: string;
   institution?: string;
   programme?: string;
+  /** Undergraduate only — the programme slug they are enrolled on, e.g. "bsc-computer-science". */
+  programmeId?: string;
+  /** Undergraduate only — the semester they are currently in. */
+  currentSemester?: 1 | 2;
   examTargets: ExamTarget[];
   /** Subject IDs the student chose at onboarding, e.g. "sec.mathematics". */
   selectedSubjectIds: string[];
@@ -34,6 +38,10 @@ export interface StudentProfile {
   lastVisited: Record<string, string>;
   /** Best topic-practice accuracy (0–100), keyed by topic ID. Unlocks the next topic at 50%. */
   topicPracticeBest: Record<string, number>;
+  /** Accumulated study minutes per course (subject id). Undergraduate only. */
+  studyMinutes: Record<string, number>;
+  /** ISO timestamp of last activity per course (subject id). Undergraduate only. */
+  lastStudiedAt: Record<string, string>;
   accessibilityPreferences: AccessibilityPreferences;
 }
 
@@ -59,6 +67,8 @@ export const DEFAULT_STUDENT_PROFILE: StudentProfile = {
   mastery: {},
   lastVisited: {},
   topicPracticeBest: {},
+  studyMinutes: {},
+  lastStudiedAt: {},
   accessibilityPreferences: DEFAULT_ACCESSIBILITY,
 };
 

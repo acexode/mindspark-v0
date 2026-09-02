@@ -3,21 +3,26 @@ import type { Route } from "next";
 import { getSubject, getSubjectStats, idSlug } from "@/lib/content/loader";
 import { allSubtopicIds, buildCandidates } from "@/lib/content/navigation";
 import { filterSubjectForClass } from "@/lib/content/class-visibility";
-import { subjectProgression } from "@/lib/content/topic-progress";
+import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { aggregateMastery } from "@/lib/domain/mastery/mastery";
 import { recommendNext } from "@/lib/domain/recommendations/recommend";
 import { MasteryBar, masteryLabel } from "@/components/ui/mastery-badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
+import { UndergradDashboard } from "@/features/undergrad/dashboard/undergrad-dashboard";
 
 export const metadata = { title: "Today — Mindspark" };
 
 export default async function HomePage() {
   const profile = await readProfileOrDefault();
+  if (profile.educationLevel === "undergraduate") {
+    return <UndergradDashboard profile={profile} />;
+  }
+
   const subjects = profile.selectedSubjectIds.map((id) => getSubject(id)).filter((s) => s !== null);
   const unlockedTopicIds = new Set(
     subjects.flatMap((subject) => [
-      ...subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest).unlockedTopicIds,
+      ...subjectProgression(subject, progressionContextFor(profile)).unlockedTopicIds,
     ]),
   );
   const candidates = buildCandidates(profile.selectedSubjectIds, profile.classLevel).filter((candidate) =>

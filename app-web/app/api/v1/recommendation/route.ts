@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSubject } from "@/lib/content/loader";
 import { buildCandidates } from "@/lib/content/navigation";
-import { subjectProgression } from "@/lib/content/topic-progress";
+import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { recommendNext } from "@/lib/domain/recommendations/recommend";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 
@@ -10,7 +10,7 @@ export async function GET() {
   const subjects = profile.selectedSubjectIds.map((id) => getSubject(id)).filter((s) => s !== null);
   const unlockedTopicIds = new Set(
     subjects.flatMap((subject) => [
-      ...subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest).unlockedTopicIds,
+      ...subjectProgression(subject, progressionContextFor(profile)).unlockedTopicIds,
     ]),
   );
   const candidates = buildCandidates(profile.selectedSubjectIds, profile.classLevel).filter((candidate) =>

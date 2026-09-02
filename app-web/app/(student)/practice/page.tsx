@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { getQuestionsForSubject, getQuestionsForTopic, getSubjects, idSlug } from "@/lib/content/loader";
 import { filterQuestionsByClass, filterSubjectsForClass } from "@/lib/content/class-visibility";
-import { subjectProgression } from "@/lib/content/topic-progress";
+import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LockNotice } from "@/components/ui/lock-notice";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
@@ -13,7 +13,12 @@ export const metadata = { title: "Practice — Mindspark" };
 /** Step 1 of the picker. Practice is never started without an explicit scope. */
 export default async function PracticePickerPage() {
   const profile = await readProfileOrDefault();
-  const subjects = filterSubjectsForClass(getSubjects(profile.educationLevel), profile.classLevel).filter(
+  const isUndergraduate = profile.educationLevel === "undergraduate";
+  /** Undergraduate courses are never year-filtered — see lib/content/courses.ts. */
+  const scoped = isUndergraduate
+    ? getSubjects("undergraduate")
+    : filterSubjectsForClass(getSubjects(profile.educationLevel), profile.classLevel);
+  const subjects = scoped.filter(
     (subject) => filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel).length > 0,
   );
 
@@ -39,7 +44,11 @@ export default async function PracticePickerPage() {
         <div>
           <span className="eyebrow">Practice</span>
           <h1>What would you like to practise?</h1>
-          <p>Choose a subject, then a topic. Topics unlock in order — score at least 50% on the current topic’s practice to open the next one.</p>
+          <p>
+            {isUndergraduate
+              ? "Choose a course, then a module. Every module is open — practise in whatever order suits you."
+              : "Choose a subject, then a topic. Topics unlock in order — score at least 50% on the current topic’s practice to open the next one."}
+          </p>
         </div>
       </header>
 
@@ -68,7 +77,7 @@ function SubjectPickers({
     <div className="picker-grid">
       {subjects.map((subject) => {
           const subjectSlug = idSlug(subject.id);
-          const progression = subjectProgression(subject, studentClass, profile.mastery, profile.topicPracticeBest);
+          const progression = subjectProgression(subject, { ...progressionContextFor(profile), classLevel: studentClass });
           const total = filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, studentClass).length;
 
           return (
@@ -107,7 +116,7 @@ function SubjectPickers({
               </ul>
 
               <Link className="secondary-action" href={`/practice/${subjectSlug}` as Route}>
-                Mixed practice across unlocked topics
+                {profile.educationLevel === "undergraduate" ? "Mixed practice across the whole course" : "Mixed practice across unlocked topics"}
               </Link>
             </article>
           );

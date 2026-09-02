@@ -9,9 +9,12 @@ export const metadata = { title: "Quiz — Mindspark" };
 
 export default async function QuizPickerPage() {
   const profile = await readProfileOrDefault();
-  const subjects = filterSubjectsForClass(getSubjects(profile.educationLevel), profile.classLevel).filter(
-    (s) => filterQuestionsByClass(getQuestionsForSubject(s.id), s, profile.classLevel).length >= 5,
-  );
+  const isUndergraduate = profile.educationLevel === "undergraduate";
+  /** Undergraduate courses are never year-filtered — see lib/content/courses.ts. */
+  const scoped = isUndergraduate
+    ? getSubjects("undergraduate")
+    : filterSubjectsForClass(getSubjects(profile.educationLevel), profile.classLevel);
+  const subjects = scoped.filter((s) => filterQuestionsByClass(getQuestionsForSubject(s.id), s, profile.classLevel).length >= 5);
 
   if (subjects.length === 0) {
     return (
@@ -33,18 +36,22 @@ export default async function QuizPickerPage() {
     <section className="page">
       <header className="page-header">
         <div>
-          <span className="eyebrow">Quiz</span>
-          <h1>Test yourself under exam conditions</h1>
-          <p>Timed, no hints, no feedback until you submit — just like the real thing.</p>
+          <span className="eyebrow">{isUndergraduate ? "Assessments" : "Quiz"}</span>
+          <h1>{isUndergraduate ? "Assess what you know" : "Test yourself under exam conditions"}</h1>
+          <p>
+            {isUndergraduate
+              ? "Timed, no hints, no feedback until you submit."
+              : "Timed, no hints, no feedback until you submit — just like the real thing."}
+          </p>
         </div>
       </header>
 
-      <QuizCards subjects={mine.length > 0 ? mine : others} studentClass={profile.classLevel} />
+      <QuizCards subjects={mine.length > 0 ? mine : others} studentClass={profile.classLevel} isUndergraduate={isUndergraduate} />
 
       {mine.length > 0 && others.length > 0 && (
         <section className="library-more">
-          <h2>Other subjects</h2>
-          <QuizCards subjects={others} studentClass={profile.classLevel} />
+          <h2>Other {isUndergraduate ? "courses" : "subjects"}</h2>
+          <QuizCards subjects={others} studentClass={profile.classLevel} isUndergraduate={isUndergraduate} />
         </section>
       )}
     </section>
@@ -54,9 +61,11 @@ export default async function QuizPickerPage() {
 function QuizCards({
   subjects,
   studentClass,
+  isUndergraduate,
 }: {
   subjects: ReturnType<typeof getSubjects>;
   studentClass: string;
+  isUndergraduate: boolean;
 }) {
   return (
     <div className="picker-grid">
@@ -67,16 +76,16 @@ function QuizCards({
           return (
             <article key={subject.id} className="picker-card" style={{ ["--accent" as string]: subject.accentColor }}>
               <header>
-                <h2>{subject.name}</h2>
+                <h2>{subject.courseCode ?? subject.name}</h2>
                 <span className="picker-count">{total} questions available</span>
               </header>
               <p>{subject.curricula.join(" · ")}</p>
               <div className="quiz-modes">
                 <Link className="primary-action" href={`/quiz/${slug}/subject` as Route}>
-                  Subject quiz · 20 questions
+                  {isUndergraduate ? "Continuous assessment" : "Subject quiz"} · 20 questions
                 </Link>
                 <Link className="secondary-action" href={`/quiz/${slug}/exam` as Route}>
-                  Exam mock · 40 questions
+                  {isUndergraduate ? "Mock exam" : "Exam mock"} · 40 questions
                 </Link>
               </div>
             </article>

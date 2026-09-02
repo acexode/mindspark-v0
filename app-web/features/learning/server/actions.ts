@@ -16,22 +16,44 @@ export interface OnboardingInput {
   classLevel: string;
   institution?: string;
   programme?: string;
+  programmeId?: string;
+  currentSemester?: 1 | 2;
   examTargets: StudentProfile["examTargets"];
   selectedSubjectIds: string[];
   goal: StudentProfile["goal"];
 }
 
-function subjectsVisibleForClass(subjectIds: string[], classLevel: string): string[] {
+/**
+ * Keeps only enrolments the student can actually study.
+ *
+ * Secondary follows the JSS/SS band: a subject with nothing visible at their
+ * class is dropped. Undergraduates browse an open catalogue and may legitimately
+ * enrol in a course from another year — a retake, an elective, or simply working
+ * ahead — so year is not a filter for them. Applying the band rule here silently
+ * deleted such enrolments and made onboarding fail with "Please complete the
+ * required fields".
+ */
+function enrollableSubjectIds(
+  subjectIds: string[],
+  classLevel: string,
+  educationLevel: StudentProfile["educationLevel"],
+): string[] {
   return subjectIds.filter((id) => {
     const subject = getSubject(id);
-    return subject !== null && filterSubjectForClass(subject, classLevel).topics.length > 0;
+    if (!subject) return false;
+    if (educationLevel === "undergraduate") return subject.level === "undergraduate";
+    return filterSubjectForClass(subject, classLevel).topics.length > 0;
   });
 }
 
 function normalizeProfileInput(input: OnboardingInput) {
   const preferredName = input.preferredName.trim();
   const isUndergraduate = input.educationLevel === "undergraduate";
-  const selectedSubjectIds = subjectsVisibleForClass(input.selectedSubjectIds, input.classLevel);
+  const selectedSubjectIds = enrollableSubjectIds(
+    input.selectedSubjectIds,
+    input.classLevel,
+    input.educationLevel,
+  );
 
   return {
     preferredName,
@@ -40,6 +62,8 @@ function normalizeProfileInput(input: OnboardingInput) {
     classLevel: input.classLevel,
     institution: isUndergraduate ? input.institution?.trim() || undefined : undefined,
     programme: isUndergraduate ? input.programme?.trim() || undefined : undefined,
+    programmeId: isUndergraduate ? input.programmeId : undefined,
+    currentSemester: isUndergraduate ? input.currentSemester : undefined,
     examTargets: isUndergraduate
       ? (["none"] as StudentProfile["examTargets"])
       : input.examTargets.length > 0
@@ -170,6 +194,7 @@ export async function recordLessonVisit(subjectId: string, subtopicId: string): 
   await updateProfile((current) => ({
     ...current,
     lastVisited: { ...current.lastVisited, [subjectId]: subtopicId },
+    lastStudiedAt: { ...current.lastStudiedAt, [subjectId]: new Date().toISOString() },
     lastActiveDate: new Date().toISOString().slice(0, 10),
   }));
 }

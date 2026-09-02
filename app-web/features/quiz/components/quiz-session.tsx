@@ -15,11 +15,13 @@ interface QuizSessionProps {
   subjectSlug: string;
   questions: PublicQuestion[];
   durationSeconds: number;
+  /** Score celebrations. Off for undergraduates. */
+  gamified?: boolean;
 }
 
 type Answers = Record<string, { optionId?: string; value?: string }>;
 
-export function QuizSession({ title, subjectName, subjectSlug, questions, durationSeconds }: QuizSessionProps) {
+export function QuizSession({ title, subjectName, subjectSlug, questions, durationSeconds, gamified = true }: QuizSessionProps) {
   const [paper] = useState(() =>
     shuffle(questions).map((question) => ({
       ...question,
@@ -59,7 +61,7 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
     });
   }
 
-  if (review) return <QuizReview title={title} items={review} subjectSlug={subjectSlug} />;
+  if (review) return <QuizReview title={title} items={review} subjectSlug={subjectSlug} gamified={gamified} />;
 
   return (
     <section className="quiz-session">
@@ -145,7 +147,17 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
   );
 }
 
-function QuizReview({ title, items, subjectSlug }: { title: string; items: QuizReviewItem[]; subjectSlug: string }) {
+function QuizReview({
+  title,
+  items,
+  subjectSlug,
+  gamified,
+}: {
+  title: string;
+  items: QuizReviewItem[];
+  subjectSlug: string;
+  gamified: boolean;
+}) {
   /** Manual-review questions carry no correctness signal, so the score excludes them. */
   const scored = items.filter((i) => !i.pendingReview);
   const correct = scored.filter((i) => i.correct).length;
@@ -159,7 +171,7 @@ function QuizReview({ title, items, subjectSlug }: { title: string; items: QuizR
         <p className="quiz-score">
           {correct}/{scored.length} · {percentage}%
         </p>
-        <ScoreCelebration percent={percentage} />
+        {gamified && <ScoreCelebration percent={percentage} />}
       </header>
 
       <ol className="review-list">

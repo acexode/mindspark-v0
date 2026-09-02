@@ -25,6 +25,8 @@ interface PracticeSessionProps {
   /** When set, this session is the topic checkpoint that can unlock the next topic. */
   checkpointTopicId?: string;
   nextTopicName?: string | null;
+  /** XP totals and score celebrations. Off for undergraduates. */
+  gamified?: boolean;
 }
 
 export function PracticeSession({
@@ -36,6 +38,7 @@ export function PracticeSession({
   sessionLength = 8,
   checkpointTopicId,
   nextTopicName,
+  gamified = true,
 }: PracticeSessionProps) {
   const total = Math.min(sessionLength, questions.length);
   const [pool] = useState(() => shuffle(questions));
@@ -86,7 +89,7 @@ export function PracticeSession({
       <section className="practice-summary">
         <span className="eyebrow">Session complete</span>
         <h1>{title}</h1>
-        {results.length > 0 && <ScoreCelebration percent={accuracy} />}
+        {gamified && results.length > 0 && <ScoreCelebration percent={accuracy} />}
         <dl className="summary-stats">
           <div>
             <dt>Score</dt>
@@ -105,10 +108,12 @@ export function PracticeSession({
               {masteryGain}
             </dd>
           </div>
-          <div>
-            <dt>XP</dt>
-            <dd>+{xp}</dd>
-          </div>
+          {gamified && (
+            <div>
+              <dt>XP</dt>
+              <dd>+{xp}</dd>
+            </div>
+          )}
         </dl>
 
         {checkpointTopicId && results.length > 0 && (

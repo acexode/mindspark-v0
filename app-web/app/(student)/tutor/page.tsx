@@ -16,7 +16,8 @@ export default async function TutorPage() {
       topic.subtopics.map((subtopic) => ({
         subtopicId: subtopic.id,
         subjectName: subject.name,
-        label: `${subject.name} · ${topic.name} · ${subtopic.name}`,
+        groupLabel: `${subject.courseCode ?? subject.name} · ${topic.name}`,
+        label: subtopic.name,
       })),
     ),
   );

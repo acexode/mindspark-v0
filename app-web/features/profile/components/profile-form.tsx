@@ -16,21 +16,25 @@ import {
   type LearningGoal,
   type StudentProfile,
 } from "@/lib/domain/student/types";
+import type { Programme } from "@/lib/content/schema";
 
 const EXAM_TARGETS: ExamTarget[] = ["WAEC", "NECO", "JAMB"];
 
 interface ProfileFormProps {
   profile: StudentProfile;
   subjects: SelectableSubject[];
+  programmes: Programme[];
 }
 
-export function ProfileForm({ profile, subjects }: ProfileFormProps) {
+export function ProfileForm({ profile, subjects, programmes }: ProfileFormProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [level, setLevel] = useState<EducationLevel>(profile.educationLevel);
   const [classLevel, setClassLevel] = useState(profile.classLevel);
   const [ageBand, setAgeBand] = useState<AgeBand>(profile.ageBand);
   const [goal, setGoal] = useState<LearningGoal>(profile.goal);
+  const [programmeId, setProgrammeId] = useState<string>(profile.programmeId ?? programmes[0]?.slug ?? "");
+  const [semester, setSemester] = useState<1 | 2>(profile.currentSemester ?? 1);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(profile.selectedSubjectIds);
   const [examTargets, setExamTargets] = useState<ExamTarget[]>(
     profile.examTargets.filter((target) => target !== "none"),
@@ -38,9 +42,14 @@ export function ProfileForm({ profile, subjects }: ProfileFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const available = subjectsForClass(subjects, level, classLevel);
+  const available = subjectsForClass(subjects, level, classLevel).filter(
+    (subject) => level !== "undergraduate" || !programmeId || subject.programmes.includes(programmeId),
+  );
   const availableIds = new Set(available.map((subject) => subject.id));
   const classLevels = level === "secondary" ? SECONDARY_CLASS_LEVELS : UNDERGRADUATE_CLASS_LEVELS;
+  const totalUnits = selectedSubjects
+    .map((id) => subjects.find((s) => s.id === id))
+    .reduce((sum, s) => sum + (s?.creditUnits ?? 0), 0);
 
   function pruneSelection(nextLevel: EducationLevel, nextClass: string, current: string[]) {
     const nextAvailable = subjectsForClass(subjects, nextLevel, nextClass);
@@ -86,6 +95,7 @@ export function ProfileForm({ profile, subjects }: ProfileFormProps) {
     }
 
     const form = new FormData(event.currentTarget);
+    const programme = programmes.find((p) => p.slug === programmeId);
     startTransition(async () => {
       const result = await updateStudentProfile({
         preferredName: String(form.get("preferredName") ?? ""),
@@ -93,7 +103,9 @@ export function ProfileForm({ profile, subjects }: ProfileFormProps) {
         educationLevel: level,
         classLevel,
         institution: String(form.get("institution") ?? "") || undefined,
-        programme: String(form.get("programme") ?? "") || undefined,
+        programme: programme?.name,
+        programmeId: level === "undergraduate" ? programmeId || undefined : undefined,
+        currentSemester: level === "undergraduate" ? semester : undefined,
         examTargets: examTargets.length > 0 ? examTargets : ["none"],
         selectedSubjectIds: visibleSelected,
         goal,
@@ -179,12 +191,33 @@ export function ProfileForm({ profile, subjects }: ProfileFormProps) {
             </label>
             <label>
               Programme
-              <input
-                name="programme"
-                defaultValue={profile.programme ?? ""}
-                placeholder="e.g. Computer Science"
-                onChange={() => setSaved(false)}
-              />
+              <select
+                value={programmeId}
+                onChange={(event) => {
+                  setProgrammeId(event.target.value);
+                  setSaved(false);
+                }}
+              >
+                {programmes.length === 0 && <option value="">No programmes published yet</option>}
+                {programmes.map((programme) => (
+                  <option key={programme.slug} value={programme.slug}>
+                    {programme.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Semester
+              <select
+                value={semester}
+                onChange={(event) => {
+                  setSemester(Number(event.target.value) as 1 | 2);
+                  setSaved(false);
+                }}
+              >
+                <option value={1}>Semester 1</option>
+                <option value={2}>Semester 2</option>
+              </select>
             </label>
           </>
         )}
@@ -214,9 +247,11 @@ export function ProfileForm({ profile, subjects }: ProfileFormProps) {
       )}
 
       <fieldset className="field-group">
-        <legend>Which subjects do you study?</legend>
+        <legend>{level === "undergraduate" ? "Which courses are you enrolled in?" : "Which subjects do you study?"}</legend>
         {available.length === 0 ? (
-          <p className="field-hint">No subjects published for {classLevel} yet.</p>
+          <p className="field-hint">
+            {level === "undergraduate" ? "No courses published for this programme yet." : `No subjects published for ${classLevel} yet.`}
+          </p>
         ) : (
           <div className="subject-chip-grid">
             {available.map((subject) => {
@@ -233,14 +268,17 @@ export function ProfileForm({ profile, subjects }: ProfileFormProps) {
                     setSaved(false);
                   }}
                 >
-                  {subject.name}
+                  {subject.courseCode ? `${subject.courseCode} · ${subject.name}` : subject.name}
+                  {subject.creditUnits ? ` (${subject.creditUnits}u)` : ""}
                 </button>
               );
             })}
           </div>
         )}
         <p className="field-hint">
-          {selectedSubjects.filter((id) => availableIds.has(id)).length} selected for {classLevel}
+          {level === "undergraduate"
+            ? `${selectedSubjects.filter((id) => availableIds.has(id)).length} courses selected · ${totalUnits} units`
+            : `${selectedSubjects.filter((id) => availableIds.has(id)).length} selected for ${classLevel}`}
         </p>
       </fieldset>
 

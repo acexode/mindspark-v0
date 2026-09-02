@@ -9,7 +9,7 @@ import {
 } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
 import { classLevelsForSubtopic, isClassVisible } from "@/lib/content/class-visibility";
-import { subjectProgression } from "@/lib/content/topic-progress";
+import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { LessonPlayer } from "@/features/lesson/components/lesson-player";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -32,7 +32,7 @@ export default async function LessonPage({
   if (!isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) {
     notFound();
   }
-  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  const progression = subjectProgression(subject, progressionContextFor(profile));
   if (!progression.isUnlocked(topic.id)) {
     const reason = progression.lockReason(topic.id);
     const blocker = progression.blocker(topic.id);
@@ -73,6 +73,12 @@ export default async function LessonPage({
     .filter((question) => question !== null)
     .map(toPublicQuestion);
 
+  const orderedUnits = [...topic.subtopics].sort((a, b) => a.order - b.order);
+  const unitIndex = orderedUnits.findIndex((s) => s.id === subtopic.id);
+  const prevUnit = unitIndex > 0 ? orderedUnits[unitIndex - 1] : null;
+  const nextUnit = unitIndex >= 0 && unitIndex < orderedUnits.length - 1 ? orderedUnits[unitIndex + 1] : null;
+  const unitHref = (unit: (typeof orderedUnits)[number]) => `/learn/${subjectSlug}/${topicSlug}/${idSlug(unit.id)}`;
+
   return (
     <div className="lesson-page" style={{ ["--accent" as string]: subject.accentColor }}>
       <LessonPlayer
@@ -87,6 +93,9 @@ export default async function LessonPage({
           subjectHref: `/library/${subjectSlug}`,
           topicHref: `/library/${subjectSlug}/${topicSlug}`,
         }}
+        unitPosition={unitIndex >= 0 ? { index: unitIndex + 1, total: orderedUnits.length } : null}
+        prevUnit={prevUnit ? { name: prevUnit.name, href: unitHref(prevUnit) } : null}
+        nextUnit={nextUnit ? { name: nextUnit.name, href: unitHref(nextUnit) } : null}
       />
     </div>
   );

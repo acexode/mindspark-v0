@@ -9,8 +9,9 @@ import {
 } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
 import { classLevelsForSubtopic, filterQuestionsByClass, isClassVisible, isTopicVisibleToClass } from "@/lib/content/class-visibility";
-import { subjectProgression } from "@/lib/content/topic-progress";
+import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
+import { experienceFor } from "@/lib/domain/student/experience";
 import { PracticeSession } from "@/features/practice/components/practice-session";
 import { EmptyState } from "@/components/ui/empty-state";
 
@@ -33,7 +34,7 @@ export default async function TopicPracticePage({
   if (!topic) notFound();
 
   if (!isTopicVisibleToClass(profile.classLevel, topic)) notFound();
-  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  const progression = subjectProgression(subject, progressionContextFor(profile));
   if (!progression.isUnlocked(topic.id)) {
     const reason = progression.lockReason(topic.id);
     const blocker = progression.blocker(topic.id);
@@ -76,6 +77,9 @@ export default async function TopicPracticePage({
   }
 
   const nextTopic = progression.items[progression.items.findIndex((item) => item.id === topic.id) + 1];
+  const experience = experienceFor(profile);
+  /** Nothing unlocks in open mode, so there is no checkpoint to record. */
+  const isCheckpoint = !subtopic && experience.progressionMode === "sequential";
 
   return (
     <div className="page" style={{ ["--accent" as string]: subject.accentColor }}>
@@ -85,8 +89,10 @@ export default async function TopicPracticePage({
         questions={questions.map(toPublicQuestion)}
         backHref={`/library/${subjectSlug}/${topicSlug}`}
         subjectSlug={idSlug(subject.id)}
-        checkpointTopicId={subtopic ? undefined : topic.id}
-        nextTopicName={subtopic ? undefined : (nextTopic?.name ?? null)}
+        sessionLength={experience.practiceSessionLength}
+        gamified={experience.gamification}
+        checkpointTopicId={isCheckpoint ? topic.id : undefined}
+        nextTopicName={isCheckpoint ? (nextTopic?.name ?? null) : undefined}
       />
     </div>
   );

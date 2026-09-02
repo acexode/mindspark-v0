@@ -6,8 +6,11 @@ import { MathText } from "@/components/ui/math-text";
 
 export interface TutorScopeOption {
   subtopicId: string;
+  /** The subtopic/unit name — shown as the option's own text. */
   label: string;
   subjectName: string;
+  /** Course/module grouping, e.g. "CSC101 · Data Structures" — rendered as an <optgroup>. */
+  groupLabel: string;
 }
 
 interface Message {
@@ -53,10 +56,14 @@ export function TutorChat({ scopes }: { scopes: TutorScopeOption[] }) {
         <label htmlFor="tutor-scope-select">What are you studying?</label>
         <select id="tutor-scope-select" value={scopeId} onChange={(e) => setScopeId(e.target.value)}>
           {scopes.length === 0 && <option value="">No subtopics available</option>}
-          {scopes.map((option) => (
-            <option key={option.subtopicId} value={option.subtopicId}>
-              {option.label}
-            </option>
+          {groupScopes(scopes).map(([groupLabel, options]) => (
+            <optgroup key={groupLabel} label={groupLabel}>
+              {options.map((option) => (
+                <option key={option.subtopicId} value={option.subtopicId}>
+                  {option.label}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
       </div>
@@ -99,4 +106,16 @@ export function TutorChat({ scopes }: { scopes: TutorScopeOption[] }) {
       </div>
     </section>
   );
+}
+
+/** Groups scope options by groupLabel, preserving first-seen order — an undergraduate's
+ * full course load can run to hundreds of subtopics, unusable as a flat list. */
+function groupScopes(scopes: TutorScopeOption[]): [string, TutorScopeOption[]][] {
+  const groups = new Map<string, TutorScopeOption[]>();
+  for (const option of scopes) {
+    const list = groups.get(option.groupLabel);
+    if (list) list.push(option);
+    else groups.set(option.groupLabel, [option]);
+  }
+  return [...groups.entries()];
 }

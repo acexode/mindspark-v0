@@ -7,11 +7,16 @@ import { aggregateMastery } from "@/lib/domain/mastery/mastery";
 import { MasteryBar, masteryLabel } from "@/components/ui/mastery-badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
+import { CourseCatalogue } from "@/features/undergrad/courses/course-catalogue";
 
 export const metadata = { title: "Library — Mindspark" };
 
 export default async function LibraryPage() {
   const profile = await readProfileOrDefault();
+  if (profile.educationLevel === "undergraduate") {
+    return <CourseCatalogue profile={profile} />;
+  }
+
   const level = profile.educationLevel;
   const all = filterSubjectsForClass(getSubjects(level), profile.classLevel);
   const mine = all.filter((s) => profile.selectedSubjectIds.includes(s.id));

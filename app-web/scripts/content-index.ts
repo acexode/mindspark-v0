@@ -8,6 +8,7 @@ const index = buildContentIndex();
 
 const manifest = {
   generatedAt: new Date().toISOString(),
+  programmes: index.programmes,
   subjects: index.subjects.map((subject) => ({
     id: subject.id,
     name: subject.name,
@@ -15,6 +16,10 @@ const manifest = {
     slug: idSlug(subject.id),
     accentColor: subject.accentColor,
     icon: subject.icon,
+    courseCode: subject.courseCode ?? null,
+    creditUnits: subject.creditUnits ?? null,
+    semester: subject.semester ?? null,
+    programmes: subject.programmes ?? [],
     stats: getSubjectStatsFromIndex(index, subject.id),
     topics: subject.topics.map((topic) => ({
       id: topic.id,

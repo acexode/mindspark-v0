@@ -7,6 +7,7 @@ import {
   isTopicCleared,
   isTopicUnlocked,
   lockCopy,
+  topicReadiness,
   TOPIC_PRACTICE_UNLOCK_PERCENT,
   unlockedSubtopicIds,
   unlockedTopicIds,
@@ -64,6 +65,35 @@ describe("topic sequence", () => {
 
   it("limits unlocked subtopics to the open prefix", () => {
     expect([...unlockedSubtopicIds(topics, { t1: 50 })]).toEqual(["s1a", "s1b", "s2a"]);
+  });
+});
+
+describe("topicReadiness", () => {
+  it("marks the first unstarted topic as recommended with no suggestion", () => {
+    const readiness = topicReadiness(topics, "t1", {});
+    expect(readiness.ready).toBe(true);
+    expect(readiness.position).toBe("recommended");
+    expect(readiness.suggestion).toBeNull();
+  });
+
+  it("marks a cleared topic as done", () => {
+    expect(topicReadiness(topics, "t1", { t1: 60 }).position).toBe("done");
+  });
+
+  it("reports a later topic as ahead, with an advisory suggestion and never a lock", () => {
+    const readiness = topicReadiness(topics, "t3", { t1: 80, t2: 20 });
+    expect(readiness.ready).toBe(false);
+    expect(readiness.position).toBe("ahead");
+    expect(readiness.suggestedFirst?.id).toBe("t2");
+    expect(readiness.suggestion).toMatch(/Algebra/);
+    expect(readiness.suggestion).toMatch(/20%/);
+    // Advisory, not a barrier — the copy must offer the choice.
+    expect(readiness.suggestion).toMatch(/if you prefer/i);
+    expect(readiness.suggestion).not.toMatch(/locked/i);
+  });
+
+  it("treats a topic as in-progress once it has a non-passing best score", () => {
+    expect(topicReadiness(topics, "t1", { t1: 30 }).position).toBe("in-progress");
   });
 });
 

@@ -93,6 +93,23 @@ describe("seeded content is valid and usable", () => {
     }
   });
 
+  /**
+   * gradeAnswer defaults a numeric tolerance to 0, so a question whose answer
+   * cannot be typed exactly is unanswerable without one. Integers and short
+   * decimals are fine; anything a student would have to round is not.
+   */
+  it("makes every numeric answer reachable — exact or within a tolerance", () => {
+    for (const question of index.questionById.values()) {
+      if (question.type !== "numeric") continue;
+      if ((question.tolerance ?? 0) > 0) continue;
+
+      const value = Number(question.correctValue);
+      expect(Number.isFinite(value), `${question.id} has a non-numeric correctValue`).toBe(true);
+      const decimals = (String(value).split(".")[1] ?? "").length;
+      expect(decimals, `${question.id} needs a tolerance: ${value} cannot be typed exactly`).toBeLessThanOrEqual(2);
+    }
+  });
+
   it("ensures every subject has at least one topic with at least one subtopic", () => {
     for (const subject of index.subjects) {
       expect(subject.topics.length).toBeGreaterThan(0);

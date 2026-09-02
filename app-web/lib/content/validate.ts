@@ -60,6 +60,20 @@ export function validateContent(options: { enforceTiers?: boolean } = {}): Valid
   for (const subject of index.subjects) {
     assertUnique(subject.id, "subject", issues, seenIds);
 
+    for (const programmeSlug of subject.programmes ?? []) {
+      if (!index.programmeBySlug.has(programmeSlug)) {
+        issues.push({ severity: "error", scope: subject.id, message: `Unknown programme: ${programmeSlug}` });
+      }
+    }
+
+    if (subject.level === "undergraduate" && (!subject.courseCode || !subject.creditUnits || !subject.semester)) {
+      issues.push({
+        severity: "warning",
+        scope: subject.id,
+        message: "Undergraduate course should declare courseCode, creditUnits and semester",
+      });
+    }
+
     for (const topic of subject.topics) {
       assertUnique(topic.id, "topic", issues, seenIds);
 

@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import { getQuestionsForSubject, resolveSubjectSlug, idSlug } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
 import { filterQuestionsByClass } from "@/lib/content/class-visibility";
-import { filterQuestionsByUnlockedTopics, subjectProgression } from "@/lib/content/topic-progress";
+import { filterQuestionsByUnlockedTopics, progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
+import { experienceFor } from "@/lib/domain/student/experience";
 import { PracticeSession } from "@/features/practice/components/practice-session";
 import { EmptyState } from "@/components/ui/empty-state";
 
@@ -19,7 +20,7 @@ export default async function SubjectPracticePage({
   const subject = resolveSubjectSlug(subjectSlug, profile.educationLevel);
   if (!subject) notFound();
 
-  const progression = subjectProgression(subject, profile.classLevel, profile.mastery, profile.topicPracticeBest);
+  const progression = subjectProgression(subject, progressionContextFor(profile));
   const questions = filterQuestionsByUnlockedTopics(
     filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel),
     progression.unlockedSubtopicIds,
@@ -37,6 +38,8 @@ export default async function SubjectPracticePage({
     );
   }
 
+  const experience = experienceFor(profile);
+
   return (
     <div className="page" style={{ ["--accent" as string]: subject.accentColor }}>
       <PracticeSession
@@ -45,6 +48,8 @@ export default async function SubjectPracticePage({
         questions={questions.map(toPublicQuestion)}
         backHref="/practice"
         subjectSlug={idSlug(subject.id)}
+        sessionLength={experience.practiceSessionLength}
+        gamified={experience.gamification}
       />
     </div>
   );

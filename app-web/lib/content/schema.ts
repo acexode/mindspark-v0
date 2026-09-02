@@ -45,6 +45,7 @@ export const classLevelSchema = z.enum([
 ]);
 export const reviewStatusSchema = z.enum(["draft", "review", "published"]);
 export const difficultySchema = z.union([z.literal(1), z.literal(2), z.literal(3)]);
+export const semesterSchema = z.union([z.literal(1), z.literal(2)]);
 
 export const provenanceSchema = z.object({
   sources: z
@@ -104,6 +105,15 @@ export const subjectSchema = z.object({
   icon: z.string().min(2),
   topics: z.array(topicSchema).min(1),
   provenance: provenanceSchema,
+  /** Undergraduate only — a course is a subject. "CSC201". */
+  courseCode: z
+    .string()
+    .regex(/^[A-Z]{2,4}\s?\d{3}$/)
+    .optional(),
+  creditUnits: z.number().int().min(1).max(6).optional(),
+  semester: semesterSchema.optional(),
+  /** Programme slugs this course belongs to, e.g. "bsc-computer-science". */
+  programmes: z.array(z.string()).optional(),
 });
 
 /* ------------------------------------------------------------- content block */
@@ -274,6 +284,18 @@ export const questionFileSchema = z.object({
   questions: z.array(questionSchema).min(1),
 });
 
+/* ---------------------------------------------------------------- programme */
+
+export const programmeSchema = z.object({
+  slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  name: z.string().min(3),
+  shortName: z.string().min(2),
+  institutionType: z.enum(["university", "polytechnic", "college"]),
+  durationYears: z.number().int().min(2).max(6),
+  description: z.string().min(20),
+  accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+});
+
 /* -------------------------------------------------------------------- types */
 
 export type EducationLevel = z.infer<typeof educationLevelSchema>;
@@ -291,6 +313,7 @@ export type QuestionType = z.infer<typeof questionTypeSchema>;
 export type QuestionOption = z.infer<typeof optionSchema>;
 export type Question = z.infer<typeof questionSchema>;
 export type QuestionFile = z.infer<typeof questionFileSchema>;
+export type Programme = z.infer<typeof programmeSchema>;
 
 /** Question with the answer key stripped — the only shape sent to clients. */
 export type PublicQuestion = Omit<
