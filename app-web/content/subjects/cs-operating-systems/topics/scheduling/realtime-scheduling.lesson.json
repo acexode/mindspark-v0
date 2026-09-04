@@ -1,0 +1,122 @@
+{
+  "id": "ug.cs-operating-systems.scheduling.realtime-scheduling.lesson",
+  "subtopicId": "ug.cs-operating-systems.scheduling.realtime-scheduling",
+  "title": "Real-Time and Multiprocessor Scheduling",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-operating-systems.scheduling.realtime-scheduling.o1",
+    "ug.cs-operating-systems.scheduling.realtime-scheduling.o2",
+    "ug.cs-operating-systems.scheduling.realtime-scheduling.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine a self-driving car navigating through busy city streets. It must make split-second decisions to ensure safety. How does its operating system prioritize tasks to meet strict deadlines?"
+    },
+    {
+      "type": "text",
+      "markdown": "In real-time systems, tasks must be completed within specific time constraints. These constraints can be categorized as either hard or soft real-time requirements. Understanding these distinctions is crucial for designing systems that meet their operational needs."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Hard vs. Soft Real-Time Requirements",
+      "text": "Hard real-time systems require tasks to be completed within a strict deadline, where missing the deadline could lead to catastrophic failure. Soft real-time systems have more flexible deadlines, where missing a deadline may degrade performance but not cause a complete system failure."
+    },
+    {
+      "type": "text",
+      "markdown": "Rate-monotonic scheduling (RMS) is a common algorithm used in real-time systems. It assigns priorities to tasks based on their periodicity: the more frequent the task, the higher its priority."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Rate-Monotonic Scheduling",
+      "text": "In RMS, tasks are assigned priorities according to their frequency. Higher frequency tasks have higher priority, making RMS optimal for fixed-priority scheduling of periodic tasks."
+    },
+    {
+      "type": "math",
+      "latex": "U = \\sum_{i=1}^{n} \\frac{C_i}{T_i} \\leq n(2^{1/n} - 1)",
+      "caption": "Utilization bound for rate-monotonic scheduling, where $C_i$ is the computation time and $T_i$ is the period of task $i$."
+    },
+    {
+      "type": "worked_example",
+      "title": "Rate-Monotonic Scheduling Example",
+      "prompt": "Consider three tasks with periods 4, 5, and 6 units and computation times 1, 1, and 2 units respectively. Determine if these tasks can be scheduled using RMS.",
+      "steps": [
+        {
+          "text": "Calculate the utilization for each task.",
+          "latex": "U_1 = \\frac{1}{4}, \\ U_2 = \\frac{1}{5}, \\ U_3 = \\frac{2}{6}"
+        },
+        {
+          "text": "Sum the utilizations.",
+          "latex": "U = \\frac{1}{4} + \\frac{1}{5} + \\frac{2}{6} = 0.25 + 0.2 + 0.333 = 0.783"
+        },
+        {
+          "text": "Check against the utilization bound for 3 tasks.",
+          "latex": "3(2^{1/3} - 1) \\approx 0.779"
+        }
+      ],
+      "answer": "The total utilization 0.783 exceeds the bound 0.779, so the tasks cannot be scheduled using RMS."
+    },
+    {
+      "type": "text",
+      "markdown": "In multiprocessor systems, scheduling becomes more complex due to the need to distribute tasks across multiple cores. Two important concepts here are load balancing and processor affinity."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Load Balancing and Processor Affinity",
+      "text": "Load balancing ensures that tasks are evenly distributed across processors to optimize performance. Processor affinity refers to the tendency of a process to run on a specific processor, which can improve cache performance by keeping data local to a processor."
+    },
+    {
+      "type": "worked_example",
+      "title": "Load Balancing in Multiprocessor Systems",
+      "prompt": "Consider a system with two processors and four tasks with the following computation times: 2, 3, 5, and 8 units. How can these tasks be distributed to achieve load balancing?",
+      "steps": [
+        {
+          "text": "Calculate the total computation time.",
+          "latex": "2 + 3 + 5 + 8 = 18"
+        },
+        {
+          "text": "Divide the total computation time by the number of processors.",
+          "latex": "\\frac{18}{2} = 9"
+        },
+        {
+          "text": "Assign tasks to processors to balance the load.",
+          "latex": "\\text{Processor 1: Tasks with times 2, 3, 4 (total 9)} \\newline \\text{Processor 2: Task with time 8 (total 8)}"
+        }
+      ],
+      "answer": "Tasks can be distributed as: Processor 1 handles tasks with times 2, 3, and 4, while Processor 2 handles the task with time 8."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Scheduling Complexity",
+      "text": "Scheduling on multiprocessor systems is NP-hard, meaning that finding an optimal solution can be computationally expensive."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Real-time systems require tasks to be completed within specific deadlines, with hard and soft real-time requirements defining the level of strictness.",
+        "Rate-monotonic scheduling assigns priorities based on task frequency and is optimal for fixed-priority scheduling of periodic tasks.",
+        "In multiprocessor systems, load balancing and processor affinity are key to optimizing performance."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-operating-systems.scheduling.realtime-scheduling.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

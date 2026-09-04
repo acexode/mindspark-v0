@@ -1,0 +1,120 @@
+{
+  "id": "ug.cs-operating-systems.storage-and-io.file-system-reliability.lesson",
+  "subtopicId": "ug.cs-operating-systems.storage-and-io.file-system-reliability",
+  "title": "Reliability and Journalling in File Systems",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-operating-systems.storage-and-io.file-system-reliability.o1",
+    "ug.cs-operating-systems.storage-and-io.file-system-reliability.o2",
+    "ug.cs-operating-systems.storage-and-io.file-system-reliability.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine your computer crashes while saving an important document. How does the file system ensure your data isn't lost or corrupted?"
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore how file systems maintain reliability, particularly focusing on crash consistency and journalling. We'll also discuss the trade-offs between write caching and durability."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Crash Consistency",
+      "text": "Crash consistency refers to the ability of a file system to maintain a consistent state even after a system crash during write operations."
+    },
+    {
+      "type": "text",
+      "markdown": "When a system crash occurs during a write operation, the file system can be left in an inconsistent state. This inconsistency arises because write operations are often not atomic; they can be interrupted, leaving some parts of the file system updated while others are not."
+    },
+    {
+      "type": "math",
+      "latex": "Consistency = \\text{All operations are atomic and durable}",
+      "caption": "Formal definition of consistency in file systems."
+    },
+    {
+      "type": "worked_example",
+      "title": "Example of Crash-Induced Inconsistency",
+      "prompt": "Consider a file system where a file is being updated. The update involves writing to two separate blocks. A crash occurs after the first block is written but before the second block is updated.",
+      "steps": [
+        {
+          "text": "Step 1: The file system starts updating Block A and Block B."
+        },
+        {
+          "text": "Step 2: Block A is successfully written to the disk."
+        },
+        {
+          "text": "Step 3: A crash occurs before Block B is written."
+        },
+        {
+          "text": "Result: Block A is updated, but Block B is not, leading to an inconsistent state."
+        }
+      ],
+      "answer": "The file system is left in an inconsistent state because only part of the update was completed."
+    },
+    {
+      "type": "text",
+      "markdown": "To address this issue, file systems use journalling. Journalling ensures that all operations are recorded in a log before they are applied to the file system. This log can be used to restore consistency after a crash."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Journalling",
+      "text": "Journalling is a technique where changes are first written to a log (journal) before being applied to the file system. This allows the system to recover to a consistent state after a crash."
+    },
+    {
+      "type": "worked_example",
+      "title": "Journalling in Action",
+      "prompt": "Consider the same scenario as before, but now with a journalling file system.",
+      "steps": [
+        {
+          "text": "Step 1: The update operation is recorded in the journal."
+        },
+        {
+          "text": "Step 2: Block A is written to the disk."
+        },
+        {
+          "text": "Step 3: A crash occurs before Block B is written."
+        },
+        {
+          "text": "Step 4: Upon recovery, the system reads the journal and completes the update to Block B."
+        }
+      ],
+      "answer": "The file system uses the journal to complete the update, restoring consistency."
+    },
+    {
+      "type": "text",
+      "markdown": "While journalling improves reliability, it introduces a trade-off between write performance and durability. Write caching can improve performance but may compromise durability if a crash occurs before cached writes are committed to disk."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Trade-off: Write Caching vs. Durability",
+      "text": "Write caching improves performance by delaying writes to disk, but it risks data loss during a crash. Journalling mitigates this risk by ensuring changes are logged before being applied."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Crash consistency is crucial for maintaining a reliable file system.",
+        "Journalling helps restore consistency after a crash by using a log.",
+        "There is a trade-off between write caching performance and data durability."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-operating-systems.storage-and-io.file-system-reliability.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

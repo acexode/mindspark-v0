@@ -14,11 +14,13 @@ import path from "node:path";
 import { subjectSchema } from "../lib/content/schema";
 import { toSubject, type CourseSpec } from "./lib/undergrad-course";
 import { CS_YEAR_1 } from "./lib/catalogue/cs-year1";
+import { CS_YEAR_2 } from "./lib/catalogue/cs-year2";
 import { CVE_YEAR_1 } from "./lib/catalogue/cve-year1";
+import { CVE_YEAR_2 } from "./lib/catalogue/cve-year2";
 
 const SUBJECTS_DIR = path.join(process.cwd(), "content/subjects");
 
-const CATALOGUE: CourseSpec[] = [...CS_YEAR_1, ...CVE_YEAR_1];
+const CATALOGUE: CourseSpec[] = [...CS_YEAR_1, ...CS_YEAR_2, ...CVE_YEAR_1, ...CVE_YEAR_2];
 
 function main(): void {
   const dryRun = process.argv.includes("--dry-run");

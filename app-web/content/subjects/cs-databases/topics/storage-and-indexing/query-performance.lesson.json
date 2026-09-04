@@ -1,0 +1,137 @@
+{
+  "id": "ug.cs-databases.storage-and-indexing.query-performance.lesson",
+  "subtopicId": "ug.cs-databases.storage-and-indexing.query-performance",
+  "title": "Query Performance",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-databases.storage-and-indexing.query-performance.o1",
+    "ug.cs-databases.storage-and-indexing.query-performance.o2",
+    "ug.cs-databases.storage-and-indexing.query-performance.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Ever wondered why some database queries are lightning fast while others seem to drag on forever? The secret often lies in the query plan and the indexes used."
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore how to interpret query plans, choose appropriate indexes, and understand the trade-offs involved in using indexes, especially in write-heavy workloads."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Query Plan",
+      "text": "A query plan is a sequence of steps used by a database management system to execute a query. It includes operations like scans, joins, and sorts."
+    },
+    {
+      "type": "text",
+      "markdown": "When a query is executed, the database management system (DBMS) generates a query plan. This plan outlines how the DBMS will retrieve the requested data. Understanding this plan is crucial for optimizing query performance."
+    },
+    {
+      "type": "math",
+      "latex": "SELECT * FROM employees WHERE department = 'Sales';",
+      "caption": "Example SQL query"
+    },
+    {
+      "type": "worked_example",
+      "title": "Interpreting a Query Plan",
+      "prompt": "Consider the query plan for the SQL query shown above.",
+      "steps": [
+        {
+          "text": "1. The query plan indicates a full table scan on the 'employees' table."
+        },
+        {
+          "text": "2. A full table scan means every row in the table is checked to find rows where 'department' is 'Sales'."
+        },
+        {
+          "text": "3. This is inefficient for large tables, as it involves reading every row."
+        }
+      ],
+      "answer": "The query plan involves a full table scan, which is inefficient for large datasets."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Full Table Scan",
+      "text": "A full table scan occurs when the DBMS reads every row in a table to find the rows that satisfy the query condition. This is often a sign of an unoptimized query."
+    },
+    {
+      "type": "text",
+      "markdown": "To improve query performance, we can use indexes. An index on the 'department' column would allow the DBMS to quickly locate rows where 'department' is 'Sales' without scanning the entire table."
+    },
+    {
+      "type": "worked_example",
+      "title": "Choosing an Index",
+      "prompt": "Given the query `SELECT * FROM employees WHERE department = 'Sales';`, choose an appropriate index.",
+      "steps": [
+        {
+          "text": "1. Identify the column used in the WHERE clause: 'department'."
+        },
+        {
+          "text": "2. Create an index on the 'department' column to speed up lookups."
+        }
+      ],
+      "answer": "An index on the 'department' column is appropriate for this query."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Operation",
+        "Description",
+        "Performance Impact"
+      ],
+      "rows": [
+        [
+          "Full Table Scan",
+          "Reads every row in the table",
+          "Slow for large tables"
+        ],
+        [
+          "Index Scan",
+          "Uses an index to find rows",
+          "Fast if index is selective"
+        ],
+        [
+          "Index Seek",
+          "Directly accesses rows using an index",
+          "Very fast"
+        ]
+      ],
+      "caption": "Comparison of different query operations"
+    },
+    {
+      "type": "text",
+      "markdown": "While indexes can significantly speed up read operations, they can slow down write-heavy workloads. This is because every insert, update, or delete operation may require updating the index."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Index Overhead",
+      "text": "Indexes can slow down write operations because the DBMS must update the index whenever the data changes."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A query plan shows the steps a DBMS takes to execute a query.",
+        "Indexes can improve query performance by reducing the need for full table scans.",
+        "Indexes can slow down write-heavy workloads due to the overhead of maintaining the index."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-databases.storage-and-indexing.query-performance.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

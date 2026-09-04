@@ -1,0 +1,145 @@
+{
+  "id": "ug.cs-compilers.parsing.top-down-parsing.lesson",
+  "subtopicId": "ug.cs-compilers.parsing.top-down-parsing",
+  "title": "Top-Down Parsing",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-compilers.parsing.top-down-parsing.o1",
+    "ug.cs-compilers.parsing.top-down-parsing.o2",
+    "ug.cs-compilers.parsing.top-down-parsing.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine you're reading a book, and you want to understand the story by following the chapters in order. Top-down parsing works similarly by trying to understand a sentence by starting with the highest-level rule and breaking it down into its components."
+    },
+    {
+      "type": "text",
+      "markdown": "Top-down parsing is a strategy of syntax analysis in which we start from the root of the parse tree and work our way down to the leaves. This approach is intuitive as it mimics the way we naturally understand hierarchical structures. In this lesson, we will explore recursive descent parsing, LL(1) parsing, and the computation of FIRST and FOLLOW sets."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Recursive Descent Parsing",
+      "text": "Recursive descent parsing is a top-down parsing technique that uses a set of recursive procedures to process the input. Each non-terminal in the grammar has a corresponding procedure."
+    },
+    {
+      "type": "text",
+      "markdown": "Recursive descent parsers are straightforward to implement but require the grammar to be free of left recursion. Let's explore how recursive descent works with a simple example."
+    },
+    {
+      "type": "worked_example",
+      "title": "Recursive Descent Parser Example",
+      "prompt": "Consider the grammar: \n1. S → aS | b\nWrite a recursive descent parser for this grammar.",
+      "steps": [
+        {
+          "text": "Identify the non-terminals and terminals. Here, S is a non-terminal, and 'a' and 'b' are terminals."
+        },
+        {
+          "text": "Create a function for each non-terminal. For S, we need a function that tries to match 'a' followed by S, or 'b'."
+        },
+        {
+          "text": "Implement the function `parseS()`:",
+          "latex": "def parseS():\n    if current_token == 'a':\n        match('a')\n        parseS()\n    elif current_token == 'b':\n        match('b')\n    else:\n        error()"
+        },
+        {
+          "text": "The `match(token)` function checks if the current token matches the expected token and advances to the next token."
+        }
+      ],
+      "answer": "The recursive descent parser for the grammar S → aS | b is implemented using the function `parseS()`."
+    },
+    {
+      "type": "text",
+      "markdown": "A major limitation of recursive descent parsing is its inability to handle left-recursive grammars. To use recursive descent, we must first eliminate left recursion."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Left Recursion",
+      "text": "Left recursion occurs when a non-terminal in a grammar can eventually derive itself as the leftmost symbol. It must be eliminated for top-down parsers to work."
+    },
+    {
+      "type": "worked_example",
+      "title": "Eliminating Left Recursion",
+      "prompt": "Consider the left-recursive grammar: \n1. A → Aα | β\nTransform this grammar to eliminate left recursion.",
+      "steps": [
+        {
+          "text": "Identify the left-recursive production A → Aα."
+        },
+        {
+          "text": "Introduce a new non-terminal A'. Rewrite the grammar as:",
+          "latex": "A → βA' \\newline A' → αA' | ε"
+        },
+        {
+          "text": "The new grammar is free of left recursion and suitable for top-down parsing."
+        }
+      ],
+      "answer": "The transformed grammar is A → βA', A' → αA' | ε."
+    },
+    {
+      "type": "text",
+      "markdown": "To implement an LL(1) parser, we need to compute the FIRST and FOLLOW sets for the grammar. These sets help determine which production to use based on the next input symbol."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "FIRST Set",
+      "text": "The FIRST set of a non-terminal is the set of terminals that begin the strings derivable from the non-terminal."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "FOLLOW Set",
+      "text": "The FOLLOW set of a non-terminal is the set of terminals that can appear immediately to the right of the non-terminal in some \"sentential\" form."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Non-terminal",
+        "FIRST Set",
+        "FOLLOW Set"
+      ],
+      "rows": [
+        [
+          "A",
+          "{a, b}",
+          "{c, $}"
+        ],
+        [
+          "B",
+          "{b, c}",
+          "{d, $}"
+        ]
+      ],
+      "caption": "Example FIRST and FOLLOW sets for a hypothetical grammar."
+    },
+    {
+      "type": "text",
+      "markdown": "By using the FIRST and FOLLOW sets, an LL(1) parser can decide which production to apply based on the current input symbol and the top of the parsing stack."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Recursive descent parsing is a top-down parsing technique that requires grammars to be free of left recursion.",
+        "FIRST and FOLLOW sets are crucial for constructing LL(1) parsers.",
+        "Eliminating left recursion is necessary for top-down parsing."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-compilers.parsing.top-down-parsing.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

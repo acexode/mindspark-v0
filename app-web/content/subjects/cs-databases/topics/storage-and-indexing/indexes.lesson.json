@@ -1,0 +1,149 @@
+{
+  "id": "ug.cs-databases.storage-and-indexing.indexes.lesson",
+  "subtopicId": "ug.cs-databases.storage-and-indexing.indexes",
+  "title": "Indexes and B+ Trees",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-databases.storage-and-indexing.indexes.o1",
+    "ug.cs-databases.storage-and-indexing.indexes.o2",
+    "ug.cs-databases.storage-and-indexing.indexes.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Have you ever wondered why some database queries are lightning-fast while others seem to drag on forever? The secret often lies in how data is indexed."
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore how indexes, particularly B+ trees, enhance the efficiency of database queries. We will also differentiate between clustered and secondary indexes and understand why B+ trees are designed to be shallow and wide."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Index",
+      "text": "An index in a database is a data structure that improves the speed of data retrieval operations on a database table at the cost of additional writes and storage space."
+    },
+    {
+      "type": "text",
+      "markdown": "Indexes are crucial for optimizing query performance. They allow the database management system (DBMS) to find data without scanning every row in a table. Among various types of indexes, B+ trees are widely used due to their efficiency in disk-based storage systems."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "B+ Tree",
+      "text": "A B+ tree is a self-balancing tree data structure that maintains sorted data and allows searches, sequential access, insertions, and deletions in logarithmic time."
+    },
+    {
+      "type": "text",
+      "markdown": "B+ trees are an extension of B-trees, optimized for systems that read and write large blocks of data. They are particularly suited for databases because they minimize the number of disk accesses required to find a record."
+    },
+    {
+      "type": "math",
+      "latex": "O(\\log n)",
+      "caption": "The time complexity for searching in a B+ tree is logarithmic, denoted as $O(\\log n)$, where $n$ is the number of elements in the tree."
+    },
+    {
+      "type": "worked_example",
+      "title": "B+ Tree Search Example",
+      "prompt": "Consider a B+ tree with an order of 4. How many nodes are accessed to find a key in a tree with 64 keys?",
+      "steps": [
+        {
+          "text": "The order of the B+ tree is 4, meaning each node can have up to 4 children."
+        },
+        {
+          "text": "The height of the tree can be calculated using the formula for the height of a B+ tree: $h = \\lceil \\log_{m} n \\rceil$, where $m$ is the order and $n$ is the number of keys.",
+          "latex": "h = \\lceil \\log_{4} 64 \\rceil = \\lceil 3 \\rceil = 3"
+        },
+        {
+          "text": "Therefore, 3 nodes are accessed to find a key in the tree."
+        }
+      ],
+      "answer": "3 nodes"
+    },
+    {
+      "type": "text",
+      "markdown": "Now, let's distinguish between clustered and secondary indexes. Understanding these concepts is crucial for designing efficient database systems."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Clustered Index",
+      "text": "A clustered index determines the physical order of data in a table. There can be only one clustered index per table because the data rows themselves are stored in the order of the clustered index."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Secondary Index",
+      "text": "A secondary index, also known as a non-clustered index, does not affect the physical order of the data. Instead, it creates a separate object within the table that points back to the original table rows."
+    },
+    {
+      "type": "worked_example",
+      "title": "Clustered vs. Secondary Index Example",
+      "prompt": "Consider a table with a primary key on 'ID' and a secondary index on 'Name'. How does the DBMS use these indexes differently when querying by 'ID' versus 'Name'?",
+      "steps": [
+        {
+          "text": "When querying by 'ID', the DBMS uses the clustered index to directly access the data rows because the data is physically ordered by 'ID'."
+        },
+        {
+          "text": "When querying by 'Name', the DBMS uses the secondary index to find pointers to the data rows, which are then accessed separately."
+        }
+      ],
+      "answer": "The DBMS uses the clustered index for direct access by 'ID' and the secondary index for indirect access by 'Name'."
+    },
+    {
+      "type": "text",
+      "markdown": "B+ trees are designed to be shallow and wide rather than binary. This design choice is intentional and has significant implications for performance."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Shallow and Wide B+ Trees",
+      "text": "B+ trees are shallow and wide to minimize the height of the tree, reducing the number of disk accesses required to find a record. This is crucial for performance in disk-based storage systems."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Index Type",
+        "Physical Order",
+        "Number of Indexes per Table"
+      ],
+      "rows": [
+        [
+          "Clustered",
+          "Yes",
+          "1"
+        ],
+        [
+          "Secondary",
+          "No",
+          "Multiple"
+        ]
+      ],
+      "caption": "Comparison of Clustered and Secondary Indexes"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "B+ trees reduce lookup costs to logarithmic time, making them efficient for database indexing.",
+        "Clustered indexes determine the physical order of data, while secondary indexes do not.",
+        "B+ trees are shallow and wide to minimize disk accesses, enhancing performance."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-databases.storage-and-indexing.indexes.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

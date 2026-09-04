@@ -1,0 +1,136 @@
+{
+  "id": "ug.cs-databases.transactions.recovery.lesson",
+  "subtopicId": "ug.cs-databases.transactions.recovery",
+  "title": "Recovery in Database Transactions",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-databases.transactions.recovery.o1",
+    "ug.cs-databases.transactions.recovery.o2",
+    "ug.cs-databases.transactions.recovery.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine you're writing a document, and your computer crashes. How can you ensure that your work is not lost? In databases, similar principles apply to ensure data consistency and durability after a crash."
+    },
+    {
+      "type": "text",
+      "markdown": "In database systems, maintaining data consistency and durability in the event of crashes or failures is crucial. This unit explores recovery mechanisms, focusing on write-ahead logging (WAL), undo, and redo operations, which are essential for restoring a consistent state after a crash."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Write-Ahead Logging (WAL)",
+      "text": "Write-ahead logging is a protocol that ensures all modifications to data are logged before they are applied to the database. This allows the system to recover from crashes by using the log to redo or undo transactions."
+    },
+    {
+      "type": "text",
+      "markdown": "The fundamental principle of write-ahead logging is that no changes should be made to the database until the changes are safely recorded in a log. This ensures that, in the event of a crash, the system can refer to the log to determine which transactions need to be undone or redone."
+    },
+    {
+      "type": "math",
+      "latex": "L_{log} \\rightarrow L_{db}",
+      "caption": "Where $L_{log}$ is the log entry and $L_{db}$ is the database update. The log entry must be written before the database update."
+    },
+    {
+      "type": "worked_example",
+      "title": "Write-Ahead Logging Example",
+      "prompt": "Consider a transaction that updates a bank account balance. Explain the steps involved in write-ahead logging for this transaction.",
+      "steps": [
+        {
+          "text": "1. Record the transaction's intention to update the balance in the log."
+        },
+        {
+          "text": "2. Write the log entry to stable storage."
+        },
+        {
+          "text": "3. Update the account balance in the database."
+        }
+      ],
+      "answer": "The log entry ensures that if a crash occurs after the log is written but before the database update, the system can redo the transaction using the log."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Durability Before Commit",
+      "text": "Before a transaction can be acknowledged as committed, all its log records must be written to stable storage."
+    },
+    {
+      "type": "text",
+      "markdown": "In the event of a crash, the system uses the log to determine which transactions need to be undone or redone. Undo operations revert changes from incomplete transactions, while redo operations reapply changes from committed transactions."
+    },
+    {
+      "type": "worked_example",
+      "title": "Undo and Redo Example",
+      "prompt": "A transaction updates a value from 100 to 150 but crashes before committing. Describe the undo and redo process.",
+      "steps": [
+        {
+          "text": "1. Check if the transaction was committed before the crash."
+        },
+        {
+          "text": "2. If not committed, undo the change by reverting the value to 100."
+        },
+        {
+          "text": "3. If committed, redo the change by ensuring the value is 150."
+        }
+      ],
+      "answer": "Since the transaction was not committed, the system undoes the change, reverting the value to 100."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Operation",
+        "Purpose",
+        "When Used"
+      ],
+      "rows": [
+        [
+          "Write-Ahead Logging",
+          "Log changes before applying to database",
+          "Before any database update"
+        ],
+        [
+          "Undo",
+          "Revert uncommitted changes",
+          "After a crash, for incomplete transactions"
+        ],
+        [
+          "Redo",
+          "Reapply committed changes",
+          "After a crash, for committed transactions"
+        ]
+      ],
+      "caption": "Comparison of recovery operations in database transactions."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Assumptions for Recovery",
+      "text": "Recovery mechanisms assume that the log is stored in stable storage that survives crashes."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Write-ahead logging ensures changes are logged before database updates.",
+        "Undo and redo operations restore consistency after a crash.",
+        "Durability requires all log records to be written before a commit is acknowledged."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-databases.transactions.recovery.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

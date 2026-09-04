@@ -1,0 +1,169 @@
+{
+  "id": "ug.cs-computer-systems.assembly.control-in-assembly.lesson",
+  "subtopicId": "ug.cs-computer-systems.assembly.control-in-assembly",
+  "title": "Control Flow in Assembly",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-computer-systems.assembly.control-in-assembly.o1",
+    "ug.cs-computer-systems.assembly.control-in-assembly.o2",
+    "ug.cs-computer-systems.assembly.control-in-assembly.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Have you ever wondered how your computer decides which instructions to execute next? This is the realm of control flow in assembly language, where we translate high-level constructs like loops and conditionals into machine-readable instructions."
+    },
+    {
+      "type": "text",
+      "markdown": "In high-level languages, control flow constructs such as `if`, `else`, and loops (`for`, `while`) are common. These constructs allow programs to make decisions and repeat actions. In assembly language, these constructs are implemented using conditional branches and jump instructions."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Conditional Branch",
+      "text": "A conditional branch is an instruction that causes the processor to jump to a different part of the program based on the result of a comparison."
+    },
+    {
+      "type": "text",
+      "markdown": "Assembly languages use condition flags to determine the outcome of comparisons. These flags are set by comparison instructions and tested by branch instructions. Common flags include the Zero Flag (ZF), Sign Flag (SF), and Carry Flag (CF)."
+    },
+    {
+      "type": "math",
+      "latex": "\\text{CMP } A, B",
+      "caption": "The CMP instruction compares two operands, A and B, by subtracting B from A and setting the condition flags based on the result."
+    },
+    {
+      "type": "text",
+      "markdown": "Let's consider how an `if/else` statement is implemented in assembly. Assume we want to execute a block of code if a variable `x` is greater than zero, and another block if it is not."
+    },
+    {
+      "type": "worked_example",
+      "title": "Implementing an if/else in Assembly",
+      "prompt": "Translate the following C code into assembly:\n\n```c\nif (x > 0) {\n    // Block A\n} else {\n    // Block B\n}\n```",
+      "steps": [
+        {
+          "text": "Use CMP to compare x with 0.",
+          "latex": "\\text{CMP } x, 0"
+        },
+        {
+          "text": "Use JLE (Jump if Less or Equal) to jump to Block B if x is not greater than 0.",
+          "latex": "\\text{JLE BlockB}"
+        },
+        {
+          "text": "If the jump is not taken, execute Block A.",
+          "latex": "\\text{BlockA:}"
+        },
+        {
+          "text": "Unconditionally jump to the end of the if/else structure after Block A.",
+          "latex": "\\text{JMP EndIf}"
+        },
+        {
+          "text": "Label Block B and place its instructions.",
+          "latex": "\\text{BlockB:}"
+        },
+        {
+          "text": "Label the end of the if/else structure.",
+          "latex": "\\text{EndIf:}"
+        }
+      ],
+      "answer": "The assembly code uses CMP to set the condition flags, JLE to conditionally jump to Block B, and JMP to skip Block B after executing Block A."
+    },
+    {
+      "type": "text",
+      "markdown": "Loops in assembly are constructed using conditional and unconditional jumps. A `while` loop checks a condition before executing a block of code repeatedly."
+    },
+    {
+      "type": "worked_example",
+      "title": "Converting a While Loop to Assembly",
+      "prompt": "Convert the following C `while` loop into assembly:\n\n```c\nwhile (y != 0) {\n    // Loop Body\n}\n```",
+      "steps": [
+        {
+          "text": "Label the start of the loop.",
+          "latex": "\\text{LoopStart:}"
+        },
+        {
+          "text": "Use CMP to compare y with 0.",
+          "latex": "\\text{CMP } y, 0"
+        },
+        {
+          "text": "Use JE (Jump if Equal) to exit the loop if y is zero.",
+          "latex": "\\text{JE LoopEnd}"
+        },
+        {
+          "text": "Place the loop body instructions.",
+          "latex": "\\text{LoopBody:}"
+        },
+        {
+          "text": "Unconditionally jump back to the start of the loop.",
+          "latex": "\\text{JMP LoopStart}"
+        },
+        {
+          "text": "Label the end of the loop.",
+          "latex": "\\text{LoopEnd:}"
+        }
+      ],
+      "answer": "The assembly code uses CMP to set the condition flags, JE to exit the loop if the condition is met, and JMP to repeat the loop."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Condition",
+        "Instruction",
+        "Description"
+      ],
+      "rows": [
+        [
+          "Equal",
+          "JE",
+          "Jump if equal (ZF = 1)"
+        ],
+        [
+          "Not Equal",
+          "JNE",
+          "Jump if not equal (ZF = 0)"
+        ],
+        [
+          "Greater",
+          "JG",
+          "Jump if greater (ZF = 0 and SF = OF)"
+        ],
+        [
+          "Less or Equal",
+          "JLE",
+          "Jump if less or equal (ZF = 1 or SF ≠ OF)"
+        ]
+      ],
+      "caption": "Common conditional branch instructions and their conditions."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Key Point",
+      "text": "Understanding how condition flags are set and used is crucial for implementing control flow in assembly language."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Conditional branches in assembly are used to implement control flow constructs like `if/else` and loops.",
+        "Condition flags are set by comparison instructions and determine the flow of execution.",
+        "Loops are implemented using a combination of conditional and unconditional jumps."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-computer-systems.assembly.control-in-assembly.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

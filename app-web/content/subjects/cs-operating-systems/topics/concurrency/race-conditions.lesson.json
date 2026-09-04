@@ -1,0 +1,132 @@
+{
+  "id": "ug.cs-operating-systems.concurrency.race-conditions.lesson",
+  "subtopicId": "ug.cs-operating-systems.concurrency.race-conditions",
+  "title": "Race Conditions and Critical Sections",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-operating-systems.concurrency.race-conditions.o1",
+    "ug.cs-operating-systems.concurrency.race-conditions.o2",
+    "ug.cs-operating-systems.concurrency.race-conditions.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine two threads trying to update a shared bank account balance simultaneously. What could go wrong?"
+    },
+    {
+      "type": "text",
+      "markdown": "In concurrent programming, a race condition occurs when the behavior of software depends on the relative timing of events, such as the order of execution of threads. This can lead to unpredictable results and is a common source of bugs in systems programming."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Race Condition",
+      "text": "A race condition is a situation in concurrent programming where the output or the state of the program depends on the sequence or timing of uncontrollable events."
+    },
+    {
+      "type": "text",
+      "markdown": "To understand race conditions, consider a simple example where two threads increment a shared counter. If both threads read the counter's value at the same time, increment it, and then write it back, the final value will be incorrect. This happens because the increment operation is not atomic."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Atomic Operation",
+      "text": "An atomic operation is one that completes in a single step relative to other threads. It is indivisible and cannot be interrupted."
+    },
+    {
+      "type": "worked_example",
+      "title": "Identifying a Race Condition",
+      "prompt": "Consider two threads, T1 and T2, both incrementing a shared variable `x` initialized to 0. Describe the possible interleavings and identify any race conditions.",
+      "steps": [
+        {
+          "text": "Initially, `x = 0`. Both threads read `x` at the same time."
+        },
+        {
+          "text": "T1 reads `x = 0`, increments to 1, but before writing back, T2 also reads `x = 0`."
+        },
+        {
+          "text": "T1 writes `x = 1`. T2 increments its read value (0) to 1 and writes `x = 1`."
+        },
+        {
+          "text": "Final value of `x` is 1, but it should be 2 if both increments were successful."
+        }
+      ],
+      "answer": "The race condition occurs because both threads read the same initial value and increment it independently, leading to a lost update."
+    },
+    {
+      "type": "text",
+      "markdown": "To prevent race conditions, we need to ensure that critical sections of code, where shared resources are accessed, are executed by only one thread at a time. This is known as mutual exclusion."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Critical Section",
+      "text": "A critical section is a part of the program where shared resources are accessed and modified. Proper synchronization is required to prevent race conditions."
+    },
+    {
+      "type": "text",
+      "markdown": "The critical section problem requires satisfying three conditions: mutual exclusion, progress, and bounded waiting."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Mutual Exclusion",
+      "text": "Only one thread can execute in the critical section at a time."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Progress",
+      "text": "If no thread is in the critical section, and some threads wish to enter, one of them must be allowed to enter without unnecessary delay."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Bounded Waiting",
+      "text": "There must be a limit on the number of times other threads can enter the critical section after a thread has requested to enter and before it is granted access."
+    },
+    {
+      "type": "worked_example",
+      "title": "Understanding Non-Atomic Operations",
+      "prompt": "Explain why the increment operation `x++` is not atomic.",
+      "steps": [
+        {
+          "text": "The increment operation `x++` involves three steps: reading the value of `x`, incrementing the value, and writing the new value back."
+        },
+        {
+          "text": "These steps can be interleaved with operations from other threads, leading to race conditions if not properly synchronized."
+        }
+      ],
+      "answer": "The operation is not atomic because it consists of multiple steps that can be interrupted, allowing other threads to access and modify `x` in between."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Key Point",
+      "text": "Ensuring atomicity and proper synchronization in critical sections is crucial to prevent race conditions and ensure correct program behavior."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Race conditions occur when the outcome of a program depends on the timing of thread execution.",
+        "Critical sections require mutual exclusion, progress, and bounded waiting to prevent race conditions."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-operating-systems.concurrency.race-conditions.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

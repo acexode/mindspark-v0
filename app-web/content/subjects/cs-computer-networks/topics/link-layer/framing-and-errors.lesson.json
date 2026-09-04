@@ -1,0 +1,152 @@
+{
+  "id": "ug.cs-computer-networks.link-layer.framing-and-errors.lesson",
+  "subtopicId": "ug.cs-computer-networks.link-layer.framing-and-errors",
+  "title": "Framing and Error Detection",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-computer-networks.link-layer.framing-and-errors.o1",
+    "ug.cs-computer-networks.link-layer.framing-and-errors.o2",
+    "ug.cs-computer-networks.link-layer.framing-and-errors.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine sending a letter through the mail, but the envelope sometimes arrives torn or with missing pages. How can we ensure the recipient gets the complete message?"
+    },
+    {
+      "type": "text",
+      "markdown": "In computer networks, data is transmitted in units called frames. Ensuring these frames are received correctly is crucial for reliable communication. The link layer is responsible for framing and error detection, which involves identifying the start and end of a frame and verifying its integrity."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Frame Delimitation",
+      "text": "Frame delimitation is the process of identifying the start and end of a frame in a stream of data. This is often achieved using special bit patterns or byte sequences."
+    },
+    {
+      "type": "text",
+      "markdown": "Once a frame is delimited, we need to ensure it hasn't been corrupted during transmission. This is where error detection mechanisms like parity checks, checksums, and cyclic redundancy checks (CRC) come into play."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Parity Check",
+      "text": "A parity check adds a single bit to the data to make the number of 1s either even (even parity) or odd (odd parity). It can detect single-bit errors."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Checksum",
+      "text": "A checksum is a value computed from a data set to detect errors. It involves summing the data values and using the sum to verify data integrity."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Cyclic Redundancy Check (CRC)",
+      "text": "CRC is a more robust error-detecting code that treats the data as a polynomial and divides it by a generator polynomial. The remainder is the CRC."
+    },
+    {
+      "type": "worked_example",
+      "title": "Calculating a Simple Checksum",
+      "prompt": "Calculate the checksum for the data bytes: [0x12, 0x34, 0x56, 0x78].",
+      "steps": [
+        {
+          "text": "Convert each byte to decimal: 0x12 = 18, 0x34 = 52, 0x56 = 86, 0x78 = 120."
+        },
+        {
+          "text": "Sum the decimal values: 18 + 52 + 86 + 120 = 276."
+        },
+        {
+          "text": "Convert the sum back to hexadecimal: 276 = 0x114."
+        },
+        {
+          "text": "The checksum is the lower byte of the sum: 0x14."
+        }
+      ],
+      "answer": "0x14"
+    },
+    {
+      "type": "worked_example",
+      "title": "Calculating a CRC",
+      "prompt": "Calculate the CRC for the data bits 1101011011 using the generator polynomial 1011.",
+      "steps": [
+        {
+          "text": "Append three zeros (degree of polynomial) to the data: 1101011011000."
+        },
+        {
+          "text": "Perform binary division of 1101011011000 by 1011."
+        },
+        {
+          "text": "Subtract (XOR) the divisor from the dividend starting from the leftmost bit."
+        },
+        {
+          "text": "Continue the division process until the remainder is less than the divisor."
+        },
+        {
+          "text": "The remainder is the CRC: 100."
+        }
+      ],
+      "answer": "100"
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Error Detection Method",
+        "Error Detection Capability",
+        "Overhead"
+      ],
+      "rows": [
+        [
+          "Parity Check",
+          "Single-bit errors",
+          "Low"
+        ],
+        [
+          "Checksum",
+          "Multiple-bit errors",
+          "Medium"
+        ],
+        [
+          "CRC",
+          "Burst errors",
+          "High"
+        ]
+      ],
+      "caption": "Comparison of Error Detection Methods"
+    },
+    {
+      "type": "text",
+      "markdown": "While error detection is crucial at the link layer, higher layers also perform error detection and correction. However, detecting errors early at the link layer helps prevent corrupted data from propagating through the network."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Link Layer Error Detection",
+      "text": "The link layer focuses on detecting errors to ensure data integrity across a single hop, reducing the burden on higher layers."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Frame delimitation identifies the start and end of a frame.",
+        "Error detection methods include parity checks, checksums, and CRCs.",
+        "Link layer error detection prevents corrupted data from spreading."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-computer-networks.link-layer.framing-and-errors.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

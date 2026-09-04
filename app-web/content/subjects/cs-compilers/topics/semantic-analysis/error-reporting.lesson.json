@@ -1,0 +1,135 @@
+{
+  "id": "ug.cs-compilers.semantic-analysis.error-reporting.lesson",
+  "subtopicId": "ug.cs-compilers.semantic-analysis.error-reporting",
+  "title": "Error Detection and Reporting",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-compilers.semantic-analysis.error-reporting.o1",
+    "ug.cs-compilers.semantic-analysis.error-reporting.o2",
+    "ug.cs-compilers.semantic-analysis.error-reporting.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine writing a program and receiving an error message that simply says 'Error.' How useful would that be? Understanding error detection and reporting in compilers can make debugging a much smoother process."
+    },
+    {
+      "type": "text",
+      "markdown": "In the realm of compilers, error detection and reporting are crucial for helping programmers identify and fix issues in their code. Errors can be broadly classified into three categories: lexical, syntactic, and semantic. Each type of error requires different handling and reporting strategies."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Lexical Error",
+      "text": "A lexical error occurs when the sequence of characters in the source code does not match any token pattern defined by the language's lexical grammar."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Syntactic Error",
+      "text": "A syntactic error arises when the sequence of tokens does not conform to the language's syntax rules."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Semantic Error",
+      "text": "A semantic error occurs when a syntactically correct program does not make sense due to issues like type mismatches or undeclared variables."
+    },
+    {
+      "type": "text",
+      "markdown": "Effective error messages are essential for debugging. A useful error message should clearly indicate the nature of the error, its location in the code, and provide suggestions for correction if possible."
+    },
+    {
+      "type": "worked_example",
+      "title": "Identifying Error Types",
+      "prompt": "Consider the following code snippet written in a C-like language:\n\n```c\nint main() {\n    int x = 10\n    printf(\"Value: %d\", x);\n    return 0;\n}\n```\nIdentify the type of error present.",
+      "steps": [
+        {
+          "text": "Observe the line `int x = 10`.",
+          "latex": "There is a missing semicolon at the end of this statement."
+        },
+        {
+          "text": "Determine the type of error.",
+          "latex": "This is a syntactic error because the syntax rules of C require a semicolon at the end of statements."
+        }
+      ],
+      "answer": "The error is a syntactic error due to the missing semicolon."
+    },
+    {
+      "type": "text",
+      "markdown": "Error recovery during parsing is another critical aspect of compiler design. The goal is to continue parsing after encountering an error, allowing the detection of further errors. Common strategies include panic mode, phrase-level recovery, and error productions."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Panic Mode Recovery",
+      "text": "In panic mode recovery, the parser discards input tokens until a synchronizing token, such as a semicolon or closing brace, is found. This helps resume parsing at a known state."
+    },
+    {
+      "type": "worked_example",
+      "title": "Error Recovery Strategy",
+      "prompt": "Given a parser using panic mode recovery, how would it handle the following erroneous code snippet?\n\n```c\nint main() {\n    int x = 10\n    if (x > 5) {\n        printf(\"x is greater than 5\");\n    \n    printf(\"End of program\");\n}\n```",
+      "steps": [
+        {
+          "text": "Identify the error in the code.",
+          "latex": "The error is a missing closing brace for the `if` statement block."
+        },
+        {
+          "text": "Apply panic mode recovery.",
+          "latex": "The parser would discard tokens until it finds a semicolon or closing brace, allowing it to continue parsing from the `printf(\"End of program\");` statement."
+        }
+      ],
+      "answer": "The parser would resume parsing at `printf(\"End of program\");` after discarding tokens following the missing brace."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Error Type",
+        "Description",
+        "Example"
+      ],
+      "rows": [
+        [
+          "Lexical",
+          "Invalid token sequence",
+          "int 123abc;"
+        ],
+        [
+          "Syntactic",
+          "Invalid token order",
+          "int x = 10"
+        ],
+        [
+          "Semantic",
+          "Logical inconsistency",
+          "int x = \"hello\";"
+        ]
+      ],
+      "caption": "Comparison of Error Types"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Errors in compilers are classified as lexical, syntactic, or semantic.",
+        "Effective error messages should clearly indicate the error's nature and location.",
+        "Error recovery strategies like panic mode help continue parsing after errors."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-compilers.semantic-analysis.error-reporting.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

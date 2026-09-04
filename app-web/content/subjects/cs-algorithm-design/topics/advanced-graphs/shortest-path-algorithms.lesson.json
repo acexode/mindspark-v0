@@ -1,0 +1,160 @@
+{
+  "id": "ug.cs-algorithm-design.advanced-graphs.shortest-path-algorithms.lesson",
+  "subtopicId": "ug.cs-algorithm-design.advanced-graphs.shortest-path-algorithms",
+  "title": "Shortest Path Algorithms",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-algorithm-design.advanced-graphs.shortest-path-algorithms.o1",
+    "ug.cs-algorithm-design.advanced-graphs.shortest-path-algorithms.o2",
+    "ug.cs-algorithm-design.advanced-graphs.shortest-path-algorithms.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine navigating a city with roads that can change direction and even have tolls that can be negative. How do you find the shortest route?"
+    },
+    {
+      "type": "text",
+      "markdown": "In this unit, we will explore algorithms that find the shortest paths in graphs, even when edges have negative weights. We'll cover the Bellman-Ford algorithm, which can handle graphs with negative weight edges and detect negative cycles, and the Floyd-Warshall algorithm, which computes shortest paths between all pairs of vertices."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Shortest Path Problem",
+      "text": "The shortest path problem involves finding the path between two vertices in a graph such that the sum of the weights of its constituent edges is minimized."
+    },
+    {
+      "type": "text",
+      "markdown": "### Bellman-Ford Algorithm\nThe Bellman-Ford algorithm finds the shortest paths from a single source vertex to all other vertices in a weighted graph. It is capable of handling graphs with negative weight edges and can also detect negative weight cycles."
+    },
+    {
+      "type": "math",
+      "latex": "d[v] = \\min(d[v], d[u] + w(u, v))",
+      "caption": "Bellman-Ford Relaxation Step"
+    },
+    {
+      "type": "worked_example",
+      "title": "Applying Bellman-Ford",
+      "prompt": "Consider a graph with vertices A, B, C, and D, and edges with weights: A->B: 1, B->C: 2, A->C: 4, C->D: -1, D->B: -2. Use Bellman-Ford to find shortest paths from A.",
+      "steps": [
+        {
+          "text": "Initialize distances: d[A]=0, d[B]=∞, d[C]=∞, d[D]=∞."
+        },
+        {
+          "text": "Relax edges repeatedly for V-1 times (where V is the number of vertices)."
+        },
+        {
+          "text": "After first iteration: d[B]=1, d[C]=3, d[D]=∞."
+        },
+        {
+          "text": "After second iteration: d[B]=1, d[C]=3, d[D]=2."
+        },
+        {
+          "text": "After third iteration: no change in distances, so final distances are: d[A]=0, d[B]=1, d[C]=3, d[D]=2."
+        }
+      ],
+      "answer": "Shortest paths from A: d[A]=0, d[B]=1, d[C]=3, d[D]=2."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Negative Cycle Detection",
+      "text": "If a graph contains a negative weight cycle reachable from the source, the Bellman-Ford algorithm will detect it by finding that a relaxation step can further reduce a distance after V-1 iterations."
+    },
+    {
+      "type": "text",
+      "markdown": "### Floyd-Warshall Algorithm\nThe Floyd-Warshall algorithm is used for finding shortest paths between all pairs of vertices in a graph. It uses a dynamic programming approach to iteratively improve the path estimates."
+    },
+    {
+      "type": "math",
+      "latex": "d[i][j] = \\min(d[i][j], d[i][k] + d[k][j])",
+      "caption": "Floyd-Warshall Update Rule"
+    },
+    {
+      "type": "worked_example",
+      "title": "Floyd-Warshall Example",
+      "prompt": "Find the shortest paths between all pairs of vertices in the graph with adjacency matrix: \\[\\begin{bmatrix} 0 & 3 & \\infty & 7 \\\\ 8 & 0 & 2 & \\infty \\\\ 5 & \\infty & 0 & 1 \\\\ 2 & \\infty & \\infty & 0 \\end{bmatrix}\\]",
+      "steps": [
+        {
+          "text": "Initialize the distance matrix with the given adjacency matrix."
+        },
+        {
+          "text": "For each vertex k, update the distance matrix using the Floyd-Warshall update rule."
+        },
+        {
+          "text": "After processing k=1: update distances using paths through vertex 1."
+        },
+        {
+          "text": "After processing k=2: update distances using paths through vertex 2."
+        },
+        {
+          "text": "After processing k=3: update distances using paths through vertex 3."
+        },
+        {
+          "text": "After processing k=4: update distances using paths through vertex 4."
+        }
+      ],
+      "answer": "The shortest path matrix is: \\[\\begin{bmatrix} 0 & 3 & 5 & 6 \\\\ 8 & 0 & 2 & 3 \\\\ 5 & 8 & 0 & 1 \\\\ 2 & 5 & 7 & 0 \\end{bmatrix}\\]"
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Algorithm",
+        "Graph Type",
+        "Handles Negative Weights",
+        "Complexity"
+      ],
+      "rows": [
+        [
+          "Dijkstra's",
+          "Weighted, no negative weights",
+          "No",
+          "$O(V^2)$ or $O(E + V \\log V)$ with priority queue"
+        ],
+        [
+          "Bellman-Ford",
+          "Weighted, negative weights",
+          "Yes",
+          "$O(VE)$"
+        ],
+        [
+          "Floyd-Warshall",
+          "Weighted, negative weights",
+          "Yes",
+          "$O(V^3)$"
+        ]
+      ],
+      "caption": "Comparison of Shortest Path Algorithms"
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Algorithm Choice",
+      "text": "Choosing the right algorithm depends on the graph's properties. For graphs with negative weights, Bellman-Ford or Floyd-Warshall are appropriate, but for non-negative weights and single-source shortest paths, Dijkstra's is more efficient."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Bellman-Ford can handle negative weights and detect negative cycles.",
+        "Floyd-Warshall computes all-pairs shortest paths using dynamic programming.",
+        "Choose algorithms based on graph properties and required outputs."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-algorithm-design.advanced-graphs.shortest-path-algorithms.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

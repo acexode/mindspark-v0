@@ -1,0 +1,147 @@
+{
+  "id": "ug.cs-algorithm-design.dynamic-programming.dp-design.lesson",
+  "subtopicId": "ug.cs-algorithm-design.dynamic-programming.dp-design",
+  "title": "Designing a Dynamic Program",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-algorithm-design.dynamic-programming.dp-design.o1",
+    "ug.cs-algorithm-design.dynamic-programming.dp-design.o2",
+    "ug.cs-algorithm-design.dynamic-programming.dp-design.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine you need to solve a problem where the solution to a large problem can be constructed efficiently from solutions to subproblems. This is where dynamic programming shines."
+    },
+    {
+      "type": "text",
+      "markdown": "Dynamic programming (DP) is a powerful technique used to solve problems by breaking them down into simpler subproblems. The key to designing a dynamic program is to define the state, the transition, and the evaluation order. Let's explore these concepts in detail."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Dynamic Programming State",
+      "text": "A DP state represents a subproblem whose solution can be reused to solve larger problems. It is typically defined by a set of parameters that capture the problem's essential features."
+    },
+    {
+      "type": "text",
+      "markdown": "The first step in designing a dynamic program is to define the state. Consider the example of the Fibonacci sequence. The state can be defined as $F(n)$, where $n$ is the position in the sequence."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Transition Function",
+      "text": "The transition function describes how to compute the solution to a problem from the solutions to its subproblems. It is often expressed as a recurrence relation."
+    },
+    {
+      "type": "text",
+      "markdown": "For the Fibonacci sequence, the transition function is $F(n) = F(n-1) + F(n-2)$, with base cases $F(0) = 0$ and $F(1) = 1$."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Evaluation Order",
+      "text": "The evaluation order is the sequence in which the states are computed. It must respect the dependencies defined by the transition function."
+    },
+    {
+      "type": "text",
+      "markdown": "In the Fibonacci example, we compute $F(0)$ and $F(1)$ first, then use these to compute $F(2)$, and so on, up to $F(n)$. This ensures that when we compute $F(k)$, we have already computed $F(k-1)$ and $F(k-2)$."
+    },
+    {
+      "type": "worked_example",
+      "title": "Example: Longest Common Subsequence",
+      "prompt": "Design a dynamic program to find the longest common subsequence (LCS) of two strings.",
+      "steps": [
+        {
+          "text": "Define the state: Let $L(i, j)$ be the length of the LCS of the first $i$ characters of string $A$ and the first $j$ characters of string $B$."
+        },
+        {
+          "text": "Define the transition: If $A[i] = B[j]$, then $L(i, j) = 1 + L(i-1, j-1)$. Otherwise, $L(i, j) = \\max(L(i-1, j), L(i, j-1))$."
+        },
+        {
+          "text": "Define the evaluation order: Compute $L(i, j)$ for all $0 \\leq i \\leq m$ and $0 \\leq j \\leq n$, where $m$ and $n$ are the lengths of $A$ and $B$, respectively."
+        },
+        {
+          "text": "Base cases: $L(i, 0) = 0$ for all $i$, and $L(0, j) = 0$ for all $j$."
+        }
+      ],
+      "answer": "The dynamic program computes the LCS length in $O(mn)$ time and space."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Component",
+        "Fibonacci Sequence",
+        "Longest Common Subsequence"
+      ],
+      "rows": [
+        [
+          "State",
+          "$F(n)$",
+          "$L(i, j)$"
+        ],
+        [
+          "Transition",
+          "$F(n) = F(n-1) + F(n-2)$",
+          "$L(i, j) = 1 + L(i-1, j-1)$ if $A[i]=B[j]$; else $\\max(L(i-1, j), L(i, j-1))$"
+        ],
+        [
+          "Evaluation Order",
+          "Compute $F(0)$, $F(1)$, ..., $F(n)$",
+          "Compute $L(i, j)$ for $0 \\leq i \\leq m$, $0 \\leq j \\leq n$"
+        ]
+      ],
+      "caption": "Comparison of DP components for different problems."
+    },
+    {
+      "type": "worked_example",
+      "title": "Example: 0/1 Knapsack Problem",
+      "prompt": "Design a dynamic program for the 0/1 knapsack problem.",
+      "steps": [
+        {
+          "text": "Define the state: Let $K(i, w)$ be the maximum value that can be achieved with the first $i$ items and a knapsack capacity of $w$."
+        },
+        {
+          "text": "Define the transition: If the $i$-th item is included, $K(i, w) = \\max(K(i-1, w), v_i + K(i-1, w-w_i))$, where $v_i$ is the value and $w_i$ is the weight of the $i$-th item."
+        },
+        {
+          "text": "Define the evaluation order: Compute $K(i, w)$ for all $0 \\leq i \\leq n$ and $0 \\leq w \\leq W$, where $n$ is the number of items and $W$ is the knapsack capacity."
+        },
+        {
+          "text": "Base cases: $K(0, w) = 0$ for all $w$, and $K(i, 0) = 0$ for all $i$."
+        }
+      ],
+      "answer": "The dynamic program computes the maximum knapsack value in $O(nW)$ time and space."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Key Points",
+      "text": "Defining the state, transition, and evaluation order correctly is crucial for designing an efficient dynamic program. Always ensure that the evaluation order respects the dependencies in the transition function."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Dynamic programming involves defining a state, a transition function, and an evaluation order.",
+        "The state captures the problem's essential features, the transition function defines how to compute solutions from subproblems, and the evaluation order ensures dependencies are respected.",
+        "Analyzing the time and space complexity of a DP solution is essential to understand its efficiency."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-algorithm-design.dynamic-programming.dp-design.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

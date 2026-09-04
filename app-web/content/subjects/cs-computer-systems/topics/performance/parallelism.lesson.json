@@ -1,0 +1,140 @@
+{
+  "id": "ug.cs-computer-systems.performance.parallelism.lesson",
+  "subtopicId": "ug.cs-computer-systems.performance.parallelism",
+  "title": "Parallelism and Amdahl's Law",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-computer-systems.performance.parallelism.o1",
+    "ug.cs-computer-systems.performance.parallelism.o2",
+    "ug.cs-computer-systems.performance.parallelism.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine your computer could run tasks twice as fast just by adding another core. How much faster could it get with even more cores? Let's explore the limits of parallelism and where it truly pays off."
+    },
+    {
+      "type": "text",
+      "markdown": "In modern computing, parallelism is a key strategy to improve performance. By dividing tasks into smaller sub-tasks that can be executed simultaneously, we can potentially speed up the overall process. However, the benefits of parallelism are not limitless. Amdahl's Law provides a theoretical framework to understand these limits."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Amdahl's Law",
+      "text": "Amdahl's Law states that the potential speedup of a task using multiple processors is limited by the fraction of the task that cannot be parallelized."
+    },
+    {
+      "type": "math",
+      "latex": "S = \\frac{1}{(1 - P) + \\frac{P}{N}}",
+      "caption": "Amdahl's Law Formula: where $S$ is the speedup, $P$ is the parallelizable portion of the task, and $N$ is the number of processors."
+    },
+    {
+      "type": "worked_example",
+      "title": "Applying Amdahl's Law",
+      "prompt": "Consider a program where 70% of the execution time can be parallelized. Calculate the speedup if the program is run on 4 processors.",
+      "steps": [
+        {
+          "text": "Identify the parallelizable portion $P$ and the number of processors $N$.",
+          "latex": "P = 0.7, \\ N = 4"
+        },
+        {
+          "text": "Substitute the values into Amdahl's Law formula.",
+          "latex": "S = \\frac{1}{(1 - 0.7) + \\frac{0.7}{4}} = \\frac{1}{0.3 + 0.175}"
+        },
+        {
+          "text": "Calculate the speedup $S$.",
+          "latex": "S = \\frac{1}{0.475} \\approx 2.11"
+        }
+      ],
+      "answer": "The speedup is approximately 2.11."
+    },
+    {
+      "type": "text",
+      "markdown": "While Amdahl's Law gives us a theoretical limit, it's important to distinguish between different types of parallelism. Two common types are instruction-level parallelism (ILP) and thread-level parallelism (TLP)."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Instruction-Level Parallelism (ILP)",
+      "text": "ILP refers to the parallel execution of instructions within a single CPU core. Techniques like pipelining and superscalar execution are used to achieve ILP."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Thread-Level Parallelism (TLP)",
+      "text": "TLP involves running multiple threads or processes simultaneously across multiple cores. This is the type of parallelism most affected by Amdahl's Law."
+    },
+    {
+      "type": "worked_example",
+      "title": "Diminishing Returns of Adding Cores",
+      "prompt": "A program has a parallelizable portion of 90%. Calculate the speedup when using 2, 4, and 8 processors.",
+      "steps": [
+        {
+          "text": "Calculate the speedup for 2 processors.",
+          "latex": "S_2 = \\frac{1}{(1 - 0.9) + \\frac{0.9}{2}} = \\frac{1}{0.1 + 0.45} = \\frac{1}{0.55} \\approx 1.82"
+        },
+        {
+          "text": "Calculate the speedup for 4 processors.",
+          "latex": "S_4 = \\frac{1}{(1 - 0.9) + \\frac{0.9}{4}} = \\frac{1}{0.1 + 0.225} = \\frac{1}{0.325} \\approx 3.08"
+        },
+        {
+          "text": "Calculate the speedup for 8 processors.",
+          "latex": "S_8 = \\frac{1}{(1 - 0.9) + \\frac{0.9}{8}} = \\frac{1}{0.1 + 0.1125} = \\frac{1}{0.2125} \\approx 4.71"
+        }
+      ],
+      "answer": "The speedups are approximately 1.82, 3.08, and 4.71 for 2, 4, and 8 processors, respectively."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Number of Processors",
+        "Speedup"
+      ],
+      "rows": [
+        [
+          "2",
+          "1.82"
+        ],
+        [
+          "4",
+          "3.08"
+        ],
+        [
+          "8",
+          "4.71"
+        ]
+      ],
+      "caption": "Speedup vs. Number of Processors for a 90% parallelizable task."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Diminishing Returns",
+      "text": "As more processors are added, the incremental speedup decreases, illustrating diminishing returns due to the non-parallelizable portion of the task."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Amdahl's Law provides a theoretical limit on the speedup achievable through parallelism.",
+        "Instruction-level parallelism and thread-level parallelism are two distinct forms of parallelism.",
+        "Adding more cores results in diminishing returns due to the non-parallelizable portion of tasks."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-computer-systems.performance.parallelism.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

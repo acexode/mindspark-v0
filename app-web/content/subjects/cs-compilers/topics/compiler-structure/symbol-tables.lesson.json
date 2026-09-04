@@ -1,0 +1,136 @@
+{
+  "id": "ug.cs-compilers.compiler-structure.symbol-tables.lesson",
+  "subtopicId": "ug.cs-compilers.compiler-structure.symbol-tables",
+  "title": "Symbol Tables and Scope",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-compilers.compiler-structure.symbol-tables.o1",
+    "ug.cs-compilers.compiler-structure.symbol-tables.o2",
+    "ug.cs-compilers.compiler-structure.symbol-tables.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine you're a detective in a library filled with books. Each book has its own set of rules and characters, and your job is to find where each character belongs. This is similar to what a compiler does with symbol tables and scope."
+    },
+    {
+      "type": "text",
+      "markdown": "In a compiler, a **symbol table** is a data structure used to record information about identifiers such as variables, functions, and objects. It plays a crucial role in the semantic analysis phase of compilation, where it helps resolve identifiers to their declarations. Understanding how symbol tables work with scope is essential for building efficient compilers."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Symbol Table",
+      "text": "A symbol table is a data structure used by a compiler to store information about the identifiers in a program, such as their names, types, and scopes."
+    },
+    {
+      "type": "text",
+      "markdown": "### Structure of a Symbol Table\nA symbol table supporting nested scopes typically uses a stack-like structure. Each scope is represented by a separate table or frame, and these frames are pushed and popped as the compiler enters and exits different scopes in the source code."
+    },
+    {
+      "type": "worked_example",
+      "title": "Nested Scopes with Symbol Tables",
+      "prompt": "Consider the following pseudocode:\n\n```\nfunction foo() {\n  var x = 10;\n  function bar() {\n    var y = 20;\n    x = x + y;\n  }\n}\n```\n\nHow would the symbol table handle the nested scopes?",
+      "steps": [
+        {
+          "text": "1. **Global Scope**: Initialize an empty symbol table."
+        },
+        {
+          "text": "2. **Enter `foo` Function**: Push a new frame onto the symbol table stack for `foo`."
+        },
+        {
+          "text": "3. **Declare `x`**: Add `x` to the `foo` frame with its value and type."
+        },
+        {
+          "text": "4. **Enter `bar` Function**: Push a new frame onto the stack for `bar`."
+        },
+        {
+          "text": "5. **Declare `y`**: Add `y` to the `bar` frame with its value and type."
+        },
+        {
+          "text": "6. **Access `x` in `bar`**: Look up `x` in the current frame. If not found, check the previous frame (lexical scoping)."
+        }
+      ],
+      "answer": "The symbol table stack will have two frames: one for `foo` with `x`, and one for `bar` with `y`. The lookup for `x` in `bar` will succeed by checking the `foo` frame."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Lexical Scoping",
+      "text": "Lexical scoping (or static scoping) determines the scope of a variable based on its position in the source code, using the structure of the program to resolve names."
+    },
+    {
+      "type": "text",
+      "markdown": "### Static vs. Dynamic Scoping\nStatic scoping resolves variable names based on the program's structure, whereas dynamic scoping resolves them based on the call stack at runtime."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Aspect",
+        "Static Scoping",
+        "Dynamic Scoping"
+      ],
+      "rows": [
+        [
+          "Resolution",
+          "Compile-time",
+          "Runtime"
+        ],
+        [
+          "Scope Determination",
+          "Lexical structure",
+          "Call stack"
+        ],
+        [
+          "Common Use",
+          "Most programming languages",
+          "Few languages, e.g., some scripting languages"
+        ]
+      ],
+      "caption": "Comparison of Static and Dynamic Scoping"
+    },
+    {
+      "type": "worked_example",
+      "title": "Resolving Names with Static Scoping",
+      "prompt": "Given the following pseudocode:\n\n```\nvar a = 5;\nfunction outer() {\n  var a = 10;\n  function inner() {\n    return a;\n  }\n  return inner();\n}\n```\n\nWhat value does `outer()` return?",
+      "steps": [
+        {
+          "text": "1. **Global Scope**: `a` is initialized to 5."
+        },
+        {
+          "text": "2. **Enter `outer` Function**: A new scope is created, and `a` is initialized to 10."
+        },
+        {
+          "text": "3. **Enter `inner` Function**: No new `a` is declared, so it looks up the nearest `a` in the `outer` scope."
+        },
+        {
+          "text": "4. **Return from `inner`**: The value of `a` in `outer`, which is 10, is returned."
+        }
+      ],
+      "answer": "The function `outer()` returns 10."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Symbol tables are essential for managing identifiers and their scopes in a program.",
+        "Static scoping resolves names based on lexical structure, while dynamic scoping uses the call stack."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-compilers.compiler-structure.symbol-tables.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

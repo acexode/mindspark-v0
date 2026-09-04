@@ -1,0 +1,153 @@
+{
+  "id": "ug.cs-operating-systems.storage-and-io.file-systems.lesson",
+  "subtopicId": "ug.cs-operating-systems.storage-and-io.file-systems",
+  "title": "File System Structure",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-operating-systems.storage-and-io.file-systems.o1",
+    "ug.cs-operating-systems.storage-and-io.file-systems.o2",
+    "ug.cs-operating-systems.storage-and-io.file-systems.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine trying to find a book in a library without a catalog. File systems are like the library's catalog, organizing and locating data efficiently."
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore how file systems manage data storage on persistent media. We'll delve into the structure of files, directories, and inodes, and examine different methods of file allocation."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "File System",
+      "text": "A file system is a method and data structure that an operating system uses to control how data is stored and retrieved."
+    },
+    {
+      "type": "text",
+      "markdown": "The core components of a file system include files, directories, and inodes. Let's start by understanding what an inode is and how it helps in locating file blocks."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Inode",
+      "text": "An inode is a data structure on a filesystem on Unix-like systems that stores information about a file or a directory, except its name or its actual data."
+    },
+    {
+      "type": "text",
+      "markdown": "Inodes contain metadata about files, such as permissions, ownership, and pointers to the data blocks. These pointers are crucial for locating the file's data on disk."
+    },
+    {
+      "type": "worked_example",
+      "title": "Locating File Blocks Using Inodes",
+      "prompt": "Consider a file that is 8 KB in size, stored on a filesystem with a block size of 1 KB. The inode contains 4 direct pointers and one indirect pointer. How does the inode locate the file's blocks?",
+      "steps": [
+        {
+          "text": "The file is 8 KB, requiring 8 blocks (since each block is 1 KB)."
+        },
+        {
+          "text": "The inode can directly point to 4 blocks using its direct pointers."
+        },
+        {
+          "text": "The remaining 4 blocks are accessed using the indirect pointer, which points to a block that contains pointers to these 4 blocks."
+        }
+      ],
+      "answer": "The inode uses its 4 direct pointers for the first 4 blocks and an indirect pointer to access the remaining 4 blocks."
+    },
+    {
+      "type": "text",
+      "markdown": "Next, we will compare different allocation methods: contiguous, linked, and indexed allocation."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "File Allocation Methods",
+      "text": "File allocation methods determine how disk space is allocated to files. Common methods include contiguous, linked, and indexed allocation."
+    },
+    {
+      "type": "text",
+      "markdown": "Contiguous allocation assigns consecutive blocks to a file. Linked allocation uses a linked list of blocks. Indexed allocation uses an index block to maintain a list of pointers to file blocks."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Method",
+        "Advantages",
+        "Disadvantages"
+      ],
+      "rows": [
+        [
+          "Contiguous",
+          "Fast access, simple",
+          "External fragmentation, resizing difficulty"
+        ],
+        [
+          "Linked",
+          "No fragmentation, easy resizing",
+          "Slow access, pointer overhead"
+        ],
+        [
+          "Indexed",
+          "Fast access, no fragmentation",
+          "Overhead of index block"
+        ]
+      ],
+      "caption": "Comparison of File Allocation Methods"
+    },
+    {
+      "type": "worked_example",
+      "title": "Comparing File Allocation Methods",
+      "prompt": "A file needs to be stored on disk. Compare the suitability of contiguous, linked, and indexed allocation for a file that frequently changes in size.",
+      "steps": [
+        {
+          "text": "Contiguous allocation is unsuitable due to resizing difficulty and potential fragmentation."
+        },
+        {
+          "text": "Linked allocation is suitable as it allows easy resizing without fragmentation."
+        },
+        {
+          "text": "Indexed allocation is also suitable, providing fast access and no fragmentation."
+        }
+      ],
+      "answer": "Linked and indexed allocations are suitable for files that frequently change in size."
+    },
+    {
+      "type": "text",
+      "markdown": "Finally, let's examine how directories map names to files."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Directory",
+      "text": "A directory is a file system cataloging structure which contains references to other computer files and possibly other directories."
+    },
+    {
+      "type": "text",
+      "markdown": "Directories map file names to inodes. The directory entry contains the file name and the inode number, allowing the system to locate the file's metadata."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Inodes store metadata and pointers to file blocks.",
+        "Contiguous, linked, and indexed are common file allocation methods.",
+        "Directories map file names to inodes, facilitating file access."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-operating-systems.storage-and-io.file-systems.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

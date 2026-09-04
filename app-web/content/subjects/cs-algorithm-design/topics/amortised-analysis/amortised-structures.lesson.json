@@ -1,0 +1,155 @@
+{
+  "id": "ug.cs-algorithm-design.amortised-analysis.amortised-structures.lesson",
+  "subtopicId": "ug.cs-algorithm-design.amortised-analysis.amortised-structures",
+  "title": "Amortised Data Structures",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-algorithm-design.amortised-analysis.amortised-structures.o1",
+    "ug.cs-algorithm-design.amortised-analysis.amortised-structures.o2",
+    "ug.cs-algorithm-design.amortised-analysis.amortised-structures.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine you have a dynamic array that occasionally needs to double its size. How can we say that appending an element is still efficient?"
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore the concept of amortised analysis, focusing on dynamic arrays, multipop stacks, and binary counters. Amortised analysis helps us understand the average performance of an operation over a sequence of operations, providing a more realistic measure than worst-case analysis."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Amortised Analysis",
+      "text": "Amortised analysis is a technique used to average the cost of an operation over a sequence of operations, rather than considering only the worst-case cost of a single operation."
+    },
+    {
+      "type": "text",
+      "markdown": "Let's start with dynamic arrays. A dynamic array is an array that can resize itself to accommodate more elements. The key operation here is appending an element, which can sometimes involve resizing the array."
+    },
+    {
+      "type": "math",
+      "latex": "T(n) = \\sum_{i=1}^{n} t_i",
+      "caption": "Total cost of n operations, where $t_i$ is the cost of the i-th operation."
+    },
+    {
+      "type": "worked_example",
+      "title": "Amortised Cost of Dynamic Array Append",
+      "prompt": "Prove that the amortised cost of appending an element to a dynamic array is $O(1)$. Assume the array doubles in size when full.",
+      "steps": [
+        {
+          "text": "Consider an array that starts with size 1 and doubles whenever it is full."
+        },
+        {
+          "text": "The cost of appending an element is usually 1, except when the array is full."
+        },
+        {
+          "text": "When the array is full, the cost includes copying all elements to a new array, which takes O(n) time for an array of size n."
+        },
+        {
+          "text": "Over a sequence of n appends, the total cost is the sum of all individual costs."
+        },
+        {
+          "text": "The number of times the array doubles is logarithmic in n, specifically $\\log_2 n$."
+        },
+        {
+          "text": "Each doubling operation costs O(n), but occurs only $\\log_2 n$ times."
+        },
+        {
+          "text": "Thus, the total cost is $O(n) + O(n \\log_2 n)$, which simplifies to $O(n)$. The amortised cost per operation is $O(n)/n = O(1)$."
+        }
+      ],
+      "answer": "The amortised cost of appending an element to a dynamic array is $O(1)$."
+    },
+    {
+      "type": "text",
+      "markdown": "Next, let's analyse the cost of incrementing a binary counter over many operations. A binary counter flips bits, and the cost is the number of bits flipped."
+    },
+    {
+      "type": "worked_example",
+      "title": "Amortised Cost of Incrementing a Binary Counter",
+      "prompt": "Analyse the amortised cost of incrementing a binary counter from 0 to n.",
+      "steps": [
+        {
+          "text": "Each increment operation may flip multiple bits, but most flip only a few."
+        },
+        {
+          "text": "Consider the binary representation of numbers. A bit flips from 0 to 1 or from 1 to 0."
+        },
+        {
+          "text": "The i-th bit flips every $2^i$ increments."
+        },
+        {
+          "text": "For a counter going from 0 to n, each bit flips at most n times."
+        },
+        {
+          "text": "The total number of bit flips is $\\sum_{i=0}^{\\log_2 n} \\frac{n}{2^i}$, which simplifies to $2n$."
+        },
+        {
+          "text": "Thus, the amortised cost per increment is $2n/n = 2 = O(1)$."
+        }
+      ],
+      "answer": "The amortised cost of incrementing a binary counter is $O(1)$."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Operation",
+        "Amortised Cost",
+        "Worst-case Cost"
+      ],
+      "rows": [
+        [
+          "Dynamic Array Append",
+          "$O(1)$",
+          "$O(n)$"
+        ],
+        [
+          "Binary Counter Increment",
+          "$O(1)$",
+          "$O(\\log n)$"
+        ],
+        [
+          "Stack Multipop",
+          "$O(1)$ per pop",
+          "$O(k)$ for k pops"
+        ]
+      ],
+      "caption": "Comparison of amortised costs versus worst-case costs."
+    },
+    {
+      "type": "text",
+      "markdown": "Finally, let's distinguish between amortised cost and average-case cost. Amortised cost considers the cost over a sequence of operations, while average-case cost considers the expected cost for a single operation, assuming a probabilistic distribution of inputs."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Amortised vs Average-case Cost",
+      "text": "Amortised cost averages the cost over a sequence of operations, while average-case cost averages over all possible inputs."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Amortised analysis provides a realistic measure of performance over multiple operations.",
+        "Dynamic arrays and binary counters have an amortised cost of $O(1)$ per operation.",
+        "Amortised cost differs from average-case cost, focusing on sequences rather than probabilistic inputs."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-algorithm-design.amortised-analysis.amortised-structures.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

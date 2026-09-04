@@ -1,0 +1,127 @@
+{
+  "id": "ug.cs-databases.storage-and-indexing.files-and-pages.lesson",
+  "subtopicId": "ug.cs-databases.storage-and-indexing.files-and-pages",
+  "title": "Files, Pages, and Buffers",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-databases.storage-and-indexing.files-and-pages.o1",
+    "ug.cs-databases.storage-and-indexing.files-and-pages.o2",
+    "ug.cs-databases.storage-and-indexing.files-and-pages.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Have you ever wondered why some database queries are lightning fast while others seem to take forever? The secret often lies in how data is stored and accessed at the physical level."
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore the fundamental concepts of how data is organized on disk and how it is accessed efficiently. Understanding these concepts is crucial for optimizing database performance and ensuring efficient data retrieval."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Page",
+      "text": "A page is the smallest unit of data storage in a database system. It typically consists of a fixed-size block of data, such as 4 KB or 8 KB, that is read from or written to disk in a single operation."
+    },
+    {
+      "type": "text",
+      "markdown": "Data in a database is stored in files, which are further divided into pages. Each page contains multiple records (or rows) of data. The organization of data into pages allows for efficient disk I/O operations, as entire pages can be read or written in a single operation."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Buffer Pool",
+      "text": "The buffer pool is a memory area used to cache pages read from disk. It reduces the number of disk I/O operations by keeping frequently accessed pages in memory."
+    },
+    {
+      "type": "text",
+      "markdown": "When a query is executed, the database system first checks if the required pages are in the buffer pool. If they are, the data can be accessed directly from memory, which is much faster than reading from disk. If not, the pages are read from disk into the buffer pool."
+    },
+    {
+      "type": "worked_example",
+      "title": "Estimating Pages Read by a Full Table Scan",
+      "prompt": "Suppose a table has 100,000 records, each occupying 100 bytes. The page size is 4 KB. Estimate the number of pages read during a full table scan.",
+      "steps": [
+        {
+          "text": "Calculate the number of records per page.",
+          "latex": "4000 \\text{ bytes per page} / 100 \\text{ bytes per record} = 40 \\text{ records per page}"
+        },
+        {
+          "text": "Calculate the total number of pages needed.",
+          "latex": "100,000 \\text{ records} / 40 \\text{ records per page} = 2,500 \\text{ pages}"
+        }
+      ],
+      "answer": "2,500 pages"
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Component",
+        "Role",
+        "Impact on Performance"
+      ],
+      "rows": [
+        [
+          "Page",
+          "Basic unit of storage",
+          "Efficient I/O operations"
+        ],
+        [
+          "File",
+          "Collection of pages",
+          "Organizes data on disk"
+        ],
+        [
+          "Buffer Pool",
+          "Caches pages in memory",
+          "Reduces disk I/O"
+        ]
+      ],
+      "caption": "Comparison of Database Storage Components"
+    },
+    {
+      "type": "text",
+      "markdown": "Efficient data retrieval in databases relies heavily on the organization of data into pages and the use of a buffer pool. By understanding these components, you can better appreciate how databases optimize query performance."
+    },
+    {
+      "type": "worked_example",
+      "title": "Buffer Pool Efficiency",
+      "prompt": "A database system has a buffer pool that can hold 1,000 pages. If a query requires access to 1,500 distinct pages, how many pages will need to be read from disk?",
+      "steps": [
+        {
+          "text": "Determine the number of pages that can be cached in the buffer pool.",
+          "latex": "1,000 \\text{ pages can be cached}"
+        },
+        {
+          "text": "Calculate the number of pages that must be read from disk.",
+          "latex": "1,500 \\text{ total pages} - 1,000 \\text{ cached pages} = 500 \\text{ pages from disk}"
+        }
+      ],
+      "answer": "500 pages"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Pages are the smallest unit of data storage in a database, allowing efficient disk I/O.",
+        "The buffer pool caches pages in memory to reduce the need for disk access.",
+        "Estimating the number of pages read during operations helps in understanding query performance."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-databases.storage-and-indexing.files-and-pages.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

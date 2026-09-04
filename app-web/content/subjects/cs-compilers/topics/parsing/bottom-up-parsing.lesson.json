@@ -1,0 +1,169 @@
+{
+  "id": "ug.cs-compilers.parsing.bottom-up-parsing.lesson",
+  "subtopicId": "ug.cs-compilers.parsing.bottom-up-parsing",
+  "title": "Bottom-Up Parsing",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-compilers.parsing.bottom-up-parsing.o1",
+    "ug.cs-compilers.parsing.bottom-up-parsing.o2",
+    "ug.cs-compilers.parsing.bottom-up-parsing.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine reading a sentence and trying to understand its structure by starting from the end. This is the essence of bottom-up parsing in compilers."
+    },
+    {
+      "type": "text",
+      "markdown": "Bottom-up parsing is a strategy for analyzing the syntax of a string by attempting to construct a parse tree from the leaves (input tokens) up to the root (start symbol). It is a key technique in compiler design, particularly for constructing parsers that can handle a wide range of grammars."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Shift-Reduce Parsing",
+      "text": "Shift-reduce parsing is a type of bottom-up parsing that uses a stack to hold grammar symbols and an input buffer for the remaining input tokens. The parser shifts tokens onto the stack and reduces them using grammar rules."
+    },
+    {
+      "type": "text",
+      "markdown": "In shift-reduce parsing, the parser uses two main operations: **shift**, which moves the next input token onto the stack, and **reduce**, which replaces a sequence of symbols on the stack with a non-terminal according to a grammar rule. The parser continues these operations until it constructs the start symbol of the grammar."
+    },
+    {
+      "type": "math",
+      "latex": "\\text{Shift: } \\text{stack} \\rightarrow \\text{stack} + \\text{next token} \\\\\\text{Reduce: } \\text{stack} + \\text{production body} \\rightarrow \\text{stack} + \\text{production head}",
+      "caption": "Shift and Reduce Operations"
+    },
+    {
+      "type": "worked_example",
+      "title": "Shift-Reduce Parsing Example",
+      "prompt": "Parse the input string 'id + id * id' using the grammar: E → E + E | E * E | id.",
+      "steps": [
+        {
+          "text": "Initialize the stack and input buffer.",
+          "latex": "Stack: [] \\quad Input: [id, +, id, *, id]"
+        },
+        {
+          "text": "Shift 'id' onto the stack.",
+          "latex": "Stack: [id] \\quad Input: [+, id, *, id]"
+        },
+        {
+          "text": "Reduce 'id' to 'E'.",
+          "latex": "Stack: [E] \\quad Input: [+, id, *, id]"
+        },
+        {
+          "text": "Shift '+' onto the stack.",
+          "latex": "Stack: [E, +] \\quad Input: [id, *, id]"
+        },
+        {
+          "text": "Shift 'id' onto the stack.",
+          "latex": "Stack: [E, +, id] \\quad Input: [*, id]"
+        },
+        {
+          "text": "Reduce 'id' to 'E'.",
+          "latex": "Stack: [E, +, E] \\quad Input: [*, id]"
+        },
+        {
+          "text": "Shift '*' onto the stack.",
+          "latex": "Stack: [E, +, E, *] \\quad Input: [id]"
+        },
+        {
+          "text": "Shift 'id' onto the stack.",
+          "latex": "Stack: [E, +, E, *, id] \\quad Input: []"
+        },
+        {
+          "text": "Reduce 'id' to 'E'.",
+          "latex": "Stack: [E, +, E, *, E] \\quad Input: []"
+        },
+        {
+          "text": "Reduce 'E * E' to 'E'.",
+          "latex": "Stack: [E, +, E] \\quad Input: []"
+        },
+        {
+          "text": "Reduce 'E + E' to 'E'.",
+          "latex": "Stack: [E] \\quad Input: []"
+        }
+      ],
+      "answer": "The input string 'id + id * id' is successfully parsed to 'E'."
+    },
+    {
+      "type": "text",
+      "markdown": "Shift-reduce parsers can be implemented using LR parsing techniques, which are more powerful than LL parsers. LR parsers can handle a larger class of grammars, including those with left recursion and certain types of ambiguity."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "LR Parsing",
+      "text": "LR parsers are a type of bottom-up parser that can handle a wider range of context-free grammars than LL parsers. They are more powerful because they use a more sophisticated lookahead mechanism and can manage left recursion."
+    },
+    {
+      "type": "text",
+      "markdown": "One common issue in shift-reduce parsing is the presence of **shift-reduce conflicts**, which occur when the parser can either shift the next input token or reduce the stack contents according to a grammar rule. These conflicts need to be resolved to ensure correct parsing."
+    },
+    {
+      "type": "worked_example",
+      "title": "Identifying a Shift-Reduce Conflict",
+      "prompt": "Consider the grammar: S → aS | b. Identify the shift-reduce conflict when parsing the string 'ab'.",
+      "steps": [
+        {
+          "text": "Initialize the stack and input buffer.",
+          "latex": "Stack: [] \\quad Input: [a, b]"
+        },
+        {
+          "text": "Shift 'a' onto the stack.",
+          "latex": "Stack: [a] \\quad Input: [b]"
+        },
+        {
+          "text": "At this point, we can either shift 'b' or reduce 'a' to 'S'. This is a shift-reduce conflict."
+        }
+      ],
+      "answer": "The conflict arises because the parser can both shift the next token 'b' or reduce 'a' to 'S'."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Parser Type",
+        "Grammar Class",
+        "Handles Left Recursion",
+        "Lookahead"
+      ],
+      "rows": [
+        [
+          "LL",
+          "Predictive",
+          "No",
+          "1"
+        ],
+        [
+          "LR",
+          "Bottom-Up",
+          "Yes",
+          "1 or more"
+        ]
+      ],
+      "caption": "Comparison of LL and LR Parsers"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Shift-reduce parsing is a bottom-up approach using a stack and input buffer.",
+        "LR parsers are more powerful than LL parsers, handling a wider range of grammars.",
+        "Shift-reduce conflicts occur when both shift and reduce actions are possible."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-compilers.parsing.bottom-up-parsing.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

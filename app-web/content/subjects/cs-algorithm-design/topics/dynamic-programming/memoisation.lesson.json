@@ -1,0 +1,138 @@
+{
+  "id": "ug.cs-algorithm-design.dynamic-programming.memoisation.lesson",
+  "subtopicId": "ug.cs-algorithm-design.dynamic-programming.memoisation",
+  "title": "Overlapping Subproblems and Memoisation",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-algorithm-design.dynamic-programming.memoisation.o1",
+    "ug.cs-algorithm-design.dynamic-programming.memoisation.o2",
+    "ug.cs-algorithm-design.dynamic-programming.memoisation.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Have you ever noticed how some recursive algorithms seem to solve the same problem multiple times? This inefficiency can be tackled using dynamic programming techniques like memoisation."
+    },
+    {
+      "type": "text",
+      "markdown": "In algorithm design, dynamic programming is a powerful technique used to solve problems by breaking them down into simpler subproblems. One of the key principles of dynamic programming is the identification and reuse of overlapping subproblems. This lesson will explore how to identify these subproblems in naive recursive solutions and how to efficiently solve them using memoisation."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Overlapping Subproblems",
+      "text": "Overlapping subproblems occur when a recursive algorithm solves the same subproblem multiple times. Dynamic programming exploits this by solving each subproblem only once and storing the result."
+    },
+    {
+      "type": "text",
+      "markdown": "Consider the naive recursive solution to the Fibonacci sequence:\n\n$$ F(n) = \\begin{cases} \n0, & \\text{if } n = 0 \\\\\n1, & \\text{if } n = 1 \\\\\nF(n-1) + F(n-2), & \\text{if } n > 1\n\\end{cases} $$\n\nThis approach recalculates the Fibonacci numbers for each recursive call, leading to exponential time complexity $O(2^n)$."
+    },
+    {
+      "type": "worked_example",
+      "title": "Identifying Overlapping Subproblems",
+      "prompt": "Identify overlapping subproblems in the naive recursive Fibonacci sequence calculation.",
+      "steps": [
+        {
+          "text": "Consider calculating $F(5)$ using the naive recursion."
+        },
+        {
+          "text": "The call tree for $F(5)$ includes calls to $F(4)$, $F(3)$, $F(2)$, $F(1)$, and $F(0)$, with $F(3)$ and $F(2)$ being calculated multiple times."
+        },
+        {
+          "text": "This redundancy indicates overlapping subproblems, as $F(3)$ and $F(2)$ are computed repeatedly."
+        }
+      ],
+      "answer": "The overlapping subproblems are $F(3)$ and $F(2)$, which are computed multiple times."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Memoisation",
+      "text": "Memoisation is a technique used to store the results of expensive function calls and return the cached result when the same inputs occur again."
+    },
+    {
+      "type": "text",
+      "markdown": "By using memoisation, we can store the results of subproblems in a data structure (e.g., an array or dictionary) and refer back to these results when needed. This reduces the time complexity of the Fibonacci sequence to $O(n)$, as each subproblem is solved only once."
+    },
+    {
+      "type": "worked_example",
+      "title": "Converting to Memoised Solution",
+      "prompt": "Convert the naive recursive Fibonacci solution to a memoised version.",
+      "steps": [
+        {
+          "text": "Initialize a memoization array `memo` of size $n+1$ with all entries set to -1."
+        },
+        {
+          "text": "Define a recursive function `fib_memo(n)` that checks if `memo[n]` is not -1, returning it if so."
+        },
+        {
+          "text": "If `memo[n]` is -1, compute `fib_memo(n-1)` and `fib_memo(n-2)`, store their sum in `memo[n]`, and return `memo[n]`."
+        },
+        {
+          "text": "Set base cases: `memo[0] = 0` and `memo[1] = 1`."
+        }
+      ],
+      "answer": "The memoised version stores intermediate results, reducing the time complexity to $O(n)$."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Approach",
+        "Time Complexity",
+        "Space Complexity"
+      ],
+      "rows": [
+        [
+          "Naive Recursion",
+          "$O(2^n)$",
+          "$O(n)$"
+        ],
+        [
+          "Memoisation",
+          "$O(n)$",
+          "$O(n)$"
+        ],
+        [
+          "Bottom-Up Tabulation",
+          "$O(n)$",
+          "$O(1)$"
+        ]
+      ],
+      "caption": "Comparison of Fibonacci sequence calculation approaches."
+    },
+    {
+      "type": "text",
+      "markdown": "Another way to implement dynamic programming is through bottom-up tabulation. This approach builds up solutions to subproblems iteratively and stores them in a table, often reducing space complexity."
+    },
+    {
+      "type": "callout",
+      "variant": "example",
+      "title": "Bottom-Up Tabulation",
+      "text": "In the Fibonacci sequence, a bottom-up approach starts from the base cases and iteratively computes each Fibonacci number up to $n$, storing only the last two computed values."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Overlapping subproblems are a key feature of dynamic programming.",
+        "Memoisation stores subproblem results to avoid redundant calculations.",
+        "Bottom-up tabulation iteratively builds solutions, often reducing space complexity."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-algorithm-design.dynamic-programming.memoisation.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

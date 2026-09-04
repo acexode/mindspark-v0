@@ -1,0 +1,122 @@
+{
+  "id": "ug.cs-compilers.intermediate-representation.translating-constructs.lesson",
+  "subtopicId": "ug.cs-compilers.intermediate-representation.translating-constructs",
+  "title": "Translating Language Constructs to Intermediate Representation",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-compilers.intermediate-representation.translating-constructs.o1",
+    "ug.cs-compilers.intermediate-representation.translating-constructs.o2",
+    "ug.cs-compilers.intermediate-representation.translating-constructs.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine transforming high-level language constructs like loops and conditionals into a form that a machine can easily understand and optimize. This is the power of Intermediate Representation (IR)."
+    },
+    {
+      "type": "text",
+      "markdown": "In compiler design, Intermediate Representation (IR) serves as a bridge between high-level source code and machine code. It allows for easier analysis and optimization. In this lesson, we'll explore how to translate common language constructs such as conditionals, loops, arrays, and procedure calls into IR, specifically using three-address code (TAC) with labels."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Three-Address Code (TAC)",
+      "text": "Three-address code is a type of intermediate representation used in compilers, where each instruction contains at most three addresses or operands."
+    },
+    {
+      "type": "text",
+      "markdown": "Let's begin by translating an `if-else` construct into three-address code. Consider the following high-level code snippet:\n\n```c\nif (x > y) {\n  z = x;\n} else {\n  z = y;\n}\n```\n\nWe can translate this into TAC as follows:"
+    },
+    {
+      "type": "math",
+      "latex": "t1 = x > y \n\\text{if } t1 \\text{ goto } L1 \n  z = y \ngoto L2 \nL1: z = x \nL2:",
+      "caption": "Three-address code for an if-else construct."
+    },
+    {
+      "type": "worked_example",
+      "title": "Translating a While Loop",
+      "prompt": "Translate the following while loop into three-address code:\n\n```c\nwhile (i < 10) {\n  i = i + 1;\n}\n```",
+      "steps": [
+        {
+          "text": "Start by evaluating the loop condition and assigning it to a temporary variable."
+        },
+        {
+          "text": "Translate the loop condition and body into three-address code with appropriate labels."
+        },
+        {
+          "text": "The complete three-address code for the while loop.",
+          "latex": "L1: t1 = i < 10 \n\\text{if not } t1 \\text{ goto } L2 \ni = i + 1 \ngoto L1 \nL2:"
+        }
+      ],
+      "answer": "L1: t1 = i < 10\nif not t1 goto L2\ni = i + 1\ngoto L1\nL2:"
+    },
+    {
+      "type": "text",
+      "markdown": "Next, we will look at generating address computation for an array access. Consider the array access `a[i]` in a high-level language. To translate this into IR, we need to compute the address of the element."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Array Address Computation",
+      "text": "The address of an element `a[i]` can be computed using the formula: `base_address + i * element_size`, where `base_address` is the starting address of the array and `element_size` is the size of each element."
+    },
+    {
+      "type": "worked_example",
+      "title": "Array Access Translation",
+      "prompt": "Translate the array access `a[i]` assuming `base_address` is stored in `base` and each element is 4 bytes.",
+      "steps": [
+        {
+          "text": "Compute the offset by multiplying the index by the element size."
+        },
+        {
+          "text": "Add the offset to the base address to get the address of the element."
+        },
+        {
+          "text": "The three-address code for computing the address of `a[i]`.",
+          "latex": "t1 = i * 4 \nt2 = base + t1"
+        }
+      ],
+      "answer": "t1 = i * 4\nt2 = base + t1"
+    },
+    {
+      "type": "text",
+      "markdown": "Finally, we will describe the IR produced for a procedure call and return. Consider a function call `foo(a, b)` and its return statement `return x`."
+    },
+    {
+      "type": "callout",
+      "variant": "example",
+      "title": "Procedure Call and Return",
+      "text": "For a procedure call, arguments are typically evaluated and stored in temporary variables, followed by a call instruction. The return value is handled by storing it in a designated location."
+    },
+    {
+      "type": "math",
+      "latex": "t1 = a \nt2 = b \ncall foo, t1, t2 \nreturn x",
+      "caption": "Three-address code for a procedure call and return."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Three-address code simplifies translation of high-level constructs into IR.",
+        "Conditionals and loops are translated using labels and temporary variables.",
+        "Array accesses require address computation using base address and element size.",
+        "Procedure calls involve argument evaluation and designated return handling."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-compilers.intermediate-representation.translating-constructs.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "id": "ug.cs-algorithm-design.advanced-graphs.network-flow.lesson",
+  "subtopicId": "ug.cs-algorithm-design.advanced-graphs.network-flow",
+  "title": "Network Flow",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-algorithm-design.advanced-graphs.network-flow.o1",
+    "ug.cs-algorithm-design.advanced-graphs.network-flow.o2",
+    "ug.cs-algorithm-design.advanced-graphs.network-flow.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine a network of pipes carrying water from a reservoir to various cities. How can we determine the maximum amount of water that can flow through this network at any given time?"
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore the concept of network flow, which is crucial in optimizing the flow through a network such as pipelines, traffic, or data packets. We'll focus on the maximum flow problem, residual graphs, the Ford-Fulkerson method, and the max-flow min-cut theorem."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Flow Network",
+      "text": "A flow network is a directed graph where each edge has a capacity and each edge receives a flow. The flow must not exceed the capacity of the edge."
+    },
+    {
+      "type": "text",
+      "markdown": "A flow network consists of a directed graph $G = (V, E)$ with a source node $s$ and a sink node $t$. Each edge $(u, v) \\in E$ has a capacity $c(u, v)$, and the flow $f(u, v)$ must satisfy $0 \\leq f(u, v) \\leq c(u, v)$. Additionally, for all nodes except $s$ and $t$, the flow conservation property must hold: the total flow into a node equals the total flow out of the node."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Residual Graph",
+      "text": "The residual graph $G_f$ of a flow network $G$ represents the available capacity for additional flow. It is constructed by adjusting capacities based on the current flow."
+    },
+    {
+      "type": "math",
+      "latex": "c_f(u, v) = c(u, v) - f(u, v)",
+      "caption": "Residual capacity of an edge in the residual graph."
+    },
+    {
+      "type": "worked_example",
+      "title": "Constructing a Residual Graph",
+      "prompt": "Given a flow network with edges and capacities: $(s, a, 10)$, $(s, b, 5)$, $(a, b, 15)$, $(a, t, 10)$, $(b, t, 10)$, and current flows: $f(s, a) = 5$, $f(s, b) = 3$, $f(a, b) = 4$, $f(a, t) = 5$, $f(b, t) = 3$, construct the residual graph.",
+      "steps": [
+        {
+          "text": "Calculate the residual capacities for each edge in the network."
+        },
+        {
+          "text": "For edge $(s, a)$, the residual capacity is $c_f(s, a) = 10 - 5 = 5$.",
+          "latex": "c_f(s, a) = 10 - 5 = 5"
+        },
+        {
+          "text": "For edge $(s, b)$, the residual capacity is $c_f(s, b) = 5 - 3 = 2$.",
+          "latex": "c_f(s, b) = 5 - 3 = 2"
+        },
+        {
+          "text": "For edge $(a, b)$, the residual capacity is $c_f(a, b) = 15 - 4 = 11$.",
+          "latex": "c_f(a, b) = 15 - 4 = 11"
+        },
+        {
+          "text": "For edge $(a, t)$, the residual capacity is $c_f(a, t) = 10 - 5 = 5$.",
+          "latex": "c_f(a, t) = 10 - 5 = 5"
+        },
+        {
+          "text": "For edge $(b, t)$, the residual capacity is $c_f(b, t) = 10 - 3 = 7$.",
+          "latex": "c_f(b, t) = 10 - 3 = 7"
+        }
+      ],
+      "answer": "The residual graph has edges with capacities: $(s, a, 5)$, $(s, b, 2)$, $(a, b, 11)$, $(a, t, 5)$, $(b, t, 7)$."
+    },
+    {
+      "type": "text",
+      "markdown": "The Ford-Fulkerson method is an algorithm to compute the maximum flow in a flow network. It repeatedly finds augmenting paths in the residual graph and increases the flow along these paths until no more augmenting paths exist."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Max-Flow Min-Cut Theorem",
+      "text": "The maximum value of flow in a network is equal to the capacity of the minimum cut, which is the smallest total weight of the edges that, if removed, would disconnect the source from the sink."
+    },
+    {
+      "type": "worked_example",
+      "title": "Applying Ford-Fulkerson",
+      "prompt": "Use the Ford-Fulkerson method to find the maximum flow in a network with edges: $(s, a, 10)$, $(s, b, 5)$, $(a, b, 15)$, $(a, t, 10)$, $(b, t, 10)$. Initially, all flows are zero.",
+      "steps": [
+        {
+          "text": "Start with an initial flow of 0 for all edges."
+        },
+        {
+          "text": "Find an augmenting path. One possible path is $s \\to a \\to t$ with bottleneck capacity 10."
+        },
+        {
+          "text": "Increase flow along this path by 10. Update flows: $f(s, a) = 10$, $f(a, t) = 10$."
+        },
+        {
+          "text": "Find another augmenting path. Another path is $s \\to b \\to t$ with bottleneck capacity 5."
+        },
+        {
+          "text": "Increase flow along this path by 5. Update flows: $f(s, b) = 5$, $f(b, t) = 5$."
+        },
+        {
+          "text": "No more augmenting paths exist in the residual graph."
+        }
+      ],
+      "answer": "The maximum flow from $s$ to $t$ is 15."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Concept",
+        "Definition",
+        "Purpose"
+      ],
+      "rows": [
+        [
+          "Flow Network",
+          "Directed graph with capacities",
+          "Model flow problems"
+        ],
+        [
+          "Residual Graph",
+          "Graph with available capacities",
+          "Find augmenting paths"
+        ],
+        [
+          "Max-Flow Min-Cut Theorem",
+          "Max flow equals min cut capacity",
+          "Relate flow and cuts"
+        ]
+      ],
+      "caption": "Key concepts in network flow."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A flow network models problems where resources flow through a network.",
+        "The Ford-Fulkerson method finds the maximum flow by using augmenting paths.",
+        "The max-flow min-cut theorem relates the maximum flow to the minimum cut in the network."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-algorithm-design.advanced-graphs.network-flow.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

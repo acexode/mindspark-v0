@@ -1,0 +1,164 @@
+{
+  "id": "ug.cs-algorithm-design.divide-and-conquer.recurrences.lesson",
+  "subtopicId": "ug.cs-algorithm-design.divide-and-conquer.recurrences",
+  "title": "Solving Recurrences",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-algorithm-design.divide-and-conquer.recurrences.o1",
+    "ug.cs-algorithm-design.divide-and-conquer.recurrences.o2",
+    "ug.cs-algorithm-design.divide-and-conquer.recurrences.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Have you ever wondered how algorithms like merge sort can efficiently handle large datasets? The secret lies in their divide-and-conquer approach, which can be analyzed using recurrences."
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore how to solve recurrences, which are equations or inequalities that describe a function in terms of its value on smaller inputs. These are crucial for analyzing the time complexity of divide-and-conquer algorithms."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Recurrence Relation",
+      "text": "A recurrence relation is an equation that recursively defines a sequence: each term of the sequence is defined as a function of the preceding terms."
+    },
+    {
+      "type": "text",
+      "markdown": "Let's start by examining a simple divide-and-conquer algorithm: merge sort. The merge sort algorithm divides an array into two halves, recursively sorts them, and then merges the sorted halves. The time complexity of merge sort can be expressed by the recurrence relation: \n\n$T(n) = 2T(n/2) + O(n)$\n\nwhere $T(n)$ is the time complexity for sorting an array of size $n$."
+    },
+    {
+      "type": "worked_example",
+      "title": "Writing a Recurrence for Merge Sort",
+      "prompt": "Derive the recurrence relation for the merge sort algorithm.",
+      "steps": [
+        {
+          "text": "Merge sort divides the array into two halves, each of size $n/2$."
+        },
+        {
+          "text": "The algorithm recursively sorts each half, which takes $2T(n/2)$ time."
+        },
+        {
+          "text": "Merging the two sorted halves takes $O(n)$ time."
+        },
+        {
+          "text": "Thus, the recurrence relation is $T(n) = 2T(n/2) + O(n)$."
+        }
+      ],
+      "answer": "The recurrence relation for merge sort is $T(n) = 2T(n/2) + O(n)$."
+    },
+    {
+      "type": "text",
+      "markdown": "Next, let's explore how to solve recurrences using the Master Theorem, which provides a way to determine the asymptotic behavior of recurrences of the form:\n\n$T(n) = aT(n/b) + f(n)$\n\nwhere $a \\geq 1$ and $b > 1$ are constants, and $f(n)$ is an asymptotically positive function."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Master Theorem",
+      "text": "The Master Theorem provides asymptotic bounds for recurrences of the form $T(n) = aT(n/b) + f(n)$, where $a \\geq 1$, $b > 1$, and $f(n)$ is asymptotically positive."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Case",
+        "Condition",
+        "Solution"
+      ],
+      "rows": [
+        [
+          "Case 1",
+          "$f(n) = O(n^c)$, $c < \\log_b a$",
+          "$T(n) = \\Theta(n^{\\log_b a})$"
+        ],
+        [
+          "Case 2",
+          "$f(n) = \\Theta(n^c)$, $c = \\log_b a$",
+          "$T(n) = \\Theta(n^c \\log n)$"
+        ],
+        [
+          "Case 3",
+          "$f(n) = \\Omega(n^c)$, $c > \\log_b a$",
+          "$T(n) = \\Theta(f(n))$"
+        ]
+      ],
+      "caption": "Summary of the Master Theorem cases."
+    },
+    {
+      "type": "worked_example",
+      "title": "Applying the Master Theorem",
+      "prompt": "Use the Master Theorem to solve the recurrence $T(n) = 2T(n/2) + n$.",
+      "steps": [
+        {
+          "text": "Identify $a = 2$, $b = 2$, and $f(n) = n$."
+        },
+        {
+          "text": "Calculate $\\log_b a = \\log_2 2 = 1$."
+        },
+        {
+          "text": "Since $f(n) = n = \\Theta(n^1)$, which matches $c = \\log_b a = 1$, we use Case 2 of the Master Theorem."
+        },
+        {
+          "text": "Thus, $T(n) = \\Theta(n \\log n)$."
+        }
+      ],
+      "answer": "The solution to the recurrence $T(n) = 2T(n/2) + n$ is $T(n) = \\Theta(n \\log n)$."
+    },
+    {
+      "type": "text",
+      "markdown": "Finally, let's discuss the substitution method, which involves guessing a bound and using mathematical induction to prove it. This method is particularly useful when the Master Theorem does not apply."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Substitution Method",
+      "text": "The substitution method requires a correct initial guess for the bound. An incorrect guess can lead to incorrect results."
+    },
+    {
+      "type": "worked_example",
+      "title": "Solving a Recurrence Using Substitution",
+      "prompt": "Solve the recurrence $T(n) = 3T(n/3) + n$ using the substitution method.",
+      "steps": [
+        {
+          "text": "Guess that $T(n) = O(n \\log n)$."
+        },
+        {
+          "text": "Assume $T(k) \\leq c k \\log k$ for $k < n$."
+        },
+        {
+          "text": "Substitute into the recurrence: $T(n) = 3(c(n/3) \\log(n/3)) + n$."
+        },
+        {
+          "text": "Simplify: $T(n) \\leq cn \\log n - cn \\log 3 + n$."
+        },
+        {
+          "text": "Choose $c$ such that $cn \\log 3 \\geq n$, ensuring $T(n) \\leq cn \\log n$."
+        }
+      ],
+      "answer": "The solution to the recurrence $T(n) = 3T(n/3) + n$ is $T(n) = O(n \\log n)$."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Recurrences describe the time complexity of divide-and-conquer algorithms.",
+        "The Master Theorem provides a systematic way to solve certain types of recurrences.",
+        "The substitution method is useful for solving recurrences when the Master Theorem does not apply."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-algorithm-design.divide-and-conquer.recurrences.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

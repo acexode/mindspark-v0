@@ -1,0 +1,117 @@
+{
+  "id": "ug.cs-operating-systems.memory-management.paging.lesson",
+  "subtopicId": "ug.cs-operating-systems.memory-management.paging",
+  "title": "Paging and Address Translation",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-operating-systems.memory-management.paging.o1",
+    "ug.cs-operating-systems.memory-management.paging.o2",
+    "ug.cs-operating-systems.memory-management.paging.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine a world where every program believes it has access to a large, continuous block of memory. How is this illusion maintained in a computer system with limited physical memory?"
+    },
+    {
+      "type": "text",
+      "markdown": "In modern operating systems, memory management is crucial for providing each process with the illusion of having its own large, contiguous address space. This is achieved through a technique called **paging**. Paging divides the virtual address space of a process into fixed-size blocks called **pages**, which are mapped to physical memory frames."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Page",
+      "text": "A page is a fixed-length contiguous block of virtual memory, which is the smallest unit of data for memory management in a virtual memory system."
+    },
+    {
+      "type": "text",
+      "markdown": "The operating system maintains a **page table** for each process, which maps virtual pages to physical frames. When a process accesses a memory location, the virtual address must be translated into a physical address using this page table."
+    },
+    {
+      "type": "math",
+      "latex": "Physical\\ Address = Page\\ Frame\\ Number \\times Page\\ Size + Offset",
+      "caption": "Formula for translating a virtual address to a physical address."
+    },
+    {
+      "type": "worked_example",
+      "title": "Translating a Virtual Address",
+      "prompt": "Translate the virtual address 0x1C3 in a system with a page size of 256 bytes, where the page table maps virtual page 1 to physical frame 5.",
+      "steps": [
+        {
+          "text": "Convert the virtual address to binary: 0x1C3 = 0001 1100 0011."
+        },
+        {
+          "text": "Determine the page number and offset. With a page size of 256 bytes, the offset is the lower 8 bits: 0011 (3 in decimal). The page number is the remaining bits: 0001 (1 in decimal)."
+        },
+        {
+          "text": "Look up the page number in the page table. Virtual page 1 maps to physical frame 5."
+        },
+        {
+          "text": "Calculate the physical address: Physical Address = 5 * 256 + 3 = 1283."
+        }
+      ],
+      "answer": "The physical address is 1283."
+    },
+    {
+      "type": "text",
+      "markdown": "To speed up address translation, modern CPUs use a cache called the **Translation Lookaside Buffer (TLB)**. The TLB stores a small number of recent page table entries, allowing for faster access."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "TLB Miss",
+      "text": "A TLB miss occurs when the required page table entry is not found in the TLB, necessitating a slower lookup in the main page table."
+    },
+    {
+      "type": "text",
+      "markdown": "In systems with large address spaces, single-level page tables can become very large. **Multi-level page tables** are used to reduce memory usage by breaking the page table into smaller parts, which are loaded into memory only when needed."
+    },
+    {
+      "type": "worked_example",
+      "title": "Understanding Multi-level Page Tables",
+      "prompt": "Explain why multi-level page tables are more efficient than single-level page tables in a 64-bit address space.",
+      "steps": [
+        {
+          "text": "A single-level page table for a 64-bit address space would require 2^64 entries, which is impractically large."
+        },
+        {
+          "text": "Multi-level page tables divide the address space into smaller segments, allowing only the necessary parts of the page table to be loaded into memory."
+        },
+        {
+          "text": "This reduces the memory overhead and improves efficiency by loading only the required page table entries."
+        }
+      ],
+      "answer": "Multi-level page tables reduce memory usage by loading only necessary parts of the page table, making them more efficient for large address spaces."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Page Table Size",
+      "text": "Be cautious of the memory overhead caused by large page tables in systems with extensive address spaces."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Paging divides virtual memory into pages, mapped to physical frames via a page table.",
+        "The TLB speeds up address translation by caching recent page table entries.",
+        "Multi-level page tables reduce memory overhead in large address spaces."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-operating-systems.memory-management.paging.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

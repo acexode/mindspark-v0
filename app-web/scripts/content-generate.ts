@@ -131,37 +131,75 @@ async function sleep(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+const MAX_ATTEMPTS = 8;
+
+/**
+ * OpenAI reserves `max_tokens` against the per-minute token budget whether or
+ * not the completion uses it. Measured across 291 generated units, output is
+ * ~3k tokens median and ~8.3k at p90 — so reserving 12k throttled a 30k TPM
+ * account to roughly two requests a minute. An occasional truncation is cheaper
+ * than that: it fails JSON parsing and the existing retry regenerates.
+ */
+const MAX_OUTPUT_TOKENS = Number(process.env.OPENAI_MAX_OUTPUT_TOKENS ?? "8000");
+
+/** Honour the server's own backoff hint before falling back to exponential. */
+function retryDelayMs(response: Response, body: string, attempt: number): number {
+  const header = Number(response.headers.get("retry-after-ms"));
+  if (Number.isFinite(header) && header > 0) return header + 250;
+  const seconds = Number(response.headers.get("retry-after"));
+  if (Number.isFinite(seconds) && seconds > 0) return seconds * 1000 + 250;
+  const stated = body.match(/try again in ([\d.]+)s/);
+  if (stated) return Number(stated[1]) * 1000 + 250;
+  return Math.min(4000 * 2 ** (attempt - 1), 60_000);
+}
+
 async function chatJson(model: string, system: string, user: string, attempt: number): Promise<GeneratedPayload> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is not set. Add it to app-web/.env.local");
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      temperature: attempt === 1 ? 0.4 : 0.2,
-      max_tokens: 12000,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-    }),
-  });
-
-  if (response.status === 429 || response.status >= 500) {
-    const wait = Math.min(8000 * attempt, 40_000);
-    await sleep(wait);
-    if (attempt < 5) return chatJson(model, system, user, attempt + 1);
+  let response: Response;
+  try {
+    response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      signal: AbortSignal.timeout(240_000),
+      body: JSON.stringify({
+        model,
+        temperature: attempt === 1 ? 0.4 : 0.2,
+        max_tokens: MAX_OUTPUT_TOKENS,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user },
+        ],
+      }),
+    });
+  } catch (error) {
+    /**
+     * A dropped connection or timeout rejects the fetch rather than returning a
+     * status, so it bypassed the 429/5xx handling below entirely — which is why
+     * a concurrency-10 run failed 406 of 437 units with a bare "fetch failed".
+     */
+    if (attempt < MAX_ATTEMPTS) {
+      await sleep(Math.min(4000 * 2 ** (attempt - 1), 60_000));
+      return chatJson(model, system, user, attempt + 1);
+    }
+    const cause = (error as { cause?: { code?: string; message?: string } }).cause;
+    throw new Error(
+      `network error after ${MAX_ATTEMPTS} attempts: ${(error as Error).message}${cause?.code ? ` (${cause.code})` : ""}`,
+    );
   }
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`OpenAI ${response.status}: ${body.slice(0, 400)}`);
+    if ((response.status === 429 || response.status >= 500) && attempt < MAX_ATTEMPTS) {
+      await sleep(retryDelayMs(response, body, attempt));
+      return chatJson(model, system, user, attempt + 1);
+    }
+    throw new Error(`OpenAI ${response.status}: ${body.slice(0, 300)}`);
   }
 
   const data = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
@@ -177,9 +215,11 @@ const STRUCTURAL_RULES = `- Return ONE JSON object with keys: lessonTitle, estim
 - hook.text ≥ 20 chars. text.markdown ≥ 20 chars. summary.points ≥ 2.
 - callout.variant is one of: definition, key-point, warning, example, exam-tip.
 - worked_example must have title, prompt, steps (≥2 objects {text, latex?}), answer.
+- table must have headers (array of strings) and rows (array of arrays of strings, one per row, each the same length as headers), plus an optional caption. Every cell is a string, so write numbers as strings: {"type":"table","headers":["Algorithm","Best","Worst"],"rows":[["Merge sort","$O(n \\\\log n)$","$O(n \\\\log n)$"],["Quicksort","$O(n \\\\log n)$","$O(n^2)$"]]}.
 - options MUST be an array of objects [{ "id": "a", "text": "..." }, ...], never a keyed object.
 - Every callout MUST include variant, title and text. Every worked_example MUST include title, prompt, steps and answer.
-- Every mcq needs correctOptionId and distractorRationale for every wrong option.
+- Every mcq needs correctOptionId, correctOptionText and distractorRationale for every wrong option.
+- correctOptionText MUST be the exact text of the correct option, copied verbatim from your own options array. Work out the answer FIRST, then find which option holds it, then write both the letter and that option's text. The letter, the text and the value your explanation derives must all agree.
 - Distractors must be plausible mistakes a real student would make, never jokes or filler.
 - Every question MUST include an explanation of at least two sentences that teaches the reasoning.
 - No duplicate stems.
@@ -199,11 +239,12 @@ How to teach (this matters as much as correctness):
 - Assume no prior exposure to THIS topic, but do assume the prerequisites of the year level.
 - A student must be able to learn this unit from the lesson alone, with no lecturer. If a step would lose them, show the step.
 - Define every symbol at first use. State units. Name the assumptions a result depends on.
-- Prefer a concrete worked case over an abstract statement. Include at least two worked_example blocks with full step-by-step reasoning.
+- Prefer a concrete worked case over an abstract statement.
 
 Lesson shape:
-- ${profile.blockRange} blocks. Use the full palette: hook → text → callout(definition) → math or table → worked_example → text → list → worked_example → callout(key-point or warning) → summary.
-- Use table blocks for comparisons (complexities, material properties, load cases, method trade-offs) — they carry more than prose.
+- ${profile.blockRange} blocks. Use the full palette: hook → text → callout(definition) → math → worked_example → table → text → worked_example → list → callout(key-point or warning) → summary.
+- Include AT LEAST ONE table block. Nearly every unit has something to tabulate, and a table teaches a comparison far better than a paragraph: algorithm complexities, material properties, load cases, method trade-offs, protocol layers, test types, failure modes, when-to-use-which. Find the comparison in this unit and tabulate it. Only omit the table if the unit genuinely contains nothing comparable.
+- Include at least two worked_example blocks with full step-by-step reasoning.
 - Use math blocks for any displayed equation. Do not write equations as plain text.
 
 ${STRUCTURAL_RULES}
@@ -295,6 +336,66 @@ function numericTolerance(raw: unknown, correctValue: unknown, type: string): nu
   return Math.max(Math.abs(value) * 0.005, 1e-9);
 }
 
+/** Numeric tokens in a string, commas stripped, for cross-checking an answer key. */
+function numbersIn(text: string): Set<string> {
+  return new Set(text.replace(/,/g, "").match(/\d+(?:\.\d+)?/g) ?? []);
+}
+
+/**
+ * Numbers an explanation presents as a computed result — those after "=" or "≈".
+ * Matching every number in the prose misfires on figures the explanation merely
+ * mentions ("the other 90% is lost as heat").
+ */
+function resultNumbersIn(text: string): Set<string> {
+  const results = new Set<string>();
+  for (const match of text.replace(/,/g, "").matchAll(/[=≈]\s*[^\d\n]{0,12}?(\d+(?:\.\d+)?)/g)) {
+    results.add(match[1]!);
+  }
+  return results;
+}
+
+/**
+ * The model computes the right value in its explanation but frequently keys the
+ * wrong option letter — measured at 1 in 4 quantitative MCQs, which would mark a
+ * correct student answer wrong. Two defences:
+ *
+ *   1. Prefer `correctOptionText` (the verbatim option text) over the letter,
+ *      which removes the mis-indexing failure entirely.
+ *   2. Where the option text is numeric, cross-check against the explanation and
+ *      re-key to the option the explanation actually supports.
+ *
+ * Returns the resolved option id, or undefined when the evidence is ambiguous —
+ * the caller drops the question, which triggers a regeneration attempt.
+ */
+function resolveCorrectOptionId(
+  row: Record<string, unknown>,
+  options: Question["options"],
+  explanation: string,
+): string | undefined {
+  const stated = typeof row.correctOptionId === "string" ? row.correctOptionId : undefined;
+  if (!options || options.length === 0) return stated;
+
+  const text = typeof row.correctOptionText === "string" ? row.correctOptionText.trim().toLowerCase() : "";
+  if (text) {
+    const byText = options.find((option) => option.text.trim().toLowerCase() === text);
+    if (byText) return byText.id;
+  }
+
+  const keyed = options.find((option) => option.id === stated);
+  if (!keyed) return stated;
+
+  const keyNumbers = numbersIn(keyed.text);
+  const results = resultNumbersIn(explanation);
+  if (keyNumbers.size === 0 || results.size === 0) return stated;
+  if ([...keyNumbers].some((n) => results.has(n))) return stated;
+
+  const supported = options.filter(
+    (option) => option.id !== stated && [...numbersIn(option.text)].some((n) => results.has(n)),
+  );
+  if (supported.length === 1) return supported[0]!.id;
+  return supported.length === 0 ? stated : undefined;
+}
+
 function normalizeOptions(value: unknown): Question["options"] {
   if (Array.isArray(value)) {
     return value.map((entry, index) => {
@@ -346,15 +447,48 @@ function normalizeDistractorRationale(
 }
 
 function normalizeBlocks(blocks: unknown[]): unknown[] {
-  return blocks.map((block) => {
+  return blocks.flatMap((block) => {
     const row = asRecord(block);
+    if (row.type === "table") {
+      /**
+       * Tables were the one block type with no normaliser and no shape in the
+       * prompt, and appeared in only 4% of generated undergraduate lessons
+       * against 63% of secondary ones. Salvage the shapes the model actually
+       * produces — rows as objects keyed by header, or cells as numbers —
+       * rather than discarding a table that is nearly right.
+       */
+      let headers = Array.isArray(row.headers) ? row.headers.map((cell) => String(cell)) : [];
+      const rawRows = Array.isArray(row.rows) ? row.rows : [];
+
+      // Rows given as objects: derive headers from the first row when absent.
+      if (headers.length === 0 && rawRows.length > 0 && !Array.isArray(rawRows[0]) && typeof rawRows[0] === "object") {
+        headers = Object.keys(asRecord(rawRows[0])).map((key) => String(key));
+      }
+
+      const rows = rawRows
+        .map((line) => {
+          if (Array.isArray(line)) return line.map((cell) => String(cell ?? ""));
+          const record = asRecord(line);
+          if (Object.keys(record).length === 0) return [];
+          return headers.map((header) => String(record[header] ?? ""));
+        })
+        .filter((line) => line.length > 0);
+
+      if (headers.length === 0 || rows.length === 0) return [];
+      // The schema requires every row to match the header count.
+      const width = headers.length;
+      const padded = rows.map((line) =>
+        line.length === width ? line : [...line, ...Array(Math.max(0, width - line.length)).fill("")].slice(0, width),
+      );
+      return [{ type: "table", headers, rows: padded, ...(row.caption ? { caption: String(row.caption) } : {}) }];
+    }
     if (row.type === "callout") {
-      return {
+      return [{
         type: "callout",
         variant: row.variant,
         title: String(row.title || row.variant || "Note"),
         text: String(row.text ?? row.body ?? ""),
-      };
+      }];
     }
     if (row.type === "worked_example") {
       const steps = Array.isArray(row.steps)
@@ -364,26 +498,26 @@ function normalizeBlocks(blocks: unknown[]): unknown[] {
             return { text: String(item.text ?? item.step ?? ""), latex: typeof item.latex === "string" ? item.latex : undefined };
           })
         : [];
-      return {
+      return [{
         type: "worked_example",
         title: String(row.title || "Worked example"),
         prompt: String(row.prompt ?? row.question ?? ""),
         steps,
         answer: String(row.answer ?? row.result ?? ""),
-      };
+      }];
     }
     if (row.type === "list") {
       const items = Array.isArray(row.items) ? row.items.map((item) => String(item)) : [];
-      return { type: "list", style: row.style === "number" ? "number" : "bullet", items };
+      return [{ type: "list", style: row.style === "number" ? "number" : "bullet", items }];
     }
     if (row.type === "hook") {
-      return { type: "hook", text: String(row.text ?? row.markdown ?? "") };
+      return [{ type: "hook", text: String(row.text ?? row.markdown ?? "") }];
     }
     if (row.type === "summary") {
       const points = Array.isArray(row.points) ? row.points.map((point) => String(point)) : [];
-      return { type: "summary", points };
+      return [{ type: "summary", points }];
     }
-    return block;
+    return [block];
   });
 }
 
@@ -408,22 +542,28 @@ function assemble(
       ? (row.objectiveIds as string[]).filter((id) => objectiveIds.includes(id))
       : [];
     const options = normalizeOptions(row.options);
-    const correctOptionId = typeof row.correctOptionId === "string" ? row.correctOptionId : undefined;
+    const statedOptionId = typeof row.correctOptionId === "string" ? row.correctOptionId : undefined;
     const distractorRationale = normalizeDistractorRationale(row.distractorRationale, options);
     let explanation = String(row.explanation ?? "").trim();
     if (explanation.length < 20) {
-      const correctText = options?.find((option) => option.id === correctOptionId)?.text;
+      const correctText = options?.find((option) => option.id === statedOptionId)?.text;
       const reasons = distractorRationale ? Object.values(distractorRationale).join(" ") : "";
       explanation = [correctText ? `The correct answer is ${correctText}.` : "", reasons].filter(Boolean).join(" ").trim();
     }
     if (explanation.length < 20) {
       explanation = `This answer is correct for ${subtopic.name} because it matches the syllabus definition; the other options mix up related but different ideas.`;
     }
+    const correctOptionId = resolveCorrectOptionId(row, options, explanation);
     return {
       id,
       subtopicId: subtopic.id,
       objectiveIds: assigned.length > 0 ? assigned : [objectiveIds[index % objectiveIds.length]],
-      type,
+      /**
+       * A "numeric" question whose answer is a word ("float") is ungradable —
+       * gradeAnswer does Number(correctValue), gets NaN, and marks every answer
+       * wrong. Reclassify it as the short_answer it actually is.
+       */
+      type: type === "numeric" && !Number.isFinite(Number(row.correctValue)) ? "short_answer" : type,
       difficulty: row.difficulty === 2 || row.difficulty === 3 ? row.difficulty : 1,
       stem: String(row.stem ?? ""),
       options,
@@ -486,6 +626,24 @@ function assemble(
     const check = { type: "check", questionId: checkId };
     if (summaryAt === -1) blocks.push(check);
     else blocks.splice(summaryAt, 0, check);
+  }
+
+  /**
+   * MathText treats "$" as a maths delimiter, so an odd count in any block
+   * string renders the rest of the paragraph as an unclosed formula. A guard
+   * test already fails the build on this; catching it here instead turns it
+   * into a regeneration attempt rather than a broken lesson on disk.
+   */
+  const unpaired = blocks.flatMap((block) => {
+    const row = asRecord(block);
+    const strings = [row.text, row.markdown, row.title, row.prompt, row.answer]
+      .filter((value): value is string => typeof value === "string")
+      .concat(Array.isArray(row.points) ? (row.points as string[]) : [])
+      .concat(Array.isArray(row.steps) ? (row.steps as Array<{ text?: string }>).map((s) => s?.text ?? "") : []);
+    return strings.filter((value) => (value.match(/\$/g) ?? []).length % 2 !== 0);
+  });
+  if (unpaired.length > 0) {
+    throw new Error(`Unpaired "$" in lesson text (write currency as "one million dollars"): ${unpaired[0]!.slice(0, 90)}`);
   }
 
   const lesson: Lesson = {

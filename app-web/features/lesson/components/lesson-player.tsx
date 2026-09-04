@@ -23,6 +23,8 @@ interface LessonPlayerProps {
   subtopicName: string;
   practiceHref: string;
   breadcrumb: { subjectHref: string; topicHref: string };
+  /** "Library" for secondary, "Courses" for undergraduates — matches the sidebar. */
+  catalogueLabel?: string;
   /** This unit's position within its module, e.g. { index: 2, total: 5 }. */
   unitPosition?: { index: number; total: number } | null;
   prevUnit?: AdjacentUnit | null;
@@ -38,6 +40,7 @@ export function LessonPlayer({
   subtopicName,
   practiceHref,
   breadcrumb,
+  catalogueLabel = "Library",
   unitPosition,
   prevUnit,
   nextUnit,
@@ -54,7 +57,7 @@ export function LessonPlayer({
     <article className="lesson">
       <header className="lesson-header">
         <nav className="breadcrumbs" aria-label="Breadcrumb">
-          <Link href="/library">Library</Link>
+          <Link href="/library">{catalogueLabel}</Link>
           <span aria-hidden>/</span>
           <Link href={breadcrumb.subjectHref as Route}>{subjectName}</Link>
           <span aria-hidden>/</span>

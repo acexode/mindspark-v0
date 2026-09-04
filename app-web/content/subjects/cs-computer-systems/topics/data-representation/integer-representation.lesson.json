@@ -1,0 +1,140 @@
+{
+  "id": "ug.cs-computer-systems.data-representation.integer-representation.lesson",
+  "subtopicId": "ug.cs-computer-systems.data-representation.integer-representation",
+  "title": "Signed Integers and Overflow",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-computer-systems.data-representation.integer-representation.o1",
+    "ug.cs-computer-systems.data-representation.integer-representation.o2",
+    "ug.cs-computer-systems.data-representation.integer-representation.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Have you ever wondered how computers represent negative numbers? In this lesson, we'll explore how computers use two's complement to handle signed integers and what happens when calculations exceed their limits."
+    },
+    {
+      "type": "text",
+      "markdown": "In computer systems, integers are stored as binary numbers. However, representing negative numbers requires a specific encoding method. The most common method is **two's complement**. This system not only allows for straightforward arithmetic operations but also simplifies the hardware design."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Two's Complement",
+      "text": "Two's complement is a method for representing signed integers in binary form. It allows for a simple way to encode negative numbers and perform arithmetic operations."
+    },
+    {
+      "type": "text",
+      "markdown": "To convert a positive integer to its negative counterpart in two's complement, invert all bits (change 0s to 1s and vice versa) and add 1 to the least significant bit. This process is straightforward and ensures that the most significant bit (MSB) indicates the sign: 0 for positive and 1 for negative."
+    },
+    {
+      "type": "worked_example",
+      "title": "Converting a Positive Integer to Two's Complement",
+      "prompt": "Convert the decimal number -5 to an 8-bit two's complement binary number.",
+      "steps": [
+        {
+          "text": "Start with the binary representation of +5.",
+          "latex": "5_{10} = 00000101_2"
+        },
+        {
+          "text": "Invert all bits to get the one's complement.",
+          "latex": "11111010_2"
+        },
+        {
+          "text": "Add 1 to the least significant bit to get the two's complement.",
+          "latex": "11111010_2 + 1 = 11111011_2"
+        }
+      ],
+      "answer": "The two's complement representation of -5 is 11111011."
+    },
+    {
+      "type": "text",
+      "markdown": "The range of an n-bit two's complement integer is asymmetric. For an n-bit integer, the range is from $-2^{n-1}$ to $2^{n-1} - 1$. This means that for an 8-bit integer, the range is from -128 to 127."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Bits",
+        "Minimum Value",
+        "Maximum Value"
+      ],
+      "rows": [
+        [
+          "4",
+          "-8",
+          "7"
+        ],
+        [
+          "8",
+          "-128",
+          "127"
+        ],
+        [
+          "16",
+          "-32,768",
+          "32,767"
+        ],
+        [
+          "32",
+          "-2,147,483,648",
+          "2,147,483,647"
+        ]
+      ],
+      "caption": "Range of Two's Complement Integers for Different Bit Widths"
+    },
+    {
+      "type": "text",
+      "markdown": "Overflow occurs when an arithmetic operation results in a value that exceeds the representable range of the given number of bits. In two's complement, overflow can be detected during addition when the sign of the result does not match the expected sign based on the operands."
+    },
+    {
+      "type": "worked_example",
+      "title": "Detecting Overflow in Two's Complement Addition",
+      "prompt": "Determine if overflow occurs when adding the 8-bit two's complement numbers 127 and 1.",
+      "steps": [
+        {
+          "text": "Convert both numbers to binary.",
+          "latex": "127_{10} = 01111111_2, \\quad 1_{10} = 00000001_2"
+        },
+        {
+          "text": "Add the binary numbers.",
+          "latex": "01111111_2 + 00000001_2 = 10000000_2"
+        },
+        {
+          "text": "Check the sign of the result.",
+          "latex": "The result is 10000000_2, which is -128_{10}. The expected result should be positive."
+        }
+      ],
+      "answer": "Overflow occurs because the result is negative, which is not expected when adding two positive numbers."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Detecting Overflow",
+      "text": "In two's complement addition, overflow occurs if the sign bit of the result is different from the sign bits of both operands when they are the same."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Two's complement is used to represent signed integers, allowing simple arithmetic operations.",
+        "The range of an n-bit two's complement integer is from $-2^{n-1}$ to $2^{n-1} - 1$.",
+        "Overflow in two's complement occurs when the result of an addition does not fit within the representable range."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-computer-systems.data-representation.integer-representation.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

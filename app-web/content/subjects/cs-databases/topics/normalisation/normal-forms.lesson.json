@@ -1,0 +1,157 @@
+{
+  "id": "ug.cs-databases.normalisation.normal-forms.lesson",
+  "subtopicId": "ug.cs-databases.normalisation.normal-forms",
+  "title": "Normal Forms in Database Schema Design",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-databases.normalisation.normal-forms.o1",
+    "ug.cs-databases.normalisation.normal-forms.o2",
+    "ug.cs-databases.normalisation.normal-forms.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Why is it important to design database tables such that updating one fact requires changing exactly one place? This is where normal forms come into play."
+    },
+    {
+      "type": "text",
+      "markdown": "In database design, normal forms are a series of guidelines that help organize database tables to reduce redundancy and improve data integrity. By following these guidelines, we ensure that each piece of data is stored in one place, making the database easier to maintain and update."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "First Normal Form (1NF)",
+      "text": "A relation is in First Normal Form (1NF) if all its attributes contain only atomic (indivisible) values and each attribute has a unique name."
+    },
+    {
+      "type": "text",
+      "markdown": "To achieve 1NF, ensure that each column in a table contains unique, indivisible values. This means no repeating groups or arrays in a single column."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Second Normal Form (2NF)",
+      "text": "A relation is in Second Normal Form (2NF) if it is in 1NF and all non-key attributes are fully functionally dependent on the primary key."
+    },
+    {
+      "type": "text",
+      "markdown": "2NF eliminates partial dependency, where a non-key attribute is dependent on only a part of a composite primary key."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Third Normal Form (3NF)",
+      "text": "A relation is in Third Normal Form (3NF) if it is in 2NF and all its attributes are not only dependent on the primary key but also directly dependent on it."
+    },
+    {
+      "type": "text",
+      "markdown": "3NF removes transitive dependency, where a non-key attribute depends on another non-key attribute."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Boyce-Codd Normal Form (BCNF)",
+      "text": "A relation is in Boyce-Codd Normal Form (BCNF) if it is in 3NF and every determinant is a candidate key."
+    },
+    {
+      "type": "text",
+      "markdown": "BCNF is a stronger version of 3NF, addressing certain anomalies that 3NF does not handle by ensuring that every determinant is a candidate key."
+    },
+    {
+      "type": "worked_example",
+      "title": "Decomposing to 3NF",
+      "prompt": "Consider a relation R(A, B, C) with functional dependencies: A → B, B → C. Decompose R into 3NF.",
+      "steps": [
+        {
+          "text": "Identify the candidate keys. Here, A is a candidate key because A → B and B → C implies A → C."
+        },
+        {
+          "text": "Check for transitive dependency. B → C is a transitive dependency since A → B and B → C."
+        },
+        {
+          "text": "Decompose R into two relations: R1(A, B) with A → B and R2(B, C) with B → C."
+        }
+      ],
+      "answer": "The decomposed relations are R1(A, B) and R2(B, C)."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Normal Form",
+        "Requirements",
+        "Eliminates"
+      ],
+      "rows": [
+        [
+          "1NF",
+          "Atomic values",
+          "Repeating groups"
+        ],
+        [
+          "2NF",
+          "1NF + Full functional dependency",
+          "Partial dependency"
+        ],
+        [
+          "3NF",
+          "2NF + No transitive dependency",
+          "Transitive dependency"
+        ],
+        [
+          "BCNF",
+          "3NF + Every determinant is a candidate key",
+          "Certain anomalies in 3NF"
+        ]
+      ],
+      "caption": "Comparison of Normal Forms"
+    },
+    {
+      "type": "worked_example",
+      "title": "Identifying Normal Form",
+      "prompt": "Given a relation R(X, Y, Z) with functional dependencies: X → Y, Y → Z, determine the highest normal form.",
+      "steps": [
+        {
+          "text": "Check if R is in 1NF. Since no repeating groups are present, it is in 1NF."
+        },
+        {
+          "text": "Check for 2NF. X is a candidate key and there are no partial dependencies, so R is in 2NF."
+        },
+        {
+          "text": "Check for 3NF. The dependency Y → Z is transitive, so R is not in 3NF."
+        }
+      ],
+      "answer": "The highest normal form for R is 2NF."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Key Takeaways",
+      "text": "3NF eliminates transitive dependencies, while BCNF ensures every determinant is a candidate key, providing a stricter normalization."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "1NF requires atomic values and unique attribute names.",
+        "2NF eliminates partial dependencies by ensuring full functional dependency on the primary key.",
+        "3NF removes transitive dependencies, enhancing data integrity.",
+        "BCNF is a stricter form of 3NF, ensuring every determinant is a candidate key."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-databases.normalisation.normal-forms.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

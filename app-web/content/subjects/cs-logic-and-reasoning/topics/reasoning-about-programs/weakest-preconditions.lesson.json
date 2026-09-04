@@ -1,0 +1,114 @@
+{
+  "id": "ug.cs-logic-and-reasoning.reasoning-about-programs.weakest-preconditions.lesson",
+  "subtopicId": "ug.cs-logic-and-reasoning.reasoning-about-programs.weakest-preconditions",
+  "title": "Weakest Preconditions",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-logic-and-reasoning.reasoning-about-programs.weakest-preconditions.o1",
+    "ug.cs-logic-and-reasoning.reasoning-about-programs.weakest-preconditions.o2",
+    "ug.cs-logic-and-reasoning.reasoning-about-programs.weakest-preconditions.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine you need to ensure a program always produces the correct result. Instead of testing every possible input, what if you could mathematically prove it?"
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore the concept of weakest preconditions, a fundamental tool in formal verification of programs. The weakest precondition for a given postcondition is the least restrictive condition that guarantees the postcondition will be true after executing a program statement."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Weakest Precondition",
+      "text": "The weakest precondition \\( wp(S, Q) \\) of a statement \\( S \\) with respect to a postcondition \\( Q \\) is the weakest assertion such that if \\( wp(S, Q) \\) holds before executing \\( S \\), then \\( Q \\) holds after executing \\( S \\)."
+    },
+    {
+      "type": "text",
+      "markdown": "To compute the weakest precondition, we often work backwards from the postcondition. Let's start by considering simple assignments."
+    },
+    {
+      "type": "math",
+      "latex": "wp(x := e, Q) = Q[x \\leftarrow e]",
+      "caption": "Weakest precondition for an assignment statement."
+    },
+    {
+      "type": "worked_example",
+      "title": "Example: Assignment",
+      "prompt": "Compute the weakest precondition for the assignment \\( x := x + 1 \\) with the postcondition \\( Q: x > 5 \\).",
+      "steps": [
+        {
+          "text": "Start with the postcondition \\( Q: x > 5 \\)."
+        },
+        {
+          "text": "Substitute \\( x \\) with \\( x + 1 \\) in \\( Q \\).",
+          "latex": "x + 1 > 5"
+        },
+        {
+          "text": "Solve for \\( x \\).",
+          "latex": "x > 4"
+        }
+      ],
+      "answer": "The weakest precondition is \\( x > 4 \\)."
+    },
+    {
+      "type": "text",
+      "markdown": "Now, let's consider conditional statements. The weakest precondition for a conditional statement involves ensuring the postcondition holds for both branches of the condition."
+    },
+    {
+      "type": "math",
+      "latex": "wp(\\text{if } B \\text{ then } S_1 \\text{ else } S_2, Q) = (B \\implies wp(S_1, Q)) \\land (\\neg B \\implies wp(S_2, Q))",
+      "caption": "Weakest precondition for a conditional statement."
+    },
+    {
+      "type": "worked_example",
+      "title": "Example: Conditional",
+      "prompt": "Compute the weakest precondition for the statement \\( \\text{if } x > 0 \\text{ then } x := x + 1 \\text{ else } x := x - 1 \\) with the postcondition \\( Q: x > 5 \\).",
+      "steps": [
+        {
+          "text": "Compute \\( wp(x := x + 1, x > 5) \\).",
+          "latex": "x > 4"
+        },
+        {
+          "text": "Compute \\( wp(x := x - 1, x > 5) \\).",
+          "latex": "x > 6"
+        },
+        {
+          "text": "Combine using the conditional rule.",
+          "latex": "(x > 0 \\implies x > 4) \\land (x \\leq 0 \\implies x > 6)"
+        }
+      ],
+      "answer": "The weakest precondition is \\((x > 0 \\implies x > 4) \\land (x \\leq 0 \\implies x > 6)\\)."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Importance of Weakest Preconditions",
+      "text": "Weakest preconditions allow us to reason about programs mathematically, providing guarantees about program correctness without exhaustive testing."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "The weakest precondition is the least restrictive condition ensuring a postcondition after a statement.",
+        "For assignments, substitute variables in the postcondition with their assigned expressions.",
+        "For conditionals, ensure the postcondition holds for both branches."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-logic-and-reasoning.reasoning-about-programs.weakest-preconditions.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

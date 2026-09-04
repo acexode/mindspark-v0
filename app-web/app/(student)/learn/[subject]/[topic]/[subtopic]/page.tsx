@@ -12,6 +12,7 @@ import { classLevelsForSubtopic, isClassVisible } from "@/lib/content/class-visi
 import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { LessonPlayer } from "@/features/lesson/components/lesson-player";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
+import { experienceFor } from "@/lib/domain/student/experience";
 import { EmptyState } from "@/components/ui/empty-state";
 
 export default async function LessonPage({
@@ -89,6 +90,7 @@ export default async function LessonPage({
         topicName={topic.name}
         subtopicName={subtopic.name}
         practiceHref={`/practice/${subjectSlug}/${topicSlug}?subtopic=${idSlug(subtopic.id)}`}
+        catalogueLabel={experienceFor(profile).copy.catalogue}
         breadcrumb={{
           subjectHref: `/library/${subjectSlug}`,
           topicHref: `/library/${subjectSlug}/${topicSlug}`,

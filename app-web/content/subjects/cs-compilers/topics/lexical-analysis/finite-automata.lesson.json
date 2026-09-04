@@ -1,0 +1,143 @@
+{
+  "id": "ug.cs-compilers.lexical-analysis.finite-automata.lesson",
+  "subtopicId": "ug.cs-compilers.lexical-analysis.finite-automata",
+  "title": "Finite Automata in Lexical Analysis",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-compilers.lexical-analysis.finite-automata.o1",
+    "ug.cs-compilers.lexical-analysis.finite-automata.o2",
+    "ug.cs-compilers.lexical-analysis.finite-automata.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine a machine that reads your program one character at a time and decides what each sequence of characters represents. This is the role of finite automata in lexical analysis."
+    },
+    {
+      "type": "text",
+      "markdown": "Finite automata are abstract machines used to recognize patterns within input data, which is crucial in the lexical analysis phase of a compiler. They process input strings and determine whether they belong to a specific set of strings, known as a language."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Finite Automata",
+      "text": "A finite automaton is a mathematical model of computation consisting of states, transitions between states, an initial state, and a set of accepting states."
+    },
+    {
+      "type": "text",
+      "markdown": "There are two main types of finite automata: Deterministic Finite Automata (DFA) and Nondeterministic Finite Automata (NFA). Both are equivalent in terms of the languages they can recognize, but they operate differently."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Deterministic vs. Nondeterministic",
+      "text": "In a DFA, for each state and input symbol, there is exactly one transition. In an NFA, there can be multiple transitions for a state and input symbol, or even transitions without input (ε-transitions)."
+    },
+    {
+      "type": "text",
+      "markdown": "Let's start with constructing a DFA for a simple regular language. Consider the language of strings over the alphabet \\( \\{a, b\\} \\) that end with 'ab'."
+    },
+    {
+      "type": "worked_example",
+      "title": "Constructing a DFA",
+      "prompt": "Construct a DFA that recognizes the language of strings over \\( \\{a, b\\} \\) ending with 'ab'.",
+      "steps": [
+        {
+          "text": "Define the states: \\( q_0 \\) (start), \\( q_1 \\) (seen 'a'), \\( q_2 \\) (seen 'ab', accepting)."
+        },
+        {
+          "text": "Define transitions: from \\( q_0 \\), 'a' goes to \\( q_1 \\); from \\( q_1 \\), 'b' goes to \\( q_2 \\); from \\( q_2 \\), 'a' goes to \\( q_1 \\), 'b' goes to \\( q_0 \\)."
+        },
+        {
+          "text": "Mark \\( q_2 \\) as the accepting state."
+        }
+      ],
+      "answer": "The DFA has states \\( \\{q_0, q_1, q_2\\} \\), transitions \\( \\{(q_0, a, q_1), (q_1, b, q_2), (q_2, a, q_1), (q_2, b, q_0)\\} \\), and \\( q_2 \\) as the accepting state."
+    },
+    {
+      "type": "text",
+      "markdown": "Now let's explore how to convert an NFA to a DFA using the subset construction method. This process involves creating a state in the DFA for each possible set of states in the NFA."
+    },
+    {
+      "type": "worked_example",
+      "title": "NFA to DFA Conversion",
+      "prompt": "Convert the following NFA to a DFA. The NFA has states \\( \\{q_0, q_1, q_2\\} \\), transitions \\( \\{(q_0, a, q_0), (q_0, a, q_1), (q_1, b, q_2)\\} \\), and \\( q_2 \\) as the accepting state.",
+      "steps": [
+        {
+          "text": "Start with the initial state of the DFA as \\( \\{q_0\\} \\)."
+        },
+        {
+          "text": "Compute the ε-closure of \\( \\{q_0\\} \\), which is \\( \\{q_0\\} \\) since there are no ε-transitions."
+        },
+        {
+          "text": "For each input symbol, compute the set of reachable states and repeat until no new states are added."
+        },
+        {
+          "text": "Define transitions based on these sets. For example, from \\( \\{q_0\\} \\) on 'a', reach \\( \\{q_0, q_1\\} \\)."
+        },
+        {
+          "text": "Mark any set containing \\( q_2 \\) as an accepting state."
+        }
+      ],
+      "answer": "The resulting DFA has states \\( \\{\\{q_0\\}, \\{q_0, q_1\\}, \\{q_2\\}\\} \\), transitions \\( \\{(\\{q_0\\}, a, \\{q_0, q_1\\}), (\\{q_0, q_1\\}, b, \\{q_2\\})\\} \\), and \\( \\{q_2\\} \\) as the accepting state."
+    },
+    {
+      "type": "text",
+      "markdown": "Finite automata are sufficient for lexical analysis because they can recognize regular languages, which are typically used to define the lexical syntax of programming languages. Regular expressions, which define these languages, can be directly converted into finite automata."
+    },
+    {
+      "type": "callout",
+      "variant": "example",
+      "title": "Regular Expressions and Finite Automata",
+      "text": "The regular expression `(a|b)*ab` can be represented by a DFA that recognizes strings ending in 'ab'."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Type",
+        "Determinism",
+        "Transitions",
+        "Ease of Implementation"
+      ],
+      "rows": [
+        [
+          "DFA",
+          "Deterministic",
+          "One per state and symbol",
+          "Easier"
+        ],
+        [
+          "NFA",
+          "Nondeterministic",
+          "Multiple possible",
+          "More complex"
+        ]
+      ],
+      "caption": "Comparison between DFA and NFA"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Finite automata are used to recognize regular languages, essential for lexical analysis.",
+        "DFAs and NFAs are equivalent in power but differ in operation and implementation.",
+        "Subset construction is a method to convert NFAs to equivalent DFAs."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-compilers.lexical-analysis.finite-automata.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

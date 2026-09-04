@@ -1,0 +1,138 @@
+{
+  "id": "ug.cs-compilers.parsing.grammars-and-trees.lesson",
+  "subtopicId": "ug.cs-compilers.parsing.grammars-and-trees",
+  "title": "Context-Free Grammars and Parse Trees",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-compilers.parsing.grammars-and-trees.o1",
+    "ug.cs-compilers.parsing.grammars-and-trees.o2",
+    "ug.cs-compilers.parsing.grammars-and-trees.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine trying to understand a sentence where words are jumbled. Parsing is like reordering those words to make sense. In compilers, parsing organizes a flat stream of tokens into a meaningful structure."
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we'll explore context-free grammars (CFGs) and parse trees, which are essential tools for understanding the structure of programming languages. We'll learn how to derive strings from CFGs, identify ambiguous grammars, and rewrite grammars to handle operator precedence and associativity."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Context-Free Grammar (CFG)",
+      "text": "A CFG is a formal grammar consisting of a set of production rules that describe all possible strings in a given formal language. A CFG is defined by a tuple (N, Σ, P, S) where N is a set of non-terminal symbols, Σ is a set of terminal symbols, P is a set of production rules, and S is the start symbol."
+    },
+    {
+      "type": "text",
+      "markdown": "A parse tree is a tree representation that illustrates the syntactic structure of a string according to a CFG. Each node in the tree corresponds to a production rule applied in the derivation of the string."
+    },
+    {
+      "type": "worked_example",
+      "title": "Deriving a String from a CFG",
+      "prompt": "Consider the CFG with production rules: S → aSb | ε. Derive the string 'aabb' and draw its parse tree.",
+      "steps": [
+        {
+          "text": "Start with the start symbol S."
+        },
+        {
+          "text": "Apply the production S → aSb."
+        },
+        {
+          "text": "Apply the production S → aSb again to the non-terminal S."
+        },
+        {
+          "text": "Apply the production S → ε to the remaining non-terminal S."
+        },
+        {
+          "text": "The derived string is 'aabb'."
+        },
+        {
+          "text": "Draw the parse tree with 'S' as the root, branching to 'a', 'S', and 'b', and further branching 'S' to 'a', 'S', 'b', and finally 'S' to ε."
+        }
+      ],
+      "answer": "The parse tree for 'aabb' has 'S' as the root, with branches leading to 'a', another 'S' (which further branches to 'a', 'S', 'b'), and 'b'. The final 'S' branches to ε."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Ambiguity in Grammars",
+      "text": "A grammar is ambiguous if there exists a string that can have more than one distinct parse tree. Ambiguity can lead to different interpretations of the same string, which is undesirable in programming languages."
+    },
+    {
+      "type": "worked_example",
+      "title": "Identifying an Ambiguous Grammar",
+      "prompt": "Consider the grammar with production rules: E → E + E | E * E | id. Show that this grammar is ambiguous by providing two different parse trees for the string 'id + id * id'.",
+      "steps": [
+        {
+          "text": "First parse tree: Start with E, apply E → E + E, then apply E → id for the first E, and E → E * E for the second E."
+        },
+        {
+          "text": "Apply E → id for both E in the second E * E production."
+        },
+        {
+          "text": "Second parse tree: Start with E, apply E → E * E, then apply E → E + E for the first E."
+        },
+        {
+          "text": "Apply E → id for all remaining E."
+        }
+      ],
+      "answer": "The two parse trees show different structures: one prioritizes addition over multiplication, while the other prioritizes multiplication over addition."
+    },
+    {
+      "type": "text",
+      "markdown": "To resolve ambiguity, grammars can be rewritten to enforce operator precedence and associativity. This ensures a single, consistent interpretation of expressions."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Operator",
+        "Associativity",
+        "Precedence Level"
+      ],
+      "rows": [
+        [
+          "+",
+          "Left",
+          "1"
+        ],
+        [
+          "*",
+          "Left",
+          "2"
+        ]
+      ],
+      "caption": "Operator precedence and associativity for common arithmetic operators."
+    },
+    {
+      "type": "callout",
+      "variant": "example",
+      "title": "Rewriting a Grammar for Precedence",
+      "text": "To encode precedence, separate expressions into different non-terminals. For example, E → E + T | T and T → T * F | F, where F → id, ensures '*' has higher precedence than '+'."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Context-Free Grammars define the syntax of languages using production rules.",
+        "Parse trees visually represent the derivation of strings from CFGs.",
+        "Ambiguity in grammars can be resolved by rewriting to enforce precedence and associativity."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-compilers.parsing.grammars-and-trees.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

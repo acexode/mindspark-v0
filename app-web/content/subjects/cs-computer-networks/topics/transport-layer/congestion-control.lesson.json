@@ -1,0 +1,156 @@
+{
+  "id": "ug.cs-computer-networks.transport-layer.congestion-control.lesson",
+  "subtopicId": "ug.cs-computer-networks.transport-layer.congestion-control",
+  "title": "Flow and Congestion Control",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-computer-networks.transport-layer.congestion-control.o1",
+    "ug.cs-computer-networks.transport-layer.congestion-control.o2",
+    "ug.cs-computer-networks.transport-layer.congestion-control.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine driving on a highway where each car represents a data packet. The flow of traffic is smooth until too many cars enter the highway, causing congestion. How can we manage this in computer networks?"
+    },
+    {
+      "type": "text",
+      "markdown": "In computer networks, managing the flow of data between sender and receiver is crucial to ensure efficient communication. Two key mechanisms involved are flow control and congestion control. While they may sound similar, they address different issues in data transmission."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Flow Control",
+      "text": "Flow control is a mechanism to prevent the sender from overwhelming the receiver with too much data too quickly. It ensures that the sender transmits data at a rate that the receiver can handle."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Congestion Control",
+      "text": "Congestion control is a mechanism to prevent too much data from being injected into the network, which can lead to network congestion and packet loss."
+    },
+    {
+      "type": "text",
+      "markdown": "In TCP (Transmission Control Protocol), both flow control and congestion control are implemented to optimize data transmission. Let's explore how TCP handles these mechanisms, particularly focusing on congestion control."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "TCP Congestion Control",
+      "text": "TCP uses a combination of algorithms to manage congestion, including slow start, congestion avoidance, fast retransmit, and fast recovery."
+    },
+    {
+      "type": "text",
+      "markdown": "TCP's congestion control mechanism begins with the **slow start** phase. In this phase, the congestion window (cwnd) starts with a small size and increases exponentially with each acknowledgment received, doubling every round-trip time (RTT). This continues until a threshold is reached, indicating potential congestion."
+    },
+    {
+      "type": "worked_example",
+      "title": "TCP Slow Start Example",
+      "prompt": "Consider a TCP connection with an initial congestion window (cwnd) of 1 MSS (Maximum Segment Size). Calculate the cwnd after 3 RTTs assuming no packet loss.",
+      "steps": [
+        {
+          "text": "Start with cwnd = 1 MSS."
+        },
+        {
+          "text": "After 1 RTT, cwnd doubles: cwnd = 2 MSS."
+        },
+        {
+          "text": "After 2 RTTs, cwnd doubles again: cwnd = 4 MSS."
+        },
+        {
+          "text": "After 3 RTTs, cwnd doubles once more: cwnd = 8 MSS."
+        }
+      ],
+      "answer": "The congestion window after 3 RTTs is 8 MSS."
+    },
+    {
+      "type": "text",
+      "markdown": "Once the slow start threshold (ssthresh) is reached, TCP transitions to the **congestion avoidance** phase. In this phase, the increase of cwnd becomes linear instead of exponential, growing by 1 MSS every RTT."
+    },
+    {
+      "type": "worked_example",
+      "title": "TCP Congestion Avoidance Example",
+      "prompt": "If the ssthresh is set to 8 MSS and the current cwnd is 8 MSS, calculate the cwnd after 3 RTTs during congestion avoidance.",
+      "steps": [
+        {
+          "text": "Start with cwnd = 8 MSS."
+        },
+        {
+          "text": "After 1 RTT, cwnd increases linearly: cwnd = 9 MSS."
+        },
+        {
+          "text": "After 2 RTTs, cwnd increases linearly: cwnd = 10 MSS."
+        },
+        {
+          "text": "After 3 RTTs, cwnd increases linearly: cwnd = 11 MSS."
+        }
+      ],
+      "answer": "The congestion window after 3 RTTs is 11 MSS."
+    },
+    {
+      "type": "text",
+      "markdown": "TCP infers congestion primarily through packet loss. When a packet loss is detected, TCP assumes network congestion and reacts by reducing the congestion window size, typically to half of its current value, and enters the slow start or congestion avoidance phase depending on the situation."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Phase",
+        "Growth Rate",
+        "Trigger"
+      ],
+      "rows": [
+        [
+          "Slow Start",
+          "Exponential",
+          "Initial phase or after timeout"
+        ],
+        [
+          "Congestion Avoidance",
+          "Linear",
+          "After reaching ssthresh"
+        ],
+        [
+          "Fast Retransmit",
+          "Immediate",
+          "Three duplicate ACKs"
+        ],
+        [
+          "Fast Recovery",
+          "Linear",
+          "After fast retransmit"
+        ]
+      ],
+      "caption": "TCP Congestion Control Phases"
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Packet Loss",
+      "text": "Packet loss is a key indicator of congestion in TCP. It triggers a reduction in the congestion window to prevent further congestion."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Flow control prevents the sender from overwhelming the receiver.",
+        "Congestion control prevents network congestion by managing data injection rates.",
+        "TCP uses slow start and congestion avoidance to optimize data flow and manage congestion."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-computer-networks.transport-layer.congestion-control.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

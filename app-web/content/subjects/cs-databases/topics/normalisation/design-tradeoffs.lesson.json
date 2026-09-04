@@ -1,0 +1,140 @@
+{
+  "id": "ug.cs-databases.normalisation.design-tradeoffs.lesson",
+  "subtopicId": "ug.cs-databases.normalisation.design-tradeoffs",
+  "title": "Denormalisation and Trade-offs",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-databases.normalisation.design-tradeoffs.o1",
+    "ug.cs-databases.normalisation.design-tradeoffs.o2",
+    "ug.cs-databases.normalisation.design-tradeoffs.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Why would a database designer ever choose to intentionally introduce redundancy into a database schema? The answer lies in the trade-off between read performance and data integrity."
+    },
+    {
+      "type": "text",
+      "markdown": "In database design, normalisation is a process used to organise a database into tables and columns. The main goal is to reduce redundancy and ensure data integrity. However, a fully normalised schema can sometimes lead to poor read performance, especially in systems where read operations are frequent and complex."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Denormalisation",
+      "text": "Denormalisation is the process of introducing redundancy into a database schema to improve read performance at the cost of increased complexity in data management."
+    },
+    {
+      "type": "text",
+      "markdown": "Consider a scenario where a fully normalised database requires multiple joins to retrieve frequently accessed data. This can be computationally expensive and slow, particularly in large databases. Denormalisation can help by storing redundant data in a way that reduces the need for such joins."
+    },
+    {
+      "type": "worked_example",
+      "title": "Denormalisation in Practice",
+      "prompt": "Suppose we have a normalised database with two tables: `Orders` and `Customers`. Each order references a customer ID. To quickly access customer names with each order, we denormalise by adding the customer name directly into the `Orders` table.",
+      "steps": [
+        {
+          "text": "1. Identify the relationship between `Orders` and `Customers`.",
+          "latex": "Each order in `Orders` references a customer ID from `Customers`."
+        },
+        {
+          "text": "2. Decide on the redundant data to store.",
+          "latex": "Add `customer_name` to the `Orders` table."
+        },
+        {
+          "text": "3. Implement the denormalisation.",
+          "latex": "Modify the `Orders` table schema to include `customer_name`."
+        }
+      ],
+      "answer": "The `Orders` table now includes `customer_name`, reducing the need for joins when retrieving order details with customer names."
+    },
+    {
+      "type": "text",
+      "markdown": "While denormalisation can improve read performance, it introduces risks. The main risk is update anomalies: when data is stored redundantly, updating it in one place but not another can lead to inconsistencies."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Update Anomalies",
+      "text": "Denormalisation can lead to update anomalies, where changes to data in one location are not reflected in another, causing inconsistencies."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Aspect",
+        "Normalisation",
+        "Denormalisation"
+      ],
+      "rows": [
+        [
+          "Data Redundancy",
+          "Low",
+          "High"
+        ],
+        [
+          "Read Performance",
+          "Potentially Poor",
+          "Improved"
+        ],
+        [
+          "Update Complexity",
+          "Simple",
+          "Complex"
+        ],
+        [
+          "Data Integrity",
+          "High",
+          "Potentially Compromised"
+        ]
+      ],
+      "caption": "Comparison of Normalisation and Denormalisation"
+    },
+    {
+      "type": "worked_example",
+      "title": "Evaluating Denormalisation Trade-offs",
+      "prompt": "A company maintains a database of employee records and project assignments. The schema is fully normalised. The company often queries the database to generate reports of employees and their project details. How could denormalisation be applied, and what are the potential trade-offs?",
+      "steps": [
+        {
+          "text": "1. Identify frequent queries.",
+          "latex": "Reports require joining `Employees` and `Projects` tables."
+        },
+        {
+          "text": "2. Determine redundant data to store.",
+          "latex": "Store project details directly in the `Employees` table."
+        },
+        {
+          "text": "3. Evaluate trade-offs.",
+          "latex": "Improved read performance but increased risk of update anomalies."
+        }
+      ],
+      "answer": "By storing project details in the `Employees` table, read performance improves, but careful management is required to maintain data integrity."
+    },
+    {
+      "type": "text",
+      "markdown": "In conclusion, denormalisation is a strategic decision made to enhance read performance by introducing redundancy. It is crucial to weigh the benefits against the potential risks of update anomalies and increased complexity in data management."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Denormalisation improves read performance by reducing the need for complex joins.",
+        "It introduces redundancy, which can lead to update anomalies and data inconsistencies.",
+        "Careful consideration of the trade-offs is essential when deciding to denormalise."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-databases.normalisation.design-tradeoffs.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

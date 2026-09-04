@@ -1,0 +1,169 @@
+{
+  "id": "ug.cs-computer-networks.transport-layer.reliable-transfer.lesson",
+  "subtopicId": "ug.cs-computer-networks.transport-layer.reliable-transfer",
+  "title": "Reliable Data Transfer",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-computer-networks.transport-layer.reliable-transfer.o1",
+    "ug.cs-computer-networks.transport-layer.reliable-transfer.o2",
+    "ug.cs-computer-networks.transport-layer.reliable-transfer.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine sending a letter without knowing if it was received. Reliable data transfer in networks ensures that messages arrive accurately and in order, much like a registered mail service."
+    },
+    {
+      "type": "text",
+      "markdown": "In computer networks, reliable data transfer is crucial for ensuring that data sent from one process to another arrives correctly and in the proper sequence. This is especially important for applications like file transfers and video streaming, where data integrity and order are paramount."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Reliable Data Transfer",
+      "text": "A communication service that ensures data is delivered accurately and in the correct sequence, typically using acknowledgements and retransmissions."
+    },
+    {
+      "type": "text",
+      "markdown": "To achieve reliability, protocols like TCP (Transmission Control Protocol) use several mechanisms, including sequence numbers, acknowledgements, and retransmissions. Let's explore these concepts in detail."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Sequence Numbers",
+      "text": "Sequence numbers are used to uniquely identify each byte of data in a stream, ensuring that data is reassembled in the correct order at the receiver."
+    },
+    {
+      "type": "text",
+      "markdown": "Sequence numbers help the receiver assemble packets in the correct order and detect any missing packets. Each byte in a TCP stream is assigned a sequence number, allowing the receiver to acknowledge specific bytes."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Acknowledgements",
+      "text": "Acknowledgements (ACKs) are sent by the receiver to inform the sender that data has been received successfully."
+    },
+    {
+      "type": "text",
+      "markdown": "When the receiver gets a packet, it sends back an ACK to the sender. If the sender does not receive an ACK within a certain time frame, it assumes the packet was lost and retransmits it."
+    },
+    {
+      "type": "worked_example",
+      "title": "Sequence Numbers and Acknowledgements",
+      "prompt": "Consider a sender transmitting a message split into three packets with sequence numbers 100, 200, and 300. The receiver successfully receives the first and third packets but not the second. How does the receiver use ACKs to inform the sender?",
+      "steps": [
+        {
+          "text": "The receiver sends an ACK for the first packet, indicating it has received up to byte 199."
+        },
+        {
+          "text": "The receiver does not send an ACK for the second packet, as it was not received."
+        },
+        {
+          "text": "Upon receiving the third packet, the receiver sends an ACK for the first packet again, indicating it is still expecting the second packet."
+        },
+        {
+          "text": "The sender, upon receiving duplicate ACKs for the first packet, retransmits the second packet."
+        }
+      ],
+      "answer": "The receiver sends duplicate ACKs for the first packet, prompting the sender to retransmit the second packet."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Key Point",
+      "text": "ACKs play a crucial role in reliable data transfer by informing the sender of successful receptions and prompting retransmissions when necessary."
+    },
+    {
+      "type": "text",
+      "markdown": "Another important mechanism in reliable data transfer is the sliding window protocol, which controls the flow of packets between sender and receiver."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Sliding Window Protocol",
+      "text": "A method for controlling the flow of data packets between two networked computers, allowing multiple packets to be sent before receiving an ACK for the first one."
+    },
+    {
+      "type": "text",
+      "markdown": "The sliding window protocol allows for efficient use of network resources by enabling the sender to transmit multiple packets before needing an ACK for the first one. This increases throughput while maintaining reliability."
+    },
+    {
+      "type": "worked_example",
+      "title": "Sliding Window Example",
+      "prompt": "A sender uses a sliding window of size 3. It sends packets with sequence numbers 1, 2, and 3. The receiver acknowledges packets 1 and 2. Explain the sender's next actions.",
+      "steps": [
+        {
+          "text": "The sender receives ACKs for packets 1 and 2, allowing it to slide the window forward."
+        },
+        {
+          "text": "The sender can now send packets 4 and 5, as the window has moved forward by two positions."
+        }
+      ],
+      "answer": "The sender slides the window forward and sends packets 4 and 5."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Mechanism",
+        "Purpose",
+        "Effect on Throughput"
+      ],
+      "rows": [
+        [
+          "Sequence Numbers",
+          "Order data correctly",
+          "Ensures data integrity"
+        ],
+        [
+          "Acknowledgements",
+          "Confirm receipt",
+          "Triggers retransmissions"
+        ],
+        [
+          "Sliding Window",
+          "Control flow",
+          "Increases throughput"
+        ]
+      ],
+      "caption": "Comparison of Reliable Data Transfer Mechanisms"
+    },
+    {
+      "type": "text",
+      "markdown": "TCP connection establishment and termination are also critical for reliable communication. The connection is established using a three-way handshake, and terminated with a four-step process."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Three-Way Handshake",
+      "text": "A method used in TCP to establish a connection between a client and server. It involves three steps: SYN, SYN-ACK, and ACK."
+    },
+    {
+      "type": "text",
+      "markdown": "The three-way handshake ensures both the client and server are ready to transmit data. It begins with the client sending a SYN packet, the server responding with a SYN-ACK, and the client replying with an ACK."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-computer-networks.transport-layer.reliable-transfer.q001"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Reliable data transfer uses sequence numbers, acknowledgements, and sliding windows to ensure data integrity and order.",
+        "The sliding window protocol improves throughput by allowing multiple packets to be sent before receiving an ACK.",
+        "TCP uses a three-way handshake for connection establishment and a four-step process for termination."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

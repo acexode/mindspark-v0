@@ -1,0 +1,177 @@
+{
+  "id": "ug.cs-algorithm-design.dynamic-programming.dp-on-sequences.lesson",
+  "subtopicId": "ug.cs-algorithm-design.dynamic-programming.dp-on-sequences",
+  "title": "Dynamic Programming on Sequences",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-algorithm-design.dynamic-programming.dp-on-sequences.o1",
+    "ug.cs-algorithm-design.dynamic-programming.dp-on-sequences.o2",
+    "ug.cs-algorithm-design.dynamic-programming.dp-on-sequences.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Dynamic programming transforms exponential problems into polynomial ones by solving overlapping subproblems just once. Let's explore how this powerful technique applies to sequences."
+    },
+    {
+      "type": "text",
+      "markdown": "Dynamic programming (DP) is a method for solving complex problems by breaking them down into simpler subproblems. It is applicable when the problem can be divided into overlapping subproblems that can be solved independently. In this lesson, we will focus on three classic problems involving sequences: the Longest Common Subsequence (LCS), the Edit Distance, and the 0/1 Knapsack Problem."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Dynamic Programming",
+      "text": "A method for solving problems by breaking them down into overlapping subproblems, solving each subproblem just once, and storing their solutions."
+    },
+    {
+      "type": "text",
+      "markdown": "### Longest Common Subsequence (LCS)\nThe LCS problem is about finding the longest subsequence common to two sequences. A subsequence is a sequence derived by deleting some or no elements without changing the order of the remaining elements."
+    },
+    {
+      "type": "math",
+      "latex": "LCS(X, Y) = \\begin{cases} 0, & \\text{if } i = 0 \\text{ or } j = 0 \\\\ LCS(X_{i-1}, Y_{j-1}) + 1, & \\text{if } X_i = Y_j \\\\ \\max(LCS(X_{i-1}, Y_j), LCS(X_i, Y_{j-1})), & \\text{if } X_i \\neq Y_j \\end{cases}",
+      "caption": "Recurrence relation for the Longest Common Subsequence."
+    },
+    {
+      "type": "worked_example",
+      "title": "Example: LCS of 'AGGTAB' and 'GXTXAYB'",
+      "prompt": "Find the LCS of the sequences 'AGGTAB' and 'GXTXAYB'.",
+      "steps": [
+        {
+          "text": "Initialize a table with dimensions (7 x 8) since the lengths of the sequences are 6 and 7 respectively, plus one for the base case."
+        },
+        {
+          "text": "Fill the table using the recurrence relation. Start from the base case where either sequence is empty."
+        },
+        {
+          "text": "If characters match (e.g., 'A' in both sequences), increment the value from the diagonal cell."
+        },
+        {
+          "text": "If characters do not match, take the maximum value from the left or top cell."
+        },
+        {
+          "text": "The value in the bottom-right cell is the length of the LCS."
+        }
+      ],
+      "answer": "The LCS is 'GTAB' with length 4."
+    },
+    {
+      "type": "text",
+      "markdown": "### Edit Distance\nThe Edit Distance between two strings is the minimum number of operations required to transform one string into the other. The allowed operations are insertion, deletion, or substitution of a single character."
+    },
+    {
+      "type": "math",
+      "latex": "ED(X, Y) = \\begin{cases} 0, & \\text{if } i = 0 \\text{ and } j = 0 \\\\ j, & \\text{if } i = 0 \\\\ i, & \\text{if } j = 0 \\\\ ED(X_{i-1}, Y_{j-1}), & \\text{if } X_i = Y_j \\\\ 1 + \\min(ED(X_{i-1}, Y_j), ED(X_i, Y_{j-1}), ED(X_{i-1}, Y_{j-1})), & \\text{if } X_i \\neq Y_j \\end{cases}",
+      "caption": "Recurrence relation for Edit Distance."
+    },
+    {
+      "type": "worked_example",
+      "title": "Example: Edit Distance between 'kitten' and 'sitting'",
+      "prompt": "Calculate the edit distance between 'kitten' and 'sitting'.",
+      "steps": [
+        {
+          "text": "Initialize a table with dimensions (7 x 8) for the lengths of 'kitten' and 'sitting', plus one."
+        },
+        {
+          "text": "Fill the table using the recurrence relation, starting from the base case where either string is empty."
+        },
+        {
+          "text": "For each cell, calculate the cost of insertion, deletion, or substitution, and choose the minimum."
+        },
+        {
+          "text": "The value in the bottom-right cell represents the edit distance."
+        }
+      ],
+      "answer": "The edit distance is 3."
+    },
+    {
+      "type": "text",
+      "markdown": "### 0/1 Knapsack Problem\nThe 0/1 Knapsack problem involves selecting items with given weights and values to maximize total value without exceeding a weight limit. Each item can be included or excluded (0/1)."
+    },
+    {
+      "type": "math",
+      "latex": "K(i, w) = \\begin{cases} 0, & \\text{if } i = 0 \\text{ or } w = 0 \\\\ K(i-1, w), & \\text{if } w_i > w \\\\ \\max(K(i-1, w), v_i + K(i-1, w-w_i)), & \\text{if } w_i \\leq w \\end{cases}",
+      "caption": "Recurrence relation for the 0/1 Knapsack problem."
+    },
+    {
+      "type": "worked_example",
+      "title": "Example: 0/1 Knapsack Problem",
+      "prompt": "Solve a knapsack problem with items: [(weight=1, value=1), (weight=3, value=4), (weight=4, value=5), (weight=5, value=7)] and a capacity of 7.",
+      "steps": [
+        {
+          "text": "Initialize a table with dimensions (5 x 8) for 4 items and capacity 7, plus one."
+        },
+        {
+          "text": "Fill the table using the recurrence relation, considering whether to include each item."
+        },
+        {
+          "text": "For each item, check if it fits in the current capacity and choose the maximum value between including or excluding it."
+        },
+        {
+          "text": "The value in the bottom-right cell is the maximum value that can be achieved."
+        }
+      ],
+      "answer": "The maximum value is 9."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Problem",
+        "Objective",
+        "Solution Approach",
+        "Complexity"
+      ],
+      "rows": [
+        [
+          "Longest Common Subsequence",
+          "Find longest subsequence common to two sequences",
+          "Fill DP table using LCS recurrence",
+          "$O(mn)$"
+        ],
+        [
+          "Edit Distance",
+          "Transform one string into another with minimum operations",
+          "Fill DP table using Edit Distance recurrence",
+          "$O(mn)$"
+        ],
+        [
+          "0/1 Knapsack",
+          "Maximize value without exceeding weight capacity",
+          "Fill DP table using Knapsack recurrence",
+          "$O(nW)$"
+        ]
+      ],
+      "caption": "Comparison of sequence-based dynamic programming problems."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Reconstructing Solutions",
+      "text": "After filling the DP table, trace back from the bottom-right to reconstruct the optimal solution."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Dynamic programming solves problems by storing solutions to overlapping subproblems.",
+        "LCS, Edit Distance, and 0/1 Knapsack are classic sequence-based DP problems.",
+        "Reconstructing the solution involves tracing back through the DP table."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-algorithm-design.dynamic-programming.dp-on-sequences.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

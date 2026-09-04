@@ -1,0 +1,147 @@
+{
+  "id": "ug.cs-databases.transactions.concurrency-control.lesson",
+  "subtopicId": "ug.cs-databases.transactions.concurrency-control",
+  "title": "Concurrency Control in Databases",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-databases.transactions.concurrency-control.o1",
+    "ug.cs-databases.transactions.concurrency-control.o2",
+    "ug.cs-databases.transactions.concurrency-control.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine multiple users trying to book the last seat on a flight at the same time. How do databases ensure that only one booking is successful?"
+    },
+    {
+      "type": "text",
+      "markdown": "Concurrency control is a critical aspect of database systems, ensuring that transactions are executed in a safe and efficient manner even when multiple users access the database simultaneously. This unit explores common anomalies, the concept of serialisability, and the mechanisms used to maintain data integrity."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Transaction",
+      "text": "A transaction is a sequence of database operations that are treated as a single unit. It must be atomic, consistent, isolated, and durable (ACID properties)."
+    },
+    {
+      "type": "text",
+      "markdown": "When multiple transactions are executed concurrently, anomalies such as lost updates, dirty reads, and non-repeatable reads can occur. These anomalies can lead to inconsistent database states."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Lost Update",
+      "text": "A lost update occurs when two transactions read the same data and then update it, with the second update overwriting the first."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Dirty Read",
+      "text": "A dirty read happens when a transaction reads data that has been modified by another transaction that has not yet been committed."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Non-repeatable Read",
+      "text": "A non-repeatable read occurs when a transaction reads the same data twice and gets different values because another transaction has modified the data in between the reads."
+    },
+    {
+      "type": "text",
+      "markdown": "To manage these anomalies, databases use concurrency control mechanisms. One such mechanism is locking."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Two-Phase Locking (2PL)",
+      "text": "Two-Phase Locking is a concurrency control method that ensures serialisability by dividing the execution of a transaction into two phases: a growing phase, where locks can be acquired but not released, and a shrinking phase, where locks can be released but not acquired."
+    },
+    {
+      "type": "worked_example",
+      "title": "Understanding Two-Phase Locking",
+      "prompt": "Consider two transactions, T1 and T2, accessing a shared resource. T1 locks and updates the resource, then T2 attempts to lock the same resource. Explain how 2PL ensures serialisability.",
+      "steps": [
+        {
+          "text": "T1 enters the growing phase and acquires a lock on the resource."
+        },
+        {
+          "text": "T1 updates the resource and then enters the shrinking phase, releasing the lock."
+        },
+        {
+          "text": "T2 can only acquire the lock after T1 has released it, ensuring that T2's operations follow T1's in a serial order."
+        }
+      ],
+      "answer": "Two-Phase Locking ensures that transactions are executed in a serial order by controlling when locks can be acquired and released, preventing interleaving that could lead to anomalies."
+    },
+    {
+      "type": "text",
+      "markdown": "Different isolation levels in databases allow for varying degrees of concurrency and consistency. These levels are defined by the anomalies they permit."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Isolation Level",
+        "Permitted Anomalies"
+      ],
+      "rows": [
+        [
+          "Read Uncommitted",
+          "Dirty reads, non-repeatable reads, phantom reads"
+        ],
+        [
+          "Read Committed",
+          "Non-repeatable reads, phantom reads"
+        ],
+        [
+          "Repeatable Read",
+          "Phantom reads"
+        ],
+        [
+          "Serializable",
+          "None"
+        ]
+      ],
+      "caption": "Comparison of Isolation Levels and Permitted Anomalies"
+    },
+    {
+      "type": "worked_example",
+      "title": "Comparing Isolation Levels",
+      "prompt": "A database transaction is executed under the 'Read Committed' isolation level. Identify the anomalies that can occur and explain why.",
+      "steps": [
+        {
+          "text": "Under 'Read Committed', a transaction can only read committed data, preventing dirty reads."
+        },
+        {
+          "text": "However, non-repeatable reads can occur because data can be modified by other transactions between reads."
+        },
+        {
+          "text": "Phantom reads can also occur because new rows can be added by other transactions."
+        }
+      ],
+      "answer": "Under 'Read Committed', non-repeatable reads and phantom reads can occur because transactions can read committed data that may change before the transaction is complete."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Concurrency control is essential for maintaining data integrity in multi-user environments.",
+        "Two-Phase Locking ensures serialisability by controlling lock acquisition and release.",
+        "Different isolation levels balance concurrency and consistency by permitting certain anomalies."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-databases.transactions.concurrency-control.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "id": "ug.cs-compilers.code-generation.instruction-selection.lesson",
+  "subtopicId": "ug.cs-compilers.code-generation.instruction-selection",
+  "title": "Instruction Selection and Register Allocation",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-compilers.code-generation.instruction-selection.o1",
+    "ug.cs-compilers.code-generation.instruction-selection.o2",
+    "ug.cs-compilers.code-generation.instruction-selection.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine trying to fit a complex jigsaw puzzle into a limited space—this is the challenge of instruction selection and register allocation in compilers."
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore how high-level intermediate representations (IR) are mapped to machine instructions and how registers are allocated efficiently. The goal is to produce correct and optimized target code."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Instruction Selection",
+      "text": "Instruction selection is the process of converting intermediate representation (IR) code into machine code instructions."
+    },
+    {
+      "type": "text",
+      "markdown": "Instruction selection involves choosing the most appropriate machine instructions to implement each operation in the IR. This is crucial for both the correctness and efficiency of the generated code."
+    },
+    {
+      "type": "worked_example",
+      "title": "Selecting Instructions for a Three-Address Statement",
+      "prompt": "Consider the IR statement `t1 = t2 + t3`. Assume the target architecture supports the `ADD` instruction which adds two registers. How would you select the appropriate instructions?",
+      "steps": [
+        {
+          "text": "Identify the operation in the IR statement. Here, it is addition."
+        },
+        {
+          "text": "Map the IR operation to the target machine's instruction set. Use the `ADD` instruction for addition."
+        },
+        {
+          "text": "Assign registers to operands `t2` and `t3`, and store the result in register for `t1`."
+        },
+        {
+          "text": "Generate the machine instruction: `ADD R1, R2, R3` where `R1`, `R2`, and `R3` are registers corresponding to `t1`, `t2`, and `t3` respectively."
+        }
+      ],
+      "answer": "The machine instruction is `ADD R1, R2, R3`."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Register Allocation",
+      "text": "Register allocation is the process of assigning a large number of target program variables onto a small number of CPU registers."
+    },
+    {
+      "type": "text",
+      "markdown": "Register allocation is a critical step in code generation. It involves mapping variables to a limited number of registers, which is often modeled as a graph coloring problem."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Graph Coloring in Register Allocation",
+      "text": "Each node in the graph represents a variable, and an edge between two nodes indicates that the variables cannot be stored in the same register."
+    },
+    {
+      "type": "worked_example",
+      "title": "Register Allocation via Graph Coloring",
+      "prompt": "Given variables `a`, `b`, `c`, and `d` with interference edges between `a-b`, `b-c`, and `c-d`, how can you allocate registers if only two registers are available?",
+      "steps": [
+        {
+          "text": "Create an interference graph with nodes `a`, `b`, `c`, and `d`."
+        },
+        {
+          "text": "Add edges between `a-b`, `b-c`, and `c-d`."
+        },
+        {
+          "text": "Attempt to color the graph using two colors (representing two registers)."
+        },
+        {
+          "text": "Assign colors: `a` and `c` can share a register, while `b` and `d` can share another."
+        }
+      ],
+      "answer": "Assign `a` and `c` to Register 1, `b` and `d` to Register 2."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Spilling",
+      "text": "Spilling occurs when there are not enough registers to hold all the variables, forcing some variables to be stored in slower memory."
+    },
+    {
+      "type": "text",
+      "markdown": "Spilling is a performance bottleneck because accessing memory is significantly slower than accessing registers. Effective register allocation aims to minimize spilling."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Concept",
+        "Description"
+      ],
+      "rows": [
+        [
+          "Instruction Selection",
+          "Mapping IR to machine instructions"
+        ],
+        [
+          "Register Allocation",
+          "Assigning variables to registers"
+        ],
+        [
+          "Graph Coloring",
+          "Modeling register allocation as a coloring problem"
+        ],
+        [
+          "Spilling",
+          "Using memory when registers are insufficient"
+        ]
+      ],
+      "caption": "Key Concepts in Instruction Selection and Register Allocation"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Instruction selection maps IR to machine instructions.",
+        "Register allocation is modeled as a graph coloring problem.",
+        "Spilling occurs when registers are insufficient, affecting performance."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-compilers.code-generation.instruction-selection.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "id": "ug.cs-databases.sql.aggregation.lesson",
+  "subtopicId": "ug.cs-databases.sql.aggregation",
+  "title": "Aggregation and Grouping in SQL",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-databases.sql.aggregation.o1",
+    "ug.cs-databases.sql.aggregation.o2",
+    "ug.cs-databases.sql.aggregation.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Ever wondered how to calculate the total sales per region or the average salary per department? SQL's aggregation and grouping features make this possible."
+    },
+    {
+      "type": "text",
+      "markdown": "In SQL, aggregation functions like COUNT, SUM, and AVG allow us to perform calculations on multiple rows of a table. When combined with the GROUP BY clause, these functions enable us to summarize data into meaningful insights."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Aggregate Functions",
+      "text": "Aggregate functions perform a calculation on a set of values and return a single value. Common aggregate functions include COUNT, SUM, AVG, MIN, and MAX."
+    },
+    {
+      "type": "text",
+      "markdown": "Let's explore how these functions work. Consider a table `Sales` with columns `Region`, `Product`, and `Amount`. To find the total sales per region, we use the `SUM` function with `GROUP BY`."
+    },
+    {
+      "type": "math",
+      "latex": "SELECT Region, SUM(Amount) AS TotalSales FROM Sales GROUP BY Region;",
+      "caption": "SQL query to calculate total sales per region."
+    },
+    {
+      "type": "worked_example",
+      "title": "Calculating Average Salary by Department",
+      "prompt": "Given a table `Employees` with columns `Department` and `Salary`, write a query to find the average salary for each department.",
+      "steps": [
+        {
+          "text": "Identify the columns involved: `Department` and `Salary`."
+        },
+        {
+          "text": "Use the `AVG` function to calculate the average salary.",
+          "latex": "SELECT Department, AVG(Salary) AS AvgSalary FROM Employees GROUP BY Department;"
+        }
+      ],
+      "answer": "SELECT Department, AVG(Salary) AS AvgSalary FROM Employees GROUP BY Department;"
+    },
+    {
+      "type": "text",
+      "markdown": "The `HAVING` clause is used to filter groups based on aggregate values, unlike `WHERE`, which filters rows before aggregation."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "WHERE vs HAVING",
+      "text": "`WHERE` filters rows before aggregation, while `HAVING` filters groups after aggregation."
+    },
+    {
+      "type": "worked_example",
+      "title": "Filtering with HAVING",
+      "prompt": "Write a query to find regions with total sales greater than 1000 from the `Sales` table.",
+      "steps": [
+        {
+          "text": "Calculate total sales per region using `SUM` and `GROUP BY`."
+        },
+        {
+          "text": "Use `HAVING` to filter regions with total sales greater than 1000.",
+          "latex": "SELECT Region, SUM(Amount) AS TotalSales FROM Sales GROUP BY Region HAVING SUM(Amount) > 1000;"
+        }
+      ],
+      "answer": "SELECT Region, SUM(Amount) AS TotalSales FROM Sales GROUP BY Region HAVING SUM(Amount) > 1000;"
+    },
+    {
+      "type": "text",
+      "markdown": "Aggregate functions handle `NULL` values by ignoring them. For example, `AVG` calculates the average of non-null values only."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Handling NULLs",
+      "text": "Be aware that aggregate functions ignore `NULL` values, which can affect calculations if not accounted for."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Aggregate functions like COUNT, SUM, and AVG summarize data.",
+        "GROUP BY organizes data into groups, and HAVING filters these groups.",
+        "NULL values are ignored by aggregate functions."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-databases.sql.aggregation.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

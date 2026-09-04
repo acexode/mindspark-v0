@@ -1,0 +1,131 @@
+{
+  "id": "ug.cs-programming-fundamentals.object-oriented.encapsulation.lesson",
+  "subtopicId": "ug.cs-programming-fundamentals.object-oriented.encapsulation",
+  "title": "Encapsulation and Invariants",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-programming-fundamentals.object-oriented.encapsulation.o1",
+    "ug.cs-programming-fundamentals.object-oriented.encapsulation.o2",
+    "ug.cs-programming-fundamentals.object-oriented.encapsulation.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine a world where anyone could directly change the internal state of your objects, potentially breaking their intended functionality. How can we prevent this chaos?"
+    },
+    {
+      "type": "text",
+      "markdown": "Encapsulation is a fundamental concept in object-oriented programming that helps protect the internal state of an object. By bundling the data (state) and the methods (operations) that operate on the data into a single unit, we can control how the data is accessed and modified. This is achieved through the use of class invariants and visibility modifiers."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Class Invariant",
+      "text": "A class invariant is a condition that must always hold true for an object of the class, except during the execution of a method."
+    },
+    {
+      "type": "text",
+      "markdown": "A class invariant is typically established by the constructor of the class and is maintained by ensuring that all methods preserve the invariant. This ensures that the object remains in a valid state throughout its lifetime."
+    },
+    {
+      "type": "worked_example",
+      "title": "Establishing a Class Invariant",
+      "prompt": "Consider a class `Rectangle` that represents a rectangle with a width and a height. The invariant is that both width and height must be positive.",
+      "steps": [
+        {
+          "text": "Define the class `Rectangle` with private attributes for width and height."
+        },
+        {
+          "text": "Use a constructor to initialize the width and height, ensuring they are positive."
+        },
+        {
+          "text": "Provide methods to access and modify the width and height, ensuring they maintain the invariant."
+        }
+      ],
+      "answer": "```java\npublic class Rectangle {\n    private double width;\n    private double height;\n\n    public Rectangle(double width, double height) {\n        if (width <= 0 || height <= 0) {\n            throw new IllegalArgumentException(\"Width and height must be positive.\");\n        }\n        this.width = width;\n        this.height = height;\n    }\n\n    public double getWidth() {\n        return width;\n    }\n\n    public void setWidth(double width) {\n        if (width <= 0) {\n            throw new IllegalArgumentException(\"Width must be positive.\");\n        }\n        this.width = width;\n    }\n\n    public double getHeight() {\n        return height;\n    }\n\n    public void setHeight(double height) {\n        if (height <= 0) {\n            throw new IllegalArgumentException(\"Height must be positive.\");\n        }\n        this.height = height;\n    }\n}\n```"
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Visibility Modifiers",
+      "text": "Visibility modifiers such as `private`, `protected`, and `public` control access to class members. Use them to enforce encapsulation."
+    },
+    {
+      "type": "text",
+      "markdown": "By marking class attributes as `private`, we prevent external code from directly accessing and modifying them. Instead, access is controlled through public methods, which can enforce the class invariant."
+    },
+    {
+      "type": "worked_example",
+      "title": "Using Visibility Modifiers",
+      "prompt": "Modify the `Rectangle` class to demonstrate how visibility modifiers protect its invariant.",
+      "steps": [
+        {
+          "text": "Ensure width and height are private."
+        },
+        {
+          "text": "Provide public methods to access and modify width and height."
+        },
+        {
+          "text": "Ensure these methods maintain the invariant."
+        }
+      ],
+      "answer": "```java\n// The Rectangle class already uses visibility modifiers correctly.\n// Width and height are private, and public methods ensure the invariant.\n```"
+    },
+    {
+      "type": "text",
+      "markdown": "Returning a reference to internal mutable state can break encapsulation. If external code modifies this state, it can violate the class invariant."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Danger of Returning Mutable References",
+      "text": "Avoid returning references to mutable internal objects. Instead, return copies or immutable views."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Visibility Modifier",
+        "Access Level"
+      ],
+      "rows": [
+        [
+          "private",
+          "Accessible only within the class"
+        ],
+        [
+          "protected",
+          "Accessible within the package and subclasses"
+        ],
+        [
+          "public",
+          "Accessible from any other class"
+        ]
+      ],
+      "caption": "Comparison of Visibility Modifiers"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Encapsulation protects the internal state of an object.",
+        "Class invariants ensure an object remains in a valid state.",
+        "Visibility modifiers control access to class members."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-programming-fundamentals.object-oriented.encapsulation.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "id": "ug.cs-algorithm-design.amortised-analysis.amortised-methods.lesson",
+  "subtopicId": "ug.cs-algorithm-design.amortised-analysis.amortised-methods",
+  "title": "Aggregate, Accounting and Potential Methods",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-algorithm-design.amortised-analysis.amortised-methods.o1",
+    "ug.cs-algorithm-design.amortised-analysis.amortised-methods.o2",
+    "ug.cs-algorithm-design.amortised-analysis.amortised-methods.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine you have a data structure that sometimes takes a long time to update. How can we analyze its performance over time to ensure it's efficient overall?"
+    },
+    {
+      "type": "text",
+      "markdown": "Amortised analysis is a technique used to average the cost of operations over a sequence of operations, rather than focusing on the worst-case scenario of a single operation. This approach provides a more realistic measure of an algorithm's efficiency in practice."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Amortised Analysis",
+      "text": "Amortised analysis is a method used to determine the average time per operation over a worst-case sequence of operations."
+    },
+    {
+      "type": "text",
+      "markdown": "In this lesson, we will explore three methods of amortised analysis: the aggregate method, the accounting method, and the potential method. Each method offers a different perspective on how to distribute the cost of operations."
+    },
+    {
+      "type": "text",
+      "markdown": "### Aggregate Method\nThe aggregate method involves calculating the total cost of a sequence of operations and then dividing by the number of operations to find the average cost per operation."
+    },
+    {
+      "type": "worked_example",
+      "title": "Aggregate Method Example",
+      "prompt": "Consider a dynamic array that doubles in size whenever it is full. Analyze the amortised cost of inserting $n$ elements.",
+      "steps": [
+        {
+          "text": "The cost of inserting an element is 1, unless the array is full, in which case it costs $n$ to resize and then 1 to insert."
+        },
+        {
+          "text": "Over $n$ insertions, the array resizes approximately $\\log n$ times, each costing $n$."
+        },
+        {
+          "text": "The total cost is $n + n \\log n$. The amortised cost is $\\frac{n + n \\log n}{n} = 1 + \\log n$."
+        }
+      ],
+      "answer": "The amortised cost per insertion is $1 + \\log n$."
+    },
+    {
+      "type": "text",
+      "markdown": "### Accounting Method\nThe accounting method assigns a 'credit' to each operation, which can be thought of as prepaying for future expensive operations."
+    },
+    {
+      "type": "worked_example",
+      "title": "Accounting Method Example",
+      "prompt": "Use the accounting method to analyze the cost of inserting elements into a dynamic array that doubles in size.",
+      "steps": [
+        {
+          "text": "Assign a credit of 3 to each insertion operation."
+        },
+        {
+          "text": "Normal insertions cost 1, leaving 2 credits for future resizing."
+        },
+        {
+          "text": "When resizing occurs, we use the accumulated credits to pay for the expensive operation."
+        }
+      ],
+      "answer": "The amortised cost per insertion is 3."
+    },
+    {
+      "type": "text",
+      "markdown": "### Potential Method\nThe potential method involves defining a potential function that captures the 'stored energy' of the data structure, which can be used to pay for future operations."
+    },
+    {
+      "type": "math",
+      "latex": "\\Phi(D) = \\text{potential of data structure } D",
+      "caption": "Potential function definition"
+    },
+    {
+      "type": "text",
+      "markdown": "The amortised cost of an operation is given by: \n\n$$ \\text{Amortised Cost} = \\text{Actual Cost} + \\Delta \\Phi $$\n\nwhere $\\Delta \\Phi$ is the change in potential."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Method",
+        "Concept",
+        "Use Case"
+      ],
+      "rows": [
+        [
+          "Aggregate",
+          "Total cost / number of operations",
+          "Simple sequences"
+        ],
+        [
+          "Accounting",
+          "Credits for future operations",
+          "Predictable future costs"
+        ],
+        [
+          "Potential",
+          "Potential function change",
+          "Complex state changes"
+        ]
+      ],
+      "caption": "Comparison of Amortised Analysis Methods"
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Choosing a Method",
+      "text": "The choice of method depends on the problem context and the nature of operations. Aggregate is simplest, but accounting and potential are more flexible for complex scenarios."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Amortised analysis provides an average cost per operation over a sequence.",
+        "The aggregate method is straightforward but limited to simple cases.",
+        "The accounting method uses credits to manage costs.",
+        "The potential method uses a potential function to capture state changes."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-algorithm-design.amortised-analysis.amortised-methods.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

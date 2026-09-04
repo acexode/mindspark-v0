@@ -10,10 +10,11 @@ describe("content index cache", () => {
     expect(first.lessonBySubtopicId.size).toBeGreaterThan(0);
   });
 
+  /** Two uncached full parses of the whole corpus — I/O bound, and the corpus keeps growing. */
   it("buildContentIndex still returns a fresh object for scripts", () => {
     const a = buildContentIndex();
     const b = buildContentIndex();
     expect(a).not.toBe(b);
     expect(a.questionById.size).toBe(b.questionById.size);
-  });
+  }, 30_000);
 });

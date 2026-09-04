@@ -1,0 +1,109 @@
+{
+  "id": "ug.cs-logic-and-reasoning.reasoning-about-programs.loop-invariants.lesson",
+  "subtopicId": "ug.cs-logic-and-reasoning.reasoning-about-programs.loop-invariants",
+  "title": "Loop Invariants",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-logic-and-reasoning.reasoning-about-programs.loop-invariants.o1",
+    "ug.cs-logic-and-reasoning.reasoning-about-programs.loop-invariants.o2",
+    "ug.cs-logic-and-reasoning.reasoning-about-programs.loop-invariants.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Have you ever wondered how we can be sure a loop in a program will always do what we expect? Loop invariants are the key to proving correctness."
+    },
+    {
+      "type": "text",
+      "markdown": "In computer science, a loop invariant is a condition that holds true before and after each iteration of a loop. Understanding loop invariants is crucial for reasoning about the correctness of loops in programs. This lesson will guide you through the process of identifying and using loop invariants to ensure that a loop achieves its intended postcondition."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Loop Invariant",
+      "text": "A loop invariant is a logical assertion that remains true before and after each execution of a loop's body."
+    },
+    {
+      "type": "text",
+      "markdown": "To prove a loop correct, we need to establish a loop invariant that holds at three critical points: before the loop starts, after each iteration, and when the loop terminates. Additionally, we need a variant, a function that decreases with each iteration, to show that the loop will eventually terminate."
+    },
+    {
+      "type": "math",
+      "latex": "I: \\text{Loop Invariant}, \\quad V: \\text{Variant}",
+      "caption": "Symbols for Loop Invariant and Variant"
+    },
+    {
+      "type": "worked_example",
+      "title": "Example: Sum of First n Natural Numbers",
+      "prompt": "Consider a loop that calculates the sum of the first $n$ natural numbers. Identify a suitable loop invariant.",
+      "steps": [
+        {
+          "text": "Initialize the sum $S = 0$ and counter $i = 1$. The loop invariant $I$ is that $S = \\frac{i(i-1)}{2}$ at the start of each iteration."
+        },
+        {
+          "text": "Before the loop starts, $i = 1$ and $S = 0$. The invariant holds because $\\frac{1(1-1)}{2} = 0$."
+        },
+        {
+          "text": "Assume the invariant holds at the start of an iteration. After executing the loop body, $S = S + i$ and $i = i + 1$."
+        },
+        {
+          "text": "Substitute $S = \\frac{i(i-1)}{2}$ into the loop body: $S + i = \\frac{i(i-1)}{2} + i = \\frac{i^2 - i + 2i}{2} = \\frac{i(i+1)}{2}$."
+        },
+        {
+          "text": "The invariant holds for the next iteration with $i = i + 1$. Thus, the invariant is preserved."
+        }
+      ],
+      "answer": "The loop invariant $S = \\frac{i(i-1)}{2}$ is preserved throughout the loop."
+    },
+    {
+      "type": "text",
+      "markdown": "A loop invariant helps ensure that a loop's postcondition is met. However, to guarantee termination, we also need a variant. A variant is a non-negative integer expression that decreases with each iteration and is zero when the loop terminates."
+    },
+    {
+      "type": "worked_example",
+      "title": "Example: Loop Termination",
+      "prompt": "For the same loop calculating the sum of the first $n$ natural numbers, identify a suitable variant.",
+      "steps": [
+        {
+          "text": "The loop continues while $i \\leq n$. A suitable variant $V$ is $n - i + 1$."
+        },
+        {
+          "text": "Initially, $V = n - 1 + 1 = n$. After each iteration, $i$ is incremented, so $V$ decreases by 1."
+        },
+        {
+          "text": "When $i = n + 1$, $V = n - (n + 1) + 1 = 0$. The loop terminates."
+        }
+      ],
+      "answer": "The variant $V = n - i + 1$ ensures the loop terminates."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Key Points",
+      "text": "1. A loop invariant must hold before and after each iteration. 2. A variant ensures the loop terminates by decreasing with each iteration."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Loop invariants are essential for proving the correctness of loops.",
+        "A variant is necessary to demonstrate that a loop will terminate."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-logic-and-reasoning.reasoning-about-programs.loop-invariants.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

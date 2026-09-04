@@ -1,0 +1,113 @@
+{
+  "id": "ug.cs-operating-systems.memory-management.virtual-memory.lesson",
+  "subtopicId": "ug.cs-operating-systems.memory-management.virtual-memory",
+  "title": "Virtual Memory and Replacement",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-operating-systems.memory-management.virtual-memory.o1",
+    "ug.cs-operating-systems.memory-management.virtual-memory.o2",
+    "ug.cs-operating-systems.memory-management.virtual-memory.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine your computer running multiple applications smoothly, each believing it has access to a vast memory space. How is this illusion maintained?"
+    },
+    {
+      "type": "text",
+      "markdown": "Virtual memory allows each process to believe it has access to a large, contiguous block of memory, even if the physical memory is much smaller. This is achieved through a combination of hardware and software techniques, primarily involving demand paging and page replacement algorithms."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Virtual Memory",
+      "text": "Virtual memory is a memory management capability that provides an 'idealized abstraction of the storage resources' that are actually available on a given machine."
+    },
+    {
+      "type": "text",
+      "markdown": "When a process accesses a page that is not currently in physical memory, a page fault occurs. The operating system must then load the required page from disk into memory, possibly replacing another page. Let's explore this sequence of events in detail."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Page Fault Sequence",
+      "text": "1. Process attempts to access a page not in physical memory.\n2. Hardware traps to the operating system.\n3. OS checks if the access is valid and finds a free frame.\n4. If no free frame, a page replacement algorithm is used.\n5. The required page is read from disk into the frame.\n6. Page table is updated.\n7. Instruction is restarted."
+    },
+    {
+      "type": "text",
+      "markdown": "Page replacement algorithms are crucial for managing which pages to keep in memory and which to swap out. We'll examine three common algorithms: FIFO (First-In-First-Out), LRU (Least Recently Used), and Optimal Replacement."
+    },
+    {
+      "type": "worked_example",
+      "title": "Applying FIFO Replacement",
+      "prompt": "Consider a reference string: 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, and 3 frames available. Apply FIFO replacement and count the page faults.",
+      "steps": [
+        {
+          "text": "Initialize the frames: [_, _, _]."
+        },
+        {
+          "text": "Process the reference string step-by-step. Replace the oldest page when a new page is needed."
+        },
+        {
+          "text": "Count page faults: 7, 0, 1 are loaded (3 faults), 2 replaces 7 (4th fault), 0 already in frame, 3 replaces 0 (5th fault), 0 replaces 1 (6th fault), 4 replaces 2 (7th fault), and so on."
+        }
+      ],
+      "answer": "The total number of page faults using FIFO is 9."
+    },
+    {
+      "type": "worked_example",
+      "title": "Applying LRU Replacement",
+      "prompt": "Using the same reference string: 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, apply LRU replacement with 3 frames and count the page faults.",
+      "steps": [
+        {
+          "text": "Initialize the frames: [_, _, _]."
+        },
+        {
+          "text": "Process the reference string, replacing the least recently used page when needed."
+        },
+        {
+          "text": "Count page faults: 7, 0, 1 are loaded (3 faults), 2 replaces 7 (4th fault), 0 already in frame, 3 replaces 1 (5th fault), 0 already in frame, 4 replaces 2 (6th fault), and so on."
+        }
+      ],
+      "answer": "The total number of page faults using LRU is 8."
+    },
+    {
+      "type": "text",
+      "markdown": "The optimal page replacement algorithm, though impractical for real-time use, serves as a benchmark. It replaces the page that will not be used for the longest period of time in the future."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Thrashing",
+      "text": "Thrashing occurs when a system spends more time swapping pages in and out of memory than executing instructions. This can severely degrade performance."
+    },
+    {
+      "type": "text",
+      "markdown": "The working set model helps to mitigate thrashing by maintaining a set of pages that a process is currently using. If the working set cannot fit in memory, the system may need to reduce the multiprogramming level."
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-operating-systems.memory-management.virtual-memory.q001"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Page faults trigger a sequence of events to load pages into memory.",
+        "Different page replacement algorithms affect the number of page faults.",
+        "Thrashing can be mitigated by managing the working set of pages."
+      ]
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

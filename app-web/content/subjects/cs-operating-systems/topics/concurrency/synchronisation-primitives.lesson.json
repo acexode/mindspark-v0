@@ -1,0 +1,118 @@
+{
+  "id": "ug.cs-operating-systems.concurrency.synchronisation-primitives.lesson",
+  "subtopicId": "ug.cs-operating-systems.concurrency.synchronisation-primitives",
+  "title": "Locks, Semaphores, and Monitors",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-operating-systems.concurrency.synchronisation-primitives.o1",
+    "ug.cs-operating-systems.concurrency.synchronisation-primitives.o2",
+    "ug.cs-operating-systems.concurrency.synchronisation-primitives.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine two threads trying to update a shared bank account balance simultaneously. How do we ensure that the final balance is correct?"
+    },
+    {
+      "type": "text",
+      "markdown": "In concurrent programming, multiple threads or processes often need to access shared resources. Without proper coordination, this can lead to race conditions, where the outcome depends on the non-deterministic timing of thread execution. Synchronization primitives like locks, semaphores, and monitors help manage access to these shared resources, ensuring data consistency and integrity."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Mutex (Mutual Exclusion)",
+      "text": "A mutex is a synchronization primitive that allows only one thread to access a critical section at a time. It ensures mutual exclusion by locking the critical section until the thread completes its operation."
+    },
+    {
+      "type": "text",
+      "markdown": "The primary purpose of a mutex is to protect critical sections of code where shared data is accessed or modified. When a thread locks a mutex, other threads attempting to lock it will block until the mutex is unlocked."
+    },
+    {
+      "type": "worked_example",
+      "title": "Using a Mutex to Protect a Critical Section",
+      "prompt": "Consider a scenario where two threads increment a shared counter. Demonstrate how a mutex can be used to ensure correct operation.",
+      "steps": [
+        {
+          "text": "Initialize the counter to 0 and create a mutex."
+        },
+        {
+          "text": "Thread 1 locks the mutex before incrementing the counter."
+        },
+        {
+          "text": "Thread 1 increments the counter and unlocks the mutex."
+        },
+        {
+          "text": "Thread 2 attempts to lock the mutex, waits if it's locked, then increments the counter once unlocked."
+        }
+      ],
+      "answer": "By using a mutex, only one thread can increment the counter at a time, preventing race conditions and ensuring the final counter value is correct."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Semaphore",
+      "text": "A semaphore is a synchronization primitive that can control access to a resource pool. It maintains a count, which represents the number of available resources."
+    },
+    {
+      "type": "text",
+      "markdown": "Semaphores are often used in producer-consumer problems, where producers add to a resource pool and consumers remove from it. The semaphore count increases when a resource is added and decreases when a resource is removed."
+    },
+    {
+      "type": "worked_example",
+      "title": "Solving a Producer-Consumer Problem with Semaphores",
+      "prompt": "Demonstrate how semaphores can be used to solve a producer-consumer problem with a buffer size of 5.",
+      "steps": [
+        {
+          "text": "Initialize a semaphore `empty` to 5 (buffer size) and `full` to 0."
+        },
+        {
+          "text": "Producer waits on `empty`, produces an item, adds it to the buffer, and signals `full`."
+        },
+        {
+          "text": "Consumer waits on `full`, removes an item from the buffer, and signals `empty`."
+        }
+      ],
+      "answer": "By using semaphores, the producer and consumer coordinate access to the buffer, ensuring it never overflows or underflows."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Monitor",
+      "text": "A monitor is a high-level synchronization construct that combines mutual exclusion and condition variables. It allows threads to wait for certain conditions to be true before proceeding."
+    },
+    {
+      "type": "text",
+      "markdown": "Monitors encapsulate shared variables, the procedures that operate on them, and the synchronization between threads. Condition variables within monitors allow threads to wait and be signaled when a condition changes."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Condition Variables",
+      "text": "Condition variables in monitors enable threads to wait for specific conditions to become true, allowing for more complex synchronization patterns than mutexes alone."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Mutexes provide mutual exclusion, ensuring only one thread accesses a critical section at a time.",
+        "Semaphores manage access to resource pools, useful in producer-consumer problems.",
+        "Monitors combine mutual exclusion and condition variables for complex synchronization."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-operating-systems.concurrency.synchronisation-primitives.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "id": "ug.cs-compilers.code-generation.loop-optimisation.lesson",
+  "subtopicId": "ug.cs-compilers.code-generation.loop-optimisation",
+  "title": "Loop and Global Optimisation",
+  "estimatedMinutes": 24,
+  "objectiveIds": [
+    "ug.cs-compilers.code-generation.loop-optimisation.o1",
+    "ug.cs-compilers.code-generation.loop-optimisation.o2",
+    "ug.cs-compilers.code-generation.loop-optimisation.o3"
+  ],
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "Imagine a program that spends 90% of its time in loops. Optimizing these loops can drastically improve performance. Let's explore how loop-invariant code motion, strength reduction, and loop unrolling can help."
+    },
+    {
+      "type": "text",
+      "markdown": "Loop optimization is a crucial aspect of code generation aimed at improving the performance of programs. By focusing on loops, which are often the most time-consuming parts of a program, we can achieve significant performance gains. In this lesson, we will explore three key techniques: loop-invariant code motion, strength reduction, and loop unrolling."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Loop-Invariant Code Motion",
+      "text": "Loop-invariant code motion is an optimization technique that moves computations that do not change within the loop outside of it, reducing the number of operations performed during each iteration."
+    },
+    {
+      "type": "text",
+      "markdown": "A computation is loop-invariant if its result does not change throughout the iterations of the loop. By moving such computations outside the loop, we can reduce the number of times they are executed."
+    },
+    {
+      "type": "worked_example",
+      "title": "Moving Loop-Invariant Code",
+      "prompt": "Consider the following loop:\n```\nfor (int i = 0; i < n; i++) {\n    int x = a * b;\n    arr[i] = x + i;\n}\n```\nIdentify and move the loop-invariant computation.",
+      "steps": [
+        {
+          "text": "Identify loop-invariant computation: `int x = a * b;` is invariant because `a` and `b` do not change within the loop."
+        },
+        {
+          "text": "Move the invariant computation outside the loop:\n```\nint x = a * b;\nfor (int i = 0; i < n; i++) {\n    arr[i] = x + i;\n}\n```"
+        }
+      ],
+      "answer": "The computation `int x = a * b;` is moved outside the loop."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Strength Reduction",
+      "text": "Strength reduction is an optimization technique that replaces expensive operations with equivalent but less costly operations, often applied to loop induction variables."
+    },
+    {
+      "type": "worked_example",
+      "title": "Applying Strength Reduction",
+      "prompt": "Consider the loop:\n```\nfor (int i = 0; i < n; i++) {\n    arr[i] = i * 2;\n}\n```\nApply strength reduction to optimize the multiplication.",
+      "steps": [
+        {
+          "text": "Recognize that multiplication by 2 can be replaced by addition."
+        },
+        {
+          "text": "Introduce a new variable to accumulate the result:\n```\nint x = 0;\nfor (int i = 0; i < n; i++) {\n    arr[i] = x;\n    x += 2;\n}\n```"
+        }
+      ],
+      "answer": "The multiplication `i * 2` is replaced with an addition `x += 2`."
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Trade-off in Loop Unrolling",
+      "text": "Loop unrolling increases the size of the code by replicating the loop body multiple times, which can improve speed by reducing loop overhead but may increase code size significantly."
+    },
+    {
+      "type": "text",
+      "markdown": "Loop unrolling is a technique where the loop body is replicated multiple times to decrease the overhead of loop control. However, this can lead to larger code size, which may not always be desirable, especially in memory-constrained environments."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Optimization Technique",
+        "Benefit",
+        "Drawback"
+      ],
+      "rows": [
+        [
+          "Loop-Invariant Code Motion",
+          "Reduces redundant computations",
+          "Requires analysis to identify invariants"
+        ],
+        [
+          "Strength Reduction",
+          "Replaces costly operations with cheaper ones",
+          "May introduce additional variables"
+        ],
+        [
+          "Loop Unrolling",
+          "Reduces loop control overhead",
+          "Increases code size"
+        ]
+      ],
+      "caption": "Comparison of Loop Optimization Techniques"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Loop-invariant code motion moves computations outside the loop to reduce redundant operations.",
+        "Strength reduction replaces expensive operations with cheaper equivalents, often using addition instead of multiplication.",
+        "Loop unrolling trades off increased code size for decreased loop control overhead, potentially improving speed."
+      ]
+    },
+    {
+      "type": "check",
+      "questionId": "ug.cs-compilers.code-generation.loop-optimisation.q001"
+    }
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "id": "openai-curriculum-pack",
+        "title": "Mindspark OpenAI curriculum pack",
+        "type": "authored"
+      }
+    ],
+    "reviewStatus": "published",
+    "verified": false,
+    "note": "Authored with OpenAI against the international undergraduate consensus core (the courses MIT, Cambridge and Imperial all teach). Synthesised, not transcribed from any institution's materials."
+  }
+}
