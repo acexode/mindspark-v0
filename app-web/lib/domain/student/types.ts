@@ -38,6 +38,18 @@ export interface StudentProfile {
   lastVisited: Record<string, string>;
   /** Best topic-practice accuracy (0–100), keyed by topic ID. Unlocks the next topic at 50%. */
   topicPracticeBest: Record<string, number>;
+  /**
+   * Question IDs already answered, keyed by subtopic ID. Practice draws from
+   * unanswered questions first so a large bank is worked through rather than
+   * resampled forever, and so coverage can be reported honestly.
+   */
+  answeredQuestionIds: Record<string, string[]>;
+  /**
+   * Subtopics the student has actually opened a lesson for, as ISO timestamps.
+   * Topic-level practice is scoped to these — a student should not be asked
+   * about a subtopic they have not reached yet.
+   */
+  visitedSubtopicIds: Record<string, string>;
   /** Accumulated study minutes per course (subject id). Undergraduate only. */
   studyMinutes: Record<string, number>;
   /** ISO timestamp of last activity per course (subject id). Undergraduate only. */
@@ -67,6 +79,8 @@ export const DEFAULT_STUDENT_PROFILE: StudentProfile = {
   mastery: {},
   lastVisited: {},
   topicPracticeBest: {},
+  answeredQuestionIds: {},
+  visitedSubtopicIds: {},
   studyMinutes: {},
   lastStudiedAt: {},
   accessibilityPreferences: DEFAULT_ACCESSIBILITY,

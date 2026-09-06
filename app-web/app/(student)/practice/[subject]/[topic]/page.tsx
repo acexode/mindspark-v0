@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import {
   getQuestions,
-  getQuestionsForTopic,
   idSlug,
   resolveSubjectSlug,
   resolveSubtopicSlug,
@@ -12,6 +11,7 @@ import { classLevelsForSubtopic, filterQuestionsByClass, isClassVisible, isTopic
 import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { experienceFor } from "@/lib/domain/student/experience";
+import { answeredIdsFor, coverageOf, coveredSubtopicIds, partitionByAnswered } from "@/lib/domain/student/coverage";
 import { PracticeSession } from "@/features/practice/components/practice-session";
 import { EmptyState } from "@/components/ui/empty-state";
 
@@ -56,14 +56,46 @@ export default async function TopicPracticePage({
   }
   const subtopic = subtopicSlug ? resolveSubtopicSlug(topic, subtopicSlug) : null;
   if (subtopic && !isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) notFound();
-  const questions = filterQuestionsByClass(
-    subtopic ? getQuestions(subtopic.id) : getQuestionsForTopic(topic.id),
+
+  /**
+   * Practising a whole topic draws only on subtopics the student has actually
+   * reached. Asking about later subtopics of a topic they have just started is
+   * both discouraging and useless as mastery evidence. Choosing one subtopic
+   * explicitly is always honoured.
+   */
+  const topicSubtopicIds = topic.subtopics.map((entry) => entry.id);
+  const covered = subtopic ? [subtopic.id] : coveredSubtopicIds(profile, topicSubtopicIds);
+
+  if (!subtopic && covered.length === 0) {
+    const first = topic.subtopics[0];
+    return (
+      <section className="page">
+        <EmptyState
+          title={`Study ${topic.name} before practising it`}
+          description="Practice covers the subtopics you have already worked through. Open the first lesson and come back."
+          actionLabel={first ? `Start ${first.name}` : `Back to ${topic.name}`}
+          actionHref={
+            first
+              ? (`/learn/${subjectSlug}/${topicSlug}/${idSlug(first.id)}` as never)
+              : (`/library/${subjectSlug}/${topicSlug}` as never)
+          }
+        />
+      </section>
+    );
+  }
+
+  const allQuestions = filterQuestionsByClass(
+    covered.flatMap((id) => getQuestions(id)),
     subject,
     profile.classLevel,
   );
+  const answered = answeredIdsFor(profile.answeredQuestionIds, covered);
+  const coverage = coverageOf(answered, allQuestions.map((question) => question.id));
+  /** Unseen questions first; once the bank is exhausted it reopens for revision. */
+  const { questions, revisiting } = partitionByAnswered(allQuestions, answered);
   const scopeLabel = subtopic ? `${subject.name} · ${subtopic.name}` : `${subject.name} · ${topic.name}`;
 
-  if (questions.length === 0) {
+  if (allQuestions.length === 0) {
     return (
       <section className="page">
         <EmptyState
@@ -91,6 +123,8 @@ export default async function TopicPracticePage({
         subjectSlug={idSlug(subject.id)}
         sessionLength={experience.practiceSessionLength}
         gamified={experience.gamification}
+        coverage={coverage}
+        revisiting={revisiting}
         checkpointTopicId={isCheckpoint ? topic.id : undefined}
         nextTopicName={isCheckpoint ? (nextTopic?.name ?? null) : undefined}
       />

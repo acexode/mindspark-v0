@@ -7,6 +7,7 @@ import { gradeAnswer, type SubmittedAnswer } from "@/lib/domain/assessment/gradi
 import { applyEvidence, getRecord } from "@/lib/domain/mastery/mastery";
 import { TOPIC_PRACTICE_UNLOCK_PERCENT } from "@/lib/domain/mastery/progression";
 import type { StudentProfile } from "@/lib/domain/student/types";
+import { recordAnswered } from "@/lib/domain/student/coverage";
 import { readProfileOrDefault, resetProfile, updateProfile, writeProfile } from "@/lib/server/profile/store";
 
 export interface OnboardingInput {
@@ -173,6 +174,7 @@ export async function submitAnswer(
     ...profile,
     xp: profile.xp + update.xpAwarded,
     mastery: { ...profile.mastery, [question.subtopicId]: update.record },
+    answeredQuestionIds: recordAnswered(profile.answeredQuestionIds, question.subtopicId, question.id),
     lastActiveDate: new Date().toISOString().slice(0, 10),
   });
 
@@ -194,6 +196,7 @@ export async function recordLessonVisit(subjectId: string, subtopicId: string): 
   await updateProfile((current) => ({
     ...current,
     lastVisited: { ...current.lastVisited, [subjectId]: subtopicId },
+    visitedSubtopicIds: { ...current.visitedSubtopicIds, [subtopicId]: new Date().toISOString() },
     lastStudiedAt: { ...current.lastStudiedAt, [subjectId]: new Date().toISOString() },
     lastActiveDate: new Date().toISOString().slice(0, 10),
   }));

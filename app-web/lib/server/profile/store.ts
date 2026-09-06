@@ -45,6 +45,8 @@ export async function readProfile(): Promise<StudentProfile | null> {
         ...DEFAULT_STUDENT_PROFILE,
         ...profile,
         topicPracticeBest: profile.topicPracticeBest ?? {},
+        answeredQuestionIds: profile.answeredQuestionIds ?? {},
+        visitedSubtopicIds: profile.visitedSubtopicIds ?? {},
         studyMinutes: profile.studyMinutes ?? {},
         lastStudiedAt: profile.lastStudiedAt ?? {},
       }

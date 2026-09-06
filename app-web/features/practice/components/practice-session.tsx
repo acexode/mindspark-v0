@@ -27,6 +27,10 @@ interface PracticeSessionProps {
   nextTopicName?: string | null;
   /** XP totals and score celebrations. Off for undergraduates. */
   gamified?: boolean;
+  /** How much of this scope's bank the student has answered at least once. */
+  coverage?: { answered: number; total: number; percent: number; complete: boolean };
+  /** True when every question has been seen and the bank has reopened for revision. */
+  revisiting?: boolean;
 }
 
 export function PracticeSession({
@@ -39,6 +43,8 @@ export function PracticeSession({
   checkpointTopicId,
   nextTopicName,
   gamified = true,
+  coverage,
+  revisiting = false,
 }: PracticeSessionProps) {
   const total = Math.min(sessionLength, questions.length);
   const [pool] = useState(() => shuffle(questions));
@@ -116,6 +122,14 @@ export function PracticeSession({
           )}
         </dl>
 
+        {coverage && coverage.total > 0 && (
+          <p className="coverage-note">
+            {revisiting
+              ? `You have answered all ${coverage.total} questions here at least once. These are repeats for revision.`
+              : `${Math.min(coverage.answered + scoredResults.length, coverage.total)} of ${coverage.total} questions in this topic practised.`}
+          </p>
+        )}
+
         {checkpointTopicId && results.length > 0 && (
           <p className={`checkpoint-note ${passed ? "is-passed" : ""}`}>
             {passed
@@ -148,9 +162,18 @@ export function PracticeSession({
           <span className="eyebrow">{scopeLabel}</span>
           <h1>{title}</h1>
         </div>
-        <p className="practice-counter">
-          Question {results.length + 1} of {total} · Difficulty {state.difficulty}
-        </p>
+        <div className="practice-counter">
+          <span>
+            Question {results.length + 1} of {total} · Difficulty {state.difficulty}
+          </span>
+          {coverage && coverage.total > 0 && (
+            <small>
+              {revisiting
+                ? `All ${coverage.total} questions covered — revising`
+                : `${coverage.answered} of ${coverage.total} practised`}
+            </small>
+          )}
+        </div>
       </header>
 
       <QuestionCard key={current.id} question={current} onAnswered={handleAnswered} />

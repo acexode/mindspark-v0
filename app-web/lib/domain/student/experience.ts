@@ -62,7 +62,7 @@ const SECONDARY: ExperienceConfig = {
   level: "secondary",
   progressionMode: "sequential",
   gamification: true,
-  practiceSessionLength: 8,
+  practiceSessionLength: 20,
   nav: SECONDARY_NAV,
   copy: { home: "Today", catalogue: "Library", container: "subject", module: "topic", unit: "subtopic" },
 };
