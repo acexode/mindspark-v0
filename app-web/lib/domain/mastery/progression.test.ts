@@ -5,6 +5,7 @@ import {
   currentTopic,
   effectivePracticeBest,
   isTopicCleared,
+  isTopicMastered,
   isTopicUnlocked,
   lockCopy,
   topicReadiness,
@@ -97,7 +98,53 @@ describe("topicReadiness", () => {
   });
 });
 
+describe("isTopicMastered", () => {
+  const topic = topics[0]!;
+
+  it("clears a topic whose every subtopic is mastered", () => {
+    const mastery: MasteryMap = {
+      s1a: { ...emptyRecord("s1a"), evidenceCount: 5, score: 90 },
+      s1b: { ...emptyRecord("s1b"), evidenceCount: 5, score: 80 },
+    };
+    expect(isTopicMastered(topic, mastery)).toBe(true);
+  });
+
+  it("does not clear a topic with an untouched subtopic", () => {
+    const mastery: MasteryMap = { s1a: { ...emptyRecord("s1a"), evidenceCount: 5, score: 95 } };
+    expect(isTopicMastered(topic, mastery)).toBe(false);
+  });
+
+  it("does not clear a topic attempted everywhere but scored poorly", () => {
+    const mastery: MasteryMap = {
+      s1a: { ...emptyRecord("s1a"), evidenceCount: 5, score: 30 },
+      s1b: { ...emptyRecord("s1b"), evidenceCount: 5, score: 20 },
+    };
+    expect(isTopicMastered(topic, mastery)).toBe(false);
+  });
+});
+
 describe("effectivePracticeBest", () => {
+  /**
+   * The reported bug: the checkpoint score is only written by a whole-topic
+   * session, but the lesson footer links to single-subtopic practice, so a
+   * student who mastered everything stayed locked out.
+   */
+  it("unlocks the next topic for a student who mastered every subtopic", () => {
+    const mastery: MasteryMap = {
+      s1a: { ...emptyRecord("s1a"), evidenceCount: 9, score: 95 },
+      s1b: { ...emptyRecord("s1b"), evidenceCount: 9, score: 92 },
+    };
+    const best = effectivePracticeBest(topics, mastery, {});
+    expect(best.t1).toBe(TOPIC_PRACTICE_UNLOCK_PERCENT);
+    expect(isTopicUnlocked(topics, "t2", best)).toBe(true);
+  });
+
+  it("keeps the next topic locked when the current one is only half done", () => {
+    const mastery: MasteryMap = { s1a: { ...emptyRecord("s1a"), evidenceCount: 9, score: 95 } };
+    const best = effectivePracticeBest(topics, mastery, {});
+    expect(isTopicUnlocked(topics, "t2", best)).toBe(false);
+  });
+
   it("grandfathers earlier topics when a later one was already started", () => {
     const mastery: MasteryMap = {
       s3a: { ...emptyRecord("s3a"), evidenceCount: 2, score: 30 },

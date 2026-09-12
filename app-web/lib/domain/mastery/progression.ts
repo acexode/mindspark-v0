@@ -36,9 +36,33 @@ export function isTopicCleared(topic: TopicProgressItem, practiceBest: Record<st
 }
 
 /**
- * Students who already practised a later topic before sequencing existed
- * should not be locked out of that work. Earlier topics are treated as
- * cleared so they can finish the furthest topic they have started.
+ * A topic is also cleared by demonstrated mastery, not only by a topic-level
+ * practice session.
+ *
+ * The checkpoint score is recorded exclusively by a whole-topic session, but
+ * the lesson footer sends students to single-subtopic practice. A student who
+ * read every lesson and practised every subtopic to mastery therefore stayed
+ * locked out of the next topic — they had proved far more than the gate asked
+ * for, through the route the product itself steers them down.
+ */
+export function isTopicMastered(topic: TopicProgressItem, mastery: MasteryMap): boolean {
+  if (topic.subtopicIds.length === 0) return false;
+  const everySubtopicAttempted = topic.subtopicIds.every((id) => getRecord(mastery, id).evidenceCount > 0);
+  if (!everySubtopicAttempted) return false;
+  const total = topic.subtopicIds.reduce((sum, id) => sum + getRecord(mastery, id).score, 0);
+  return Math.round(total / topic.subtopicIds.length) >= TOPIC_PRACTICE_UNLOCK_PERCENT;
+}
+
+/**
+ * The effective checkpoint score per topic, combining what was recorded with
+ * what the student has demonstrably earned:
+ *
+ *  - a topic mastered across all of its subtopics counts as cleared, and
+ *  - students who practised a later topic before sequencing existed are not
+ *    locked out of finishing it.
+ *
+ * Every gate reads through here, so crediting a topic in this one place keeps
+ * `isTopicUnlocked`, `blockingTopic` and the pickers consistent.
  */
 export function effectivePracticeBest(
   topics: readonly TopicProgressItem[],
@@ -51,6 +75,9 @@ export function effectivePracticeBest(
   topics.forEach((topic, index) => {
     const started = topic.subtopicIds.some((id) => getRecord(mastery, id).evidenceCount > 0);
     if (started) furthestStarted = index;
+    if (isTopicMastered(topic, mastery) && (best[topic.id] ?? 0) < TOPIC_PRACTICE_UNLOCK_PERCENT) {
+      best[topic.id] = TOPIC_PRACTICE_UNLOCK_PERCENT;
+    }
   });
 
   for (let index = 0; index < furthestStarted; index += 1) {
@@ -117,7 +144,7 @@ export function lockCopy(blocker: TopicProgressItem, practiceBest: Record<string
   if (best > 0) {
     return `Finish ${blocker.name} first. Score at least ${TOPIC_PRACTICE_UNLOCK_PERCENT}% in that topic’s practice — your best so far is ${best}%.`;
   }
-  return `Finish ${blocker.name} first. Score at least ${TOPIC_PRACTICE_UNLOCK_PERCENT}% in its practice to unlock this topic.`;
+  return `Finish ${blocker.name} first — either score at least ${TOPIC_PRACTICE_UNLOCK_PERCENT}% in that topic’s practice, or work through all of its subtopics.`;
 }
 
 /* --------------------------------------------------------------- readiness */
