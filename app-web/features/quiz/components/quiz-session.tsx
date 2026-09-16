@@ -15,13 +15,23 @@ interface QuizSessionProps {
   subjectSlug: string;
   questions: PublicQuestion[];
   durationSeconds: number;
+  /** Shown next to the timer, e.g. "Easy" — the pace the student chose before starting. */
+  difficultyLabel?: string;
   /** Score celebrations. Off for undergraduates. */
   gamified?: boolean;
 }
 
 type Answers = Record<string, { optionId?: string; value?: string }>;
 
-export function QuizSession({ title, subjectName, subjectSlug, questions, durationSeconds, gamified = true }: QuizSessionProps) {
+export function QuizSession({
+  title,
+  subjectName,
+  subjectSlug,
+  questions,
+  durationSeconds,
+  difficultyLabel,
+  gamified = true,
+}: QuizSessionProps) {
   const [paper] = useState(() =>
     shuffle(questions).map((question) => ({
       ...question,
@@ -70,8 +80,11 @@ export function QuizSession({ title, subjectName, subjectSlug, questions, durati
           <span className="eyebrow">{subjectName}</span>
           <h1>{title}</h1>
         </div>
-        <div className="quiz-timer" role="timer" aria-live="off">
-          {formatTime(remaining)}
+        <div className="quiz-timer-block">
+          {difficultyLabel && <span className="quiz-difficulty-tag">{difficultyLabel}</span>}
+          <div className="quiz-timer" role="timer" aria-live="off">
+            {formatTime(remaining)}
+          </div>
         </div>
       </header>
 

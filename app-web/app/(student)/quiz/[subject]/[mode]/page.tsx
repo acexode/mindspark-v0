@@ -12,9 +12,9 @@ import { EmptyState } from "@/components/ui/empty-state";
 export const dynamic = "force-dynamic";
 
 const MODES = {
-  subject: { count: 20, minutesPerQuestion: 1.5 },
-  exam: { count: 40, minutesPerQuestion: 1.5 },
-  topic: { count: 10, minutesPerQuestion: 1.5 },
+  subject: { count: 20 },
+  exam: { count: 40 },
+  topic: { count: 10 },
 } as const;
 
 const MODE_LABELS = {
@@ -22,17 +22,42 @@ const MODE_LABELS = {
   undergraduate: { subject: "Continuous assessment", exam: "Mock exam", topic: "Module assessment" },
 } as const;
 
+/**
+ * Minutes allowed per question, by difficulty. Easy gives the most thinking
+ * time; medium sits close to easy so the step down doesn't feel punishing;
+ * hard is a deliberately tight, exam-pressure pace.
+ */
+const DIFFICULTY_MINUTES_PER_QUESTION = {
+  easy: 2.2,
+  medium: 1.8,
+  hard: 1.0,
+} as const;
+
+export type QuizDifficulty = keyof typeof DIFFICULTY_MINUTES_PER_QUESTION;
+
+const DIFFICULTY_LABELS: Record<QuizDifficulty, string> = {
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+};
+
+function resolveDifficulty(value: string | undefined): QuizDifficulty {
+  return value === "easy" || value === "medium" || value === "hard" ? value : "medium";
+}
+
 export default async function QuizPage({
   params,
   searchParams,
 }: {
   params: Promise<{ subject: string; mode: string }>;
-  searchParams: Promise<{ topic?: string }>;
+  searchParams: Promise<{ topic?: string; difficulty?: string }>;
 }) {
   const { subject: subjectSlug, mode } = await params;
-  const { topic: topicSlug } = await searchParams;
+  const { topic: topicSlug, difficulty: difficultyParam } = await searchParams;
   const config = MODES[mode as keyof typeof MODES];
   if (!config) notFound();
+  const difficulty = resolveDifficulty(difficultyParam);
+  const minutesPerQuestion = DIFFICULTY_MINUTES_PER_QUESTION[difficulty];
 
   const profile = await readProfileOrDefault();
   const subject = resolveSubjectSlug(subjectSlug, profile.educationLevel);
@@ -69,7 +94,8 @@ export default async function QuizPage({
         subjectName={subject.name}
         subjectSlug={idSlug(subject.id)}
         questions={questions.map(toPublicQuestion)}
-        durationSeconds={Math.round(questions.length * config.minutesPerQuestion * 60)}
+        durationSeconds={Math.round(questions.length * minutesPerQuestion * 60)}
+        difficultyLabel={DIFFICULTY_LABELS[difficulty]}
         gamified={experienceFor(profile).gamification}
       />
     </div>

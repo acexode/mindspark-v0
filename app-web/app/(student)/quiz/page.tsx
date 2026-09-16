@@ -5,6 +5,13 @@ import { filterQuestionsByClass, filterSubjectsForClass } from "@/lib/content/cl
 import { EmptyState } from "@/components/ui/empty-state";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 
+/** Kept in sync with app/(student)/quiz/[subject]/[mode]/page.tsx's DIFFICULTY_MINUTES_PER_QUESTION. */
+const DIFFICULTIES = [
+  { value: "easy", label: "Easy" },
+  { value: "medium", label: "Medium" },
+  { value: "hard", label: "Hard" },
+] as const;
+
 export const metadata = { title: "Quiz — Mindspark" };
 
 export default async function QuizPickerPage() {
@@ -81,12 +88,30 @@ function QuizCards({
               </header>
               <p>{subject.curricula.join(" · ")}</p>
               <div className="quiz-modes">
-                <Link className="primary-action" href={`/quiz/${slug}/subject` as Route}>
-                  {isUndergraduate ? "Continuous assessment" : "Subject quiz"} · 20 questions
-                </Link>
-                <Link className="secondary-action" href={`/quiz/${slug}/exam` as Route}>
-                  {isUndergraduate ? "Mock exam" : "Exam mock"} · 40 questions
-                </Link>
+                <div className="quiz-mode-group">
+                  <span className="quiz-mode-title">
+                    {isUndergraduate ? "Continuous assessment" : "Subject quiz"} · 20 questions
+                  </span>
+                  <div className="quiz-difficulty-row">
+                    {DIFFICULTIES.map((d) => (
+                      <Link key={d.value} className="chip" href={`/quiz/${slug}/subject?difficulty=${d.value}` as Route}>
+                        {d.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                <div className="quiz-mode-group">
+                  <span className="quiz-mode-title">
+                    {isUndergraduate ? "Mock exam" : "Exam mock"} · 40 questions
+                  </span>
+                  <div className="quiz-difficulty-row">
+                    {DIFFICULTIES.map((d) => (
+                      <Link key={d.value} className="chip" href={`/quiz/${slug}/exam?difficulty=${d.value}` as Route}>
+                        {d.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               </div>
             </article>
           );
