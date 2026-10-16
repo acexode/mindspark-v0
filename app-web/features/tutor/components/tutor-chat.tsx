@@ -16,11 +16,11 @@ export interface TutorScopeOption {
 interface Message {
   role: "student" | "tutor";
   text: string;
-  source?: "ai" | "fallback";
+  source?: "ollama" | "ai" | "fallback";
 }
 
-export function TutorChat({ scopes }: { scopes: TutorScopeOption[] }) {
-  const [scopeId, setScopeId] = useState(scopes[0]?.subtopicId ?? "");
+export function TutorChat({ scopes, initialScopeId }: { scopes: TutorScopeOption[]; initialScopeId?: string }) {
+  const [scopeId, setScopeId] = useState(initialScopeId ?? scopes[0]?.subtopicId ?? "");
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "tutor",
@@ -43,6 +43,7 @@ export function TutorChat({ scopes }: { scopes: TutorScopeOption[] }) {
       const reply = await askTutor({
         subjectName: scope?.subjectName ?? "your subject",
         subtopicId: scopeId || undefined,
+        surface: "general",
         userMessage: text || undefined,
         alternateExplanation: alternate,
       });

@@ -4,7 +4,12 @@ import { readProfileOrDefault } from "@/lib/server/profile/store";
 
 export const metadata = { title: "Tutor — Mindspark" };
 
-export default async function TutorPage() {
+export default async function TutorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ subtopic?: string }>;
+}) {
+  const { subtopic } = await searchParams;
   const profile = await readProfileOrDefault();
   const subjects =
     profile.selectedSubjectIds.length > 0
@@ -31,7 +36,7 @@ export default async function TutorPage() {
           <p>Grounded in your lesson content, across every subject.</p>
         </div>
       </header>
-      <TutorChat scopes={scopes} />
+      <TutorChat scopes={scopes} initialScopeId={scopes.some((s) => s.subtopicId === subtopic) ? subtopic : undefined} />
     </section>
   );
 }

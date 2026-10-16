@@ -8,6 +8,7 @@ import { MathText } from "@/components/ui/math-text";
 import { shuffle } from "@/lib/domain/assessment/shuffle";
 import { ScoreCelebration } from "@/components/ui/score-celebration";
 import { submitQuiz, type QuizReviewItem } from "@/features/quiz/server/actions";
+import { QuestionHelp } from "@/features/tutor/components/question-help";
 
 interface QuizSessionProps {
   title: string;
@@ -71,7 +72,7 @@ export function QuizSession({
     });
   }
 
-  if (review) return <QuizReview title={title} items={review} subjectSlug={subjectSlug} gamified={gamified} />;
+  if (review) return <QuizReview title={title} items={review} answers={answers} subjectSlug={subjectSlug} gamified={gamified} />;
 
   return (
     <section className="quiz-session">
@@ -163,11 +164,13 @@ export function QuizSession({
 function QuizReview({
   title,
   items,
+  answers,
   subjectSlug,
   gamified,
 }: {
   title: string;
   items: QuizReviewItem[];
+  answers: Answers;
   subjectSlug: string;
   gamified: boolean;
 }) {
@@ -204,6 +207,7 @@ function QuizReview({
             <p className="review-explanation">
               <MathText text={item.explanation} />
             </p>
+            <QuestionHelp questionId={item.questionId} surface="quiz-review" answer={answers[item.questionId] ?? {}} />
           </li>
         ))}
       </ol>

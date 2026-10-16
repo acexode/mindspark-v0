@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 /**
@@ -182,6 +182,123 @@ test.describe("Tutor", () => {
     await page.getByRole("button", { name: /Ask tutor/i }).click();
 
     await expect(page.locator(".tutor-message.is-tutor").nth(1)).toBeVisible({ timeout: 20000 });
+  });
+});
+
+test.describe("Ask the tutor", () => {
+  async function openFirstLesson(page: Page, name: string) {
+    await onboard(page, name, 3);
+    await page.getByRole("link", { name: "Library" }).click();
+    await page.locator(".subject-card").first().click();
+    await page.locator(".topic-row h2 a").first().click();
+    // The lesson records a visit once React has hydrated; interacting earlier lets hydration reset the drawer.
+    const hydrated = page.waitForResponse((r) => r.request().method() === "POST" && r.url().includes("/learn/"));
+    await page.getByRole("link", { name: "Learn" }).first().click();
+    await expect(page.locator(".stuck-card")).toBeVisible();
+    await hydrated;
+  }
+
+  async function openDrawer(page: Page, trigger: Locator) {
+    await trigger.click();
+    await expect(page.locator("dialog[open]")).toBeVisible();
+  }
+
+  /** The model is mocked: these tests cover the wiring, not Ollama's answer quality. */
+  async function mockTutor(page: Page, source: "ollama" | "fallback", body: string) {
+    await page.route("**/api/v1/tutor/stream", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "text/plain; charset=utf-8",
+        headers: { "x-tutor-source": source },
+        body,
+      }),
+    );
+  }
+
+  test("opens a drawer from the lesson and shows the tutor's reply", async ({ page }) => {
+    await mockTutor(page, "ollama", "Think of a fraction as a part of a whole.");
+    await openFirstLesson(page, "Drawer Student");
+
+    await openDrawer(page, page.locator(".tutor-fab"));
+    await page.locator("dialog[open] .tutor-chip").first().click();
+
+    const drawer = page.locator("dialog[open]");
+    await expect(drawer.locator(".tutor-message.is-tutor")).toContainText("part of a whole");
+    await expect(drawer.locator(".tutor-source")).toHaveCount(0);
+
+    await page.keyboard.press("Escape");
+    await expect(page.locator("dialog[open]")).toHaveCount(0);
+  });
+
+  test("says so when the tutor is offline and falls back to built-in guidance", async ({ page }) => {
+    await mockTutor(page, "fallback", "Let's start with this topic. What do you already know?");
+    await openFirstLesson(page, "Offline Student");
+
+    await openDrawer(page, page.locator(".tutor-fab"));
+    await page.locator("dialog[open] textarea").fill("Help me");
+    await page.locator("dialog[open]").getByRole("button", { name: "Ask", exact: true }).click();
+
+    await expect(page.locator("dialog[open] .tutor-source")).toHaveText(/Offline guidance/i);
+    await expect(page.locator("dialog[open] .ask-tutor-note")).toBeVisible();
+  });
+
+  test("treats what the student types after 'Quiz me' as an answer to check", async ({ page }) => {
+    const modes: (string | undefined)[] = [];
+    await page.route("**/api/v1/tutor/stream", async (route) => {
+      modes.push(route.request().postDataJSON().mode);
+      await route.fulfill({
+        status: 200,
+        contentType: "text/plain; charset=utf-8",
+        headers: { "x-tutor-source": "ollama" },
+        body: "Here's a question: what is 2/3 as a decimal?",
+      });
+    });
+    await openFirstLesson(page, "Quiz Me Student");
+
+    await openDrawer(page, page.locator(".tutor-fab"));
+    await page.locator("dialog[open]").getByRole("button", { name: /Quiz me/ }).click();
+    await expect(page.locator("dialog[open] .tutor-message.is-tutor")).toBeVisible();
+
+    const drawer = page.locator("dialog[open]");
+    await expect(drawer.getByRole("button", { name: "Check my answer" })).toBeVisible();
+    await expect(drawer.getByRole("button", { name: /Show me the answer/ })).toBeVisible();
+    await expect(drawer.getByRole("button", { name: /Just explain it/ })).toHaveCount(0);
+
+    await drawer.locator("textarea").fill("0.66");
+    await drawer.getByRole("button", { name: "Check my answer" }).click();
+    await expect(drawer.locator(".tutor-message.is-student")).toHaveCount(2);
+
+    expect(modes).toEqual(["hint", "check-my-thinking"]);
+    await expect(drawer.getByRole("button", { name: "Ask", exact: true })).toBeVisible();
+  });
+
+  test("offers help on a lesson question only after it has been answered", async ({ page }) => {
+    await mockTutor(page, "ollama", "Let's look closer. Can you work out 20% of 5,000?");
+    await openFirstLesson(page, "Why Student");
+
+    // Not every unit has a quick check, so walk forward until one does.
+    for (let i = 0; i < 6 && (await page.locator(".lesson-check").count()) === 0; i++) {
+      const next = page.locator(".lesson-unit-nav a").last();
+      if (!(await next.isVisible()) || !(await next.textContent())?.includes("→")) break;
+      await next.click();
+      await expect(page.locator(".stuck-card")).toBeVisible();
+    }
+    test.skip((await page.locator(".lesson-check").count()) === 0, "no quick check in the first units");
+
+    const card = page.locator(".lesson-check .question-card").first();
+    await expect(card.locator(".question-help")).toHaveCount(0);
+
+    await card.locator(".option").first().click();
+    await card.getByRole("button", { name: /Check answer/i }).click();
+    await expect(card.locator(".feedback")).toBeVisible();
+
+    await card.locator(".question-help button").first().click();
+    await expect(card.locator(".ask-tutor-chips .tutor-chip").first()).toBeVisible();
+
+    // The hint ends in a question, so the buttons must now be about answering it.
+    await card.locator(".ask-tutor-chips .tutor-chip").first().click();
+    await expect(card.getByRole("button", { name: "Check my answer" })).toBeVisible();
+    await expect(card.getByRole("button", { name: /Show me the answer/ })).toBeVisible();
   });
 });
 

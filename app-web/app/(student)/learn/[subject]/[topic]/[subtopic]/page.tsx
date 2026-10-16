@@ -89,6 +89,7 @@ export default async function LessonPage({
         subjectName={subject.name}
         topicName={topic.name}
         subtopicName={subtopic.name}
+        fullTutorHref={`/tutor?subtopic=${encodeURIComponent(subtopic.id)}`}
         practiceHref={`/practice/${subjectSlug}/${topicSlug}?subtopic=${idSlug(subtopic.id)}`}
         catalogueLabel={experienceFor(profile).copy.catalogue}
         breadcrumb={{

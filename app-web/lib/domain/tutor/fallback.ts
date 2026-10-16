@@ -1,3 +1,25 @@
+export type TutorSurface = "general" | "lesson" | "practice" | "quiz-review";
+
+/** explain: answer directly. hint: one nudge, no final answer. check-my-thinking: judge the student's own reasoning. */
+export type TutorMode = "explain" | "hint" | "check-my-thinking";
+
+export interface TutorTurn {
+  role: "student" | "tutor";
+  text: string;
+}
+
+/** A question the student has already attempted. Answer-key fields are filled in by the server only. */
+export interface TutorQuestionContext {
+  stem: string;
+  studentAnswerLabel: string;
+  /** Null when the question cannot be auto-graded. */
+  wasCorrect: boolean | null;
+  correctAnswerLabel: string;
+  explanation: string;
+  /** Rationale for the specific wrong option the student picked, when the author wrote one. */
+  distractorNote?: string;
+}
+
 export interface TutorContext {
   ageBand: string;
   educationLevel: string;
@@ -9,9 +31,13 @@ export interface TutorContext {
   groundingText?: string;
   alternateExplanation: boolean;
   userMessage?: string;
+  surface?: TutorSurface;
+  mode?: TutorMode;
+  history?: TutorTurn[];
+  question?: TutorQuestionContext;
 }
 
-export const PROMPT_VERSION = "tutor-v2.0.0";
+export const PROMPT_VERSION = "tutor-v3.0.0";
 
 /**
  * Deterministic replies used whenever no AI provider is configured or a call
@@ -27,6 +53,13 @@ export function getDeterministicTutorResponse(context: TutorContext): { response
       response: context.objectives.length
         ? `Let's approach ${focus} differently. Try this: ${context.objectives[0]}. Work through that one goal in your own words first, then check it against the worked example in the lesson.`
         : `Let's approach ${focus} from another angle. Explain it back to me in your own words, one sentence at a time, and I'll tell you where the reasoning breaks.`,
+    };
+  }
+
+  if (context.question && context.question.wasCorrect !== true) {
+    return {
+      strategy: "socratic",
+      response: `Let's look at that question again. Re-read what it asks and tell me which idea from ${focus} it is testing. Then check your choice against the lesson, one step at a time.`,
     };
   }
 

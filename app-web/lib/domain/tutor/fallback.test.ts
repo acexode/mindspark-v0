@@ -43,3 +43,14 @@ describe("deterministic tutor fallback", () => {
     expect(PROMPT_VERSION).toMatch(/^tutor-v/);
   });
 });
+
+describe("fallback for question surfaces", () => {
+  it("nudges the student back to the question without revealing the answer", () => {
+    const result = getDeterministicTutorResponse({
+      ...base,
+      question: { stem: "q", studentAnswerLabel: "a", wasCorrect: false, correctAnswerLabel: "SECRET", explanation: "e" },
+    });
+    expect(result.response).toContain("Cell Structure");
+    expect(result.response).not.toContain("SECRET");
+  });
+});

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Sidebar, type AcademicSummary } from "./sidebar";
 import type { NavItem } from "@/lib/domain/student/experience";
+import { TutorLevelProvider } from "@/features/tutor/components/tutor-tone";
 import type { EducationLevel } from "@/lib/domain/student/types";
 
 interface StudentShellProps {
@@ -17,7 +18,9 @@ export function StudentShell({ children, level, nav, xp, streak, summary }: Stud
   return (
     <div className="app-shell" data-level={level}>
       <Sidebar nav={nav} xp={xp} streak={streak} summary={summary} />
-      <main className="app-main">{children}</main>
+      <main className="app-main">
+        <TutorLevelProvider level={level}>{children}</TutorLevelProvider>
+      </main>
     </div>
   );
 }

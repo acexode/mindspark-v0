@@ -1,7 +1,8 @@
 import "server-only";
-import { generateText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
+import { generateText, streamText } from "ai";
 import { getDeterministicTutorResponse, PROMPT_VERSION, type TutorContext } from "@/lib/domain/tutor/fallback";
+import { buildMessages, buildSystemPrompt } from "@/lib/domain/tutor/prompt";
+import { tutorProviders, type ProviderName } from "./providers";
 
 export type { TutorContext };
 
@@ -9,56 +10,108 @@ export interface TutorReply {
   response: string;
   strategy: string;
   promptVersion: string;
-  source: "ai" | "fallback";
+  source: ProviderName | "fallback";
+}
+
+export interface TutorStream {
+  source: TutorReply["source"];
+  promptVersion: string;
+  stream: ReadableStream<Uint8Array>;
+}
+
+const MAX_TOKENS = 400;
+/** Low enough to keep small models from drifting on arithmetic, high enough to avoid canned wording. */
+const TEMPERATURE = 0.3;
+
+function fallbackReply(context: TutorContext): TutorReply {
+  return { ...getDeterministicTutorResponse(context), promptVersion: PROMPT_VERSION, source: "fallback" };
 }
 
 export async function generateTutorTurn(context: TutorContext): Promise<TutorReply> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  for (const provider of tutorProviders()) {
+    try {
+      const { text } = await generateText({
+        model: provider.model,
+        system: buildSystemPrompt(context),
+        messages: buildMessages(context),
+        maxTokens: MAX_TOKENS,
+        temperature: TEMPERATURE,
+        maxRetries: 0,
+        abortSignal: AbortSignal.timeout(provider.timeoutMs),
+      });
 
-  if (!apiKey) {
-    return { ...getDeterministicTutorResponse(context), promptVersion: PROMPT_VERSION, source: "fallback" };
+      const response = text.trim();
+      if (response) {
+        const strategy = context.alternateExplanation ? "alternate-representation" : "socratic";
+        return { response, strategy, promptVersion: PROMPT_VERSION, source: provider.name };
+      }
+    } catch {
+      // Unreachable, model not pulled, or timed out — try the next provider.
+    }
   }
 
-  try {
-    const openai = createOpenAI({ apiKey });
-    const { text } = await generateText({
-      model: openai(process.env.OPENAI_TUTOR_MODEL ?? "gpt-4o-mini"),
-      system: buildSystemPrompt(context),
-      prompt:
-        context.userMessage ??
-        (context.alternateExplanation
-          ? "The student did not understand. Explain using a genuinely different representation, not a paraphrase."
-          : "Give one Socratic question or one progressive hint for what the student is studying."),
-      maxTokens: 320,
-    });
-
-    return {
-      response: text.trim(),
-      strategy: context.alternateExplanation ? "alternate-representation" : "socratic",
-      promptVersion: PROMPT_VERSION,
-      source: "ai",
-    };
-  } catch {
-    return { ...getDeterministicTutorResponse(context), promptVersion: PROMPT_VERSION, source: "fallback" };
-  }
+  return fallbackReply(context);
 }
 
-function buildSystemPrompt(context: TutorContext): string {
-  const register =
-    context.educationLevel === "undergraduate"
-      ? "Use precise academic language and correct notation."
-      : context.ageBand === "12-13"
-        ? "Use short sentences, concrete examples and everyday analogies."
-        : "Use clear language suited to a senior secondary student preparing for WAEC, NECO or JAMB.";
+/**
+ * Same provider order as generateTutorTurn, but the reply is streamed as it is
+ * written. A provider only wins once its first chunk arrives, so a dead or
+ * missing model still falls through to the next provider before any bytes are sent.
+ */
+export async function streamTutorTurn(context: TutorContext): Promise<TutorStream> {
+  const encoder = new TextEncoder();
 
-  return [
-    `You are a Socratic tutor for Mindspark, helping with ${context.subjectName}.`,
-    context.subtopicName ? `The student is studying: ${context.subtopicName}.` : "",
-    context.objectives.length ? `Learning objectives:\n- ${context.objectives.join("\n- ")}` : "",
-    context.groundingText ? `Approved lesson content you must stay consistent with:\n"""\n${context.groundingText.slice(0, 4000)}\n"""` : "",
-    register,
-    "Rules: never invent curriculum facts; if you are unsure, say so plainly. Do not reveal a final answer immediately — ask one guiding question or give one progressive hint. Keep replies under 120 words.",
-  ]
-    .filter(Boolean)
-    .join("\n\n");
+  for (const provider of tutorProviders()) {
+    try {
+      const result = streamText({
+        model: provider.model,
+        system: buildSystemPrompt(context),
+        messages: buildMessages(context),
+        maxTokens: MAX_TOKENS,
+        temperature: TEMPERATURE,
+        maxRetries: 0,
+        abortSignal: AbortSignal.timeout(provider.timeoutMs),
+        onError: () => {},
+      });
+
+      const chunks = result.textStream[Symbol.asyncIterator]();
+      const first = await chunks.next();
+      if (first.done || !first.value) continue;
+
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(encoder.encode(first.value));
+        },
+        async pull(controller) {
+          try {
+            const next = await chunks.next();
+            if (next.done) controller.close();
+            else controller.enqueue(encoder.encode(next.value));
+          } catch {
+            // A mid-stream failure keeps what the student has already read.
+            controller.close();
+          }
+        },
+        cancel() {
+          void chunks.return?.();
+        },
+      });
+
+      return { source: provider.name, promptVersion: PROMPT_VERSION, stream };
+    } catch {
+      // Fall through to the next provider.
+    }
+  }
+
+  const { response } = fallbackReply(context);
+  return {
+    source: "fallback",
+    promptVersion: PROMPT_VERSION,
+    stream: new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(response));
+        controller.close();
+      },
+    }),
+  };
 }

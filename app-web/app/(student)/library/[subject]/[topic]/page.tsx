@@ -7,6 +7,7 @@ import { progressionContextFor, subjectProgression } from "@/lib/content/topic-p
 import { getRecord, isUnlocked, lockReason } from "@/lib/domain/mastery/mastery";
 import { MasteryBadge } from "@/components/ui/mastery-badge";
 import { EmptyState } from "@/components/ui/empty-state";
+import { LessonTutor } from "@/features/tutor/components/lesson-tutor";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 
 export default async function TopicPage({
@@ -116,6 +117,8 @@ export default async function TopicPage({
           );
         })}
       </div>
+
+      <LessonTutor scope={{ subjectName: subject.name, topicId: topic.id }} heading={`Ask about ${topic.name}`} />
     </section>
   );
 }

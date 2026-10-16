@@ -5,6 +5,7 @@ import type { PublicQuestion } from "@/lib/content/schema";
 import { MathText } from "@/components/ui/math-text";
 import { shuffle } from "@/lib/domain/assessment/shuffle";
 import { submitAnswer, type AnswerResult } from "@/features/learning/server/actions";
+import { QuestionHelp } from "@/features/tutor/components/question-help";
 
 interface QuestionCardProps {
   question: PublicQuestion;
@@ -133,6 +134,12 @@ export function QuestionCard({
               {result.xpAwarded > 0 && ` · +${result.xpAwarded} XP`}
             </p>
           )}
+          <QuestionHelp
+            questionId={question.id}
+            subtopicId={question.subtopicId}
+            surface="practice"
+            answer={hasOptions ? { optionId: selected ?? undefined } : { value }}
+          />
         </div>
       )}
     </div>

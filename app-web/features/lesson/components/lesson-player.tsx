@@ -8,6 +8,7 @@ import { ContentBlockView } from "./content-block";
 import { QuestionCard } from "@/features/practice/components/question-card";
 import { recordLessonVisit } from "@/features/learning/server/actions";
 import { useEffect } from "react";
+import { LessonTutor } from "@/features/tutor/components/lesson-tutor";
 
 interface AdjacentUnit {
   name: string;
@@ -29,6 +30,8 @@ interface LessonPlayerProps {
   unitPosition?: { index: number; total: number } | null;
   prevUnit?: AdjacentUnit | null;
   nextUnit?: AdjacentUnit | null;
+  /** Deep link into the full tutor with this unit preselected. */
+  fullTutorHref?: string;
 }
 
 export function LessonPlayer({
@@ -44,6 +47,7 @@ export function LessonPlayer({
   unitPosition,
   prevUnit,
   nextUnit,
+  fullTutorHref,
 }: LessonPlayerProps) {
   const [completedChecks, setCompletedChecks] = useState<string[]>([]);
 
@@ -85,6 +89,12 @@ export function LessonPlayer({
           />
         ))}
       </div>
+
+      <LessonTutor
+        scope={{ subjectName, subtopicId: lesson.subtopicId }}
+        heading={`Ask about ${subtopicName}`}
+        fullTutorHref={fullTutorHref}
+      />
 
       <footer className="lesson-footer">
         <p>Ready to prove it? Practice is where mastery is earned.</p>

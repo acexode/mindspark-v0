@@ -1,43 +1,20 @@
 "use server";
 
-import { getLesson, getSubtopic } from "@/lib/content/loader";
+import { PROMPT_VERSION } from "@/lib/domain/tutor/fallback";
 import { generateTutorTurn, type TutorReply } from "@/lib/server/ai/tutor";
-import { readProfileOrDefault } from "@/lib/server/profile/store";
+import { buildTutorContext } from "./context";
+import { tutorRequestSchema } from "./request";
 
-export interface TutorRequest {
-  subjectName: string;
-  subtopicId?: string;
-  userMessage?: string;
-  alternateExplanation?: boolean;
-}
+const INVALID_REQUEST_REPLY: TutorReply = {
+  response: "I couldn't read that question. Try rewording it, or ask something shorter.",
+  strategy: "invalid-request",
+  promptVersion: PROMPT_VERSION,
+  source: "fallback",
+};
 
-export async function askTutor(request: TutorRequest): Promise<TutorReply> {
-  const profile = await readProfileOrDefault();
-  const entry = request.subtopicId ? getSubtopic(request.subtopicId) : null;
-  const lesson = request.subtopicId ? getLesson(request.subtopicId) : null;
-
-  const groundingText = lesson?.blocks
-    .map((block) =>
-      block.type === "text"
-        ? block.markdown
-        : block.type === "callout"
-          ? `${block.title}: ${block.text}`
-          : block.type === "summary"
-            ? block.points.join(" ")
-            : "",
-    )
-    .filter(Boolean)
-    .join("\n\n");
-
-  return generateTutorTurn({
-    ageBand: profile.ageBand,
-    educationLevel: profile.educationLevel,
-    subjectName: entry?.subject.name ?? request.subjectName,
-    topicName: entry?.topic.name,
-    subtopicName: entry?.subtopic.name,
-    objectives: entry?.subtopic.objectives.map((o) => o.text) ?? [],
-    groundingText,
-    alternateExplanation: request.alternateExplanation ?? false,
-    userMessage: request.userMessage,
-  });
+/** Takes `unknown`: a server action is a public endpoint, so the input is validated here, not trusted from the types. */
+export async function askTutor(input: unknown): Promise<TutorReply> {
+  const parsed = tutorRequestSchema.safeParse(input);
+  if (!parsed.success) return INVALID_REQUEST_REPLY;
+  return generateTutorTurn(await buildTutorContext(parsed.data));
 }
