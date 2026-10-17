@@ -24,6 +24,25 @@ async function onboard(page: Page, name: string, subjectCount = 1) {
   await expect(page.getByRole("heading", { name: new RegExp(name) })).toBeVisible();
 }
 
+/** Practice only covers what has been studied, so the real path is: open a lesson, then practise from it. */
+async function practiseFirstLesson(page: Page) {
+  await page.getByLabel("Main").getByRole("link", { name: "Library" }).click();
+  await page.locator(".library-card, .library-others a").first().click();
+  await page.locator(".outline-row h2 a").first().click();
+  await page.getByRole("link", { name: "Learn" }).first().click();
+  await expect(page.locator(".lesson-body")).toBeVisible();
+  await page.getByRole("link", { name: /^Practise / }).last().click();
+  await expect(page.locator(".question-card")).toBeVisible();
+}
+
+/** A click that lands before hydration selects nothing, so retry until "Check answer" is enabled. */
+async function chooseFirstOption(page: Page) {
+  await expect(async () => {
+    await page.locator(".question-card .option").first().click();
+    await expect(page.getByRole("button", { name: /Check answer/i })).toBeEnabled({ timeout: 1000 });
+  }).toPass({ timeout: 20_000 });
+}
+
 test.describe("Onboarding", () => {
   test("requires at least one subject before continuing", async ({ page }) => {
     await page.goto("/onboarding");
@@ -36,7 +55,7 @@ test.describe("Onboarding", () => {
   test("lets a student pick subjects and reach a personalised home", async ({ page }) => {
     await onboard(page, "Ada Student", 2);
     await expect(page.getByRole("heading", { name: /Ada Student/ })).toBeVisible();
-    await expect(page.getByText(/Recommended next/i)).toBeVisible();
+    await expect(page.getByText(/Up next/i)).toBeVisible();
   });
 });
 
@@ -44,33 +63,33 @@ test.describe("Library navigation", () => {
   test("browses subject to topic to subtopic entirely through the UI", async ({ page }) => {
     await onboard(page, "Browser Student", 3);
 
-    await page.getByRole("link", { name: "Library" }).click();
+    await page.getByLabel("Main").getByRole("link", { name: "Library" }).click();
     await page.waitForURL("**/library");
 
-    const subjectCards = page.locator(".subject-card");
+    const subjectCards = page.locator(".library-card, .library-others a");
     await expect(subjectCards.first()).toBeVisible();
 
     await subjectCards.first().click();
-    await expect(page.locator(".topic-row").first()).toBeVisible();
+    await expect(page.locator(".outline-row").first()).toBeVisible();
 
-    await page.locator(".topic-row h2 a").first().click();
-    await expect(page.locator(".subtopic-card").first()).toBeVisible();
-    await expect(page.locator(".subtopic-card").first().getByText(/learning objectives/i)).toBeVisible();
+    await page.locator(".outline-row h2 a").first().click();
+    await expect(page.locator(".lesson-row").first()).toBeVisible();
+    await expect(page.locator(".lesson-row").first().getByText(/learning objectives/i)).toBeVisible();
   });
 
   test("shows no empty subject: every listed subject opens to real topics", async ({ page }) => {
     await onboard(page, "Coverage Student", 8);
-    await page.getByRole("link", { name: "Library" }).click();
+    await page.getByLabel("Main").getByRole("link", { name: "Library" }).click();
     await page.waitForURL("**/library");
 
-    const count = await page.locator(".subject-card").count();
+    const count = await page.locator(".library-card, .library-others a").count();
     expect(count).toBeGreaterThan(0);
 
     for (let i = 0; i < count; i++) {
       await page.getByLabel("Main").getByRole("link", { name: "Library" }).click();
       await page.waitForURL("**/library");
-      await page.locator(".subject-card").nth(i).click();
-      await expect(page.locator(".topic-row").first()).toBeVisible();
+      await page.locator(".library-card, .library-others a").nth(i).click();
+      await expect(page.locator(".outline-row").first()).toBeVisible();
     }
   });
 });
@@ -79,9 +98,9 @@ test.describe("Learn then practise", () => {
   test("completes a lesson and starts scoped practice from it", async ({ page }) => {
     await onboard(page, "Lesson Student", 3);
 
-    await page.getByRole("link", { name: "Library" }).click();
-    await page.locator(".subject-card").first().click();
-    await page.locator(".topic-row h2 a").first().click();
+    await page.getByLabel("Main").getByRole("link", { name: "Library" }).click();
+    await page.locator(".library-card, .library-others a").first().click();
+    await page.locator(".outline-row h2 a").first().click();
 
     const learn = page.getByRole("link", { name: "Learn" }).first();
     await expect(learn).toBeVisible();
@@ -97,12 +116,8 @@ test.describe("Learn then practise", () => {
 
   test("grades an answer on the server and returns an explanation", async ({ page }) => {
     await onboard(page, "Answer Student", 3);
-
-    await page.getByRole("link", { name: "Practice" }).click();
-    await page.locator(".picker-topics a").first().click();
-
-    await expect(page.locator(".question-card")).toBeVisible();
-    await page.locator(".option").first().click();
+    await practiseFirstLesson(page);
+    await chooseFirstOption(page);
     await page.getByRole("button", { name: /Check answer/i }).click();
 
     const feedback = page.locator(".feedback");
@@ -115,11 +130,26 @@ test.describe("Learn then practise", () => {
 test.describe("Practice is always scoped", () => {
   test("shows a picker instead of dropping the student into a subject", async ({ page }) => {
     await onboard(page, "Picker Student", 3);
-    await page.getByRole("link", { name: "Practice" }).click();
+    await page.getByLabel("Main").getByRole("link", { name: "Practice" }).click();
 
     await expect(page.getByRole("heading", { name: /What would you like to practise/i })).toBeVisible();
     await expect(page.locator(".question-card")).toHaveCount(0);
-    await expect(page.locator(".picker-card").first()).toBeVisible();
+    await expect(page.locator(".practice-subject").first()).toBeVisible();
+  });
+
+  test("sends a fresh topic to its first lesson, then opens practice once it is studied", async ({ page }) => {
+    await onboard(page, "Fresh Student", 1);
+    await page.getByLabel("Main").getByRole("link", { name: "Practice" }).click();
+    const card = page.locator(".practice-subject").first();
+    await expect(card.getByRole("link", { name: "Start the first lesson" })).toBeVisible();
+    await expect(card.locator(".practice-locked")).toBeVisible();
+
+    await card.getByRole("link", { name: "Start the first lesson" }).click();
+    await page.getByRole("link", { name: "Learn" }).first().click();
+    await expect(page.locator(".lesson-body")).toBeVisible();
+
+    await page.getByLabel("Main").getByRole("link", { name: "Practice" }).click();
+    await expect(page.locator(".practice-subject").first().getByRole("link", { name: "Practise this topic" })).toBeVisible();
   });
 });
 
@@ -127,10 +157,10 @@ test.describe("Quiz", () => {
   test("runs a timed quiz and returns a review with explanations", async ({ page }) => {
     test.setTimeout(120_000);
     await onboard(page, "Quiz Student", 3);
-    await page.getByRole("link", { name: "Quiz" }).click();
+    await page.getByLabel("Main").getByRole("link", { name: "Quiz" }).click();
 
     await expect(page.getByRole("heading", { name: /exam conditions/i })).toBeVisible();
-    await page.getByRole("link", { name: /Subject quiz/i }).first().click();
+    await page.locator(".quiz-pace").first().click();
 
     await expect(page.locator(".quiz-timer")).toBeVisible();
     await expect(page.locator(".quiz-question")).toBeVisible();
@@ -158,39 +188,56 @@ test.describe("Quiz", () => {
 test.describe("Progress", () => {
   test("reflects mastery earned from practice", async ({ page }) => {
     await onboard(page, "Progress Student", 3);
-
-    await page.getByRole("link", { name: "Practice" }).click();
-    await page.locator(".picker-topics a").first().click();
-    await page.locator(".option").first().click();
+    await practiseFirstLesson(page);
+    await chooseFirstOption(page);
     await page.getByRole("button", { name: /Check answer/i }).click();
     await expect(page.locator(".feedback")).toBeVisible();
 
-    await page.getByRole("link", { name: "Progress" }).click();
+    await page.getByLabel("Main").getByRole("link", { name: "Progress" }).click();
     await expect(page.getByRole("heading", { name: /What you know/i })).toBeVisible();
-    await expect(page.locator(".progress-subject").first()).toBeVisible();
-    await expect(page.getByText(/Subtopics practised/i)).toBeVisible();
+    await expect(page.locator(".progress-subject:not(.is-untouched)").first()).toBeVisible();
+    await expect(page.locator(".progress-highlights")).toBeVisible();
+    await expect(page.locator(".header-stats").getByText(/Subtopics practised/i)).toBeVisible();
   });
 });
 
 test.describe("Tutor", () => {
   test("answers in the context of a chosen subtopic", async ({ page }) => {
+    const asked: { subtopicId?: string; mode?: string }[] = [];
+    await page.route("**/api/v1/tutor/stream", async (route) => {
+      asked.push(route.request().postDataJSON());
+      await route.fulfill({ status: 200, contentType: "text/plain", headers: { "x-tutor-source": "ollama" }, body: "Here is how it works." });
+    });
     await onboard(page, "Tutor Student", 3);
-    await page.getByRole("link", { name: "Tutor" }).click();
+    await page.getByLabel("Main").getByRole("link", { name: "Tutor" }).click();
 
-    await expect(page.locator("#tutor-scope-select")).toBeVisible();
-    await page.locator("#tutor-input").fill("I don't understand this topic");
-    await page.getByRole("button", { name: /Ask tutor/i }).click();
+    // The context panel names the unit, and starters are built from its objectives.
+    const unitName = await page.locator(".tutor-context h2").innerText();
+    await expect(page.locator(".tutor-notebook-head h1")).toHaveText(unitName);
+    await expect(page.locator(".tutor-starters button").first()).toBeVisible();
 
-    await expect(page.locator(".tutor-message.is-tutor").nth(1)).toBeVisible({ timeout: 20000 });
+    // Switching unit through the picker re-scopes the notebook and the URL.
+    const other = page.locator(".tutor-picker-topic button:not([aria-current])").first();
+    const otherName = await other.innerText();
+    await other.click();
+    await expect(page.locator(".tutor-notebook-head h1")).toHaveText(otherName);
+    await expect(page).toHaveURL(/\/tutor\?subtopic=/);
+
+    await page.locator(".ask-tutor-compose textarea").fill("I don't understand this topic");
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+
+    await expect(page.locator(".tutor-message.is-tutor")).toContainText("Here is how it works.");
+    expect(asked[0]?.subtopicId).toBeTruthy();
+    expect(asked[0]?.mode).toBe("explain");
   });
 });
 
 test.describe("Ask the tutor", () => {
   async function openFirstLesson(page: Page, name: string) {
     await onboard(page, name, 3);
-    await page.getByRole("link", { name: "Library" }).click();
-    await page.locator(".subject-card").first().click();
-    await page.locator(".topic-row h2 a").first().click();
+    await page.getByLabel("Main").getByRole("link", { name: "Library" }).click();
+    await page.locator(".library-card, .library-others a").first().click();
+    await page.locator(".outline-row h2 a").first().click();
     // The lesson records a visit once React has hydrated; interacting earlier lets hydration reset the drawer.
     const hydrated = page.waitForResponse((r) => r.request().method() === "POST" && r.url().includes("/learn/"));
     await page.getByRole("link", { name: "Learn" }).first().click();
@@ -250,7 +297,7 @@ test.describe("Ask the tutor", () => {
         status: 200,
         contentType: "text/plain; charset=utf-8",
         headers: { "x-tutor-source": "ollama" },
-        body: "Here's a question: what is 2/3 as a decimal?",
+        body: modes.length === 1 ? "Here's a question: what is 2/3 as a decimal?" : "Close! It is about 0.67.",
       });
     });
     await openFirstLesson(page, "Quiz Me Student");
@@ -315,12 +362,12 @@ test.describe("Accessibility", () => {
   test("library and lesson pages have no serious axe violations", async ({ page }) => {
     await onboard(page, "A11y Student", 3);
 
-    await page.getByRole("link", { name: "Library" }).click();
+    await page.getByLabel("Main").getByRole("link", { name: "Library" }).click();
     let results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(results.violations.filter((v) => v.impact === "critical" || v.impact === "serious").map((v) => v.id)).toEqual([]);
 
-    await page.locator(".subject-card").first().click();
-    await page.locator(".topic-row h2 a").first().click();
+    await page.locator(".library-card, .library-others a").first().click();
+    await page.locator(".outline-row h2 a").first().click();
     await page.getByRole("link", { name: "Learn" }).first().click();
     await expect(page.locator(".lesson-body")).toBeVisible();
 

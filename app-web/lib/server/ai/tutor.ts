@@ -2,7 +2,9 @@ import "server-only";
 import { generateText, streamText } from "ai";
 import { getDeterministicTutorResponse, PROMPT_VERSION, type TutorContext } from "@/lib/domain/tutor/fallback";
 import { buildMessages, buildSystemPrompt } from "@/lib/domain/tutor/prompt";
+import { checkScope, offTopicReply } from "@/lib/domain/tutor/scope";
 import { tutorProviders, type ProviderName } from "./providers";
+import { isStudyMessage } from "./scope-check";
 
 export type { TutorContext };
 
@@ -10,7 +12,8 @@ export interface TutorReply {
   response: string;
   strategy: string;
   promptVersion: string;
-  source: ProviderName | "fallback";
+  /** "scope" is a deliberate redirect, not a failure: the UI must not call it offline guidance. */
+  source: ProviderName | "fallback" | "scope";
 }
 
 export interface TutorStream {
@@ -27,7 +30,27 @@ function fallbackReply(context: TutorContext): TutorReply {
   return { ...getDeterministicTutorResponse(context), promptVersion: PROMPT_VERSION, source: "fallback" };
 }
 
+function scopeReply(context: TutorContext): TutorReply {
+  return { response: offTopicReply(context), strategy: "scope-redirect", promptVersion: PROMPT_VERSION, source: "scope" };
+}
+
+/** Free pattern check first, then a short model check; off-topic messages never reach the tutor prompt. */
+async function withinScope(context: TutorContext): Promise<boolean> {
+  return checkScope(context.userMessage).allowed && (await isStudyMessage(context));
+}
+
+function singleChunkStream(text: string): ReadableStream<Uint8Array> {
+  return new ReadableStream({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode(text));
+      controller.close();
+    },
+  });
+}
+
 export async function generateTutorTurn(context: TutorContext): Promise<TutorReply> {
+  if (!(await withinScope(context))) return scopeReply(context);
+
   for (const provider of tutorProviders()) {
     try {
       const { text } = await generateText({
@@ -60,6 +83,13 @@ export async function generateTutorTurn(context: TutorContext): Promise<TutorRep
  */
 export async function streamTutorTurn(context: TutorContext): Promise<TutorStream> {
   const encoder = new TextEncoder();
+
+  const redirect = (): TutorStream => {
+    const { response, promptVersion, source } = scopeReply(context);
+    return { source, promptVersion, stream: singleChunkStream(response) };
+  };
+
+  if (!(await withinScope(context))) return redirect();
 
   for (const provider of tutorProviders()) {
     try {
@@ -104,14 +134,5 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
   }
 
   const { response } = fallbackReply(context);
-  return {
-    source: "fallback",
-    promptVersion: PROMPT_VERSION,
-    stream: new ReadableStream({
-      start(controller) {
-        controller.enqueue(encoder.encode(response));
-        controller.close();
-      },
-    }),
-  };
+  return { source: "fallback", promptVersion: PROMPT_VERSION, stream: singleChunkStream(response) };
 }

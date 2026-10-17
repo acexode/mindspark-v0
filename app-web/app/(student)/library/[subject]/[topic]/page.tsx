@@ -5,7 +5,8 @@ import { getLesson, getQuestions, idSlug, resolveSubjectSlug, resolveTopicSlug }
 import { filterTopicsForClass } from "@/lib/content/class-visibility";
 import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { getRecord, isUnlocked, lockReason } from "@/lib/domain/mastery/mastery";
-import { MasteryBadge } from "@/components/ui/mastery-badge";
+import { coveredSubtopicIds } from "@/lib/domain/student/coverage";
+import { LessonList, type LessonListItem } from "@/features/library/components/lesson-list";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LessonTutor } from "@/features/tutor/components/lesson-tutor";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
@@ -48,8 +49,28 @@ export default async function TopicPage({
     subject.topics.flatMap((t) => t.subtopics.map((s) => [s.id, s.name] as const)),
   );
 
+  const items: LessonListItem[] = topic.subtopics.map((subtopic) => {
+    const subtopicSlug = idSlug(subtopic.id);
+    const questionCount = getQuestions(subtopic.id).length;
+    const unlocked = isUnlocked(profile.mastery, subtopic.prerequisites);
+    return {
+      id: subtopic.id,
+      name: subtopic.name,
+      summary: subtopic.summary,
+      objectives: subtopic.objectives,
+      record: getRecord(profile.mastery, subtopic.id),
+      reached: coveredSubtopicIds(profile, [subtopic.id]).length > 0,
+      learnHref: getLesson(subtopic.id) ? `/learn/${subjectSlug}/${topicSlug}/${subtopicSlug}` : null,
+      practiceHref: questionCount > 0 ? `/practice/${subjectSlug}/${topicSlug}?subtopic=${subtopicSlug}` : null,
+      questionCount,
+      suggestion: unlocked ? null : lockReason(profile.mastery, subtopic.prerequisites, (id) => nameById.get(id) ?? id),
+    };
+  });
+  const reachedCount = items.filter((i) => i.reached).length;
+  const nextUp = items.find((i) => !i.reached && i.learnHref) ?? null;
+
   return (
-    <section className="page" style={{ ["--accent" as string]: subject.accentColor }}>
+    <section className="page topic-page" style={{ ["--accent" as string]: subject.accentColor }}>
       <header className="page-header">
         <div>
           <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -61,62 +82,26 @@ export default async function TopicPage({
           </nav>
           <h1>{topic.name}</h1>
           <p>{topic.summary}</p>
+          <p className="subject-page-meta">
+            {reachedCount} of {items.length} lessons started
+            {(progression.practiceBest[topic.id] ?? 0) > 0 ? ` · best topic practice ${progression.practiceBest[topic.id]}%` : ""}
+          </p>
         </div>
         <div className="header-actions">
-          <Link className="primary-action" href={`/practice/${subjectSlug}/${topicSlug}` as Route}>
-            Practise this topic
-          </Link>
+          {nextUp?.learnHref && (
+            <Link className="primary-action" href={nextUp.learnHref as Route}>
+              {reachedCount === 0 ? "Start" : "Next"}: {nextUp.name}
+            </Link>
+          )}
+          {reachedCount > 0 && (
+            <Link className={nextUp ? "secondary-action" : "primary-action"} href={`/practice/${subjectSlug}/${topicSlug}` as Route}>
+              Practise this topic
+            </Link>
+          )}
         </div>
       </header>
 
-      <div className="subtopic-grid">
-        {topic.subtopics.map((subtopic) => {
-          const record = getRecord(profile.mastery, subtopic.id);
-          const unlocked = isUnlocked(profile.mastery, subtopic.prerequisites);
-          const reason = lockReason(profile.mastery, subtopic.prerequisites, (id) => nameById.get(id) ?? id);
-          const hasLesson = Boolean(getLesson(subtopic.id));
-          const questionCount = getQuestions(subtopic.id).length;
-          const subtopicSlug = idSlug(subtopic.id);
-
-          return (
-            <article key={subtopic.id} className={`subtopic-card ${unlocked ? "" : "is-locked"}`}>
-              <header>
-                <h2>{subtopic.name}</h2>
-                <MasteryBadge state={record.state} score={record.score} />
-              </header>
-              <p>{subtopic.summary}</p>
-
-              <details className="objectives">
-                <summary>{subtopic.objectives.length} learning objectives</summary>
-                <ul>
-                  {subtopic.objectives.map((objective) => (
-                    <li key={objective.id}>{objective.text}</li>
-                  ))}
-                </ul>
-              </details>
-
-              {!unlocked && reason && <p className="lock-reason">{reason}</p>}
-
-              <div className="subtopic-actions">
-                {hasLesson ? (
-                  <Link className="primary-action" href={`/learn/${subjectSlug}/${topicSlug}/${subtopicSlug}` as Route}>
-                    Learn
-                  </Link>
-                ) : (
-                  <span className="action-disabled">Lesson coming soon</span>
-                )}
-                {questionCount > 0 ? (
-                  <Link className="secondary-action" href={`/practice/${subjectSlug}/${topicSlug}?subtopic=${subtopicSlug}` as Route}>
-                    Practise ({questionCount})
-                  </Link>
-                ) : (
-                  <span className="action-disabled">No questions yet</span>
-                )}
-              </div>
-            </article>
-          );
-        })}
-      </div>
+      <LessonList items={items} />
 
       <LessonTutor scope={{ subjectName: subject.name, topicId: topic.id }} heading={`Ask about ${topic.name}`} />
     </section>

@@ -1,12 +1,11 @@
 import Link from "next/link";
 import type { Route } from "next";
-import { getQuestionsForSubject, getQuestionsForTopic, getSubjects, idSlug } from "@/lib/content/loader";
+import { getQuestionsForSubject, getSubjects, idSlug } from "@/lib/content/loader";
 import { filterQuestionsByClass, filterSubjectsForClass } from "@/lib/content/class-visibility";
-import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
+import { buildSubjectOverview } from "@/lib/content/study-overview";
 import { EmptyState } from "@/components/ui/empty-state";
-import { LockNotice } from "@/components/ui/lock-notice";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
-import type { StudentProfile } from "@/lib/domain/student/types";
+import { PracticeSubject } from "@/features/practice/components/practice-subject";
 
 export const metadata = { title: "Practice — Mindspark" };
 
@@ -35,92 +34,48 @@ export default async function PracticePickerPage() {
     );
   }
 
-  const mine = subjects.filter((s) => profile.selectedSubjectIds.includes(s.id));
+  // In the order the student chose them, not catalogue order.
+  const mine = subjects
+    .filter((s) => profile.selectedSubjectIds.includes(s.id))
+    .sort((a, b) => profile.selectedSubjectIds.indexOf(a.id) - profile.selectedSubjectIds.indexOf(b.id));
   const others = subjects.filter((s) => !profile.selectedSubjectIds.includes(s.id));
+  const featured = mine.length > 0 ? mine : others;
+  const rest = mine.length > 0 ? others : [];
 
   return (
-    <section className="page">
+    <section className="page practice-page">
       <header className="page-header">
         <div>
           <span className="eyebrow">Practice</span>
           <h1>What would you like to practise?</h1>
           <p>
             {isUndergraduate
-              ? "Choose a course, then a module. Every module is open — practise in whatever order suits you."
-              : "Choose a subject, then a topic. Topics unlock in order — score at least 50% on the current topic’s practice to open the next one."}
+              ? "Every module is open — practise in whatever order suits you."
+              : "Work on your current topic in each subject. Clear it to unlock the next."}
           </p>
         </div>
       </header>
 
-      <SubjectPickers subjects={mine.length > 0 ? mine : others} studentClass={profile.classLevel} profile={profile} />
+      <div className="practice-subjects">
+        {featured.map((subject) => (
+          <PracticeSubject key={subject.id} subject={buildSubjectOverview(subject, profile)} openModules={isUndergraduate} />
+        ))}
+      </div>
 
-      {mine.length > 0 && others.length > 0 && (
-        <section className="library-more">
-          <h2>Other subjects</h2>
-          <SubjectPickers subjects={others} studentClass={profile.classLevel} profile={profile} />
-        </section>
+      {rest.length > 0 && (
+        <details className="practice-others">
+          <summary>
+            Practise another {isUndergraduate ? "course" : "subject"} <span>({rest.length})</span>
+          </summary>
+          <ul>
+            {rest.map((subject) => (
+              <li key={subject.id} style={{ ["--accent" as string]: subject.accentColor }}>
+                <Link href={`/practice/${idSlug(subject.id)}` as Route}>{subject.courseCode ?? subject.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </details>
       )}
     </section>
-  );
-}
-
-function SubjectPickers({
-  subjects,
-  studentClass,
-  profile,
-}: {
-  subjects: ReturnType<typeof getSubjects>;
-  studentClass: string;
-  profile: StudentProfile;
-}) {
-  return (
-    <div className="picker-grid">
-      {subjects.map((subject) => {
-          const subjectSlug = idSlug(subject.id);
-          const progression = subjectProgression(subject, { ...progressionContextFor(profile), classLevel: studentClass });
-          const total = filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, studentClass).length;
-
-          return (
-            <article key={subject.id} className="picker-card" style={{ ["--accent" as string]: subject.accentColor }}>
-              <header>
-                <h2>{subject.name}</h2>
-                <span className="picker-count">{total} questions</span>
-              </header>
-
-              <ul className="picker-topics">
-                {progression.subject.topics.map((topic) => {
-                  const count = filterQuestionsByClass(getQuestionsForTopic(topic.id), subject, studentClass).length;
-                  if (count === 0) return null;
-                  const unlocked = progression.isUnlocked(topic.id);
-                  const reason = progression.lockReason(topic.id);
-                  if (!unlocked) {
-                    return (
-                      <li key={topic.id} className="picker-topic-locked">
-                        <span className="is-locked">
-                          {topic.name}
-                          <small>Locked</small>
-                        </span>
-                        {reason && <LockNotice reason={reason} />}
-                      </li>
-                    );
-                  }
-                  return (
-                    <li key={topic.id}>
-                      <Link href={`/practice/${subjectSlug}/${idSlug(topic.id)}` as Route}>
-                        {topic.name}
-                        <small>{count} Q</small>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <Link className="secondary-action" href={`/practice/${subjectSlug}` as Route}>
-                {profile.educationLevel === "undergraduate" ? "Mixed practice across the whole course" : "Mixed practice across unlocked topics"}
-              </Link>
-            </article>
-          );
-        })}
-    </div>
   );
 }

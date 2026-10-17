@@ -4,6 +4,7 @@ import {
   applyEvidence,
   calculateXp,
   emptyRecord,
+  getRecord,
   isUnlocked,
   lockReason,
   scoreToState,
@@ -26,6 +27,24 @@ describe("scoreToState", () => {
 });
 
 describe("applyEvidence", () => {
+  it("never leaves an attempted subtopic as not started, even at 0%", () => {
+    const wrong = applyEvidence(emptyRecord(SUBTOPIC), {
+      subtopicId: SUBTOPIC,
+      correct: false,
+      difficulty: 1,
+      attempts: 1,
+      hintsUsed: 0,
+    });
+    expect(wrong.record.score).toBe(0);
+    expect(wrong.record.state).toBe("exploring");
+  });
+
+  it("corrects records saved with the old not-started state on read", () => {
+    const stale = { [SUBTOPIC]: { subtopicId: SUBTOPIC, score: 0, state: "not_started" as const, evidenceCount: 4, lastPractisedAt: null } };
+    expect(getRecord(stale, SUBTOPIC).state).toBe("exploring");
+    expect(getRecord({}, SUBTOPIC).state).toBe("not_started");
+  });
+
   it("gains more on harder questions", () => {
     const easy = applyEvidence(emptyRecord(SUBTOPIC), {
       subtopicId: SUBTOPIC,

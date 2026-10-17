@@ -41,8 +41,20 @@ export function emptyRecord(subtopicId: string): MasteryRecord {
   return { subtopicId, score: 0, state: "not_started", evidenceCount: 0, lastPractisedAt: null };
 }
 
+/**
+ * Once a student has attempted a subtopic it is at least "exploring", even at 0%: a run of
+ * wrong answers is still engagement, and "not started" next to six answered questions is false.
+ */
+function stateFor(score: number, evidenceCount: number): MasteryState {
+  const state = scoreToState(score);
+  return evidenceCount > 0 && state === "not_started" ? "exploring" : state;
+}
+
 export function getRecord(mastery: MasteryMap, subtopicId: string): MasteryRecord {
-  return mastery[subtopicId] ?? emptyRecord(subtopicId);
+  const record = mastery[subtopicId];
+  if (!record) return emptyRecord(subtopicId);
+  // Records saved before stateFor existed can carry "not_started" alongside evidence.
+  return { ...record, state: stateFor(record.score, record.evidenceCount) };
 }
 
 /**
@@ -59,7 +71,7 @@ export function applyEvidence(current: MasteryRecord, evidence: AttemptEvidence,
       record: {
         ...current,
         score,
-        state: scoreToState(score),
+        state: stateFor(score, current.evidenceCount + 1),
         evidenceCount: current.evidenceCount + 1,
         lastPractisedAt: timestamp,
       },

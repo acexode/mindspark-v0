@@ -8,6 +8,7 @@ import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { experienceFor } from "@/lib/domain/student/experience";
 import { QuizSession } from "@/features/quiz/components/quiz-session";
 import { EmptyState } from "@/components/ui/empty-state";
+import { DIFFICULTY_LABELS, DIFFICULTY_MINUTES_PER_QUESTION, resolveDifficulty } from "@/features/quiz/difficulty";
 
 export const dynamic = "force-dynamic";
 
@@ -22,28 +23,6 @@ const MODE_LABELS = {
   undergraduate: { subject: "Continuous assessment", exam: "Mock exam", topic: "Module assessment" },
 } as const;
 
-/**
- * Minutes allowed per question, by difficulty. Easy gives the most thinking
- * time; medium sits close to easy so the step down doesn't feel punishing;
- * hard is a deliberately tight, exam-pressure pace.
- */
-const DIFFICULTY_MINUTES_PER_QUESTION = {
-  easy: 2.2,
-  medium: 1.8,
-  hard: 1.0,
-} as const;
-
-export type QuizDifficulty = keyof typeof DIFFICULTY_MINUTES_PER_QUESTION;
-
-const DIFFICULTY_LABELS: Record<QuizDifficulty, string> = {
-  easy: "Easy",
-  medium: "Medium",
-  hard: "Hard",
-};
-
-function resolveDifficulty(value: string | undefined): QuizDifficulty {
-  return value === "easy" || value === "medium" || value === "hard" ? value : "medium";
-}
 
 export default async function QuizPage({
   params,

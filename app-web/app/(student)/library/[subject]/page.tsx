@@ -1,12 +1,15 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
-import { getLesson, getQuestions, idSlug, resolveSubjectSlug } from "@/lib/content/loader";
+import { getLesson, getQuestions, resolveSubjectSlug } from "@/lib/content/loader";
 import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
-import { aggregateMastery, getRecord } from "@/lib/domain/mastery/mastery";
-import { MasteryBar, MasteryBadge } from "@/components/ui/mastery-badge";
-import { LockNotice } from "@/components/ui/lock-notice";
+import { buildSubjectOverview } from "@/lib/content/study-overview";
+import { TOPIC_PRACTICE_UNLOCK_PERCENT } from "@/lib/domain/mastery/progression";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
+import { TopicTrail } from "@/features/study/components/topic-trail";
+import { subjectStateLabel } from "@/features/study/labels";
+import { shortSummary } from "@/features/library/components/library-subjects";
+import { TopicOutline, type OutlineTopic } from "@/features/library/components/topic-outline";
 
 export default async function SubjectPage({ params }: { params: Promise<{ subject: string }> }) {
   const { subject: subjectSlug } = await params;
@@ -18,9 +21,22 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
   const subject = progression.subject;
   if (subject.topics.length === 0) notFound();
   const isUndergraduate = profile.educationLevel === "undergraduate";
+  const overview = buildSubjectOverview(raw, profile);
+  const nextLocked = overview.topics.find((t) => t.status === "locked");
+
+  const topics: OutlineTopic[] = subject.topics.map((topic) => {
+    const readiness = isUndergraduate ? progression.readiness(topic.id) : null;
+    return {
+      topic,
+      overview: overview.topics.find((t) => t.id === topic.id)!,
+      lessons: Object.fromEntries(topic.subtopics.map((s) => [s.id, Boolean(getLesson(s.id))])),
+      questionCounts: Object.fromEntries(topic.subtopics.map((s) => [s.id, getQuestions(s.id).length])),
+      suggestion: readiness?.position === "ahead" ? readiness.suggestion : null,
+    };
+  });
 
   return (
-    <section className="page" style={{ ["--accent" as string]: subject.accentColor }}>
+    <section className="page subject-page" style={{ ["--accent" as string]: subject.accentColor }}>
       <header className="page-header">
         <div>
           <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -29,21 +45,17 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
             <span>{subject.name}</span>
           </nav>
           <h1>{subject.name}</h1>
-          {isUndergraduate ? (
-            <p className="topic-meta">
-              {subject.courseCode ?? subject.shortName}
-              {subject.creditUnits ? ` · ${subject.creditUnits} unit${subject.creditUnits === 1 ? "" : "s"}` : ""}
-              {subject.semester ? ` · Semester ${subject.semester}` : ""}
-            </p>
-          ) : null}
-          <p>{subject.description}</p>
-          {!isUndergraduate && (
-            <>
-              <p className="topic-meta">Showing topics for {profile.classLevel}. Other classes stay hidden so you only study what matches your year.</p>
-              <p className="topic-meta">Topics unlock in order. Master the current topic and score at least 50% in its practice to open the next one.</p>
-            </>
-          )}
-          <p className="curricula-tags">
+          <p>{shortSummary(subject.description)}</p>
+          <p className="subject-page-meta">
+            {isUndergraduate ? (
+              <>
+                {subject.courseCode ?? subject.shortName}
+                {subject.creditUnits ? ` · ${subject.creditUnits} unit${subject.creditUnits === 1 ? "" : "s"}` : ""}
+                {subject.semester ? ` · Semester ${subject.semester}` : ""}
+              </>
+            ) : (
+              <>Showing {profile.classLevel} topics</>
+            )}
             {subject.curricula.map((c) => (
               <span key={c} className="tag">
                 {c}
@@ -61,85 +73,40 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
         </div>
       </header>
 
-      <ol className="topic-list">
-        {subject.topics.map((topic) => {
-          const agg = aggregateMastery(profile.mastery, topic.subtopics.map((s) => s.id));
-          const topicSlug = idSlug(topic.id);
-          const unlocked = progression.isUnlocked(topic.id);
-          const reason = progression.lockReason(topic.id);
-          const best = progression.practiceBest[topic.id] ?? 0;
-          const readiness = isUndergraduate ? progression.readiness(topic.id) : null;
+      <section className="subject-summary" aria-label={`Your progress in ${subject.name}`}>
+        <div className="subject-summary-trail">
+          <TopicTrail topics={overview.topics} label={`${subject.name} topics`} />
+          {!isUndergraduate && overview.current && nextLocked ? (
+            <p>
+              Topics unlock in order. Score {TOPIC_PRACTICE_UNLOCK_PERCENT}% in <strong>{overview.current.name}</strong>
+              {"'"}s practice, or work through all of its subtopics, to open <strong>{nextLocked.name}</strong>.
+            </p>
+          ) : (
+            <p>{isUndergraduate ? "Every module is open. Work through them in any order." : "Every topic is open to you."}</p>
+          )}
+        </div>
+        <dl className="subject-summary-stats">
+          <div>
+            <dt>{isUndergraduate ? "Modules" : "Topics cleared"}</dt>
+            <dd>
+              {isUndergraduate ? overview.topics.length : overview.clearedCount}
+              {!isUndergraduate && <span>/{overview.topics.length}</span>}
+            </dd>
+          </div>
+          <div>
+            <dt>Mastery</dt>
+            <dd>
+              {overview.mastery.score}% <span>{subjectStateLabel(overview).toLowerCase()}</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Answered</dt>
+            <dd>{overview.answeredCount}</dd>
+          </div>
+        </dl>
+      </section>
 
-          return (
-            <li key={topic.id} className={`topic-row ${unlocked ? "" : "is-locked"}`}>
-              <div className="topic-row-head">
-                <div>
-                  <h2>
-                    {unlocked ? (
-                      <Link href={`/library/${subjectSlug}/${topicSlug}` as Route}>{topic.name}</Link>
-                    ) : (
-                      <span>
-                        {topic.name} <span className="topic-lock-badge">Locked</span>
-                      </span>
-                    )}
-                  </h2>
-                  <p>{topic.summary}</p>
-                  <p className="topic-meta">
-                    {topic.subtopics.length} subtopics · {topic.classLevels.join(", ")}
-                    {unlocked && best > 0 ? ` · Best practice ${best}%` : ""}
-                  </p>
-                </div>
-                <div className="topic-row-mastery">
-                  <MasteryBadge state={agg.state} score={agg.score} />
-                  <MasteryBar score={agg.score} label={`${topic.name} mastery`} />
-                </div>
-              </div>
-
-              {!unlocked && reason && <LockNotice reason={reason} />}
-              {readiness?.position === "ahead" && readiness.suggestion && <p className="readiness-note">{readiness.suggestion}</p>}
-              {isUndergraduate && (
-                <p className="topic-meta">
-                  <Link href={`/practice/${subjectSlug}/${topicSlug}` as Route}>Practise this module</Link>
-                  {" · "}
-                  <Link href={`/quiz/${subjectSlug}/topic?topic=${topicSlug}` as Route}>Assess this module</Link>
-                </p>
-              )}
-
-              <ul className="subtopic-chips">
-                {topic.subtopics.map((subtopic) => {
-                  const record = getRecord(profile.mastery, subtopic.id);
-                  const hasLesson = Boolean(getLesson(subtopic.id));
-                  const questionCount = getQuestions(subtopic.id).length;
-                  return (
-                    <li key={subtopic.id}>
-                      {unlocked ? (
-                        <Link
-                          href={
-                            hasLesson
-                              ? (`/learn/${subjectSlug}/${topicSlug}/${idSlug(subtopic.id)}` as Route)
-                              : (`/library/${subjectSlug}/${topicSlug}` as Route)
-                          }
-                          className={`subtopic-chip is-${record.state.replace("_", "-")}`}
-                        >
-                          {subtopic.name}
-                          <small>
-                            {hasLesson ? "Lesson" : "No lesson yet"} · {questionCount} Q
-                          </small>
-                        </Link>
-                      ) : (
-                        <span className="subtopic-chip is-locked" title={reason ?? "Locked"}>
-                          {subtopic.name}
-                          <small>Locked</small>
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </li>
-          );
-        })}
-      </ol>
+      <TopicOutline subjectSlug={subjectSlug} topics={topics} mastery={profile.mastery} isUndergraduate={isUndergraduate} />
     </section>
   );
 }

@@ -1,13 +1,14 @@
-import Link from "next/link";
-import type { Route } from "next";
 import { getSubject, getSubjects, idSlug } from "@/lib/content/loader";
-import { allSubtopicIds, practiceHref } from "@/lib/content/navigation";
-import { aggregateMastery, getRecord } from "@/lib/domain/mastery/mastery";
-import { MasteryBar, MasteryBadge, masteryLabel } from "@/components/ui/mastery-badge";
+import { practiceHref } from "@/lib/content/navigation";
+import { buildSubjectOverview } from "@/lib/content/study-overview";
+import { scopeSubjectForStudent } from "@/lib/content/courses";
+import { getRecord } from "@/lib/domain/mastery/mastery";
 import { EmptyState } from "@/components/ui/empty-state";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { experienceFor } from "@/lib/domain/student/experience";
 import { courseCompletion } from "@/features/undergrad/lib/course-stats";
+import { ProgressHighlights, type PractisedUnit } from "@/features/progress/components/progress-highlights";
+import { ProgressSubject } from "@/features/progress/components/progress-subject";
 
 export const metadata = { title: "Progress — Mindspark" };
 
@@ -15,10 +16,11 @@ export default async function ProgressPage() {
   const profile = await readProfileOrDefault();
   const experience = experienceFor(profile);
   const isUndergraduate = profile.educationLevel === "undergraduate";
-  const subjects =
+  const subjects = (
     profile.selectedSubjectIds.length > 0
       ? profile.selectedSubjectIds.map((id) => getSubject(id)).filter((s) => s !== null)
-      : getSubjects(profile.educationLevel);
+      : getSubjects(profile.educationLevel)
+  ).map((subject) => scopeSubjectForStudent(subject, profile.classLevel, profile.educationLevel));
 
   if (subjects.length === 0) {
     return (
@@ -33,129 +35,84 @@ export default async function ProgressPage() {
     );
   }
 
-  const attempted = Object.values(profile.mastery).filter((r) => r.evidenceCount > 0);
-  const weakest = [...attempted].sort((a, b) => a.score - b.score).slice(0, 3);
-  const strongest = [...attempted].sort((a, b) => b.score - a.score).slice(0, 3);
-  const locate = (subtopicId: string) => {
-    for (const subject of subjects) {
-      for (const topic of subject.topics) {
-        const subtopic = topic.subtopics.find((s) => s.id === subtopicId);
-        if (subtopic) return { subject, topic, subtopic };
-      }
-    }
-    return null;
+  const overviews = subjects.map((subject) => buildSubjectOverview(subject, profile));
+  const practised: PractisedUnit[] = subjects.flatMap((subject) =>
+    subject.topics.flatMap((topic) =>
+      topic.subtopics
+        .map((subtopic) => ({ subtopic, record: getRecord(profile.mastery, subtopic.id) }))
+        .filter(({ record }) => record.evidenceCount > 0)
+        .map(({ subtopic, record }) => ({
+          record,
+          name: subtopic.name,
+          context: `${subject.courseCode ?? subject.name} · ${topic.name}`,
+          practiceHref: `${practiceHref(subject, topic)}?subtopic=${idSlug(subtopic.id)}`,
+        })),
+    ),
+  );
+
+  const totals = {
+    subtopics: overviews.reduce((sum, o) => sum + o.subtopicCount, 0),
+    practised: overviews.reduce((sum, o) => sum + o.practisedSubtopicCount, 0),
+    answered: overviews.reduce((sum, o) => sum + o.answeredCount, 0),
+    cleared: overviews.reduce((sum, o) => sum + o.clearedCount, 0),
+    topics: overviews.reduce((sum, o) => sum + o.topics.length, 0),
   };
 
   return (
-    <section className="page">
+    <section className="page progress-page">
       <header className="page-header">
         <div>
           <span className="eyebrow">Progress</span>
           <h1>What you know</h1>
           <p>Mastery is earned from correct reasoning, not time on screen.</p>
         </div>
-        <div className="header-stats">
+        <dl className="header-stats">
           {experience.gamification && (
             <div>
-              <span>XP</span>
-              <strong>{profile.xp}</strong>
+              <dt>XP</dt>
+              <dd>{profile.xp}</dd>
             </div>
           )}
           <div>
-            <span>{isUndergraduate ? "Units practised" : "Subtopics practised"}</span>
-            <strong>{attempted.length}</strong>
+            <dt>{isUndergraduate ? "Units practised" : "Subtopics practised"}</dt>
+            <dd>
+              {totals.practised}
+              <span>/{totals.subtopics}</span>
+            </dd>
           </div>
-        </div>
+          <div>
+            <dt>Answered</dt>
+            <dd>{totals.answered}</dd>
+          </div>
+          {!isUndergraduate && (
+            <div>
+              <dt>Topics cleared</dt>
+              <dd>
+                {totals.cleared}
+                <span>/{totals.topics}</span>
+              </dd>
+            </div>
+          )}
+        </dl>
       </header>
 
-      {attempted.length > 0 && (
-        <div className="progress-highlights">
-          <article>
-            <h2>Needs attention</h2>
-            <ul>
-              {weakest.map((record) => {
-                const located = locate(record.subtopicId);
-                return (
-                  <li key={record.subtopicId}>
-                    {located ? (
-                      <Link href={practiceHref(located.subject, located.topic) as Route}>{located.subtopic.name}</Link>
-                    ) : (
-                      <span>{record.subtopicId}</span>
-                    )}
-                    <MasteryBadge state={record.state} score={record.score} />
-                  </li>
-                );
-              })}
-            </ul>
-          </article>
-          <article>
-            <h2>Strongest</h2>
-            <ul>
-              {strongest.map((record) => {
-                const located = locate(record.subtopicId);
-                return (
-                  <li key={record.subtopicId}>
-                    <span>{located?.subtopic.name ?? record.subtopicId}</span>
-                    <MasteryBadge state={record.state} score={record.score} />
-                  </li>
-                );
-              })}
-            </ul>
-          </article>
-        </div>
+      {practised.length > 0 ? (
+        <ProgressHighlights units={practised} />
+      ) : (
+        <p className="progress-intro">
+          Your mastery appears here as you practise. Each subtopic moves from <em>exploring</em> to <em>mastered</em> as you
+          answer its questions correctly.
+        </p>
       )}
 
       <div className="progress-subjects">
-        {subjects.map((subject) => {
-          const agg = aggregateMastery(profile.mastery, allSubtopicIds(subject));
-          const completion = isUndergraduate ? courseCompletion(subject, profile.mastery) : null;
-          return (
-            <article key={subject.id} className="progress-subject" style={{ ["--accent" as string]: subject.accentColor }}>
-              <header>
-                <h2>
-                  <Link href={`/library/${idSlug(subject.id)}` as Route}>
-                    {subject.courseCode ? `${subject.courseCode} · ${subject.name}` : subject.name}
-                  </Link>
-                </h2>
-                <span>
-                  {completion ? `${completion.percent}% complete · ` : ""}
-                  {agg.score}% mastery · {masteryLabel(agg.state)}
-                </span>
-              </header>
-              <MasteryBar score={agg.score} label={`${subject.name} mastery`} />
-
-              <ul className="progress-topics">
-                {subject.topics.map((topic) => {
-                  const topicAgg = aggregateMastery(profile.mastery, topic.subtopics.map((s) => s.id));
-                  return (
-                    <li key={topic.id}>
-                      <span className="progress-topic-name">{topic.name}</span>
-                      <MasteryBar score={topicAgg.score} label={`${topic.name} mastery`} />
-                      <span className="progress-topic-score">{topicAgg.score}%</span>
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <details className="progress-detail">
-                <summary>Subtopic detail</summary>
-                <ul>
-                  {subject.topics
-                    .flatMap((t) => t.subtopics)
-                    .map((subtopic) => {
-                      const record = getRecord(profile.mastery, subtopic.id);
-                      return (
-                        <li key={subtopic.id}>
-                          <span>{subtopic.name}</span>
-                          <MasteryBadge state={record.state} score={record.score} />
-                        </li>
-                      );
-                    })}
-                </ul>
-              </details>
-            </article>
-          );
-        })}
+        {overviews.map((overview, i) => (
+          <ProgressSubject
+            key={overview.id}
+            subject={overview}
+            completion={isUndergraduate ? courseCompletion(subjects[i], profile.mastery).percent : null}
+          />
+        ))}
       </div>
     </section>
   );

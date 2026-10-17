@@ -1,18 +1,15 @@
-import Link from "next/link";
-import type { Route } from "next";
 import { getQuestionsForSubject, getSubjects, idSlug } from "@/lib/content/loader";
 import { filterQuestionsByClass, filterSubjectsForClass } from "@/lib/content/class-visibility";
+import type { Subject } from "@/lib/content/schema";
 import { EmptyState } from "@/components/ui/empty-state";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
-
-/** Kept in sync with app/(student)/quiz/[subject]/[mode]/page.tsx's DIFFICULTY_MINUTES_PER_QUESTION. */
-const DIFFICULTIES = [
-  { value: "easy", label: "Easy" },
-  { value: "medium", label: "Medium" },
-  { value: "hard", label: "Hard" },
-] as const;
+import { QuizSubjectRow, type QuizMode } from "@/features/quiz/components/quiz-subject-row";
 
 export const metadata = { title: "Quiz — Mindspark" };
+
+/** Paper lengths; kept in step with MODES in app/(student)/quiz/[subject]/[mode]/page.tsx. */
+const SUBJECT_QUIZ_LENGTH = 20;
+const EXAM_MOCK_LENGTH = 40;
 
 export default async function QuizPickerPage() {
   const profile = await readProfileOrDefault();
@@ -21,9 +18,14 @@ export default async function QuizPickerPage() {
   const scoped = isUndergraduate
     ? getSubjects("undergraduate")
     : filterSubjectsForClass(getSubjects(profile.educationLevel), profile.classLevel);
-  const subjects = scoped.filter((s) => filterQuestionsByClass(getQuestionsForSubject(s.id), s, profile.classLevel).length >= 5);
+  const counted = scoped
+    .map((subject) => ({
+      subject,
+      count: filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, profile.classLevel).length,
+    }))
+    .filter(({ count }) => count >= 5);
 
-  if (subjects.length === 0) {
+  if (counted.length === 0) {
     return (
       <section className="page">
         <EmptyState
@@ -36,86 +38,62 @@ export default async function QuizPickerPage() {
     );
   }
 
-  const mine = subjects.filter((s) => profile.selectedSubjectIds.includes(s.id));
-  const others = subjects.filter((s) => !profile.selectedSubjectIds.includes(s.id));
+  const chosen = (id: string) => profile.selectedSubjectIds.indexOf(id);
+  const mine = counted.filter(({ subject }) => chosen(subject.id) >= 0).sort((a, b) => chosen(a.subject.id) - chosen(b.subject.id));
+  const others = counted.filter(({ subject }) => chosen(subject.id) < 0);
+  const featured = mine.length > 0 ? mine : others;
+  const rest = mine.length > 0 ? others : [];
+
+  const modesFor = (count: number): QuizMode[] => [
+    { mode: "subject", label: isUndergraduate ? "Continuous assessment" : "Subject quiz", questionCount: Math.min(SUBJECT_QUIZ_LENGTH, count) },
+    { mode: "exam", label: isUndergraduate ? "Mock exam" : "Exam mock", questionCount: Math.min(EXAM_MOCK_LENGTH, count) },
+  ];
+  const row = ({ subject, count }: { subject: Subject; count: number }) => (
+    <QuizSubjectRow
+      key={subject.id}
+      slug={idSlug(subject.id)}
+      label={subject.courseCode ?? subject.name}
+      accent={subject.accentColor}
+      questionCount={count}
+      curricula={isUndergraduate ? [] : subject.curricula}
+      modes={modesFor(count)}
+    />
+  );
 
   return (
-    <section className="page">
+    <section className="page quiz-picker">
       <header className="page-header">
         <div>
           <span className="eyebrow">{isUndergraduate ? "Assessments" : "Quiz"}</span>
           <h1>{isUndergraduate ? "Assess what you know" : "Test yourself under exam conditions"}</h1>
-          <p>
-            {isUndergraduate
-              ? "Timed, no hints, no feedback until you submit."
-              : "Timed, no hints, no feedback until you submit — just like the real thing."}
-          </p>
+          <p>Pick a paper and a pace. The clock starts as soon as it opens.</p>
         </div>
+        <ul className="quiz-rules" aria-label="How quizzes work">
+          <li>
+            <strong>Timed</strong>
+            <span>Submits itself when time runs out</span>
+          </li>
+          <li>
+            <strong>No hints</strong>
+            <span>Feedback only after you submit</span>
+          </li>
+          <li>
+            <strong>Full review</strong>
+            <span>Every answer explained at the end</span>
+          </li>
+        </ul>
       </header>
 
-      <QuizCards subjects={mine.length > 0 ? mine : others} studentClass={profile.classLevel} isUndergraduate={isUndergraduate} />
+      <div className="quiz-rows">{featured.map(row)}</div>
 
-      {mine.length > 0 && others.length > 0 && (
-        <section className="library-more">
-          <h2>Other {isUndergraduate ? "courses" : "subjects"}</h2>
-          <QuizCards subjects={others} studentClass={profile.classLevel} isUndergraduate={isUndergraduate} />
-        </section>
+      {rest.length > 0 && (
+        <details className="practice-others quiz-others">
+          <summary>
+            Other {isUndergraduate ? "courses" : "subjects"} <span>({rest.length})</span>
+          </summary>
+          <div className="quiz-rows">{rest.map(row)}</div>
+        </details>
       )}
     </section>
-  );
-}
-
-function QuizCards({
-  subjects,
-  studentClass,
-  isUndergraduate,
-}: {
-  subjects: ReturnType<typeof getSubjects>;
-  studentClass: string;
-  isUndergraduate: boolean;
-}) {
-  return (
-    <div className="picker-grid">
-      {subjects.map((subject) => {
-          const slug = idSlug(subject.id);
-          const total = filterQuestionsByClass(getQuestionsForSubject(subject.id), subject, studentClass).length;
-
-          return (
-            <article key={subject.id} className="picker-card" style={{ ["--accent" as string]: subject.accentColor }}>
-              <header>
-                <h2>{subject.courseCode ?? subject.name}</h2>
-                <span className="picker-count">{total} questions available</span>
-              </header>
-              <p>{subject.curricula.join(" · ")}</p>
-              <div className="quiz-modes">
-                <div className="quiz-mode-group">
-                  <span className="quiz-mode-title">
-                    {isUndergraduate ? "Continuous assessment" : "Subject quiz"} · 20 questions
-                  </span>
-                  <div className="quiz-difficulty-row">
-                    {DIFFICULTIES.map((d) => (
-                      <Link key={d.value} className="chip" href={`/quiz/${slug}/subject?difficulty=${d.value}` as Route}>
-                        {d.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-                <div className="quiz-mode-group">
-                  <span className="quiz-mode-title">
-                    {isUndergraduate ? "Mock exam" : "Exam mock"} · 40 questions
-                  </span>
-                  <div className="quiz-difficulty-row">
-                    {DIFFICULTIES.map((d) => (
-                      <Link key={d.value} className="chip" href={`/quiz/${slug}/exam?difficulty=${d.value}` as Route}>
-                        {d.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </article>
-          );
-        })}
-    </div>
   );
 }
