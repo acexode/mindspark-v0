@@ -14,6 +14,8 @@ import path from "node:path";
 import { lessonSchema, questionFileSchema, type Lesson, type Question, type QuestionFile, type Subject, type Subtopic, type Topic } from "../lib/content/schema";
 import { TIER_REQUIREMENTS } from "../lib/content/validate";
 import { buildContentIndex, idSlug } from "../lib/content/loader";
+import { isPlaceholderExplanation } from "../lib/content/explanations";
+import { argValue, chatJson, hasFlag, loadEnvLocal, mapPool } from "./lib/openai";
 
 const SUBJECTS_DIR = path.join(process.cwd(), "content/subjects");
 /** Secondary subjects whose notation needs LaTeX and the stronger model. */
@@ -30,32 +32,6 @@ interface GeneratedPayload {
   estimatedMinutes?: number;
   blocks?: unknown[];
   questions?: unknown[];
-}
-
-function loadEnvLocal(): void {
-  const file = path.join(process.cwd(), ".env.local");
-  if (!existsSync(file)) return;
-  for (const line of readFileSync(file, "utf8").split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) continue;
-    const eq = trimmed.indexOf("=");
-    const key = trimmed.slice(0, eq).trim();
-    let value = trimmed.slice(eq + 1).trim();
-    if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
-    }
-    if (!process.env[key]) process.env[key] = value;
-  }
-}
-
-function argValue(flag: string): string | undefined {
-  const index = process.argv.indexOf(flag);
-  if (index === -1) return undefined;
-  return process.argv[index + 1];
-}
-
-function hasFlag(flag: string): boolean {
-  return process.argv.includes(flag);
 }
 
 const SECONDARY_PROVENANCE = {
@@ -91,10 +67,24 @@ interface SubjectProfile {
   voice: "secondary" | "undergraduate";
   defaultBoard: "WAEC" | "internal";
   provenance: typeof SECONDARY_PROVENANCE;
+  /** Extra rules for one subject, appended to the system prompt. */
+  notes?: string;
 }
 
 /** Per-subject escape hatch. Empty by default — the level defaults are the contract. */
-const PROFILE_OVERRIDES: Record<string, Partial<SubjectProfile>> = {};
+const AUTOCAD_NOTES = `This course teaches AutoCAD itself, so being exact about the software matters more than anything else. A student will type what you write.
+- Teach with command names and their command-line prompts. Prefer commands and options that have been stable across many releases: LINE, PLINE, CIRCLE, ARC, RECTANG, OFFSET, TRIM, EXTEND, FILLET, MOVE, COPY, ROTATE, SCALE, MIRROR, ARRAY, HATCH, BLOCK, INSERT, DIMLINEAR, MTEXT, LAYER, PLOT, and similar well-established commands.
+- Do NOT invent commands, options, system variables or menu paths. If you are not certain that a command or option exists, describe the action in plain words instead of naming it.
+- Do NOT quote exact ribbon tab names, panel names, icon names or dialog layouts, because they change between releases. Say "on the ribbon" or "in the dialog box" and always give the command name so the student can type it.
+- Show a keystroke sequence the way the student would type it, one step per line, in a list or table block: the command, then each response to its prompts. Write "Enter" for pressing the Enter key.
+- Every worked_example must be reproducible by typing, with explicit coordinates, and must state a result the student can check (for example with the DIST or AREA command).
+- Say which units a drawing uses. Use millimetres for building-scale drawings and metres for site plans. A drawing unit has no meaning until the drafter decides it.
+- Questions must be answerable without seeing a screen: which command achieves a stated goal, what a scale, coordinate, area or length calculation gives, or why a setting matters. Numeric questions should be scale, coordinate, area or length calculations.
+- AutoCAD is a drafting tool, not a design checker. Never imply that a drawing that looks right is structurally correct.`;
+
+const PROFILE_OVERRIDES: Record<string, Partial<SubjectProfile>> = {
+  "ug.cve-autocad-drafting": { notes: AUTOCAD_NOTES },
+};
 
 function profileFor(subject: Subject): SubjectProfile {
   const tierMin = TIER_REQUIREMENTS.find((requirement) => requirement.subjectId === subject.id)?.minQuestionsPerSubtopic;
@@ -125,87 +115,6 @@ function profileFor(subject: Subject): SubjectProfile {
         };
 
   return { ...base, ...PROFILE_OVERRIDES[subject.id] };
-}
-
-async function sleep(ms: number): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-const MAX_ATTEMPTS = 8;
-
-/**
- * OpenAI reserves `max_tokens` against the per-minute token budget whether or
- * not the completion uses it. Measured across 291 generated units, output is
- * ~3k tokens median and ~8.3k at p90 — so reserving 12k throttled a 30k TPM
- * account to roughly two requests a minute. An occasional truncation is cheaper
- * than that: it fails JSON parsing and the existing retry regenerates.
- */
-const MAX_OUTPUT_TOKENS = Number(process.env.OPENAI_MAX_OUTPUT_TOKENS ?? "8000");
-
-/** Honour the server's own backoff hint before falling back to exponential. */
-function retryDelayMs(response: Response, body: string, attempt: number): number {
-  const header = Number(response.headers.get("retry-after-ms"));
-  if (Number.isFinite(header) && header > 0) return header + 250;
-  const seconds = Number(response.headers.get("retry-after"));
-  if (Number.isFinite(seconds) && seconds > 0) return seconds * 1000 + 250;
-  const stated = body.match(/try again in ([\d.]+)s/);
-  if (stated) return Number(stated[1]) * 1000 + 250;
-  return Math.min(4000 * 2 ** (attempt - 1), 60_000);
-}
-
-async function chatJson(model: string, system: string, user: string, attempt: number): Promise<GeneratedPayload> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY is not set. Add it to app-web/.env.local");
-
-  let response: Response;
-  try {
-    response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      signal: AbortSignal.timeout(240_000),
-      body: JSON.stringify({
-        model,
-        temperature: attempt === 1 ? 0.4 : 0.2,
-        max_tokens: MAX_OUTPUT_TOKENS,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-      }),
-    });
-  } catch (error) {
-    /**
-     * A dropped connection or timeout rejects the fetch rather than returning a
-     * status, so it bypassed the 429/5xx handling below entirely — which is why
-     * a concurrency-10 run failed 406 of 437 units with a bare "fetch failed".
-     */
-    if (attempt < MAX_ATTEMPTS) {
-      await sleep(Math.min(4000 * 2 ** (attempt - 1), 60_000));
-      return chatJson(model, system, user, attempt + 1);
-    }
-    const cause = (error as { cause?: { code?: string; message?: string } }).cause;
-    throw new Error(
-      `network error after ${MAX_ATTEMPTS} attempts: ${(error as Error).message}${cause?.code ? ` (${cause.code})` : ""}`,
-    );
-  }
-
-  if (!response.ok) {
-    const body = await response.text();
-    if ((response.status === 429 || response.status >= 500) && attempt < MAX_ATTEMPTS) {
-      await sleep(retryDelayMs(response, body, attempt));
-      return chatJson(model, system, user, attempt + 1);
-    }
-    throw new Error(`OpenAI ${response.status}: ${body.slice(0, 300)}`);
-  }
-
-  const data = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
-  const content = data.choices?.[0]?.message?.content;
-  if (!content) throw new Error("OpenAI returned an empty completion");
-  return JSON.parse(content) as GeneratedPayload;
 }
 
 /** Rules that hold for every level — schema shape, not pedagogy. */
@@ -257,7 +166,7 @@ Assessment — this mirrors how these courses are really examined (problem sets 
 - Difficulty mix: ~30% 1, ~50% 2, ~20% 3.
 - Set board to "internal" on every question. This is university coursework, not a national exam board.
 - Never reference WAEC, NECO, JAMB, or Nigerian secondary school. Use SI units and international engineering/CS conventions.
-
+${profile.notes ? `\nCourse-specific rules:\n${profile.notes}\n` : ""}
 ${LATEX_RULE}`;
   }
 
@@ -546,12 +455,11 @@ function assemble(
     const distractorRationale = normalizeDistractorRationale(row.distractorRationale, options);
     let explanation = String(row.explanation ?? "").trim();
     if (explanation.length < 20) {
+      // Salvage real teaching text if the model gave rationales for the wrong options. Never invent
+      // filler: a question left without an explanation is dropped below and the unit is retried.
       const correctText = options?.find((option) => option.id === statedOptionId)?.text;
-      const reasons = distractorRationale ? Object.values(distractorRationale).join(" ") : "";
-      explanation = [correctText ? `The correct answer is ${correctText}.` : "", reasons].filter(Boolean).join(" ").trim();
-    }
-    if (explanation.length < 20) {
-      explanation = `This answer is correct for ${subtopic.name} because it matches the syllabus definition; the other options mix up related but different ideas.`;
+      const reasons = distractorRationale ? Object.values(distractorRationale).join(" ").trim() : "";
+      explanation = reasons ? [correctText ? `The correct answer is ${correctText}.` : "", reasons].filter(Boolean).join(" ") : "";
     }
     const correctOptionId = resolveCorrectOptionId(row, options, explanation);
     return {
@@ -584,6 +492,7 @@ function assemble(
       provenance: profile.provenance,
     } as Question;
   }).filter((question) => {
+    if (question.explanation.length < 20 || isPlaceholderExplanation(question.explanation)) return false;
     if (question.type === "mcq") return (question.options?.length ?? 0) >= 3 && Boolean(question.correctOptionId);
     if (question.type === "true_false") return (question.options?.length ?? 0) === 2;
     if (question.type === "theory") return (question.markingGuide?.length ?? 0) > 0;
@@ -708,7 +617,7 @@ async function generateOne(
   let errors: string | undefined;
 
   for (let attempt = 1; attempt <= 3; attempt += 1) {
-    const raw = await chatJson(
+    const raw = await chatJson<GeneratedPayload>(
       model,
       systemPrompt(subject, profile),
       userPrompt(subject, topic, subtopic, minQuestions, profile, errors),
@@ -733,20 +642,6 @@ async function generateOne(
     }
   }
   throw new Error(`${subtopic.id}: exhausted retries`);
-}
-
-async function mapPool<T, R>(items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>): Promise<R[]> {
-  const results: R[] = new Array(items.length);
-  let next = 0;
-  async function run(): Promise<void> {
-    while (next < items.length) {
-      const index = next;
-      next += 1;
-      results[index] = await worker(items[index], index);
-    }
-  }
-  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, () => run()));
-  return results;
 }
 
 async function main(): Promise<void> {

@@ -10,6 +10,7 @@ import {
   Exam,
   Gauge,
   GraduationCap,
+  PencilRuler,
   PencilSimpleLine,
   Sparkle,
   User,
@@ -27,6 +28,7 @@ const ICONS: Record<string, Icon> = {
   User,
   Gauge,
   GraduationCap,
+  PencilRuler,
 };
 
 export interface AcademicSummary {

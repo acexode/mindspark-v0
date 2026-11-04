@@ -2,6 +2,7 @@ import "server-only";
 import { generateText, streamText } from "ai";
 import { getDeterministicTutorResponse, PROMPT_VERSION, type TutorContext } from "@/lib/domain/tutor/fallback";
 import { buildMessages, buildSystemPrompt } from "@/lib/domain/tutor/prompt";
+import { guardedStream } from "@/lib/domain/tutor/guarded-stream";
 import { checkScope, offTopicReply } from "@/lib/domain/tutor/scope";
 import { tutorProviders, type ProviderName } from "./providers";
 import { isStudyMessage } from "./scope-check";
@@ -23,6 +24,13 @@ export interface TutorStream {
 }
 
 const MAX_TOKENS = 400;
+/**
+ * Longest the model may stay silent mid-reply. Generous, because a CPU-only machine can pause between
+ * tokens, yet far shorter than a whole reply: the old single 60s deadline cut slow answers off silently.
+ */
+const STREAM_IDLE_MS = 30_000;
+/** Absolute cap on one streamed reply, so a model that keeps trickling output cannot hold a request open forever. */
+const STREAM_CEILING_MS = 5 * 60_000;
 /** Low enough to keep small models from drifting on arithmetic, high enough to avoid canned wording. */
 const TEMPERATURE = 0.3;
 
@@ -82,8 +90,6 @@ export async function generateTutorTurn(context: TutorContext): Promise<TutorRep
  * missing model still falls through to the next provider before any bytes are sent.
  */
 export async function streamTutorTurn(context: TutorContext): Promise<TutorStream> {
-  const encoder = new TextEncoder();
-
   const redirect = (): TutorStream => {
     const { response, promptVersion, source } = scopeReply(context);
     return { source, promptVersion, stream: singleChunkStream(response) };
@@ -92,6 +98,12 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
   if (!(await withinScope(context))) return redirect();
 
   for (const provider of tutorProviders()) {
+    // `timeoutMs` now bounds the wait for the FIRST token (a cold model load plus reading the prompt),
+    // not the whole reply. Once words are flowing, silence between chunks is what is watched.
+    const controller = new AbortController();
+    const firstTokenTimer = setTimeout(() => controller.abort(), provider.timeoutMs);
+    let ceilingTimer: ReturnType<typeof setTimeout> | undefined;
+
     try {
       const result = streamText({
         model: provider.model,
@@ -100,36 +112,32 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
         maxTokens: MAX_TOKENS,
         temperature: TEMPERATURE,
         maxRetries: 0,
-        abortSignal: AbortSignal.timeout(provider.timeoutMs),
+        abortSignal: controller.signal,
         onError: () => {},
       });
 
       const chunks = result.textStream[Symbol.asyncIterator]();
       const first = await chunks.next();
-      if (first.done || !first.value) continue;
+      clearTimeout(firstTokenTimer);
+      if (first.done || !first.value) {
+        controller.abort();
+        continue;
+      }
 
-      const stream = new ReadableStream<Uint8Array>({
-        start(controller) {
-          controller.enqueue(encoder.encode(first.value));
-        },
-        async pull(controller) {
-          try {
-            const next = await chunks.next();
-            if (next.done) controller.close();
-            else controller.enqueue(encoder.encode(next.value));
-          } catch {
-            // A mid-stream failure keeps what the student has already read.
-            controller.close();
-          }
-        },
-        cancel() {
-          void chunks.return?.();
-        },
+      ceilingTimer = setTimeout(() => controller.abort(), STREAM_CEILING_MS);
+      const stream = guardedStream(first.value, chunks, {
+        idleMs: STREAM_IDLE_MS,
+        finishReason: result.finishReason,
+        onStall: () => controller.abort(),
+        onEnd: () => clearTimeout(ceilingTimer),
       });
 
       return { source: provider.name, promptVersion: PROMPT_VERSION, stream };
     } catch {
-      // Fall through to the next provider.
+      // Unreachable, model not pulled, or no first token in time — fall through to the next provider.
+      clearTimeout(firstTokenTimer);
+      clearTimeout(ceilingTimer);
+      controller.abort();
     }
   }
 

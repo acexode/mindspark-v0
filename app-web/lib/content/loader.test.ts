@@ -8,7 +8,7 @@ describe("content index cache", () => {
     const second = getContentIndex();
     expect(second).toBe(first);
     expect(first.lessonBySubtopicId.size).toBeGreaterThan(0);
-  });
+  }, 30_000);
 
   /** Two uncached full parses of the whole corpus — I/O bound, and the corpus keeps growing. */
   it("buildContentIndex still returns a fresh object for scripts", () => {

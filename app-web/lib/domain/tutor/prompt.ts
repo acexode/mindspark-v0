@@ -1,4 +1,5 @@
 import type { TutorContext, TutorMode, TutorSurface } from "./fallback";
+import { GROUNDING_CHAR_BUDGET } from "./grounding";
 
 /** Small local models follow short, concrete rules better than long policy text. */
 const MODE_RULES: Record<TutorMode, string> = {
@@ -63,7 +64,7 @@ export function buildSystemPrompt(context: TutorContext): string {
     context.subtopicName ? `The student is studying: ${context.subtopicName}.` : "",
     context.objectives.length ? `Learning objectives:\n- ${context.objectives.join("\n- ")}` : "",
     context.groundingText
-      ? `Approved lesson content you must stay consistent with:\n"""\n${context.groundingText.slice(0, 4000)}\n"""`
+      ? `Approved lesson content you must stay consistent with:\n"""\n${context.groundingText.slice(0, GROUNDING_CHAR_BUDGET)}\n"""`
       : "",
     questionBlock,
     SCOPE_RULE,
@@ -90,11 +91,31 @@ export function buildDefaultUserPrompt(context: TutorContext): string {
     : "Give one Socratic question or one progressive hint for what the student is studying.";
 }
 
-/** Prior turns in the chat-completion shape, oldest first. */
+/**
+ * How much chat history goes into the prompt, in characters (~1,100 tokens).
+ *
+ * Ollama's default context window is 4k tokens on a machine without much VRAM, and the system
+ * prompt, the lesson text, the history and the reply all share it. History used to be limited only
+ * by turn count, so six long turns plus a long lesson could overflow it and silently lose the start
+ * of the prompt, which is where the tutor's rules are.
+ */
+export const HISTORY_CHAR_BUDGET = 4000;
+/** A tutor reply is capped near 150 words, so a longer turn is a pasted wall of text from the client. */
+const HISTORY_TURN_CHAR_LIMIT = 1200;
+
+/** Prior turns in the chat-completion shape, oldest first, keeping the most recent that fit the budget. */
 export function buildMessages(context: TutorContext): { role: "user" | "assistant"; content: string }[] {
-  const history = (context.history ?? []).map((turn) => ({
-    role: turn.role === "student" ? ("user" as const) : ("assistant" as const),
-    content: turn.text,
-  }));
-  return [...history, { role: "user", content: context.userMessage ?? buildDefaultUserPrompt(context) }];
+  const kept: { role: "user" | "assistant"; content: string }[] = [];
+  let used = 0;
+
+  for (const turn of [...(context.history ?? [])].reverse()) {
+    const content = turn.text.slice(0, HISTORY_TURN_CHAR_LIMIT);
+    if (used + content.length > HISTORY_CHAR_BUDGET) break;
+    kept.unshift({ role: turn.role === "student" ? "user" : "assistant", content });
+    used += content.length;
+  }
+  // A conversation opens with the student; a tutor reply left dangling at the start has lost its question.
+  while (kept[0]?.role === "assistant") kept.shift();
+
+  return [...kept, { role: "user", content: context.userMessage ?? buildDefaultUserPrompt(context) }];
 }

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { StudentShell } from "@/components/layout/student-shell";
 import type { AcademicSummary } from "@/components/layout/sidebar";
 import { getProgramme, getSubject } from "@/lib/content/loader";
+import { DRAFTING_COURSE_ID } from "@/lib/domain/drafting/prompt";
 import { experienceFor } from "@/lib/domain/student/experience";
 import { readProfile } from "@/lib/server/profile/store";
 
@@ -25,11 +26,15 @@ export default async function StudentLayout({ children }: { children: React.Reac
   if (!profile?.onboarded) redirect("/onboarding");
 
   const experience = experienceFor(profile);
+  // The drafting studio belongs to the AutoCAD course, so only students enrolled in it see it.
+  const nav = profile.selectedSubjectIds.includes(DRAFTING_COURSE_ID)
+    ? [...experience.nav.slice(0, -2), { href: "/drafting", label: "Drafting", icon: "PencilRuler" }, ...experience.nav.slice(-2)]
+    : experience.nav;
 
   return (
     <StudentShell
       level={profile.educationLevel}
-      nav={experience.nav}
+      nav={nav}
       xp={profile.xp}
       streak={profile.streak}
       summary={academicSummaryFor(profile)}

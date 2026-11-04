@@ -1,4 +1,5 @@
 import { buildContentIndex, type ContentIndex } from "./loader";
+import { isPlaceholderExplanation } from "./explanations";
 import { ID_PATTERNS } from "./schema";
 
 export interface ValidationIssue {
@@ -123,6 +124,11 @@ export function validateContent(options: { enforceTiers?: boolean } = {}): Valid
         const stems = seenStems.get(subtopic.id) ?? new Set<string>();
         for (const question of questions) {
           assertUnique(question.id, "question", issues, seenIds);
+
+          // "The correct answer is X." tells a student who got it wrong nothing they could not already see.
+          if (isPlaceholderExplanation(question.explanation)) {
+            issues.push({ severity: "error", scope: question.id, message: "Placeholder explanation: it restates the answer instead of explaining why" });
+          }
 
           for (const objectiveId of question.objectiveIds) {
             if (!objectiveIds.has(objectiveId)) {

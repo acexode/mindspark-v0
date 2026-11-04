@@ -100,6 +100,10 @@ Full contract: [docs/content-authoring-guide.md](docs/content-authoring-guide.md
 - Every question needs a real `explanation` (validator-enforced, not a restatement of the answer).
 - After writing content, run `npm run content:validate` and fix errors immediately.
 
+## Drafting studio
+
+`/drafting` (shown only to students enrolled in `ug.cve-autocad-drafting`) turns a prompt or template into a DXF. The model writes a short Python script against `app-web/drafting/mindspark_draft/drawing.py`; `lib/server/drafting/` spawns `python -I drafting/run.py` (AST-allowlisted, time-limited) and returns DXF + SVG preview + AutoCAD command equivalents. Needs `npm run drafting:setup` once (Python 3.9+, private venv). Keep the API reference in `lib/domain/drafting/prompt.ts` in sync with `drawing.py`. Tests: `npm run drafting:test` (Python) and the vitest files under `lib/*/drafting`.
+
 ## Engineering guidelines
 
 Full rules: [docs/engineering-guidelines.md](docs/engineering-guidelines.md). Points most likely to matter day-to-day:

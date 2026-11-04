@@ -3,6 +3,7 @@ import { getLesson, getQuestionById, getSubtopic, getTopic } from "@/lib/content
 import type { Question } from "@/lib/content/schema";
 import { gradeAnswer, type SubmittedAnswer } from "@/lib/domain/assessment/grading";
 import type { TutorContext, TutorQuestionContext } from "@/lib/domain/tutor/fallback";
+import { buildGroundingText } from "@/lib/domain/tutor/grounding";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import type { TutorRequest } from "./request";
 
@@ -15,18 +16,7 @@ export async function buildTutorContext(request: TutorRequest): Promise<TutorCon
   const topicEntry = !entry && request.topicId ? getTopic(request.topicId) : null;
   const lesson = subtopicId ? getLesson(subtopicId) : null;
 
-  const groundingText = lesson?.blocks
-    .map((block) =>
-      block.type === "text"
-        ? block.markdown
-        : block.type === "callout"
-          ? `${block.title}: ${block.text}`
-          : block.type === "summary"
-            ? block.points.join(" ")
-            : "",
-    )
-    .filter(Boolean)
-    .join("\n\n");
+  const groundingText = lesson ? buildGroundingText(lesson.blocks) || undefined : undefined;
 
   return {
     ageBand: profile.ageBand,
