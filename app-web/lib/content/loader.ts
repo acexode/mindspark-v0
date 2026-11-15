@@ -13,6 +13,7 @@ import {
   type Subtopic,
   type Topic,
 } from "./schema";
+import { listDocs, openContentDb, type DocRow } from "./db";
 
 export const CONTENT_ROOT = path.join(process.cwd(), "content");
 const SUBJECTS_DIR = path.join(CONTENT_ROOT, "subjects");
@@ -102,15 +103,7 @@ export function buildContentIndex(): ContentIndex {
     }
 
     const subject = parsedSubject.data;
-    index.subjects.push(subject);
-    index.subjectById.set(subject.id, subject);
-
-    for (const topic of subject.topics) {
-      index.topicById.set(topic.id, { topic, subject });
-      for (const subtopic of topic.subtopics) {
-        index.subtopicById.set(subtopic.id, { subtopic, topic, subject });
-      }
-    }
+    registerSubject(index, subject);
 
     const topicsDir = path.join(dir, "topics");
     for (const topicDir of listDirs(topicsDir)) {
@@ -141,8 +134,80 @@ export function buildContentIndex(): ContentIndex {
     }
   }
 
+  loadFromDatabase(index);
+
   index.subjects.sort((a, b) => a.name.localeCompare(b.name));
   return index;
+}
+
+function registerSubject(index: ContentIndex, subject: Subject): void {
+  index.subjects.push(subject);
+  index.subjectById.set(subject.id, subject);
+  for (const topic of subject.topics) {
+    index.topicById.set(topic.id, { topic, subject });
+    for (const subtopic of topic.subtopics) {
+      index.subtopicById.set(subtopic.id, { subtopic, topic, subject });
+    }
+  }
+}
+
+/**
+ * Merges undergraduate content from the local SQLite database, if one exists.
+ * Repo JSON wins on ID collisions so secondary content can never be shadowed.
+ * Every row is re-validated against the same Zod schemas as disk content.
+ */
+function loadFromDatabase(index: ContentIndex): void {
+  let db;
+  try {
+    db = openContentDb();
+  } catch (error) {
+    index.errors.push({ file: "content.db", message: `Cannot open content database: ${(error as Error).message}` });
+    return;
+  }
+  if (!db) return;
+
+  try {
+    const parse = <T>(row: DocRow, schema: { safeParse(v: unknown): { success: true; data: T } | { success: false; error: { issues: Array<{ path: (string | number)[]; message: string }> } } }): T | null => {
+      let raw: unknown;
+      try {
+        raw = JSON.parse(row.json);
+      } catch (error) {
+        index.errors.push({ file: `db:${row.kind}:${row.id}`, message: `Invalid JSON: ${(error as Error).message}` });
+        return null;
+      }
+      const result = schema.safeParse(raw);
+      if (!result.success) {
+        index.errors.push({ file: `db:${row.kind}:${row.id}`, message: formatZod(result.error) });
+        return null;
+      }
+      return result.data;
+    };
+
+    for (const row of listDocs(db, "programme")) {
+      const programme = parse<Programme>(row, programmeSchema);
+      if (programme && !index.programmeBySlug.has(programme.slug)) {
+        index.programmes.push(programme);
+        index.programmeBySlug.set(programme.slug, programme);
+      }
+    }
+    for (const row of listDocs(db, "subject")) {
+      const subject = parse<Subject>(row, subjectSchema);
+      if (subject && !index.subjectById.has(subject.id)) registerSubject(index, subject);
+    }
+    for (const row of listDocs(db, "lesson")) {
+      const lesson = parse<Lesson>(row, lessonSchema);
+      if (lesson && !index.lessonBySubtopicId.has(lesson.subtopicId)) index.lessonBySubtopicId.set(lesson.subtopicId, lesson);
+    }
+    for (const row of listDocs(db, "questions")) {
+      const file = parse<{ subtopicId: string; questions: Question[] }>(row, questionFileSchema);
+      if (!file) continue;
+      const existing = index.questionsBySubtopicId.get(file.subtopicId) ?? [];
+      index.questionsBySubtopicId.set(file.subtopicId, [...existing, ...file.questions]);
+      for (const q of file.questions) index.questionById.set(q.id, q);
+    }
+  } finally {
+    db.close();
+  }
 }
 
 function readJson(file: string, index: ContentIndex): unknown {
