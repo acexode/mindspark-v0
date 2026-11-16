@@ -51,8 +51,8 @@ if (!dryRun) {
   const db = openContentDb(dbPath(), { create: true })!;
   db.exec("BEGIN");
   try {
-    for (const p of DB_PROGRAMMES) upsertDoc(db, { kind: "programme", id: p.slug, data: p });
-    for (const s of subjects) upsertDoc(db, { kind: "subject", id: s.id, subjectId: s.id, data: s });
+    for (const p of DB_PROGRAMMES) upsertDoc(db, { kind: "programme", id: p.slug, data: p, preserveReview: true });
+    for (const s of subjects) upsertDoc(db, { kind: "subject", id: s.id, subjectId: s.id, data: s, preserveReview: true });
     db.exec("COMMIT");
   } catch (e) {
     db.exec("ROLLBACK");

@@ -80,7 +80,7 @@ export function listDocs(db: DatabaseSyncType, kind: DocKind): DocRow[] {
 
 export function upsertDoc(
   db: DatabaseSyncType,
-  doc: { kind: DocKind; id: string; subjectId?: string | null; data: unknown; reviewStatus?: ReviewStatus },
+  doc: { kind: DocKind; id: string; subjectId?: string | null; data: unknown; reviewStatus?: ReviewStatus; preserveReview?: boolean },
 ): void {
   db.prepare(
     `INSERT INTO documents (kind, id, subject_id, json, review_status, updated_at)
@@ -88,9 +88,17 @@ export function upsertDoc(
      ON CONFLICT(kind, id) DO UPDATE SET
        subject_id = excluded.subject_id,
        json = excluded.json,
-       review_status = CASE WHEN ? IS NULL THEN 'unreviewed' ELSE excluded.review_status END,
+       review_status = CASE WHEN ? THEN documents.review_status WHEN ? IS NULL THEN 'unreviewed' ELSE excluded.review_status END,
        updated_at = datetime('now')`,
-  ).run(doc.kind, doc.id, doc.subjectId ?? null, JSON.stringify(doc.data), doc.reviewStatus ?? "unreviewed", doc.reviewStatus ?? null);
+  ).run(
+    doc.kind,
+    doc.id,
+    doc.subjectId ?? null,
+    JSON.stringify(doc.data),
+    doc.reviewStatus ?? "unreviewed",
+    doc.preserveReview ? 1 : 0,
+    doc.reviewStatus ?? null,
+  );
 }
 
 export function setReviewStatus(db: DatabaseSyncType, subjectId: string, status: ReviewStatus, notes?: string): void {
