@@ -16,6 +16,8 @@ import { TIER_REQUIREMENTS } from "../lib/content/validate";
 import { buildContentIndex, idSlug } from "../lib/content/loader";
 import { isPlaceholderExplanation } from "../lib/content/explanations";
 import { argValue, chatJson, hasFlag, loadEnvLocal, mapPool } from "./lib/openai";
+import { dbPath, openContentDb, upsertDoc } from "../lib/content/db";
+import type { DatabaseSync } from "node:sqlite";
 
 const SUBJECTS_DIR = path.join(process.cwd(), "content/subjects");
 /** Secondary subjects whose notation needs LaTeX and the stronger model. */
@@ -66,7 +68,7 @@ interface SubjectProfile {
   minQuestions: number;
   voice: "secondary" | "undergraduate";
   defaultBoard: "WAEC" | "internal";
-  provenance: typeof SECONDARY_PROVENANCE;
+  provenance: Omit<typeof SECONDARY_PROVENANCE, "reviewStatus"> & { reviewStatus: "draft" | "review" | "published" };
   /** Extra rules for one subject, appended to the system prompt. */
   notes?: string;
 }
@@ -81,6 +83,32 @@ const AUTOCAD_NOTES = `This course teaches AutoCAD itself, so being exact about 
 - Say which units a drawing uses. Use millimetres for building-scale drawings and metres for site plans. A drawing unit has no meaning until the drafter decides it.
 - Questions must be answerable without seeing a screen: which command achieves a stated goal, what a scale, coordinate, area or length calculation gives, or why a setting matters. Numeric questions should be scale, coordinate, area or length calculations.
 - AutoCAD is a drafting tool, not a design checker. Never imply that a drawing that looks right is structurally correct.`;
+
+const MEDICAL_NOTES = `This is a pre-clinical medical degree course taught to the standard of leading UK and US medical schools. Accuracy outranks everything else.
+- Use standard international anatomical and clinical terminology (Terminologia Anatomica / Latin or English official names). Give eponyms only alongside the descriptive name.
+- State reference ranges and thresholds only when they are widely standardised, and say they vary by laboratory and guideline. Never give patient-specific treatment instructions or drug doses as advice; doses may appear only as pharmacology teaching examples and must be labelled as such.
+- Prefer mechanism-based explanation: structure, then function, then what goes wrong, then what you would see clinically.
+- Clinical vignettes are welcome in questions (age, sex, presentation, one or two findings) and must be internally consistent.
+- If you are not certain a fact is correct, leave it out rather than guess.
+- Do not claim a specific named guideline, trial or statistic unless it is very well established.`;
+
+const ENGINEERING_NOTES = `This is a mechanical engineering degree course taught to the standard of leading European and US programmes.
+- Use SI units throughout and state them. Define symbols at first use and name the assumptions a formula depends on.
+- Worked examples must have internally consistent numbers: recompute before you write the answer.
+- Do not quote standards, code clauses or material property tables you are not certain of; give representative values and label them as typical.`;
+
+/** Programmes whose generated content lives in the database and starts life as an unreviewed draft. */
+const DB_PROGRAMME_NOTES: Record<string, string> = {
+  "mbbs-medicine": MEDICAL_NOTES,
+  "beng-mechanical-engineering": ENGINEERING_NOTES,
+};
+
+const DRAFT_PROVENANCE = {
+  sources: [{ id: GENERATED_SOURCE_ID, title: "Mindspark AI-generated course content", type: "authored" as const }],
+  reviewStatus: "draft" as const,
+  verified: false,
+  note: "AI-generated against the published curricula of leading European and US universities; wording is original. Not yet reviewed by a subject-matter expert.",
+};
 
 const PROFILE_OVERRIDES: Record<string, Partial<SubjectProfile>> = {
   "ug.cve-autocad-drafting": { notes: AUTOCAD_NOTES },
@@ -113,6 +141,13 @@ function profileFor(subject: Subject): SubjectProfile {
           defaultBoard: "WAEC",
           provenance: SECONDARY_PROVENANCE,
         };
+
+  const dbProgramme = (subject.programmes ?? []).find((slug) => slug in DB_PROGRAMME_NOTES);
+  if (dbProgramme && subject.level === "undergraduate" && /^ug\.(mbbs|mce)-/.test(subject.id)) {
+    base.notes = DB_PROGRAMME_NOTES[dbProgramme];
+    base.provenance = DRAFT_PROVENANCE;
+    if (dbProgramme === "mbbs-medicine") base.latex = false;
+  }
 
   return { ...base, ...PROFILE_OVERRIDES[subject.id] };
 }
@@ -598,19 +633,27 @@ async function generateOne(
   subject: Subject,
   topic: Topic,
   subtopic: Subtopic,
-  destDir: string,
+  destDir: string | null,
   force: boolean,
   questionOverride?: number,
+  db?: DatabaseSync,
+  index?: ReturnType<typeof buildContentIndex>,
 ): Promise<"wrote" | "skipped" | "protected"> {
+  const toDb = destDir === null;
+  if (toDb && (!db || !index)) throw new Error("database target requires an open database");
   const topicSlug = idSlug(topic.id);
   const subSlug = idSlug(subtopic.id);
-  const folder = path.join(destDir, "topics", topicSlug);
+  const folder = toDb ? "" : path.join(destDir, "topics", topicSlug);
   const lessonPath = path.join(folder, `${subSlug}.lesson.json`);
   const questionsPath = path.join(folder, `${subSlug}.questions.json`);
-  if (!force && existsSync(lessonPath) && existsSync(questionsPath)) return "skipped";
-  if (force && (isHandAuthored(lessonPath) || isHandAuthored(questionsPath))) return "protected";
-
-  mkdirSync(folder, { recursive: true });
+  if (toDb) {
+    const has = index!.lessonBySubtopicId.has(subtopic.id) && index!.questionsBySubtopicId.has(subtopic.id);
+    if (!force && has) return "skipped";
+  } else {
+    if (!force && existsSync(lessonPath) && existsSync(questionsPath)) return "skipped";
+    if (force && (isHandAuthored(lessonPath) || isHandAuthored(questionsPath))) return "protected";
+    mkdirSync(folder, { recursive: true });
+  }
   const profile = profileFor(subject);
   const minQuestions = questionOverride && questionOverride > 0 ? questionOverride : profile.minQuestions;
   const model = profile.model;
@@ -633,8 +676,20 @@ async function generateOne(
         if (!questionsParsed.success) parts.push(`QUESTIONS\n${formatZod(questionsParsed.error)}`);
         throw new Error(parts.join("\n"));
       }
-      writeFileSync(lessonPath, `${JSON.stringify(lessonParsed.data, null, 2)}\n`);
-      writeFileSync(questionsPath, `${JSON.stringify(questionsParsed.data, null, 2)}\n`);
+      if (toDb) {
+        db!.exec("BEGIN");
+        try {
+          upsertDoc(db!, { kind: "lesson", id: subtopic.id, subjectId: subject.id, data: lessonParsed.data });
+          upsertDoc(db!, { kind: "questions", id: `${subtopic.id}#generated`, subjectId: subject.id, data: questionsParsed.data });
+          db!.exec("COMMIT");
+        } catch (error) {
+          db!.exec("ROLLBACK");
+          throw error;
+        }
+      } else {
+        writeFileSync(lessonPath, `${JSON.stringify(lessonParsed.data, null, 2)}\n`);
+        writeFileSync(questionsPath, `${JSON.stringify(questionsParsed.data, null, 2)}\n`);
+      }
       return "wrote";
     } catch (error) {
       errors = error instanceof Error ? error.message : String(error);
@@ -666,11 +721,13 @@ async function main(): Promise<void> {
     existsSync(path.join(SUBJECTS_DIR, entry, "subject.json")),
   );
 
-  const jobs: Array<{ subject: Subject; topic: Topic; subtopic: Subtopic; destDir: string }> = [];
+  const jobs: Array<{ subject: Subject; topic: Topic; subtopic: Subtopic; destDir: string | null }> = [];
+  const onDisk = new Set<string>();
   for (const dir of dirs) {
     const subjectFile = path.join(SUBJECTS_DIR, dir, "subject.json");
     const subject = index.subjects.find((entry) => entry.id === JSON.parse(readFileSync(subjectFile, "utf8")).id);
     if (!subject) continue;
+    onDisk.add(subject.id);
     if (only && only !== dir && only !== subject.id && only !== subject.name.toLowerCase()) continue;
     if (programme && !(subject.programmes ?? []).includes(programme)) continue;
     for (const topic of subject.topics) {
@@ -681,8 +738,25 @@ async function main(): Promise<void> {
     }
   }
 
+  /** Subjects that live only in the content database (no directory in the repo). */
+  for (const subject of index.subjects) {
+    if (onDisk.has(subject.id)) continue;
+    if (only && only !== subject.id && only !== idSlug(subject.id) && only !== subject.name.toLowerCase()) continue;
+    if (programme && !(subject.programmes ?? []).includes(programme)) continue;
+    for (const topic of subject.topics) {
+      if (year && !topic.classLevels.includes(year as (typeof topic.classLevels)[number])) continue;
+      for (const subtopic of topic.subtopics) jobs.push({ subject, topic, subtopic, destDir: null });
+    }
+  }
+
+  const db = jobs.some((job) => job.destDir === null) ? openContentDb(dbPath(), { create: true }) : null;
+  if (db) console.log(`database target: ${dbPath()}`);
+
   const pending = jobs.filter((job) => {
     if (force) return true;
+    if (job.destDir === null) {
+      return !(index.lessonBySubtopicId.has(job.subtopic.id) && index.questionsBySubtopicId.has(job.subtopic.id));
+    }
     const folder = path.join(job.destDir, "topics", idSlug(job.topic.id));
     const slug = idSlug(job.subtopic.id);
     return !(existsSync(path.join(folder, `${slug}.lesson.json`)) && existsSync(path.join(folder, `${slug}.questions.json`)));
@@ -698,10 +772,10 @@ async function main(): Promise<void> {
   let wrote = 0;
   let failed = 0;
   let protectedCount = 0;
-  await mapPool(queue, concurrency, async (job, index) => {
-    const label = `${index + 1}/${queue.length} ${job.subtopic.id}`;
+  await mapPool(queue, concurrency, async (job, position) => {
+    const label = `${position + 1}/${queue.length} ${job.subtopic.id}`;
     try {
-      const result = await generateOne(job.subject, job.topic, job.subtopic, job.destDir, force, questionOverride);
+      const result = await generateOne(job.subject, job.topic, job.subtopic, job.destDir, force, questionOverride, db ?? undefined, index);
       if (result === "wrote") {
         wrote += 1;
         console.log(`wrote  ${label}`);
@@ -718,6 +792,7 @@ async function main(): Promise<void> {
     }
   });
 
+  db?.close();
   console.log(
     `done — wrote ${wrote}, failed ${failed}, hand-authored kept ${protectedCount}, skipped ${queue.length - wrote - failed - protectedCount}`,
   );
