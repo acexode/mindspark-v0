@@ -60,6 +60,20 @@ function retryDelayMs(response: Response, body: string, attempt: number): number
   return Math.min(4000 * 2 ** (attempt - 1), 60_000);
 }
 
+/**
+ * GPT-5 and o-series models reason before answering: they reject `temperature` and
+ * `max_tokens`, take `max_completion_tokens`, and count their hidden reasoning against
+ * that budget, so it needs headroom beyond the visible JSON.
+ */
+export function isReasoningModel(model: string): boolean {
+  return /^(gpt-5|o\d)/.test(model);
+}
+
+const REASONING_OUTPUT_TOKENS = Number(process.env.OPENAI_REASONING_OUTPUT_TOKENS ?? "32000");
+
+/** Running token totals for this process, so a generation run can report what it actually used. */
+export const usageTotals = { calls: 0, inputTokens: 0, outputTokens: 0, reasoningTokens: 0 };
+
 export interface ChatOptions {
   /** Defaults to 0.4 on the first attempt and 0.2 on retries. */
   temperature?: number;
@@ -87,8 +101,15 @@ export async function chatJson<T = unknown>(
       signal: AbortSignal.timeout(240_000),
       body: JSON.stringify({
         model,
-        temperature: options.temperature ?? (attempt === 1 ? 0.4 : 0.2),
-        max_tokens: options.maxTokens ?? DEFAULT_MAX_OUTPUT_TOKENS,
+        ...(isReasoningModel(model)
+          ? {
+              max_completion_tokens: options.maxTokens ?? REASONING_OUTPUT_TOKENS,
+              reasoning_effort: process.env.OPENAI_REASONING_EFFORT ?? "medium",
+            }
+          : {
+              temperature: options.temperature ?? (attempt === 1 ? 0.4 : 0.2),
+              max_tokens: options.maxTokens ?? DEFAULT_MAX_OUTPUT_TOKENS,
+            }),
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: system },
@@ -121,7 +142,14 @@ export async function chatJson<T = unknown>(
     throw new Error(`OpenAI ${response.status}: ${body.slice(0, 300)}`);
   }
 
-  const data = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  const data = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+    usage?: { prompt_tokens?: number; completion_tokens?: number; completion_tokens_details?: { reasoning_tokens?: number } };
+  };
+  usageTotals.calls += 1;
+  usageTotals.inputTokens += data.usage?.prompt_tokens ?? 0;
+  usageTotals.outputTokens += data.usage?.completion_tokens ?? 0;
+  usageTotals.reasoningTokens += data.usage?.completion_tokens_details?.reasoning_tokens ?? 0;
   const content = data.choices?.[0]?.message?.content;
   if (!content) throw new Error("OpenAI returned an empty completion");
   return JSON.parse(content) as T;

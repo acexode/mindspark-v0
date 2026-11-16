@@ -15,7 +15,7 @@ import { lessonSchema, questionFileSchema, type Lesson, type Question, type Ques
 import { TIER_REQUIREMENTS } from "../lib/content/validate";
 import { buildContentIndex, idSlug } from "../lib/content/loader";
 import { isPlaceholderExplanation } from "../lib/content/explanations";
-import { argValue, chatJson, hasFlag, loadEnvLocal, mapPool } from "./lib/openai";
+import { argValue, chatJson, hasFlag, loadEnvLocal, mapPool, usageTotals } from "./lib/openai";
 import { dbPath, openContentDb, upsertDoc } from "../lib/content/db";
 import type { DatabaseSync } from "node:sqlite";
 
@@ -153,6 +153,8 @@ function profileFor(subject: Subject): SubjectProfile {
   const dbProgramme = (subject.programmes ?? []).find((slug) => slug in DB_PROGRAMME_NOTES);
   if (dbProgramme && subject.level === "undergraduate" && /^ug\.(mbbs|mce)-/.test(subject.id)) {
     base.notes = DB_PROGRAMME_NOTES[dbProgramme];
+    // Review showed gpt-4o writes ambiguous multiple-choice keys on these courses; gpt-5.5 did not.
+    base.model = process.env.OPENAI_CONTENT_MODEL_DB ?? "gpt-5.5";
     base.provenance = DRAFT_PROVENANCE;
     if (dbProgramme === "mbbs-medicine") base.latex = false;
   }
@@ -828,6 +830,9 @@ async function main(): Promise<void> {
     console.log("review status reset to unreviewed: re-run the reviewer on this course");
   }
   db?.close();
+  console.log(
+    `tokens — ${usageTotals.calls} calls, input ${usageTotals.inputTokens}, output ${usageTotals.outputTokens} (of which reasoning ${usageTotals.reasoningTokens})`,
+  );
   console.log(
     `done — wrote ${wrote}, failed ${failed}, hand-authored kept ${protectedCount}, skipped ${queue.length - wrote - failed - protectedCount}`,
   );
