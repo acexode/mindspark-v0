@@ -27,9 +27,13 @@ export interface CourseSpec {
   semester: 1 | 2;
   creditUnits: number;
   programme: string;
+  /** Further programmes that share this course (e.g. engineering maths reused across disciplines). */
+  alsoIn?: string[];
   accentColor: string;
   icon: string;
   modules: ModuleDraft[];
+  /** Overrides the default provenance (international consensus core) with course-specific sources. */
+  provenance?: Subject["provenance"];
 }
 
 export function toSubject(spec: CourseSpec): Subject {
@@ -49,11 +53,11 @@ export function toSubject(spec: CourseSpec): Subject {
     courseCode: spec.code,
     creditUnits: spec.creditUnits,
     semester: spec.semester,
-    programmes: [spec.programme],
+    programmes: [spec.programme, ...(spec.alsoIn ?? [])],
     topics: spec.modules.map((module, index) =>
       makeTopic(id, module.slug, module.name, index + 1, module.summary, [spec.year], module.units),
     ),
-    provenance: {
+    provenance: spec.provenance ?? {
       sources: [
         {
           id: "international-consensus-core",
