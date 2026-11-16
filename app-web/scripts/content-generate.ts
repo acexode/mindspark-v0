@@ -91,7 +91,7 @@ const MEDICAL_NOTES = `This is a pre-clinical medical degree course taught to th
 - Clinical vignettes are welcome in questions (age, sex, presentation, one or two findings) and must be internally consistent.
 - If you are not certain a fact is correct, leave it out rather than guess.
 - Do not claim a specific named guideline, trial or statistic unless it is very well established.
-- Every numeric question must be answerable from numbers stated in the stem plus universally agreed definitions. Never write a question whose answer depends on an unstated counting convention, a typical value the student would have to guess, or a measurement the stem does not give. Avoid "how many" counting questions unless the count is a standard fact the lesson states explicitly.
+- Every numeric question must be answerable from numbers stated in the stem plus universally agreed definitions. Never write a question whose answer depends on an unstated counting convention, a typical value the student would have to guess, or a measurement the stem does not give. Avoid "how many" counting questions unless the count is a standard fact the lesson states explicitly. Use numeric questions only where a calculation is clinically meaningful; never pad with trivial arithmetic (such as N-1 counts) or recall counts disguised as calculations, and never state the answer in the stem. Every concept a question tests (including both terms of a pair such as midsagittal/parasagittal) must be explicitly taught in the lesson, and the lesson must cover every term in the unit title.
 - For every question, solve it yourself first, then check that the key, the correct option text and the explanation all give the same answer, and that the explanation's own arithmetic or counting agrees with the key. If they disagree, rewrite the question.
 - Every objective must be taught in the lesson, and every question must be answerable from the lesson content. Do not test a structure or fact the lesson never covers.
 - Distinguish carefully between where a structure exits, where it travels, and which level it is affected at (for example spinal nerve roots and vertebral levels). Do not state a procedure site or landmark unless you are certain of it.
@@ -230,6 +230,20 @@ ${profile.latex ? LATEX_RULE : "- Do not force LaTeX. Plain clear English is bet
 - Teach, do not dump notes. A student should be able to learn the subtopic from the lesson alone.`;
 }
 
+/** The exact payload shape, so an agent or model never has to infer it from the assembler. */
+const PAYLOAD_SPEC = `Return ONE JSON object: { "lessonTitle": string, "estimatedMinutes": number, "blocks": [...], "questions": [...] }.
+Each question object:
+- "type": "mcq" | "true_false" | "numeric" | "theory"
+- "difficulty": 1 | 2 | 3
+- "stem": string
+- "objectiveIds": array of the objective IDs listed above that this question genuinely tests (required; use only IDs from the list)
+- mcq: "options": [{"id":"a","text":"..."}, ... 4 options a-d], "correctOptionId": "a-d", "correctOptionText": the EXACT text of the correct option, "distractorRationale": {"a":"why wrong or right", ...}
+- true_false: "options": [{"id":"a","text":"True"},{"id":"b","text":"False"}], "correctOptionId", "correctOptionText"
+- numeric: "correctValue": number, "tolerance": positive number, "unit": string (also stated in the stem)
+- theory: "markingGuide": array of the specific points a marker awards credit for
+- every question: "explanation" (at least two sentences that justify the key), "board": "internal" (university) or WAEC/NECO/JAMB
+Every objective listed above must be covered by at least one question.`;
+
 function userPrompt(
   subject: Subject,
   topic: Topic,
@@ -261,6 +275,11 @@ Write ONLY at this class level. A JSS1 learner must not get SS3 material, and an
 
   const unitWord = profile.voice === "undergraduate" ? "unit" : "subtopic";
 
+  const siblings = topic.subtopics
+    .filter((other) => other.id !== subtopic.id)
+    .map((other) => `- ${other.name}`)
+    .join("\n");
+
   return `${heading}
 Learning objectives:
 ${objectives}
@@ -268,6 +287,9 @@ ${objectives}
 Write one lesson and exactly ${minQuestions + 2} questions for THIS ${unitWord} only (extras are kept as a buffer).
 Questions must assess the objectives above.
 Every question needs a full explanation of at least two sentences.
+${PAYLOAD_SPEC}
+Other units in this module are written separately. Do not reuse their clinical vignettes, worked examples or question scenarios; keep every vignette and example in this unit distinct and specific to this unit's topic:
+${siblings}
 ${errors ? `\nThe previous draft failed review or validation. Fix every issue below and keep everything else accurate:\n${errors}` : ""}`;
 }
 
@@ -639,6 +661,14 @@ function isHandAuthored(file: string): boolean {
   }
 }
 
+/**
+ * Authoring without an API: `--emit-prompts <dir>` writes the exact system+user prompt
+ * for each pending unit, an agent writes <dir>/<unit>.json in the same payload shape the
+ * model would return, and `--from-dir <dir>` assembles, validates and stores it.
+ */
+const FROM_DIR = argValue("--from-dir");
+const EMIT_DIR = argValue("--emit-prompts");
+
 async function generateOne(
   subject: Subject,
   topic: Topic,
@@ -671,13 +701,33 @@ async function generateOne(
   const model = profile.model;
   let errors: string | undefined = feedback;
 
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    const raw = await chatJson<GeneratedPayload>(
-      model,
-      systemPrompt(subject, profile),
-      userPrompt(subject, topic, subtopic, minQuestions, profile, errors),
-      1,
+  if (EMIT_DIR) {
+    mkdirSync(EMIT_DIR, { recursive: true });
+    writeFileSync(
+      path.join(EMIT_DIR, `${subSlug}.prompt.md`),
+      `# SYSTEM
+
+${systemPrompt(subject, profile)}
+
+# USER
+
+${userPrompt(subject, topic, subtopic, minQuestions, profile, errors)}
+`,
     );
+    return "skipped";
+  }
+  const fromFile = FROM_DIR ? path.join(FROM_DIR, `${subSlug}.json`) : null;
+  if (fromFile && !existsSync(fromFile)) return "skipped";
+
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const raw = fromFile
+      ? (JSON.parse(readFileSync(fromFile, "utf8")) as GeneratedPayload)
+      : await chatJson<GeneratedPayload>(
+          model,
+          systemPrompt(subject, profile),
+          userPrompt(subject, topic, subtopic, minQuestions, profile, errors),
+          1,
+        );
     try {
       const assembled = assemble(raw, subject, subtopic, minQuestions, profile);
       const lessonParsed = lessonSchema.safeParse(assembled.lesson);
@@ -705,7 +755,7 @@ async function generateOne(
       return "wrote";
     } catch (error) {
       errors = error instanceof Error ? error.message : String(error);
-      if (attempt === 3) throw new Error(`${subtopic.id}: ${errors}`);
+      if (attempt === 3 || fromFile) throw new Error(`${subtopic.id}: ${errors}`);
     }
   }
   throw new Error(`${subtopic.id}: exhausted retries`);
