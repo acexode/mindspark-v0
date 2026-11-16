@@ -13,7 +13,7 @@ export function filterQuestionsByClass(questions: Question[], subject: Subject, 
 
 const JSS: ClassLevel[] = ["JSS1", "JSS2", "JSS3"];
 const SS: ClassLevel[] = ["SS1", "SS2", "SS3"];
-const YEAR: ClassLevel[] = ["Year1", "Year2", "Year3", "Year4"];
+const YEAR: ClassLevel[] = ["Year1", "Year2", "Year3", "Year4", "Year5", "Year6"];
 const SECONDARY: ClassLevel[] = [...JSS, ...SS];
 const ALL_BANDED: ClassLevel[] = [...SECONDARY, ...YEAR];
 

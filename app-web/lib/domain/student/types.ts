@@ -87,4 +87,4 @@ export const DEFAULT_STUDENT_PROFILE: StudentProfile = {
 };
 
 export const SECONDARY_CLASS_LEVELS = ["JSS1", "JSS2", "JSS3", "SS1", "SS2", "SS3"] as const;
-export const UNDERGRADUATE_CLASS_LEVELS = ["Year1", "Year2", "Year3", "Year4"] as const;
+export const UNDERGRADUATE_CLASS_LEVELS = ["Year1", "Year2", "Year3", "Year4", "Year5", "Year6"] as const;

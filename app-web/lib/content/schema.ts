@@ -42,6 +42,8 @@ export const classLevelSchema = z.enum([
   "Year2",
   "Year3",
   "Year4",
+  "Year5",
+  "Year6",
 ]);
 export const reviewStatusSchema = z.enum(["draft", "review", "published"]);
 export const difficultySchema = z.union([z.literal(1), z.literal(2), z.literal(3)]);

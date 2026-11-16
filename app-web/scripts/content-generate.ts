@@ -242,7 +242,8 @@ Each question object:
 - numeric: "correctValue": number, "tolerance": positive number, "unit": string (also stated in the stem)
 - theory: "markingGuide": array of the specific points a marker awards credit for
 - every question: "explanation" (at least two sentences that justify the key), "board": "internal" (university) or WAEC/NECO/JAMB
-Every objective listed above must be covered by at least one question.`;
+Every objective listed above must be covered by at least one question.
+Question stems must use new numbers or a new scenario. Never copy the lesson's hook or a worked example into a question, and never write two questions around the same scenario: a student who read the lesson must still have to reason to answer.`;
 
 function userPrompt(
   subject: Subject,

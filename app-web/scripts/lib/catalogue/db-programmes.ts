@@ -9,7 +9,7 @@ export const DB_PROGRAMMES: Programme[] = [
     institutionType: "university",
     durationYears: 6,
     description:
-      "A six-year medical degree. This first release covers the three pre-clinical years: anatomy, physiology, biochemistry, pathology, pharmacology, microbiology and immunology, with public health, ethics and clinical skills taught alongside.",
+      "A six-year medical degree. Years 1-3 cover the pre-clinical sciences (anatomy, physiology, biochemistry, pathology, pharmacology, microbiology and immunology) with public health, ethics and clinical skills alongside; Years 4-6 cover clinical medicine by specialty (medicine, surgery, obstetrics and gynaecology, paediatrics, psychiatry, emergency care, geriatrics, forensic medicine and evidence-based practice) and transition to practice.",
     accentColor: "#9d2f3b",
   },
   {

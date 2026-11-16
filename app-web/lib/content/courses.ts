@@ -2,7 +2,7 @@ import { getSubjects } from "./loader";
 import { filterSubjectForClass } from "./class-visibility";
 import type { ClassLevel, Subject } from "./schema";
 
-const YEARS: ClassLevel[] = ["Year1", "Year2", "Year3", "Year4"];
+const YEARS: ClassLevel[] = ["Year1", "Year2", "Year3", "Year4", "Year5", "Year6"];
 
 export interface CatalogueCourse {
   subject: Subject;
