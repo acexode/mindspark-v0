@@ -90,11 +90,19 @@ const MEDICAL_NOTES = `This is a pre-clinical medical degree course taught to th
 - Prefer mechanism-based explanation: structure, then function, then what goes wrong, then what you would see clinically.
 - Clinical vignettes are welcome in questions (age, sex, presentation, one or two findings) and must be internally consistent.
 - If you are not certain a fact is correct, leave it out rather than guess.
-- Do not claim a specific named guideline, trial or statistic unless it is very well established.`;
+- Do not claim a specific named guideline, trial or statistic unless it is very well established.
+- Every numeric question must be answerable from numbers stated in the stem plus universally agreed definitions. Never write a question whose answer depends on an unstated counting convention, a typical value the student would have to guess, or a measurement the stem does not give. Avoid "how many" counting questions unless the count is a standard fact the lesson states explicitly.
+- For every question, solve it yourself first, then check that the key, the correct option text and the explanation all give the same answer, and that the explanation's own arithmetic or counting agrees with the key. If they disagree, rewrite the question.
+- Every objective must be taught in the lesson, and every question must be answerable from the lesson content. Do not test a structure or fact the lesson never covers.
+- Distinguish carefully between where a structure exits, where it travels, and which level it is affected at (for example spinal nerve roots and vertebral levels). Do not state a procedure site or landmark unless you are certain of it.
+- Open with a concrete clinical or anatomical hook, not a generic statement about the importance of the topic.`;
 
 const ENGINEERING_NOTES = `This is a mechanical engineering degree course taught to the standard of leading European and US programmes.
 - Use SI units throughout and state them. Define symbols at first use and name the assumptions a formula depends on.
 - Worked examples must have internally consistent numbers: recompute before you write the answer.
+- Every numeric question must be answerable from numbers stated in the stem plus standard constants. State every assumed value in the stem. Check that the key, the correct option text and the explanation's own arithmetic all agree.
+- Every objective must be taught in the lesson, and every question must be answerable from the lesson content.
+- Open with a concrete engineering hook, not a generic statement about the importance of the topic.
 - Do not quote standards, code clauses or material property tables you are not certain of; give representative values and label them as typical.`;
 
 /** Programmes whose generated content lives in the database and starts life as an unreviewed draft. */
@@ -258,7 +266,7 @@ ${objectives}
 Write one lesson and exactly ${minQuestions + 2} questions for THIS ${unitWord} only (extras are kept as a buffer).
 Questions must assess the objectives above.
 Every question needs a full explanation of at least two sentences.
-${errors ? `\nThe previous draft failed validation. Fix every issue:\n${errors}` : ""}`;
+${errors ? `\nThe previous draft failed review or validation. Fix every issue below and keep everything else accurate:\n${errors}` : ""}`;
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -634,12 +642,14 @@ async function generateOne(
   topic: Topic,
   subtopic: Subtopic,
   destDir: string | null,
-  force: boolean,
+  forceFlag: boolean,
   questionOverride?: number,
   db?: DatabaseSync,
   index?: ReturnType<typeof buildContentIndex>,
+  feedback?: string,
 ): Promise<"wrote" | "skipped" | "protected"> {
   const toDb = destDir === null;
+  const force = forceFlag || Boolean(feedback);
   if (toDb && (!db || !index)) throw new Error("database target requires an open database");
   const topicSlug = idSlug(topic.id);
   const subSlug = idSlug(subtopic.id);
@@ -657,7 +667,7 @@ async function generateOne(
   const profile = profileFor(subject);
   const minQuestions = questionOverride && questionOverride > 0 ? questionOverride : profile.minQuestions;
   const model = profile.model;
-  let errors: string | undefined;
+  let errors: string | undefined = feedback;
 
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     const raw = await chatJson<GeneratedPayload>(
@@ -702,6 +712,7 @@ async function generateOne(
 async function main(): Promise<void> {
   loadEnvLocal();
   const only = argValue("--subject");
+  const repair = hasFlag("--repair");
   const programme = argValue("--programme");
   const year = argValue("--year");
   const questionOverride = Number(argValue("--questions") ?? "0");
@@ -761,7 +772,26 @@ async function main(): Promise<void> {
     const slug = idSlug(job.subtopic.id);
     return !(existsSync(path.join(folder, `${slug}.lesson.json`)) && existsSync(path.join(folder, `${slug}.questions.json`)));
   });
-  const queue = limit > 0 ? pending.slice(0, limit) : pending;
+  let queue = limit > 0 ? pending.slice(0, limit) : pending;
+  const feedbackByUnit = new Map<string, string>();
+  if (repair) {
+    if (!only) throw new Error("--repair needs --subject <course>");
+    const repairSubject = jobs.find((job) => job.destDir === null)?.subject;
+    if (!repairSubject || !db) throw new Error("--repair only applies to database courses");
+    const row = db.prepare("SELECT review_notes FROM documents WHERE kind = 'subject' AND id = ?").get(repairSubject.id) as
+      | { review_notes: string | null }
+      | undefined;
+    if (!row?.review_notes) throw new Error(`No stored review for ${repairSubject.id}; run the reviewer first`);
+    const verdict = JSON.parse(row.review_notes) as {
+      issues: Array<{ subtopicId: string; questionId?: string; severity: string; category: string; problem: string; suggestedFix: string }>;
+    };
+    for (const issue of verdict.issues) {
+      const line = `- [${issue.severity}/${issue.category}]${issue.questionId ? ` ${issue.questionId}:` : ""} ${issue.problem} FIX: ${issue.suggestedFix}`;
+      feedbackByUnit.set(issue.subtopicId, `${feedbackByUnit.get(issue.subtopicId) ?? ""}${line}\n`);
+    }
+    queue = jobs.filter((job) => feedbackByUnit.has(job.subtopic.id));
+    console.log(`repair mode: ${queue.length} flagged units`);
+  }
 
   console.log(`${jobs.length} subtopics in scope, ${pending.length} missing content, generating ${queue.length} (concurrency ${concurrency})`);
   if (queue.length === 0) {
@@ -775,7 +805,7 @@ async function main(): Promise<void> {
   await mapPool(queue, concurrency, async (job, position) => {
     const label = `${position + 1}/${queue.length} ${job.subtopic.id}`;
     try {
-      const result = await generateOne(job.subject, job.topic, job.subtopic, job.destDir, force, questionOverride, db ?? undefined, index);
+      const result = await generateOne(job.subject, job.topic, job.subtopic, job.destDir, force, questionOverride, db ?? undefined, index, feedbackByUnit.get(job.subtopic.id));
       if (result === "wrote") {
         wrote += 1;
         console.log(`wrote  ${label}`);
@@ -792,6 +822,11 @@ async function main(): Promise<void> {
     }
   });
 
+  if (repair && db && wrote > 0) {
+    const subjectId = queue[0]?.subject.id;
+    if (subjectId) db.prepare("UPDATE documents SET review_status = 'unreviewed' WHERE kind = 'subject' AND id = ?").run(subjectId);
+    console.log("review status reset to unreviewed: re-run the reviewer on this course");
+  }
   db?.close();
   console.log(
     `done — wrote ${wrote}, failed ${failed}, hand-authored kept ${protectedCount}, skipped ${queue.length - wrote - failed - protectedCount}`,
