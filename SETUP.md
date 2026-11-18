@@ -123,9 +123,14 @@ End-to-end browser tests (`npm run test:e2e`) are optional. They need `npx playw
 ## Optional extras
 
 - **Drafting studio** (only for the AutoCAD drafting course): install Python 3.9 or newer, then run `npm run drafting:setup` once.
-- **Windows kiosk install** (a launcher on the desktop for a student PC): restore the database first (step 5), then
-  right-click `windows\install.bat` and choose Run as administrator. It copies the whole app, including `data\`, to
-  `C:\ProgramData\Mindspark` and creates a desktop shortcut.
+- **Windows kiosk install** (a launcher on the desktop for a student PC). Order matters:
+  1. `git pull`, so the installer and the app code are current.
+  2. Restore the database into your clone first (step 5). The installer copies `app-web\data\content.db` into the install.
+  3. Right-click `windows\install.bat` and choose Run as administrator. It copies the whole app to
+     `C:\ProgramData\Mindsparkpp`, builds it, and puts `Mindspark.bat` on the desktop.
+  4. Run it again after every `git pull` or database change. If the courses are missing, check that
+     `C:\ProgramData\Mindsparkpp\data\content.db` exists. The installer used to lock that folder read-only, which
+     stopped the database opening. Re-run the updated installer to fix an old install.
 - **macOS launcher:** double-click `app-web/start-mindspark.command`. It builds and starts the app.
 
 ## Where things live

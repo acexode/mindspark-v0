@@ -19,13 +19,19 @@ if errorlevel 1 (
 )
 
 set "SRC=%~dp0.."
+if not exist "%SRC%\data\content.db" (
+  echo WARNING: %SRC%\data\content.db was not found.
+  echo The MBBS and Mechanical Engineering courses live in that file. Restore it first
+  echo ^(see SETUP.md step 5^), then run this installer again. Continuing without it.
+  pause
+)
 set "ROOT=%ProgramData%\Mindspark"
 set "DEST=%ROOT%\app"
 
 echo Copying the app to %DEST% ...
 mkdir "%DEST%" 2>nul
 rem /MIR mirrors the code; the excluded folders keep the student's saved progress and the installed packages.
-robocopy "%SRC%" "%DEST%" /MIR /XD node_modules .next .dev-data .venv __pycache__ .git windows /NFL /NDL /NJH /NJS /NP >nul
+robocopy "%SRC%" "%DEST%" /MIR /XD node_modules .next .dev-data .venv __pycache__ .git windows /XF content.db-wal content.db-shm /NFL /NDL /NJH /NJS /NP >nul
 if errorlevel 8 (
   echo Copy failed.
   pause
@@ -48,10 +54,13 @@ if errorlevel 1 echo Drafting setup did not finish. Install Python 3.9 or newer 
 rem Lock the folder: administrators full control, everyone else read-only ...
 mkdir "%DEST%\.dev-data" 2>nul
 mkdir "%DEST%\.next\cache" 2>nul
+mkdir "%DEST%\data" 2>nul
 icacls "%ROOT%" /inheritance:r /grant:r "*S-1-5-32-544:(OI)(CI)F" "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-545:(OI)(CI)RX" >nul
 rem ... except the two places the running app must write to.
 icacls "%DEST%\.dev-data" /grant "*S-1-5-32-545:(OI)(CI)M" >nul
 icacls "%DEST%\.next\cache" /grant "*S-1-5-32-545:(OI)(CI)M" >nul
+rem The course database (content.db) is opened in WAL mode, which creates -wal/-shm files beside it, so data\ must be writable too.
+icacls "%DEST%\data" /grant "*S-1-5-32-545:(OI)(CI)M" >nul
 attrib +h +s "%ROOT%"
 
 copy /Y "%~dp0Mindspark.bat" "%PUBLIC%\Desktop\Mindspark.bat" >nul
