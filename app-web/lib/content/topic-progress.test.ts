@@ -83,10 +83,10 @@ describe("progression mode", () => {
 });
 
 describe("year-band scoping", () => {
-  it("hides later-year content from a secondary-style scoped undergraduate", () => {
+  it("never year-filters an undergraduate course, even in a year-scoped context", () => {
     const subject = getSubject(UG_SUBJECT)!;
     const scoped = subjectProgression(subject, ctx({ classLevel: "Year1" }));
-    expect(scoped.subject.topics.length).toBeLessThan(subject.topics.length);
+    expect(scoped.subject.topics.length).toBe(subject.topics.length);
   });
 
   it("shows an undergraduate every topic of a course regardless of year", () => {

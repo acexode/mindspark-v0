@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { getLesson, getQuestions, idSlug, resolveSubjectSlug, resolveTopicSlug } from "@/lib/content/loader";
-import { filterTopicsForClass } from "@/lib/content/class-visibility";
+import { filterTopicsForClass, isYearGated } from "@/lib/content/class-visibility";
 import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { getRecord, isUnlocked, lockReason } from "@/lib/domain/mastery/mastery";
 import { coveredSubtopicIds } from "@/lib/domain/student/coverage";
@@ -23,7 +23,7 @@ export default async function TopicPage({
   const rawTopic = resolveTopicSlug(subject, topicSlug);
   if (!rawTopic) notFound();
 
-  const topic = filterTopicsForClass([rawTopic], profile.classLevel)[0];
+  const topic = (isYearGated(subject) ? filterTopicsForClass([rawTopic], profile.classLevel) : [rawTopic])[0];
   if (!topic) notFound();
   const progression = subjectProgression(subject, progressionContextFor(profile));
   if (!progression.isUnlocked(topic.id)) {

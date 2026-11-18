@@ -8,7 +8,7 @@ import {
   resolveTopicSlug,
 } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
-import { classLevelsForSubtopic, isClassVisible } from "@/lib/content/class-visibility";
+import { classLevelsForSubtopic, isClassVisible, isYearGated } from "@/lib/content/class-visibility";
 import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { LessonPlayer } from "@/features/lesson/components/lesson-player";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
@@ -32,7 +32,7 @@ export default async function LessonPage({
   const subtopic = resolveSubtopicSlug(topic, subtopicSlug);
   if (!subtopic) notFound();
 
-  if (!isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) {
+  if (isYearGated(subject) && !isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) {
     notFound();
   }
   const progression = subjectProgression(subject, progressionContextFor(profile));

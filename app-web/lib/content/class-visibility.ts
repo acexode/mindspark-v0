@@ -86,7 +86,13 @@ export function filterTopicsForClass(topics: Topic[], studentClass: string): Top
     .filter((topic) => topic.subtopics.length > 0);
 }
 
+/** Undergraduate courses are never year-filtered: a student who enrols in a course sees all of it. */
+export function isYearGated(subject: Subject): boolean {
+  return subject.level !== "undergraduate";
+}
+
 export function filterSubjectForClass(subject: Subject, studentClass: string): Subject {
+  if (!isYearGated(subject)) return subject;
   return { ...subject, topics: filterTopicsForClass(subject.topics, studentClass) };
 }
 

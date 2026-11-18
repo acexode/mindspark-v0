@@ -7,7 +7,7 @@ import {
   resolveTopicSlug,
 } from "@/lib/content/loader";
 import { toPublicQuestion } from "@/lib/content/schema";
-import { classLevelsForSubtopic, filterQuestionsByClass, isClassVisible, isTopicVisibleToClass } from "@/lib/content/class-visibility";
+import { classLevelsForSubtopic, filterQuestionsByClass, isClassVisible, isTopicVisibleToClass, isYearGated } from "@/lib/content/class-visibility";
 import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { experienceFor } from "@/lib/domain/student/experience";
@@ -35,7 +35,7 @@ export default async function TopicPracticePage({
   const topic = resolveTopicSlug(subject, topicSlug);
   if (!topic) notFound();
 
-  if (!isTopicVisibleToClass(profile.classLevel, topic)) notFound();
+  if (isYearGated(subject) && !isTopicVisibleToClass(profile.classLevel, topic)) notFound();
   const progression = subjectProgression(subject, progressionContextFor(profile));
   if (!progression.isUnlocked(topic.id)) {
     const reason = progression.lockReason(topic.id);
@@ -57,7 +57,7 @@ export default async function TopicPracticePage({
     );
   }
   const subtopic = subtopicSlug ? resolveSubtopicSlug(topic, subtopicSlug) : null;
-  if (subtopic && !isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) notFound();
+  if (subtopic && isYearGated(subject) && !isClassVisible(profile.classLevel, classLevelsForSubtopic(topic, subtopic))) notFound();
 
   /**
    * Practising a whole topic draws only on subtopics the student has actually

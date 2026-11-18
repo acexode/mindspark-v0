@@ -1,5 +1,5 @@
 import { getLesson, getQuestions, getSubject, getSubjects, idSlug } from "@/lib/content/loader";
-import { filterTopicsForClass } from "@/lib/content/class-visibility";
+import { filterTopicsForClass, isYearGated } from "@/lib/content/class-visibility";
 import { TutorWorkspace } from "@/features/tutor/components/tutor-workspace";
 import type { TutorSubjectGroup } from "@/features/tutor/components/tutor-unit-picker";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -26,7 +26,7 @@ export default async function TutorPage({
       label: subject.courseCode ?? subject.name,
       name: subject.name,
       accent: subject.accentColor,
-      topics: filterTopicsForClass(subject.topics, profile.classLevel).map((topic) => ({
+      topics: (isYearGated(subject) ? filterTopicsForClass(subject.topics, profile.classLevel) : subject.topics).map((topic) => ({
         id: topic.id,
         name: topic.name,
         units: [...topic.subtopics]
