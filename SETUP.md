@@ -64,7 +64,7 @@ app or service is running. If you use a different model, change `OLLAMA_MODEL` i
 ## 5. Install the course database
 
 The 71 undergraduate courses (1,029 units, about 24,000 questions) live in a SQLite file, `app-web/data/content.db`.
-It is not in git, because it is a generated file. It travels as a snapshot bundle: a folder with `content.db` and
+It is not in git, because it is a generated file. download it via this link https://drive.google.com/drive/folders/1Izro0U9Syg7qCW3K2uJLzjKsD6bD_-s0?usp=drive_link,git  It travels as a snapshot bundle: a folder with `content.db` and
 `manifest.json`.
 
 1. Copy the bundle folder from the old computer to this one (USB stick, Drive, or network share). The latest one was
