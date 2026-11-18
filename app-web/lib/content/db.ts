@@ -1,6 +1,5 @@
 import { existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
-import { createRequire } from "node:module";
 import type { DatabaseSync as DatabaseSyncType } from "node:sqlite";
 
 /**
@@ -52,9 +51,13 @@ CREATE TABLE IF NOT EXISTS generation_requests (
 );
 `;
 
-// Loaded through createRequire so the bundler does not try to resolve the
-// experimental built-in module.
-const nodeRequire = createRequire(path.join(process.cwd(), "package.json"));
+// process.getBuiltinModule (Node 22.3+) keeps the bundler away from the experimental
+// built-in. createRequire is rewritten by webpack inside Next and breaks at runtime.
+function loadSqlite(): typeof import("node:sqlite") {
+  const mod = process.getBuiltinModule?.("node:sqlite") as typeof import("node:sqlite") | undefined;
+  if (!mod) throw new Error("node:sqlite is unavailable: use Node 22.13 or newer");
+  return mod;
+}
 
 export function dbPath(): string {
   return process.env.CONTENT_DB_PATH ?? DEFAULT_DB_PATH;
@@ -65,7 +68,7 @@ export function openContentDb(file: string = dbPath(), opts: { create?: boolean 
     if (!opts.create) return null;
     mkdirSync(path.dirname(file), { recursive: true });
   }
-  const { DatabaseSync } = nodeRequire("node:sqlite") as typeof import("node:sqlite");
+  const { DatabaseSync } = loadSqlite();
   const db = new DatabaseSync(file);
   db.exec("PRAGMA journal_mode = WAL;");
   db.exec(SCHEMA);
