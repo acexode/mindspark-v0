@@ -53,3 +53,19 @@ export function chipLabel(question: string, max = 46): string {
   const cut = question.slice(0, max - 1);
   return `${cut.slice(0, cut.lastIndexOf(" ") > 20 ? cut.lastIndexOf(" ") : cut.length)}…`;
 }
+
+/** Next questions for a chat already under way: built on what was just explained, never repeating what was asked. */
+export function buildFollowUpMessages(
+  focus: SuggestionFocus,
+  history: ReadonlyArray<{ role: "student" | "tutor"; text: string }>,
+): { system: string; prompt: string } {
+  const base = buildSuggestionMessages(focus);
+  const system = `${base.system}
+- This is a follow-up: the student has already been chatting. Write questions that naturally come NEXT, building on the tutor's latest answer (a deeper why, a variation, a related step, a check of understanding).
+- Never repeat or rephrase a question the student already asked.`;
+  const convo = history
+    .slice(-4)
+    .map((t) => `${t.role === "student" ? "Student" : "Tutor"}: ${t.text.slice(0, 900)}`)
+    .join("\n");
+  return { system, prompt: `${base.prompt.replace(/\n\nThe \d+ questions:$/, "")}\n\nConversation so far:\n${convo}\n\nThe ${SUGGESTION_COUNT} follow-up questions:` };
+}

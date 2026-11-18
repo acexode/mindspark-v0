@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, useTransition, type ReactNode } from "reac
 import { MAX_HISTORY_TURNS, MAX_MESSAGE_CHARS } from "@/features/tutor/server/request";
 import type { TutorMode, TutorSurface } from "@/lib/domain/tutor/fallback";
 import { defaultModeFor } from "@/lib/domain/tutor/prompt";
+import { chipLabel } from "@/lib/domain/tutor/suggestions";
 import { streamReply } from "./stream-reply";
 import { TutorMessages, type TutorMessage } from "./tutor-messages";
 import { TutorModeSwitch } from "./tutor-mode-switch";
@@ -30,13 +31,15 @@ interface AskTutorPanelProps {
   autoSend?: { prompt: string; mode?: TutorMode; quiz?: boolean; nonce: number };
   /** Page variant: what to show before the first message (usually starters built from objectives). */
   renderEmpty?: (ask: (chip: TutorChip) => void) => ReactNode;
+  /** Lesson-specific opening questions; replaced by fresh follow-ups after every tutor reply. */
+  suggestions?: string[];
 }
 
 function endsWithQuestion(text: string): boolean {
   return /\?[\s"'”’)*_]*$/.test(text.trim());
 }
 
-export function AskTutorPanel({ scope, variant = "compact", fullTutorHref, autoSend, renderEmpty }: AskTutorPanelProps) {
+export function AskTutorPanel({ scope, variant = "compact", fullTutorHref, autoSend, renderEmpty, suggestions }: AskTutorPanelProps) {
   const level = useTutorLevel();
   const casual = level !== "undergraduate";
   const isPage = variant === "page";
@@ -48,6 +51,9 @@ export function AskTutorPanel({ scope, variant = "compact", fullTutorHref, autoS
   const [awaitingAnswer, setAwaitingAnswer] = useState(false);
   const [pending, startTransition] = useTransition();
   const messagesRef = useRef<TutorMessage[]>([]);
+  /** Follow-up questions written after the latest reply; null until ready, "loading" while the model writes them. */
+  const [followUps, setFollowUps] = useState<string[] | "loading" | null>(null);
+  const followUpRun = useRef(0);
   const sentNonce = useRef<number | null>(null);
 
   messagesRef.current = messages;
@@ -57,6 +63,8 @@ export function AskTutorPanel({ scope, variant = "compact", fullTutorHref, autoS
     if (!message || pending) return;
 
     const history = messagesRef.current.slice(-MAX_HISTORY_TURNS).map(({ role, text: t }) => ({ role, text: t }));
+    followUpRun.current++;
+    setFollowUps(null);
     setMessages((m) => [...m, { role: "student", text: message }]);
     setInput("");
     // Checking an answer is a one-off; the student's chosen mode stays for their next question.
@@ -92,7 +100,33 @@ export function AskTutorPanel({ scope, variant = "compact", fullTutorHref, autoS
       setMessages((m) => [...m.slice(0, -1), { ...m[m.length - 1], source }]);
       // Hints, explanations and checks often end by posing a question; what the student types next is their attempt at it.
       setAwaitingAnswer(asksQuestion || (source !== "scope" && endsWithQuestion(finalText)));
+      if (source !== "scope" && source !== "fallback" && finalText && !isQuestion) {
+        loadFollowUps([...history, { role: "student" as const, text: message }, { role: "tutor" as const, text: finalText }]);
+      }
     });
+  }
+
+  /** Asks the server for next questions based on the conversation; a stale answer from an older turn is ignored. */
+  function loadFollowUps(turns: Array<{ role: "student" | "tutor"; text: string }>) {
+    const run = ++followUpRun.current;
+    setFollowUps("loading");
+    fetch("/api/v1/tutor/suggestions", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        subjectName: scope.subjectName,
+        subtopicId: scope.subtopicId,
+        topicId: scope.topicId,
+        history: turns.slice(-MAX_HISTORY_TURNS),
+      }),
+    })
+      .then((r) => (r.ok ? r.json() : { questions: [] }))
+      .then((data: { questions?: string[] }) => {
+        if (run === followUpRun.current) setFollowUps(Array.isArray(data.questions) && data.questions.length > 0 ? data.questions : null);
+      })
+      .catch(() => {
+        if (run === followUpRun.current) setFollowUps(null);
+      });
   }
 
   const ask = (chip: TutorChip) => send(chip.prompt, chip.mode, chip.quiz);
@@ -108,7 +142,12 @@ export function AskTutorPanel({ scope, variant = "compact", fullTutorHref, autoS
     send(input, awaitingAnswer ? "check-my-thinking" : mode);
   }
 
-  const chips = chipsFor(level, isQuestion ? "question" : "lesson");
+  const dynamic = Array.isArray(followUps) ? followUps : messages.length === 0 ? suggestions : undefined;
+  const chips: TutorChip[] =
+    dynamic && dynamic.length > 0
+      ? dynamic.map((q) => ({ label: chipLabel(q), prompt: q, mode: "explain" as const }))
+      : chipsFor(level, isQuestion ? "question" : "lesson");
+  const writingFollowUps = followUps === "loading" && !pending;
   const offline = messages.some((m) => m.source === "fallback");
   const inputId = `ask-tutor-${variant}-${scope.question?.id ?? scope.subtopicId ?? scope.topicId}`;
 
@@ -140,11 +179,17 @@ export function AskTutorPanel({ scope, variant = "compact", fullTutorHref, autoS
       <div className="ask-tutor-dock">
         {(!isPage || messages.length > 0) && (
           <div className="ask-tutor-chips" role="group" aria-label="Quick questions">
-            {chips.map((chip) => (
-              <button key={chip.label} type="button" className="tutor-chip" disabled={pending} onClick={() => ask(chip)}>
-                {chip.label}
-              </button>
-            ))}
+            {writingFollowUps ? (
+              <span className="ask-tutor-note" role="status">
+                Thinking of follow-up questions…
+              </span>
+            ) : (
+              chips.map((chip) => (
+                <button key={chip.prompt} type="button" className="tutor-chip" title={chip.prompt} disabled={pending} onClick={() => ask(chip)}>
+                  {chip.label}
+                </button>
+              ))
+            )}
           </div>
         )}
 

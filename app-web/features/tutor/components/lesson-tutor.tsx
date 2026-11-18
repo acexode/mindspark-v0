@@ -63,6 +63,31 @@ export function LessonTutor({ scope, heading, fullTutorHref }: LessonTutorProps)
       : chipsFor(level, "lesson").slice(0, 3);
   const loading = suggested === null;
 
+  const [width, setWidth] = useState<number | null>(null);
+  useEffect(() => {
+    try {
+      const saved = Number(localStorage.getItem("tutor-drawer-width"));
+      if (saved >= 360) setWidth(saved);
+    } catch {}
+  }, []);
+
+  function startResize(e: React.PointerEvent<HTMLDivElement>) {
+    e.preventDefault();
+    const move = (ev: PointerEvent) => setWidth(Math.round(Math.min(window.innerWidth, Math.max(360, window.innerWidth - ev.clientX))));
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      setWidth((w) => {
+        try {
+          if (w) localStorage.setItem("tutor-drawer-width", String(w));
+        } catch {}
+        return w;
+      });
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }
+
   useEffect(() => {
     if (launch && dialogRef.current && !dialogRef.current.open) dialogRef.current.showModal();
   }, [launch]);
@@ -101,10 +126,25 @@ export function LessonTutor({ scope, heading, fullTutorHref }: LessonTutorProps)
         ref={dialogRef}
         className="tutor-drawer"
         aria-label={heading}
+        style={width ? { width: `min(${width}px, 100vw)` } : undefined}
         onClick={(e) => {
           if (e.target === dialogRef.current) dialogRef.current?.close();
         }}
       >
+        <div
+          className="tutor-drawer-grip"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Drag to resize the tutor panel"
+          title="Drag to resize"
+          onPointerDown={startResize}
+          onDoubleClick={() => {
+            setWidth(null);
+            try {
+              localStorage.removeItem("tutor-drawer-width");
+            } catch {}
+          }}
+        />
         <header className="tutor-drawer-head">
           <div>
             <span className="eyebrow">Tutor</span>
@@ -118,6 +158,7 @@ export function LessonTutor({ scope, heading, fullTutorHref }: LessonTutorProps)
           <AskTutorPanel
             scope={{ ...scope, surface: "lesson" }}
             fullTutorHref={fullTutorHref}
+            suggestions={suggested ?? undefined}
             autoSend={launch.prompt ? { prompt: launch.prompt, mode: launch.mode, quiz: launch.quiz, nonce: launch.key } : undefined}
           />
         )}
