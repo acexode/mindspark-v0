@@ -1,0 +1,434 @@
+{
+ "lessonTitle": "Energy and Exergy Accounting",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "In a 100 MW-of-fuel steam power plant, the condenser rejects well over half of the fuel energy to the river, so it looks like the obvious place to improve. Yet that heat leaves at 30 °C and could do almost no work, whereas the boiler, where very hot flame gas heats steam to a lower temperature, destroys more than half of the fuel's capacity to do work. A first-law energy balance shows where energy goes; an exergy balance shows where its usefulness is lost."
+  },
+  {
+   "type": "text",
+   "markdown": "**Energy** is conserved: it cannot be destroyed. **Exergy** (or availability) is the maximum useful work obtainable as a system comes into equilibrium with the environment at temperature $T_0$ and pressure $p_0$. Unlike energy, exergy is destroyed by irreversibility such as friction, throttling, heat transfer across a finite temperature difference and mixing. The destroyed exergy is exactly the lost work potential."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Exergy destruction",
+   "text": "In any process the exergy destroyed is $X_d=T_0S_{gen}$, where $S_{gen}\\ge0$ is the entropy generated ($S_{gen}=0$ only for a reversible process) and $T_0$ is the environment temperature in K. The exergy of heat $Q$ at temperature $T$ is $X_Q=Q(1-T_0/T)$, and the flow exergy of a stream is $\\psi=(h-h_0)-T_0(s-s_0)$ plus kinetic and potential terms. In steady flow, exergy in minus exergy out equals $X_d$."
+  },
+  {
+   "type": "math",
+   "latex": "X_d=T_0S_{gen},\\qquad X_Q=Q\\left(1-\\frac{T_0}{T}\\right),\\qquad \\eta_{II}=\\frac{\\text{useful exergy output}}{\\text{exergy input}}",
+   "caption": "Exergy destruction, exergy of heat and second-law efficiency (T_0 in kelvin)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Throttling an ideal gas",
+   "prompt": "Air ($R=0.287$ kJ/(kg K), ideal gas) flows at 2 kg/s through a valve, with pressure falling from 800 kPa to 300 kPa. The environment is at $T_0=298.15$ K. Find the exergy destruction rate.",
+   "steps": [
+    {
+     "text": "Throttling is adiabatic and has no work, so enthalpy is constant; for an ideal gas the temperature is unchanged and the entropy rise is from the pressure drop.",
+     "latex": "s_2-s_1=-R\\ln\\frac{p_2}{p_1}=-0.287\\ln\\frac{300}{800}=0.2815\\ \\text{kJ/(kg K)}"
+    },
+    {
+     "text": "Entropy generation rate.",
+     "latex": "\\dot S_{gen}=\\dot m\\,(s_2-s_1)=2\\times0.2815=0.563\\ \\text{kW/K}"
+    },
+    {
+     "text": "Exergy destruction rate.",
+     "latex": "\\dot X_d=T_0\\dot S_{gen}=298.15\\times0.563=167.9\\ \\text{kW}"
+    }
+   ],
+   "answer": "The valve destroys about 168 kW of exergy, although it loses no energy at all: the pressure drop wasted the ability to produce work in a turbine."
+  },
+  {
+   "type": "worked_example",
+   "title": "Exergy destroyed in a heat exchanger",
+   "prompt": "In a counterflow heat exchanger, hot water ($2$ kg/s) cools from 90 °C to 60 °C, heating cold water ($3$ kg/s) from 20 °C. Take $c_p=4.18$ kJ/(kg K) for both and $T_0=298.15$ K. Find the exit temperature of the cold stream and the exergy destruction rate.",
+   "steps": [
+    {
+     "text": "Heat transferred from the hot stream, and cold outlet temperature.",
+     "latex": "\\dot Q=2\\times4.18\\times(363.15-333.15)=250.8\\ \\text{kW},\\quad T_{c2}=293.15+\\frac{250.8}{3\\times4.18}=313.15\\ \\text{K}"
+    },
+    {
+     "text": "Entropy generation is the sum of the entropy changes of the two streams.",
+     "latex": "\\dot S_{gen}=\\dot m_hc_p\\ln\\frac{T_{h2}}{T_{h1}}+\\dot m_cc_p\\ln\\frac{T_{c2}}{T_{c1}}=-0.7208+0.8276=0.1068\\ \\text{kW/K}"
+    },
+    {
+     "text": "Exergy destruction.",
+     "latex": "\\dot X_d=T_0\\dot S_{gen}=298.15\\times0.1068=31.84\\ \\text{kW}"
+    }
+   ],
+   "answer": "The cold stream leaves at about 40 °C and the exchanger destroys about 31.8 kW of exergy, around 13% of the heat duty, because heat crossed a finite temperature difference."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Component",
+    "Energy flow or loss, MW",
+    "Exergy destroyed, MW",
+    "Share of fuel exergy"
+   ],
+   "rows": [
+    [
+     "Boiler (combustion and heat transfer)",
+     "10 lost up the stack",
+     "55",
+     "52.9%"
+    ],
+    [
+     "Turbine (irreversibility)",
+     "Shaft work (34 net of pump work)",
+     "6",
+     "5.77%"
+    ],
+    [
+     "Condenser",
+     "56 rejected to cooling water",
+     "4",
+     "3.85%"
+    ],
+    [
+     "Pump and other",
+     "Small",
+     "1",
+     "0.962%"
+    ],
+    [
+     "Stack exhaust (exergy leaving)",
+     "10 energy, small exergy",
+     "2 (leaving)",
+     "1.92%"
+    ],
+    [
+     "Condenser heat (exergy leaving)",
+     "56 energy, small exergy",
+     "2 (leaving)",
+     "1.92%"
+    ],
+    [
+     "Net electrical output",
+     "34 energy and exergy",
+     "34 (useful)",
+     "32.7%"
+    ]
+   ],
+   "caption": "Energy and exergy account of a steam plant with 100 MW of fuel energy (fuel exergy 104 MW, typical ratio of about 1.04 for natural gas)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Building the balances.** For a multi-component plant, write a first-law energy balance and a second-law exergy balance for each component, and for the plant as a whole. Energy: inputs equal outputs plus losses, with no destruction. Exergy: the fuel exergy equals the useful work plus the exergy in waste streams plus the sum of the component destructions. A consistent table makes the largest source of loss obvious."
+  },
+  {
+   "type": "worked_example",
+   "title": "Plant balance and the largest destruction",
+   "prompt": "Use the table above: fuel energy 100 MW, fuel exergy 104 MW, net work 34 MW. Check both balances, then find the first-law and second-law efficiencies and the component destroying the most exergy.",
+   "steps": [
+    {
+     "text": "Energy balance: all energy leaving must equal the fuel energy.",
+     "latex": "W+Q_{stack}+Q_{cond}=34+10+56=100\\ \\text{MW}"
+    },
+    {
+     "text": "Exergy balance: useful work, exergy in waste streams and destruction must equal the fuel exergy.",
+     "latex": "34+2+2+(55+6+4+1)=104\\ \\text{MW}"
+    },
+    {
+     "text": "Efficiencies.",
+     "latex": "\\eta_I=\\frac{34}{100}=0.34,\\quad \\eta_{II}=\\frac{34}{104}=0.327"
+    },
+    {
+     "text": "Largest destruction.",
+     "latex": "X_{d,boiler}=55\\ \\text{MW}=52.9\\%\\ \\text{of fuel exergy}"
+    }
+   ],
+   "answer": "The balances close. The first-law efficiency is 0.34 and the second-law efficiency 0.327. The boiler destroys 55 MW, far more than any other component, even though the condenser has the largest energy loss."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Fix the environment temperature $T_0$ (and $p_0$) and use kelvin in all entropy and exergy calculations.",
+    "Compute entropy generation per component from stream entropy changes, then $X_d=T_0S_{gen}$.",
+    "Draw up a table with energy flows and exergy flows; check that each balance closes.",
+    "Rank components by exergy destroyed to find where improvement is possible; do not rank by energy loss."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Energy loss and exergy destruction are different things",
+   "text": "A stream carrying a large amount of energy at a temperature close to $T_0$ (such as condenser cooling water) has little exergy and so a large energy loss means little. A throttle valve or a large-temperature-difference heat exchanger loses no energy but destroys exergy. Confusing the two directs effort to the wrong component."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Exergy destruction $X_d=T_0S_{gen}$ is positive for any irreversible process; throttling and heat transfer across a finite temperature difference are standard examples.",
+    "An energy table (first law) and an exergy table (second law) for a plant show different pictures: waste heat at near-ambient temperature carries little exergy.",
+    "The component with the largest exergy destruction, often the boiler or combustor, offers the largest potential for improvement."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which relation gives the exergy destroyed in a process in an environment at temperature $T_0$ (kelvin)?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$X_d=T_0S_{gen}$, where $S_{gen}$ is the entropy generated"
+    },
+    {
+     "id": "b",
+     "text": "$X_d=T_0\\,(S_2-S_1)$ for the system alone, regardless of heat transfer"
+    },
+    {
+     "id": "c",
+     "text": "$X_d=Q(1-T_0/T)$, the exergy of the heat transferred"
+    },
+    {
+     "id": "d",
+     "text": "$X_d=W_{actual}-W_{ideal}$ with the sign reversed for turbines only"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$X_d=T_0S_{gen}$, where $S_{gen}$ is the entropy generated",
+   "distractorRationale": {
+    "a": "Correct: environment temperature times entropy generation.",
+    "b": "Ignores the entropy transferred with heat and flows; only the generated entropy counts.",
+    "c": "This gives the exergy of heat, which is transferred, not destroyed.",
+    "d": "Exergy destruction is positive for every machine and process, not only turbines."
+   },
+   "explanation": "The Gouy-Stodola relation states that lost work equals $T_0$ times the entropy generated. Since $S_{gen}\\ge0$ for real processes, exergy destruction is never negative.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Air (ideal gas) passes through a throttling valve from a high to a low pressure. Which description is correct?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The temperature falls, energy is lost, and no exergy is destroyed"
+    },
+    {
+     "id": "b",
+     "text": "The enthalpy and temperature are unchanged, no energy is lost, but exergy is destroyed because entropy is generated"
+    },
+    {
+     "id": "c",
+     "text": "The enthalpy rises, and the process is reversible"
+    },
+    {
+     "id": "d",
+     "text": "The entropy is unchanged, so no exergy is destroyed"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The enthalpy and temperature are unchanged, no energy is lost, but exergy is destroyed because entropy is generated",
+   "distractorRationale": {
+    "a": "An ideal gas does not change temperature, and exergy destruction is positive in a throttle.",
+    "b": "Correct: constant enthalpy, unchanged energy, positive exergy destruction.",
+    "c": "Enthalpy is constant and throttling is highly irreversible.",
+    "d": "Entropy increases, from $-R\\ln(p_2/p_1)>0$."
+   },
+   "explanation": "For steady adiabatic flow with no work, $h_1=h_2$, so an ideal gas leaves at the same temperature. The entropy rises by $R\\ln(p_1/p_2)$ per unit mass, so exergy $T_0R\\ln(p_1/p_2)$ per kg is destroyed even though no energy is lost.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A plant is supplied with 120 MW of fuel energy. It delivers 42 MW of net electrical work and loses 9 MW up the stack. All other energy leaves in the cooling water. What is the energy rejected to the cooling water?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "78 MW"
+    },
+    {
+     "id": "b",
+     "text": "51 MW"
+    },
+    {
+     "id": "c",
+     "text": "69 MW"
+    },
+    {
+     "id": "d",
+     "text": "27 MW"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "69 MW",
+   "distractorRationale": {
+    "a": "Subtracts only the work, forgetting the stack loss.",
+    "b": "Adds the work and the stack loss to the fuel energy instead of subtracting.",
+    "c": "Correct: the fuel energy minus the work and the stack loss.",
+    "d": "Subtracts the work from the stack loss and the fuel energy inconsistently."
+   },
+   "explanation": "The first-law balance requires all energy leaving to equal the energy entering: $120=42+9+Q_{cond}$, so $Q_{cond}=69$ MW. Energy is never destroyed, so the table must close.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An exergy analysis of a cycle gives these destruction rates: boiler 48 MW, turbine 9 MW, condenser 4 MW, feed pump 1 MW. The condenser rejects the largest quantity of energy (60 MW). Which component offers the largest scope for thermodynamic improvement and why?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The condenser, because it rejects the most energy"
+    },
+    {
+     "id": "b",
+     "text": "The turbine, because turbines always have the largest losses"
+    },
+    {
+     "id": "c",
+     "text": "The feed pump, because it is the smallest and therefore easiest to improve"
+    },
+    {
+     "id": "d",
+     "text": "The boiler, because it destroys the most exergy; the condenser's large energy loss is at near-ambient temperature and carries little exergy"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The boiler, because it destroys the most exergy; the condenser's large energy loss is at near-ambient temperature and carries little exergy",
+   "distractorRationale": {
+    "a": "Energy rejected at near-ambient temperature has little work potential, so the destroyed exergy is the better guide.",
+    "b": "The data show 9 MW destruction in the turbine, much less than in the boiler.",
+    "c": "Ease of improvement is not the criterion; the potential is set by the size of the destruction.",
+    "d": "Correct: the boiler destroys the most exergy."
+   },
+   "explanation": "The largest destruction, 48 MW, is in the boiler. The condenser's 60 MW of energy rejection is at a temperature close to the environment's, so it carries little exergy and the condenser destroys only 4 MW.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two heat exchangers each transfer 200 kW of heat to a cold stream at 350 K. The first takes heat from a hot stream at 400 K and the second from a hot stream at 800 K. Compared with the first, the exergy destroyed in the second is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "larger, because heat transfer across a bigger temperature difference generates more entropy"
+    },
+    {
+     "id": "b",
+     "text": "smaller, because the hotter stream carries more exergy"
+    },
+    {
+     "id": "c",
+     "text": "the same, because the energy transferred is the same"
+    },
+    {
+     "id": "d",
+     "text": "zero for both, because heat exchangers have no moving parts"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "larger, because heat transfer across a bigger temperature difference generates more entropy",
+   "distractorRationale": {
+    "a": "Correct: a bigger temperature difference gives more entropy generation.",
+    "b": "The hotter stream carries more exergy in, but the extra is lost in the larger temperature gap.",
+    "c": "The destruction depends on the temperatures, not on the energy alone: $X_d=T_0Q(1/T_c-1/T_h)$.",
+    "d": "Finite temperature difference heat transfer is irreversible regardless of moving parts."
+   },
+   "explanation": "The entropy generated is $Q(1/T_c-1/T_h)$: it is $200(1/350-1/400)=0.0714$ kW/K for the first exchanger and $200(1/350-1/800)=0.3214$ kW/K for the second. The second therefore destroys more exergy.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Air (ideal gas, $R=0.287$ kJ/(kg K)) at 0.50 kg/s is throttled from 600 kPa to 200 kPa. The environment is at 293 K. Find the exergy destruction rate in kW.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o1"
+   ],
+   "correctValue": 46.19,
+   "tolerance": 0.5,
+   "unit": "kW",
+   "explanation": "Entropy generation is $\\dot m R\\ln(p_1/p_2)=0.50\\times0.287\\times\\ln3=0.1577$ kW/K. Multiplying by $T_0=293$ K gives $\\dot X_d=46.19$ kW.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Steady heat transfer of 100 kW passes from a hot stream at 600 K to a cold stream at 400 K. The environment is at 300 K. Find the exergy destruction rate in kW.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o1"
+   ],
+   "correctValue": 25.0,
+   "tolerance": 0.1,
+   "unit": "kW",
+   "explanation": "The entropy generation rate is $Q(1/T_c-1/T_h)=100\\times(1/400-1/600)=0.08333$ kW/K. Then $\\dot X_d=T_0\\dot S_{gen}=300\\times0.08333=25$ kW.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A power plant uses fuel with an exergy flow of 520 MW and delivers 150 MW of net electrical output. The exergy destroyed in the boiler is 230 MW, in the turbine 40 MW, in the condenser 30 MW, in other equipment 20 MW, and the remainder leaves in exhaust and cooling water. Find the second-law efficiency of the plant as a fraction.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o2",
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o3"
+   ],
+   "correctValue": 0.2885,
+   "tolerance": 0.003,
+   "unit": "dimensionless",
+   "explanation": "The second-law efficiency is useful exergy output over exergy input: $150/520=0.2885$. The component destructions total $230+40+30+20=320$ MW, and the remaining $520-150-320=50$ MW is the exergy leaving in waste streams, so the account closes.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A steam plant's condenser rejects 55 per cent of the fuel energy while the boiler destroys about half of the fuel exergy. Explain this apparent contradiction and state which component an engineer should study first to improve the plant. Describe two practical ways to reduce the destruction in that component.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o3"
+   ],
+   "markingGuide": [
+    "Exergy of heat Q at T is Q(1 - T0/T); condenser heat is at near-ambient temperature so it carries very little exergy",
+    "Condenser energy loss is large but exergy destruction/loss is small",
+    "Boiler destroys exergy by combustion irreversibility and heat transfer across a large temperature difference from flame to steam",
+    "Exergy destruction is T0 S_gen, so large entropy generation across large temperature differences matters",
+    "Study the boiler first (largest destruction)",
+    "Ways: raise steam temperature and pressure or add reheat to reduce the temperature difference, preheat combustion air, use feedwater heating, reduce excess air"
+   ],
+   "explanation": "Energy and exergy answer different questions. Heat rejected at a temperature close to $T_0$ contains little capacity to do work, so the condenser's large energy loss is a small exergy loss. The boiler converts a very high-temperature flame to heat steam at a much lower temperature, generating a large amount of entropy and destroying exergy.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Show how to calculate the exergy destroyed in throttling an ideal gas, and outline how you would draw up the energy and exergy balances for a multi-component plant. State two checks that confirm the table is consistent.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o1",
+    "ug.mce-thermofluid-applications.energy-sustainability.energy-balances.o2"
+   ],
+   "markingGuide": [
+    "Throttling: h constant so T constant for ideal gas; entropy change s2 - s1 = -R ln(p2/p1)",
+    "Entropy generation S_gen = m-dot R ln(p1/p2); X_d = T0 S_gen",
+    "Energy table: list inputs and outputs of each component; energy in = energy out for each component and the plant",
+    "Exergy table: fuel exergy = useful work + exergy in waste streams + sum of component destructions",
+    "Check 1: energy balance closes (no destruction term)",
+    "Check 2: exergy balance closes with all destruction terms non-negative and second-law efficiency below 1"
+   ],
+   "explanation": "For an ideal gas the throttle leaves the temperature unchanged, so the entropy rise comes entirely from the pressure drop, and multiplying the entropy generation by the environment temperature gives the destroyed exergy. The plant tables must close, with exergy destruction never negative.",
+   "board": "internal"
+  }
+ ]
+}

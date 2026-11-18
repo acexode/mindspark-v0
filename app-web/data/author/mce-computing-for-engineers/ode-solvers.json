@@ -1,0 +1,412 @@
+{
+ "lessonTitle": "Euler and Runge-Kutta Methods",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A forged steel billet leaves a furnace at 90 C and must be handled once it cools below a safe temperature. Its temperature obeys a differential equation, and so does the motion of a vehicle suspension. Few such equations have a closed-form solution, so engineers march the answer forward in small time steps."
+  },
+  {
+   "type": "text",
+   "markdown": "An **initial value problem** (IVP) specifies a differential equation $dy/dt=f(t,y)$ and a starting value $y(t_0)=y_0$. A numerical solver advances the solution in steps of size $h$: from the known $y_n$ at time $t_n$ it computes an estimate $y_{n+1}$ at $t_{n+1}=t_n+h$. The simplest solver follows the tangent line for one step."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Explicit Euler method",
+   "text": "Use the slope at the start of the step to predict the end: $y_{n+1}=y_n+h\\,f(t_n,y_n)$. It is called *explicit* because $y_{n+1}$ is computed directly from known values. Its **local** error per step is $O(h^2)$ and its **global** error after a fixed time is $O(h)$, so it is first-order accurate."
+  },
+  {
+   "type": "math",
+   "latex": "y_{n+1}=y_n+h\\,f(t_n,y_n)",
+   "caption": "Explicit Euler step."
+  },
+  {
+   "type": "worked_example",
+   "title": "Euler steps for a cooling body",
+   "prompt": "Newton's law of cooling gives $dT/dt=-k(T-T_\\infty)$. A body at $T_0=90$ C cools in air at $T_\\infty=20$ C with $k=0.1$ s^-1. Take two Euler steps with $h=2$ s and compare with the exact solution $T=20+70e^{-0.1t}$.",
+   "steps": [
+    {
+     "text": "Step 1: slope at $t=0$ is $f=-0.1(90-20)=-7$ C/s. Then $T_1=90+2(-7)=76.0$ C.",
+     "latex": "T_1=90+2\\times(-7)=76.0"
+    },
+    {
+     "text": "Step 2: slope at $t=2$ is $f=-0.1(76-20)=-5.6$ C/s. Then $T_2=76+2(-5.6)=64.8$ C.",
+     "latex": "T_2=76+2\\times(-5.6)=64.8"
+    },
+    {
+     "text": "Exact values: $T(2)=20+70e^{-0.2}=77.31$ C and $T(4)=20+70e^{-0.4}=66.92$ C."
+    },
+    {
+     "text": "Errors: $76.0-77.31=-1.31$ C after one step and $64.8-66.92=-2.12$ C after two. Euler underestimates because it uses the steepest (initial) slope while the true slope flattens."
+    }
+   ],
+   "answer": "T(2) is approximately 76.0 C and T(4) is approximately 64.8 C by Euler (exact 77.31 C and 66.92 C)."
+  },
+  {
+   "type": "text",
+   "markdown": "Solvers handle only **first-order** equations, $\\mathbf y'=\\mathbf f(t,\\mathbf y)$ with a vector $\\mathbf y$. A higher-order equation is converted by introducing each lower derivative as a new variable. For the mass-spring-damper $m\\ddot x+c\\dot x+kx=F(t)$ (mass $m$ in kg, damping $c$ in N s/m, stiffness $k$ in N/m), define $y_1=x$ and $y_2=\\dot x$. Then:"
+  },
+  {
+   "type": "math",
+   "latex": "\\begin{aligned}\\dot y_1&=y_2\\\\ \\dot y_2&=\\frac{1}{m}\\left[F(t)-c\\,y_2-k\\,y_1\\right]\\end{aligned}",
+   "caption": "First-order system equivalent to the second-order mass-spring-damper equation."
+  },
+  {
+   "type": "worked_example",
+   "title": "Converting and stepping a mass-spring-damper",
+   "prompt": "A system has $m=2$ kg, $c=8$ N s/m, $k=50$ N/m, $F=0$, initial displacement $x_0=0.1$ m and velocity $v_0=0$. Write the first-order system and take one Euler step with $h=0.01$ s.",
+   "steps": [
+    {
+     "text": "Set $y_1=x$, $y_2=\\dot x$. The system is $\\dot y_1=y_2$ and $\\dot y_2=(0-8y_2-50y_1)/2=-4y_2-25y_1$.",
+     "latex": "\\dot y_2=-4y_2-25y_1"
+    },
+    {
+     "text": "Evaluate the derivatives at the start: $\\dot y_1=0$ and $\\dot y_2=-4(0)-25(0.1)=-2.5$ m/s^2."
+    },
+    {
+     "text": "Update both variables together: $y_1=0.1+0.01(0)=0.1$ m and $y_2=0+0.01(-2.5)=-0.025$ m/s.",
+     "latex": "y_1=0.100\\ \\text{m},\\quad y_2=-0.025\\ \\text{m/s}"
+    },
+    {
+     "text": "Check physics: natural frequency $\\omega_n=\\sqrt{k/m}=5$ rad/s and damping ratio $\\zeta=c/(2\\sqrt{km})=0.4$, so the response is an underdamped oscillation; a negative initial acceleration for a positive displacement is correct."
+    }
+   ],
+   "answer": "y1 = 0.100 m, y2 = -0.025 m/s after the first step."
+  },
+  {
+   "type": "text",
+   "markdown": "The classical **fourth-order Runge-Kutta (RK4)** method samples the slope four times per step and combines them: $k_1=f(t_n,y_n)$, $k_2=f(t_n+\\tfrac h2,y_n+\\tfrac h2k_1)$, $k_3=f(t_n+\\tfrac h2,y_n+\\tfrac h2k_2)$, $k_4=f(t_n+h,y_n+hk_3)$, and $y_{n+1}=y_n+\\tfrac h6(k_1+2k_2+2k_3+k_4)$. Its global error is $O(h^4)$."
+  },
+  {
+   "type": "worked_example",
+   "title": "One RK4 step",
+   "prompt": "Take one RK4 step with $h=2$ s for the cooling problem above ($dT/dt=-0.1(T-20)$, $T_0=90$ C).",
+   "steps": [
+    {
+     "text": "$k_1=-0.1(90-20)=-7.00$. Midpoint: $T=90+1(-7)=83$, so $k_2=-0.1(83-20)=-6.30$.",
+     "latex": "k_1=-7.00,\\quad k_2=-6.30"
+    },
+    {
+     "text": "Second midpoint: $T=90+1(-6.30)=83.7$, so $k_3=-0.1(63.7)=-6.37$. End point: $T=90+2(-6.37)=77.26$, so $k_4=-0.1(57.26)=-5.726$.",
+     "latex": "k_3=-6.37,\\quad k_4=-5.726"
+    },
+    {
+     "text": "Combine: $T_1=90+\\tfrac26(-7-12.6-12.74-5.726)=90+\\tfrac13(-38.066)=77.311$ C.",
+     "latex": "T_1=90-12.689=77.311\\ \\text{C}"
+    },
+    {
+     "text": "The exact value is 77.311 C, so the RK4 error is about $3\\times10^{-4}$ C against $1.31$ C for Euler, at four times the cost per step."
+    }
+   ],
+   "answer": "T(2) is approximately 77.311 C, very close to the exact value."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Explicit Euler",
+    "RK4"
+   ],
+   "rows": [
+    [
+     "Global order",
+     "1, error $\\propto h$",
+     "4, error $\\propto h^4$"
+    ],
+    [
+     "Slope evaluations per step",
+     "1",
+     "4"
+    ],
+    [
+     "Effect of halving $h$ on error",
+     "about 2 times smaller",
+     "about 16 times smaller"
+    ],
+    [
+     "Stability limit for $y'=-\\lambda y$",
+     "$h<2/\\lambda$",
+     "$h\\lesssim2.78/\\lambda$"
+    ]
+   ],
+   "caption": "Accuracy and stability of the two methods."
+  },
+  {
+   "type": "text",
+   "markdown": "**Stability** is a separate issue from accuracy. For $y'=-\\lambda y$ with $\\lambda>0$, Euler gives $y_{n+1}=(1-\\lambda h)\\,y_n$, so the numerical solution decays only if $|1-\\lambda h|<1$, that is $h<2/\\lambda$. Above this limit the solution oscillates with growing amplitude even though the true solution decays. In stiff problems, with large $\\lambda$, this forces tiny steps."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Euler: $y_{n+1}=y_n+hf(t_n,y_n)$; first order; cheap but needs small $h$.",
+    "Convert $n$-th order ODEs to $n$ first-order equations with $y_1=x$, $y_2=\\dot x,\\dots$",
+    "RK4 is fourth order and usually far more accurate for the same $h$.",
+    "Keep $h$ below the stability limit, then reduce $h$ until the answer stops changing.",
+    "Verify against an exact solution for a simple case."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "A stable-looking answer can still be wrong",
+   "text": "Instability is easy to see because the solution blows up, but a stable run can still be inaccurate. If halving $h$ changes the result in the second or third digit, the first run was not converged. Always repeat with a smaller $h$ and compare."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Explicit Euler advances y_{n+1} = y_n + h f(t_n, y_n); it is first order and conditionally stable (h < 2/lambda for y' = -lambda y).",
+    "A second-order ODE becomes a first-order system via y1 = x, y2 = dx/dt.",
+    "RK4 uses four slope evaluations per step and is fourth order, so halving h cuts the error by about 16.",
+    "Test the step size by halving it and checking that the result converges."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A cup of coffee cools according to $dT/dt=-0.08\\,(T-22)$ with $T$ in C and $t$ in s. Starting at $T_0=85$ C, take one explicit Euler step of $h=5$ s. What is $T_1$ in C?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o1"
+   ],
+   "correctValue": 59.8,
+   "tolerance": 0.05,
+   "unit": "C",
+   "explanation": "The slope at the start is -0.08(85 - 22) = -5.04 C/s. Then T1 = 85 + 5(-5.04) = 85 - 25.2 = 59.8 C.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A hot plate cools by $dT/dt=-0.02\\,(T-30)$ (T in C, t in s), starting at 200 C. Using explicit Euler with $h=10$ s, what is the temperature after two steps (t = 20 s)?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "128.0 C"
+    },
+    {
+     "id": "b",
+     "text": "166.0 C"
+    },
+    {
+     "id": "c",
+     "text": "138.8 C"
+    },
+    {
+     "id": "d",
+     "text": "143.95 C"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "138.8 C",
+   "distractorRationale": {
+    "c": "Correct: two Euler steps.",
+    "b": "This is only the first step.",
+    "d": "This is the exact solution 30 + 170 e^-0.4, not the Euler estimate.",
+    "a": "This uses T instead of T - 30 in the slope, which is wrong."
+   },
+   "explanation": "Step 1: slope -0.02(170) = -3.4, so T1 = 200 - 34 = 166 C. Step 2: slope -0.02(136) = -2.72, so T2 = 166 - 27.2 = 138.8 C.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A system obeys $5\\ddot x+20\\dot x+300x=F(t)$. With $y_1=x$ and $y_2=\\dot x$, which is the correct equation for $\\dot y_2$?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dot y_2=5\\,F-20\\,y_2-300\\,y_1$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dot y_2=\\big(F-20\\,y_2-300\\,y_1\\big)/5$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dot y_2=\\big(F+20\\,y_2+300\\,y_1\\big)/5$"
+    },
+    {
+     "id": "d",
+     "text": "$\\dot y_2=y_1$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$\\dot y_2=\\big(F-20\\,y_2-300\\,y_1\\big)/5$",
+   "distractorRationale": {
+    "b": "Correct: divide the net force by the mass.",
+    "a": "Multiplies by m instead of dividing.",
+    "c": "Wrong signs on the damping and stiffness terms.",
+    "d": "This is the relation for y1-dot, not y2-dot (which is y2)."
+   },
+   "explanation": "Rearrange m x'' = F - c x' - k x and divide by m = 5. The damping and spring forces oppose the motion, so they carry negative signs.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A mass-spring-damper has $m=2$ kg, $c=6$ N s/m and $k=200$ N/m, and is acted on by a constant force $F=10$ N. At an instant, $x=0.05$ m and $\\dot x=0.4$ m/s. Compute the acceleration $\\dot y_2$ in m/s^2.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o2"
+   ],
+   "correctValue": -1.2,
+   "tolerance": 0.02,
+   "unit": "m/s^2",
+   "explanation": "The net force is F - c v - k x = 10 - 6(0.4) - 200(0.05) = 10 - 2.4 - 10 = -2.4 N. Dividing by m = 2 kg gives -1.2 m/s^2.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A student wants to simulate $m\\ddot x+c\\dot x+kx=F_0\\sin(\\omega t)$ using a solver that accepts only first-order systems. Show the conversion, give the function the solver needs, and state the initial conditions required.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o2"
+   ],
+   "markingGuide": [
+    "Introduces y1 = x and y2 = dx/dt",
+    "dy1/dt = y2",
+    "dy2/dt = (F0 sin(wt) - c y2 - k y1)/m",
+    "Function returns the vector [dy1/dt, dy2/dt] given (t, y)",
+    "Initial conditions needed: x(0) and dx/dt(0), two values for a second-order equation"
+   ],
+   "explanation": "Each derivative below the highest becomes a new state variable, so an n-th order equation gives n first-order equations. The solver then needs n initial values, one per state variable.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For $y'=-4y$ with explicit Euler, what is the largest step size $h$ for which the numerical solution decays rather than oscillating with growing amplitude?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$h<4$"
+    },
+    {
+     "id": "b",
+     "text": "$h<0.25$"
+    },
+    {
+     "id": "c",
+     "text": "$h<8$"
+    },
+    {
+     "id": "d",
+     "text": "$h<0.5$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$h<0.5$",
+   "distractorRationale": {
+    "d": "Correct: h < 2/lambda.",
+    "b": "This is the condition for the factor to stay positive (1 - 4h > 0), not for stability.",
+    "a": "This is lambda, not 2/lambda.",
+    "c": "This is 2 times lambda."
+   },
+   "explanation": "Euler gives y_{n+1} = (1 - 4h) y_n, which decays in magnitude only if |1 - 4h| < 1, that is h < 2/4 = 0.5. For larger h the amplitude grows with alternating sign.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "For $y'=-4y$ with $y_0=1$, apply explicit Euler with $h=0.6$ for three steps. What is $y_3$?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o3"
+   ],
+   "correctValue": -2.744,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "The amplification factor is 1 - 4(0.6) = -1.4. After three steps y3 = (-1.4)^3 = -2.744. The solution grows and alternates in sign, whereas the true solution decays to 0, which shows instability.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "When the step size of explicit Euler is halved, by roughly what factor does the global error at a fixed time decrease?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It does not change"
+    },
+    {
+     "id": "b",
+     "text": "16"
+    },
+    {
+     "id": "c",
+     "text": "2"
+    },
+    {
+     "id": "d",
+     "text": "4"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "2",
+   "distractorRationale": {
+    "c": "Correct: first order.",
+    "d": "That would be a second-order method.",
+    "b": "That is the factor for a fourth-order method such as RK4.",
+    "a": "Reducing the step size does reduce the error."
+   },
+   "explanation": "Euler is a first-order method with global error proportional to h, so halving h halves the error. For RK4, the error would fall by about 16.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "One step of the classical fourth-order Runge-Kutta method requires four evaluations of the derivative function $f$.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "RK4 computes the four slopes k1 to k4 at the start, twice at the midpoint and at the end of the step. This costs four times as much per step as Euler but gives fourth-order accuracy.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Compare explicit Euler and RK4 for the cooling-body equation. Discuss accuracy order, cost per step, the effect of step size, and how stability limits the step size of Euler when the cooling constant is large.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o1",
+    "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers.o3"
+   ],
+   "markingGuide": [
+    "Euler is first order (global error proportional to h); RK4 is fourth order (error proportional to h^4)",
+    "RK4 needs 4 function evaluations per step, Euler needs 1",
+    "Halving h reduces Euler error by about 2 and RK4 error by about 16",
+    "For y' = -lambda y, Euler requires h < 2/lambda for decay; larger h gives growing oscillations",
+    "RK4 has a larger (but finite) stability limit; test convergence by halving h"
+   ],
+   "explanation": "RK4 spends more computation per step but usually allows a much larger step for the same accuracy. Euler's stability limit shrinks as the cooling constant grows, so it can need tiny steps.",
+   "board": "internal"
+  }
+ ]
+}

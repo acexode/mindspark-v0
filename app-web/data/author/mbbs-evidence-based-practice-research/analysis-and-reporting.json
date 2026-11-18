@@ -1,0 +1,471 @@
+{
+ "lessonTitle": "Analysis, Reporting and Authorship: Choosing Tests and Staying Honest",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Two students analyse the same length-of-stay data from a ward audit. One reports a t-test with p = 0.30 and writes 'no difference'. The other, after removing nothing, uses a rank-based test and finds p = 0.01. Both followed a method, but only one chose a test that fits the data, and the choice changes the conclusion."
+  },
+  {
+   "type": "text",
+   "markdown": "A project is only as honest as its analysis. Three decisions matter: **which statistical test fits the outcome**, **which reporting guideline the paper follows**, and **who is an author and what counts as misconduct**. Start with the idea: a test is a rule that asks how surprising your data would be if there were truly no effect. The rule must match the type of outcome and the way the data were collected."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "p-value and the null hypothesis",
+   "text": "The null hypothesis $H_0$ states there is no true difference or association. The **p-value** is the probability of observing data at least as extreme as ours, in either direction (two-sided), if $H_0$ and the test's assumptions were true. It is not the probability that $H_0$ is true, and it says nothing about the size or importance of an effect. By convention results are called statistically significant when two-sided $p<0.05$; a 95% confidence interval for a difference excluding 0 (or for a ratio excluding 1) carries the same message and also shows the effect size."
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing a test.** Ask three questions in order. (1) Is the outcome *categorical* (event/no event, grade) or *continuous* (blood pressure, length of stay)? (2) How many groups, and are the observations *independent* (different patients in each group) or *paired* (the same patient before and after, or matched pairs)? (3) For continuous data, is the distribution roughly symmetric (Normal), or skewed or ordinal, in which case a rank-based (non-parametric) test is safer, especially in small samples?"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Outcome and design",
+    "Parametric choice",
+    "Non-parametric / exact alternative"
+   ],
+   "rows": [
+    [
+     "Categorical, 2 independent groups, adequate counts",
+     "Chi-squared test of association",
+     "Fisher's exact test when any expected cell count is below 5"
+    ],
+    [
+     "Categorical, paired (same patients twice)",
+     "McNemar's test",
+     "Exact McNemar (binomial) for few discordant pairs"
+    ],
+    [
+     "Continuous, 2 independent groups",
+     "Independent-samples t-test",
+     "Mann-Whitney U (Wilcoxon rank-sum)"
+    ],
+    [
+     "Continuous, paired measurements",
+     "Paired t-test",
+     "Wilcoxon signed-rank test"
+    ],
+    [
+     "Continuous, 3 or more independent groups",
+     "One-way ANOVA",
+     "Kruskal-Wallis test"
+    ],
+    [
+     "Time to event with censoring",
+     "Cox regression for hazard ratios",
+     "Log-rank test to compare curves"
+    ]
+   ],
+   "caption": "Matching test to outcome and design. Test selection should be fixed in the protocol, before looking at the data."
+  },
+  {
+   "type": "math",
+   "latex": "\\chi^{2}=\\sum \\frac{(O-E)^{2}}{E},\\qquad E=\\frac{\\text{row total}\\times\\text{column total}}{N}",
+   "caption": "Chi-squared statistic for a contingency table (no continuity correction). For a 2x2 table the degrees of freedom are 1 and the 5% critical value is 3.84."
+  },
+  {
+   "type": "worked_example",
+   "title": "Chi-squared test for a 2x2 table",
+   "prompt": "In a randomised comparison of two wound dressings, infection occurred in 12 of 80 patients with dressing A and 24 of 80 with dressing B. Test whether infection is associated with dressing using a chi-squared test without continuity correction.",
+   "steps": [
+    {
+     "text": "Set out the observed counts: A infected 12, A not infected 68; B infected 24, B not infected 56. Row totals are 80 and 80; column totals are 36 infected and 124 not infected; N = 160."
+    },
+    {
+     "text": "Expected counts if dressing did not matter: infected in each arm $E=80\\times36/160=18$; not infected in each arm $E=80\\times124/160=62$. All expected counts exceed 5, so the chi-squared approximation is acceptable.",
+     "latex": "E_{\\text{inf}}=\\frac{80\\times36}{160}=18,\\quad E_{\\text{not}}=\\frac{80\\times124}{160}=62"
+    },
+    {
+     "text": "Sum $(O-E)^2/E$ over the four cells. Each cell deviates by 6 from expectation.",
+     "latex": "\\chi^{2}=2\\left(\\frac{36}{18}\\right)+2\\left(\\frac{36}{62}\\right)=4+1.161=5.16"
+    },
+    {
+     "text": "Compare with the critical value for 1 degree of freedom: 5.16 exceeds 3.84, so the two-sided p-value is about 0.023, below 0.05. Report the effect size too (risk 15% versus 30%), not just the p-value."
+    }
+   ],
+   "answer": "$\\chi^2\\approx5.16$ on 1 degree of freedom, two-sided $p\\approx0.02$: evidence of an association between dressing and infection at the 5% level."
+  },
+  {
+   "type": "text",
+   "markdown": "**Parametric versus rank-based.** The t-test compares means and assumes the sampling distribution of the mean is approximately Normal; with skewed data such as length of stay, a few very long stays inflate the standard deviation and can hide a real shift. Rank-based tests use the ordering of values and are robust to outliers, at a small cost in power if data really are Normal. For a paired design, analyse the *differences* within each patient: the standard error uses the standard deviation of the differences, not of the two raw columns."
+  },
+  {
+   "type": "worked_example",
+   "title": "Paired t-test with a confidence interval",
+   "prompt": "Nine patients rate pain (0-10) before and after a physiotherapy course. The mean reduction is 1.8 points and the standard deviation of the nine individual differences is 1.5. Test for a change and give a 95% confidence interval. Definitions: $t=\\bar d/(s_d/\\sqrt{n})$ with $n-1$ degrees of freedom; the 5% two-sided critical value for 8 degrees of freedom is 2.306.",
+   "steps": [
+    {
+     "text": "Standard error of the mean difference: divide the SD of the differences by the square root of $n$.",
+     "latex": "SE=\\frac{s_d}{\\sqrt{n}}=\\frac{1.5}{\\sqrt{9}}=0.50"
+    },
+    {
+     "text": "Test statistic: the mean difference in units of standard error.",
+     "latex": "t=\\frac{\\bar d}{SE}=\\frac{1.8}{0.50}=3.6\\quad(df=8)"
+    },
+    {
+     "text": "3.6 exceeds the critical value 2.306, so two-sided $p<0.05$ (about 0.007)."
+    },
+    {
+     "text": "95% CI = mean difference $\\pm$ critical t $\\times$ SE.",
+     "latex": "1.8\\pm2.306\\times0.50=(0.65,\\;2.95)"
+    },
+    {
+     "text": "The interval excludes 0, agreeing with the test. Whether a reduction of roughly 0.7 to 3 points matters to patients is a clinical judgement, separate from statistical significance."
+    }
+   ],
+   "answer": "$t=3.6$, 8 df, $p\\approx0.007$; mean reduction 1.8 points (95% CI 0.65 to 2.95)."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Multiple testing and p-hacking",
+   "text": "If you run $k$ independent tests each at $\\alpha=0.05$ when all null hypotheses are true, the chance of at least one false positive is $1-(0.95)^k$: about 40% for 10 tests. Testing many outcomes, subgroups or cut-points and reporting only the 'significant' ones is **p-hacking**. Guard against it by pre-specifying one primary outcome and the analysis plan, labelling other analyses exploratory, and using an adjustment such as the Bonferroni threshold $\\alpha/k$ when several confirmatory tests are made."
+  },
+  {
+   "type": "text",
+   "markdown": "**Reporting guidelines** are checklists that make a paper complete and transparent so readers can judge bias and reproduce it. Choose by design, using the EQUATOR Network library to find the right one."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Study design",
+    "Reporting guideline",
+    "Signature requirement"
+   ],
+   "rows": [
+    [
+     "Randomised trial",
+     "CONSORT",
+     "Flow diagram of participants from enrolment to analysis"
+    ],
+    [
+     "Cohort, case-control, cross-sectional",
+     "STROBE",
+     "Describe sources of bias and handling of confounders"
+    ],
+    [
+     "Systematic review / meta-analysis",
+     "PRISMA",
+     "Search strategy and study-selection flow diagram"
+    ],
+    [
+     "Diagnostic accuracy study",
+     "STARD",
+     "Reference standard and how indeterminate results were handled"
+    ],
+    [
+     "Prediction model",
+     "TRIPOD",
+     "Model development and validation described separately"
+    ],
+    [
+     "Quality improvement",
+     "SQUIRE",
+     "Context, intervention and measures over time"
+    ],
+    [
+     "Case report",
+     "CARE",
+     "Timeline of events and patient perspective"
+    ]
+   ],
+   "caption": "Match the guideline to the design, not to the topic."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Authorship and research misconduct",
+   "text": "The ICMJE recommends authorship only if **all four** apply: (1) substantial contribution to conception, design, data acquisition or analysis; (2) drafting or critically revising the work; (3) final approval of the version published; (4) agreement to be accountable for all aspects of the work. Those who contribute less (for example providing a clinic, funding or general supervision) are acknowledged, not listed as authors. **Misconduct** is classically fabrication (making up data), falsification (manipulating or selectively omitting data or results so the record is not accurate) and plagiarism. Gift, guest and ghost authorship, duplicate publication and undeclared conflicts of interest are related breaches of integrity."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Principles to carry away",
+   "text": "Fit the test to the outcome type and design, fix it before seeing the data, and report effect sizes with confidence intervals. Follow the reporting guideline for the design. Authorship requires all four ICMJE criteria; honest handling of data, including outliers and non-significant results, is non-negotiable. Concerns are raised through institutional integrity procedures and journals follow COPE guidance."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Categorical outcomes: chi-squared (or Fisher's exact if expected counts are below 5; McNemar for paired); continuous outcomes: t-tests or ANOVA if approximately Normal, rank-based alternatives otherwise.",
+    "A p-value is the two-sided probability of data at least this extreme under the null hypothesis; confidence intervals add effect size and precision.",
+    "Multiple unplanned tests inflate false positives; pre-specify the primary analysis.",
+    "Use CONSORT, STROBE, PRISMA, STARD and similar guidelines matched to design.",
+    "Authorship needs all four ICMJE criteria; fabrication, falsification and plagiarism are misconduct."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A student compares 30-day readmission (yes/no) between patients discharged by two teams: 20 patients in team X and 15 in team Y, with 5 readmissions in total across both teams. Which test is most appropriate?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Wilcoxon signed-rank test"
+    },
+    {
+     "id": "b",
+     "text": "Chi-squared test without any adjustment"
+    },
+    {
+     "id": "c",
+     "text": "Fisher's exact test"
+    },
+    {
+     "id": "d",
+     "text": "Independent-samples t-test"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Fisher's exact test",
+   "distractorRationale": {
+    "a": "This is for paired continuous or ordinal data; the groups here are independent and the outcome is binary.",
+    "b": "The chi-squared approximation needs adequate expected counts; here the expected count of readmissions per team is under 5.",
+    "c": "Correct: the outcome is categorical with independent groups and the expected counts for readmission are below 5, so the chi-squared approximation is unreliable.",
+    "d": "A t-test compares means of a continuous outcome; readmission is binary."
+   },
+   "explanation": "The outcome is a binary event in two independent groups, which points to a test of association in a 2x2 table. With 5 events across 35 patients the expected number of readmissions is about 2.9 in team X and 2.1 in team Y, both below 5, so Fisher's exact test, which does not rely on the large-sample approximation, is the right choice.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Postoperative length of stay (days) is compared between two independent groups of 18 patients each. The distribution is strongly right-skewed with three patients staying more than 40 days. Which analysis best matches the data?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Paired t-test"
+    },
+    {
+     "id": "b",
+     "text": "Chi-squared test of association"
+    },
+    {
+     "id": "c",
+     "text": "McNemar's test"
+    },
+    {
+     "id": "d",
+     "text": "Mann-Whitney U test"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Mann-Whitney U test",
+   "distractorRationale": {
+    "a": "The groups consist of different patients, so observations are not paired.",
+    "b": "This is for categorical counts, not a continuous outcome such as days.",
+    "c": "This is for paired binary outcomes, not independent continuous data.",
+    "d": "Correct: independent groups, continuous but skewed data and small samples favour a rank-based test that is robust to extreme values."
+   },
+   "explanation": "For two independent groups with a skewed continuous outcome and small numbers, the Mann-Whitney U (rank-sum) test compares the distributions through ranks and is not dominated by the three very long stays. A t-test would still be valid in principle for independent groups but its assumptions are poorly met here, and the paired, chi-squared and McNemar options do not fit the design or outcome type.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A group plans a retrospective cohort study of patients prescribed a long-term drug and their later fracture risk. Which reporting guideline should the paper follow?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "CONSORT"
+    },
+    {
+     "id": "b",
+     "text": "STROBE"
+    },
+    {
+     "id": "c",
+     "text": "STARD"
+    },
+    {
+     "id": "d",
+     "text": "PRISMA"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "STROBE",
+   "distractorRationale": {
+    "a": "CONSORT applies to randomised trials, and no randomisation took place.",
+    "b": "Correct: STROBE covers cohort, case-control and cross-sectional studies.",
+    "c": "STARD reports diagnostic accuracy against a reference standard, which is not the aim here.",
+    "d": "PRISMA is for systematic reviews and meta-analyses of existing studies."
+   },
+   "explanation": "Reporting guidelines are chosen by study design. An observational cohort study falls under STROBE, which asks authors to describe participant selection, exposure and outcome definitions, confounders and bias. CONSORT, PRISMA and STARD address trials, systematic reviews and test-accuracy studies respectively.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A consultant provided clinic space and obtained the grant for a junior doctor's audit-like study, but did not take part in design, analysis or writing and has not read the final manuscript. According to ICMJE criteria, how should the consultant be recognised?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "As an author provided the junior doctor agrees"
+    },
+    {
+     "id": "b",
+     "text": "As an author, because the grant made the study possible"
+    },
+    {
+     "id": "c",
+     "text": "In the acknowledgements, as the criteria for authorship are not met"
+    },
+    {
+     "id": "d",
+     "text": "As last author, because the consultant leads the department"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "In the acknowledgements, as the criteria for authorship are not met",
+   "distractorRationale": {
+    "a": "Agreement between colleagues cannot override the criteria; this is still gift authorship.",
+    "b": "Obtaining funding alone does not satisfy the intellectual-contribution and accountability criteria.",
+    "c": "Correct: funding and providing facilities do not meet the four authorship criteria.",
+    "d": "Seniority and position do not confer authorship; this would be gift authorship."
+   },
+   "explanation": "ICMJE authorship requires all four criteria: a substantial intellectual contribution, drafting or revising, approving the final version and accountability. Securing funding, providing space or general supervision does not meet them, so the correct recognition is an acknowledgement; naming the consultant otherwise would be gift authorship, a recognised integrity breach.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "After analysis, a researcher notices that three participants' blood results contradict the hypothesis. She deletes them from the dataset, does not record that she did so, and reports the remaining results as complete. How is this best classified?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Acceptable outlier handling, since the results were unexpected"
+    },
+    {
+     "id": "b",
+     "text": "Falsification, because inconvenient data were omitted so the findings misrepresent the research"
+    },
+    {
+     "id": "c",
+     "text": "Plagiarism, because other data were used without credit"
+    },
+    {
+     "id": "d",
+     "text": "Salami slicing, because the dataset was split into fragments"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Falsification, because inconvenient data were omitted so the findings misrepresent the research",
+   "distractorRationale": {
+    "a": "Exclusion must be pre-specified and disclosed; being inconvenient is not a valid reason.",
+    "b": "Correct: selective, undisclosed removal of data to change results is falsification.",
+    "c": "No one else's work was presented as her own; the problem is the integrity of the data.",
+    "d": "Salami slicing is dividing one study into several publications, which did not occur."
+   },
+   "explanation": "Falsification includes omitting data or results so that the research record is not accurate. Excluding observations is legitimate only when the criteria were pre-specified and the exclusions are reported openly; here they were chosen because they contradicted the hypothesis and hidden. Plagiarism and salami slicing describe different breaches.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A study reports a difference in mean systolic blood pressure with p = 0.12. This proves that the two treatments have the same effect.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "A p-value above 0.05 means the data are not sufficiently surprising under the null hypothesis; it does not prove no effect. The study may be underpowered, and the confidence interval for the difference should be examined to see which effect sizes remain compatible with the data.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A subgroup-hungry analysis tests 14 independent subgroup comparisons, each at a two-sided significance level of 0.05, and in truth no treatment effect exists in any subgroup. What is the probability, as a percentage, that at least one comparison is nevertheless declared significant?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o1"
+   ],
+   "correctValue": 51.2,
+   "tolerance": 0.5,
+   "unit": "%",
+   "explanation": "The probability that no test is falsely positive is $0.95^{14}\\approx0.488$, so the probability of at least one false positive is $1-0.488=0.512$, or 51.2%. This shows why unplanned subgroup searching nearly guarantees a spurious 'finding' and why a pre-specified primary analysis or an adjusted threshold such as $0.05/14\\approx0.0036$ is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "In a smoking-cessation project, 30 of 100 patients given brief advice plus a leaflet had quit at 6 months, compared with 18 of 100 given brief advice alone. Calculate the chi-squared statistic (1 degree of freedom, no continuity correction) and judge it against the 5% critical value of 3.84. Give the statistic as a number.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o1"
+   ],
+   "correctValue": 3.95,
+   "tolerance": 0.05,
+   "unit": "dimensionless (chi-squared statistic)",
+   "explanation": "Expected quitters per group are $100\\times48/200=24$ and expected non-quitters $76$, so $\\chi^2=2(6^2/24)+2(6^2/76)=3.00+0.95=3.95$. This exceeds the critical value of 3.84, so the association is statistically significant at the 5% level (two-sided p about 0.047), but only just, so the confidence interval for the difference in quit rates would deserve attention too.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A trainee has 6 outcomes and 4 subgroup analyses available in a dataset and wants to report whichever are significant. Explain, with reference to p-hacking and HARKing, why this is a problem and what design and reporting steps prevent it.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o1",
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o3"
+   ],
+   "markingGuide": [
+    "Many tests inflate the family-wise false-positive rate (about 1-0.95^k for k independent tests)",
+    "P-hacking: selecting analyses or outcomes after seeing which are significant",
+    "HARKing: presenting a post-hoc finding as if it had been the original hypothesis",
+    "Pre-specify a single primary outcome and analysis plan in the protocol, ideally registered",
+    "Label other analyses as exploratory or hypothesis-generating; consider Bonferroni-type adjustment for confirmatory tests",
+    "Report all analyses performed, with effect sizes and confidence intervals, not only significant p-values"
+   ],
+   "explanation": "Examining many outcomes and subgroups multiplies the chances of a chance 'significant' result, so selective reporting misleads readers. Pre-specification, registration and transparent labelling of exploratory work separate confirmatory evidence from hypothesis generation, and honest reporting of everything tested is part of research integrity.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A research team has completed a two-arm randomised trial of a rehabilitation programme. Name the reporting guideline they should follow, and describe three items it asks authors to report that help readers judge bias. Explain why journals ask for the guideline to be followed.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.analysis-and-reporting.o2"
+   ],
+   "markingGuide": [
+    "CONSORT is the guideline for randomised trials",
+    "Flow diagram showing numbers randomised, allocated, lost to follow-up and analysed",
+    "Method of random sequence generation and allocation concealment",
+    "Who was blinded and how; the pre-specified primary outcome and any changes made",
+    "Guidelines improve completeness and transparency so readers can appraise validity and reproduce or pool results",
+    "Guidelines are chosen by design (STROBE, PRISMA, STARD for other designs)"
+   ],
+   "explanation": "CONSORT is the checklist for parallel-group randomised trials and asks for details that allow the reader to judge selection, performance, detection and attrition bias. Following a design-appropriate guideline makes reports complete and comparable, which supports appraisal, replication and later systematic review.",
+   "board": "internal"
+  }
+ ]
+}

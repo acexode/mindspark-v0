@@ -1,0 +1,421 @@
+{
+ "lessonTitle": "Gauss Quadrature, Locking and Element Quality",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A thin cantilever bracket modelled with a single layer of four-node quadrilaterals can come out up to ten times too stiff, while the same mesh with one cheap change in the integration rule gives the right answer, and a poor choice of that rule makes the mesh wobble in zig-zag patterns that carry no energy. The finite element method evaluates every element stiffness by numerical integration, and the rule you pick decides which of these happens."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why integrate numerically?** In an isoparametric element the stiffness is $\\mathbf K=\\int\\!\\!\\int\\mathbf B^{T}\\mathbf D\\,\\mathbf B\\,t\\,\\det\\mathbf J\\,d\\xi\\,d\\eta$, where $\\mathbf B$ holds the derivatives of the shape functions, $\\mathbf D$ is the material matrix and $t$ is the thickness (m). For distorted elements $\\mathbf J^{-1}$ makes the integrand rational, so no closed form exists. Instead the integral is replaced by a weighted sum of the integrand at a few sampling points."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Gauss quadrature",
+   "text": "An $n$-point Gauss rule approximates $\\int_{-1}^{1}f(\\xi)\\,d\\xi\\approx\\sum_{k=1}^{n}w_k f(\\xi_k)$ with points and weights chosen to integrate every polynomial up to degree $2n-1$ **exactly**. One point: $\\xi=0$, $w=2$. Two points: $\\xi=\\pm1/\\sqrt3$, $w=1$. Three points: $\\xi=0,\\pm\\sqrt{0.6}$ with weights $8/9$ and $5/9$. In two dimensions the rule is applied as a tensor product, giving $n\\times n$ points."
+  },
+  {
+   "type": "math",
+   "latex": "\\int_{-1}^{1}\\!\\!\\int_{-1}^{1}g(\\xi,\\eta)\\,d\\xi\\,d\\eta\\approx\\sum_{i=1}^{n}\\sum_{j=1}^{n}w_iw_j\\,g(\\xi_i,\\eta_j)",
+   "caption": "Tensor-product Gauss rule on the parent square"
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing the number of points.** Count the polynomial degree of the stiffness integrand and use the smallest $n$ with $2n-1\\ge$ that degree. For a regular element (straight edges, $\\det\\mathbf J$ constant, as for a rectangle or parallelogram) the integrand is a polynomial. A two-node bar has a constant $\\mathbf B$, so one point is exact. A three-node bar has linear $\\mathbf B$, so the integrand is quadratic and two points are exact. For a four-node quadrilateral each term is at most quadratic in each natural coordinate, so $2\\times2$ points are exact."
+  },
+  {
+   "type": "worked_example",
+   "title": "Gauss order for a three-node bar",
+   "prompt": "A three-node bar element of length $L=0.6$ m, $E=210$ GPa, $A=300$ mm$^2$ (so $EA=6.3\\times10^{7}$ N) has shape functions $N_1=\\xi(\\xi-1)/2$, $N_2=1-\\xi^2$, $N_3=\\xi(\\xi+1)/2$ with node 1 at $\\xi=-1$, node 3 at $\\xi=+1$ and node 2 at the midpoint. Find $K_{11}=\\int EA\\,(dN_1/dx)^2dx$ using one and two Gauss points.",
+   "steps": [
+    {
+     "text": "Use the mapping $x=\\tfrac L2(\\xi+1)$ so $dx=\\tfrac L2d\\xi$ and $d/dx=\\tfrac2L\\,d/d\\xi$. Here $N_1=\\xi(\\xi-1)/2$ has $dN_1/d\\xi=\\xi-\\tfrac12$. Then $K_{11}=EA\\,\\tfrac2L\\int_{-1}^{1}(\\xi-\\tfrac12)^2d\\xi$.",
+     "latex": "K_{11}=\\frac{2EA}{L}\\int_{-1}^{1}\\left(\\xi-\\tfrac12\\right)^2d\\xi"
+    },
+    {
+     "text": "The integrand is a quadratic, degree 2, so $2n-1\\ge2$ requires $n=2$. Two-point rule: $(-0.5774-0.5)^2+(0.5774-0.5)^2=1.1607+0.0060=1.1667$, which equals the exact $7/6$.",
+     "latex": "\\int_{-1}^{1}\\left(\\xi-\\tfrac12\\right)^2d\\xi=\\frac76"
+    },
+    {
+     "text": "Hence $K_{11}=\\dfrac{2EA}{L}\\cdot\\dfrac76=\\dfrac{7EA}{3L}=2.45\\times10^{8}$ N/m."
+    },
+    {
+     "text": "With one point ($\\xi=0$, $w=2$): $2(-0.5)^2=0.5$, which is only $3/7$ of the exact value, giving $K_{11}=1.05\\times10^{8}$ N/m. Under-integration lowers the stiffness here, so one point is not acceptable for this element."
+    }
+   ],
+   "answer": "$K_{11}=7EA/(3L)=2.45\\times10^{8}$ N/m with two Gauss points; one point gives only 3/7 of this."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Element",
+    "Typical integrand degree (regular shape)",
+    "Gauss rule for exact $\\mathbf K$"
+   ],
+   "rows": [
+    [
+     "Two-node bar",
+     "Constant (degree 0)",
+     "1 point"
+    ],
+    [
+     "Three-node bar",
+     "Quadratic (degree 2)",
+     "2 points"
+    ],
+    [
+     "Four-node quadrilateral (Q4)",
+     "Degree 2 in each of $\\xi,\\eta$",
+     "$2\\times2$ points"
+    ],
+    [
+     "Eight- or nine-node quadrilateral",
+     "Degree 4 in at least one direction",
+     "$3\\times3$ points"
+    ]
+   ],
+   "caption": "Full integration of regular elements"
+  },
+  {
+   "type": "worked_example",
+   "title": "What goes wrong with too few points",
+   "prompt": "Integrate $f(\\xi)=\\xi^4+3\\xi^2$ over $[-1,1]$ exactly, with two Gauss points, and with three Gauss points.",
+   "steps": [
+    {
+     "text": "Exact: $\\int_{-1}^{1}(\\xi^4+3\\xi^2)d\\xi=\\tfrac25+2=2.4$.",
+     "latex": "\\tfrac25+2=2.4"
+    },
+    {
+     "text": "Two points ($\\xi^2=1/3$, $\\xi^4=1/9$ at both points, weights 1): $2\\left(\\tfrac19+1\\right)=2.2222$. The degree is 4 but two points integrate only up to degree 3, so the quartic term is mis-integrated ($2/9$ instead of $2/5$).",
+     "latex": "2\\left(\\tfrac19+3\\cdot\\tfrac13\\right)=2.2222"
+    },
+    {
+     "text": "Three points ($\\xi=0$ with $w=8/9$; $\\xi^2=0.6$ with $w=5/9$ twice): $\\tfrac{5}{9}\\cdot2\\,(0.36+1.8)=2.4$, exact because $2n-1=5\\ge4$.",
+     "latex": "\\tfrac{10}{9}(0.36+1.8)=2.4"
+    }
+   ],
+   "answer": "Exact 2.4; two points give 2.2222; three points give 2.4."
+  },
+  {
+   "type": "text",
+   "markdown": "**Reduced integration and its two sides.** Full $2\\times2$ integration of a Q4 in a slender bending member is too stiff: the bilinear field cannot bend without producing a spurious shear strain $\\gamma_{xy}$, so shear energy dominates and the element locks. This is **shear locking**. Sampling at a single centre point removes the spurious shear because it is zero there in pure bending. The price is that a single point sees only the constant part of the strain, so deformation shapes with zero strain at the centre cost no energy. These zero-energy patterns are **hourglass modes**: a Q4 has 8 degrees of freedom, 3 rigid-body motions and 3 constant-strain modes, leaving 2 hourglass modes under one-point integration."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Rule for Q4",
+    "Shear locking in bending",
+    "Spurious zero-energy modes",
+    "Typical remedy"
+   ],
+   "rows": [
+    [
+     "Full $2\\times2$",
+     "Yes, severe for thin members",
+     "None",
+     "Use more elements, higher-order or incompatible-mode elements"
+    ],
+    [
+     "Reduced $1\\times1$",
+     "No",
+     "2 hourglass modes",
+     "Hourglass control stiffness"
+    ]
+   ],
+   "caption": "Full versus reduced integration"
+  },
+  {
+   "type": "text",
+   "markdown": "**Element quality.** Because the rule assumes well-shaped elements, geometry must be checked. The **aspect ratio** is the ratio of the longest to the shortest edge length. The **skew** is the largest deviation of an interior angle from the ideal $90^{\\circ}$ for a quadrilateral. Typical guidelines (they vary by solver) are an aspect ratio below about 5 in regions of high gradient and skew below about $45^{\\circ}$; distortion also makes $\\det\\mathbf J$ vary strongly."
+  },
+  {
+   "type": "worked_example",
+   "title": "Quality check of a skewed element",
+   "prompt": "A Q4 element has nodes (in mm) at (0,0), (10,0), (12,3), (2,3). Compute its aspect ratio and skew.",
+   "steps": [
+    {
+     "text": "Edge lengths: bottom 10 mm; right $\\sqrt{2^2+3^2}=3.606$ mm; top 10 mm; left 3.606 mm. Aspect ratio $=10/3.606=2.7735$."
+    },
+    {
+     "text": "Interior angle at node 1 between the edge to (10,0) and the edge to (2,3) is $\\arctan(3/2)=56.31^{\\circ}$, and at node 2 it is $180^{\\circ}-56.31^{\\circ}=123.69^{\\circ}$."
+    },
+    {
+     "text": "Skew is the largest deviation from $90^{\\circ}$: $|90-56.31|=33.69^{\\circ}$. Both numbers are below the usual limits, so the element is acceptable."
+    }
+   ],
+   "answer": "Aspect ratio 2.77 and skew 33.69 degrees: acceptable by typical guidelines."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find the polynomial degree of the integrand for a regular element and choose $n$ with $2n-1$ at least that degree.",
+    "Use full integration by default for stiffness.",
+    "Use reduced integration only with hourglass control, or choose an element formulated to avoid locking.",
+    "Inspect aspect ratio, skew and $\\det\\mathbf J$ before running the analysis."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Reduced integration is not free",
+   "text": "A fine-looking contour plot can hide hourglassing. If the deformed shape of a reduced-integration mesh shows zig-zag patterns, check the hourglass (artificial) energy, which should stay a small fraction of the total internal energy."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "An $n$-point Gauss rule integrates polynomials up to degree $2n-1$ exactly; $2\\times2$ points integrate a regular Q4 stiffness exactly.",
+    "Too few points under-integrate and lose stiffness; for the three-node bar one point gives only 3/7 of $K_{11}$.",
+    "Reduced integration relieves shear locking in bending-dominated Q4 elements but admits two hourglass modes.",
+    "Aspect ratio and skew measure element distortion; poor quality degrades accuracy and can make $\\det\\mathbf J$ vary strongly."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An $n$-point Gauss rule on $[-1,1]$ integrates which polynomials exactly?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "All polynomials up to degree $2n-1$"
+    },
+    {
+     "id": "b",
+     "text": "All polynomials up to degree $n$"
+    },
+    {
+     "id": "c",
+     "text": "All polynomials up to degree $2n$"
+    },
+    {
+     "id": "d",
+     "text": "Only polynomials of degree exactly $n-1$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "All polynomials up to degree $2n-1$",
+   "distractorRationale": {
+    "a": "Correct: the $2n$ free parameters (points and weights) match the $2n$ coefficients of a polynomial of degree $2n-1$.",
+    "b": "This undercounts; the optimal placement of points doubles the degree achievable.",
+    "c": "This overcounts by one: $n$ points cannot fix $2n+1$ coefficients.",
+    "d": "Lower-degree polynomials are also integrated exactly, not only one degree."
+   },
+   "explanation": "A Gauss rule chooses both its $n$ points and $n$ weights, giving $2n$ free parameters. These suffice to integrate every polynomial of degree up to $2n-1$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Use the two-point Gauss rule to evaluate $\\int_{-1}^{1}\\left(3\\xi^3+6\\xi^2-\\xi+2\\right)d\\xi$. Give the value (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o1"
+   ],
+   "correctValue": 8.0,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "The integrand has degree 3, so two points are exact. The odd terms cancel between the points $\\pm1/\\sqrt3$, and each point gives $6/3+2=4$ from the even part, so the sum is $4+4=8$. The analytic integral $6\\cdot\\tfrac23+4=8$ agrees.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Use the two-point Gauss rule (points $\\pm1/\\sqrt3$, weights 1) to estimate $\\int_{-1}^{1}\\left(5\\xi^4+\\xi\\right)d\\xi$ (dimensionless). The exact value is 2, so the result shows an under-integration error.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o1"
+   ],
+   "correctValue": 1.1111,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "At $\\xi=\\pm1/\\sqrt3$ we have $\\xi^4=1/9$, so each point gives $5/9\\pm0.5774$; the odd term cancels and the sum is $2\\times5/9=1.1111$. The exact value of 2 is not reached because the quartic exceeds degree $2n-1=3$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which Gauss rule integrates the stiffness matrix of a regular (undistorted) eight-node quadrilateral exactly?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$3\\times3$ points"
+    },
+    {
+     "id": "b",
+     "text": "$1\\times1$ point"
+    },
+    {
+     "id": "c",
+     "text": "$2\\times2$ points"
+    },
+    {
+     "id": "d",
+     "text": "$4\\times4$ points are required; three are not enough"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$3\\times3$ points",
+   "distractorRationale": {
+    "a": "Correct: the integrand reaches degree 4 in one natural coordinate, and three points integrate up to degree 5.",
+    "b": "One point samples only the constant part, far too few.",
+    "c": "Two points integrate degree 3 only, which falls short of degree 4.",
+    "d": "Four points would work but waste computation; three already suffice."
+   },
+   "explanation": "The quadratic shape functions give derivatives of degree up to 2, so the product in $\\mathbf B^T\\mathbf D\\mathbf B$ reaches degree 4. Three points per direction integrate up to degree 5, which is enough.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does one-point reduced integration relieve shear locking in a bilinear quadrilateral under bending?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The spurious shear strain of the bilinear field vanishes at the element centre, so the single sampling point sees no parasitic shear energy"
+    },
+    {
+     "id": "b",
+     "text": "One point makes the element more flexible by deleting the bending strain energy"
+    },
+    {
+     "id": "c",
+     "text": "It makes the Jacobian determinant constant"
+    },
+    {
+     "id": "d",
+     "text": "It removes the rigid-body modes of the element"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The spurious shear strain of the bilinear field vanishes at the element centre, so the single sampling point sees no parasitic shear energy",
+   "distractorRationale": {
+    "a": "Correct: in pure bending the spurious shear is zero at the centre, so centre sampling removes the stiffening effect.",
+    "b": "Bending strain is still sampled at the centre; the benefit comes from the shear term, not from dropping bending.",
+    "c": "The Jacobian determinant is a geometric property unaffected by the number of points.",
+    "d": "Rigid-body modes remain with zero strain energy under any rule; they are not removed."
+   },
+   "explanation": "A bilinear element in bending develops shear $\\gamma_{xy}\\ne0$ away from the centre, which absorbs energy and stiffens the element. Sampling only at the centre avoids that spurious energy.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A four-node quadrilateral integrated with one Gauss point can contain zero-energy hourglass modes in addition to its rigid-body motions.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. One point measures only the constant strain state, so patterns of nodal motion with zero strain at the centre cost no energy. A Q4 has two such hourglass modes (8 degrees of freedom minus 3 rigid and 3 constant-strain modes).",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "How many zero-energy hourglass modes does a single plane-stress four-node quadrilateral have when its stiffness is integrated with one Gauss point?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2"
+    },
+    {
+     "id": "b",
+     "text": "0"
+    },
+    {
+     "id": "c",
+     "text": "1"
+    },
+    {
+     "id": "d",
+     "text": "3"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "2",
+   "distractorRationale": {
+    "a": "Correct: 8 degrees of freedom minus 3 rigid-body modes minus 3 constant-strain modes leaves 2.",
+    "b": "Zero is the count for full $2\\times2$ integration, not the one-point rule.",
+    "c": "One would result only if the strain count were 4, but a plane element has three strain components.",
+    "d": "Three is the number of rigid-body modes, which are not hourglass modes."
+   },
+   "explanation": "A plane element has 8 degrees of freedom. The single point supplies at most three independent strains, and three rigid-body motions carry no strain at all, so $8-3-3=2$ modes have no energy.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A Q4 element has nodes (in mm) at (0,0), (8,0), (11,4) and (3,4), numbered counter-clockwise. Compute its skew, defined as the largest deviation of any interior angle from $90^{\\circ}$, in degrees.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o3"
+   ],
+   "correctValue": 36.8699,
+   "tolerance": 0.2,
+   "unit": "degrees",
+   "explanation": "The left edge runs from (0,0) to (3,4), which makes $\\arctan(4/3)=53.13^{\\circ}$ with the bottom edge, so the interior angles are $53.13^{\\circ}$ and $126.87^{\\circ}$. The deviation from $90^{\\circ}$ is $36.87^{\\circ}$ at both types of corner. This lies under the usual guideline of about $45^{\\circ}$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain shear locking in a bilinear quadrilateral and how reduced integration cures it, and explain what new problem reduced integration introduces and how it is controlled.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o2"
+   ],
+   "markingGuide": [
+    "Bilinear field cannot represent pure bending without a parasitic shear strain $\\gamma_{xy}$",
+    "Shear energy dominates for slender members, so the element is much too stiff (locking)",
+    "One-point (reduced) integration samples at the centre where the spurious shear is zero, curing locking",
+    "Single point sees only constant strain, so two hourglass modes (8-3-3) carry zero energy",
+    "Control by hourglass stiffness or viscosity, or monitor hourglass energy (small fraction of internal energy); alternatively use incompatible-mode or higher-order elements"
+   ],
+   "explanation": "Locking comes from the element's inability to bend without shear; reduced integration removes the shear penalty at the cost of unresisted patterns. Both effects must be managed in practice.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A mesh check reports two Q4 elements. Element A has nodes (in mm) at (0,0), (12,0), (12,1.5), (0,1.5). Element B has nodes at (0,0), (4,0), (6,3.464), (2,3.464). Compute the aspect ratio and skew of each and state whether you would accept them using the typical limits (aspect ratio about 5, skew about $45^{\\circ}$).",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.numerical-integration.o3"
+   ],
+   "markingGuide": [
+    "Element A: edges 12 mm and 1.5 mm, aspect ratio $12/1.5=8$",
+    "Element A is a rectangle, skew $0^{\\circ}$; aspect ratio 8 exceeds the typical limit so it is acceptable only where the field varies slowly along its length, otherwise refine",
+    "Element B: all edges 4 mm, aspect ratio 1",
+    "Element B interior angles $60^{\\circ}$ and $120^{\\circ}$, skew $30^{\\circ}$, below $45^{\\circ}$, so acceptable",
+    "Conclusion that aspect ratio and skew are separate checks and one good value does not offset the other"
+   ],
+   "explanation": "Aspect ratio compares edge lengths and skew compares angles with the ideal right angle. Element A fails on aspect ratio only; element B passes both checks.",
+   "board": "internal"
+  }
+ ]
+}

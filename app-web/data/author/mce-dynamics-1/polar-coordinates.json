@@ -1,0 +1,400 @@
+{
+ "lessonTitle": "Polar Coordinates: Radial and Transverse Components",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A pick-and-place robot swings its horizontal arm around a vertical post while a gripper slides out along the arm. The controller must command the motor for the swing and the linear drive for the slide, and it needs the gripper's velocity and acceleration in exactly those two directions: along the arm and across it. Polar coordinates give them directly."
+  },
+  {
+   "type": "text",
+   "markdown": "In Cartesian axes the position of the gripper is awkward to track; in **polar coordinates** we describe it by the distance $r$ (m) from a fixed origin $O$ and the angle $\\theta$ (rad) measured from a fixed reference line. The unit vectors are $\\mathbf e_r$, pointing radially outward, and $\\mathbf e_\\theta$, perpendicular to it in the direction of increasing $\\theta$. Unlike $\\mathbf i$ and $\\mathbf j$, these vectors **rotate** with the particle: $\\dot{\\mathbf e}_r=\\dot\\theta\\,\\mathbf e_\\theta$ and $\\dot{\\mathbf e}_\\theta=-\\dot\\theta\\,\\mathbf e_r$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Radial and transverse components",
+   "text": "Position is $\\mathbf r=r\\,\\mathbf e_r$. Velocity has a radial component $v_r=\\dot r$ (rate of lengthening) and a transverse component $v_\\theta=r\\dot\\theta$ (rate of sweeping around). Dots denote time derivatives; $\\dot\\theta$ is the angular velocity in rad/s."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf v=\\dot r\\,\\mathbf e_r+r\\dot\\theta\\,\\mathbf e_\\theta,\\qquad v=\\sqrt{\\dot r^2+(r\\dot\\theta)^2}",
+   "caption": "The two components are perpendicular, so the speed is found by Pythagoras."
+  },
+  {
+   "type": "text",
+   "markdown": "Differentiating $\\mathbf v$ again, and using the derivatives of the unit vectors, gives the acceleration. Because $\\mathbf e_r$ and $\\mathbf e_\\theta$ rotate, extra terms appear that have no Cartesian counterpart. The term $-r\\dot\\theta^2$ is the familiar **centripetal** term, directed toward the origin. The term $2\\dot r\\dot\\theta$ is the **Coriolis** term: it appears whenever the particle moves radially while the line to it rotates."
+  },
+  {
+   "type": "math",
+   "latex": "a_r=\\ddot r-r\\dot\\theta^2,\\qquad a_\\theta=r\\ddot\\theta+2\\dot r\\dot\\theta",
+   "caption": "Radial and transverse acceleration components, in m/s$^2$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Velocity from polar data",
+   "prompt": "At an instant the gripper is $r=0.80$ m from the post, extending at $\\dot r=0.50$ m/s while the arm rotates at $\\dot\\theta=3.0$ rad/s. Find its velocity components and speed.",
+   "steps": [
+    {
+     "text": "Radial component.",
+     "latex": "v_r=\\dot r=0.50\\ \\text{m/s}"
+    },
+    {
+     "text": "Transverse component.",
+     "latex": "v_\\theta=r\\dot\\theta=0.80(3.0)=2.40\\ \\text{m/s}"
+    },
+    {
+     "text": "Speed and direction measured from the arm.",
+     "latex": "v=\\sqrt{0.50^2+2.40^2}=2.45\\ \\text{m/s},\\quad \\tan\\beta=\\frac{2.40}{0.50}\\Rightarrow\\beta=78.2^\\circ"
+    }
+   ],
+   "answer": "$v=2.45$ m/s, directed $78.2^\\circ$ from the arm toward increasing $\\theta$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Term",
+    "Expression",
+    "Physical origin",
+    "Direction"
+   ],
+   "rows": [
+    [
+     "Radial acceleration",
+     "$\\ddot r$",
+     "Change of radial speed",
+     "Along $\\mathbf e_r$"
+    ],
+    [
+     "Centripetal",
+     "$-r\\dot\\theta^2$",
+     "Turning of the radial direction",
+     "Toward the origin"
+    ],
+    [
+     "Angular acceleration",
+     "$r\\ddot\\theta$",
+     "Change of angular speed",
+     "Along $\\mathbf e_\\theta$"
+    ],
+    [
+     "Coriolis",
+     "$2\\dot r\\dot\\theta$",
+     "Radial motion on a rotating line",
+     "Along $\\mathbf e_\\theta$"
+    ]
+   ],
+   "caption": "The four terms in the polar acceleration."
+  },
+  {
+   "type": "worked_example",
+   "title": "Acceleration of a bead on a rotating rod",
+   "prompt": "A bead slides on a rod that rotates in a horizontal plane. At an instant $r=0.60$ m, $\\dot r=1.2$ m/s, $\\ddot r=0$, $\\dot\\theta=4.0$ rad/s and $\\ddot\\theta=2.0$ rad/s$^2$. Find $a_r$, $a_\\theta$ and the magnitude of the acceleration.",
+   "steps": [
+    {
+     "text": "Radial component: centripetal term only since $\\ddot r=0$.",
+     "latex": "a_r=0-0.60(4.0)^2=-9.6\\ \\text{m/s}^2"
+    },
+    {
+     "text": "Transverse component: angular-acceleration term plus Coriolis term.",
+     "latex": "a_\\theta=0.60(2.0)+2(1.2)(4.0)=1.2+9.6=10.8\\ \\text{m/s}^2"
+    },
+    {
+     "text": "Magnitude of the total acceleration.",
+     "latex": "a=\\sqrt{9.6^2+10.8^2}=14.45\\ \\text{m/s}^2"
+    }
+   ],
+   "answer": "$a_r=-9.6$ m/s$^2$, $a_\\theta=10.8$ m/s$^2$ and $a\\approx14.5$ m/s$^2$."
+  },
+  {
+   "type": "text",
+   "markdown": "Notice that most of $a_\\theta$ here came from the Coriolis term, even though the rod's angular acceleration is modest. If the rod is smooth, the only transverse force is the rod's normal reaction, and Newton's second law gives $F_\\theta=m(r\\ddot\\theta+2\\dot r\\dot\\theta)$ and $F_r=m(\\ddot r-r\\dot\\theta^2)$. In the polar description, a particle moving at constant $r$ with constant $\\dot\\theta$ has only the centripetal term."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Define $r$, $\\theta$ and the positive sense of $\\theta$ from a fixed reference line.",
+    "Write down $r,\\dot r,\\ddot r,\\theta,\\dot\\theta,\\ddot\\theta$ at the instant required.",
+    "Use $v_r=\\dot r$ and $v_\\theta=r\\dot\\theta$ for velocity, and $a_r,a_\\theta$ above for acceleration.",
+    "Combine the components perpendicularly to get magnitudes; use $\\tan\\beta=v_\\theta/v_r$ for direction.",
+    "Check which terms vanish: $\\dot r=0$ kills Coriolis, $\\dot\\theta=0$ kills centripetal and Coriolis."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "The radial acceleration is not just $\\ddot r$",
+   "text": "The component $a_r=\\ddot r-r\\dot\\theta^2$ includes the centripetal term. Setting $a_r=\\ddot r$ is wrong whenever the line rotates, and forgetting $2\\dot r\\dot\\theta$ is the most common transverse error. Angles must be in radians."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "In polar coordinates $\\mathbf v=\\dot r\\,\\mathbf e_r+r\\dot\\theta\\,\\mathbf e_\\theta$ and the speed is $\\sqrt{\\dot r^2+r^2\\dot\\theta^2}$.",
+    "The acceleration components are $a_r=\\ddot r-r\\dot\\theta^2$ and $a_\\theta=r\\ddot\\theta+2\\dot r\\dot\\theta$; the unit vectors rotate, which creates the extra terms.",
+    "$-r\\dot\\theta^2$ is the centripetal term and $2\\dot r\\dot\\theta$ is the Coriolis term, which needs both radial motion and rotation."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the polar acceleration expression, which term is the Coriolis term?",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$r\\ddot\\theta$"
+    },
+    {
+     "id": "b",
+     "text": "$\\ddot r$"
+    },
+    {
+     "id": "c",
+     "text": "$2\\dot r\\dot\\theta$"
+    },
+    {
+     "id": "d",
+     "text": "$-r\\dot\\theta^2$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$2\\dot r\\dot\\theta$",
+   "distractorRationale": {
+    "a": "This arises from angular acceleration.",
+    "b": "This is the radial acceleration due to change in radial speed.",
+    "c": "Correct: it needs both radial motion and rotation.",
+    "d": "This is the centripetal term."
+   },
+   "explanation": "The Coriolis term $2\\dot r\\dot\\theta$ appears in the transverse component because moving outward on a rotating line changes both the direction of the radial velocity and the size of $r\\dot\\theta$. It vanishes if either $\\dot r$ or $\\dot\\theta$ is zero.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A particle has polar coordinates $r$ and $\\theta$ with $\\dot\\theta$ in rad/s. The transverse component of its velocity is",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dot r$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dot\\theta/r$"
+    },
+    {
+     "id": "c",
+     "text": "$r\\ddot\\theta$"
+    },
+    {
+     "id": "d",
+     "text": "$r\\dot\\theta$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$r\\dot\\theta$",
+   "distractorRationale": {
+    "a": "This is the radial velocity component.",
+    "b": "Dimensionally inconsistent: it has units of 1/s$^2$ not m/s.",
+    "c": "This is a part of transverse acceleration.",
+    "d": "Correct: arc length per unit time at radius $r$."
+   },
+   "explanation": "In a small time $dt$ the particle sweeps an arc of length $r\\,d\\theta$ perpendicular to the radius, so $v_\\theta=r\\dot\\theta$. This has units of m/s when $\\dot\\theta$ is in rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A particle moves on a circle of constant radius $r$ with constant angular speed $\\dot\\theta$. Which description of its polar acceleration is correct?",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$a_r=-r\\dot\\theta^2$ and $a_\\theta=0$"
+    },
+    {
+     "id": "b",
+     "text": "$a_r=0$ and $a_\\theta=r\\dot\\theta^2$"
+    },
+    {
+     "id": "c",
+     "text": "$a_r=r\\dot\\theta^2$ and $a_\\theta=0$"
+    },
+    {
+     "id": "d",
+     "text": "The acceleration is zero because the speed is constant"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$a_r=-r\\dot\\theta^2$ and $a_\\theta=0$",
+   "distractorRationale": {
+    "a": "Correct: $\\ddot r=0$, $\\ddot\\theta=0$, $\\dot r=0$.",
+    "b": "Reverses which component survives.",
+    "c": "Sign error: the radial acceleration points toward the origin, so it is negative.",
+    "d": "Constant speed does not mean zero acceleration; the direction is changing."
+   },
+   "explanation": "With $\\dot r=\\ddot r=0$ and $\\ddot\\theta=0$, only $-r\\dot\\theta^2$ survives in $a_r$ and $a_\\theta=0$. The acceleration is centripetal, directed toward the centre.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A particle moves outward along a radial line that does not rotate ($\\dot\\theta=0$, $\\ddot\\theta=0$). The polar acceleration is",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$a_r=\\ddot r$, $a_\\theta=2\\dot r$"
+    },
+    {
+     "id": "b",
+     "text": "$a_r=\\ddot r$, $a_\\theta=0$"
+    },
+    {
+     "id": "c",
+     "text": "$a_r=\\ddot r-r\\dot\\theta^2$, $a_\\theta=2\\dot r\\dot\\theta$"
+    },
+    {
+     "id": "d",
+     "text": "$a_r=0$, $a_\\theta=\\ddot r$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$a_r=\\ddot r$, $a_\\theta=0$",
+   "distractorRationale": {
+    "a": "$2\\dot r$ alone is not dimensionally an acceleration.",
+    "b": "Correct: all rotation terms vanish.",
+    "c": "This is the general case, in which the rotation terms are zero here.",
+    "d": "Components swapped."
+   },
+   "explanation": "Setting $\\dot\\theta=\\ddot\\theta=0$ eliminates both the centripetal and Coriolis terms, leaving ordinary one-dimensional acceleration $\\ddot r$ along the line. This is a good check on the general polar expression.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A bead slides on a rotating rod. At the instant considered $r=0.50$ m, $\\dot r=2.0$ m/s, $\\ddot r=0$, $\\dot\\theta=3.0$ rad/s and $\\ddot\\theta=0$. Its polar acceleration components are",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$a_r=-4.5$ m/s$^2$ and $a_\\theta=6$ m/s$^2$"
+    },
+    {
+     "id": "b",
+     "text": "$a_r=0$ and $a_\\theta=12$ m/s$^2$"
+    },
+    {
+     "id": "c",
+     "text": "$a_r=-4.5$ m/s$^2$ and $a_\\theta=12$ m/s$^2$"
+    },
+    {
+     "id": "d",
+     "text": "$a_r=4.5$ m/s$^2$ and $a_\\theta=12$ m/s$^2$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$a_r=-4.5$ m/s$^2$ and $a_\\theta=12$ m/s$^2$",
+   "distractorRationale": {
+    "a": "Uses $\\dot r\\dot\\theta$ without the factor of 2 in the Coriolis term.",
+    "b": "Drops the centripetal term.",
+    "c": "Correct: $a_r=-0.5(9)=-4.5$; $a_\\theta=2(2)(3)=12$.",
+    "d": "Sign error on the centripetal term."
+   },
+   "explanation": "The radial component is $\\ddot r-r\\dot\\theta^2=0-0.50(9)=-4.5$ m/s$^2$. The transverse component has only the Coriolis part, $2\\dot r\\dot\\theta=2(2.0)(3.0)=12$ m/s$^2$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A stylus rides on a turntable's radial slot at $r=1.5$ m, moving outward at $\\dot r=2.0$ m/s while the slot turns at $\\dot\\theta=2.5$ rad/s. Find the speed of the stylus in m/s.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o2"
+   ],
+   "correctValue": 4.25,
+   "tolerance": 0.02,
+   "unit": "m/s",
+   "explanation": "The radial component is 2.0 m/s and the transverse component is $r\\dot\\theta=1.5(2.5)=3.75$ m/s. The speed is $\\sqrt{2.0^2+3.75^2}=4.25$ m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A collar slides on a rotating arm. At an instant $r=0.90$ m, $\\dot r=-0.80$ m/s (moving inward), $\\dot\\theta=2.0$ rad/s and $\\ddot\\theta=-1.5$ rad/s$^2$. Find the transverse acceleration component $a_\\theta$ in m/s$^2$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o1"
+   ],
+   "correctValue": -4.55,
+   "tolerance": 0.05,
+   "unit": "m/s^2",
+   "explanation": "$a_\\theta=r\\ddot\\theta+2\\dot r\\dot\\theta=0.90(-1.5)+2(-0.80)(2.0)=-1.35-3.20=-4.55$ m/s$^2$. The negative sign means it acts toward decreasing $\\theta$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A slider on an arm has $r=1.2$ m, $\\ddot r=0.60$ m/s$^2$ and the arm turns at constant $\\dot\\theta=5.0$ rad/s. Find the radial acceleration component $a_r$ in m/s$^2$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o1",
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o3"
+   ],
+   "correctValue": -29.4,
+   "tolerance": 0.1,
+   "unit": "m/s^2",
+   "explanation": "$a_r=\\ddot r-r\\dot\\theta^2=0.60-1.2(25)=0.60-30.0=-29.4$ m/s$^2$. The centripetal term dominates and points toward the origin, so $a_r$ is negative.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the physical origin of the centripetal term $-r\\dot\\theta^2$ and of the Coriolis term $2\\dot r\\dot\\theta$ in the polar acceleration, and state when each is zero.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o3"
+   ],
+   "markingGuide": [
+    "The unit vectors rotate, $\\dot{\\mathbf e}_r=\\dot\\theta\\mathbf e_\\theta$ and $\\dot{\\mathbf e}_\\theta=-\\dot\\theta\\mathbf e_r$, which generate extra acceleration terms.",
+    "Centripetal: the transverse velocity $r\\dot\\theta\\,\\mathbf e_\\theta$ changes direction toward the centre; zero if $\\dot\\theta=0$ or $r=0$.",
+    "Coriolis: two equal contributions, the radial velocity's direction turning with the line and the transverse speed $r\\dot\\theta$ changing because $r$ changes.",
+    "Coriolis term is zero if $\\dot r=0$ or $\\dot\\theta=0$.",
+    "The centripetal term points toward the origin; the Coriolis term acts transversely."
+   ],
+   "explanation": "Both terms arise only because $\\mathbf e_r$ and $\\mathbf e_\\theta$ change direction. The Coriolis term combines two effects of equal size, which explains its factor of 2.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A small bead of mass $m$ slides on a smooth horizontal rod that is driven at constant angular speed $\\omega$. At radius $r$ it has outward speed $\\dot r$. Use polar components to find the force the rod must exert on the bead and explain why a transverse force is needed even though $\\dot\\theta$ is constant.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o1",
+    "ug.mce-dynamics-1.polar-and-normal-tangential.polar-coordinates.o3"
+   ],
+   "markingGuide": [
+    "Smooth rod: no force along the rod, so $F_r=0$ and $\\ddot r-r\\omega^2=0$, giving $\\ddot r=r\\omega^2$ (bead accelerates outward).",
+    "Transverse: $a_\\theta=r\\ddot\\theta+2\\dot r\\dot\\theta=0+2\\dot r\\omega$.",
+    "The rod force (normal reaction) is $N=m(2\\dot r\\omega)$, perpendicular to the rod.",
+    "Reason: the bead's radial motion makes the transverse velocity $r\\omega$ grow, so it must be accelerated transversely even though $\\ddot\\theta=0$.",
+    "Horizontal plane so weight is balanced vertically and does not enter these components."
+   ],
+   "explanation": "The only transverse force is the rod's reaction, and it must supply the Coriolis acceleration $2\\dot r\\omega$. The radial equation has no applied force, so the bead is flung outward at $\\ddot r=r\\omega^2$.",
+   "board": "internal"
+  }
+ ]
+}

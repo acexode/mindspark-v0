@@ -1,0 +1,375 @@
+{
+ "lessonTitle": "Euler Buckling of Ideal Columns",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A pushrod in a race-car suspension is a slim steel tube loaded in pure compression. The stress in it is far below the yield strength, yet at a load of a few kilonewtons it suddenly bows sideways and collapses. This is buckling: failure by loss of stability, governed by stiffness and geometry rather than strength."
+  },
+  {
+   "type": "text",
+   "markdown": "A long slender member in compression is stable only up to a **critical load** $P_{cr}$ (N). Beyond it the straight form is unstable and any small disturbance grows into a lateral bow. Leonhard Euler analysed the **ideal column**: perfectly straight, centrally loaded, homogeneous, linear-elastic and with frictionless pinned ends. Taking the lateral deflection $v(x)$ and the bending moment $M=-Pv$, the beam equation $EIv''=-Pv$ is an eigenvalue problem whose smallest non-trivial solution gives the lowest buckling load. Here $E$ is Young's modulus (MPa), $I$ the **smallest** second moment of area of the cross-section (mm$^4$) and $L$ the length (mm)."
+  },
+  {
+   "type": "math",
+   "latex": "P_{cr}=\\frac{\\pi^2EI}{L_e^2},\\qquad L_e=KL",
+   "caption": "Euler critical load for effective length L_e = KL (K = 1 for pinned-pinned)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Effective length factor $K$",
+   "text": "The effective length $L_e=KL$ is the length of an equivalent pinned-pinned column with the same buckling load, i.e. the distance between inflection points of the buckled shape. $K=1$ pinned-pinned, $K=2$ fixed-free (cantilever), $K=0.5$ fixed-fixed, $K\\approx0.7$ fixed-pinned."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "End conditions",
+    "$K$",
+    "$L_e$",
+    "$P_{cr}$ relative to pinned-pinned"
+   ],
+   "rows": [
+    [
+     "Pinned-pinned",
+     "1",
+     "$L$",
+     "1"
+    ],
+    [
+     "Fixed-free (cantilever)",
+     "2",
+     "$2L$",
+     "$1/4$"
+    ],
+    [
+     "Fixed-pinned",
+     "$\\approx0.7$",
+     "$0.7L$",
+     "$\\approx2$"
+    ],
+    [
+     "Fixed-fixed",
+     "0.5",
+     "$0.5L$",
+     "4"
+    ]
+   ],
+   "caption": "Effective length factors for ideal end conditions (theoretical values)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Euler load for a pinned steel rod",
+   "prompt": "A solid round steel rod, diameter $d=20$ mm and length $L=1.0$ m, is pinned at both ends. Take $E=200$ GPa (typical). Find the critical load, the slenderness ratio and the critical stress.",
+   "steps": [
+    {
+     "text": "Second moment of area and area.",
+     "latex": "I=\\frac{\\pi d^4}{64}=7854\\ \\text{mm}^4,\\quad A=\\frac{\\pi d^2}{4}=314.2\\ \\text{mm}^2"
+    },
+    {
+     "text": "Euler load with $K=1$.",
+     "latex": "P_{cr}=\\frac{\\pi^2(200000)(7854)}{1000^2}=15503\\ \\text{N}=15.5\\ \\text{kN}"
+    },
+    {
+     "text": "Radius of gyration and slenderness ratio $\\lambda=L_e/r$.",
+     "latex": "r=\\sqrt{I/A}=d/4=5.0\\ \\text{mm},\\quad\\lambda=\\frac{1000}{5.0}=200"
+    },
+    {
+     "text": "Critical stress, which can also be written $\\pi^2E/\\lambda^2$.",
+     "latex": "\\sigma_{cr}=\\frac{P_{cr}}{A}=49.3\\ \\text{MPa}"
+    }
+   ],
+   "answer": "$P_{cr}\\approx15.5$ kN, $\\lambda=200$, $\\sigma_{cr}\\approx49$ MPa."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_{cr}=\\frac{P_{cr}}{A}=\\frac{\\pi^2E}{(L_e/r)^2}=\\frac{\\pi^2E}{\\lambda^2},\\qquad r=\\sqrt{I/A}",
+   "caption": "Critical stress in terms of the slenderness ratio"
+  },
+  {
+   "type": "text",
+   "markdown": "**Limits of Euler theory.** The derivation assumes linear-elastic behaviour, so it only holds if $\\sigma_{cr}$ is below the yield strength $S_y$ (or the proportional limit). Setting $\\sigma_{cr}=S_y$ gives the **limiting slenderness ratio**: Euler's formula applies only when $\\lambda\\ge\\lambda_c$ with"
+  },
+  {
+   "type": "math",
+   "latex": "\\lambda_c=\\pi\\sqrt{\\frac{E}{S_y}}",
+   "caption": "Below \\lambda_c the column yields before it buckles elastically and Euler overestimates the capacity"
+  },
+  {
+   "type": "worked_example",
+   "title": "Effective length, weak axis and the validity check",
+   "prompt": "A flat aluminium bar, 30 mm wide and 10 mm thick, is fixed at one end and free at the other, length $L=600$ mm. Take $E=70$ GPa and $S_y=240$ MPa (typical). Find the critical load and check that Euler theory is valid.",
+   "steps": [
+    {
+     "text": "The bar buckles about the axis with the smaller $I$, so use the thin direction.",
+     "latex": "I=\\frac{30\\times10^3}{12}=2500\\ \\text{mm}^4,\\quad A=300\\ \\text{mm}^2,\\quad r=2.887\\ \\text{mm}"
+    },
+    {
+     "text": "Fixed-free: $K=2$, so $L_e=1200$ mm.",
+     "latex": "P_{cr}=\\frac{\\pi^2(70000)(2500)}{1200^2}=1199\\ \\text{N}"
+    },
+    {
+     "text": "Slenderness ratio and critical stress.",
+     "latex": "\\lambda=\\frac{1200}{2.887}=416,\\quad\\sigma_{cr}=\\frac{1199}{300}=4.0\\ \\text{MPa}"
+    },
+    {
+     "text": "Limiting ratio for this alloy.",
+     "latex": "\\lambda_c=\\pi\\sqrt{70000/240}=53.7"
+    },
+    {
+     "text": "Since $\\lambda=416>53.7$ and $\\sigma_{cr}<S_y$, the column buckles elastically and Euler's formula is valid."
+    }
+   ],
+   "answer": "$P_{cr}\\approx1199$ N ($\\approx1.20$ kN); Euler valid."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Use the smallest $I$",
+   "text": "A column buckles about the axis of least bending stiffness, so always take the smaller of $I_x$ and $I_y$ unless end restraints differ in the two planes. A strong-axis calculation can overestimate $P_{cr}$ by an order of magnitude."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Stiffness not strength",
+   "text": "$P_{cr}$ depends on $E$, not $S_y$. Switching to a higher-strength steel does nothing for a slender column; increasing $I$ (a larger or thin-walled tube) is what helps."
+  },
+  {
+   "type": "text",
+   "markdown": "For structural steel with $S_y=250$ MPa and $E=200$ GPa, $\\lambda_c=88.9$. Columns with $\\lambda$ well below this are stocky and fail by yielding or inelastic buckling, treated in the next unit. Columns with $\\lambda\\gg\\lambda_c$ are slender and Euler is accurate."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The Euler load for an ideal column is $P_{cr}=\\pi^2EI/(KL)^2$, with $I$ the minimum second moment of area.",
+    "The effective length factor is 1 (pinned-pinned), 2 (fixed-free), 0.5 (fixed-fixed) and about 0.7 (fixed-pinned).",
+    "Critical stress $\\sigma_{cr}=\\pi^2E/\\lambda^2$ with $\\lambda=L_e/r$ and $r=\\sqrt{I/A}$.",
+    "Euler theory is valid only for $\\lambda\\ge\\pi\\sqrt{E/S_y}$; for lower slenderness the column yields first and Euler overestimates strength."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A slender column fixed at both ends is compared with an identical column pinned at both ends. By what factor is the Euler critical load of the fixed-fixed column larger?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4"
+    },
+    {
+     "id": "b",
+     "text": "2"
+    },
+    {
+     "id": "c",
+     "text": "0.25"
+    },
+    {
+     "id": "d",
+     "text": "1"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "4",
+   "distractorRationale": {
+    "a": "Correct: $K=0.5$ so $P_{cr}\\propto1/K^2=4$.",
+    "b": "Factor 2 is nearer the fixed-pinned case, where $K\\approx0.7$ gives about 2.",
+    "c": "This is the fixed-free cantilever result.",
+    "d": "End fixity matters a great deal; the load is not unchanged."
+   },
+   "explanation": "For the fixed-fixed case, $L_e=0.5L$ and $P_{cr}=\\pi^2EI/(0.5L)^2=4\\pi^2EI/L^2$. The inflection points are at quarter-lengths, so the central half behaves like a pinned column of length $L/2$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A pinned-pinned steel column has $E=210$ GPa, minimum second moment of area $I=8.0\\times10^5$ mm$^4$ and length 2.5 m. Calculate the Euler critical load in kN.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o1"
+   ],
+   "correctValue": 265.294966,
+   "tolerance": 2.0,
+   "unit": "kN",
+   "explanation": "$P_{cr}=\\pi^2EI/L^2=\\pi^2(210000)(8.0\\times10^5)/2500^2=265.3$ kN. Units: MPa times mm$^4$ over mm$^2$ gives N, divided by 1000 for kN.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A vertical aluminium strut is fixed at its base and free at its top. Its length is 1.2 m, $E=70$ GPa and $I=3.0\\times10^5$ mm$^4$ (minimum). Calculate the Euler critical load in kN.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o2"
+   ],
+   "correctValue": 35.982933,
+   "tolerance": 0.1,
+   "unit": "kN",
+   "explanation": "For fixed-free $K=2$, so $L_e=2.4$ m. Then $P_{cr}=\\pi^2(70000)(3.0\\times10^5)/2400^2=35.98$ kN. Using the length of 1.2 m would give four times this value.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel has $E=200$ GPa and $S_y=355$ MPa (typical). Below what slenderness ratio does Euler's formula cease to apply? Give the value of $\\pi\\sqrt{E/S_y}$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o3"
+   ],
+   "correctValue": 74.567691,
+   "tolerance": 0.3,
+   "unit": "dimensionless",
+   "explanation": "Setting $\\sigma_{cr}=\\pi^2E/\\lambda^2=S_y$ gives $\\lambda_c=\\pi\\sqrt{E/S_y}=\\pi\\sqrt{200000/355}=74.6$. A column with a smaller slenderness ratio yields before it can buckle elastically.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A pinned-pinned steel column ($E=200$ GPa, $S_y=250$ MPa, typical) has a slenderness ratio $\\lambda=60$. The Euler formula would give a critical stress of about 548 MPa. What is the correct assessment?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Euler is valid and the column buckles at 548 MPa"
+    },
+    {
+     "id": "b",
+     "text": "Euler is not valid because $\\lambda$ is below about 89, so the column would yield first"
+    },
+    {
+     "id": "c",
+     "text": "Euler is valid because 548 MPa exceeds the yield strength, which proves it is safe"
+    },
+    {
+     "id": "d",
+     "text": "Euler is not valid because $\\lambda$ is above 89"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Euler is not valid because $\\lambda$ is below about 89, so the column would yield first",
+   "distractorRationale": {
+    "a": "548 MPa is more than twice the yield strength; the steel would yield well before reaching it.",
+    "b": "Correct: the limit is $\\pi\\sqrt{200000/250}=88.9$, and $60<88.9$.",
+    "c": "A stress above yield means the theory's elastic assumption is violated, not that the column is safe.",
+    "d": "$\\lambda=60$ is below, not above, 88.9."
+   },
+   "explanation": "Euler theory assumes elastic behaviour, requiring $\\sigma_{cr}\\le S_y$, equivalent to $\\lambda\\ge88.9$ here. At $\\lambda=60$ the formula's 548 MPa is physically impossible, so the member fails by yielding or inelastic buckling at a lower load.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A rectangular steel strut, 40 mm by 12 mm in cross-section, is pinned at both ends with length 0.9 m and $E=200$ GPa. Which value is its Euler critical load?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "14.0 kN"
+    },
+    {
+     "id": "b",
+     "text": "156 kN"
+    },
+    {
+     "id": "c",
+     "text": "28.0 kN"
+    },
+    {
+     "id": "d",
+     "text": "7.0 kN"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "14.0 kN",
+   "distractorRationale": {
+    "a": "Correct: it buckles about the weak axis, $I=40(12)^3/12=5760$ mm$^4$, so $P_{cr}=\\pi^2(200000)(5760)/900^2=14.0$ kN.",
+    "b": "Uses the strong-axis $I=64000$ mm$^4$, which a real strut would not buckle about.",
+    "c": "Doubles the correct value, as if the effective length were halved.",
+    "d": "Halves the correct value, as if the effective length were $\\sqrt2L$."
+   },
+   "explanation": "The strut buckles in the direction of least stiffness, so the minimum $I$ applies: the weak-axis value is 5760 mm$^4$ and gives 14.04 kN. The strong-axis value 156 kN is more than 11 times larger and unattainable.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain what is meant by the effective length of a column. Why does a fixed-free (cantilever) column of length $L$ have the same Euler load as a pinned-pinned column of length $2L$, and why is a fixed-fixed column four times stronger than a pinned one?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o2"
+   ],
+   "markingGuide": [
+    "Effective length $L_e=KL$ is the length of the equivalent pinned-pinned column, equal to the distance between inflection points (zero-moment points) of the buckled shape.",
+    "Fixed-free: the buckled shape is a quarter-sine wave, equal to half of a pinned-pinned half-wave of length $2L$, so $L_e=2L$ and $P_{cr}=\\pi^2EI/(2L)^2$.",
+    "Fixed-fixed: inflection points at $L/4$ and $3L/4$, with the central half behaving as a pinned column of length $L/2$, so $L_e=0.5L$.",
+    "$P_{cr}\\propto1/L_e^2$, so the loads are in the ratio $1/4:1:4$ for fixed-free, pinned and fixed-fixed.",
+    "Real fixities are never perfect, so design uses larger effective lengths than the ideal values."
+   ],
+   "explanation": "Euler load scales with the inverse square of effective length, and end restraint sets effective length through the position of the inflection points. Restraining rotation shortens the effective length and strongly increases the buckling load.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A solid round steel column of diameter 30 mm and length 1.5 m is rigidly fixed at both ends. Take $E=200$ GPa. Calculate the Euler critical load in kN (and check, for your own understanding, that the critical stress is below a typical yield strength of 250 MPa).",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o2",
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o3"
+   ],
+   "correctValue": 139.528245,
+   "tolerance": 2.0,
+   "unit": "kN",
+   "explanation": "For fixed-fixed $L_e=0.75$ m, $r=d/4=7.5$ mm, so $\\lambda=100$. Then $\\sigma_{cr}=\\pi^2E/\\lambda^2=197.4$ MPa, which is below 250 MPa, so Euler holds. With $A=706.9$ mm$^2$ the load is $P_{cr}=139.5$ kN.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A pinned-pinned round steel strut of length 1.2 m ($E=200$ GPa, $S_y=250$ MPa, typical) is to be buckle-limited by Euler theory. Find the largest diameter for which Euler's formula is still valid, and the Euler load at that diameter. Comment on what happens for larger diameters.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o1",
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o3"
+   ],
+   "markingGuide": [
+    "Limiting slenderness $\\lambda_c=\\pi\\sqrt{E/S_y}=88.9$.",
+    "For a round bar $r=d/4$ and $K=1$, so $\\lambda=4L/d$.",
+    "Euler valid when $4(1200)/d\\ge88.9$, i.e. $d\\le54.0$ mm (about 54 mm).",
+    "At $d=54$ mm: $I=\\pi d^4/64=417393$ mm$^4$ and $P_{cr}=\\pi^2EI/L^2=572$ kN.",
+    "For diameters above about 54 mm the column is too stocky: $\\sigma_{cr}$ would exceed $S_y$, so failure is by yielding or inelastic buckling and Euler overestimates the capacity."
+   ],
+   "explanation": "Euler is valid only when the slenderness ratio exceeds $\\pi\\sqrt{E/S_y}$, which for a round pinned strut bounds the diameter from above. Beyond this bound the real capacity is limited by the yield strength rather than elastic instability.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: a column fixed at its base and completely free at the top has an effective length factor of $K=2$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.euler-buckling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The buckled shape is a quarter sine wave, so the free length $L$ is equivalent to half of a pinned-pinned column of length $2L$. Hence $L_e=2L$ and $P_{cr}$ is one quarter of that for a pinned-pinned column of length $L$.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,410 @@
+{
+ "lessonTitle": "Mates and Degrees of Freedom",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bicycle brake lever drops into your CAD assembly and flops about like a loose flag. Nothing is wrong with the part: it simply has six degrees of freedom and no mates yet to remove them."
+  },
+  {
+   "type": "text",
+   "markdown": "A rigid body in space has **six degrees of freedom (DOF)**: three translations (along $x$, $y$, $z$) and three rotations (about $x$, $y$, $z$). An assembly tool starts every free component with all six. Each **mate** is a geometric relation between two components that removes some of those freedoms. The designer's job is to remove exactly the freedoms the real joint removes and keep the ones the mechanism needs."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Mate and degree of freedom",
+   "text": "A **degree of freedom** is one independent motion (a translation or a rotation) a component can still perform relative to its neighbour. A **mate** is an assembly relation (coincident, concentric, parallel, distance) that removes one or more of them. DOF remaining = 6 minus the DOF removed, counting only independent mates."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{DOF}_{\\text{remaining}} = 6 - \\sum_i r_i",
+   "caption": "r_i is the number of DOF removed by independent mate i, for one free part relative to a fixed part"
+  },
+  {
+   "type": "text",
+   "markdown": "Three mate combinations cover most real joints. **Pin (revolute) joint**: a concentric mate between a pin and its hole removes 4 DOF (two translations across the axis and two rotations that would tilt the axis); a coincident mate between a shoulder face and the lug face removes the translation along the axis. Five are removed, leaving one rotation about the axis. **Slider (prismatic) joint**: a rod with a flat in a bore has concentric (4 removed) plus a mate holding the flat parallel to a flat face (1 removed, the spin), leaving one translation along the axis. **Rigid (fixed) connection**: all six removed, for example a flange face coincident with a mounting face, a concentric spigot and an anti-rotation mate such as a second bolt hole aligned."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Joint",
+    "Typical mate set",
+    "DOF removed",
+    "DOF remaining"
+   ],
+   "rows": [
+    [
+     "Pin (revolute)",
+     "Concentric + coincident shoulder face",
+     "5",
+     "1 (rotation about axis)"
+    ],
+    [
+     "Slider (prismatic)",
+     "Concentric + parallel flat (anti-rotation)",
+     "5",
+     "1 (translation along axis)"
+    ],
+    [
+     "Rigid (fixed)",
+     "Coincident face + concentric + anti-rotation",
+     "6",
+     "0"
+    ],
+    [
+     "Cylinder in bore",
+     "Concentric only",
+     "4",
+     "2 (slide and spin)"
+    ]
+   ],
+   "caption": "Mate sets and the freedom they leave for one part relative to a fixed part"
+  },
+  {
+   "type": "worked_example",
+   "title": "Counting DOF for a hinge pin",
+   "prompt": "A clevis pin of diameter 10 mm is dropped into a hole in a fixed bracket. The pin has a head that sits against the bracket face. A concentric mate and a coincident mate (head underside to bracket face) are applied. How many DOF remain, and what motion is left?",
+   "steps": [
+    {
+     "text": "A free pin has 6 DOF. The bracket is fixed."
+    },
+    {
+     "text": "The concentric mate aligns the pin axis with the hole axis: it removes 2 translations perpendicular to the axis and 2 rotations that would tilt the axis, so 4 DOF are removed.",
+     "latex": "r_1 = 2 + 2 = 4"
+    },
+    {
+     "text": "The coincident mate of head underside against bracket face removes translation along the axis: 1 DOF. Rotation about the axis is untouched because both faces are rotationally symmetric.",
+     "latex": "r_2 = 1"
+    },
+    {
+     "text": "Subtract the removed freedoms from six.",
+     "latex": "\\text{DOF} = 6 - (4 + 1) = 1"
+    }
+   ],
+   "answer": "1 DOF remains: rotation of the pin about its own axis, so the pair behaves as a pin joint."
+  },
+  {
+   "type": "text",
+   "markdown": "Mating is not the end of the job. Real parts have tolerances and models contain errors, so you must **check for interference**: do the solid volumes of two components overlap? Assembly tools compute the intersection of each pair and report any non-zero volume. Interference is acceptable only for a deliberate press fit; otherwise it signals a design error such as a shaft larger than its bore, or a hole position error between mating parts."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Mates can conflict",
+   "text": "A mate that repeats a restriction already imposed is redundant if the geometry is consistent, and causes a conflict if the geometry is not. Count removed DOF only for independent mates: a coincident face and a concentric spigot overlap in the two tilt rotations."
+  },
+  {
+   "type": "worked_example",
+   "title": "Detecting interference from sizes",
+   "prompt": "A pin has a maximum diameter of 16.03 mm. Its hole has a smallest diameter of 16.00 mm and a largest of 16.04 mm, and the two are concentric. Is there interference, and how large is it at worst?",
+   "steps": [
+    {
+     "text": "Interference exists when the pin diameter exceeds the hole diameter at the same section."
+    },
+    {
+     "text": "Compare the worst pairing, the largest pin in the smallest hole.",
+     "latex": "d_\\text{pin,max} - d_\\text{hole,min} = 16.03 - 16.00 = 0.03\\ \\text{mm}"
+    },
+    {
+     "text": "The result is positive, so material overlaps by 0.03 mm on diameter, which is 0.015 mm per side. The largest hole with the smallest pin would give clearance, so whether a given assembly interferes depends on the actual part sizes."
+    }
+   ],
+   "answer": "At worst there is 0.03 mm diametral interference (0.015 mm radial), so the check must be run at the extreme sizes."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Start from the real joint: which motion must remain?",
+    "Choose mates that remove everything else, no more and no fewer.",
+    "Count removed DOF only for independent mates.",
+    "Run an interference check at the extreme limits of size."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Over- and under-constraint",
+   "text": "If you remove the intended freedom the mechanism will not move in a motion study; if you leave extras the part floats away from where the drawing shows it."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A free rigid part has 6 DOF and each independent mate removes some of them.",
+    "Pin = concentric + coincident (1 rotation left); slider = concentric + anti-rotation (1 translation left); rigid = all 6 removed.",
+    "Interference detection finds overlapping solid volume; check it at the limit sizes."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which pair of mates turns a pin into a revolute (hinge) joint with a fixed lug?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Concentric to the hole and coincident to the shoulder face"
+    },
+    {
+     "id": "b",
+     "text": "Two parallel face mates"
+    },
+    {
+     "id": "c",
+     "text": "A distance mate and an angle mate"
+    },
+    {
+     "id": "d",
+     "text": "A fixed mate with a coincident plane"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Concentric to the hole and coincident to the shoulder face",
+   "distractorRationale": {
+    "a": "Correct: leaves 1 rotation.",
+    "b": "Parallel faces do not locate the axis.",
+    "c": "These do not align axes.",
+    "d": "This would give a rigid joint with no rotation."
+   },
+   "explanation": "Concentric removes four DOF and the coincident face removes the axial translation, leaving only rotation about the axis. The other sets either do not locate the axis or fix the pin entirely.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How many degrees of freedom does an unmated component have in 3D space?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3"
+    },
+    {
+     "id": "b",
+     "text": "4"
+    },
+    {
+     "id": "c",
+     "text": "6"
+    },
+    {
+     "id": "d",
+     "text": "9"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "6",
+   "distractorRationale": {
+    "a": "Only translations.",
+    "b": "Not a rigid body count.",
+    "c": "Correct.",
+    "d": "More than a rigid body can have."
+   },
+   "explanation": "Three translations and three rotations make six degrees of freedom. A count of three forgets either the rotations or the translations.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A guide rail is fixed. A carriage block is mated with a coincident mate between its base face and the rail top face (removes 3 DOF) and a second coincident mate between its side face and the rail side face (removes 2 further independent DOF). How many DOF remain for the carriage?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o1",
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o2"
+   ],
+   "correctValue": 1,
+   "tolerance": 0.01,
+   "unit": "DOF",
+   "explanation": "Six minus the removed 3 and 2 gives 1. The remaining freedom is translation along the rail.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A shaft has a maximum diameter of 8.015 mm. Its mating hole has a minimum diameter of 8.000 mm. Calculate the maximum diametral interference in mm.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o3"
+   ],
+   "correctValue": 0.015,
+   "tolerance": 0.001,
+   "unit": "mm",
+   "explanation": "Maximum interference is the largest shaft minus the smallest hole: 8.015 - 8.000 = 0.015 mm. Interference exists only if this number is positive.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An assembly has one fixed base and two floating components, both with no mates. How many DOF are available to the two floating parts in total?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "6"
+    },
+    {
+     "id": "b",
+     "text": "12"
+    },
+    {
+     "id": "c",
+     "text": "18"
+    },
+    {
+     "id": "d",
+     "text": "0"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "12",
+   "distractorRationale": {
+    "a": "That is one part.",
+    "b": "Correct.",
+    "c": "That would be three floating parts.",
+    "d": "That would mean both are fixed."
+   },
+   "explanation": "Each floating part has 6 DOF, so two parts have 12. The fixed base contributes none.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A pin of 10.00 mm diameter sits in a hole of 10.20 mm diameter, but the two axes are offset by 0.30 mm. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "No interference, clearance exists all round"
+    },
+    {
+     "id": "b",
+     "text": "Interference: the pin overlaps the hole wall by 0.20 mm at the nearest point"
+    },
+    {
+     "id": "c",
+     "text": "Interference of 0.30 mm"
+    },
+    {
+     "id": "d",
+     "text": "Interference of 0.10 mm"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Interference: the pin overlaps the hole wall by 0.20 mm at the nearest point",
+   "distractorRationale": {
+    "a": "Radial clearance is only 0.10 mm per side, smaller than the offset.",
+    "b": "Correct.",
+    "c": "The offset alone ignores the 0.10 mm radial clearance.",
+    "d": "This is the radial clearance, not the overlap."
+   },
+   "explanation": "The hole radius is 5.10 mm and the pin radius 5.00 mm. The far edge of the pin lies 0.30 + 5.00 = 5.30 mm from the hole centre, which is 0.20 mm beyond the hole wall at 5.10 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A round rod with one flat runs in a bore. Which mate set gives a slider with exactly one translation DOF?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Concentric only"
+    },
+    {
+     "id": "b",
+     "text": "Concentric plus a coincident end face"
+    },
+    {
+     "id": "c",
+     "text": "Concentric plus a parallel mate between the flat and a flat face of the housing"
+    },
+    {
+     "id": "d",
+     "text": "Three coincident point mates"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Concentric plus a parallel mate between the flat and a flat face of the housing",
+   "distractorRationale": {
+    "a": "Leaves 2 DOF.",
+    "b": "Gives a pin joint.",
+    "c": "Correct.",
+    "d": "Not a standard slider set and may leave several DOF."
+   },
+   "explanation": "Concentric leaves slide and spin; the parallel flat mate stops the spin, leaving only the slide. A coincident end face would stop the slide but leave the spin, giving a pin joint.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A rod is placed in a bore of a fixed housing with a concentric mate only, and a student finds it both slides and spins in the animation. State the DOF before and after the mate, and name a second mate that converts the joint into (a) a pin joint and (b) a slider.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o1",
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o2"
+   ],
+   "markingGuide": [
+    "Free rod 6 DOF; concentric removes 4, so 2 remain (slide and spin)",
+    "(a) Pin: coincident shoulder or end face removes the slide, leaving 1 rotation",
+    "(b) Slider: a parallel or anti-rotation mate on a flat removes the spin, leaving 1 translation",
+    "Each result leaves exactly 1 DOF"
+   ],
+   "explanation": "Concentric alone leaves two DOF: translation along the axis and rotation about it. A face mate removes the translation (pin), or a flat parallel mate removes the rotation (slider).",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A motor flange is mated to a fixed plate with a coincident face mate and a concentric spigot mate. A student counts 3 + 4 = 7 DOF removed and concludes the flange is over-constrained. Correct the count, state the DOF that remain, and name a mate that makes the connection fully rigid.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o1",
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o2"
+   ],
+   "markingGuide": [
+    "Face contact removes 1 translation and 2 tilts",
+    "The concentric spigot repeats the 2 tilts, so only 2 in-plane translations are new",
+    "Independent total is 5, so 1 DOF remains (spin about the spigot axis)",
+    "Add an anti-rotation mate, such as an aligned bolt hole, to remove the last rotation",
+    "Total 6 removed, so the joint is rigid"
+   ],
+   "explanation": "Mates remove only independent freedoms, so the tilts counted twice must be discounted. The independent count is 5, leaving the spin, which a bolt-hole alignment removes.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A rigid (fixed) connection between two parts leaves zero degrees of freedom between them.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.assemblies-and-mates.assembly-mates.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A rigid connection removes all six DOF so the parts move as one body. A pin or slider by contrast keeps exactly one.",
+   "board": "internal"
+  }
+ ]
+}

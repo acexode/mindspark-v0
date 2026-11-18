@@ -1,0 +1,403 @@
+{
+ "lessonTitle": "Shaft Design for Strength and Fatigue",
+ "estimatedMinutes": 60,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A gearbox shaft can be perfectly strong enough to carry its torque and still fail the gearbox, because a shaft that bends too much tilts the gears so that the teeth mesh on one edge and the bearings run with their rollers skewed. A shaft must therefore be checked twice: once for strength and fatigue at its most stressed section, and again for stiffness."
+  },
+  {
+   "type": "text",
+   "markdown": "A rotating shaft carries gears and pulleys that apply forces and torque. Resolve the forces into two perpendicular planes, find the bearing reactions, and draw the bending-moment diagram in each plane; the resultant moment $M$ at each section is the vector sum. Because the shaft rotates, a fixed bending moment produces a stress that reverses every revolution, so the **bending stress is fully reversed** (alternating), while a steady torque $T$ produces a **steady (mean) shear stress**. The critical sections are shoulders, keyways and grooves where $M$ or $T$ is large and the diameter is small."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Fatigue stress concentration factor",
+   "text": "A geometric stress concentration factor $K_t$ (bending) or $K_{ts}$ (torsion) is the ratio of peak elastic stress at a feature to the nominal stress. In fatigue the full peak is not felt, because the material is notch-insensitive to some degree. The fatigue factor is $K_f=1+q(K_t-1)$, where $q$ in the range 0 to 1 is the notch sensitivity (and similarly $K_{fs}=1+q_s(K_{ts}-1)$ for torsion). It multiplies the nominal stress, and for ductile material in a mean stress it is applied only to the alternating component in the simplest treatment, but Shigley's DE-Goodman form below applies it to both."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "First-iteration $K_t$ (bending)",
+    "$K_{ts}$ (torsion)"
+   ],
+   "rows": [
+    [
+     "Shoulder fillet, sharp ($r/d=0.02$)",
+     "2.7",
+     "2.2"
+    ],
+    [
+     "Shoulder fillet, well rounded ($r/d=0.1$)",
+     "1.7",
+     "1.5"
+    ],
+    [
+     "End-milled keyseat ($r/d=0.02$)",
+     "2.14",
+     "3.0"
+    ],
+    [
+     "Retaining-ring groove",
+     "5.0",
+     "3.0"
+    ]
+   ],
+   "caption": "Typical first-iteration stress concentration factors for shafts (indicative, Shigley Table 7-1; refine when the dimensions are known)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Sizing for fatigue.** For a rotating shaft with fully reversed bending moment $M_a$ and steady torque $T_m$ (so $M_m=T_a=0$), the distortion-energy (von Mises) combination with the Goodman line gives the factor of safety $n$ in terms of the diameter $d$. In SI units, with $M$ and $T$ in N mm and strengths in MPa, the relation and its inverse for the minimum diameter are shown below. The equations come from $\\sigma_a'=\\sqrt{\\sigma_a^2+3\\tau_a^2}$ and $\\sigma_m'=\\sqrt{\\sigma_m^2+3\\tau_m^2}$ with $\\sigma=32M/(\\pi d^3)$ and $\\tau=16T/(\\pi d^3)$, inserted in the Goodman equation $\\sigma_a'/S_e+\\sigma_m'/S_{ut}=1/n$."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{1}{n}=\\frac{16}{\\pi d^3}\\left[\\frac{2K_fM_a}{S_e}+\\frac{\\sqrt3\\,K_{fs}T_m}{S_{ut}}\\right],\\qquad d=\\left\\{\\frac{16n}{\\pi}\\left[\\frac{2K_fM_a}{S_e}+\\frac{\\sqrt3\\,K_{fs}T_m}{S_{ut}}\\right]\\right\\}^{1/3}",
+   "caption": "DE-Goodman criterion for a shaft with alternating bending and steady torque (Shigley, M and T in N mm, S in MPa gives d in mm)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Minimum diameter at a shoulder",
+   "prompt": "A steel shaft ($S_{ut}=600$ MPa, corrected endurance limit $S_e=230$ MPa) has a shoulder where the alternating bending moment is 180 N m and the steady torque is 120 N m. The stress concentration at the fillet is $K_t=2.1$ in bending with notch sensitivity $q=0.8$, and $K_{ts}=1.7$ in torsion with $q_s=0.85$. Find the minimum diameter for $n=2.0$.",
+   "steps": [
+    {
+     "text": "Fatigue stress concentration factors.",
+     "latex": "K_f=1+0.8(2.1-1)=1.88,\\qquad K_{fs}=1+0.85(1.7-1)=1.595"
+    },
+    {
+     "text": "Bracket terms in the DE-Goodman expression (N mm and MPa).",
+     "latex": "\\frac{2K_fM_a}{S_e}=\\frac{2\\times1.88\\times180000}{230}=2943,\\qquad \\frac{\\sqrt3K_{fs}T_m}{S_{ut}}=\\frac{\\sqrt3\\times1.595\\times120000}{600}=553"
+    },
+    {
+     "text": "Sum and insert in the diameter equation.",
+     "latex": "d=\\left\\{\\frac{16\\times2.0}{\\pi}\\times3495\\right\\}^{1/3}=32.9\\ \\text{mm}"
+    },
+    {
+     "text": "Round up to a standard 35 mm and verify. The factor of safety for $d=35$ mm follows from the first equation.",
+     "latex": "\\frac{1}{n}=\\frac{16}{\\pi\\times35^3}\\times3495=0.415\\ \\Rightarrow\\ n=2.41"
+    }
+   ],
+   "answer": "The minimum diameter is 32.9 mm; a 35 mm shaft gives n = 2.41. Note that the shoulder, not the plain shaft, controls the size."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Deflection and slope.** A shaft must also be stiff enough. Excessive slope at a bearing misaligns the rolling elements or the oil film and shortens bearing life, and excessive transverse deflection or slope at a gear reduces tooth contact and increases noise and wear. The designer therefore calculates the deflection $y$ and slope $\\theta$ from the beam equations, using the shaft's second moment of area $I=\\pi d^4/64$ and the modulus $E$ (steel $E\\approx207$ GPa), then compares them with limits. Typical guideline values (indicative; check the bearing and gear manufacturer): slope at a deep-groove ball bearing about 0.001 to 0.003 rad, at tapered or cylindrical roller bearings about 0.0005 to 0.0012 rad, and slope across a spur gear mesh about 0.0005 rad."
+  },
+  {
+   "type": "math",
+   "latex": "y_{load}=\\frac{F\\,a^2b^2}{3EIL},\\qquad \\theta_A=\\frac{F\\,b\\,(L^2-b^2)}{6EIL},\\qquad \\theta_B=\\frac{F\\,a\\,(L^2-a^2)}{6EIL}",
+   "caption": "Simply supported shaft of span L with a single load F at distance a from support A and b from support B (a + b = L); central load: y = FL^3/(48EI)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Deflection and slope check",
+   "prompt": "A 35 mm diameter steel shaft ($E=207$ GPa) is simply supported over a 400 mm span and carries a gear load of 3.2 kN at 150 mm from bearing A. Find the deflection at the gear and the slopes at the two bearings.",
+   "steps": [
+    {
+     "text": "Second moment of area.",
+     "latex": "I=\\frac{\\pi d^4}{64}=\\frac{\\pi\\times35^4}{64}=73662\\ \\text{mm}^4"
+    },
+    {
+     "text": "Deflection under the load with $a=150$ mm and $b=250$ mm.",
+     "latex": "y=\\frac{3200\\times150^2\\times250^2}{3\\times207000\\times73662\\times400}=0.246\\ \\text{mm}"
+    },
+    {
+     "text": "Slope at the nearer bearing A.",
+     "latex": "\\theta_A=\\frac{3200\\times250\\times(400^2-250^2)}{6\\times207000\\times73662\\times400}=0.00213\\ \\text{rad}"
+    },
+    {
+     "text": "Slope at the farther bearing B.",
+     "latex": "\\theta_B=\\frac{3200\\times150\\times(400^2-150^2)}{6\\times207000\\times73662\\times400}=0.00180\\ \\text{rad}"
+    }
+   ],
+   "answer": "Deflection at the gear is 0.25 mm; the slopes are 0.00213 rad at A and 0.00180 rad at B, which is acceptable for deep-groove ball bearings (up to about 0.003 rad, typical) but too large for roller bearings (about 0.0012 rad) and well above the guideline for a gear mesh, so the shaft would need stiffening or a different layout."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Stiffness scales with $d^4$ through $I$, so a 10 per cent increase in diameter reduces deflection by about 32 per cent.",
+    "Deflection depends on $E$, which is nearly the same for all steels, so changing to a stronger steel does not help stiffness.",
+    "Shorten the span, place bearings close to the gears, or add a bearing to cut deflection.",
+    "Use generous shoulder fillets, relief grooves and gently rounded keyways to reduce $K_f$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Strength first, then stiffness",
+   "text": "Estimate the diameter from fatigue at the critical section including $K_f$ and $K_{fs}$, round up to a standard size, then check deflection and slope. In practice the stiffness check often governs the final diameter for long, heavily loaded shafts, and the fatigue check governs for short ones."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A rotating shaft sees fully reversed bending and usually steady torque, so the fatigue analysis uses $M_a$ and $T_m$ with the DE-Goodman criterion.",
+    "Stress concentration enters through $K_f=1+q(K_t-1)$ and $K_{fs}$; shoulders, keyways and grooves are the critical features.",
+    "Minimum diameter: $d=\\{(16n/\\pi)[2K_fM_a/S_e+\\sqrt3K_{fs}T_m/S_{ut}]\\}^{1/3}$.",
+    "Check deflection and slope with beam equations ($I=\\pi d^4/64$) against limits for bearings and gear meshes; stiffness scales with $d^4$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A shaft rotates at constant speed under a bending moment that is fixed in direction. How does the bending stress at a point on the surface vary with time?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is fully reversed, going from tension to compression once per revolution"
+    },
+    {
+     "id": "b",
+     "text": "It is steady in tension"
+    },
+    {
+     "id": "c",
+     "text": "It is steady in compression"
+    },
+    {
+     "id": "d",
+     "text": "It is zero except at the bearings"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is fully reversed, going from tension to compression once per revolution",
+   "distractorRationale": {
+    "a": "Correct: a surface point rotates from the tension side to the compression side and back.",
+    "b": "The point passes through the compression side too.",
+    "c": "The surface alternates, so it is not steady.",
+    "d": "The stress is non-zero in the loaded span."
+   },
+   "explanation": "A point on the surface sits on the tension side for half a revolution and on the compression side for the other half. The bending stress is therefore alternating with zero mean, while a steady torque gives a steady shear stress.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A shoulder has a theoretical stress concentration factor $K_t=2.5$ and a notch sensitivity $q=0.8$. What is the fatigue stress concentration factor $K_f$?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2.2"
+    },
+    {
+     "id": "b",
+     "text": "2.0"
+    },
+    {
+     "id": "c",
+     "text": "2.5"
+    },
+    {
+     "id": "d",
+     "text": "1.8"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "2.2",
+   "distractorRationale": {
+    "a": "Correct: K_f = 1 + 0.8(2.5 - 1) = 2.2.",
+    "b": "2.0 uses q K_t = 0.8 x 2.5.",
+    "c": "2.5 assumes q = 1 (a fully notch-sensitive material).",
+    "d": "1.8 subtracts 0.7 from K_t, which has no basis."
+   },
+   "explanation": "$K_f=1+q(K_t-1)=1+0.8\\times1.5=2.2$. The fatigue factor lies between 1 (no notch effect) and $K_t$ (full effect) depending on notch sensitivity.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which change at a shaft shoulder most directly reduces the stress concentration there?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Increasing the fillet radius"
+    },
+    {
+     "id": "b",
+     "text": "Making the fillet sharper"
+    },
+    {
+     "id": "c",
+     "text": "Reducing the fillet radius to save space"
+    },
+    {
+     "id": "d",
+     "text": "Cutting a keyway across the shoulder"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Increasing the fillet radius",
+   "distractorRationale": {
+    "a": "Correct: a larger radius makes the flow of stress smoother.",
+    "b": "A sharp corner raises Kt to about 2.7 or more.",
+    "c": "Roughness adds to the surface-finish penalty.",
+    "d": "A keyway adds a stress raiser."
+   },
+   "explanation": "A generous fillet radius reduces $K_t$ from about 2.7 (sharp) to about 1.7 (well rounded). The same idea applies to relief grooves and to the ends of keyways.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A steel shaft is found to deflect too much. The diameter is increased by 10 per cent. By approximately what factor does the deflection under the same load fall?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It becomes about 0.68 of its previous value"
+    },
+    {
+     "id": "b",
+     "text": "It becomes about 0.91 of its previous value"
+    },
+    {
+     "id": "c",
+     "text": "It becomes about 0.83 of its previous value"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It becomes about 0.68 of its previous value",
+   "distractorRationale": {
+    "a": "Correct: deflection varies as 1/I, proportional to d^-4: 1/1.1^4 = 0.683.",
+    "b": "0.91 assumes deflection inversely proportional to d.",
+    "c": "0.83 assumes d^-2.",
+    "d": "Stiffness depends on diameter."
+   },
+   "explanation": "The second moment of area is $I=\\pi d^4/64$, so deflection varies as $d^{-4}$. A 10 per cent larger diameter gives $1/1.1^4=0.68$ of the deflection, a 32 per cent reduction.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why is the slope of the shaft at a bearing limited in design?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Excess slope misaligns the rolling elements or the oil film, causing edge loading and shortening bearing life"
+    },
+    {
+     "id": "b",
+     "text": "Slope changes the torque transmitted"
+    },
+    {
+     "id": "c",
+     "text": "Slope has no effect on bearings but affects the key"
+    },
+    {
+     "id": "d",
+     "text": "Slope increases the shaft's endurance limit"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Excess slope misaligns the rolling elements or the oil film, causing edge loading and shortening bearing life",
+   "distractorRationale": {
+    "a": "Correct: bearings are designed for a nearly parallel shaft.",
+    "b": "Torque is independent of slope.",
+    "c": "The bearing is the first component affected.",
+    "d": "Slope does not alter the endurance limit."
+   },
+   "explanation": "A tilted shaft loads one edge of a roller or the end of a plain bearing, causing high local stresses and rapid wear. Limits depend on the bearing type, with self-aligning bearings accepting much more tilt.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A shoulder fillet has a stress concentration factor $K_t=2.3$ and the material notch sensitivity is $q=0.85$. Find the fatigue stress concentration factor $K_f$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o2"
+   ],
+   "correctValue": 2.105,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "Using $K_f=1+q(K_t-1)=1+0.85\\times1.3=2.105$. The fatigue effect is therefore a little less than the full theoretical concentration of 2.3.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A solid steel shaft of diameter 30 mm ($E=207$ GPa) is simply supported over a span of 500 mm and carries a single load of 2.5 kN at mid-span. Find the mid-span deflection in mm.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o3"
+   ],
+   "correctValue": 0.791013,
+   "tolerance": 0.03,
+   "unit": "mm",
+   "explanation": "The second moment of area is $I=\\pi\\times30^4/64=39761$ mm$^4$. Then $y=FL^3/(48EI)=2500\\times500^3/(48\\times207000\\times39761)=0.791$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 35 mm diameter shaft carries a fully reversed bending moment of 150 N m and a steady torque of 100 N m at a section where $K_f=1.8$ and $K_{fs}=1.5$. The strengths are $S_e=200$ MPa and $S_{ut}=550$ MPa. Using the DE-Goodman relation for a rotating shaft, find the factor of safety (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o1",
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o2"
+   ],
+   "correctValue": 2.653684,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "In N mm and MPa, $2K_fM_a/S_e=2\\times1.8\\times150000/200=2700$ and $\\sqrt3K_{fs}T_m/S_{ut}=\\sqrt3\\times1.5\\times100000/550=472.4$, so the bracket is 3172. Then $1/n=16\\times3172/(\\pi\\times35^3)=0.3768$ and $n=2.65$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Outline the procedure for finding the minimum diameter of a stepped shaft at a shoulder for a given fatigue factor of safety, listing the data you need and explaining why the process is iterative.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o1",
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o2"
+   ],
+   "markingGuide": [
+    "Draw free-body diagrams in two planes, find reactions, bending-moment and torque diagrams, and the resultant alternating moment $M_a$ and steady torque $T_m$ at the shoulder.",
+    "Material data: $S_{ut}$, $S_y$ and the corrected endurance limit $S_e$ from the Marin factors.",
+    "Stress concentration: $K_t$, $K_{ts}$ from the geometry and $K_f=1+q(K_t-1)$, $K_{fs}$ with notch sensitivities.",
+    "Apply DE-Goodman, $d=\\{(16n/\\pi)[2K_fM_a/S_e+\\sqrt3K_{fs}T_m/S_{ut}]\\}^{1/3}$ to find the minimum diameter, and round to a standard size.",
+    "Iterative because $S_e$ (size factor $k_b$), $K_t$ (depends on $r/d$ and $D/d$) and $q$ (depends on $r$) depend on the diameter being found, so estimate, compute, update and repeat; check yield and deflection after."
+   ],
+   "explanation": "Diameter appears on both sides of the design equation through the size factor and the stress concentration. A first estimate with typical Marin and concentration factors is refined until the answers converge.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A shaft carrying two gears is found to meet the fatigue factor of safety but the deflection at one gear and the slope at one of its deep-groove ball bearings are too large. Describe the consequences of excessive deflection and slope, explain which design changes would reduce them and why changing to a higher-strength steel does not help.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.shaft-design.o3"
+   ],
+   "markingGuide": [
+    "Consequences: gear teeth mesh with misalignment, giving edge loading, noise, uneven wear and premature tooth failure; bearing elements run skewed, increasing contact stress and reducing life.",
+    "Deflection and slope are governed by $EI$ with $I=\\pi d^4/64$, and by the span and load placement.",
+    "Changes: increase the diameter (deflection varies as $d^{-4}$), shorten the span or move bearings close to the gears, add an intermediate support, or change the arrangement of the gears to reduce moments.",
+    "Higher strength does not help because the modulus $E$ is practically the same for all steels (about 207 GPa), so stiffness is unchanged.",
+    "Alternatively use self-aligning or tapered bearings that tolerate larger slope, but gear alignment still needs control."
+   ],
+   "explanation": "Stiffness depends on geometry and the elastic modulus, not on strength. Only changing the geometry or support arrangement achieves a substantial improvement.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,414 @@
+{
+ "lessonTitle": "The Navier-Stokes Equations and the No-Slip Condition",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The oil film in a hydraulic valve spool, the blood in an artery and the air over a car roof all obey the same set of equations: Newton's second law written for a small parcel of fluid. Those equations, the Navier-Stokes equations, look intimidating, but for the straight, steady flows met in engineering most terms vanish and what remains is a pressure-viscous balance you can solve with pen and paper."
+  },
+  {
+   "type": "text",
+   "markdown": "The Navier-Stokes equations express Newton's second law, **mass times acceleration equals the sum of forces**, for a fluid element of an incompressible Newtonian fluid of constant density $\\rho$ and constant viscosity $\\mu$. Together with the continuity equation $\\nabla\\cdot\\mathbf V=0$ they govern the velocity $\\mathbf V(x,y,z,t)$ and pressure $p$. In vector form, per unit volume (units N/m$^3$):"
+  },
+  {
+   "type": "math",
+   "latex": "\\rho\\left(\\frac{\\partial\\mathbf V}{\\partial t}+\\mathbf V\\cdot\\nabla\\mathbf V\\right)=-\\nabla p+\\mu\\nabla^2\\mathbf V+\\rho\\mathbf g",
+   "caption": "Incompressible Navier-Stokes equation (constant density and viscosity)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "The four groups of terms",
+   "text": "Left side: the **inertia** (mass times acceleration) terms: $\\rho\\,\\partial\\mathbf V/\\partial t$ is the local (unsteady) acceleration and $\\rho\\,\\mathbf V\\cdot\\nabla\\mathbf V$ is the convective acceleration, which is non-linear. Right side: $-\\nabla p$ is the **pressure** force, $\\mu\\nabla^2\\mathbf V$ is the **viscous** force from the stress gradients, and $\\rho\\mathbf g$ is the **body force** (gravity). Each has units of force per unit volume."
+  },
+  {
+   "type": "text",
+   "markdown": "In Cartesian coordinates the $x$-component is $\\rho\\left(\\dfrac{\\partial u}{\\partial t}+u\\dfrac{\\partial u}{\\partial x}+v\\dfrac{\\partial u}{\\partial y}+w\\dfrac{\\partial u}{\\partial z}\\right)=-\\dfrac{\\partial p}{\\partial x}+\\mu\\left(\\dfrac{\\partial^2u}{\\partial x^2}+\\dfrac{\\partial^2u}{\\partial y^2}+\\dfrac{\\partial^2u}{\\partial z^2}\\right)+\\rho g_x$, with similar $y$ and $z$ equations. The ratio of the size of the convective inertia term, of order $\\rho U^2/L$, to the viscous term, of order $\\mu U/L^2$, is $\\rho UL/\\mu=Re$, the Reynolds number: at low $Re$ viscous forces dominate and at high $Re$ inertia dominates."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Term",
+    "Expression",
+    "Physical meaning",
+    "Vanishes when"
+   ],
+   "rows": [
+    [
+     "Local acceleration",
+     "$\\rho\\,\\partial\\mathbf V/\\partial t$",
+     "Rate of change of velocity at a point",
+     "Flow is steady"
+    ],
+    [
+     "Convective acceleration",
+     "$\\rho\\,\\mathbf V\\cdot\\nabla\\mathbf V$",
+     "Acceleration due to moving through a velocity gradient",
+     "Flow is unidirectional and fully developed"
+    ],
+    [
+     "Pressure force",
+     "$-\\nabla p$",
+     "Net pressure force per unit volume",
+     "No pressure gradient (e.g. Couette flow)"
+    ],
+    [
+     "Viscous force",
+     "$\\mu\\nabla^2\\mathbf V$",
+     "Net shear force per unit volume (diffusion of momentum)",
+     "Fluid is inviscid or velocity is linear in space"
+    ],
+    [
+     "Body force",
+     "$\\rho\\mathbf g$",
+     "Weight per unit volume",
+     "Gravity is balanced by hydrostatic pressure"
+    ]
+   ],
+   "caption": "Identification of the terms in the incompressible Navier-Stokes equation"
+  },
+  {
+   "type": "text",
+   "markdown": "**Simplification for unidirectional flow.** Consider steady, incompressible, fully developed flow between two parallel plates, with the velocity along $x$ only and depending only on $y$: $\\mathbf V=(u(y),0,0)$. Continuity is satisfied automatically since $\\partial u/\\partial x=0$. Every convective term vanishes because $v=w=0$ and $\\partial u/\\partial x=0$, the unsteady term vanishes because the flow is steady, and the $x$-derivatives of $u$ in the viscous term vanish. The $y$-momentum equation gives $\\partial p/\\partial y=-\\rho g$, so $p$ varies hydrostatically across the gap; absorbing gravity into a modified pressure, the $x$-equation reduces to the ODE below."
+  },
+  {
+   "type": "math",
+   "latex": "0=-\\frac{dp}{dx}+\\mu\\frac{d^2u}{dy^2}\\quad\\Longrightarrow\\quad \\mu\\frac{d^2u}{dy^2}=\\frac{dp}{dx}",
+   "caption": "Reduced x-momentum equation for steady fully developed flow, u = u(y)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "No-slip boundary condition",
+   "text": "A viscous fluid in contact with a solid surface moves with the same velocity as the surface (tangential component), so $u_{fluid}=u_{wall}$ at the wall: zero for a fixed wall, $U$ for a wall moving at $U$. The normal component of the fluid velocity also matches the wall for an impermeable surface. These conditions supply the constants of integration."
+  },
+  {
+   "type": "worked_example",
+   "title": "Plane Poiseuille flow between fixed plates",
+   "prompt": "Derive the velocity profile for steady laminar flow between two fixed parallel plates at y = 0 and y = h driven by a constant pressure gradient dp/dx = -G, where G > 0. Then evaluate for oil (typical density 900 kg/m^3, viscosity 0.10 Pa s), h = 4.0 mm and G = 400 Pa/m: maximum velocity, flow rate per unit width, wall shear and the Reynolds number.",
+   "steps": [
+    {
+     "text": "Start from the reduced momentum equation with dp/dx = -G and integrate twice.",
+     "latex": "\\mu\\frac{d^2u}{dy^2}=-G\\ \\Rightarrow\\ u=-\\frac{G}{2\\mu}y^2+C_1y+C_2"
+    },
+    {
+     "text": "Apply no-slip at the lower wall, u(0) = 0, giving C2 = 0, and at the upper wall u(h) = 0, giving C1 = G h/(2 mu).",
+     "latex": "u(y)=\\frac{G}{2\\mu}\\,y\\,(h-y)"
+    },
+    {
+     "text": "The maximum is at the centre y = h/2; integrate u over the gap for the flow rate per unit width.",
+     "latex": "u_{max}=\\frac{Gh^2}{8\\mu}=\\frac{400(0.004)^2}{8(0.10)}=0.0080\\ \\text{m/s},\\qquad q=\\int_0^hu\\,dy=\\frac{Gh^3}{12\\mu}=2.133e-05\\ \\text{m}^2/\\text{s}"
+    },
+    {
+     "text": "Wall shear stress from tau_w = mu du/dy at y = 0, which equals G h/2.",
+     "latex": "\\tau_w=\\mu\\left.\\frac{du}{dy}\\right|_{0}=\\frac{Gh}{2}=0.80\\ \\text{Pa}"
+    },
+    {
+     "text": "Mean velocity is q/h = 0.00533 m/s, so the Reynolds number based on the gap h is small, confirming that viscous forces dominate.",
+     "latex": "Re=\\frac{\\rho\\bar Vh}{\\mu}=0.19"
+    }
+   ],
+   "answer": "u = G y (h - y)/(2 mu); u_max = 0.0080 m/s, q = 2.133e-05 m^2/s, tau_w = 0.80 Pa, Re = 0.19."
+  },
+  {
+   "type": "worked_example",
+   "title": "Using no-slip in Couette flow",
+   "prompt": "Oil of typical viscosity 0.080 Pa s fills a gap h = 3.0 mm between a fixed lower plate and an upper plate moving at U = 0.60 m/s, with no pressure gradient. Use the reduced Navier-Stokes equation and the no-slip conditions to find the velocity profile and the shear stress.",
+   "steps": [
+    {
+     "text": "With dp/dx = 0 the reduced equation is mu u'' = 0; integrating twice gives a linear profile with two constants.",
+     "latex": "u=C_1y+C_2"
+    },
+    {
+     "text": "Fixed lower plate: no-slip gives u(0) = 0 so C2 = 0. Moving upper plate: no-slip gives u(h) = U so C1 = U/h = 0.60/0.0030 = 200 per second.",
+     "latex": "u(y)=\\frac{U}{h}y=200\\,y\\ \\text{m/s}"
+    },
+    {
+     "text": "Shear stress is viscosity times the constant velocity gradient and is the same at both plates.",
+     "latex": "\\tau=\\mu\\frac{du}{dy}=0.080\\times200=16.0\\ \\text{Pa}"
+    }
+   ],
+   "answer": "u = 200 y (m/s, y in m); the shear stress is 16.0 Pa everywhere in the gap."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Write the full Navier-Stokes $x$-component and the continuity equation.",
+    "Cross out every term that is zero by assumption (steady, unidirectional, fully developed, no variation in $x$ or $z$).",
+    "Integrate the remaining ODE and keep the integration constants.",
+    "Apply no-slip on each wall (and symmetry or zero shear where appropriate).",
+    "Check the Reynolds number: the laminar solution is valid only if the flow stays laminar."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why exact solutions exist",
+   "text": "The convective acceleration is the only non-linear term. In unidirectional flow it vanishes identically, so the Navier-Stokes equation becomes linear and can be integrated exactly. In general flows the non-linearity makes closed-form solutions rare, which is why numerical methods are used."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Pressure and gravity",
+   "text": "In the vertical direction the pressure is hydrostatic. Combine $p$ and gravity into a piezometric pressure $p^*=p+\\rho gz$ when gravity matters, and remember that only the pressure gradient along the flow drives it. Also a no-slip condition applies to the tangential velocity relative to the wall; it fails for rarefied gases at very small scales."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The incompressible Navier-Stokes equation is inertia $=$ pressure $+$ viscous $+$ body force; the terms are $\\rho\\,\\partial\\mathbf V/\\partial t+\\rho\\,\\mathbf V\\cdot\\nabla\\mathbf V=-\\nabla p+\\mu\\nabla^2\\mathbf V+\\rho\\mathbf g$.",
+    "For steady unidirectional flow $u=u(y)$ the equation reduces to $\\mu\\,d^2u/dy^2=dp/dx$.",
+    "The no-slip condition sets the fluid velocity equal to the wall velocity and provides the boundary conditions.",
+    "Plane Poiseuille flow gives $u=Gy(h-y)/(2\\mu)$ with $q=Gh^3/(12\\mu)$ and $\\tau_w=Gh/2$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the incompressible Navier-Stokes equation, which term represents the viscous force per unit volume?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "rho times the velocity dotted with the gradient of velocity"
+    },
+    {
+     "id": "b",
+     "text": "rho times the gravitational acceleration"
+    },
+    {
+     "id": "c",
+     "text": "mu times the Laplacian of the velocity"
+    },
+    {
+     "id": "d",
+     "text": "The gradient of pressure"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "mu times the Laplacian of the velocity",
+   "distractorRationale": {
+    "a": "This is the convective acceleration (inertia) term.",
+    "b": "This is the body (gravity) force.",
+    "c": "Correct: the viscous force comes from the divergence of the viscous stress, giving mu del-squared V.",
+    "d": "This is the pressure force, minus the pressure gradient."
+   },
+   "explanation": "The viscous stress tensor for a Newtonian fluid with constant viscosity has divergence $\\mu\\nabla^2\\mathbf V$ for incompressible flow, so this term is the net viscous force per unit volume. The others are the pressure, inertia and body force terms.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which term in the Navier-Stokes equation is non-linear in the velocity and so makes general solutions difficult?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The body force, rho g"
+    },
+    {
+     "id": "b",
+     "text": "The viscous term, mu del-squared V"
+    },
+    {
+     "id": "c",
+     "text": "The pressure gradient, grad p"
+    },
+    {
+     "id": "d",
+     "text": "The convective acceleration, rho (V . grad) V"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The convective acceleration, rho (V . grad) V",
+   "distractorRationale": {
+    "a": "This term does not depend on V at all.",
+    "b": "This term is linear in V.",
+    "c": "This term is linear in p (and the pressure is an independent unknown).",
+    "d": "Correct: it contains products of velocity components and their derivatives."
+   },
+   "explanation": "The convective acceleration $\\rho\\,\\mathbf V\\cdot\\nabla\\mathbf V$ multiplies the velocity by its own gradient, a quadratic quantity in $\\mathbf V$. All the other terms are linear in the unknowns.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Steady, incompressible flow between two fixed parallel plates is fully developed with velocity u(y) only. Which equation results from the x-momentum equation (G = -dp/dx > 0)?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "d2u/dy2 = 0"
+    },
+    {
+     "id": "b",
+     "text": "mu d2u/dy2 = -G"
+    },
+    {
+     "id": "c",
+     "text": "rho u du/dx = -G"
+    },
+    {
+     "id": "d",
+     "text": "mu d2u/dy2 = rho g"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "mu d2u/dy2 = -G",
+   "distractorRationale": {
+    "a": "This applies when there is no pressure gradient (Couette flow).",
+    "b": "Correct: all inertia terms vanish and a pressure gradient balances viscous stress.",
+    "c": "Convective terms vanish because du/dx = 0 in fully developed flow.",
+    "d": "Gravity acts in the y direction in this configuration and is balanced by hydrostatic pressure, not by shear."
+   },
+   "explanation": "With $v=w=0$, $\\partial u/\\partial x=0$ and steady flow, the inertia terms drop out, leaving $0=-dp/dx+\\mu\\,d^2u/dy^2$, that is $\\mu\\,u''=-G$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Oil (viscosity 0.020 Pa s) flows steadily between two fixed horizontal plates 2.0 mm apart under a pressure gradient of magnitude 1500 Pa/m. Using the laminar solution u = G y (h - y)/(2 mu), find the maximum velocity (at the mid-plane) in m/s.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o2"
+   ],
+   "correctValue": 0.0375,
+   "tolerance": 0.0005,
+   "unit": "m/s",
+   "explanation": "At y = h/2, u = G (h/2)(h/2)/(2 mu) = G h^2/(8 mu) = 1500 x (0.002)^2/(8 x 0.020) = 0.0375 m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A viscous liquid of viscosity 0.040 Pa s flows between two fixed parallel plates separated by 5.0 mm, driven by a pressure gradient of magnitude 200 Pa/m. Using q = G h^3/(12 mu), find the volume flow rate per metre of plate width in m^3/s per metre (m^2/s).",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o2"
+   ],
+   "correctValue": 5.20833e-05,
+   "tolerance": 2e-06,
+   "unit": "m^2/s",
+   "explanation": "q = G h^3/(12 mu) = 200 x (0.005)^3/(12 x 0.040) = 5.208e-05 m^2/s, i.e. 52.1 cm^3/s for each metre of plate width.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "The no-slip condition means that a viscous fluid in contact with a solid wall has the same tangential velocity as the wall, even if the wall itself is moving.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "No-slip equates the fluid's velocity at the surface with that of the wall: zero for a stationary wall and $U$ for a wall moving at $U$. This is why the moving plate in Couette flow drags the adjacent fluid at speed $U$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Fluid is confined between a stationary lower plate at y = 0 and an upper plate at y = h moving in the x direction at speed U. Which boundary conditions apply?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "du/dy = 0 at both plates"
+    },
+    {
+     "id": "b",
+     "text": "u(0) = 0 and u(h) = U"
+    },
+    {
+     "id": "c",
+     "text": "u(0) = u(h) = U/2"
+    },
+    {
+     "id": "d",
+     "text": "u(0) = U and u(h) = 0"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "u(0) = 0 and u(h) = U",
+   "distractorRationale": {
+    "a": "Zero shear stress at a wall is not a no-slip condition; it holds on a free surface or plane of symmetry.",
+    "b": "Correct: the fluid adheres to each plate.",
+    "c": "The fluid at each wall matches the wall velocity, not the average.",
+    "d": "This swaps the plates, so the lower plate would be moving."
+   },
+   "explanation": "No-slip says that the fluid velocity equals the wall velocity at each wall: $u(0)=0$ at the fixed plate and $u(h)=U$ at the moving plate. These are the conditions that fix the two integration constants.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water (typical density 998 kg/m^3, viscosity 1.0e-3 Pa s) moves at a characteristic speed of 0.020 m/s through a channel with a characteristic length of 0.050 m. Estimate the ratio of the convective inertia term to the viscous term in the Navier-Stokes equation, i.e. the Reynolds number (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o1"
+   ],
+   "correctValue": 998.0,
+   "tolerance": 5.0,
+   "unit": "dimensionless",
+   "explanation": "The inertia term is of order rho U^2/L and the viscous term is of order mu U/L^2, so their ratio is rho U L/mu = 998 x 0.020 x 0.050/1.0e-3 = 998. Inertia is therefore comparable to or larger than the viscous forces.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "For steady, incompressible, fully developed flow between two fixed horizontal parallel plates (velocity u(y) in the x direction only), show step by step how the x-momentum Navier-Stokes equation reduces to mu d2u/dy2 = dp/dx. State clearly which terms vanish and why, and describe what the y-momentum equation tells you about the pressure.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o2"
+   ],
+   "markingGuide": [
+    "Writes the x-momentum equation with all terms: local, convective, pressure, viscous and body force",
+    "Unsteady term zero because the flow is steady",
+    "Convective terms zero: v = w = 0 and du/dx = 0 from fully developed flow/continuity",
+    "Viscous terms d2u/dx2 and d2u/dz2 zero because u depends only on y",
+    "Gravity has no x-component for horizontal plates",
+    "Result: mu d2u/dy2 = dp/dx",
+    "y-momentum gives dp/dy = -rho g, so pressure is hydrostatic across the gap and dp/dx is the same at all y"
+   ],
+   "explanation": "Each assumption removes specific terms: steadiness removes $\\partial u/\\partial t$, unidirectional fully developed flow removes all convective terms and the $x$ and $z$ viscous derivatives, and horizontal plates mean gravity does not act along $x$. What remains is $\\mu u''=dp/dx$, with $p$ hydrostatic in $y$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain the physical meaning of the no-slip boundary condition and use it to determine the constants for plane Poiseuille flow between fixed plates at y = 0 and y = h, starting from u = -G y^2/(2 mu) + C1 y + C2. Hence obtain the wall shear stress and evaluate it for h = 6.0 mm and G = 250 Pa/m.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.o3"
+   ],
+   "markingGuide": [
+    "No-slip: fluid adjacent to a solid has the same tangential velocity as the wall (molecular adhesion and momentum exchange at the surface)",
+    "Lower wall u(0) = 0 gives C2 = 0",
+    "Upper wall u(h) = 0 gives C1 = G h/(2 mu)",
+    "u = G y (h - y)/(2 mu)",
+    "tau_w = mu du/dy at y = 0 = G h/2",
+    "Numerical value G h/2 = 250 x 0.006/2 = 0.75 Pa"
+   ],
+   "explanation": "No-slip fixes both constants: $u(0)=0$ gives $C_2=0$ and $u(h)=0$ gives $C_1=Gh/(2\\mu)$, so $u=Gy(h-y)/(2\\mu)$. Taking the shear stress as the magnitude of $\\mu\\,du/dy$ at either wall (at $y=0$ it is $+Gh/2$; at $y=h$ the slope is negative, so $\\mu\\,du/dy=-Gh/2$ with the same magnitude), the wall shear stress is $Gh/2$. The fluid drags each wall in the flow direction with this stress, balancing half the pressure force per unit wall area, giving 0.75 Pa for the stated values.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,376 @@
+{
+ "lessonTitle": "Verification and Validation of FE Models",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A pressure-vessel analyst once reported a peak stress of 8 MPa for a vessel whose hand calculation said 80 MPa. The difference was a unit error in the pressure, a mistake that no amount of mesh refinement would have found. Before any finite element result is believed, it must be checked against something independent: a closed-form answer, the laws of equilibrium, and a written record of what the model assumes."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Verification and validation",
+   "text": "**Verification** asks whether the equations of the model are being solved correctly: is the code input right, is the mesh adequate, does the answer agree with hand calculations and equilibrium? **Validation** asks whether the model is the right model of the real structure, by comparing predictions with experiment. This unit concerns verification, using hand checks, reaction-force checks and an assumptions log; validation requires test data."
+  },
+  {
+   "type": "text",
+   "markdown": "**Check 1: closed-form hand calculations.** For a simple case such as a cantilever, a simply supported beam or a thin pressure vessel, a closed-form solution exists. Use it as a benchmark, either on the real structure when it is simple, or on a simplified version of it. Compare the key outputs, usually a deflection and a stress. Agreement within about 5% (a typical tolerance, tighter for smooth problems) builds confidence. A large disagreement is a prompt to look at units, section orientation, boundary conditions and loads before blaming the mesh. When the hand calculation is itself an idealisation (thin-wall formulas, Euler-Bernoulli beam theory), expected differences must be named: shear deformation, stress concentrations at supports, end effects."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta_{tip}=\\frac{PL^3}{3EI},\\quad\\sigma=\\frac{Mc}{I},\\qquad\\sigma_\\theta=\\frac{pR}{t},\\quad\\sigma_x=\\frac{pR}{2t}",
+   "caption": "Hand-check formulas: cantilever with tip load $P$ (N); thin cylinder under internal pressure $p$ (Pa) of mean radius $R$ (m), wall thickness $t$ (m)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Cantilever hand check",
+   "prompt": "A steel cantilever ($E=200$ GPa) of length $L=0.8$ m has a 30 mm wide by 50 mm deep rectangular section, bent about the axis giving the 50 mm depth, and carries a tip load $P=1.5$ kN. An FE model reports a tip deflection of 4.07 mm and a root surface stress of 95.0 MPa. Verify these against beam theory.",
+   "steps": [
+    {
+     "text": "$I=bh^3/12=0.030(0.050)^3/12=3.125\\times10^{-7}$ m$^4$ ($312500$ mm$^4$)."
+    },
+    {
+     "text": "Hand deflection: $\\delta=PL^3/(3EI)=1500(0.512)/(3\\times200\\times10^{9}\\times3.125\\times10^{-7})=4.096$ mm."
+    },
+    {
+     "text": "Hand stress at the root surface: $\\sigma=Mc/I=(1500\\times0.8)(0.025)/3.125\\times10^{-7}=96$ MPa.",
+     "latex": "\\sigma=\\frac{PL\\,(h/2)}{I}"
+    },
+    {
+     "text": "Differences: deflection $(4.07-4.096)/4.096=-0.63\\%$ and stress $(95.0-96)/96=-1.04\\%$. Both are within 5%: the model passes. A small shortfall is expected because shear deformation and the elastic root restraint in the FE model change the answer slightly, and because the FE stress is evaluated at an integration point or node a little away from the fixed face."
+    }
+   ],
+   "answer": "Hand values 4.1 mm and 96 MPa against FE 4.07 mm and 95.0 MPa: differences -0.6% and -1%."
+  },
+  {
+   "type": "worked_example",
+   "title": "Pressure vessel hand check",
+   "prompt": "A thin cylindrical vessel with mean radius $R=0.4$ m and wall thickness $t=8$ mm carries an internal pressure $p=3$ MPa. An axisymmetric FE shell model gives a hoop stress of 148.6 MPa at mid-length, away from the ends. Check it.",
+   "steps": [
+    {
+     "text": "Hoop stress from the thin-wall formula: $\\sigma_\\theta=pR/t=(3\\times10^{6})(0.4)/0.008=150$ MPa."
+    },
+    {
+     "text": "Axial stress is half of this: $\\sigma_x=pR/(2t)=75$ MPa."
+    },
+    {
+     "text": "Difference of the FE hoop stress: $(148.6-150)/150=-0.93\\%$, within the 5% tolerance. The thin-wall formula is accurate to about $t/(2R)=1\\%$ here; end effects are negligible at mid-length."
+    }
+   ],
+   "answer": "Hand hoop stress 150 MPa; the FE value differs by -0.93%, so it passes."
+  },
+  {
+   "type": "text",
+   "markdown": "**Check 2: reaction forces and equilibrium.** A finite element solution satisfies global equilibrium by construction, to within the solver tolerance, whatever the mesh. The sum of the reaction forces must therefore equal minus the sum of the applied loads in each direction, and the reactions must balance the applied moments about any point. If they do not, the model is wrong: a load was not applied (for example a face selected incorrectly), a constraint is missing or duplicated, a unit is inconsistent, or the solution did not converge. Typical practice is to demand a balance within 0.1% to 1% of the applied load."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reaction check of a beam model",
+   "prompt": "A simply supported beam of span 1.0 m has a pin at $x=0$ and a roller at $x=1.0$ m. A vertical load of 12 kN acts at $x=0.6$ m and a horizontal load of 5 kN acts at the pin end. Find the expected reactions and judge an FE output of $R_{A,x}=-5.00$ kN, $R_{A,y}=4.79$ kN and $R_{B,y}=6.61$ kN.",
+   "steps": [
+    {
+     "text": "Moments about A: $R_B(1.0)=12(0.6)$, so $R_B=7.2$ kN. Vertical balance: $R_A=12-7.2=4.8$ kN. Horizontal balance: $R_{A,x}=-5$ kN.",
+     "latex": "\\sum M_A=0:\\ R_B\\times1.0=12\\times0.6"
+    },
+    {
+     "text": "The FE reaction $R_{A,x}$ matches. The vertical reactions sum to $4.79+6.61=11.40$ kN against an applied 12.00 kN: a shortfall of 0.60 kN, or 5.0% of the load."
+    },
+    {
+     "text": "Since equilibrium holds in any mesh, a 5% imbalance cannot be a discretisation error. The model has a modelling error: for example, only part of the load was applied because the load was assigned to the wrong face, or a unit conversion was applied to one load only."
+    },
+    {
+     "text": "Action: inspect the load definitions, correct the model, and repeat the check. Also compare with the hand values ($R_A=4.8$ kN, $R_B=7.2$ kN): $R_A$ is correct but $R_B$ is 0.59 kN low, so the moment balance fails too and the error is not a simple scaling of the load; inspect the roller support and the load definitions together."
+    }
+   ],
+   "answer": "Expected R_B = 7.2 kN and R_A = 4.8 kN; the FE vertical reactions total 11.40 kN against 12.00 kN, so there is a 5% modelling error to be traced."
+  },
+  {
+   "type": "text",
+   "markdown": "**Check 3: the assumptions log.** Verification is incomplete without a written record that lets another engineer (or yourself in six months) understand what was modelled and why. The log is short, one line per decision, and covers five headings: **geometry** (what was simplified, removed or symmetric, and the units), **loads** (magnitude, direction, application area and source), **constraints** (which degrees of freedom are fixed and where, and the reason), **material** (model, $E$, $\\nu$, source of data, temperature) and **mesh** (element type, size, refinement regions, convergence result). It also records the checks performed and their outcome."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Heading",
+    "What to record",
+    "Example entry"
+   ],
+   "rows": [
+    [
+     "Geometry",
+     "Simplifications, symmetry, units",
+     "Fillet radii below 1 mm removed; half model with symmetry about $x$-$y$ plane; mm, N, MPa"
+    ],
+    [
+     "Loads",
+     "Value, direction, area, origin",
+     "Pressure 3 MPa on inner face, normal to surface, design limit"
+    ],
+    [
+     "Constraints",
+     "Fixed degrees of freedom and reason",
+     "Base face fully fixed (rigid foundation assumed); symmetry plane: normal displacement zero"
+    ],
+    [
+     "Material",
+     "Law, properties, source",
+     "Linear elastic steel, $E=200$ GPa, $\\nu=0.3$, handbook values"
+    ],
+    [
+     "Mesh",
+     "Elements, size, convergence evidence",
+     "Quadratic tetrahedra, 2 mm at fillet; stress changes 1.3% on refinement"
+    ]
+   ],
+   "caption": "Template for a model assumptions log"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Run a hand calculation of the key output on the real or a simplified structure and compare within about 5%.",
+    "Sum reactions in each direction and check moment equilibrium; investigate any imbalance above about 1%.",
+    "Check units, orientation of sections and the direction of the loads.",
+    "Write the assumptions log and file it with the model, with the check results."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Agreement is not proof",
+   "text": "A model can pass hand checks and equilibrium and still be wrong, because the hand calculation may share the same wrong assumption (for example an incorrect support). Use at least two independent checks, and move to validation against test data for critical designs."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Verification checks that the model equations are solved correctly; validation checks that the model represents reality with test data.",
+    "Hand calculations with closed-form formulas (for example $\\delta=PL^3/3EI$ and $\\sigma=pR/t$) should agree within a few percent, and discrepancies must be explained.",
+    "Reaction forces must balance the applied loads and moments in any mesh; an imbalance indicates a modelling error such as a missing load or constraint.",
+    "An assumptions log records geometry, loads, constraints, material and mesh decisions and the checks carried out."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A thin-walled cylindrical vessel has a mean radius of 0.25 m and a wall thickness of 5 mm and carries an internal pressure of 2.0 MPa. Using the thin-wall formula, find the hoop stress in MPa away from the ends, as a hand check of an FE model.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o1"
+   ],
+   "correctValue": 100.0,
+   "tolerance": 1.0,
+   "unit": "MPa",
+   "explanation": "The hoop stress is $\\sigma_\\theta=pR/t=(2.0\\times10^{6})(0.25)/0.005=1.0\\times10^{8}$ Pa, i.e. 100 MPa. The axial stress is half of this, 50 MPa. An FE hoop stress far from the ends should agree within a few percent.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An aluminium cantilever ($E=70$ GPa, $I=2.5\\times10^{-7}$ m$^4$) of length $L=1.2$ m carries a uniformly distributed load $w=2$ kN/m over its whole length. Use $\\delta=wL^4/(8EI)$ to find the hand-calculated tip deflection in mm.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o1"
+   ],
+   "correctValue": 29.623,
+   "tolerance": 0.3,
+   "unit": "mm",
+   "explanation": "Compute $L^4=2.0736$ m$^4$, so the numerator is $2000\\times2.0736=4147.2$ N m$^3$. The denominator is $8\\times70\\times10^{9}\\times2.5\\times10^{-7}=1.4\\times10^{5}$ N m$^2$. Then $\\delta=0.02962$ m, i.e. 29.6 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A simply supported steel beam of span 1.5 m has a rectangular section 40 mm wide and 60 mm deep (bending about the axis giving the 60 mm depth) and a central load of 6 kN. A FE model reports a mid-span surface stress of 91.2 MPa. Using $\\sigma=Mc/I$ with $M=PL/4$, find the percentage difference of the FE result from the hand value, defined as (FE - hand)/hand.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o1"
+   ],
+   "correctValue": -2.72,
+   "tolerance": 0.1,
+   "unit": "%",
+   "explanation": "The moment is $M=6000\\times1.5/4=2250$ N m, $I=0.040(0.060)^3/12=7.2\\times10^{-7}$ m$^4$ and $c=0.030$ m. The hand stress is $2250(0.030)/7.2\\times10^{-7}=93.75$ MPa, so the difference is $(91.2-93.75)/93.75=-2.7\\%$. This is within a 5% tolerance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The FE tip deflection of a slender cantilever is 40% lower than the beam-theory value. What is the most sensible first step?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Re-check the inputs of both calculations: units, section orientation (which dimension is the depth), modulus, load and constraint"
+    },
+    {
+     "id": "b",
+     "text": "Refine the mesh by a factor of ten and rerun"
+    },
+    {
+     "id": "c",
+     "text": "Accept the FE value because FE is more accurate than hand calculation"
+    },
+    {
+     "id": "d",
+     "text": "Multiply the FE result by 1.4 to match"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Re-check the inputs of both calculations: units, section orientation (which dimension is the depth), modulus, load and constraint",
+   "distractorRationale": {
+    "a": "Correct: gross disagreement of this size usually comes from an input error, such as a swapped section dimension or a units mistake.",
+    "b": "Mesh refinement seldom changes the result by 40% for a slender beam, so it would waste time before checking basics.",
+    "c": "FE is only as good as its input; blind acceptance is the mistake verification is meant to catch.",
+    "d": "Scaling the result hides the error without finding it."
+   },
+   "explanation": "Discretisation errors for a reasonable mesh are of the order of a few percent. Differences of tens of percent point to a mistake in units, geometry, loads or constraints in one of the two calculations.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The vertical reaction forces from an FE model are 3.12 kN, 5.40 kN and 2.55 kN, and the total applied vertical load is 11.0 kN. Find the equilibrium imbalance as a percentage of the applied load, defined as (sum of reactions - applied)/applied.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o2"
+   ],
+   "correctValue": 0.636,
+   "tolerance": 0.05,
+   "unit": "%",
+   "explanation": "The reactions sum to $3.12+5.40+2.55=11.07$ kN. The imbalance is $(11.07-11.00)/11.00=0.64\\%$. This is below 1%, so the reaction check passes, although the small residual may come from a loose convergence tolerance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The reaction forces of a solved linear static model sum to 95% of the applied vertical load. What is the correct conclusion?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "There is a modelling or solution error, such as a load not applied, a missing constraint or a units problem, because FE equilibrium holds for any mesh"
+    },
+    {
+     "id": "b",
+     "text": "The mesh is too coarse, which is the normal cause of a 5% imbalance"
+    },
+    {
+     "id": "c",
+     "text": "The result is acceptable because FE solutions are approximate"
+    },
+    {
+     "id": "d",
+     "text": "The material properties are wrong"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "There is a modelling or solution error, such as a load not applied, a missing constraint or a units problem, because FE equilibrium holds for any mesh",
+   "distractorRationale": {
+    "a": "Correct: the assembled FE equations enforce global equilibrium to within the solver tolerance regardless of mesh quality.",
+    "b": "Mesh coarseness affects accuracy of stresses and deflections, not global force balance.",
+    "c": "A 5% imbalance is far above any solver tolerance, so it cannot be dismissed as approximation.",
+    "d": "Material properties change displacements but not the balance of reactions with applied load."
+   },
+   "explanation": "Global equilibrium is a property of the assembled equations, so an imbalance is a symptom of an input mistake, a convergence failure or an incomplete load definition. Investigate before using the results.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A coarse mesh is the usual reason why the sum of reaction forces of a linear static FE model does not equal the applied load.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "False. Global equilibrium is enforced exactly by the assembled equations (up to solver tolerance), whatever the mesh. A coarse mesh affects local accuracy of stresses, not the force balance; an imbalance points to a modelling error.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which set of headings best describes the content of a short model assumptions log?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Geometry, loads, constraints, material and mesh, together with the checks performed"
+    },
+    {
+     "id": "b",
+     "text": "Only the final results and a colour plot"
+    },
+    {
+     "id": "c",
+     "text": "The name of the solver and the date"
+    },
+    {
+     "id": "d",
+     "text": "The computer hardware used and the run time"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Geometry, loads, constraints, material and mesh, together with the checks performed",
+   "distractorRationale": {
+    "a": "Correct: these are the decisions that determine the validity of a result, and the log should also record the checks.",
+    "b": "Results alone do not tell the reader how they were obtained or whether they are credible.",
+    "c": "Solver and date do not explain the modelling decisions.",
+    "d": "Hardware and run time do not affect the validity of the model."
+   },
+   "explanation": "The assumptions log lets a reviewer reproduce and challenge the model. It records what was simplified, how loads and supports were represented, the material data, the mesh and the evidence for convergence.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A steel bracket is bolted to a wall by four bolts and carries a 2 kN load at a hole. Write a short assumptions log for an FE model of the bracket, with one entry under each of the headings geometry, loads, constraints, material and mesh.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o3"
+   ],
+   "markingGuide": [
+    "Geometry: bolt heads and small fillets removed or kept, state units (mm, N, MPa) and any symmetry",
+    "Loads: 2 kN at the hole, direction stated, applied as a distributed (bearing) load, not a point load, to avoid a singularity",
+    "Constraints: bolt holes fixed in the bolt directions or the contact face fixed, with the reason (rigid wall assumed)",
+    "Material: linear elastic steel with typical $E=200$ GPa, $\\nu=0.3$, and source of data",
+    "Mesh: element type and size, refinement at holes, with convergence evidence, and the verification checks (hand calculation and reaction check)"
+   ],
+   "explanation": "The log records the idealisations in each part of the model, so that a reader can judge the credibility of the result. Each entry should say what was assumed and why.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Distinguish verification from validation, and describe three verification checks you would carry out on a solved model of a loaded cantilever bracket, including what you would conclude from a failed check.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o1",
+    "ug.mce-finite-element-analysis.fea-best-practice.fea-verification.o2"
+   ],
+   "markingGuide": [
+    "Verification: are the equations solved correctly (inputs, mesh, equilibrium, hand calculations)",
+    "Validation: is the model the right representation of reality, assessed against test data",
+    "Check 1: hand calculation of deflection and stress with $\\delta=PL^3/3EI$ and $\\sigma=Mc/I$ within about 5%",
+    "Check 2: sum of reactions and moments equals applied load within about 1%; failure means a modelling error, not a mesh error",
+    "Check 3: units and the assumptions log, and mesh convergence of the key result; a failed check is traced to inputs before results are used"
+   ],
+   "explanation": "Verification builds confidence that the model is solved right, using independent calculations and equilibrium. Validation requires experimental evidence that it is the right model.",
+   "board": "internal"
+  }
+ ]
+}

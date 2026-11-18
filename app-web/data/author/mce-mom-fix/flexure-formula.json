@@ -1,0 +1,380 @@
+{
+ "lessonTitle": "The Flexure Formula",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A floor joist sags slightly when you stand at mid-span. The bottom fibres are stretched, the top fibres squeezed, and somewhere between them a layer neither lengthens nor shortens. The flexure formula tells you how large those fibre stresses are, and it is why deep, narrow joists are laid on edge."
+  },
+  {
+   "type": "text",
+   "markdown": "When a straight beam of linear elastic material is bent by a **bending moment** $M$ about a principal axis, plane sections remain plane. Fibres on one side lengthen (tension) and on the other shorten (compression); the line of zero strain is the **neutral axis**. Since strain varies linearly with distance $y$ from the neutral axis, so does stress: $\\sigma = -E\\kappa y$ where $\\kappa$ is the curvature."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Second moment of area and section modulus",
+   "text": "The **second moment of area** about the neutral axis is $I=\\int y^2\\,dA$ (units mm$^4$). The **section modulus** is $S=I/c$ with $c$ the distance from the neutral axis to the extreme fibre (mm$^3$). For a rectangle of width $b$ and depth $h$, $I=bh^3/12$ and $S=bh^2/6$."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma=-\\frac{M\\,y}{I},\\qquad \\sigma_{\\max}=\\frac{M\\,c}{I}=\\frac{M}{S}",
+   "caption": "$y$ is measured from the neutral axis; the neutral axis passes through the centroid because there is no axial force. Sign: for a sagging moment the top is in compression."
+  },
+  {
+   "type": "worked_example",
+   "title": "Rectangular beam",
+   "prompt": "A rectangular beam 100 mm wide and 200 mm deep carries a sagging moment of 24 kN m. Find the maximum bending stresses.",
+   "steps": [
+    {
+     "text": "Second moment of area about the horizontal centroidal axis.",
+     "latex": "I=\\frac{100\\times200^3}{12}=6.667\\times10^{7}\\ \\text{mm}^4"
+    },
+    {
+     "text": "Extreme fibres are c = 100 mm from the axis, and M = 24e6 N mm.",
+     "latex": "\\sigma_{\\max}=\\frac{24\\times10^{6}\\times100}{6.667\\times10^{7}}=36\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The top fibre is at 36 MPa compression and the bottom at 36 MPa tension, because the section is symmetric."
+  },
+  {
+   "type": "text",
+   "markdown": "**Asymmetric sections.** If a section is not symmetric about the neutral axis, the extreme tensile and compressive fibres are at different distances, so the stresses differ. First locate the centroid by the area-weighted average of $y$, then use the **parallel-axis theorem** $I=\\sum\\left(I_i+A_i d_i^2\\right)$ where $d_i$ is the distance from each part's centroid to the section's centroid."
+  },
+  {
+   "type": "worked_example",
+   "title": "A T-section",
+   "prompt": "A T-shaped section has a flange 120 mm wide by 20 mm thick on top of a web 20 mm wide by 100 mm tall (overall depth 120 mm). It carries a sagging moment of 3 kN m. Find the neutral axis, I, and the maximum tensile and compressive stresses.",
+   "steps": [
+    {
+     "text": "Centroid height from the bottom: web area 2000 mm^2 at 50 mm, flange area 2400 mm^2 at 110 mm.",
+     "latex": "\\bar y=\\frac{2000(50)+2400(110)}{4400}=82.7\\ \\text{mm}"
+    },
+    {
+     "text": "Parallel-axis theorem for each part (web then flange).",
+     "latex": "I=\\left[\\frac{20(100)^3}{12}+2000(32.7)^2\\right]+\\left[\\frac{120(20)^3}{12}+2400(27.3)^2\\right]=5.67\\times10^{6}\\ \\text{mm}^4"
+    },
+    {
+     "text": "Bottom fibre is 82.7 mm below the neutral axis (tension for sagging), top fibre 37.3 mm above (compression).",
+     "latex": "\\sigma_t=\\frac{3\\times10^{6}(82.7)}{5.67\\times10^{6}}=43.7\\ \\text{MPa}"
+    },
+    {
+     "text": "Compression at the top.",
+     "latex": "\\sigma_c=\\frac{3\\times10^{6}(37.3)}{5.67\\times10^{6}}=19.7\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The neutral axis is 82.7 mm above the bottom; maximum tension is 43.7 MPa (bottom) and maximum compression 19.7 MPa (top)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Section",
+    "$I$",
+    "$S$ (to extreme fibre)"
+   ],
+   "rows": [
+    [
+     "Rectangle $b\\times h$",
+     "$bh^3/12$",
+     "$bh^2/6$"
+    ],
+    [
+     "Solid circle, diameter $d$",
+     "$\\pi d^4/64$",
+     "$\\pi d^3/32$"
+    ],
+    [
+     "Hollow circle ($d_o$, $d_i$)",
+     "$\\pi(d_o^4-d_i^4)/64$",
+     "$\\pi(d_o^4-d_i^4)/(32d_o)$"
+    ],
+    [
+     "Asymmetric (T, L)",
+     "parallel-axis sum",
+     "two values, one per extreme fibre"
+    ]
+   ],
+   "caption": "Common sections"
+  },
+  {
+   "type": "text",
+   "markdown": "**Selecting a section.** The design form of the formula is $S_{\\text{req}}=M_{\\max}/\\sigma_{\\text{allow}}$. A section is acceptable if its tabulated section modulus is at least this value; choose the lightest such section."
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a steel beam",
+   "prompt": "A simply supported beam must carry a maximum moment of 60 kN m with an allowable bending stress of 150 MPa. Choose from typical catalogue sections: S = 324 cm^3, 429 cm^3 and 557 cm^3.",
+   "steps": [
+    {
+     "text": "Required section modulus.",
+     "latex": "S_{\\text{req}}=\\frac{60\\times10^{6}}{150}=4.0\\times10^{5}\\ \\text{mm}^3=400\\ \\text{cm}^3"
+    },
+    {
+     "text": "Compare: 324 cm^3 is too small, 429 cm^3 is adequate, and 557 cm^3 is heavier than necessary.",
+     "latex": "429\\ \\text{cm}^3\\ge400\\ \\text{cm}^3"
+    }
+   ],
+   "answer": "The 429 cm^3 section is the lightest that satisfies the stress limit; its actual stress is 60e6/429e3 = 140 MPa."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Check the right fibre",
+   "text": "Use the distance to the fibre you care about, not always the mid-depth. Brittle materials (cast iron, concrete) are weaker in tension, so the larger distance to the tension fibre in an asymmetric section matters. The formula needs the moment about the principal centroidal axis."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Bending stress is sigma = M y/I, linear in distance from the neutral axis and maximum at the extreme fibres.",
+    "The neutral axis passes through the centroid; for asymmetric sections locate it first, then use the parallel-axis theorem for I.",
+    "Design check: S_required = M/sigma_allow, select the lightest section with S at least as large."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a beam in pure bending of linear elastic material, where is the bending stress zero?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "At the top surface"
+    },
+    {
+     "id": "b",
+     "text": "At the bottom surface"
+    },
+    {
+     "id": "c",
+     "text": "At the supports"
+    },
+    {
+     "id": "d",
+     "text": "At the neutral axis"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "At the neutral axis",
+   "distractorRationale": {
+    "a": "Largest compressive or tensile stress occurs at the extreme fibres.",
+    "b": "Same as the top: maximum, not zero.",
+    "c": "Stress at a given section depends on the moment there, not the location of supports as such.",
+    "d": "Correct: sigma = M y/I and y = 0 at the neutral axis."
+   },
+   "explanation": "Stress is proportional to the distance y from the neutral axis, so it is zero on the axis and reaches its maximum at the outermost fibres.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A rectangular beam has its depth doubled (width unchanged) while carrying the same bending moment. What happens to the maximum bending stress?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is halved"
+    },
+    {
+     "id": "b",
+     "text": "It falls to one quarter"
+    },
+    {
+     "id": "c",
+     "text": "It falls to one eighth"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It falls to one quarter",
+   "distractorRationale": {
+    "a": "Treats S as proportional to h.",
+    "b": "Correct: S = bh^2/6 grows 4 times.",
+    "c": "I scales as h^3 but sigma_max = M/S uses h^2.",
+    "d": "Stress depends strongly on depth."
+   },
+   "explanation": "With S = bh^2/6, doubling h makes S four times larger, and sigma_max = M/S is divided by four. This is why joists are laid on edge.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a beam with a T-shaped cross-section in bending about a horizontal axis, where does the neutral axis lie?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "At mid-depth of the section"
+    },
+    {
+     "id": "b",
+     "text": "At the top surface"
+    },
+    {
+     "id": "c",
+     "text": "Through the centroid of the section, not at mid-depth"
+    },
+    {
+     "id": "d",
+     "text": "At the bottom surface"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Through the centroid of the section, not at mid-depth",
+   "distractorRationale": {
+    "a": "True only for sections symmetric about a horizontal axis.",
+    "b": "That would mean the whole section is in tension or compression.",
+    "c": "Correct: no axial force means the neutral axis passes through the centroid.",
+    "d": "Same objection as the top surface."
+   },
+   "explanation": "Equilibrium of axial force requires the integral of sigma dA to be zero, and with linear stress this places the neutral axis at the centroid. For a T-section the centroid is displaced toward the flange.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A beam must resist 62 kN m with an allowable bending stress of 160 MPa. Typical catalogue sections have section moduli of 285, 324, 429 and 557 cm^3. Which is the lightest acceptable section?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "324 cm^3"
+    },
+    {
+     "id": "b",
+     "text": "285 cm^3"
+    },
+    {
+     "id": "c",
+     "text": "557 cm^3"
+    },
+    {
+     "id": "d",
+     "text": "429 cm^3"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "429 cm^3",
+   "distractorRationale": {
+    "a": "Gives a stress of 191 MPa, above the allowable.",
+    "b": "Even more overstressed.",
+    "c": "Acceptable but heavier than necessary.",
+    "d": "Correct: required S = 387.5 cm^3, so the smallest S above it is 429."
+   },
+   "explanation": "S_required = 62e6/160 = 387 500 mm^3 = 387.5 cm^3. Only 429 and 557 cm^3 exceed it, and the smaller of the two is the lightest.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: in a beam of T-shaped cross-section the maximum tensile and maximum compressive bending stresses are always equal in magnitude.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The neutral axis is not at mid-depth, so the extreme fibres are at different distances from it. The fibre farther from the axis carries the larger stress.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A rectangular beam 60 mm wide and 150 mm deep carries a bending moment of 9 kN m. Find the maximum bending stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o1"
+   ],
+   "correctValue": 40.0,
+   "tolerance": 0.3,
+   "unit": "MPa",
+   "explanation": "I = 60 x 150^3/12 = 1.6875e7 mm^4 and c = 75 mm. sigma = 9e6 x 75/1.6875e7 = 40 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A T-section has a flange 150 mm wide and 25 mm thick on top of a web 25 mm wide and 125 mm tall (overall depth 150 mm). Find the second moment of area about its horizontal centroidal axis, in units of 10^6 mm^4.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o2"
+   ],
+   "correctValue": 13.85,
+   "tolerance": 0.1,
+   "unit": "10^6 mm^4",
+   "explanation": "Centroid from the bottom: (3125 x 62.5 + 3750 x 137.5)/6875 = 103.4 mm. Parallel-axis sum: web 4.07e6 + 3125(40.9)^2 and flange 0.195e6 + 3750(34.1)^2 gives I = 13.85e6 mm^4.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A rectangular timber beam, 100 mm wide, must carry a bending moment of 12 kN m with an allowable bending stress of 10 MPa. Find the minimum depth in mm.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o3"
+   ],
+   "correctValue": 268.3,
+   "tolerance": 2.0,
+   "unit": "mm",
+   "explanation": "S_required = 12e6/10 = 1.2e6 mm^3 = b h^2/6 so h^2 = 6 x 1.2e6/100 = 72 000, h = 268 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "State the assumptions behind the flexure formula sigma = M y/I and explain why the neutral axis passes through the centroid of the cross-section.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o2"
+   ],
+   "markingGuide": [
+    "Linear elastic, homogeneous material and small deflections",
+    "Plane sections remain plane so strain is linear in y",
+    "Beam symmetric about the plane of loading (or bending about a principal axis)",
+    "No axial force: integral of sigma dA = 0",
+    "With sigma proportional to y this requires the first moment of area about the axis to vanish, i.e. the axis is the centroid"
+   ],
+   "explanation": "Zero net axial force with linearly varying stress forces the first moment of area about the neutral axis to be zero. That condition defines the centroid.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A cast-iron beam with an inverted T cross-section is much weaker in tension than in compression. Explain how you would find the maximum tensile and compressive stresses and which orientation (flange up or down) is preferable for a sagging moment, with reasons.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o2",
+    "ug.mce-mechanics-of-materials.bending-stress.flexure-formula.o1"
+   ],
+   "markingGuide": [
+    "Locates the centroid and neutral axis first, then computes I by the parallel-axis theorem",
+    "Uses sigma = M y/I with y measured to each extreme fibre",
+    "Notes that the fibre farther from the neutral axis carries the larger stress",
+    "For sagging the bottom fibre is in tension, so the larger lever arm should be on the compression side: the flange at the bottom (the inverted T), with the stem tip on top in compression",
+    "Concludes by comparing computed stresses with the separate tensile and compressive allowable values"
+   ],
+   "explanation": "In an asymmetric section the stress is larger on the side with the larger lever arm. In a T-section the centroid lies close to the flange, so the stem tip is the far fibre. With the flange up (upright T) under a sagging moment the stem tip is in tension and carries the larger stress; for the 120 mm by 20 mm flange and 20 mm by 100 mm web used in the lesson, 3 kN m gives 43.7 MPa tension and 19.7 MPa compression, which overstresses the weak side of cast iron. Inverting the section (flange at the bottom) puts the stem tip in compression at 43.7 MPa and the flange in tension at only 19.7 MPa, keeping the larger stress on the strong compression side.",
+   "board": "internal"
+  }
+ ]
+}

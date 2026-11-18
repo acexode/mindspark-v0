@@ -1,0 +1,107 @@
+{
+  "subjectId": "ug.mce-advanced-heat-transfer",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "Technical quality is high. Every numeric answer key and worked example was recomputed independently in Python (resistance networks, fin arrays, fan operating points, LMTD and effectiveness-NTU, fouling, Zuber CHF, the Nusselt vertical-plate case with Re about 21, stoichiometry and boiler losses, the flame temperature estimate of about 2360 K, solar incidence and Hottel-Whillier, PCM and battery energy balances, y+ estimates). All keys matched and no reversed direction-of-effect statements were found. The defects are mostly rendering and generation artefacts: one tank-sizing example that evaluates to 0 L, a leftover template placeholder, tab characters that ate a LaTeX \\times, and e+XX-style numbers inside LaTeX. There are also two hook claims that are quantitatively wrong or inconsistent with the lesson text. The combustion estimate of 2360 K for stoichiometric methane (constant mean cp, no dissociation) is plausible and correctly flagged as above the real value of about 2220-2330 K. This is an AI review; the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Worked example 'Sizing a tank and collector' evaluates the stored volume as 'V=... =0 L', 'V_tank=1.25x0=0 L' and the answer says 'A tank of about 0 L (a 220 L unit would be chosen)'. The calculation is broken.",
+      "suggestedFix": "V = 36.58e6/(1000 x 4180 x 50) = 0.175 m^3 = 175 L; with the 25 % allowance V_tank = 219 L (about 220 L). Fix the two latex steps and the answer text (a 220 L unit)."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance",
+      "questionId": "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.q005",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Explanation contains literal tab control characters where \\times was lost: '$180<TAB>imes4180<TAB>imes40=30.10$' and '$0.38<TAB>imes16=6.08$'. The key (about 4.95 m^2, option a) is correct.",
+      "suggestedFix": "Restore '\\times' (escaped as \\\\times in JSON): $180\\times4180\\times40=30.10$ MJ and $0.38\\times16=6.08$ MJ/m^2."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Hook says the collector feeding a 90 C loop on a cold day 'delivers almost nothing'. With the lesson's own numbers (F_R 0.85, tau-alpha 0.82, U_L 5.5, G 800) it still delivers roughly 270-460 W, and eta reaches zero only at (Ti-Ta)/G about 0.15.",
+      "suggestedFix": "Soften to 'delivers a fraction of that' or use a larger U_L and lower irradiance so the claim holds."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Parallel-board-path example step text contains an unrendered template placeholder: 'from the common temperature difference $\\Delta T={dT:.2f}$ K.'",
+      "suggestedFix": "Replace with the value: $\\Delta T=51.06$ K (40 x 1.2766)."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Hook says the temperature drop 'is not in the fins at all: it sits in the thin layer of thermal paste, the package, and the heat spreader'. The lesson's own worked example shows the heat sink is the dominant resistance (68 %) and the interface only 6 %.",
+      "suggestedFix": "Reword the hook (for example, a transient throttle caused by thermal mass and package resistance) or choose numbers where the package and interface dominate."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.two-phase-flow.condensation",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Hook: 'The condenser of a 600 MW steam turbine rejects roughly 400 MW of heat'. For a 600 MW(e) unit this implies about 60 % cycle efficiency, which is impossible for a steam plant. Typical rejection is about 900-1000 MW.",
+      "suggestedFix": "State about 900 MW (or 'a 600 MW(e) unit at about 40 % efficiency rejects roughly 900 MW'), or restate the 600 MW as thermal input."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.two-phase-flow.condensation",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "e-notation inside LaTeX and prose in the Nusselt example: '=1.106e+17', '4.549e-04' in the Re_delta step. Question q005 explanation also has '5.315e+15'. The numerical results (h = 17.2 kW/m^2K, Q = 1032 W, mdot = 0.455 g/s, Re about 21; q005 8052) are correct.",
+      "suggestedFix": "Write 1.106\\times10^{17}, 4.549\\times10^{-4} and 5.315\\times10^{15} with braced exponents."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.two-phase-flow.boiling",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Text says Zuber's correlation has 'the constant refined by Lienhard and Dhir' and then gives C = 0.131. 0.131 (pi/24) is Zuber's original constant; the Lienhard-Dhir refinement for large flat plates is about 0.149 (which would give about 1.26 MW/m^2 for water). All worked numbers and keys correctly use 0.131 as stated.",
+      "suggestedFix": "Say that Zuber's analysis gives C = pi/24 = 0.131 (conservative) and that Lienhard-Dhir refined it to about 0.149 for large flat plates; keep 0.131 for the exercises."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.combustion-applications.combustion-stoichiometry",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Hook: 'at 8 % [O2] almost a third more fuel is needed for the same bake'. Using the lesson's own method an 8 % to 2 % O2 change costs only about 4-5 % in fuel (stack loss about 12 % vs 9 %). This also contradicts the burner-efficiency hook, where 8 % to 3 % saves about 4 %.",
+      "suggestedFix": "Change to 'several percent more fuel' (about 4-5 %), consistent with the burners-efficiency unit."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.solar-thermal.solar-geometry",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Radiative-loss example uses e-notation inside LaTeX: '(1.5554e+10)-(6.8941e+09)=8.6598e+09'. The q005 explanation also gives '1.1406e+10'. Values are correct (loss 491 W/m^2; q005 77.6 W/m^2).",
+      "suggestedFix": "Use 1.5554\\times10^{10}, 6.8941\\times10^{9}, 8.6598\\times10^{9} in LaTeX and 1.1406\\times10^{10} in the explanation."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Finite-volume worked example has '2.50e+06 W/m^3' inside LaTeX and again in the answer text.",
+      "suggestedFix": "Write 2.5\\times10^{6} W/m^3."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Flat-plate y+ example has '=1.333e+06' inside LaTeX.",
+      "suggestedFix": "Write 1.333\\times10^{6}."
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Bullet 'Check that the added area from fouling does not change the stream outlet temperatures when the exchanger is clean (over-surfaced units over-perform at start-up)' is self-contradictory: the extra area does change the clean-condition outlets.",
+      "suggestedFix": "Rewrite: 'Check the clean-condition performance: an over-surfaced unit will over-perform (outlets move) at start-up, so provide bypass or control.'"
+    },
+    {
+      "subtopicId": "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Spreading is framed inconsistently. The objective and summary say spreading lowers peak temperature 'at the cost of a spreading resistance', but R_s=1/(4ka) is the constriction penalty of a small source, not a cost of adding a spreader. The worked example says 'Spreading adds about 13.8 K' and could be read as the spreader raising temperature. The maths is correct (R_s=0.277 K/W, 13.8 K, flux ratio 25).",
+      "suggestedFix": "State that R_s is the unavoidable constriction rise for a small source, and that a thick, high-k spreader lowers the total rise compared with a thin base or no spreader. Compare the total with and without the spreader."
+    }
+  ]
+}

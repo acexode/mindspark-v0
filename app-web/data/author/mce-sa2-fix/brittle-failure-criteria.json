@@ -1,0 +1,384 @@
+{
+ "lessonTitle": "Brittle Material Failure Criteria",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A grey cast iron brake-drum housing can sit under a compressive clamp load that would crush a steel part of the same weight, yet crack under a modest tensile stress from a wheel-nut overload. The same casting, loaded in different directions, fails at stresses that differ by a factor of three or more."
+  },
+  {
+   "type": "text",
+   "markdown": "Ductile metals yield by shear slip, and the Tresca and von Mises criteria assume the material is equally strong in tension and compression. **Brittle** materials such as grey cast iron, ceramics and concrete fracture with almost no plastic strain, and their compressive strength $S_{uc}$ is typically 3 to 4 times their tensile strength $S_{ut}$ (both in MPa, used here as magnitudes). A criterion for them must respect that asymmetry and be based on fracture, not yield. We assume static loading, plane stress and an isotropic, flaw-tolerant casting; the strengths used are typical, not code values."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Maximum normal stress (Rankine) criterion",
+   "text": "Fracture occurs when the largest principal stress reaches the ultimate tensile strength, $\\sigma_1=S_{ut}$, or when the most compressive principal stress reaches the ultimate compressive strength, $\\sigma_3=-S_{uc}$. The principal stresses are ordered $\\sigma_1\\ge\\sigma_2\\ge\\sigma_3$ with the out-of-plane zero included."
+  },
+  {
+   "type": "math",
+   "latex": "n=\\min\\left(\\frac{S_{ut}}{\\sigma_1},\\;\\frac{S_{uc}}{|\\sigma_3|}\\right)\\quad(\\text{each term used only if }\\sigma_1>0\\text{ or }\\sigma_3<0)",
+   "caption": "Maximum normal stress factor of safety"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Coulomb-Mohr (internal friction) criterion",
+   "text": "For $\\sigma_1>0>\\sigma_3$ the strength envelope is a straight line joining the tensile and compressive Mohr circles. It lowers the allowable stress when tension and compression act together, which the maximum normal stress criterion ignores."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{1}{n}=\\frac{\\sigma_1}{S_{ut}}-\\frac{\\sigma_3}{S_{uc}}\\qquad(\\sigma_1\\ge0\\ge\\sigma_3)",
+   "caption": "Coulomb-Mohr factor of safety in the tension-compression quadrant; use $n=S_{ut}/\\sigma_1$ if $\\sigma_3\\ge0$ and $n=S_{uc}/|\\sigma_3|$ if $\\sigma_1\\le0$"
+  },
+  {
+   "type": "worked_example",
+   "title": "Maximum normal stress for a cast iron lug",
+   "prompt": "A grey cast iron lug has plane stress $\\sigma_x=80$ MPa, $\\sigma_y=-30$ MPa, $\\tau_{xy}=40$ MPa. Typical strengths: $S_{ut}=200$ MPa, $S_{uc}=700$ MPa. Find the factor of safety by the maximum normal stress criterion.",
+   "steps": [
+    {
+     "text": "Principal stresses: centre = 25 MPa, radius = $\\sqrt{55^2+40^2}=68.01$ MPa.",
+     "latex": "\\sigma_1=93.01,\\quad \\sigma_2=-43.01\\ \\text{MPa}"
+    },
+    {
+     "text": "Include the out-of-plane zero and order: $\\sigma_1=93.01$, $\\sigma_3=-43.01$ MPa.",
+     "latex": "\\sigma_3=\\min(\\sigma_2,0)=-43.01"
+    },
+    {
+     "text": "Tension check against $S_{ut}$.",
+     "latex": "n_t=200/93.01=2.15"
+    },
+    {
+     "text": "Compression check against $S_{uc}$.",
+     "latex": "n_c=700/43.01=16.28"
+    },
+    {
+     "text": "The smaller value governs.",
+     "latex": "n=\\min(2.15,\\,16.28)=2.15"
+    }
+   ],
+   "answer": "$n=2.15$ (tension governs); the lug fails by cracking, not crushing."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Ductile steel",
+    "Grey cast iron (typical)"
+   ],
+   "rows": [
+    [
+     "Failure mode",
+     "Yielding by shear slip",
+     "Fracture normal to $\\sigma_1$ (tension)"
+    ],
+    [
+     "Tension vs compression strength",
+     "$S_{yt}\\approx S_{yc}$",
+     "$S_{uc}\\approx3$ to $4\\,S_{ut}$"
+    ],
+    [
+     "Plastic strain before failure",
+     "Large",
+     "Almost none"
+    ],
+    [
+     "Suitable criterion",
+     "Tresca or von Mises",
+     "Maximum normal stress or Coulomb-Mohr"
+    ],
+    [
+     "Pure torsion failure surface",
+     "Transverse plane (shear)",
+     "$45^\\circ$ helix (tensile)"
+    ]
+   ],
+   "caption": "Why brittle materials need their own criterion"
+  },
+  {
+   "type": "text",
+   "markdown": "The last row of the table is the classic demonstration. A cast iron bar in torsion has principal stresses $\\pm\\tau$ at $45^\\circ$ to its axis. The tensile principal stress reaches $S_{ut}$ long before the shear stress is large enough for slip, so the bar cracks along a $45^\\circ$ helix, perpendicular to $\\sigma_1$. Applying the von Mises criterion with a single strength would badly misrepresent this behaviour."
+  },
+  {
+   "type": "worked_example",
+   "title": "Torsion of a cast iron shaft: two brittle criteria",
+   "prompt": "A solid cast iron shaft carries a surface shear stress $\\tau=60$ MPa and nothing else. Use $S_{ut}=200$ MPa and $S_{uc}=700$ MPa (typical). Compare the maximum normal stress and Coulomb-Mohr factors of safety.",
+   "steps": [
+    {
+     "text": "Principal stresses in pure shear are $\\pm\\tau$.",
+     "latex": "\\sigma_1=60,\\quad\\sigma_3=-60\\ \\text{MPa}"
+    },
+    {
+     "text": "Maximum normal stress: tension governs.",
+     "latex": "n=\\min(200/60,\\,700/60)=\\min(3.33,\\,11.67)=3.33"
+    },
+    {
+     "text": "Coulomb-Mohr combines both.",
+     "latex": "\\frac1n=\\frac{60}{200}+\\frac{60}{700}=0.3000+0.0857=0.3857,\\quad n=2.59"
+    },
+    {
+     "text": "Coulomb-Mohr is the more conservative of the two because the compressive principal stress also contributes."
+    }
+   ],
+   "answer": "Maximum normal stress: $n=3.33$; Coulomb-Mohr: $n=2.59$."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find $\\sigma_1$ and $\\sigma_3$ including the out-of-plane zero.",
+    "Decide the quadrant: both tensile, both compressive, or mixed.",
+    "Tension quadrant: $n=S_{ut}/\\sigma_1$. Compression quadrant: $n=S_{uc}/|\\sigma_3|$.",
+    "Mixed quadrant: use Coulomb-Mohr (or the maximum normal stress rule for a less conservative, quicker estimate)."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not use a ductile criterion on cast iron",
+   "text": "Von Mises assumes the same strength in tension and compression. For cast iron, whose compressive strength $S_{uc}$ is several times its tensile strength $S_{ut}$, a von Mises limit set from $S_{uc}$ would overpredict the tensile capacity, while one set from $S_{ut}$ would be far too conservative in compression. Never use a single strength figure for a brittle material under mixed loading."
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Sign and quadrant discipline",
+   "text": "Write down $\\sigma_1,\\sigma_2,\\sigma_3$ in order before choosing a formula. In plane stress, if both in-plane principal stresses are tensile then $\\sigma_3=0$ and $n=S_{ut}/\\sigma_1$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Brittle materials fracture without yielding and are far stronger in compression than in tension, so ductile criteria do not apply.",
+    "The maximum normal stress criterion compares $\\sigma_1$ with $S_{ut}$ and $\\sigma_3$ with $-S_{uc}$; the smaller ratio gives the factor of safety.",
+    "Coulomb-Mohr gives $1/n=\\sigma_1/S_{ut}-\\sigma_3/S_{uc}$ in the mixed quadrant and is more conservative than maximum normal stress.",
+    "Always order the three principal stresses, including the out-of-plane zero, before choosing the governing term."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why can the von Mises criterion not be applied directly to a grey cast iron component?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Cast iron fractures without yielding and is much stronger in compression than in tension, so a single yield strength is meaningless"
+    },
+    {
+     "id": "b",
+     "text": "Cast iron has no tensile strength"
+    },
+    {
+     "id": "c",
+     "text": "Von Mises only applies to uniaxial stress states"
+    },
+    {
+     "id": "d",
+     "text": "Cast iron is stronger in tension than in compression"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Cast iron fractures without yielding and is much stronger in compression than in tension, so a single yield strength is meaningless",
+   "distractorRationale": {
+    "a": "Correct: the criterion assumes equal strength in tension and compression and a yield-based failure.",
+    "b": "Cast iron does have a tensile strength; it is just low (about a quarter to a third of the compressive).",
+    "c": "Von Mises is a multiaxial criterion, so this is false.",
+    "d": "The asymmetry is the other way round: compression is the stronger."
+   },
+   "explanation": "Von Mises is built on distortion energy for materials that slip plastically with equal tension and compression strength. Cast iron breaks in a brittle manner and has $S_{uc}\\approx3$ to $4S_{ut}$, so a criterion that respects both strengths is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: under the maximum normal stress criterion, a brittle part with both principal stresses tensile fails when the larger principal stress reaches $S_{ut}$, regardless of the value of the smaller one.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "In the tension-tension quadrant, the criterion looks only at $\\sigma_1$, so $\\sigma_2$ has no effect until it becomes the larger of the two. This is why the maximum normal stress locus is a square in the $\\sigma_1$-$\\sigma_2$ plane.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cast iron bracket has plane stress $\\sigma_x=95$ MPa, $\\sigma_y=35$ MPa, $\\tau_{xy}=50$ MPa. Using $S_{ut}=200$ MPa (typical), find the factor of safety by the maximum normal stress criterion. Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o1",
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o3"
+   ],
+   "correctValue": 1.621935,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "The principal stresses are $65\\pm\\sqrt{30^2+50^2}=65\\pm58.31$, so $\\sigma_1=123.31$ and $\\sigma_2=6.69$ MPa, both tensile. Hence $\\sigma_3=0$ and $n=S_{ut}/\\sigma_1=200/123.31=1.622$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A cast iron block is loaded so that the in-plane principal stresses are $-40$ MPa and $-150$ MPa (both compressive). With $S_{uc}=700$ MPa, the maximum normal stress factor of safety is closest to",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "17.5"
+    },
+    {
+     "id": "b",
+     "text": "4.7"
+    },
+    {
+     "id": "c",
+     "text": "1.0"
+    },
+    {
+     "id": "d",
+     "text": "3.7"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "4.7",
+   "distractorRationale": {
+    "a": "Uses the smaller compressive stress $40$ MPa, so $700/40=17.5$.",
+    "b": "Correct: the most compressive principal stress is $-150$ MPa, so $n=700/150=4.67$.",
+    "c": "Compares with a tensile strength that does not apply here.",
+    "d": "Sums the two compressive stresses (190 MPa), which has no meaning in this criterion."
+   },
+   "explanation": "With $\\sigma_1=0$ (out-of-plane) and $\\sigma_3=-150$ MPa, only the compression term applies, giving $n=S_{uc}/|\\sigma_3|=700/150=4.67$. The block is far from fracture.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cast iron shaft transmits torque so that the surface carries a pure torsional shear stress $\\tau=55$ MPa. Its strengths are $S_{ut}=240$ MPa and $S_{uc}=800$ MPa (typical). Using the Coulomb-Mohr criterion, what is the factor of safety? Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o3"
+   ],
+   "correctValue": 3.356643,
+   "tolerance": 0.03,
+   "unit": "dimensionless",
+   "explanation": "In pure shear $\\sigma_1=55$ MPa and $\\sigma_3=-55$ MPa. Then $1/n=55/240+55/800=0.2292+0.0688=0.2979$, giving $n=3.357$. The maximum normal stress criterion would give $240/55=4.36$, which is less conservative.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A cast iron bar and a mild steel bar of the same diameter are twisted to destruction. Describe how each fails and explain the difference using principal stresses and the strengths of each material.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o2"
+   ],
+   "markingGuide": [
+    "Pure shear on the surface gives principal stresses $+\\tau$ and $-\\tau$ at $45^\\circ$ to the axis.",
+    "Mild steel is shear-limited: it yields by slip and fails on a transverse plane after large plastic twist.",
+    "Cast iron is weak in tension: the tensile principal stress reaches $S_{ut}$ first, giving a $45^\\circ$ helical fracture surface perpendicular to $\\sigma_1$.",
+    "Because $S_{uc}\\gg S_{ut}$, the compressive principal stress of equal size is harmless.",
+    "Therefore a brittle material must be judged against normal stress, not shear stress or distortion energy."
+   ],
+   "explanation": "Each material breaks along its weakest mechanism. Steel is weakest in shear, cast iron in tension, and pure shear contains both a shear plane and an equal tension and compression at $45^\\circ$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A grey cast iron component has plane stress $\\sigma_x=130$ MPa, $\\sigma_y=-60$ MPa and $\\tau_{xy}=40$ MPa. With $S_{ut}=200$ MPa and $S_{uc}=700$ MPa (typical), calculate the Coulomb-Mohr factor of safety. Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o3"
+   ],
+   "correctValue": 1.269612,
+   "tolerance": 0.03,
+   "unit": "dimensionless",
+   "explanation": "The principal stresses are $35\\pm\\sqrt{95^2+40^2}=35\\pm103.08$, so $\\sigma_1=138.08$ and $\\sigma_3=-68.08$ MPa. Then $1/n=138.08/200+68.08/700=0.7876$, so $n=1.270$. The maximum normal stress value would be $200/138.08=1.45$, which is higher.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cast iron pipe of mean radius 50 mm and wall thickness 4 mm carries internal pressure $p$. Its thickness-to-diameter ratio is $t/D=0.04$, within the thin-wall limit, so use hoop stress $\\sigma_\\theta=pr/t$ and axial stress $\\sigma_a=pr/(2t)$, both tensile. With $S_{ut}=200$ MPa (typical), what is the largest pressure in MPa that gives a factor of safety of 2 by the maximum normal stress criterion?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o1",
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o3"
+   ],
+   "correctValue": 8.0,
+   "tolerance": 0.1,
+   "unit": "MPa",
+   "explanation": "With $t/D=4/100=0.04$ the thin-wall formulas apply. Both stresses are tensile, so $\\sigma_3=0$ and the governing stress is the hoop stress $\\sigma_\\theta=pr/t=12.5p$. Setting $12.5p=S_{ut}/2=100$ MPa gives $p=8.0$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A cast iron machine part has principal stresses $\\sigma_1=150$ MPa and $\\sigma_3=-300$ MPa, with $S_{ut}=200$ MPa and $S_{uc}=700$ MPa (typical). Compute the factor of safety by the maximum normal stress and Coulomb-Mohr criteria and comment on which result is safe to rely on.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o1",
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o3"
+   ],
+   "markingGuide": [
+    "Maximum normal stress: $\\min(200/150,\\,700/300)=\\min(1.33,\\,2.33)=1.33$.",
+    "Coulomb-Mohr: $1/n=150/200+300/700=0.75+0.4286=1.1786$, so $n=0.85$.",
+    "The two criteria disagree: maximum normal stress says safe, Coulomb-Mohr predicts fracture ($n<1$).",
+    "In the mixed tension-compression quadrant, the compression lowers the tensile fracture stress, which maximum normal stress ignores.",
+    "The Coulomb-Mohr result should be used; maximum normal stress is non-conservative here."
+   ],
+   "explanation": "Combined tension and compression interact in brittle materials, so the straight Coulomb-Mohr line lies inside the square of the maximum normal stress criterion in this quadrant. The calculated factor of safety of 0.85 versus 1.33 shows how misleading the simpler rule can be.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement about the maximum normal stress criterion for brittle materials is correct?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o1",
+    "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It uses the maximum shear stress compared with half the compressive strength"
+    },
+    {
+     "id": "b",
+     "text": "It uses the distortion energy with the tensile strength"
+    },
+    {
+     "id": "c",
+     "text": "It uses the tensile strength for the largest principal stress and the compressive strength for the most compressive one"
+    },
+    {
+     "id": "d",
+     "text": "It uses the average of the tensile and compressive strengths"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It uses the tensile strength for the largest principal stress and the compressive strength for the most compressive one",
+   "distractorRationale": {
+    "a": "That describes Tresca, a ductile criterion.",
+    "b": "That describes von Mises, also ductile.",
+    "c": "Correct: each principal stress is compared with the strength for its own sign.",
+    "d": "There is no averaging of strengths in any of these criteria."
+   },
+   "explanation": "The criterion checks $\\sigma_1$ against $S_{ut}$ and $\\sigma_3$ against $-S_{uc}$ separately, and the smaller ratio is the factor of safety. Averaging strengths would erase the very tension-compression asymmetry that makes brittle materials different.",
+   "board": "internal"
+  }
+ ]
+}

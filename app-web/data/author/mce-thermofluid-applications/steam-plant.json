@@ -1,0 +1,439 @@
+{
+ "lessonTitle": "Steam Plant with Irreversibilities",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 300 MW coal-fired unit burns about 30 kg of coal every second to make steam at 10 MPa and 500 °C, yet only about a third of the fuel energy leaves as electricity; most of the rest is rejected in the condenser. The ideal Rankine cycle would do better, around 40 per cent, but real turbines and pumps are irreversible. This unit shows how to account for those irreversibilities and how reheat and feedwater heating recover the efficiency."
+  },
+  {
+   "type": "text",
+   "markdown": "The ideal **Rankine cycle** has four processes: isentropic pump compression, constant-pressure boiling and superheating, isentropic turbine expansion and constant-pressure condensation. We number the states 1 (turbine inlet), 2 (turbine exit), 3 (condenser exit, saturated liquid) and 4 (pump exit). Real components generate entropy, so the actual turbine delivers less work and the actual pump needs more than the isentropic values."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Isentropic efficiencies",
+   "text": "For the turbine, $\\eta_t=(h_1-h_2)/(h_1-h_{2s})$: actual over isentropic enthalpy drop. For the pump, $\\eta_p=(h_{4s}-h_3)/(h_4-h_3)$: isentropic over actual work input, with $w_{p,s}=v_3(p_4-p_3)$ for an incompressible liquid of specific volume $v_3$. The thermal efficiency is the net work over the heat added in the boiler (and reheater)."
+  },
+  {
+   "type": "math",
+   "latex": "\\eta_{th}=\\frac{w_t-w_p}{q_{in}}=\\frac{(h_1-h_2)-(h_4-h_3)}{h_1-h_4},\\qquad w_t=\\eta_t(h_1-h_{2s}),\\quad w_p=\\frac{v_3(p_4-p_3)}{\\eta_p}",
+   "caption": "Thermal efficiency of a Rankine cycle with real turbine and pump"
+  },
+  {
+   "type": "worked_example",
+   "title": "Rankine cycle with isentropic efficiencies",
+   "prompt": "Steam leaves the boiler at 10 MPa and 500 °C ($h_1=3375.1$ kJ/kg, $s_1=6.5995$ kJ/(kg K), typical steam-table values) and expands to a condenser at 10 kPa where $h_f=191.81$, $h_{fg}=2392.1$ kJ/kg, $s_f=0.6492$, $s_{fg}=7.4996$ kJ/(kg K) and $v_f=0.00101$ m$^3$/kg. Turbine efficiency 0.85 and pump efficiency 0.8. Find the thermal efficiency.",
+   "steps": [
+    {
+     "text": "Isentropic turbine exit state: equate entropies, find the quality and enthalpy.",
+     "latex": "x_{2s}=\\frac{s_1-s_f}{s_{fg}}=\\frac{6.5995-0.6492}{7.4996}=0.7934,\\quad h_{2s}=191.81+0.7934\\times2392.1=2089.7\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Real turbine work and exit state.",
+     "latex": "w_t=0.85\\,(h_1-h_{2s})=0.85\\times1285.4=1092.6\\ \\text{kJ/kg},\\quad h_2=2282.5\\ \\text{kJ/kg},\\ x_2=0.874"
+    },
+    {
+     "text": "Pump work: isentropic value $v\\Delta p$, divided by the pump efficiency.",
+     "latex": "w_p=\\frac{0.00101\\times(10000-10)}{0.80}=\\frac{10.09}{0.80}=12.61\\ \\text{kJ/kg},\\quad h_4=204.42\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Heat input and net work.",
+     "latex": "q_{in}=h_1-h_4=3170.7\\ \\text{kJ/kg},\\quad w_{net}=1092.6-12.61=1079.9\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Thermal efficiency, compared with the ideal cycle.",
+     "latex": "\\eta_{th}=\\frac{1079.9}{3170.7}=0.3406\\quad(\\text{ideal: }0.402)"
+    }
+   ],
+   "answer": "The cycle with irreversibilities has $\\eta_{th}\\approx0.341$ against $0.402$ for the ideal cycle. The turbine exit is steam of quality about 0.874."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Improvement",
+    "How it acts",
+    "Effect on efficiency",
+    "Side effect"
+   ],
+   "rows": [
+    [
+     "Higher boiler pressure",
+     "Raises the mean temperature of heat addition",
+     "Increases",
+     "Wetter turbine exit steam"
+    ],
+    [
+     "Lower condenser pressure",
+     "Lowers the heat-rejection temperature",
+     "Increases",
+     "Wetter exit steam; limited by cooling-water temperature"
+    ],
+    [
+     "Superheat",
+     "Raises mean heat-addition temperature, drier exit steam",
+     "Increases",
+     "Metallurgical limit"
+    ],
+    [
+     "Reheat",
+     "Returns steam to the boiler to add heat at high temperature between turbine sections",
+     "Increases modestly, and exit dryness improves greatly",
+     "Extra piping and cost"
+    ],
+    [
+     "Feedwater heating",
+     "Preheats boiler feed with extracted steam, so less heat is added at low temperature",
+     "Increases",
+     "Less steam to the condenser, extra heaters"
+    ]
+   ],
+   "caption": "Ways to raise the efficiency of a steam plant"
+  },
+  {
+   "type": "text",
+   "markdown": "**Reheat.** After expansion through a high-pressure (HP) turbine to an intermediate pressure, the steam returns to the boiler and is reheated, typically back to the original temperature, before expanding in the low-pressure (LP) turbine. This increases the net work and also keeps the LP exit steam dry enough to avoid blade erosion. **Feedwater heating** extracts a fraction $y$ of the steam to heat the liquid feed: in an open (mixing) heater, an energy balance on the heater fixes $y$."
+  },
+  {
+   "type": "math",
+   "latex": "\\eta_{th}=\\frac{(h_1-h_{x})+(h_{RH}-h_{6})-w_p}{(h_1-h_4)+(h_{RH}-h_x)},\\qquad y=\\frac{h_f-h_{p1}}{h_{ext}-h_{p1}}",
+   "caption": "Reheat cycle (x = HP exit, RH = reheated state, 6 = LP exit) and the extraction fraction of an open feedwater heater"
+  },
+  {
+   "type": "worked_example",
+   "title": "Effect of reheat",
+   "prompt": "Using the same plant, steam leaves the HP turbine at 2 MPa and is reheated to 500 °C. Typical steam-table values: isentropic HP exit $h_{HPs}=2932.2$ kJ/kg; reheated steam $h=3467.6$ kJ/kg; isentropic LP exit $h_{LPs}=2355.8$ kJ/kg. Both turbine sections have efficiency 0.85. Find the thermal efficiency and the exit quality.",
+   "steps": [
+    {
+     "text": "HP turbine work and exit enthalpy.",
+     "latex": "w_{HP}=0.85\\times(3375.1-2932.2)=376.5\\ \\text{kJ/kg},\\quad h_x=2998.6\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Reheat heat input.",
+     "latex": "q_{RH}=3467.6-2998.6=469\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "LP turbine work and exit state.",
+     "latex": "w_{LP}=0.85\\times(3467.6-2355.8)=945\\ \\text{kJ/kg},\\quad h_6=2522.6\\ \\text{kJ/kg},\\ x_6=0.974"
+    },
+    {
+     "text": "Net work, total heat input and efficiency.",
+     "latex": "\\eta_{th}=\\frac{376.5+945-12.61}{3170.7+469}=\\frac{1308.9}{3639.6}=0.3596"
+    }
+   ],
+   "answer": "Reheat raises the efficiency from about 0.341 to 0.36 and the exit quality from 0.874 to 0.974."
+  },
+  {
+   "type": "worked_example",
+   "title": "Open feedwater heater and mass flow for a target output",
+   "prompt": "In an ideal cycle (10 MPa, 500 °C, 10 kPa) a fraction $y$ of steam is extracted at 1 MPa ($h_{ext}=2784$ kJ/kg, typical, near-isentropic state) to an open heater whose outlet is saturated liquid ($h_f=762.5$ kJ/kg, $v=0.001127$ m$^3$/kg). Find $y$, the efficiency, and the steam mass flow for 300 MW of net output using the real-turbine cycle above.",
+   "steps": [
+    {
+     "text": "Condensate pump outlet enthalpy to the heater.",
+     "latex": "h_{p1}=191.81+0.00101\\times(1000-10)=192.81\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Energy balance of the open heater.",
+     "latex": "y\\,h_{ext}+(1-y)\\,h_{p1}=h_f\\Rightarrow y=\\frac{762.5-192.81}{2784-192.81}=0.2199"
+    },
+    {
+     "text": "Efficiency of the ideal regenerative cycle.",
+     "latex": "\\eta_{th}=\\frac{1121.8}{2602.5}=0.4311\\quad(\\text{no heater: }0.4019)"
+    },
+    {
+     "text": "Steam flow for the net power with the real cycle, $\\dot m=P/w_{net}$.",
+     "latex": "\\dot m=\\frac{300\\times10^{3}}{1079.9}=277.8\\ \\text{kg/s}"
+    }
+   ],
+   "answer": "The extraction fraction is 0.22 and the ideal efficiency rises from 0.402 to 0.431. The real unit needs about 278 kg/s of steam for 300 MW."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Locate state 1 from the boiler pressure and temperature; find $h_{2s}$ by equating entropy at the condenser pressure.",
+    "Apply the turbine and pump efficiencies to get the real $h_2$ and $h_4$.",
+    "Add reheat or regeneration by writing the energy balance for each component in kJ per kg of steam through the boiler.",
+    "Divide net work by total heat added for $\\eta_{th}$, and scale by $\\dot m=P_{net}/w_{net}$ for the plant."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Both reheat and feedwater heating add heat at a higher average temperature",
+   "text": "Reheat adds heat at a high temperature in the middle of the expansion; feedwater heating uses extraction steam instead of the boiler to raise the feed temperature, so less heat is added at low temperature. Either raises the mean temperature of heat addition, which is why they raise the efficiency: efficiency of any cycle improves when heat is added hotter or rejected colder."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Real turbines and pumps are described by isentropic efficiencies: $w_t=\\eta_t(h_1-h_{2s})$ and $w_p=v\\Delta p/\\eta_p$.",
+    "Reheat and feedwater heating raise the efficiency by raising the average temperature of heat addition; reheat also gives drier exit steam.",
+    "Steam mass flow for a target net power is $\\dot m=P_{net}/w_{net}$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A steam turbine has an isentropic efficiency of 0.85. Compared with the isentropic exit state at the same exit pressure, the real exit state has:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "a higher enthalpy and entropy, because less work is extracted than in the reversible case"
+    },
+    {
+     "id": "b",
+     "text": "a lower enthalpy and the same entropy, because the expansion is adiabatic"
+    },
+    {
+     "id": "c",
+     "text": "a lower enthalpy and lower entropy, because more work is extracted"
+    },
+    {
+     "id": "d",
+     "text": "the same enthalpy but a different pressure"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "a higher enthalpy and entropy, because less work is extracted than in the reversible case",
+   "distractorRationale": {
+    "a": "Correct: less work out means higher exit enthalpy, and entropy generation raises entropy.",
+    "b": "Entropy increases in an irreversible adiabatic process, and less work extracted means higher exit enthalpy.",
+    "c": "Irreversibility reduces the work, so the enthalpy drop is smaller.",
+    "d": "The exit pressure is fixed by the condenser; the enthalpy changes."
+   },
+   "explanation": "The actual enthalpy drop is $\\eta_t(h_1-h_{2s})$, which is smaller than isentropic, so $h_2>h_{2s}$. The same final pressure with a higher enthalpy also means higher entropy, because entropy was generated by friction in the expansion.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which of the following is a benefit of adding a reheat stage to a steam cycle at the same maximum pressure and temperature?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The condenser heat rejection falls to zero"
+    },
+    {
+     "id": "b",
+     "text": "The steam leaving the low-pressure turbine is drier, and the average temperature of heat addition rises"
+    },
+    {
+     "id": "c",
+     "text": "The pump work is eliminated"
+    },
+    {
+     "id": "d",
+     "text": "The turbine inlet temperature rises above the metallurgical limit"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The steam leaving the low-pressure turbine is drier, and the average temperature of heat addition rises",
+   "distractorRationale": {
+    "a": "The condenser rejects heat in any cycle.",
+    "b": "Correct: it gives drier exit steam and a higher mean temperature of heat addition.",
+    "c": "Reheat does not alter the pump's job.",
+    "d": "Reheat returns the steam to the limit; it does not exceed it."
+   },
+   "explanation": "Reheat adds heat at a high temperature part-way through the expansion, so the mean temperature of heat addition rises and the efficiency improves. It also keeps the LP turbine exit steam closer to dry, which reduces moisture erosion of the blades.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A feed pump raises liquid water ($v=0.00101$ m$^3$/kg, incompressible) through a pressure rise of 6.0 MPa. With a pump isentropic efficiency of 0.75, the actual work input per kg is closest to:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "6.06 kJ/kg"
+    },
+    {
+     "id": "b",
+     "text": "4.54 kJ/kg"
+    },
+    {
+     "id": "c",
+     "text": "8.08 kJ/kg"
+    },
+    {
+     "id": "d",
+     "text": "6060 kJ/kg"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "8.08 kJ/kg",
+   "distractorRationale": {
+    "a": "Gives the isentropic work and omits the efficiency.",
+    "b": "Multiplies by the efficiency instead of dividing.",
+    "c": "Correct: the isentropic work divided by the efficiency.",
+    "d": "Mis-converts the units by a factor of 1000."
+   },
+   "explanation": "The isentropic pump work is $v\\Delta p=0.00101\\times6000=6.06$ kJ/kg with pressure in kPa. The real work is higher: $6.06/0.75=8.08$ kJ/kg.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An open feedwater heater is added to an otherwise identical ideal steam plant. The main thermodynamic reason the efficiency rises is that:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "the extracted steam does extra work in the condenser"
+    },
+    {
+     "id": "b",
+     "text": "the pump work is eliminated"
+    },
+    {
+     "id": "c",
+     "text": "the turbine isentropic efficiency increases"
+    },
+    {
+     "id": "d",
+     "text": "less of the heat input is supplied at low temperature, so the average temperature of heat addition rises"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "less of the heat input is supplied at low temperature, so the average temperature of heat addition rises",
+   "distractorRationale": {
+    "a": "Extracted steam bypasses the later turbine stages and the condenser.",
+    "b": "Pumps are still needed, and in fact an extra pump is typically required.",
+    "c": "The component efficiencies are unchanged; the cycle arrangement changes.",
+    "d": "Correct: preheating raises the mean temperature at which heat is added."
+   },
+   "explanation": "The feed enters the boiler at a higher temperature, so the boiler supplies less heat at low temperature. Heat rejected in the condenser also falls because less steam reaches it, and the mean heat-addition temperature rises.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A steam plant has a net specific work of 1250 kJ/kg. To deliver 120 MW of net power, the steam mass flow through the boiler must be:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "96 kg/s"
+    },
+    {
+     "id": "b",
+     "text": "0.096 kg/s"
+    },
+    {
+     "id": "c",
+     "text": "1.5\\times10^{5} kg/s"
+    },
+    {
+     "id": "d",
+     "text": "240 kg/s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "96 kg/s",
+   "distractorRationale": {
+    "a": "Correct: net power divided by net specific work.",
+    "b": "Treats the power as 120 kW; the unit conversion is wrong.",
+    "c": "Multiplies power by specific work instead of dividing.",
+    "d": "Divides by an invented efficiency; net specific work already includes losses."
+   },
+   "explanation": "Net power equals mass flow times net specific work, so $\\dot m=P/w_{net}=120\\,000\\ \\text{kW}/1250\\ \\text{kJ/kg}=96$ kg/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A Rankine plant has turbine inlet enthalpy 3400 kJ/kg, isentropic exit enthalpy 2100 kJ/kg and turbine isentropic efficiency 0.90. The condensate is saturated liquid at 190 kJ/kg, and the pump work is 10 kJ/kg. Find the thermal efficiency (as a fraction).",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o1"
+   ],
+   "correctValue": 0.3625,
+   "tolerance": 0.003,
+   "unit": "dimensionless",
+   "explanation": "Turbine work is $0.90\\times(3400-2100)=1170$ kJ/kg, and net work is $1170-10=1160$ kJ/kg. The boiler inlet enthalpy is $190+10=200$ kJ/kg, so $q_{in}=3400-200=3200$ kJ/kg and $\\eta=1160/3200=0.3625$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steam plant has turbine inlet enthalpy 3300 kJ/kg, isentropic exit enthalpy 2150 kJ/kg, turbine isentropic efficiency 0.88 and pump work 12 kJ/kg. Find the steam mass flow in kg/s needed for a net output of 250 MW.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o3"
+   ],
+   "correctValue": 250.0,
+   "tolerance": 1.0,
+   "unit": "kg/s",
+   "explanation": "The turbine work is $0.88\\times(3300-2150)=1012$ kJ/kg, so the net work is $1012-12=1000$ kJ/kg. Then $\\dot m=250\\,000/1000=250$ kg/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A reheat plant has these actual enthalpies: boiler exit 3400 kJ/kg, HP turbine exit 2950 kJ/kg, reheater exit 3500 kJ/kg, LP turbine exit 2480 kJ/kg, condensate (saturated liquid) 190 kJ/kg, and pump work 10 kJ/kg. Find the thermal efficiency (as a fraction).",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o1",
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o2"
+   ],
+   "correctValue": 0.3893,
+   "tolerance": 0.003,
+   "unit": "dimensionless",
+   "explanation": "Net work is $(3400-2950)+(3500-2480)-10=1460$ kJ/kg. Heat input is the boiler $(3400-200)=3200$ plus the reheater $(3500-2950)=550$, a total of 3750 kJ/kg. So $\\eta=1460/3750=0.3893$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain, with reference to a T-s diagram and the isentropic efficiencies, how a real turbine and pump reduce the thermal efficiency of a Rankine cycle compared with the ideal cycle. Which of the two has the greater effect on the efficiency, and why?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o1"
+   ],
+   "markingGuide": [
+    "Real turbine expansion is irreversible: entropy increases, so the exit enthalpy is higher and w_t = eta_t (h1 - h2s) is smaller",
+    "Real pump needs more work: w_p = v dp / eta_p",
+    "Net work falls while the heat input rises slightly (higher pump exit enthalpy), so efficiency decreases",
+    "On a T-s diagram the turbine line leans to the right of the vertical isentrope; the cycle area (net work) shrinks",
+    "Turbine effect is much larger because turbine work is of the order of 1000 kJ/kg while pump work is about 10 kJ/kg",
+    "A turbine efficiency of 0.85 removes 15 percent of a large work output; pump irreversibility affects a small term"
+   ],
+   "explanation": "The turbine produces nearly all the work in the cycle, so any irreversibility there reduces the net output directly. The pump handles an incompressible liquid and needs a work input of about 1 per cent of the turbine output, so its inefficiency has a much smaller effect.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how an open feedwater heater changes the steam flows in a regenerative Rankine cycle, derive the extraction fraction $y$ from an energy balance, and explain why the cycle efficiency improves. Then state how you would find the boiler steam flow for a required net power.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o2",
+    "ug.mce-thermofluid-applications.power-plant-analysis.steam-plant.o3"
+   ],
+   "markingGuide": [
+    "Open heater mixes extracted steam (fraction y) with feed water (fraction 1 - y) to give saturated liquid",
+    "Energy balance: y h_ext + (1 - y) h_p1 = h_f so y = (h_f - h_p1)/(h_ext - h_p1)",
+    "Less steam flows through the later turbine stages and condenser, so less heat is rejected",
+    "Feed enters the boiler hotter, so the heat added per kg is smaller and mean temperature of heat addition rises, raising efficiency",
+    "Net work per kg of boiler steam: turbine work sections weighted by flow fractions minus pump works",
+    "Boiler flow = P_net/w_net, with w_net per kg of boiler steam"
+   ],
+   "explanation": "The extraction fraction follows from conservation of energy across the mixing heater. Because the feed is preheated by steam that has already done some work, the boiler heat input falls by more than the work output does, so the efficiency rises. The boiler flow is the net power divided by the net work per kg of boiler steam.",
+   "board": "internal"
+  }
+ ]
+}

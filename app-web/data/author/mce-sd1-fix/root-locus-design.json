@@ -1,0 +1,391 @@
+{
+ "lessonTitle": "Design Using Root Locus: Gain, Damping and Compensation",
+ "estimatedMinutes": 34,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A telescope mount must slew to a new star and settle without ringing, and the only adjustable parameter is the controller gain. Turn it down and the mount crawls; turn it up and the pointing rings and finally goes unstable. The root locus plots every possible closed-loop pole position as the gain sweeps from zero upward, so the designer can pick the gain that gives the desired damping and see what happens if the controller is given an extra pole or zero."
+  },
+  {
+   "type": "text",
+   "markdown": "For a unity-feedback loop with loop transfer function $KL(s)=K\\,N(s)/D(s)$, the closed-loop poles are the roots of $1+KL(s)=0$. The **root locus** is the set of those roots as $K$ varies from $0$ to $\\infty$. A point $s$ is on the locus if two conditions hold: the **angle condition** $\\angle L(s)=\\pm180^\\circ(2k+1)$ and the **magnitude condition** $K=1/|L(s)|$. The angle condition selects the path; the magnitude condition then gives the gain at any chosen point on it."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Damping-ratio line",
+   "text": "A closed-loop pole $s=-\\sigma+j\\omega_d$ with natural frequency $\\omega_n=|s|$ and damping ratio $\\zeta$ lies on a radial line at an angle $\\theta=\\cos^{-1}\\zeta$ measured from the negative real axis. For example $\\zeta=0.5$ gives $60^\\circ$ and $\\zeta=0.707$ gives $45^\\circ$. Percent overshoot depends only on $\\zeta$ (about $16\\%$ for $\\zeta=0.5$, $9.5\\%$ for $0.6$, $4.3\\%$ for $0.707$)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing gain for a desired $\\zeta$.** Draw the radial line at angle $\\theta=\\cos^{-1}\\zeta$. The point where it intersects the locus is the desired pole position. Apply the magnitude condition there: $K=1/|L(s)|$, which is the product of the distances from the point to every open-loop pole divided by the product of the distances to every open-loop zero (times the leading coefficient). The other closed-loop poles are then found from the characteristic polynomial and should be checked for dominance."
+  },
+  {
+   "type": "worked_example",
+   "title": "Gain for a damping ratio of 0.6",
+   "prompt": "A telescope axis has $L(s)=\\dfrac{1}{s(s+4)}$ in a unity-feedback loop with gain $K$. Find $K$ that gives $\\zeta=0.6$, the pole locations, and the overshoot.",
+   "steps": [
+    {
+     "text": "Closed-loop polynomial: $s^2+4s+K=0$ so $2\\zeta\\omega_n=4$ and $\\omega_n^2=K$. The locus is a vertical line at $\\sigma=-2$ once the poles are complex.",
+     "latex": "s^2+4s+K=0"
+    },
+    {
+     "text": "With $\\zeta=0.6$: $\\omega_n=2/\\zeta=3.333$ rad/s, so $K=\\omega_n^2=11.11$.",
+     "latex": "\\omega_n=\\frac{2}{0.6}=3.333,\\quad K=11.11"
+    },
+    {
+     "text": "Poles: $s=-2\\pm j\\sqrt{K-4}=-2\\pm j2.667$. Check by the magnitude condition: $|s||s+4|=3.333\\times3.333=11.11$ ($|{-2+2.667j}|=3.333$ and $|2+2.667j|=3.333$).",
+     "latex": "s=-2\\pm2.667j"
+    },
+    {
+     "text": "Overshoot: $\\exp(-\\pi\\times0.6/0.8)=e^{-2.356}=9.5\\%$.",
+     "latex": "\\text{OS}=9.5\\%"
+    }
+   ],
+   "answer": "$K=11.1$, poles $-2\\pm2.67j$, $\\omega_n=3.33$ rad/s, $\\zeta=0.6$, overshoot $9.5\\%$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Effect of adding poles and zeros.** The locus branches start at the open-loop poles ($K=0$) and end at the open-loop zeros or at infinity along asymptotes. The sum of the closed-loop poles is fixed when $n-m\\ge2$ (here $n$ and $m$ are the number of poles and zeros), so if one branch goes left, another goes right. An added **zero** in the left half-plane attracts branches to the left and reduces the number of asymptotes; this normally improves damping and stability. An added **pole** repels branches to the right, adds an asymptote and normally lowers the stability range. A compensator may be chosen deliberately to reshape the locus."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Modification to $L(s)$",
+    "Asymptotes ($n-m$)",
+    "Effect on locus",
+    "Typical result"
+   ],
+   "rows": [
+    [
+     "Add a left-half-plane zero",
+     "One fewer",
+     "Branches bend toward the zero, to the left",
+     "Higher damping and bandwidth, larger stability range"
+    ],
+    [
+     "Add a left-half-plane pole",
+     "One more",
+     "Branches bend to the right",
+     "Lower damping, smaller maximum stable gain, slower"
+    ],
+    [
+     "Add a pole at the origin (integrator)",
+     "One more",
+     "Pushes the locus toward the imaginary axis",
+     "Zero steady-state error but less stability"
+    ],
+    [
+     "Add a pole and a nearby zero (lag compensator)",
+     "Unchanged",
+     "Small local change",
+     "Raises DC gain with little change to dynamics"
+    ]
+   ],
+   "caption": "Reshaping the root locus"
+  },
+  {
+   "type": "worked_example",
+   "title": "Pole versus zero",
+   "prompt": "Start with $L(s)=\\dfrac{1}{s(s+2)}$. Compare adding a pole at $s=-4$ with adding a zero at $s=-4$.",
+   "steps": [
+    {
+     "text": "Added pole: $L=1/[s(s+2)(s+4)]$, three asymptotes at $\\pm60^\\circ$ and $180^\\circ$ with centroid $(0-2-4)/3=-2$. The characteristic equation is $s^3+6s^2+8s+K=0$, and the Routh condition $6\\times8>K$ gives stability only for $0<K<48$.",
+     "latex": "s^3+6s^2+8s+K=0\\ \\Rightarrow\\ K<48"
+    },
+    {
+     "text": "Crossing frequency at $K=48$: $6s^2+48=0$ gives $s=\\pm j\\sqrt8=\\pm2.83j$.",
+     "latex": "\\omega=2.83\\ \\text{rad/s}"
+    },
+    {
+     "text": "Added zero: $L=(s+4)/[s(s+2)]$ has $n-m=1$ so one asymptote on the negative real axis. The characteristic equation is $s^2+(2+K)s+4K=0$ with all coefficients positive for every $K>0$, so the loop is stable for all gains.",
+     "latex": "s^2+(2+K)s+4K=0"
+    }
+   ],
+   "answer": "The added pole creates an instability limit at $K=48$ (crossing at $\\pm2.83j$ rad/s); the added zero removes the limit entirely, so the closed loop is stable for all $K>0$."
+  },
+  {
+   "type": "text",
+   "markdown": "**Imaginary-axis crossing.** The gain at which the locus crosses into the right half-plane is the largest stable gain. It is found by the Routh array (the gain that makes the $s^1$ row zero) or by substituting $s=j\\omega$ into the characteristic equation and equating real and imaginary parts. For $L(s)=1/[(s+1)(s+3)(s+5)]$ we have $s^3+9s^2+23s+15+K=0$. The Routh condition $9\\times23>15+K$ gives $K<192$. At $K=192$ the auxiliary equation $9s^2+207=0$ gives $\\omega=\\sqrt{23}=4.796$ rad/s."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Write the characteristic equation $1+KL(s)=0$ and mark the open-loop poles and zeros.",
+    "Sketch the locus (real-axis segments, asymptotes, breakaway points) or use the rules.",
+    "For a target $\\zeta$, draw the line at $\\cos^{-1}\\zeta$ and read the intersection with the locus.",
+    "Find the gain from the magnitude condition at that point and check the remaining poles.",
+    "Find the imaginary-axis crossing by the Routh array to know the maximum stable gain.",
+    "Add a zero or pole (compensator) only if no gain on the locus meets the specification."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Do not read the gain from the picture; compute it from the magnitude condition. A gain that puts one pole pair at the desired $\\zeta$ may leave a third pole close to the origin that dominates the response. The statement that a zero 'improves' the locus assumes it lies in the left half-plane; a right-half-plane zero pulls the locus the wrong way."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Gain is a design knob, compensation is a design tool",
+   "text": "If no point on the locus meets the damping and speed specification, no gain will help and the locus itself must be reshaped by adding poles and zeros."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The magnitude condition $K=1/|L(s)|$ gives the gain at a chosen closed-loop pole; the damping line $\\theta=\\cos^{-1}\\zeta$ chooses the point.",
+    "Adding a left-half-plane zero pulls the locus left and increases stability; adding a pole pushes it right and reduces the maximum stable gain.",
+    "The gain at the imaginary-axis crossing is the Routh limit, and the crossing frequency comes from the auxiliary equation.",
+    "Always check that the non-dominant poles do not dominate the response."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A position loop has $L(s)=\\dfrac{1}{s(s+6)}$ in unity feedback with gain $K$. Find $K$ (dimensionless) so that the closed-loop poles have damping ratio $\\zeta=0.5$.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o1"
+   ],
+   "correctValue": 36,
+   "tolerance": 0.3,
+   "unit": "dimensionless",
+   "explanation": "The characteristic equation is $s^2+6s+K=0$, so $2\\zeta\\omega_n=6$ and $K=\\omega_n^2$. With $\\zeta=0.5$ we get $\\omega_n=6$ rad/s and $K=36$, giving poles $-3\\pm5.196j$. The poles lie on the $60^\\circ$ line from the negative real axis.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "On the s-plane, a designer wants closed-loop poles with damping ratio $\\zeta=0.5$. Which description of the constant-$\\zeta$ line is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A radial line from the origin at $60^\\circ$ to the negative real axis"
+    },
+    {
+     "id": "b",
+     "text": "A radial line from the origin at $30^\\circ$ to the negative real axis"
+    },
+    {
+     "id": "c",
+     "text": "A vertical line at $\\sigma=-0.5$"
+    },
+    {
+     "id": "d",
+     "text": "A circle of radius 0.5 about the origin"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A radial line from the origin at $60^\\circ$ to the negative real axis",
+   "distractorRationale": {
+    "a": "Correct: $\\theta=\\cos^{-1}\\zeta=\\cos^{-1}0.5=60^\\circ$ from the negative real axis.",
+    "b": "$30^\\circ$ corresponds to $\\zeta=\\cos30^\\circ=0.866$, not 0.5.",
+    "c": "A vertical line is a line of constant decay rate $\\sigma$, not constant damping ratio.",
+    "d": "A circle about the origin is a line of constant natural frequency $\\omega_n$."
+   },
+   "explanation": "For a pole $s=-\\zeta\\omega_n+j\\omega_n\\sqrt{1-\\zeta^2}$ the angle from the negative real axis satisfies $\\cos\\theta=\\zeta$. Constant $\\zeta$ lines are radial; vertical lines are constant $\\sigma$ (settling time), and circles are constant $\\omega_n$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A loop $L(s)=\\dfrac{1}{s(s+6)}$ has the closed-loop pole pair $-3\\pm4j$ (so $\\omega_n=5$ rad/s and $\\zeta=0.6$) on its locus. What gain $K$ places the poles there?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$25$"
+    },
+    {
+     "id": "b",
+     "text": "$5$"
+    },
+    {
+     "id": "c",
+     "text": "$36$"
+    },
+    {
+     "id": "d",
+     "text": "$20$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$25$",
+   "distractorRationale": {
+    "a": "Correct: $K=|s||s+6|=5\\times5=25$ at $s=-3+4j$ ($|s|=5$ and $|s+6|=|3+4j|=5$).",
+    "b": "This is $\\omega_n$, not $\\omega_n^2$.",
+    "c": "This uses the pole separation $6^2$, which would give poles at $-3\\pm5.2j$ with $\\zeta=0.5$.",
+    "d": "This multiplies the real and imaginary parts, $5\\times4$, which is not a distance product."
+   },
+   "explanation": "By the magnitude condition $K=1/|L|=|s|\\,|s+6|$ evaluated at the pole. Each distance is $\\sqrt{3^2+4^2}=5$, so $K=25=\\omega_n^2$, as expected for the characteristic equation $s^2+6s+25=0$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A unity-feedback loop has $L(s)=\\dfrac{1}{(s+2)(s+4)(s+6)}$ and gain $K$. Using the Routh criterion, find the maximum gain $K$ (dimensionless) for stability.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o3"
+   ],
+   "correctValue": 480,
+   "tolerance": 2,
+   "unit": "dimensionless",
+   "explanation": "The characteristic polynomial is $(s+2)(s+4)(s+6)+K=s^3+12s^2+44s+(48+K)$. The Routh condition $12\\times44>48+K$ gives $K<480$. At $K=480$ the locus crosses the imaginary axis.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A servo has $L(s)=\\dfrac{1}{s(s+1)(s+5)}$ with unity feedback and gain $K$. At the maximum stable gain the loop oscillates continuously. Find the oscillation frequency in rad/s.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o3"
+   ],
+   "correctValue": 2.236,
+   "tolerance": 0.02,
+   "unit": "rad/s",
+   "explanation": "The characteristic equation is $s^3+6s^2+5s+K=0$ and the Routh condition gives $K<30$. At $K=30$ the auxiliary equation is $6s^2+30=0$, so $s=\\pm j\\sqrt5$ and $\\omega=2.236$ rad/s. Checking: $s^3+6s^2+5s+30=(s+6)(s^2+5)$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A loop has open-loop poles at $0$, $-1$ and $-5$. A compensator adds a zero at $s=-2$. Which statement about the new root locus is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Two asymptotes at $\\pm90^\\circ$ with centroid $-2$; the closed loop is stable for all $K>0$"
+    },
+    {
+     "id": "b",
+     "text": "Three asymptotes at $\\pm60^\\circ$ and $180^\\circ$; the maximum stable gain is lowered"
+    },
+    {
+     "id": "c",
+     "text": "One asymptote on the negative real axis; the locus is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "The zero moves the poles to the right half-plane"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Two asymptotes at $\\pm90^\\circ$ with centroid $-2$; the closed loop is stable for all $K>0$",
+   "distractorRationale": {
+    "a": "Correct: $n-m=2$ gives asymptotes at $\\pm90^\\circ$ and centroid $(-6+2)/2=-2$; $s^3+6s^2+(5+K)s+2K$ stays stable for all $K>0$.",
+    "b": "That is the asymptote pattern of the original three-pole loop, before the zero.",
+    "c": "One asymptote would mean one more zero; here $n-m=3-1=2$.",
+    "d": "A left-half-plane zero attracts branches to the left, not right."
+   },
+   "explanation": "The added zero reduces the pole excess from 3 to 2, so there are two asymptotes at $\\pm90^\\circ$ with centroid $(\\sum p-\\sum z)/(n-m)=(-6-(-2))/2=-2$. The Routh condition $6(5+K)>2K$ holds for every $K>0$, so no imaginary-axis crossing occurs.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer adds an extra real pole in the left half-plane to a loop transfer function (for example by adding a sensor lag). What is the usual effect on the root locus?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The branches bend toward the right half-plane, reducing the maximum stable gain and the damping"
+    },
+    {
+     "id": "b",
+     "text": "The branches bend to the left, increasing the stable range"
+    },
+    {
+     "id": "c",
+     "text": "The locus is unchanged because only the zeros affect it"
+    },
+    {
+     "id": "d",
+     "text": "The system order is unchanged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The branches bend toward the right half-plane, reducing the maximum stable gain and the damping",
+   "distractorRationale": {
+    "a": "Correct: an extra pole repels the locus to the right and adds an asymptote, which typically lowers stability.",
+    "b": "That is the effect of adding a zero.",
+    "c": "Poles define where the branches start, so they strongly shape the locus.",
+    "d": "An extra pole raises the order of the closed-loop polynomial by one."
+   },
+   "explanation": "Extra open-loop poles increase $n-m$, which adds an asymptote and tilts the asymptote angles toward the right half-plane (for example from $\\pm90^\\circ$ to $\\pm60^\\circ$ and $180^\\circ$), so the branches curve toward the imaginary axis sooner. The centroid also shifts toward the added pole at $p$, by $(p-\\sigma_a)/(n-m+1)$, so its direction depends on where the pole lies. This is why neglected sensor and actuator lags often limit the usable gain.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Adding a zero in the left half-plane to the open-loop transfer function tends to pull the root locus to the left and improve the damping of the closed loop.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A left-half-plane zero attracts branches towards it and reduces the number of asymptotes, which makes the closed-loop poles more stable and better damped. This is the principle behind the derivative (lead) action in PD and lead compensators.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how to use the root locus to choose the gain that gives a desired damping ratio, including the role of the angle and magnitude conditions, and mention what you must check afterwards.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o1"
+   ],
+   "markingGuide": [
+    "Draw the radial line at $\\cos^{-1}\\zeta$ from the negative real axis",
+    "Find where it meets the locus: the desired closed-loop pole position",
+    "Apply the magnitude condition $K=1/|L(s)|$ (product of distances to poles over zeros)",
+    "Find the remaining closed-loop poles from the characteristic polynomial",
+    "Check dominance of the chosen pair and the resulting overshoot and settling time"
+   ],
+   "explanation": "The locus gives the possible pole positions, and the magnitude condition converts the chosen point to a gain. Checking the other poles is essential, since a slow real pole can dominate.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A loop $L(s)=\\dfrac{1}{s(s+2)}$ is compared with the same loop plus an extra pole at $s=-4$ and with the same loop plus a zero at $s=-4$. Explain the difference in the locus and the maximum stable gain, and say which modification you would choose to raise the gain for faster response.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o2",
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.o3"
+   ],
+   "markingGuide": [
+    "Extra pole: three asymptotes at $\\pm60^\\circ$ and $180^\\circ$ with centroid $-2$ so branches go into the right half-plane",
+    "Routh: $s^3+6s^2+8s+K$ gives $K<48$ and crossing at $\\pm2.83j$",
+    "Extra zero: one asymptote on the negative real axis; $s^2+(2+K)s+4K$ is stable for all $K>0$",
+    "States zeros pull and poles push the locus",
+    "Chooses the zero (lead-like action) to allow higher gain and faster response, noting noise sensitivity"
+   ],
+   "explanation": "The comparison illustrates how compensation reshapes the locus. The zero also increases the effective gain at high frequency, which can amplify noise, so the choice involves a trade-off.",
+   "board": "internal"
+  }
+ ]
+}

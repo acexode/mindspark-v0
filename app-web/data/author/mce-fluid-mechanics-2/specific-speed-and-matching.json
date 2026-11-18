@@ -1,0 +1,404 @@
+{
+ "lessonTitle": "Specific Speed, Affinity Laws and System Matching",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A plant engineer must choose a pump for a cooling-water duty of 0.060 m^3/s against 35 m of head: a tall, narrow multistage unit, a conventional volute pump or an axial-flow machine like a ship's propeller? She does not guess. One dimensionless number, the specific speed, points to the right family, and the intersection of two curves says how much water the chosen pump will really deliver."
+  },
+  {
+   "type": "text",
+   "markdown": "Pumps come in many shapes because the best geometry depends on the duty: high head with small flow calls for a narrow radial impeller with a large diameter ratio, whereas large flow at small head calls for a wide, nearly axial impeller. To compare all pumps on a common basis we form a dimensionless group from the speed $N$, flow rate $Q$ and head $H$ at the best efficiency point, eliminating the size. This is the **specific speed**."
+  },
+  {
+   "type": "math",
+   "latex": "N_s=\\frac{\\omega\\,Q^{1/2}}{(gH)^{3/4}},\\qquad \\omega=\\frac{2\\pi N}{60}",
+   "caption": "Dimensionless specific speed (omega in rad/s, Q in m^3/s, H in m, g = 9.81 m/s^2), evaluated at the best-efficiency point"
+  },
+  {
+   "type": "worked_example",
+   "title": "Specific speed of a pump duty",
+   "prompt": "A pump is required to deliver Q = 0.060 m^3/s against a head H = 35.0 m at a speed of 1450 rev/min. Calculate its dimensionless specific speed and say what type of impeller it suggests.",
+   "steps": [
+    {
+     "text": "Convert the rotational speed from rev/min to rad/s.",
+     "latex": "\\omega=\\frac{2\\pi(1450)}{60}=151.84\\ \\text{rad/s}"
+    },
+    {
+     "text": "Compute gH and its three-quarter power.",
+     "latex": "gH=9.81\\times35.0=343.4\\ \\text{m}^2/\\text{s}^2,\\qquad (gH)^{3/4}=79.76"
+    },
+    {
+     "text": "Insert into the definition with sqrt(Q) = sqrt(0.060) = 0.2449.",
+     "latex": "N_s=\\frac{151.84\\times0.2449}{79.76}=0.466"
+    },
+    {
+     "text": "A value of Ns near 0.5 to 1.0 lies within the usual radial-flow (centrifugal, volute) range, so a conventional centrifugal pump is appropriate.",
+     "latex": "0.2\\lesssim N_s\\lesssim1.2\\ \\Rightarrow\\ \\text{radial-flow impeller}"
+    }
+   ],
+   "answer": "Ns = 0.466 (dimensionless), which suggests a radial-flow centrifugal pump."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Pump type",
+    "Typical $N_s$ (dimensionless, rad basis)",
+    "Duty",
+    "Impeller shape"
+   ],
+   "rows": [
+    [
+     "Radial (centrifugal)",
+     "about 0.2 to 1.2",
+     "High head, low to moderate flow",
+     "Large diameter ratio $D_2/D_1$, narrow"
+    ],
+    [
+     "Mixed flow",
+     "about 1.2 to 2.5",
+     "Medium head, medium flow",
+     "Intermediate, angled passages"
+    ],
+    [
+     "Axial (propeller)",
+     "above about 2.5",
+     "Low head, very large flow",
+     "Propeller blades, diameter ratio near 1"
+    ]
+   ],
+   "caption": "Typical specific speed ranges (representative values only; exact limits vary between sources)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Affinity laws.** For geometrically similar pumps, or for one pump run at different speeds, with similar flow patterns (same dimensionless operating point) and negligible changes in efficiency and Reynolds number, the flow, head and power scale as follows. These follow from dimensional analysis, because the dimensionless groups $Q/(ND^3)$, $gH/(N^2D^2)$ and $P/(\\rho N^3D^5)$ are held constant."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{Q_2}{Q_1}=\\frac{N_2}{N_1}\\left(\\frac{D_2}{D_1}\\right)^3,\\qquad \\frac{H_2}{H_1}=\\left(\\frac{N_2}{N_1}\\right)^2\\left(\\frac{D_2}{D_1}\\right)^2,\\qquad \\frac{P_2}{P_1}=\\left(\\frac{N_2}{N_1}\\right)^3\\left(\\frac{D_2}{D_1}\\right)^5",
+   "caption": "Affinity laws (same fluid); for speed change alone set D2 = D1"
+  },
+  {
+   "type": "worked_example",
+   "title": "Speeding up a pump",
+   "prompt": "The pump above, whose best-efficiency duty is 0.060 m^3/s at 35.0 m head and 80 per cent efficiency, is speeded up from 1450 to 1750 rev/min. Predict the new flow, head and shaft power. Use water of density 998 kg/m^3.",
+   "steps": [
+    {
+     "text": "Form the speed ratio of the new speed to the old speed.",
+     "latex": "\\frac{N_2}{N_1}=\\frac{1750}{1450}=1.2069"
+    },
+    {
+     "text": "Flow scales with speed, head with its square.",
+     "latex": "Q_2=1.2069(0.060)=0.0724\\ \\text{m}^3/\\text{s},\\qquad H_2=1.2069^2(35.0)=51.0\\ \\text{m}"
+    },
+    {
+     "text": "Original shaft power = rho g Q H/efficiency = 998 x 9.81 x 0.060 x 35.0/0.80 = 25.7 kW; power scales with the cube of the speed ratio.",
+     "latex": "P_2=1.2069^3\\times25.7\\ \\text{kW}=45.2\\ \\text{kW}"
+    }
+   ],
+   "answer": "Q = 0.0724 m^3/s, H = 51.0 m, P = 45.2 kW (up from 25.7 kW)."
+  },
+  {
+   "type": "text",
+   "markdown": "**System matching.** A pump delivers whatever flow makes its head equal to the head the pipe system requires. The **system curve** gives the head needed to move flow $Q$ through the system: a static (elevation plus pressure) head plus the friction and minor losses, which grow as $Q^2$ for turbulent flow, $H_s=H_{static}+kQ^2$. The pump's own head-flow characteristic $H_p(Q)$ typically falls as $Q$ increases. The **operating point** is the intersection, where $H_p(Q)=H_s(Q)$. Closing a throttle valve increases $k$, steepening the system curve and moving the operating point to lower flow and higher head."
+  },
+  {
+   "type": "worked_example",
+   "title": "Operating point from a pump and a system curve",
+   "prompt": "A pump has the characteristic H_p = 42.0 - 1500 Q^2 and a pipe system needs H_s = 12.0 + 4000 Q^2, where H is in metres and Q in m^3/s. Find the operating flow rate and head.",
+   "steps": [
+    {
+     "text": "At the operating point the pump head equals the system head.",
+     "latex": "42.0-1500Q^2=12.0+4000Q^2"
+    },
+    {
+     "text": "Collect terms: 30.0 = 5500 Q^2, so Q^2 = 5.4545e-3 and the flow follows.",
+     "latex": "Q=\\sqrt{\\frac{30.0}{5500}}=0.0739\\ \\text{m}^3/\\text{s}"
+    },
+    {
+     "text": "Head from either curve: using the system curve, and checking with the pump curve.",
+     "latex": "H=12.0+4000(0.0739)^2=33.82\\ \\text{m}"
+    }
+   ],
+   "answer": "Operating point: Q = 0.0739 m^3/s (73.9 L/s) at H = 33.82 m."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Use the best-efficiency duty to compute $N_s=\\omega\\sqrt Q/(gH)^{3/4}$ and select the pump family.",
+    "Use the affinity laws for a change of speed (and diameter): $Q\\propto N$, $H\\propto N^2$, $P\\propto N^3$.",
+    "Write the system curve $H_s=H_{static}+kQ^2$ from the pipe losses.",
+    "Solve $H_p(Q)=H_s(Q)$ for the operating point, then check that it lies near the best efficiency flow.",
+    "Compute the shaft power from $P=\\rho gQH/\\eta$."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Speed control saves energy",
+   "text": "Since power varies as the cube of speed, a modest reduction in pump speed to meet a lower flow demand saves far more energy than throttling a valve. Reducing speed to 80 per cent cuts the flow to 80 per cent and the power to about 51 per cent."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Limits of the affinity laws",
+   "text": "The affinity laws assume dynamic similarity: same efficiency, no cavitation and no big change in Reynolds number. They are reliable for small speed changes, but poor when the system has a large static head, since the scaled pump curve then no longer meets the same system point. The specific speed formula must use consistent SI units (rad/s, m^3/s, m); the traditional US-unit version (rev/min, gal/min, ft) gives numbers in the thousands, so quote which convention you use."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The specific speed $N_s=\\omega\\sqrt Q/(gH)^{3/4}$ at the best efficiency point identifies the pump family: radial for low $N_s$, mixed flow in the middle, axial for high $N_s$.",
+    "The affinity laws for a speed change are $Q\\propto N$, $H\\propto N^2$, $P\\propto N^3$.",
+    "The operating point is where the pump characteristic meets the system curve $H_s=H_{static}+kQ^2$.",
+    "Throttling steepens the system curve, reducing flow but wasting energy; reducing speed is more efficient."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A pump designed for a very large flow rate at a very small head has which type of specific speed and impeller?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero specific speed, positive displacement"
+    },
+    {
+     "id": "b",
+     "text": "Intermediate specific speed, always a volute pump"
+    },
+    {
+     "id": "c",
+     "text": "High specific speed, axial (propeller) type"
+    },
+    {
+     "id": "d",
+     "text": "Low specific speed, narrow radial type"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "High specific speed, axial (propeller) type",
+   "distractorRationale": {
+    "a": "Specific speed is always positive for a rotodynamic pump and positive displacement pumps are not classified this way.",
+    "b": "Intermediate Ns is for mixed-flow pumps, not large flow with very low head.",
+    "c": "Correct: Ns increases with sqrt(Q) and decreases with H, so large flow and low head give high Ns.",
+    "d": "Low Ns corresponds to high head and low flow."
+   },
+   "explanation": "Since $N_s=\\omega\\sqrt Q/(gH)^{3/4}$, a large $Q$ and a small $H$ give a large $N_s$. High specific speeds correspond to axial-flow impellers with a diameter ratio near 1.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A multistage pump is rated at its best efficiency point at Q = 0.015 m^3/s, H = 60.0 m and N = 2900 rev/min. Use g = 9.81 m/s^2 and find the dimensionless specific speed N_s = omega sqrt(Q)/(g H)^(3/4), with omega in rad/s.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o1"
+   ],
+   "correctValue": 0.311248,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "omega = 2 pi (2900)/60 = 303.69 rad/s, sqrt(Q) = 0.1225 and (g H)^(3/4) = (588.6)^0.75 = 119.50. Hence Ns = 303.69 x 0.1225/119.50 = 0.311, a radial pump.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A pump absorbs 22.0 kW at 1450 rev/min. Assuming the affinity laws apply and the same fluid and pump are used, find the shaft power in kW if the speed is reduced to 1160 rev/min.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o2"
+   ],
+   "correctValue": 11.264,
+   "tolerance": 0.05,
+   "unit": "kW",
+   "explanation": "The speed ratio is 1160/1450 = 0.8. Power scales with the cube of the speed ratio, so P = 22.0 x 0.8^3 = 11.26 kW.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A pump develops a head of 28.0 m at its best efficiency flow when running at 960 rev/min. Assuming the affinity laws apply, find the head in metres at the corresponding flow when the speed is increased to 1200 rev/min.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o2"
+   ],
+   "correctValue": 43.75,
+   "tolerance": 0.05,
+   "unit": "m",
+   "explanation": "Head scales with the square of the speed: H2 = 28.0 x (1200/960)^2 = 28.0 x 1.5625 = 43.75 m.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The speed of a pump is doubled while it handles the same fluid at the corresponding duty point. By what factor does the power consumption change according to the affinity laws?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "8"
+    },
+    {
+     "id": "b",
+     "text": "2"
+    },
+    {
+     "id": "c",
+     "text": "16"
+    },
+    {
+     "id": "d",
+     "text": "4"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "8",
+   "distractorRationale": {
+    "a": "Correct: P is proportional to N^3.",
+    "b": "This is the factor for flow, not power.",
+    "c": "This would need P proportional to N^4.",
+    "d": "This is the factor for head (N^2), not power."
+   },
+   "explanation": "Flow doubles and head quadruples, so the hydraulic power $\\rho gQH$ rises by $2\\times4=8$. This agrees with $P\\propto N^3$.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "The operating point of a pump in a piping system is found where the pump head-flow curve intersects the system curve.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "At the operating point the head supplied by the pump equals the head that the system requires at that flow, so the two curves cross. At any other flow there would be an energy imbalance, and the flow would accelerate or decelerate until they match.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A throttling valve downstream of a centrifugal pump running at constant speed is partly closed. What happens to the system curve and the operating point?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The pump curve moves downwards, leaving the system curve unchanged"
+    },
+    {
+     "id": "b",
+     "text": "The system curve steepens and the operating point moves to lower flow and higher pump head"
+    },
+    {
+     "id": "c",
+     "text": "The operating point does not change"
+    },
+    {
+     "id": "d",
+     "text": "The system curve flattens and the operating point moves to higher flow"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The system curve steepens and the operating point moves to lower flow and higher pump head",
+   "distractorRationale": {
+    "a": "The pump curve is a property of the pump and speed; it does not change with a valve position.",
+    "b": "Correct: more loss coefficient k gives a steeper H_s = H_static + kQ^2.",
+    "c": "The operating point must move because the system curve has changed.",
+    "d": "Closing a valve raises k, which steepens the system curve."
+   },
+   "explanation": "A partly closed valve raises the loss coefficient $k$, so the system curve $H_s=H_{static}+kQ^2$ is steeper. It intersects the (falling) pump curve at a lower flow and a higher head.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A pump has a small specific speed. Which statement about its duty and impeller is correct?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It delivers high head at high flow, with a large axial pump"
+    },
+    {
+     "id": "b",
+     "text": "It delivers a low head at a large flow rate, with a propeller-type impeller"
+    },
+    {
+     "id": "c",
+     "text": "It is a pump that cannot be classified"
+    },
+    {
+     "id": "d",
+     "text": "It delivers a high head at a low flow rate, with a radial impeller of large diameter ratio"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It delivers a high head at a low flow rate, with a radial impeller of large diameter ratio",
+   "distractorRationale": {
+    "a": "High head and high flow together give an intermediate N_s unless the speed is changed; the question refers to the specific speed being small.",
+    "b": "This describes a high specific speed pump.",
+    "c": "Every rotodynamic pump has a specific speed that places it in a family.",
+    "d": "Correct: small N_s means small sqrt(Q) relative to (gH)^(3/4)."
+   },
+   "explanation": "A small $N_s$ results from a small flow and a large head, for which the best impeller is a narrow, large-diameter radial one with a high diameter ratio.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A pump has the characteristic H_p = 50.0 - 2500 Q^2 and is connected to a system whose head requirement is H_s = 18.0 + 6000 Q^2 (H in m, Q in m^3/s). (a) Find the operating flow rate and head. (b) Calculate the hydraulic power delivered to the water (density 998 kg/m^3). (c) Explain how the operating point would change if a valve in the system were partially closed.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o3"
+   ],
+   "markingGuide": [
+    "Sets H_p = H_s: 50.0 - 2500 Q^2 = 18.0 + 6000 Q^2",
+    "Q^2 = 32.0/8500, so Q = 0.0614 m^3/s (61.4 L/s)",
+    "H = 18.0 + 6000 Q^2 = 40.59 m (cross-check with the pump curve)",
+    "Hydraulic power = rho g Q H = 998 x 9.81 x 0.0614 x 40.59 = 24.38 kW",
+    "Closing a valve increases the system loss coefficient, steepening the system curve; operating point moves up the pump curve to lower flow and higher head"
+   ],
+   "explanation": "Equating the two curves gives Q^2 = 32.0/8500, hence Q = 0.0614 m^3/s and H = 40.59 m. The water receives rho g Q H = 24.38 kW; throttling raises k and the operating point moves along the pump curve to a smaller flow.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A mixed-flow pump delivers 0.30 m^3/s against a head of 8.0 m at 730 rev/min at its best efficiency point. (a) Calculate its dimensionless specific speed and say what pump type it indicates. (b) Show, using the dimensionless groups Q/(N D^3) and gH/(N D)^2, why head scales as the square of speed for the same pump.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o1",
+    "ug.mce-fluid-mechanics-2.turbomachinery-intro.specific-speed-and-matching.o2"
+   ],
+   "markingGuide": [
+    "omega = 2 pi 730/60 = 76.45 rad/s",
+    "(gH)^(3/4) = (78.48)^0.75 = 26.37 and sqrt(Q) = 0.5477",
+    "Ns = 1.588: above the radial range, indicating a mixed-flow impeller",
+    "Same pump: D is constant and operating at similar flow pattern gives constant gH/(N^2 D^2)",
+    "Therefore H is proportional to N^2 and, from Q/(N D^3) constant, Q is proportional to N"
+   ],
+   "explanation": "The specific speed is 1.588, which lies in the mixed-flow range. For the same pump at dynamically similar conditions the group $gH/(N^2D^2)$ is constant, so $H\\propto N^2$ and, similarly, $Q\\propto N$.",
+   "board": "internal"
+  }
+ ]
+}

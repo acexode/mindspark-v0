@@ -1,0 +1,400 @@
+{
+ "lessonTitle": "Mechanical and Electrical Models: Mass-Spring-Damper, RLC and DC Motor",
+ "estimatedMinutes": 34,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The driver's seat on a tractor bounces over a rutted field at about 2 Hz, and a manufacturer wants to know whether a stiffer spring or a bigger damper will do more to protect the driver. Before anyone builds a prototype, the seat is reduced to a mass, a spring and a damper, and an equation of motion is written that can be solved or simulated in seconds. The same equation describes an electrical filter and the speed of a motor."
+  },
+  {
+   "type": "text",
+   "markdown": "**Modelling** means choosing the dominant physics, writing the governing laws, and arriving at a differential equation between a chosen input and output. We keep to **lumped, linear** models: components are idealised as masses, springs, dampers, resistors, inductors and capacitors, with parameters constant and small deviations from an equilibrium. SI units are used throughout."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Ideal mechanical elements",
+   "text": "A **mass** $m$ (kg) obeys $f=m\\ddot x$. A linear **spring** of stiffness $k$ (N/m) exerts a restoring force $kx$ in proportion to its extension. A viscous **damper** of coefficient $c$ (N s/m) exerts a force $c\\dot x$ opposing relative velocity. Springs store energy; dampers dissipate it; masses store kinetic energy."
+  },
+  {
+   "type": "text",
+   "markdown": "**Newton's second law with a free-body diagram.** Choose a positive direction for the displacement $x$ of the mass (measured from the equilibrium position, where gravity is balanced by the static spring force). Draw the forces acting on the mass: the applied force $f(t)$, the spring force $-kx$ and the damper force $-c\\dot x$. Newton's law $m\\ddot x=\\sum F$ gives the equation of motion. For a vertical arrangement the gravity force $mg$ and the static spring force cancel when $x$ is measured from the static equilibrium."
+  },
+  {
+   "type": "math",
+   "latex": "m\\ddot x+c\\dot x+kx=f(t),\\qquad \\omega_n=\\sqrt{\\frac{k}{m}},\\quad \\zeta=\\frac{c}{2\\sqrt{km}}",
+   "caption": "Mass-spring-damper: natural frequency (rad/s) and damping ratio."
+  },
+  {
+   "type": "worked_example",
+   "title": "Equation of motion of a seat",
+   "prompt": "A seat and driver of total mass $m=300$ kg rest on a spring of stiffness $k=45\\,000$ N/m with a damper $c=3000$ N s/m. Write the equation of motion for the displacement from static equilibrium under a road force $f$ and find the static deflection, $\\omega_n$ and $\\zeta$. Take $g=9.81$ m/s$^2$.",
+   "steps": [
+    {
+     "text": "Free-body diagram: positive $x$ upward from static equilibrium, forces $f$, $-kx$, $-c\\dot x$. Gravity cancels against the static spring force.",
+     "latex": "300\\ddot x+3000\\dot x+45000x=f(t)"
+    },
+    {
+     "text": "Static deflection under the weight: $\\delta=mg/k=300\\times9.81/45000=0.0654$ m (65.4 mm).",
+     "latex": "\\delta=\\frac{mg}{k}=0.0654\\ \\text{m}"
+    },
+    {
+     "text": "Natural frequency: $\\omega_n=\\sqrt{45000/300}=\\sqrt{150}=12.25$ rad/s, which is $12.25/2\\pi=1.95$ Hz.",
+     "latex": "\\omega_n=12.25\\ \\text{rad/s}=1.95\\ \\text{Hz}"
+    },
+    {
+     "text": "Damping ratio: $\\zeta=3000/(2\\sqrt{45000\\times300})=3000/(2\\times3674.2)=0.408$.",
+     "latex": "\\zeta=0.408"
+    }
+   ],
+   "answer": "$300\\ddot x+3000\\dot x+45000x=f$; $\\delta=65.4$ mm, $\\omega_n=12.25$ rad/s (1.95 Hz, close to the 2 Hz road excitation, so resonance is a concern), $\\zeta=0.408$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Electrical analogue.** For a series RLC circuit driven by a source voltage $v(t)$ (V), Kirchhoff's voltage law says the voltage drops across the inductor, resistor and capacitor sum to the source. With $i=\\dot q$ (current in A, charge $q$ in C) we obtain a second-order equation with exactly the same form as the mass-spring-damper, so the same solutions apply. In the force-voltage analogy, inductance plays the role of mass, resistance of damping and the reciprocal of capacitance of stiffness."
+  },
+  {
+   "type": "math",
+   "latex": "L\\ddot q+R\\dot q+\\frac{1}{C}q=v(t),\\qquad \\omega_n=\\frac{1}{\\sqrt{LC}},\\quad \\zeta=\\frac{R}{2}\\sqrt{\\frac{C}{L}}",
+   "caption": "Series RLC (inductance $L$ in H, resistance $R$ in ohm, capacitance $C$ in F)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Mechanical (translational)",
+    "Electrical (series RLC)",
+    "Energy role"
+   ],
+   "rows": [
+    [
+     "Force $f$",
+     "Voltage $v$",
+     "Input effort"
+    ],
+    [
+     "Displacement $x$",
+     "Charge $q$",
+     "State"
+    ],
+    [
+     "Velocity $\\dot x$",
+     "Current $i$",
+     "Flow"
+    ],
+    [
+     "Mass $m$",
+     "Inductance $L$",
+     "Stores kinetic / magnetic energy"
+    ],
+    [
+     "Damping $c$",
+     "Resistance $R$",
+     "Dissipates energy"
+    ],
+    [
+     "Stiffness $k$",
+     "Reciprocal capacitance $1/C$",
+     "Stores potential / electric energy"
+    ]
+   ],
+   "caption": "Force-voltage analogy"
+  },
+  {
+   "type": "worked_example",
+   "title": "An RLC filter and its mechanical twin",
+   "prompt": "A series RLC circuit has $R=20\\ \\Omega$, $L=0.1$ H and $C=100\\ \\mu$F ($1\\times10^{-4}$ F). Write its equation, find $\\omega_n$ and $\\zeta$, and give the equivalent mass-spring-damper parameters.",
+   "steps": [
+    {
+     "text": "Write the equation with $1/C=10\\,000$ F$^{-1}$.",
+     "latex": "0.1\\ddot q+20\\dot q+10000q=v(t)"
+    },
+    {
+     "text": "Natural frequency: $\\omega_n=1/\\sqrt{LC}=1/\\sqrt{1\\times10^{-5}}=316.2$ rad/s.",
+     "latex": "\\omega_n=\\frac{1}{\\sqrt{0.1\\times10^{-4}}}=316.2\\ \\text{rad/s}"
+    },
+    {
+     "text": "Damping ratio: $\\zeta=(R/2)\\sqrt{C/L}=10\\times\\sqrt{10^{-3}}=0.316$.",
+     "latex": "\\zeta=10\\sqrt{0.001}=0.316"
+    },
+    {
+     "text": "Mechanical twin: $m=L=0.1$ kg, $c=R=20$ N s/m, $k=1/C=10\\,000$ N/m. Check: $20/(2\\sqrt{10000\\times0.1})=0.316$.",
+     "latex": "m=0.1,\\ c=20,\\ k=10000"
+    }
+   ],
+   "answer": "$\\omega_n=316$ rad/s, $\\zeta=0.316$ (underdamped), analogue $m=0.1$ kg, $c=20$ N s/m, $k=10^4$ N/m."
+  },
+  {
+   "type": "text",
+   "markdown": "**DC motor.** A permanent-magnet DC motor has an electrical side (armature resistance $R$, inductance $L$, applied voltage $v$, current $i$) and a mechanical side (rotor inertia $J$, viscous friction $b$, angular speed $\\omega$, load torque $T_L$). They are coupled by the **torque constant** $K_t$ (N m/A) and the **back-emf constant** $K_e$ (V s/rad); in SI units $K_t=K_e=K$. The armature circuit law is $v=Ri+L\\,di/dt+K\\omega$, and Newton's law for the rotor is $J\\dot\\omega=Ki-b\\omega-T_L$."
+  },
+  {
+   "type": "math",
+   "latex": "v=Ri+L\\frac{di}{dt}+K\\omega,\\qquad J\\frac{d\\omega}{dt}=Ki-b\\omega-T_L",
+   "caption": "Armature circuit and rotor equations."
+  },
+  {
+   "type": "text",
+   "markdown": "Eliminating the current with $T_L=0$ and neglecting $L$ (the electrical time constant $L/R$ is usually much shorter than the mechanical one) gives a first-order speed model: $\\dfrac{\\Omega(s)}{V(s)}=\\dfrac{K}{JRs+bR+K^2}$. With the numbers $R=2\\ \\Omega$, $K=0.05$ N m/A, $J=5\\times10^{-5}$ kg m$^2$, $b=1\\times10^{-5}$ N m s/rad and $L=0.5$ mH, the DC gain is $0.05/(2\\times10^{-5}+0.0025)=19.8$ rad/s per V, the time constant is $JR/(bR+K^2)=0.0397$ s, and $L/R=0.25$ ms is indeed negligible. A 12 V step gives a no-load speed of $238$ rad/s, about 2270 rpm."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Mixing the force-voltage and force-current analogies gives reversed roles for $C$ and $L$. Forgetting the back-emf term $K\\omega$ in the armature equation makes the motor look like a pure integrator without electrical damping. Using rpm instead of rad/s in $K_e$ introduces a factor $2\\pi/60$. Remember that in the vertical spring problem the static deflection cancels gravity."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Newton's second law on a free-body diagram gives $m\\ddot x+c\\dot x+kx=f$, with $\\omega_n=\\sqrt{k/m}$ and $\\zeta=c/(2\\sqrt{km})$.",
+    "A series RLC circuit obeys $L\\ddot q+R\\dot q+q/C=v$, the analogue with $m\\leftrightarrow L$, $c\\leftrightarrow R$, $k\\leftrightarrow1/C$.",
+    "A DC motor couples $v=Ri+L\\,di/dt+K\\omega$ with $J\\dot\\omega=Ki-b\\omega-T_L$.",
+    "Neglecting armature inductance gives a first-order speed model with $\\tau=JR/(bR+K^2)$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A mass $m$ slides on a frictionless horizontal surface. It is connected to a fixed wall by a spring $k$ and a viscous damper $c$ in parallel, and is pulled by a force $f(t)$ in the positive $x$ direction. Which equation of motion is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$m\\ddot x+c\\dot x+kx=f(t)$"
+    },
+    {
+     "id": "b",
+     "text": "$m\\ddot x-c\\dot x-kx=f(t)$"
+    },
+    {
+     "id": "c",
+     "text": "$m\\ddot x+c\\dot x+kx=0$"
+    },
+    {
+     "id": "d",
+     "text": "$m\\ddot x+c\\dot x=f(t)+kx$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$m\\ddot x+c\\dot x+kx=f(t)$",
+   "distractorRationale": {
+    "a": "Correct: Newton's law $m\\ddot x=f-c\\dot x-kx$ rearranges to this form.",
+    "b": "The spring and damper forces oppose the motion, so they must be on the left with the same sign as $m\\ddot x$.",
+    "c": "This is the free vibration equation; the applied force $f$ was dropped.",
+    "d": "The spring force $kx$ must oppose positive displacement, so it is a restoring force."
+   },
+   "explanation": "The forces on the mass are the applied force $f$, the spring force $-kx$ and the damper force $-c\\dot x$ (both opposing displacement and velocity). Newton's second law then gives $m\\ddot x=f-c\\dot x-kx$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A machine of mass 360 kg is supported vertically on a spring of stiffness $9.0\\times10^{4}$ N/m. Take $g=9.81$ m/s$^2$. Find the static deflection of the spring in mm.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o1"
+   ],
+   "correctValue": 39.2,
+   "tolerance": 0.3,
+   "unit": "mm",
+   "explanation": "At static equilibrium the spring force balances the weight, so $k\\delta=mg$ and $\\delta=360\\times9.81/90000=0.03924$ m, which is 39.2 mm. Displacements in the equation of motion are measured from this equilibrium, which removes gravity from the equation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the force-voltage analogy between a series RLC circuit and a mass-spring-damper, which correspondence is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$L\\leftrightarrow m$, $R\\leftrightarrow c$, $1/C\\leftrightarrow k$, current $\\leftrightarrow$ velocity"
+    },
+    {
+     "id": "b",
+     "text": "$L\\leftrightarrow k$, $R\\leftrightarrow c$, $C\\leftrightarrow m$, current $\\leftrightarrow$ force"
+    },
+    {
+     "id": "c",
+     "text": "$L\\leftrightarrow c$, $R\\leftrightarrow m$, $C\\leftrightarrow k$, voltage $\\leftrightarrow$ displacement"
+    },
+    {
+     "id": "d",
+     "text": "$L\\leftrightarrow m$, $R\\leftrightarrow k$, $C\\leftrightarrow c$, current $\\leftrightarrow$ displacement"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$L\\leftrightarrow m$, $R\\leftrightarrow c$, $1/C\\leftrightarrow k$, current $\\leftrightarrow$ velocity",
+   "distractorRationale": {
+    "a": "Correct: $L\\ddot q+R\\dot q+q/C=v$ matches $m\\ddot x+c\\dot x+kx=f$ term by term.",
+    "b": "The roles of inductance and capacitance are reversed, and current is a flow quantity, not a force.",
+    "c": "Voltage corresponds to force, not displacement, and $R$ plays the role of damping.",
+    "d": "Resistance dissipates energy like a damper, not a spring, and current is the rate of change of charge, so it is velocity."
+   },
+   "explanation": "Matching coefficients of $\\ddot q$, $\\dot q$ and $q$ in $L\\ddot q+R\\dot q+q/C=v$ with $m,c,k$ in the mechanical equation gives $L\\leftrightarrow m$, $R\\leftrightarrow c$ and $1/C\\leftrightarrow k$. Charge corresponds to displacement and current to velocity.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A series RLC circuit has $R=50\\ \\Omega$, $L=0.2$ H and $C=50\\ \\mu$F ($5\\times10^{-5}$ F). Find the damping ratio $\\zeta$ of the circuit (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o2"
+   ],
+   "correctValue": 0.395,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "The damping ratio is $\\zeta=(R/2)\\sqrt{C/L}=25\\times\\sqrt{5\\times10^{-5}/0.2}=25\\times0.01581=0.395$. The circuit is therefore underdamped (the mechanical analogue has $m=0.2$, $c=50$, $k=20\\,000$), with $\\omega_n=1/\\sqrt{LC}=316$ rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A DC motor has armature resistance $R=1.5\\ \\Omega$ and torque and back-emf constant $K=0.08$ (N m/A and V s/rad). It runs at steady state with $v=24$ V against a constant load torque of $0.10$ N m, with negligible viscous friction. Find the steady-state speed in rad/s.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o3"
+   ],
+   "correctValue": 276.6,
+   "tolerance": 1.0,
+   "unit": "rad/s",
+   "explanation": "At steady state $di/dt=0$ and $\\dot\\omega=0$. The rotor equation gives $Ki=T_L$, so $i=0.10/0.08=1.25$ A. The armature equation then gives $K\\omega=v-Ri=24-1.5\\times1.25=22.125$ V, so $\\omega=22.125/0.08=276.6$ rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which pair of equations correctly models a permanent-magnet DC motor with armature resistance $R$, inductance $L$, back-emf constant $K_e$, torque constant $K_t$, inertia $J$, viscous friction $b$ and load torque $T_L$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$v=Ri+L\\dot i+K_e\\omega$ and $J\\dot\\omega=K_ti-b\\omega-T_L$"
+    },
+    {
+     "id": "b",
+     "text": "$v=Ri+L\\dot i-K_e\\omega$ and $J\\dot\\omega=K_ti-b\\omega-T_L$"
+    },
+    {
+     "id": "c",
+     "text": "$v=Ri+L\\dot i+K_e\\omega$ and $J\\dot\\omega=K_t\\omega-bi-T_L$"
+    },
+    {
+     "id": "d",
+     "text": "$v=Ri+K_e\\omega$ and $J\\dot\\omega=K_ti+b\\omega+T_L$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$v=Ri+L\\dot i+K_e\\omega$ and $J\\dot\\omega=K_ti-b\\omega-T_L$",
+   "distractorRationale": {
+    "a": "Correct: the back-emf opposes the applied voltage, and torque $K_ti$ drives the rotor against friction and load.",
+    "b": "The back-emf is a voltage drop that must be subtracted from the supply, so it appears with a plus sign on the right of the voltage equation.",
+    "c": "The torque is proportional to current, not speed, and friction is proportional to speed.",
+    "d": "Friction and load torque oppose the motion, so they have negative signs in the torque equation."
+   },
+   "explanation": "Kirchhoff's voltage law around the armature says the supply equals the resistive drop, the inductive drop and the back-emf $K_e\\omega$. Newton's law for the rotor says inertia torque equals the motor torque $K_ti$ minus friction $b\\omega$ and load torque.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "In the force-voltage analogy, a larger capacitance $C$ in a series RLC circuit corresponds to a stiffer spring in the mechanical analogue.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The stiffness corresponds to the reciprocal of capacitance, $k\\leftrightarrow1/C$. A larger capacitance therefore corresponds to a softer spring, which lowers $\\omega_n=1/\\sqrt{LC}$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A mass-spring system has its mass increased by a factor of 4 while the stiffness is unchanged. What happens to its natural frequency $\\omega_n$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It halves"
+    },
+    {
+     "id": "b",
+     "text": "It doubles"
+    },
+    {
+     "id": "c",
+     "text": "It is divided by 4"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It halves",
+   "distractorRationale": {
+    "a": "Correct: $\\omega_n=\\sqrt{k/m}$, so quadrupling $m$ divides $\\omega_n$ by $\\sqrt4=2$.",
+    "b": "The natural frequency decreases with mass.",
+    "c": "The factor is $\\sqrt{4}$, not 4, because mass is under a square root.",
+    "d": "The natural frequency depends on both $k$ and $m$."
+   },
+   "explanation": "Since $\\omega_n=\\sqrt{k/m}$ and $k$ is fixed, $\\omega_n$ scales as $1/\\sqrt m$. A fourfold mass gives half the natural frequency; the same reasoning gives $\\omega_n\\propto1/\\sqrt L$ for an RLC circuit.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the equation of motion of a mass $m$ supported on a spring $k$ and damper $c$ and driven by a force $f(t)$, from a free-body diagram. Explain the sign convention, the role of gravity for a vertical arrangement, and how $\\omega_n$ and $\\zeta$ are obtained.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o1"
+   ],
+   "markingGuide": [
+    "Draws a free-body diagram with applied force, spring force and damper force",
+    "Spring force $-kx$ and damper force $-c\\dot x$ oppose displacement and velocity",
+    "Writes $m\\ddot x=f-c\\dot x-kx$ and rearranges to $m\\ddot x+c\\dot x+kx=f$",
+    "Explains that $x$ is measured from static equilibrium so gravity cancels the static spring force",
+    "Gives $\\omega_n=\\sqrt{k/m}$ and $\\zeta=c/(2\\sqrt{km})$"
+   ],
+   "explanation": "The derivation is Newton's second law applied to a single lumped mass. Measuring displacement from the static equilibrium is a useful device that removes the constant gravity term for a linear spring.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the first-order speed model of a DC motor from its armature and rotor equations, stating when the armature inductance can be neglected, and give expressions for the DC gain and time constant. Comment on which physical parameters make the motor respond faster.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models.o3"
+   ],
+   "markingGuide": [
+    "Writes $v=Ri+L\\,di/dt+K\\omega$ and $J\\dot\\omega=Ki-b\\omega$ (zero load)",
+    "Neglects $L$ when $L/R\\ll$ mechanical time constant to obtain $i=(v-K\\omega)/R$",
+    "Substitutes to get $JR\\dot\\omega+(bR+K^2)\\omega=Kv$",
+    "DC gain $K/(bR+K^2)$ and time constant $\\tau=JR/(bR+K^2)$",
+    "Smaller $J$ or $R$ or larger $K$ gives a faster response; back-emf acts as additional electrical damping"
+   ],
+   "explanation": "The back-emf term converts the electrical resistance into an effective viscous damping $K^2/R$, which is why $K^2$ appears alongside $bR$ in the time constant. A small rotor inertia and a strong motor constant give fast motors.",
+   "board": "internal"
+  }
+ ]
+}

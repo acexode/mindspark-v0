@@ -1,0 +1,416 @@
+{
+ "lessonTitle": "Leak-Before-Break and Safe Life",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 16 mm thick steel boiler drum holds steam at 8 MPa. If a fatigue crack grows through the wall, one of two things happens: the steam leaks out in a small jet that operators can hear and see, or the crack runs the length of the drum in an instant. Which one it is depends on a simple comparison between two lengths."
+  },
+  {
+   "type": "text",
+   "markdown": "Many pressure vessels and pipes are designed so that a growing crack gets through the wall **while it is still short**. A through-wall crack that is shorter than its critical size releases fluid, which is detected by leakage monitoring, and the plant is shut down safely. This is the **leak-before-break (LBB)** idea. It works only if the critical length of a through-wall crack is clearly larger than the wall thickness, so that the crack penetrates the wall before it can run unstably."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Leak-before-break",
+   "text": "A vessel satisfies leak-before-break when a part-through crack growing in the thickness direction becomes a through-wall (leaking) crack whose length is still below the critical length for fast fracture. As a screening rule, we require the critical through-wall half-length $a_c$ to exceed the wall thickness $t$ by a margin (here we use $a_c \\ge 2t$ as an illustrative margin; actual rules vary by industry and standard)."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_h = \\frac{p\\,r}{t}",
+   "caption": "Hoop (circumferential) stress in a thin-walled cylinder: internal pressure $p$, mean radius $r$, wall thickness $t$. Axial stress is half of this, so hoop stress drives axial cracks."
+  },
+  {
+   "type": "math",
+   "latex": "a_c = \\frac{1}{\\pi}\\left(\\frac{K_c}{\\sigma_h}\\right)^2",
+   "caption": "Critical half-length of a through-wall crack (simplified, $Y = 1$, ignoring shell bulging; this is mildly unconservative, and real assessments apply a correction)."
+  },
+  {
+   "type": "worked_example",
+   "title": "A vessel that satisfies LBB",
+   "prompt": "A cylindrical vessel has mean radius 0.5 m, wall thickness 20 mm and internal pressure 6 MPa. Its steel has an assumed toughness $K_c = 100$ MPa$\\sqrt{\\text{m}}$. Check LBB using $a_c\\ge 2t$.",
+   "steps": [
+    {
+     "text": "Hoop stress.",
+     "latex": "\\sigma_h = \\frac{6\\times0.5}{0.020} = 150\\ \\text{MPa}"
+    },
+    {
+     "text": "Critical half-length.",
+     "latex": "a_c = \\frac{1}{\\pi}\\left(\\frac{100}{150}\\right)^2 = 0.1415\\ \\text{m} = 141\\ \\text{mm}"
+    },
+    {
+     "text": "Compare with $2t = 40$ mm: 141 mm is well above 40 mm, so the crack will leak long before it becomes critical."
+    }
+   ],
+   "answer": "$a_c\\approx141$ mm, about 7.1 times the wall thickness: LBB is satisfied."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Philosophy",
+    "Basic assumption",
+    "Main safeguard",
+    "Typical use"
+   ],
+   "rows": [
+    [
+     "Safe-life",
+     "Component is crack-free at start; fatigue life is predicted and a scatter factor applied",
+     "Retire at a fraction of calculated or tested life",
+     "Landing gear, engine discs, rotating parts"
+    ],
+    [
+     "Fail-safe",
+     "Cracks may form; structure carries load after a member fails",
+     "Redundant load paths, crack arrest, inspection",
+     "Aircraft skins and wings"
+    ],
+    [
+     "Damage tolerance / LBB",
+     "Cracks of a given size exist; growth is predicted",
+     "Inspection intervals; leak detection before break",
+     "Pressure vessels, piping"
+    ]
+   ],
+   "caption": "Three design philosophies for flaw tolerance."
+  },
+  {
+   "type": "text",
+   "markdown": "**Safe-life versus fail-safe.** Safe-life design makes no allowance for undetected cracks. It uses an experimental or calculated fatigue life divided by a scatter factor, then removes the part regardless of its condition. It is simple but wasteful and has no defence if an unexpected flaw is present. Fail-safe design accepts that a member may crack and ensures the remaining structure can carry the load until the next inspection. It needs redundancy and inspection access."
+  },
+  {
+   "type": "worked_example",
+   "title": "A vessel that fails the LBB criterion, and a re-rating",
+   "prompt": "A vessel has mean radius 0.4 m and wall thickness 16 mm at 8 MPa. The steel has $K_c = 50$ MPa$\\sqrt{\\text{m}}$. (a) Check $a_c \\ge 2t$. (b) What pressure would just meet it?",
+   "steps": [
+    {
+     "text": "Hoop stress at 8 MPa.",
+     "latex": "\\sigma_h = \\frac{8\\times0.4}{0.016} = 200\\ \\text{MPa}"
+    },
+    {
+     "text": "Critical half-length.",
+     "latex": "a_c = \\frac{1}{\\pi}\\left(\\frac{50}{200}\\right)^2 = 19.9\\ \\text{mm} < 2t = 32\\ \\text{mm}"
+    },
+    {
+     "text": "So LBB is not met with margin. For $a_c = 0.032$ m the allowed hoop stress is $K_c/\\sqrt{\\pi a_c}$.",
+     "latex": "\\sigma_h = \\frac{50}{\\sqrt{\\pi\\times0.032}} = 157.7\\ \\text{MPa}"
+    },
+    {
+     "text": "Convert back to pressure: $p = \\sigma_h t/r$.",
+     "latex": "p = \\frac{157.7\\times0.016}{0.4} = 6.31\\ \\text{MPa}"
+    }
+   ],
+   "answer": "At 8 MPa the criterion fails ($a_c\\approx19.9$ mm); re-rating to about 6.31 MPa would meet it."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Assessment result",
+    "Typical action",
+    "Reason"
+   ],
+   "rows": [
+    [
+     "Flaws far below the critical size and slow growth",
+     "Continue in service with monitoring",
+     "Adequate margin"
+    ],
+    [
+     "Margin inadequate but reducible",
+     "Re-rate (lower pressure or temperature) or repair",
+     "Reducing stress raises $a_c$ as $\\sigma^{-2}$"
+    ],
+    [
+     "Flaws near critical, fast growth, or no practical repair",
+     "Retire (replace)",
+     "Risk of unstable fracture is not acceptable"
+    ]
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Lower stress gives a much bigger critical crack: $a_c\\propto\\sigma_h^{-2}$.",
+    "A tougher steel increases $a_c$ as $K_c^2$ and favours LBB.",
+    "Re-rating trades output for safety margin; repair removes the flaw; retirement is chosen when neither can restore margin."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "LBB needs leak detection and a ductile material",
+   "text": "LBB is valid only if leakage is detected in time and the toughness is high enough at the operating temperature. For brittle or cold-embrittled steels, or where leakage cannot be monitored, a vessel should not be justified on LBB."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Hoop stress $\\sigma_h=pr/t$ drives axial through-wall cracks; $a_c=(1/\\pi)(K_c/\\sigma_h)^2$.",
+    "LBB holds if the critical through-wall length comfortably exceeds the wall thickness so a leak appears first.",
+    "Safe-life retires parts by calculated life with a scatter factor; fail-safe tolerates a member failure through redundancy; when margin is lost choose repair, re-rate or retire."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does a vessel designed on a leak-before-break basis rely on?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A crack grows through the wall and leaks while still shorter than the critical length for fast fracture"
+    },
+    {
+     "id": "b",
+     "text": "A crack never grows because the stress is below the threshold"
+    },
+    {
+     "id": "c",
+     "text": "The vessel is always replaced before any crack could form"
+    },
+    {
+     "id": "d",
+     "text": "The vessel is made so thick that stress is zero"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A crack grows through the wall and leaks while still shorter than the critical length for fast fracture",
+   "distractorRationale": {
+    "a": "Correct: leakage gives warning before unstable fracture.",
+    "b": "LBB assumes cracks can grow.",
+    "c": "That is a safe-life approach.",
+    "d": "Stress is never zero in a pressurised vessel."
+   },
+   "explanation": "LBB means a through-wall crack reaches the surface and leaks at a size below its critical length, so operators detect the leak and shut down before any rapid fracture. It therefore assumes cracks may exist and grow.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which description fits fail-safe design?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The part is retired after a fraction of its calculated life without inspection"
+    },
+    {
+     "id": "b",
+     "text": "The part is made of a material with infinite toughness"
+    },
+    {
+     "id": "c",
+     "text": "The structure can carry the load after one member fails, through redundancy, until the failure is found"
+    },
+    {
+     "id": "d",
+     "text": "No cracks are assumed to exist ever"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The structure can carry the load after one member fails, through redundancy, until the failure is found",
+   "distractorRationale": {
+    "a": "That describes safe-life.",
+    "b": "No material has infinite toughness.",
+    "c": "Correct: fail-safe allows failure of a member without loss of the structure.",
+    "d": "Fail-safe accepts cracks may form."
+   },
+   "explanation": "A fail-safe structure has alternative load paths so one cracked member does not cause the whole to fail. Inspection finds the damage before the remaining members are overloaded.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The operating pressure of a thin-walled cylinder is halved while all else is unchanged. What happens to the critical through-wall half-length for fracture?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases by a factor of 2"
+    },
+    {
+     "id": "b",
+     "text": "It decreases by a factor of 2"
+    },
+    {
+     "id": "c",
+     "text": "It increases by a factor of 4"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It increases by a factor of 4",
+   "distractorRationale": {
+    "a": "That treats $a_c$ as $1/\\sigma$.",
+    "b": "Lower stress increases the tolerable crack.",
+    "c": "Correct: $a_c\\propto\\sigma_h^{-2}$ and $\\sigma_h\\propto p$.",
+    "d": "The critical size depends on stress."
+   },
+   "explanation": "The hoop stress is proportional to the pressure and $a_c\\propto\\sigma_h^{-2}$, so halving the pressure quadruples the critical crack size. This is why re-rating is an effective response when margin is short.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An assessment shows that a vessel with a stable, slowly growing flaw has insufficient margin at its present pressure, but adequate margin at 70 percent of that pressure. Replacement would take a year. Which decision is the most reasonable?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Continue unchanged because the flaw is stable"
+    },
+    {
+     "id": "b",
+     "text": "Immediately retire and scrap the vessel"
+    },
+    {
+     "id": "c",
+     "text": "Increase pressure to test the flaw"
+    },
+    {
+     "id": "d",
+     "text": "Re-rate to the lower pressure and monitor"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Re-rate to the lower pressure and monitor",
+   "distractorRationale": {
+    "a": "Margin is inadequate at the current pressure.",
+    "b": "Retirement is not forced when a re-rate restores margin.",
+    "c": "Raising pressure would worsen the margin.",
+    "d": "Correct: re-rating restores the margin with little cost."
+   },
+   "explanation": "A lower pressure reduces hoop stress and so increases the critical crack size, restoring margin while the vessel is monitored. Retirement would be chosen if no re-rating or repair restored an acceptable margin.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement correctly contrasts safe-life with damage-tolerant methods?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Safe-life assumes a crack-free part and retires it with a scatter factor, while damage tolerance assumes flaws exist and manages them by inspection"
+    },
+    {
+     "id": "b",
+     "text": "Safe-life relies on inspection while damage tolerance does not"
+    },
+    {
+     "id": "c",
+     "text": "Safe-life and damage tolerance are the same"
+    },
+    {
+     "id": "d",
+     "text": "Damage tolerance assumes no flaws at all"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Safe-life assumes a crack-free part and retires it with a scatter factor, while damage tolerance assumes flaws exist and manages them by inspection",
+   "distractorRationale": {
+    "a": "Correct: it describes both philosophies.",
+    "b": "The inspection role is reversed.",
+    "c": "They are different philosophies.",
+    "d": "That is the safe-life assumption."
+   },
+   "explanation": "Safe-life depends on a calculated or test life and a scatter factor, with no inspection credit for cracks. Damage-tolerant design assumes a flaw of a given size exists and uses crack growth predictions with inspection to manage it.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A cylindrical air receiver has internal pressure 4 MPa, mean radius 0.3 m and wall thickness 12 mm. Find the hoop stress in MPa using $\\sigma_h=pr/t$.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o1"
+   ],
+   "correctValue": 100.0,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "$\\sigma_h=4\\times0.3/0.012=100$ MPa. Radius and thickness must be in the same unit, here metres.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel has $K_c = 90$ MPa$\\sqrt{\\text{m}}$ (assumed). It is loaded by a hoop stress of 180 MPa and contains a through-wall crack ($Y=1$). Find the critical half-length in mm.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o1"
+   ],
+   "correctValue": 79.5775,
+   "tolerance": 0.5,
+   "unit": "mm",
+   "explanation": "$a_c=(1/\\pi)(90/180)^2=0.25/\\pi=0.07958$ m, which is 79.6 mm. This is the half-length of the through-wall crack.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A vessel has mean radius 0.6 m, wall thickness 25 mm and steel toughness $K_c = 70$ MPa$\\sqrt{\\text{m}}$ (assumed). Using the illustrative criterion $a_c\\ge 2t$, what is the maximum internal pressure in MPa for which leak-before-break is met? Take $Y=1$.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o1",
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o3"
+   ],
+   "correctValue": 7.35914,
+   "tolerance": 0.1,
+   "unit": "MPa",
+   "explanation": "The required $a_c=2t=0.050$ m, so $\\sigma_h=K_c/\\sqrt{\\pi a_c}=70/\\sqrt{\\pi\\times0.05}=176.6$ MPa. Then $p=\\sigma_h t/r=176.6\\times0.025/0.6=7.36$ MPa. Lower pressures give larger critical lengths and therefore satisfy the criterion.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Contrast safe-life and fail-safe design philosophies, giving one advantage and one limitation of each and one typical application.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o2"
+   ],
+   "markingGuide": [
+    "Safe-life: crack-free start, life from test or calculation divided by a scatter factor, retire regardless of condition",
+    "Safe-life advantage: simple, no inspection needed; limitation: wasteful and no defence against unexpected flaws",
+    "Fail-safe: structure tolerates failure of a member via redundancy and crack arrest",
+    "Fail-safe advantage: tolerates damage between inspections; limitation: needs redundancy, weight and inspection access",
+    "Gives a sensible application for each (for example landing gear and aircraft skin)"
+   ],
+   "explanation": "Safe-life puts all the trust in prediction and retires parts early, while fail-safe puts trust in redundancy and inspection. The two are chosen according to whether redundant load paths and inspection access can be provided.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A cylindrical vessel (mean radius 0.8 m, wall 30 mm) operates at 5 MPa; steel toughness is $K_c = 45$ MPa$\\sqrt{\\text{m}}$ (assumed). (a) Compute the hoop stress and critical through-wall half-length. (b) Decide whether leak-before-break with the margin $a_c\\ge 2t$ is met. (c) Recommend repair, re-rate or retire and justify with a quantitative pressure.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o1",
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.leak-before-break.o3"
+   ],
+   "markingGuide": [
+    "Hoop stress $=pr/t=133.3$ MPa",
+    "Critical half-length $=(1/\\pi)(45/133.3)^2\\approx36.3$ mm",
+    "Compares with $2t=60$ mm and concludes the margin is not met (only about 1.21 times $t$)",
+    "Recommends re-rating (or repair) rather than retirement if a modest pressure reduction restores margin",
+    "Finds the pressure giving $a_c=60$ mm as about 3.89 MPa and mentions leak detection"
+   ],
+   "explanation": "The hoop stress is 133.3 MPa and the critical half-length is 36.3 mm, below the 60 mm required. Reducing pressure to about 3.89 MPa restores the margin, so re-rating (or repair) is justified rather than retirement.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,376 @@
+{
+ "lessonTitle": "The Effectiveness-NTU Method",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A power-station engineer has a new feedwater heater delivered with a known area and overall coefficient, and she must predict its outlet temperatures at tomorrow's operating point. The LMTD equation would need a guess of an outlet temperature and an iteration. The effectiveness-NTU method gets the answer in one pass."
+  },
+  {
+   "type": "text",
+   "markdown": "The LMTD method is natural when all four terminal temperatures are known and the area is unknown. For rating an existing exchanger (known $UA$, flows and inlet temperatures) the outlet temperatures are unknown, so $\\Delta T_{lm}$ cannot be written directly and the equation $q=UA\\Delta T_{lm}$ must be solved iteratively. The **effectiveness-NTU** method avoids this by normalising the heat transfer against the maximum possible."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Capacity rate, effectiveness and NTU",
+   "text": "The capacity rate is $C=\\dot mc_p$ (W/K); $C_{min}$ and $C_{max}$ are the smaller and larger of the two streams, and $C_r=C_{min}/C_{max}$. The effectiveness is $\\varepsilon=q/q_{max}$ with $q_{max}=C_{min}(T_{h,i}-T_{c,i})$. The number of transfer units is $NTU=UA/C_{min}$, a dimensionless size of the exchanger."
+  },
+  {
+   "type": "text",
+   "markdown": "Why $C_{min}$? The stream with the smaller capacity rate undergoes the larger temperature change ($q=C\\Delta T$ for each stream). That stream could at most reach the inlet temperature of the other, so $q_{max}=C_{min}(T_{h,i}-T_{c,i})$. No real exchanger reaches it, so $0<\\varepsilon<1$."
+  },
+  {
+   "type": "math",
+   "latex": "\\varepsilon_{cf}=\\frac{1-\\exp[-NTU(1-C_r)]}{1-C_r\\exp[-NTU(1-C_r)]}\\quad(C_r<1),\\qquad \\varepsilon_{cf}=\\frac{NTU}{1+NTU}\\quad(C_r=1)",
+   "caption": "Counterflow effectiveness; for parallel flow, epsilon = [1 - exp(-NTU(1+C_r))]/(1+C_r)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Rating a counterflow exchanger from inlet temperatures",
+   "prompt": "Hot water ($\\dot m=0.5$ kg/s, $c_p=4180$ J/kg K) enters a counterflow exchanger at 90 $^\\circ$C. Cold oil ($\\dot m=0.8$ kg/s, $c_p=2000$ J/kg K, typical) enters at 20 $^\\circ$C. The exchanger has $U=300$ W/m$^2$K and $A=8$ m$^2$. Find the heat transfer rate and both outlet temperatures.",
+   "steps": [
+    {
+     "text": "Capacity rates $C=\\dot mc_p$: $C_h=0.5\\times4180=2090$ W/K and $C_c=0.8\\times2000=1600$ W/K. So $C_{min}=1600$ W/K (oil) and $C_r=C_{min}/C_{max}=0.7656$.",
+     "latex": "C=\\dot m\\,c_p,\\quad C_r=\\frac{C_{min}}{C_{max}}"
+    },
+    {
+     "text": "Number of transfer units: $NTU=UA/C_{min}=300\\times8/1600=1.500$.",
+     "latex": "NTU=\\frac{UA}{C_{min}}"
+    },
+    {
+     "text": "Counterflow effectiveness: $\\varepsilon=\\dfrac{1-e^{-NTU(1-C_r)}}{1-C_re^{-NTU(1-C_r)}}=0.6426$.",
+     "latex": "\\varepsilon=\\frac{1-e^{-NTU(1-C_r)}}{1-C_r\\,e^{-NTU(1-C_r)}}"
+    },
+    {
+     "text": "Maximum possible heat rate: $q_{max}=C_{min}(T_{h,i}-T_{c,i})=1600\\times70=112.0$ kW. Actual: $q=\\varepsilon q_{max}=71.97$ kW.",
+     "latex": "q=\\varepsilon\\,C_{min}(T_{h,i}-T_{c,i})"
+    },
+    {
+     "text": "Outlet temperatures from energy balances: $T_{h,o}=90-q/C_h=90-71966/2090=55.6$ $^\\circ$C and $T_{c,o}=20+q/C_c=20+71966/1600=65.0$ $^\\circ$C."
+    }
+   ],
+   "answer": "$\\varepsilon\\approx0.643$, $q\\approx72.0$ kW, $T_{h,o}\\approx55.6$ $^\\circ$C and $T_{c,o}\\approx65.0$ $^\\circ$C. No iteration was needed."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Known quantities",
+    "Unknown",
+    "Preferred method"
+   ],
+   "rows": [
+    [
+     "All four terminal temperatures and flow rates",
+     "Area $A$ (given $U$)",
+     "LMTD: $A=q/(U\\Delta T_{lm})$"
+    ],
+    [
+     "Inlet temperatures, flow rates, $UA$",
+     "Outlet temperatures and $q$",
+     "Effectiveness-NTU (no iteration)"
+    ],
+    [
+     "Inlet temperatures, flow rates and one outlet temperature",
+     "Area",
+     "Either; LMTD is direct, NTU also works from $\\varepsilon$"
+    ],
+    [
+     "Required effectiveness, flow rates",
+     "Size $UA$",
+     "Effectiveness-NTU (invert $\\varepsilon(NTU)$)"
+    ]
+   ],
+   "caption": "Choosing between the LMTD and effectiveness-NTU methods"
+  },
+  {
+   "type": "text",
+   "markdown": "The effectiveness rises with NTU with diminishing returns: for a counterflow exchanger with $C_r=0.5$, going from $NTU=1$ to $NTU=2$ raises $\\varepsilon$ markedly, but going from 3 to 4 gains little. This matters economically because area costs money. In the limit of $C_r\\to0$ (a boiling or condensing stream), $\\varepsilon=1-e^{-NTU}$ for every flow arrangement."
+  },
+  {
+   "type": "worked_example",
+   "title": "Gas-to-water economiser, with an LMTD check",
+   "prompt": "A counterflow economiser has hot gas with $C_h=1200$ W/K entering at 300 $^\\circ$C and water with $C_c=2500$ W/K entering at 40 $^\\circ$C. The product $UA=1800$ W/K. Find the outlet temperatures using the effectiveness-NTU method, then verify the heat rate using the LMTD.",
+   "steps": [
+    {
+     "text": "The gas stream has the smaller capacity rate, so $C_{min}=C_h=1200$ W/K and $C_r=1200/2500=0.48$. $NTU=1800/1200=1.50$."
+    },
+    {
+     "text": "$\\varepsilon=[1-e^{-NTU(1-C_r)}]/[1-C_re^{-NTU(1-C_r)}]$ with $NTU(1-C_r)=0.780$ gives $\\varepsilon=0.6944$.",
+     "latex": "\\varepsilon=\\frac{1-e^{-NTU(1-C_r)}}{1-C_re^{-NTU(1-C_r)}}"
+    },
+    {
+     "text": "$q=\\varepsilon C_{min}(300-40)=0.6944\\times1200\\times260=216.6$ kW. Then $T_{h,o}=300-q/C_h=119.5$ $^\\circ$C and $T_{c,o}=40+q/C_c=126.7$ $^\\circ$C."
+    },
+    {
+     "text": "Check with LMTD (counterflow): $\\Delta T_1=T_{h,i}-T_{c,o}=173.3$ K, $\\Delta T_2=T_{h,o}-T_{c,i}=79.5$ K, $\\Delta T_{lm}=120.36$ K, so $q=UA\\Delta T_{lm}=1800\\times120.36=216.6$ kW, matching.",
+     "latex": "q=UA\\,\\Delta T_{lm}"
+    }
+   ],
+   "answer": "$\\varepsilon\\approx0.694$, $T_{h,o}\\approx119$ $^\\circ$C and $T_{c,o}\\approx126.7$ $^\\circ$C; $q\\approx217$ kW. The two methods agree, as they must."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Compute $C_h$ and $C_c$, identify $C_{min}$, and find $C_r$.",
+    "Compute $NTU=UA/C_{min}$.",
+    "Obtain $\\varepsilon$ from the relation for the flow arrangement.",
+    "Compute $q=\\varepsilon C_{min}(T_{h,i}-T_{c,i})$.",
+    "Find the outlet temperatures: $T_{h,o}=T_{h,i}-q/C_h$ and $T_{c,o}=T_{c,i}+q/C_c$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common mistakes",
+   "text": "Use $C_{min}$ in both $NTU$ and $q_{max}$, not whichever stream happens to be hot. Take care with $C_r=1$, where the general formula gives $0/0$ and you must use $NTU/(1+NTU)$. $\\varepsilon$ relations depend on the flow arrangement, so do not use the counterflow formula for parallel flow."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Two methods, one physics",
+   "text": "Both methods rest on the same energy balance and give the same answer if used correctly. LMTD suits sizing (area unknown, temperatures known). Effectiveness-NTU suits rating (outlet temperatures unknown), with $q=\\varepsilon C_{min}(T_{h,i}-T_{c,i})$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$C=\\dot mc_p$, $C_r=C_{min}/C_{max}$, $NTU=UA/C_{min}$, $\\varepsilon=q/[C_{min}(T_{h,i}-T_{c,i})]$.",
+    "Counterflow: $\\varepsilon=\\{1-e^{-NTU(1-C_r)}\\}/\\{1-C_re^{-NTU(1-C_r)}\\}$, or $NTU/(1+NTU)$ for $C_r=1$.",
+    "Rating a given exchanger (outlets unknown): use effectiveness-NTU; sizing from known terminal temperatures: use LMTD.",
+    "Outlets follow from $q$: $T_{h,o}=T_{h,i}-q/C_h$ and $T_{c,o}=T_{c,i}+q/C_c$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An engineer must predict the outlet temperatures of an existing exchanger of known area and overall coefficient, given the flow rates and inlet temperatures of both streams. The most direct method is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "the LMTD method, since the end temperature differences are known"
+    },
+    {
+     "id": "b",
+     "text": "the effectiveness-NTU method, since it needs no outlet temperature guess"
+    },
+    {
+     "id": "c",
+     "text": "the arithmetic mean temperature difference"
+    },
+    {
+     "id": "d",
+     "text": "an energy balance on one stream alone"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "the effectiveness-NTU method, since it needs no outlet temperature guess",
+   "distractorRationale": {
+    "a": "The outlet temperatures are unknown, so $\\Delta T_{lm}$ cannot be written without iteration.",
+    "c": "This is only an approximation and not an exact method.",
+    "d": "One stream's energy balance has two unknowns ($q$ and its outlet temperature)"
+   },
+   "explanation": "With inlet temperatures only, $\\varepsilon$ and $NTU$ can be computed directly, giving $q=\\varepsilon C_{min}(T_{h,i}-T_{c,i})$ and then the outlet temperatures. LMTD would need an iteration since its end differences contain unknown outlets.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The number of transfer units of a heat exchanger is defined as",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$NTU=UA/C_{max}$"
+    },
+    {
+     "id": "b",
+     "text": "$NTU=C_{min}/C_{max}$"
+    },
+    {
+     "id": "c",
+     "text": "$NTU=q/q_{max}$"
+    },
+    {
+     "id": "d",
+     "text": "$NTU=UA/C_{min}$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$NTU=UA/C_{min}$",
+   "distractorRationale": {
+    "a": "The definition uses the smaller capacity rate.",
+    "b": "This is the capacity ratio $C_r$.",
+    "c": "This is the effectiveness $\\varepsilon$."
+   },
+   "explanation": "$NTU$ compares the conductance $UA$ (W/K) with the smaller capacity rate $C_{min}$ (W/K). It is a dimensionless measure of how large the exchanger is relative to the flow it must treat.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A counterflow exchanger has $C_h=3000$ W/K, $C_c=1500$ W/K and $UA=2250$ W/K. Find its effectiveness as a number between 0 and 1.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o1"
+   ],
+   "correctValue": 0.6908,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "$C_{min}=1500$ W/K, $C_r=1500/3000=0.5$ and $NTU=2250/1500=1.50$. Then $\\varepsilon=[1-e^{-1.5(0.5)}]/[1-0.5e^{-1.5(0.5)}]=(1-0.4724)/(1-0.2362)=0.6908$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Hot oil enters an exchanger at 200 $^\\circ$C with $C_h=2000$ W/K. Cold water enters at 30 $^\\circ$C with $C_c=6000$ W/K. The exchanger effectiveness is 0.65. Find the oil outlet temperature in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o2"
+   ],
+   "correctValue": 89.5,
+   "tolerance": 0.3,
+   "unit": "degC",
+   "explanation": "The oil has the smaller capacity rate, so $C_{min}=C_h$. $q=\\varepsilon C_{min}(200-30)=0.65\\times2000\\times170=221000$ W. Then $T_{h,o}=200-q/C_h=200-110.5=89.5$ $^\\circ$C. Equivalently, the oil temperature falls by $\\varepsilon$ times the maximum temperature range.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A counterflow exchanger with equal capacity rates ($C_r=1$) has $NTU=2.4$. Find its effectiveness.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o1"
+   ],
+   "correctValue": 0.7059,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "When $C_r=1$ the general counterflow expression is $0/0$ and reduces to $\\varepsilon=NTU/(1+NTU)=2.4/3.4=0.7059$. This shows high effectiveness needs large $NTU$ when $C_r=1$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a heat exchanger one stream has $C=2000$ W/K and the other has $C=5000$ W/K. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The stream with $C=2000$ W/K has the larger temperature change, and is the $C_{min}$ stream"
+    },
+    {
+     "id": "b",
+     "text": "The stream with $C=5000$ W/K has the larger temperature change"
+    },
+    {
+     "id": "c",
+     "text": "Both streams have the same temperature change"
+    },
+    {
+     "id": "d",
+     "text": "$C_{min}$ is the larger capacity rate because it limits $q_{max}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The stream with $C=2000$ W/K has the larger temperature change, and is the $C_{min}$ stream",
+   "distractorRationale": {
+    "b": "From $q=C\\Delta T$ for both streams, the larger $C$ has the smaller $\\Delta T$.",
+    "c": "That only holds if the capacity rates are equal ($C_r=1$).",
+    "d": "$C_{min}$ is the smaller one; it limits the possible temperature change."
+   },
+   "explanation": "Since $q=C_h\\Delta T_h=C_c\\Delta T_c$, the stream with the smaller capacity rate shows the larger temperature change. That is why $q_{max}$ is limited by $C_{min}$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a counterflow exchanger with fixed $C_r=0.5$, how does effectiveness change as NTU is increased from 3 to 4?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It doubles, because NTU rises by a third and effectiveness is proportional to $NTU^2$"
+    },
+    {
+     "id": "b",
+     "text": "It falls, because larger exchangers lose more heat"
+    },
+    {
+     "id": "c",
+     "text": "It rises only slightly, showing diminishing returns from extra area"
+    },
+    {
+     "id": "d",
+     "text": "It stays exactly constant at 1"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It rises only slightly, showing diminishing returns from extra area",
+   "distractorRationale": {
+    "a": "There is no such proportionality; $\\varepsilon$ saturates at 1.",
+    "b": "A larger exchanger never reduces effectiveness for the same flows.",
+    "d": "$\\varepsilon$ approaches but does not reach 1 for finite $NTU$."
+   },
+   "explanation": "From the formula, $\\varepsilon(3)=0.8744$ and $\\varepsilon(4)=0.9274$, a gain of only 0.053. The curve flattens because the temperature driving force is exhausted at the exchanger ends.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the maximum possible heat transfer rate of a heat exchanger is $q_{max}=C_{min}(T_{h,i}-T_{c,i})$ and why effectiveness is always less than one for a real exchanger.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o1"
+   ],
+   "markingGuide": [
+    "Energy balance on each stream: $q=C\\Delta T$, so the stream with the smaller $C$ has the larger temperature change.",
+    "The largest possible temperature change is the difference between the inlet temperatures; the $C_{min}$ stream reaches the other inlet temperature in an infinitely long counterflow exchanger.",
+    "So $q_{max}=C_{min}(T_{h,i}-T_{c,i})$ and $\\varepsilon=q/q_{max}$.",
+    "A real exchanger has finite area (finite $NTU$), so the $C_{min}$ stream cannot reach the other stream's inlet temperature and $\\varepsilon<1$ (second-law limit)."
+   ],
+   "explanation": "The reasoning combines the stream energy balances with the temperature limit set by the second law. A student should name $C_{min}$ as the limiting stream.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Compare the LMTD and effectiveness-NTU methods. For each of the following problems say which you would use and why: (a) find the area required to cool oil from 120 $^\\circ$C to 70 $^\\circ$C with water heated from 20 $^\\circ$C to 50 $^\\circ$C; (b) find the outlet temperatures of an existing exchanger of known $UA$ on a day when the flow rates have changed.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o3"
+   ],
+   "markingGuide": [
+    "Both are based on the same energy balances and agree when used consistently.",
+    "(a) All four temperatures are known, so LMTD gives $q$ and $A=q/(U\\Delta T_{lm})$ directly without iteration.",
+    "(b) Outlet temperatures are unknown, so LMTD would need iteration; effectiveness-NTU gives $\\varepsilon$ and $q$ directly from inlet data.",
+    "Effectiveness-NTU is also better when varying flow conditions or when exploring design trade-offs."
+   ],
+   "explanation": "A good answer links the method to which temperatures are known. LMTD is direct for sizing, effectiveness-NTU is direct for rating.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A counterflow exchanger has oil ($C_h=1800$ W/K) entering at 150 $^\\circ$C and water ($C_c=4200$ W/K) entering at 20 $^\\circ$C. The conductance is $UA=3000$ W/K. Find the water outlet temperature in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o1",
+    "ug.mce-heat-transfer.heat-exchangers.effectiveness-ntu.o2"
+   ],
+   "correctValue": 61.0,
+   "tolerance": 0.1,
+   "unit": "degC",
+   "explanation": "$C_{min}=1800$ W/K (oil), $C_r=1800/4200=0.4286$ and $NTU=3000/1800=1.6667$. $\\varepsilon=0.7359$, so $q=\\varepsilon C_{min}(150-20)=172.2$ kW. Then $T_{c,o}=20+q/C_c=61.00$ $^\\circ$C (and $T_{h,o}=54.3$ $^\\circ$C).",
+   "board": "internal"
+  }
+ ]
+}

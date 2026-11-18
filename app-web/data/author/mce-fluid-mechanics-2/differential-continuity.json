@@ -1,0 +1,412 @@
+{
+ "lessonTitle": "Differential Continuity and the Stream Function",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A designer of a wind-tunnel contraction sketches the air velocity as a formula in x and y and needs to know, before anyone builds anything, whether that formula could physically describe an incompressible flow. A single differential test on the velocity field answers the question, and when it passes it hands you a stream function that draws the streamlines for free."
+  },
+  {
+   "type": "text",
+   "markdown": "Mass cannot be created or destroyed at a point. For a fluid of constant density, any small box in the flow must have as much volume flowing out as flowing in. Writing this balance for an infinitesimal box of sides $dx$, $dy$, $dz$ and letting the box shrink gives the **differential continuity equation**. Here $u$, $v$, $w$ are the velocity components (m/s) in the $x$, $y$, $z$ directions."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\partial u}{\\partial x}+\\frac{\\partial v}{\\partial y}+\\frac{\\partial w}{\\partial z}=0\\quad\\text{(incompressible)},\\qquad \\frac{1}{r}\\frac{\\partial (r v_r)}{\\partial r}+\\frac{1}{r}\\frac{\\partial v_\\theta}{\\partial \\theta}+\\frac{\\partial v_z}{\\partial z}=0",
+   "caption": "Incompressible continuity in Cartesian and cylindrical polar coordinates"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Divergence-free velocity field",
+   "text": "Incompressible continuity says $\\nabla\\cdot\\mathbf V=0$: the velocity field has no sources or sinks of volume in the interior of the fluid. If the sum of velocity gradients is not zero at some point, the field would need fluid to be created or destroyed there, so it cannot represent an incompressible flow."
+  },
+  {
+   "type": "text",
+   "markdown": "**Testing a field.** Differentiate each component with respect to its own coordinate and add. If the sum is zero everywhere in the region, the field is a valid incompressible flow; otherwise it is not. For example, $u=2x$, $v=-2y$ has $\\partial u/\\partial x+\\partial v/\\partial y=2-2=0$ and passes (it represents flow into a corner), whereas $u=2x$, $v=2y$ gives $4\\neq0$ and fails. Note that satisfying continuity says nothing about whether the flow also satisfies the momentum equation."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Stream function",
+   "text": "For two-dimensional incompressible flow in the $xy$-plane we define $\\psi(x,y)$ (m$^2$/s) by $u=\\partial\\psi/\\partial y$ and $v=-\\partial\\psi/\\partial x$. With this sign convention continuity is satisfied automatically, because $\\partial u/\\partial x+\\partial v/\\partial y=\\psi_{yx}-\\psi_{xy}=0$. Lines of constant $\\psi$ are streamlines, since along them $d\\psi=\\psi_x dx+\\psi_y dy=-v\\,dx+u\\,dy=0$, i.e. $dy/dx=v/u$."
+  },
+  {
+   "type": "math",
+   "latex": "u=\\frac{\\partial\\psi}{\\partial y},\\qquad v=-\\frac{\\partial\\psi}{\\partial x},\\qquad Q_{12}=\\psi_2-\\psi_1",
+   "caption": "Stream function definition and flow between streamlines, per unit depth normal to the plane"
+  },
+  {
+   "type": "text",
+   "markdown": "**Flow between streamlines.** Consider a vertical line at fixed $x$ from point 1 (at $y_1$) to point 2 (at $y_2>y_1$). The volume flow per unit depth through it is $\\int_{y_1}^{y_2}u\\,dy=\\int \\partial\\psi/\\partial y\\,dy=\\psi_2-\\psi_1$. With this sign convention, a positive difference means net flow in the $+x$ direction across a line drawn from point 1 to point 2. The result does not depend on the path between the two points, because no fluid crosses a streamline. Multiply by the depth (m) to get a volume flow in m$^3$/s."
+  },
+  {
+   "type": "worked_example",
+   "title": "Finding a stream function and a flow rate",
+   "prompt": "A flow is described (with x and y in metres and the constants carrying units such that velocities are in m/s) by u = 2xy and v = -y^2. Show that it is incompressible, find psi (with psi = 0 on the x axis), and compute the flow per unit depth across the line x = 2 m from y = 1 m to y = 3 m.",
+   "steps": [
+    {
+     "text": "Test continuity: differentiate each component with respect to its own coordinate.",
+     "latex": "\\frac{\\partial u}{\\partial x}+\\frac{\\partial v}{\\partial y}=2y+(-2y)=0"
+    },
+    {
+     "text": "Integrate u = dpsi/dy with respect to y, adding an unknown function of x.",
+     "latex": "\\psi=\\int 2xy\\,dy=xy^2+g(x)"
+    },
+    {
+     "text": "Use v = -dpsi/dx = -y^2 - g'(x); this must equal -y^2, so g' = 0 and g is a constant, set to zero because psi = 0 on y = 0.",
+     "latex": "\\psi=xy^2"
+    },
+    {
+     "text": "Evaluate psi at the two ends of the line, both at x = 2 m: psi(2,1) = 2 and psi(2,3) = 18.",
+     "latex": "Q=\\psi_2-\\psi_1=18-2=16\\ \\text{m}^2/\\text{s}"
+    },
+    {
+     "text": "Check by direct integration of u along the line: the integral of 4y from 1 to 3 equals 2(9-1) = 16, which agrees.",
+     "latex": "\\int_1^3 u\\,dy=\\int_1^3 4y\\,dy=16"
+    }
+   ],
+   "answer": "Continuity is satisfied; psi = x y^2 and Q = 16 m^2/s per metre of depth, in the +x direction."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Velocity field test",
+    "Stream function"
+   ],
+   "rows": [
+    [
+     "What it needs",
+     "Differentiate $u,v$ and add: sum must be 0",
+     "Integrate $u=\\psi_y$ and fix the function of $x$ using $v=-\\psi_x$"
+    ],
+    [
+     "Existence",
+     "Any given field can be tested",
+     "Exists only if continuity holds (2D, incompressible)"
+    ],
+    [
+     "Streamlines",
+     "Solve $dy/dx=v/u$",
+     "Plot $\\psi=\\text{const}$"
+    ],
+    [
+     "Flow rate",
+     "Integrate $u\\,dy$ across a line",
+     "Subtract $\\psi$ values: $Q=\\psi_2-\\psi_1$"
+    ],
+    [
+     "Closer line spacing",
+     "Higher speed",
+     "Higher speed (constant $\\Delta\\psi$ between lines)"
+    ]
+   ],
+   "caption": "Two ways of using differential continuity in 2D flow"
+  },
+  {
+   "type": "worked_example",
+   "title": "A second stream function",
+   "prompt": "A two-dimensional field has u = x^2 + 2y and v = -2xy + 3x (SI units, coordinates in metres). Check continuity, find psi, and find the flow per unit depth crossing the line x = 1 m between y = 0 and y = 2 m.",
+   "steps": [
+    {
+     "text": "Test continuity by differentiating each component with respect to its own coordinate.",
+     "latex": "\\frac{\\partial u}{\\partial x}+\\frac{\\partial v}{\\partial y}=2x+(-2x)=0"
+    },
+    {
+     "text": "Integrate u with respect to y, keeping an unknown g(x).",
+     "latex": "\\psi=x^2y+y^2+g(x)"
+    },
+    {
+     "text": "Differentiate with respect to x and require -dpsi/dx = v: -2xy - g' = -2xy + 3x, hence g' = -3x and g = -1.5 x^2.",
+     "latex": "\\psi=x^2y+y^2-1.5x^2"
+    },
+    {
+     "text": "Evaluate at (1, 0) and (1, 2): psi = -1.5 and psi = 2 + 4 - 1.5 = 4.5.",
+     "latex": "Q=\\psi_2-\\psi_1=4.5-(-1.5)=6.0\\ \\text{m}^2/\\text{s}"
+    }
+   ],
+   "answer": "Continuity holds; psi = x^2 y + y^2 - 1.5 x^2 and Q = 6.0 m^2/s per metre of depth."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Always write the continuity sum with the correct signs, then simplify before concluding.",
+    "If the sum is not identically zero, the field cannot be an incompressible flow.",
+    "To build $\\psi$, integrate one velocity component and use the other component to find the unknown function.",
+    "Flow rate between two points = difference of the $\\psi$ values times the depth.",
+    "Check direction: with $u=\\psi_y$ the larger value of $\\psi$ lies above (to the left of the direction of flow)."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Constants in ψ are arbitrary",
+   "text": "Adding a constant to $\\psi$ changes no velocity, so only differences of $\\psi$ matter physically. Typically we pick $\\psi=0$ on a convenient streamline such as a wall or an axis."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Continuity is necessary, not sufficient",
+   "text": "A field that satisfies continuity need not be a real flow: it must also satisfy the Navier-Stokes (or Euler) momentum equations. Likewise a stream function exists for any 2D incompressible flow, whether or not the flow is irrotational."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Incompressible continuity is $\\nabla\\cdot\\mathbf V=0$; test a field by summing $\\partial u/\\partial x+\\partial v/\\partial y(+\\partial w/\\partial z)$.",
+    "In 2D, define $u=\\partial\\psi/\\partial y$ and $v=-\\partial\\psi/\\partial x$; continuity then holds identically and constant-$\\psi$ lines are streamlines.",
+    "The flow per unit depth between two points is $\\psi_2-\\psi_1$, independent of the path joining them.",
+    "Streamlines packed closely together indicate fast flow."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of the following steady two-dimensional velocity fields (components in m/s, x and y in metres) satisfies incompressible continuity?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "u = 5x - 2y, v = 2x + 5y"
+    },
+    {
+     "id": "b",
+     "text": "u = 5x + 2y, v = 5y - 2x"
+    },
+    {
+     "id": "c",
+     "text": "u = 2x - 5y, v = 5x + 2y"
+    },
+    {
+     "id": "d",
+     "text": "u = 5x - 2y, v = 2x - 5y"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "u = 5x - 2y, v = 2x - 5y",
+   "distractorRationale": {
+    "a": "du/dx = 5 and dv/dy = +5 gives 10, so fluid would have to be created.",
+    "b": "du/dx = 5 and dv/dy = +5 gives 10; the cross terms 2y and -2x are irrelevant to continuity.",
+    "c": "du/dx = 2 and dv/dy = 2 gives 4, not zero.",
+    "d": "Correct: du/dx = 5 and dv/dy = -5, summing to zero."
+   },
+   "explanation": "Continuity needs $\\partial u/\\partial x+\\partial v/\\partial y=0$. Only the first field gives $5+(-5)=0$; the cross terms such as $-2y$ and $2x$ do not enter because each component is differentiated with respect to its own coordinate.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Any two-dimensional incompressible flow whose velocity field satisfies continuity must also be irrotational.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Continuity is a statement about volume conservation, while irrotationality requires $\\partial v/\\partial x-\\partial u/\\partial y=0$. For example plane Couette flow $u=Uy/h$, $v=0$ satisfies continuity but has vorticity $-U/h$, so it is not irrotational.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A two-dimensional steady field is u = 4xy and v = a y^2, with x and y in metres and velocities in m/s (so a has units 1/(m s)). Find the value of the constant a (in units of 1/(m s)) needed for the field to satisfy incompressible continuity.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o1"
+   ],
+   "correctValue": -2.0,
+   "tolerance": 0.01,
+   "unit": "1/(m s)",
+   "explanation": "Continuity requires du/dx + dv/dy = 4y + 2a y = 0 for all y. Hence a = -2, so v = -2y^2 and the field passes the test.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The stream function values on two streamlines bounding a planar channel flow are psi = -4 m^2/s and psi = +7 m^2/s (defined by u = dpsi/dy). The channel has a uniform depth of 0.60 m perpendicular to the plane of the flow. Find the total volume flow rate between the two streamlines in m^3/s.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o3"
+   ],
+   "correctValue": 6.6,
+   "tolerance": 0.05,
+   "unit": "m^3/s",
+   "explanation": "The flow per unit depth is the difference in psi, 7 - (-4) = 11 m^2/s. Multiplying by the depth 0.60 m gives Q = 6.6 m^3/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "With the usual convention for a two-dimensional incompressible flow, which pair of expressions defines the velocity components from the stream function psi(x, y)?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "u = dpsi/dx and v = dpsi/dy"
+    },
+    {
+     "id": "b",
+     "text": "u = -dpsi/dy and v = dpsi/dx"
+    },
+    {
+     "id": "c",
+     "text": "u = dpsi/dx and v = -dpsi/dy"
+    },
+    {
+     "id": "d",
+     "text": "u = dpsi/dy and v = -dpsi/dx"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "u = dpsi/dy and v = -dpsi/dx",
+   "distractorRationale": {
+    "a": "This pair gives du/dx + dv/dy = psi_xx + psi_yy, which is not zero in general.",
+    "b": "This is the opposite sign convention used in some texts; the unit defines u = dpsi/dy, so the statement is not the convention used here.",
+    "c": "This pair gives psi_xx - psi_yy, which is not zero in general, so continuity would not be automatic.",
+    "d": "Correct: this pairing satisfies continuity identically."
+   },
+   "explanation": "The sign-convention $u=\\psi_y$, $v=-\\psi_x$ makes continuity vanish identically, since mixed derivatives cancel: $\\psi_{yx}-\\psi_{xy}=0$. The other pairs do not cancel and would not guarantee mass conservation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which stream function corresponds to the incompressible flow u = 6x, v = -6y (stagnation-point flow, using u = dpsi/dy and v = -dpsi/dx, with psi = 0 on the axes)?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "psi = -6xy"
+    },
+    {
+     "id": "b",
+     "text": "psi = 3x^2 - 3y^2"
+    },
+    {
+     "id": "c",
+     "text": "psi = 6x^2 y"
+    },
+    {
+     "id": "d",
+     "text": "psi = 6xy"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "psi = 6xy",
+   "distractorRationale": {
+    "a": "This reverses the sign: dpsi/dy would be -6x, giving u = -6x.",
+    "b": "This is a velocity potential-type expression (phi = 3x^2 - 3y^2 gives u = 6x, v = -6y), not the stream function.",
+    "c": "dpsi/dy = 6x^2, which is not 6x.",
+    "d": "Correct: dpsi/dy = 6x and -dpsi/dx = -6y."
+   },
+   "explanation": "Integrate $u=\\partial\\psi/\\partial y=6x$ to get $\\psi=6xy+g(x)$. Then $v=-\\partial\\psi/\\partial x=-6y-g'$, which equals $-6y$ only if $g'=0$, so $\\psi=6xy$. Note that $3x^2-3y^2$ is the velocity potential of this same flow.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A flow has u = 1.5x + y and v = 0.5y - z in a three-dimensional region (SI units, coordinates in metres). Find the value of the velocity gradient dw/dz, in 1/s, that is required for the flow to satisfy incompressible continuity.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o1"
+   ],
+   "correctValue": -2.0,
+   "tolerance": 0.01,
+   "unit": "1/s",
+   "explanation": "Continuity gives du/dx + dv/dy + dw/dz = 0. Here du/dx = 1.5 and dv/dy = 0.5, so dw/dz = -(1.5 + 0.5) = -2.0 per second.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a plot of streamlines drawn at equal increments of psi, the lines are closer together near a nozzle throat than upstream. What does this tell you?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The flow is compressible at the throat"
+    },
+    {
+     "id": "b",
+     "text": "The speed is lower at the throat, because the lines are crowded"
+    },
+    {
+     "id": "c",
+     "text": "The speed is higher at the throat, because the same flow per unit depth passes through a narrower channel"
+    },
+    {
+     "id": "d",
+     "text": "The pressure must be higher at the throat"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The speed is higher at the throat, because the same flow per unit depth passes through a narrower channel",
+   "distractorRationale": {
+    "a": "The stream function only exists for incompressible flow, so this cannot be a sign of compressibility.",
+    "b": "Crowding means the same flow squeezes through less width, so speed increases, not decreases.",
+    "c": "Correct: equal psi increments carry equal flow rate, so narrower spacing means higher velocity.",
+    "d": "For steady incompressible flow high speed is associated with lower pressure, so this reverses the physics (Bernoulli)."
+   },
+   "explanation": "Between adjacent streamlines the flow per unit depth is the fixed increment $\\Delta\\psi$, and $\\Delta\\psi=\\bar u\\,\\Delta y$. A smaller spacing $\\Delta y$ must therefore be compensated by a larger speed $\\bar u$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Starting from the incompressible continuity equation for two-dimensional flow, show that defining u = dpsi/dy and v = -dpsi/dx guarantees that continuity is satisfied, and show that psi is constant along a streamline.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o1",
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o2"
+   ],
+   "markingGuide": [
+    "States du/dx + dv/dy = 0 for 2D incompressible flow",
+    "Substitutes the definitions to get d2psi/dxdy - d2psi/dydx",
+    "Recognises mixed partial derivatives are equal (for smooth psi), so the sum is identically zero",
+    "Writes dpsi = psi_x dx + psi_y dy = -v dx + u dy",
+    "Uses the streamline condition dy/dx = v/u to show dpsi = 0 along a streamline"
+   ],
+   "explanation": "Substituting the definitions gives $\\partial u/\\partial x+\\partial v/\\partial y=\\psi_{yx}-\\psi_{xy}=0$ by equality of mixed partials. Along a streamline the tangent satisfies $v\\,dx=u\\,dy$, so $d\\psi=-v\\,dx+u\\,dy=0$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A two-dimensional flow has velocity components u = 3x^2 - 3y^2 and v = -6xy (SI units, x and y in metres). (a) Show that the flow is incompressible. (b) Derive its stream function with psi = 0 at the origin. (c) Find the volume flow per unit depth across the line x = 1 m between y = 0 and y = 2 m, and state the direction of net flow.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o2",
+    "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.o3"
+   ],
+   "markingGuide": [
+    "Computes du/dx = 6x and dv/dy = -6x, sum zero",
+    "Integrates u with respect to y: psi = 3x^2 y - y^3 + g(x)",
+    "Uses v = -dpsi/dx = -6xy - g' to show g' = 0 and g = 0 given psi(0,0) = 0",
+    "psi = 3x^2 y - y^3",
+    "Evaluates psi(1,2) - psi(1,0) = -2 m^2/s",
+    "Interprets the negative sign as net flow of 2 m^2/s in the -x direction through the line (consistent with direct integration of u from 0 to 2: 6 - 8 = -2)"
+   ],
+   "explanation": "The stream function is $\\psi=3x^2y-y^3$. At (1, 2) it equals 6 - 8 = -2 and at (1, 0) it equals 0, so $Q=\\psi_2-\\psi_1=-2$ m$^2$/s per metre. The negative value means the net flow crosses the line towards -x, which agrees with $\\int_0^2(3-3y^2)dy=-2$.",
+   "board": "internal"
+  }
+ ]
+}

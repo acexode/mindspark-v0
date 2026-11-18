@@ -1,0 +1,427 @@
+{
+ "lessonTitle": "Pump Performance and Similarity",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A chilled-water pump in a hospital plant runs at 1450 rpm at full duty. When the building load falls, the variable-speed drive slows the motor to 80 per cent of full speed. The pump does not simply do 80 per cent of the work: the flow falls to 80 per cent, but the electrical power it draws falls to about 51 per cent. Understanding why is the heart of pump performance and similarity."
+  },
+  {
+   "type": "text",
+   "markdown": "A rotodynamic pump adds energy to a liquid by turning the impeller. Three quantities describe what it does: the **volume flow rate** $Q$ (m$^3$/s), the **head** $H$ (m of liquid column, the energy added per unit weight) and the **shaft power** $P$ (W) taken from the driver. Measured at several flow rates, they give the performance curves of the pump at one speed. The question for a designer is what happens to those curves when the speed $N$ changes, or when a different size of pump is considered."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Affinity laws",
+   "text": "For one pump (fixed impeller diameter $D$) running at different speeds, with dynamically similar operating points and unchanged efficiency: flow is proportional to speed, head to speed squared and power to speed cubed. They follow from dimensional analysis: with $\\rho$ the liquid density, the flow coefficient $Q/(ND^3)$, head coefficient $gH/(N^2D^2)$ and power coefficient $P/(\\rho N^3 D^5)$ are held constant."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{Q_2}{Q_1}=\\frac{N_2}{N_1},\\qquad \\frac{H_2}{H_1}=\\left(\\frac{N_2}{N_1}\\right)^{2},\\qquad \\frac{P_2}{P_1}=\\left(\\frac{N_2}{N_1}\\right)^{3}",
+   "caption": "Affinity laws for a change of speed at constant impeller diameter"
+  },
+  {
+   "type": "worked_example",
+   "title": "Slowing a pump with the affinity laws",
+   "prompt": "A pump at 1450 rpm delivers 0.05 m$^3$/s at a head of 32 m and absorbs 20.5 kW of shaft power. Predict the corresponding duty at 1160 rpm, assuming the efficiency is unchanged.",
+   "steps": [
+    {
+     "text": "Speed ratio.",
+     "latex": "\\frac{N_2}{N_1}=\\frac{1160}{1450}=0.8"
+    },
+    {
+     "text": "Flow scales with the speed ratio.",
+     "latex": "Q_2=Q_1\\frac{N_2}{N_1}=0.05\\times0.8=0.04\\ \\text{m}^3/\\text{s}"
+    },
+    {
+     "text": "Head scales with the square of the speed ratio.",
+     "latex": "H_2=32\\times(0.8)^2=20.5\\ \\text{m}"
+    },
+    {
+     "text": "Power scales with the cube of the speed ratio.",
+     "latex": "P_2=20.5\\times(0.8)^3=10.5\\ \\text{kW}"
+    }
+   ],
+   "answer": "At 1160 rpm: $Q_2\\approx0.04$ m$^3$/s, $H_2\\approx20.5$ m, $P_2\\approx10.5$ kW."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Symbol",
+    "Scales with speed as",
+    "Effect of a 20% speed reduction"
+   ],
+   "rows": [
+    [
+     "Flow rate",
+     "$Q$",
+     "$N$",
+     "falls to 80%"
+    ],
+    [
+     "Head",
+     "$H$",
+     "$N^2$",
+     "falls to 64%"
+    ],
+    [
+     "Shaft power",
+     "$P$",
+     "$N^3$",
+     "falls to about 51%"
+    ]
+   ],
+   "caption": "Affinity relations at constant diameter"
+  },
+  {
+   "type": "text",
+   "markdown": "**Efficiency.** The useful power given to the liquid is the **hydraulic (water) power** $P_h=\\rho g Q H$. The pump efficiency is the ratio of hydraulic power to the shaft power supplied: $\\eta=P_h/P$. Because the affinity laws scale $Q H$ with $N^3$ and $P$ with $N^3$, efficiency is predicted to stay the same at corresponding points; in practice it falls a little at large speed changes because viscous effects do not scale perfectly. **Specific speed** combines $Q$, $H$ and $N$ into one dimensionless number that is independent of size, so it describes the *shape* of the impeller."
+  },
+  {
+   "type": "math",
+   "latex": "\\eta=\\frac{P_h}{P}=\\frac{\\rho g Q H}{P},\\qquad \\omega_s=\\frac{\\omega\\sqrt{Q}}{(gH)^{3/4}}",
+   "caption": "Pump efficiency and dimensionless specific speed (omega in rad/s, evaluated at best efficiency point)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Efficiency and specific speed",
+   "prompt": "A pump runs at 1450 rpm and delivers 0.04 m$^3$/s of water ($\\rho=998$ kg/m$^3$) at a head of 25 m. The shaft power is 12.8 kW. Find the efficiency and the dimensionless specific speed.",
+   "steps": [
+    {
+     "text": "Hydraulic power.",
+     "latex": "P_h=\\rho g Q H=998\\times9.81\\times0.04\\times25=9790\\ \\text{W}"
+    },
+    {
+     "text": "Efficiency is hydraulic over shaft power.",
+     "latex": "\\eta=\\frac{9790}{12800}=0.765"
+    },
+    {
+     "text": "Convert speed to rad/s.",
+     "latex": "\\omega=\\frac{2\\pi\\times1450}{60}=151.8\\ \\text{rad/s}"
+    },
+    {
+     "text": "Evaluate the specific speed.",
+     "latex": "\\omega_s=\\frac{151.8\\times\\sqrt{0.04}}{(9.81\\times25)^{3/4}}=0.49"
+    }
+   ],
+   "answer": "$\\eta\\approx0.765$ (about 76.5%) and $\\omega_s\\approx0.49$, which is in the radial-flow (centrifugal) range."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Impeller type",
+    "Typical dimensionless $\\omega_s$ (approx.)",
+    "Flow path",
+    "Duty"
+   ],
+   "rows": [
+    [
+     "Radial (centrifugal)",
+     "about 0.2 to 1.0",
+     "Leaves impeller radially",
+     "High head, low flow"
+    ],
+    [
+     "Mixed flow",
+     "about 1.0 to 2.5",
+     "Part radial, part axial",
+     "Moderate head and flow"
+    ],
+    [
+     "Axial (propeller)",
+     "above about 2.5",
+     "Parallel to shaft",
+     "Low head, high flow"
+    ]
+   ],
+   "caption": "Typical ranges, shown for orientation only; boundaries vary between sources"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Pick the best-efficiency duty of the machine; evaluate $\\omega_s$ there with $\\omega$ in rad/s and $H$ in metres.",
+    "Low $\\omega_s$ means a narrow, large-diameter impeller delivering high head at low flow.",
+    "High $\\omega_s$ means a wide, small-diameter impeller delivering low head at high flow.",
+    "Quote the same unit system when comparing: dimensional forms using rpm, m$^3$/s and m give different numbers."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Limits of the affinity laws",
+   "text": "They hold only between dynamically similar points on one pump curve and for the same liquid. A pump working against a system with static head does not move along the system curve in proportion to speed, so matching the new duty to a given system needs the system curve (a later unit). The laws do not apply across large changes in Reynolds number."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "At constant diameter and dynamic similarity, $Q\\propto N$, $H\\propto N^2$ and $P\\propto N^3$.",
+    "Pump efficiency is hydraulic power $\\rho g Q H$ divided by shaft power.",
+    "Dimensionless specific speed $\\omega_s=\\omega\\sqrt Q/(gH)^{3/4}$ indicates impeller type: low for radial, high for axial machines."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A circulating pump has its impeller speed increased by 20% (same impeller, same liquid, similar operating point). By what factor does the shaft power change?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases by a factor of about 1.73"
+    },
+    {
+     "id": "b",
+     "text": "It increases by a factor of 1.20"
+    },
+    {
+     "id": "c",
+     "text": "It increases by a factor of 1.44"
+    },
+    {
+     "id": "d",
+     "text": "It increases by a factor of 2.07"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It increases by a factor of about 1.73",
+   "distractorRationale": {
+    "a": "Correct: it cubes the speed ratio, and 1.2 cubed is about 1.73.",
+    "b": "Treats power as proportional to speed, which is the flow-rate law.",
+    "c": "Squares the speed ratio, which is the head law, not the power law.",
+    "d": "Over-applies the law with a fourth-power relation, which does not exist here."
+   },
+   "explanation": "Power scales with the cube of speed, so the factor is $1.2^3=1.73$. Squaring would give the head ratio and the first power would give the flow ratio.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A pump produces 45 m of head at 2900 rpm. At a similar operating point at 2320 rpm with the same impeller, the head is closest to:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "36 m"
+    },
+    {
+     "id": "b",
+     "text": "28.8 m"
+    },
+    {
+     "id": "c",
+     "text": "23 m"
+    },
+    {
+     "id": "d",
+     "text": "70.3 m"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "28.8 m",
+   "distractorRationale": {
+    "a": "Scales head linearly with speed, which is the flow law.",
+    "b": "Correct: it applies the square of the speed ratio 0.8.",
+    "c": "Uses the cube, which is the power law.",
+    "d": "Inverts the speed ratio, so it raises the head when speed is reduced."
+   },
+   "explanation": "Head scales with the square of speed: $H_2=45\\times(2320/2900)^2=28.8$ m. The other values come from using the wrong exponent or inverting the ratio, and a speed reduction must reduce head.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A dosing pump delivers liquid at a hydraulic power of 6.4 kW while the motor shaft supplies 8.0 kW. Its efficiency is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.25"
+    },
+    {
+     "id": "b",
+     "text": "0.64"
+    },
+    {
+     "id": "c",
+     "text": "0.80"
+    },
+    {
+     "id": "d",
+     "text": "0.20"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "0.80",
+   "distractorRationale": {
+    "a": "Inverts the ratio (shaft over hydraulic power), giving an impossible efficiency above 1.",
+    "b": "Has no basis in the data; it is not the ratio of the two powers.",
+    "c": "Correct: hydraulic power divided by shaft power.",
+    "d": "Takes the loss fraction (1.6 kW of 8.0 kW), not the efficiency."
+   },
+   "explanation": "Efficiency is useful hydraulic power over shaft power: $6.4/8.0=0.80$. The 1.6 kW difference is the loss inside the pump, which is the 0.20 fraction.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A circulating pump runs at 1480 rpm and at its best efficiency point passes 0.30 m$^3$/s against a head of 20.0 m. Using the typical ranges given in the lesson, the dimensionless specific speed is about 1.62 and the suitable impeller type is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Radial (centrifugal)"
+    },
+    {
+     "id": "b",
+     "text": "Axial (propeller)"
+    },
+    {
+     "id": "c",
+     "text": "Positive displacement"
+    },
+    {
+     "id": "d",
+     "text": "Mixed flow"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Mixed flow",
+   "distractorRationale": {
+    "a": "This type suits specific speeds below about 1.0, which would need a higher head per unit flow.",
+    "b": "Axial pumps suit specific speeds above about 2.5, so this duty is too high in head for one.",
+    "c": "Not a rotodynamic type, and specific speed is not used to select it.",
+    "d": "Correct: the specific speed of about 1.62 lies in the mixed-flow range."
+   },
+   "explanation": "With $\\omega=155$ rad/s, $\\omega_s=\\omega\\sqrt Q/(gH)^{3/4}=1.62$. That falls between the radial and axial ranges, so a mixed-flow impeller is appropriate.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A student predicts the effect of slowing a pump using the affinity laws. Which statement is consistent with them (same pump, same liquid, similar operating points)?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o1",
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Halving the speed cuts the head to a quarter and the shaft power to an eighth, while the efficiency is predicted to be unchanged"
+    },
+    {
+     "id": "b",
+     "text": "Halving the speed halves the head and quarters the shaft power"
+    },
+    {
+     "id": "c",
+     "text": "Halving the speed halves the head, the flow and the power"
+    },
+    {
+     "id": "d",
+     "text": "Halving the speed cuts the flow to a quarter and the efficiency to half"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Halving the speed cuts the head to a quarter and the shaft power to an eighth, while the efficiency is predicted to be unchanged",
+   "distractorRationale": {
+    "a": "Correct: it uses the squared and cubed speed ratios and unchanged efficiency.",
+    "b": "Mixes up the exponents: head follows the square and power the cube of speed.",
+    "c": "Treats every quantity as linear in speed, which only holds for flow.",
+    "d": "Flow is linear in speed, and the laws predict unchanged efficiency."
+   },
+   "explanation": "With $N_2/N_1=0.5$: $H_2/H_1=0.25$, $P_2/P_1=0.125$ and $Q_2/Q_1=0.5$. Since hydraulic power and shaft power both scale with $N^3$, the efficiency ratio is predicted to be 1.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water ($\\rho=998$ kg/m$^3$, $g=9.81$ m/s$^2$) is pumped at 0.030 m$^3$/s against a total head of 18.0 m by a pump of efficiency 0.72. Find the shaft power in kW.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o2"
+   ],
+   "correctValue": 7.343,
+   "tolerance": 0.05,
+   "unit": "kW",
+   "explanation": "Hydraulic power is $\\rho g Q H=998\\times9.81\\times0.030\\times18.0=5286.8$ W. Dividing by the efficiency 0.72 gives the shaft power of 7.343 kW.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A pump absorbs 15.0 kW at 1750 rpm. Using the affinity laws, find the shaft power in kW when the speed is reduced to 1400 rpm, assuming similar operating points.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o1"
+   ],
+   "correctValue": 7.68,
+   "tolerance": 0.05,
+   "unit": "kW",
+   "explanation": "Power scales with the cube of speed: $15.0\\times(1400/1750)^3=15.0\\times0.8^3=7.68$ kW. The reduction is far larger than the 20% speed change, which is why variable-speed drives save so much energy.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A boiler-feed pump runs at 2950 rpm and at best efficiency passes 0.012 m$^3$/s at a head of 60.0 m. Calculate the dimensionless specific speed $\\omega_s=\\omega\\sqrt Q/(gH)^{3/4}$ (with $\\omega$ in rad/s, $g=9.81$ m/s$^2$).",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o3"
+   ],
+   "correctValue": 0.283,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "Convert the speed: $\\omega=2\\pi\\times2950/60=308.9$ rad/s. Then $\\omega_s=308.9\\times\\sqrt{0.012}/(9.81\\times60)^{0.75}=0.283$, which is in the radial range, so a centrifugal impeller is appropriate.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A pump delivers a variable flow in a closed pipework loop with no static head. Compare throttling a valve with reducing the pump speed to cut the delivered flow to 70% of the design value. Use the affinity laws to estimate the shaft power in the speed-control case and explain why it saves energy.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o1",
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o2"
+   ],
+   "markingGuide": [
+    "States Q proportional to N, so speed ratio 0.7",
+    "Power proportional to N cubed gives 0.7^3 = 0.343, about 34% of design power (assuming unchanged efficiency)",
+    "Identifies that a throttle keeps speed and head capability high and dissipates the surplus head as loss in the valve",
+    "Notes that hydraulic power needed is rho g Q H with a lower H at lower speed, so speed control delivers less head",
+    "Mentions the caveat that efficiency and similarity hold approximately and drive/motor losses also matter"
+   ],
+   "explanation": "In a friction-dominated loop the system head falls with flow squared, which is exactly how head scales with speed, so the pump stays near its best efficiency as it slows: power falls to $0.7^3\\approx0.34$ of design. A throttle leaves the pump at full speed and burns the excess head across the valve, so power falls much less.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain, in terms of impeller shape and the direction of the flow through it, why a low-specific-speed pump is a radial centrifugal machine while a high-specific-speed pump is axial. State which of head and flow each type is best suited to.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.pump-performance.o3"
+   ],
+   "markingGuide": [
+    "Defines specific speed as dimensionless combination of speed, flow and head, independent of size, describing impeller shape",
+    "Low specific speed: high head and low flow, narrow impeller of large diameter with flow leaving radially, head generated mainly by centrifugal action",
+    "High specific speed: low head and high flow, wide impeller of small diameter relative to flow area, flow stays axial",
+    "Mixed flow lies between",
+    "Notes that choice is by specific speed at the best efficiency point to maximise efficiency"
+   ],
+   "explanation": "Because $\\omega_s\\propto\\sqrt Q/H^{3/4}$, a high head per unit flow gives a low value and requires the large radius change of a centrifugal impeller, while a large flow at small head gives a high value and is passed with little radius change by an axial impeller.",
+   "board": "internal"
+  }
+ ]
+}

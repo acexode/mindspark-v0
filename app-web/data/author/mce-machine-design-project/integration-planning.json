@@ -1,0 +1,401 @@
+{
+ "lessonTitle": "Integration: Assembly Sequence, Mass Budget and Clash Checking",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Two weeks before a drone's first flight test, the team discovers that the battery tray fouls the motor mount in the CAD assembly, that the last four fasteners of the gimbal are hidden behind a camera that was bolted on earlier, and that the total mass is 140 g over the limit. None of these is a design-calculation error; they are integration errors, and they are cheapest to find on paper before parts are made."
+  },
+  {
+   "type": "text",
+   "markdown": "**Systems integration** is the work of making separately designed subsystems fit together in space, in sequence and within shared budgets. Three tools do most of the work: an *assembly sequence* that proves every fastener can be reached, a *mass budget* kept up to date with a stated margin, and *interference checking* in the CAD assembly that finds parts that overlap. In a team project each subsystem owner works in isolation, so these checks have to be done deliberately on the combined model."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Assembly sequence and access",
+   "text": "An assembly sequence is an ordered list of steps showing which part is added when, and which fasteners are tightened at each step. Every fastener must be accessible at its step: the tool and the operator's hand must reach the fastener head, the tool must have swing room, and the fastener must be reachable *before* later parts cover it. Where this is impossible, either the sequence is changed or the design is."
+  },
+  {
+   "type": "text",
+   "markdown": "**Checking access.** For a hex bolt driven by a socket, the socket outer diameter $d_s$ sets a minimum radial clearance from the bolt axis to any neighbouring wall of about $d_s/2$ plus a small allowance (typically 1 mm). A socket head cap screw driven by a hex key needs only enough room for the key, which is much less. The tool also needs axial room: the socket plus its drive extension must be able to line up with the bolt axis."
+  },
+  {
+   "type": "worked_example",
+   "title": "Checking fastener access",
+   "prompt": "A hex bolt is to be tightened with a socket of outer diameter 22 mm. A vertical wall stands 9 mm from the bolt axis. Is the bolt accessible, and what is the smallest acceptable distance if a 1 mm allowance is used?",
+   "steps": [
+    {
+     "text": "Radial space needed is half the socket diameter plus the allowance.",
+     "latex": "r_{\\min}=\\frac{22}{2}+1=12\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Compare with the actual distance: $9<12$ mm, so the socket cannot reach the bolt head."
+    },
+    {
+     "text": "Options: move the bolt at least 3 mm further from the wall, or change to a socket head cap screw with a hex key, which needs less radial room."
+    }
+   ],
+   "answer": "Not accessible as drawn; the bolt axis must be at least 12 mm from the wall or the fastener type must change."
+  },
+  {
+   "type": "text",
+   "markdown": "**Sequencing rules.** Work from the inside to the outside and from the base upward: fasteners hidden under a later part must be tightened first; parts that cover several fasteners go on last; heavy or awkward parts are placed early while access is greatest; and the sequence should allow a part to be removed for service without dismantling the whole unit (a typical goal of the project's maintenance requirement)."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{margin}=M_{\\mathrm{limit}}-M_{\\mathrm{predicted}},\\qquad \\text{margin}\\,(\\%)=\\frac{M_{\\mathrm{limit}}-M_{\\mathrm{predicted}}}{M_{\\mathrm{limit}}}\\times100",
+   "caption": "Mass budget margin. M_limit is the allowed total mass in kg and M_predicted is the sum of the current subsystem masses."
+  },
+  {
+   "type": "worked_example",
+   "title": "Maintaining a mass budget",
+   "prompt": "A rover has a mass limit of 12.0 kg. The current subsystem masses are frame 4.2 kg, drive 3.1 kg, electronics 1.4 kg, cover 1.6 kg and wiring 0.5 kg. Report the margin, then update it after the drive motor grows by 0.9 kg.",
+   "steps": [
+    {
+     "text": "Total predicted mass.",
+     "latex": "M=4.2+3.1+1.4+1.6+0.5=10.8\\ \\mathrm{kg}"
+    },
+    {
+     "text": "Margin against the limit.",
+     "latex": "12.0-10.8=1.2\\ \\mathrm{kg}\\;\\Rightarrow\\;\\frac{1.2}{12.0}=10.0\\%"
+    },
+    {
+     "text": "After the motor change the total is 11.7 kg, so the margin falls to $12.0-11.7=0.3$ kg, which is $2.5\\%$.",
+     "latex": "\\frac{0.3}{12.0}\\times100=2.5\\%"
+    },
+    {
+     "text": "Report: a 2.5% margin is thin for a design that is still evolving; a project may specify a minimum margin (for example 5%, typical) and flag a breach as a risk."
+    }
+   ],
+   "answer": "Initial margin 1.2 kg (10%); after the change 0.3 kg (2.5%)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "What it checks",
+    "Limitation"
+   ],
+   "rows": [
+    [
+     "Assembly sequence plan",
+     "Every fastener reachable at its step",
+     "Needs tool dimensions and a realistic order"
+    ],
+    [
+     "Mass budget",
+     "Sum of subsystem masses against a limit, with margin",
+     "Depends on honest, current mass estimates"
+    ],
+    [
+     "Static interference check",
+     "Overlap of solid models in the assembled position",
+     "Does not test moving positions or tolerance variation"
+    ],
+    [
+     "Kinematic or swept-volume check",
+     "Clashes during the range of motion",
+     "Needs a motion model of the mechanism"
+    ]
+   ],
+   "caption": "Integration checks and what each can miss."
+  },
+  {
+   "type": "text",
+   "markdown": "**Interference checking.** CAD software can compare every pair of solids in an assembly and report any pair whose volumes overlap, and the depth of the overlap. A clash may be a true design error (two parts cannot occupy one place), an intended press fit modelled at nominal size (acceptable), or a model error such as a missing clearance on a hole. Each reported clash must be classified. A static check, done in one position, does not catch parts that collide only when a mechanism moves, so moving assemblies must also be checked through their range of motion, with tolerance allowed."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Draw the assembly sequence and mark the tool and access direction for each fastener.",
+    "Keep a mass table with an owner for each line and a margin line; update it at every design change.",
+    "Run interference checks on the whole assembly after each major revision.",
+    "Classify each clash as error, intended fit or model issue, and assign an owner to close it."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Margin is reported, not hidden",
+   "text": "A budget is only useful if it shows the margin honestly at each review. Early in a project mass estimates tend to grow, so a healthy margin early on is expected to shrink; a negative margin is an early warning that must lead to an action."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "A clean clash report is not proof of access",
+   "text": "Interference checking finds overlapping solids, not blocked tools. A bolt can be perfectly clear of every part and still be unreachable because a socket cannot get to it. Check access with a model of the tool or a swept envelope."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Plan the assembly order so that every fastener can be reached by its tool at its step; check radial and axial clearances against the tool size.",
+    "Maintain a mass budget with the margin $M_{\\mathrm{limit}}-M_{\\mathrm{predicted}}$ reported in kg and as a percentage of the limit, updated at each change.",
+    "Use CAD interference checking to find clashes, classify each one, and remember that static checks miss moving positions and access problems."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a gearbox, four bolts that hold the bearing carrier are located directly under the output cover plate. Which assembly sequence is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Tighten the carrier bolts first, then fit the cover plate over them"
+    },
+    {
+     "id": "b",
+     "text": "Fit the cover plate first and then reach the carrier bolts through its gaps"
+    },
+    {
+     "id": "c",
+     "text": "Fit the cover plate and carrier together and tighten the bolts afterwards if they can be seen"
+    },
+    {
+     "id": "d",
+     "text": "Tighten the cover plate only and omit the carrier bolts"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Tighten the carrier bolts first, then fit the cover plate over them",
+   "distractorRationale": {
+    "a": "Correct: fasteners hidden by a later part must be tightened before that part goes on.",
+    "b": "The bolts would then be hidden or blocked by the cover.",
+    "c": "There is no access to the bolts once the cover is in place.",
+    "d": "Omitting fasteners leaves the carrier unsecured."
+   },
+   "explanation": "The sequence must follow the order of access: inner, hidden fasteners go first and covering parts last. Reversing the order makes the carrier bolts unreachable without dismantling the cover.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A hex bolt must be driven with a socket of outer diameter 24 mm, but a neighbouring wall stands 10 mm from the bolt axis, and the wall cannot move. Which change gives access?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Use a socket head cap screw driven by a hex key"
+    },
+    {
+     "id": "b",
+     "text": "Use a longer bolt of the same hex head type"
+    },
+    {
+     "id": "c",
+     "text": "Add a washer under the bolt head"
+    },
+    {
+     "id": "d",
+     "text": "Paint the wall a contrasting colour"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Use a socket head cap screw driven by a hex key",
+   "distractorRationale": {
+    "a": "Correct: a hex key needs much less radial room than a 24 mm socket.",
+    "b": "A longer bolt does not change the radial space needed by the socket.",
+    "c": "A washer does not move the wall or reduce the socket size.",
+    "d": "Colour has no effect on tool clearance."
+   },
+   "explanation": "The socket needs about 12 mm radius plus an allowance and only 10 mm is available. Changing the fastener drive style reduces the radial room needed, while a longer bolt or washer leaves the problem unchanged.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A system has a mass limit of 50 kg and a current predicted mass of 46 kg. How should the margin be reported?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4 kg, which is 8% of the limit"
+    },
+    {
+     "id": "b",
+     "text": "4 kg, which is 8.7% of the predicted mass and is not related to the limit"
+    },
+    {
+     "id": "c",
+     "text": "46 kg, because that is the current mass"
+    },
+    {
+     "id": "d",
+     "text": "Zero, because the mass is within the limit"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "4 kg, which is 8% of the limit",
+   "distractorRationale": {
+    "a": "Correct: margin = limit minus predicted, and 4/50 = 8%.",
+    "b": "The percentage margin is relative to the limit, so 4/50 and not 4/46.",
+    "c": "The current mass is the predicted total, not the margin.",
+    "d": "Being within the limit means a positive margin, not zero."
+   },
+   "explanation": "The margin is the unused part of the limit: $50-46=4$ kg. Expressed as a percentage of the limit it is $4/50=8\\%$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Early in a project the mass budget shows a 15% margin. A senior engineer says not to remove it yet. What is the main reason?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Predicted masses usually grow as design detail is added, so the margin is expected to be consumed"
+    },
+    {
+     "id": "b",
+     "text": "Margin is a cost reserve for extra testing and tooling, not for mass"
+    },
+    {
+     "id": "c",
+     "text": "The limit will be raised automatically later"
+    },
+    {
+     "id": "d",
+     "text": "Margin has no purpose after the first review"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Predicted masses usually grow as design detail is added, so the margin is expected to be consumed",
+   "distractorRationale": {
+    "a": "Correct: unforeseen brackets, fasteners and wiring typically add mass.",
+    "b": "Margin here is a mass reserve; a cost reserve is a different budget line.",
+    "c": "Limits are requirements and do not rise automatically.",
+    "d": "Margin is needed through to final delivery."
+   },
+   "explanation": "Mass estimates are optimistic early on because small items such as fasteners, cables and brackets are not yet modelled. Margin gives room for that growth, and its erosion is tracked as a measure of project health.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A static interference check on a folding-arm assembly in its stowed position reports no clashes. Why is it still unsafe to conclude that the design is free of clashes?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The arm may collide with other parts at positions during its motion that the single-position check did not test"
+    },
+    {
+     "id": "b",
+     "text": "Static checks always report fewer clashes than exist because of rounding"
+    },
+    {
+     "id": "c",
+     "text": "The check cannot detect solid parts in an assembly"
+    },
+    {
+     "id": "d",
+     "text": "A clean report means the model needs no further checks at any later revision"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The arm may collide with other parts at positions during its motion that the single-position check did not test",
+   "distractorRationale": {
+    "a": "Correct: only a swept or multi-position check covers the motion range.",
+    "b": "Rounding is not the cause of missed clashes.",
+    "c": "The check does compare solids; it is limited to the position tested.",
+    "d": "A clean result applies only to the revision and positions checked, so it must be repeated after changes."
+   },
+   "explanation": "Interference checking evaluates the solids as positioned. A mechanism moves, so each additional position, or a swept envelope, must be checked as well, and tolerances on fits should also be considered.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "The mass limit for a robot arm is 85 kg. The current subsystem masses are base 31.5 kg, links 22.8 kg, actuators 14.6 kg and controller 9.4 kg. Find the mass margin against the limit in kg.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o2"
+   ],
+   "correctValue": 6.7,
+   "tolerance": 0.05,
+   "unit": "kg",
+   "explanation": "The total is $31.5+22.8+14.6+9.4=78.3$ kg, so the margin is $85-78.3=6.7$ kg. A positive margin means the design is currently within budget.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A sensor module has a mass limit of 6.5 kg and a predicted mass of 5.9 kg. Express the margin as a percentage of the limit.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o2"
+   ],
+   "correctValue": 9.230769,
+   "tolerance": 0.1,
+   "unit": "%",
+   "explanation": "The margin is $6.5-5.9=0.6$ kg, and $0.6/6.5\\times100=9.23\\%$. The percentage is divided by the limit, not by the predicted mass.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "In a CAD check of a gear cavity the internal depth between two faces is 50.0 mm. The stack of components placed in it has a bearing 17.0 mm thick, a spacer 12.4 mm thick and a gear 22.5 mm thick, all at nominal size. Find the interference (overlap) depth in mm.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o3"
+   ],
+   "correctValue": 1.9,
+   "tolerance": 0.05,
+   "unit": "mm",
+   "explanation": "The stack height is $17.0+12.4+22.5=51.9$ mm, which exceeds the 50.0 mm cavity by $51.9-50.0=1.9$ mm. The interference check would report this as a true clash needing a design change.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A pump unit consists of a base plate, a motor, a pump, a coupling, a coupling guard and an inlet pipe. The motor foot bolts are under the guard's flange, and the coupling must be aligned after both machines are bolted down. Propose an assembly sequence and justify it with access arguments.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o1"
+   ],
+   "markingGuide": [
+    "Base plate first, then motor and pump are placed and loosely bolted",
+    "Alignment and tightening of motor and pump bolts done before the guard goes on",
+    "Coupling fitted and aligned before the guard",
+    "Guard (which covers fasteners) fitted last",
+    "Inlet pipe connected without loading the pump; checks tool access for each fastener",
+    "Allows service removal of the guard without dismantling the machines"
+   ],
+   "explanation": "Parts that hide fasteners are added last and fasteners that need adjustment are tightened first. This makes alignment possible and lets the guard be removed for servicing.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "After a design update the mass budget of a drone shows a predicted 2.46 kg against a 2.40 kg limit, and an interference check reports a 0.8 mm overlap between the battery tray and a motor mount. Explain how you would report and respond to each problem in a design review.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o2",
+    "ug.mce-machine-design-project.systems-integration.integration-planning.o3"
+   ],
+   "markingGuide": [
+    "Reports margin as limit minus predicted: negative 0.06 kg, about $-2.5\\%$",
+    "Flags the breach as a risk with an owner and an action date, not hidden by changing the limit",
+    "Identifies candidate mass reductions and checks the effect on requirements",
+    "Classifies the clash as true error, intended fit or model issue, and states it is a true overlap here unless justified",
+    "Proposes a design change (move or reshape the tray) and re-run of the interference check",
+    "Notes that the check is static and that the moving positions and tolerances are also tested"
+   ],
+   "explanation": "Both problems are reported honestly with owners and actions. The mass margin is negative by 0.06 kg ($-2.5\\%$ of the limit), and the clash needs a geometry change followed by a repeat check.",
+   "board": "internal"
+  }
+ ]
+}

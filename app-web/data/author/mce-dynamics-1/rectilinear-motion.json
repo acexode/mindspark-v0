@@ -1,0 +1,417 @@
+{
+ "lessonTitle": "Rectilinear Motion: Integrating Acceleration",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A lift controller in a tall building logs the car's acceleration every 10 ms. From that log alone, with no position sensor, the engineers must work out where the car is, how fast it is moving and how far it has travelled. Integration turns an acceleration record into a position."
+  },
+  {
+   "type": "text",
+   "markdown": "**Rectilinear motion** is motion of a particle along a straight line. We choose an origin $O$ on the line and a positive direction, then describe the particle with a single signed coordinate $s$ (m). Velocity $v$ (m/s) and acceleration $a$ (m/s$^2$) are also signed: a negative $v$ means motion in the negative direction, and a negative $a$ means the velocity is decreasing algebraically (which is a speeding up if $v$ is also negative)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Kinematic definitions",
+   "text": "Velocity is the rate of change of position, $v=ds/dt$. Acceleration is the rate of change of velocity, $a=dv/dt$. Displacement is the change in position $\\Delta s=s_2-s_1$ (signed); distance travelled is the total path length (always non-negative)."
+  },
+  {
+   "type": "math",
+   "latex": "v=\\frac{ds}{dt},\\qquad a=\\frac{dv}{dt}=\\frac{d^2s}{dt^2},\\qquad a\\,ds=v\\,dv",
+   "caption": "Eliminating time between the first two relations gives the third, useful when $a$ is given as a function of position."
+  },
+  {
+   "type": "text",
+   "markdown": "To go from acceleration back to position we integrate, and each integration introduces a constant fixed by an **initial condition**. If $a(t)$ is known, with $v=v_0$ and $s=s_0$ at $t=0$, we integrate twice. Without both initial conditions the answer is undetermined: the same $a(t)$ describes a whole family of motions."
+  },
+  {
+   "type": "math",
+   "latex": "v(t)=v_0+\\int_0^t a(\\tau)\\,d\\tau,\\qquad s(t)=s_0+\\int_0^t v(\\tau)\\,d\\tau",
+   "caption": "The dummy variable $\\tau$ avoids confusing the integration variable with the upper limit $t$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Integrating a time-varying acceleration",
+   "prompt": "A test trolley moves along a rail with $a=6-0.4t$ m/s$^2$ ($t$ in s). At $t=0$ it is at $s_0=5$ m with $v_0=2$ m/s. Find $v$ and $s$ at $t=10$ s.",
+   "steps": [
+    {
+     "text": "Integrate $a$ once and apply $v(0)=2$.",
+     "latex": "v=2+\\int_0^t(6-0.4\\tau)\\,d\\tau=2+6t-0.2t^2"
+    },
+    {
+     "text": "Integrate $v$ and apply $s(0)=5$.",
+     "latex": "s=5+\\int_0^t(2+6\\tau-0.2\\tau^2)\\,d\\tau=5+2t+3t^2-\\tfrac{0.2}{3}t^3"
+    },
+    {
+     "text": "Evaluate at $t=10$ s.",
+     "latex": "v=2+60-20=42\\ \\text{m/s},\\quad s=5+20+300-66.67=258.3\\ \\text{m}"
+    }
+   ],
+   "answer": "$v(10)=42$ m/s and $s(10)\\approx 258.3$ m."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "When the acceleration is **constant**, the integrals can be done once and for all. Eliminating $t$ gives a relation between speed and distance that is the main tool for **stopping distance**: a vehicle braking at constant deceleration $a_b$ (a positive magnitude) from speed $v_0$ to rest covers $v_0^2/(2a_b)$. Stopping distance therefore grows with the square of the initial speed. Real drivers also travel $v_0 t_r$ during a reaction time $t_r$ before braking begins."
+  },
+  {
+   "type": "math",
+   "latex": "v=v_0+at,\\qquad s=s_0+v_0t+\\tfrac12at^2,\\qquad v^2=v_0^2+2a(s-s_0)"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Known",
+    "Unknown wanted",
+    "Use"
+   ],
+   "rows": [
+    [
+     "$a,\\ v_0,\\ t$",
+     "$v$",
+     "$v=v_0+at$"
+    ],
+    [
+     "$a,\\ v_0,\\ t$",
+     "$s-s_0$",
+     "$s-s_0=v_0t+\\tfrac12at^2$"
+    ],
+    [
+     "$a,\\ v_0,\\ s-s_0$",
+     "$v$ (no time)",
+     "$v^2=v_0^2+2a(s-s_0)$"
+    ],
+    [
+     "$v_0,\\ v,\\ a$",
+     "$t$",
+     "$t=(v-v_0)/a$"
+    ]
+   ],
+   "caption": "Choosing a constant-acceleration equation: pick the one that lacks the quantity you neither know nor want."
+  },
+  {
+   "type": "worked_example",
+   "title": "Stopping distance with reaction time",
+   "prompt": "A car travels at 90 km/h on a level road. The driver reacts in 0.8 s, then brakes with constant deceleration 7.5 m/s$^2$. Find the total stopping distance.",
+   "steps": [
+    {
+     "text": "Convert units: 90 km/h $=90/3.6=25$ m/s.",
+     "latex": "v_0=25\\ \\text{m/s}"
+    },
+    {
+     "text": "Reaction phase at constant speed.",
+     "latex": "s_r=v_0t_r=25(0.8)=20\\ \\text{m}"
+    },
+    {
+     "text": "Braking phase from $v^2=v_0^2+2a(s-s_0)$ with $v=0$, $a=-7.5$.",
+     "latex": "s_b=\\frac{v_0^2}{2a_b}=\\frac{625}{15}=41.7\\ \\text{m}"
+    },
+    {
+     "text": "Add the phases.",
+     "latex": "s_{stop}=20+41.7=61.7\\ \\text{m}"
+    }
+   ],
+   "answer": "The total stopping distance is about 61.7 m (of which 20 m is the reaction distance)."
+  },
+  {
+   "type": "text",
+   "markdown": "Graphs give a visual form of the same calculus. On a **$v$-$t$ graph**, the slope at any instant is the acceleration and the signed area under the curve between two times is the displacement. On an **$a$-$t$ graph**, the signed area is the change in velocity $\\Delta v$, not the velocity itself; you must still add $v_0$. Areas above the time axis count positive and areas below count negative."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading a v-t graph",
+   "prompt": "A shuttle starts from rest. Its velocity rises linearly to 12 m/s in 8 s, stays constant for 20 s, then falls linearly to zero in 6 s. Find the total displacement and the average velocity.",
+   "steps": [
+    {
+     "text": "Accelerating phase: a triangle.",
+     "latex": "\\Delta s_1=\\tfrac12(8)(12)=48\\ \\text{m}"
+    },
+    {
+     "text": "Cruise phase: a rectangle.",
+     "latex": "\\Delta s_2=12(20)=240\\ \\text{m}"
+    },
+    {
+     "text": "Braking phase: a triangle.",
+     "latex": "\\Delta s_3=\\tfrac12(6)(12)=36\\ \\text{m}"
+    },
+    {
+     "text": "Sum, and divide by total time $8+20+6=34$ s.",
+     "latex": "\\Delta s=324\\ \\text{m},\\quad v_{avg}=324/34=9.53\\ \\text{m/s}"
+    }
+   ],
+   "answer": "Displacement 324 m; average velocity about 9.53 m/s."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Displacement is not distance",
+   "text": "If a particle reverses direction, net displacement (signed area) is smaller than distance travelled (sum of absolute areas). Also never apply the constant-acceleration equations across an interval where $a$ changes."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Integrate $a$ to get $v$ and $v$ to get $s$, using the initial conditions to fix both constants.",
+    "For constant $a$, $v^2=v_0^2+2a(s-s_0)$ gives the stopping distance $v_0^2/(2a_b)$, which scales with $v_0^2$; add $v_0t_r$ for reaction time.",
+    "On graphs, slopes give the next derivative and signed areas give the change in the quantity: $v$-$t$ area is displacement, $a$-$t$ area is $\\Delta v$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "On a velocity-time graph for a particle moving along a line, the slope of the curve at a given instant represents which quantity?",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The distance travelled up to that instant"
+    },
+    {
+     "id": "b",
+     "text": "The average speed up to that instant"
+    },
+    {
+     "id": "c",
+     "text": "The acceleration at that instant"
+    },
+    {
+     "id": "d",
+     "text": "The displacement up to that instant"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The acceleration at that instant",
+   "distractorRationale": {
+    "a": "Distance is a sum of absolute areas, not a slope.",
+    "b": "Average speed is total distance divided by elapsed time, not a slope.",
+    "c": "Correct: slope of $v$-$t$ is $dv/dt=a$.",
+    "d": "Displacement is the area under the curve, not the slope."
+   },
+   "explanation": "The slope of a graph is the derivative of the plotted quantity with respect to time. Since $a=dv/dt$, the slope of a $v$-$t$ graph is the acceleration, while areas under it give displacement.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A lorry brakes to rest with constant deceleration. If the same lorry, with the same deceleration, starts braking from twice the speed, its braking distance becomes",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Three times as large"
+    },
+    {
+     "id": "b",
+     "text": "Four times as large"
+    },
+    {
+     "id": "c",
+     "text": "Unchanged"
+    },
+    {
+     "id": "d",
+     "text": "Twice as large"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Four times as large",
+   "distractorRationale": {
+    "a": "No kinematic relation gives a factor of three.",
+    "b": "Correct: $s=v_0^2/(2a_b)$, so doubling $v_0$ multiplies $s$ by 4.",
+    "c": "Distance clearly depends on initial speed.",
+    "d": "Would be true only if distance scaled linearly with speed."
+   },
+   "explanation": "From $v^2=v_0^2+2a(s-s_0)$ with $v=0$, braking distance is $v_0^2/(2a_b)$. It is proportional to $v_0^2$, so doubling the speed quadruples the distance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A particle moves along a line with $a=3t^2$ m/s$^2$ ($t$ in s). At $t=0$ it is at $s_0=5$ m with $v_0=1$ m/s. Its position at $t=2$ s is",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "11 m"
+    },
+    {
+     "id": "b",
+     "text": "9 m"
+    },
+    {
+     "id": "c",
+     "text": "7 m"
+    },
+    {
+     "id": "d",
+     "text": "23 m"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "11 m",
+   "distractorRationale": {
+    "a": "Correct: $v=1+t^3$, $s=5+t+t^4/4=5+2+4=11$ m.",
+    "b": "Omits the $v_0t$ term (2 m): $5+4=9$ m.",
+    "c": "Keeps only $s_0$ and the $v_0t$ term, dropping the acceleration contribution: $5+2=7$ m.",
+    "d": "Forgets the factor 1/4 in integrating $t^3$: $5+2+16=23$ m."
+   },
+   "explanation": "Integrating once gives $v=1+t^3$ using $v_0=1$, and integrating again gives $s=5+t+t^4/4$ using $s_0=5$. At $t=2$ s this is $5+2+4=11$ m.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An $a$-$t$ graph shows a constant $a=+2$ m/s$^2$ from $t=0$ to 4 s, then a constant $a=-1$ m/s$^2$ from 4 s to 6 s. The change in velocity over the first 6 s is",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "6 m/s"
+    },
+    {
+     "id": "b",
+     "text": "10 m/s"
+    },
+    {
+     "id": "c",
+     "text": "8 m/s"
+    },
+    {
+     "id": "d",
+     "text": "4 m/s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "6 m/s",
+   "distractorRationale": {
+    "a": "Correct: signed area $=2(4)+(-1)(2)=6$ m/s.",
+    "b": "Adds the areas without respecting the sign of the second segment: $8+2$.",
+    "c": "Counts only the positive segment, ignoring the deceleration.",
+    "d": "Averages or otherwise mishandles the two accelerations."
+   },
+   "explanation": "The signed area under an $a$-$t$ graph is $\\Delta v$. The first segment contributes $+8$ m/s and the second contributes $-2$ m/s, giving $+6$ m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A car travelling at 30 m/s has a driver reaction time of 1.0 s, after which the car brakes at a constant 6 m/s$^2$ to rest. The total distance from the moment the hazard appears to rest is",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "105 m"
+    },
+    {
+     "id": "b",
+     "text": "55 m"
+    },
+    {
+     "id": "c",
+     "text": "75 m"
+    },
+    {
+     "id": "d",
+     "text": "180 m"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "105 m",
+   "distractorRationale": {
+    "a": "Correct: $30(1.0)+900/(2\\cdot6)=30+75=105$ m.",
+    "b": "Not supported by any consistent calculation.",
+    "c": "Braking distance alone, $900/12$; it ignores the reaction distance.",
+    "d": "Uses $v_0^2/a$ instead of $v_0^2/(2a)$, then adds 30 m."
+   },
+   "explanation": "During the reaction time the car moves at constant speed, $30\\times1.0=30$ m. Braking then covers $v_0^2/(2a_b)=900/12=75$ m, and the total is 105 m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A sled on a test track is accelerated with $a=12t-3t^2$ m/s$^2$ ($t$ in s), starting from rest at the origin. Find its position at $t=4$ s, in metres.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o1"
+   ],
+   "correctValue": 64,
+   "tolerance": 0.5,
+   "unit": "m",
+   "explanation": "Integrating gives $v=6t^2-t^3$ (using $v_0=0$) and $s=2t^3-t^4/4$ (using $s_0=0$). At $t=4$ s this is $128-64=64$ m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A railway wagon rolls at 54 km/h and is braked at a constant 2.5 m/s$^2$ to rest. Find its stopping distance in metres.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o2"
+   ],
+   "correctValue": 45,
+   "tolerance": 0.5,
+   "unit": "m",
+   "explanation": "Convert 54 km/h to 15 m/s. Then $s=v_0^2/(2a_b)=225/5=45$ m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The velocity of a cart varies linearly from $-4$ m/s at $t=0$ to $+6$ m/s at $t=5$ s. Find its net displacement over the 5 s, in metres (positive in the +v direction).",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o3"
+   ],
+   "correctValue": 5,
+   "tolerance": 0.1,
+   "unit": "m",
+   "explanation": "The velocity crosses zero at $t=2$ s. The area below the axis is $\\tfrac12(2)(-4)=-4$ m and above it is $\\tfrac12(3)(6)=+9$ m, so net displacement is $+5$ m (equivalently average velocity 1 m/s times 5 s).",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A particle's $v$-$t$ graph crosses the time axis once. Explain how to obtain from the graph (i) the net displacement and (ii) the total distance travelled, and explain why the area under an $a$-$t$ graph gives $\\Delta v$ and not $v$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o3"
+   ],
+   "markingGuide": [
+    "Displacement is the signed area under $v$-$t$ (areas below the axis negative).",
+    "Distance is the sum of absolute values of the areas on either side of the zero crossing.",
+    "Reason: $\\Delta s=\\int v\\,dt$, so the two quantities differ whenever $v$ changes sign.",
+    "Area under $a$-$t$ is $\\int a\\,dt=v_2-v_1=\\Delta v$.",
+    "The initial velocity must be added to obtain $v$ at a later time."
+   ],
+   "explanation": "Because $s$ is the time integral of $v$, signed areas give displacement, while distance needs absolute values. Likewise $\\int a\\,dt$ is only the change $v_2-v_1$, so the starting velocity is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A particle's acceleration is given as a function of position, $a=f(s)$, with known $v_0$ at $s_0$. Show how to find $v(s)$, and explain why initial conditions are needed when integrating.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.rectilinear-and-curvilinear-kinematics.rectilinear-motion.o1"
+   ],
+   "markingGuide": [
+    "Use $a\\,ds=v\\,dv$ obtained by eliminating $dt$ from $v=ds/dt$ and $a=dv/dt$.",
+    "Integrate: $\\tfrac12(v^2-v_0^2)=\\int_{s_0}^{s}f(s)\\,ds$.",
+    "Solve for $v$ and state the sign by physical reasoning.",
+    "Each integration yields a constant of integration; $v_0$ and $s_0$ select one motion from the family consistent with $a$."
+   ],
+   "explanation": "Writing $a=v\\,dv/ds$ removes time and makes the equation separable in $v$ and $s$. The integration constants are not arbitrary: they are fixed by the known state at the start.",
+   "board": "internal"
+  }
+ ]
+}

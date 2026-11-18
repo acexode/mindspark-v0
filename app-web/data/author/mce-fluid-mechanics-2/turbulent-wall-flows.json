@@ -1,0 +1,402 @@
+{
+ "lessonTitle": "Turbulent Wall-Bounded Flows: Log Law and Friction",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "In a district-heating main the water at the pipe wall moves at a snail's pace, yet a few millimetres away it is already moving at about two thirds of the centreline speed. That blunt, flattened velocity profile is the signature of turbulent flow, and it explains why turbulent pipes need far more pumping power than laminar ones. A single logarithmic formula describes most of the profile."
+  },
+  {
+   "type": "text",
+   "markdown": "Near a solid wall the turbulent fluctuations are damped, so the wall shear stress $\\tau_w$ is the key quantity that sets the scale of the flow. We combine it with density and viscosity to form the **friction velocity** $u_\\tau=\\sqrt{\\tau_w/\\rho}$ (m/s), a velocity scale (not a real flow speed) that characterises the turbulence near the wall, and the **viscous length scale** $\\nu/u_\\tau$ (m). With these we define dimensionless wall variables."
+  },
+  {
+   "type": "math",
+   "latex": "u_\\tau=\\sqrt{\\frac{\\tau_w}{\\rho}},\\qquad u^+=\\frac{u}{u_\\tau},\\qquad y^+=\\frac{y\\,u_\\tau}{\\nu}",
+   "caption": "Wall (inner) variables: friction velocity, velocity and distance from the wall in wall units"
+  },
+  {
+   "type": "text",
+   "markdown": "Experiments in pipes, channels and boundary layers show that the mean velocity profile has layers, each with its own physics. In the **viscous sublayer** ($y^+\\lesssim5$) the flow is nearly laminar and $u^+=y^+$. In the **buffer layer** ($5\\lesssim y^+\\lesssim30$) viscous and turbulent stresses are comparable. Further out, in the **logarithmic region** ($y^+\\gtrsim30$ and $y/\\delta\\lesssim0.1$ to $0.2$), the Reynolds stress dominates and the profile follows the **law of the wall**:"
+  },
+  {
+   "type": "math",
+   "latex": "u^+=\\frac{1}{\\kappa}\\ln y^++B,\\qquad \\kappa\\approx0.41,\\quad B\\approx5.0",
+   "caption": "Logarithmic law of the wall (von Karman constant kappa and additive constant B for a smooth wall; typical values)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Pipe friction and wall shear",
+   "text": "For fully developed pipe flow with mean velocity $V$, the Darcy friction factor $f$ is defined through the pressure gradient, $\\Delta p/L=f\\,(1/D)\\,\\tfrac12\\rho V^2$. A force balance gives the wall shear stress in terms of $f$ (for laminar or turbulent flow), and the friction velocity follows from it."
+  },
+  {
+   "type": "math",
+   "latex": "\\tau_w=\\frac{f\\rho V^2}{8},\\qquad u_\\tau=V\\sqrt{\\frac{f}{8}},\\qquad f_{lam}=\\frac{64}{Re}",
+   "caption": "Wall shear stress and friction velocity from the Darcy friction factor f; Re = rho V D / mu"
+  },
+  {
+   "type": "worked_example",
+   "title": "Log-law velocity in a smooth pipe",
+   "prompt": "Water (density 998 kg/m^3, kinematic viscosity 1.0e-6 m^2/s, typical values) flows at a mean velocity of 2.0 m/s in a smooth pipe of diameter 0.100 m. The Moody-chart friction factor for a smooth pipe at this Reynolds number is f = 0.0156. Find the wall shear stress, friction velocity, the thickness of the viscous sublayer, and the velocity 1.0 mm from the wall.",
+   "steps": [
+    {
+     "text": "Reynolds number: 2.0e+05, well above 4000, so the flow is turbulent.",
+     "latex": "Re=\\frac{VD}{\\nu}=\\frac{2.0\\times0.100}{1.0\\times10^{-6}}=2.0e+05"
+    },
+    {
+     "text": "Wall shear stress from the friction factor, and the friction velocity from it.",
+     "latex": "\\tau_w=\\frac{f\\rho V^2}{8}=\\frac{0.0156(998)(2.0)^2}{8}=7.78\\ \\text{Pa},\\quad u_\\tau=\\sqrt{\\tau_w/\\rho}=0.0883\\ \\text{m/s}"
+    },
+    {
+     "text": "Viscous sublayer is where y+ is about 5, i.e. y = 5 nu/u_tau.",
+     "latex": "\\delta_v=\\frac{5\\nu}{u_\\tau}=\\frac{5(1.0\\times10^{-6})}{0.0883}=57\\ \\mu\\text{m}"
+    },
+    {
+     "text": "At y = 1.0 mm the wall coordinate is 88.3, in the log region, so use the log law.",
+     "latex": "u^+=\\frac{1}{0.41}\\ln(88.3)+5.0=15.93,\\quad u=u^+u_\\tau=1.41\\ \\text{m/s}"
+    }
+   ],
+   "answer": "tau_w = 7.78 Pa, u_tau = 0.0883 m/s, sublayer about 57 micrometres thick, u(1 mm) = 1.41 m/s."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Laminar pipe flow",
+    "Turbulent pipe flow"
+   ],
+   "rows": [
+    [
+     "Momentum transport",
+     "Molecular viscosity only",
+     "Eddy mixing plus viscosity"
+    ],
+    [
+     "Velocity profile",
+     "Parabolic, $u_{max}=2V$",
+     "Much flatter, $u_{max}\\approx1.15$ to $1.25\\,V$ (typical)"
+    ],
+    [
+     "Wall velocity gradient",
+     "Small",
+     "Large, set by a thin viscous sublayer"
+    ],
+    [
+     "Wall shear stress at the same $V$",
+     "Low, $\\tau_w=8\\mu V/D$",
+     "Higher: $\\tau_w=f\\rho V^2/8$ with $f\\gtrsim0.015$ for $Re>10^4$"
+    ],
+    [
+     "Friction factor",
+     "$64/Re$",
+     "Weak function of $Re$ (smooth): about $0.316\\,Re^{-1/4}$ for $Re<10^5$ (typical)"
+    ]
+   ],
+   "caption": "Laminar and turbulent pipe flow compared"
+  },
+  {
+   "type": "text",
+   "markdown": "**Why the profile is fuller.** In turbulent flow, large eddies carry high-momentum fluid from the pipe centre towards the wall and low-momentum fluid inwards. This **mixing** flattens the velocity across most of the pipe, leaving a steep gradient only in the thin region near the wall. The same mixing transports momentum to the wall far more effectively than molecular diffusion, so for the same mean velocity the wall shear stress (and hence the pressure drop) is greater than for laminar flow."
+  },
+  {
+   "type": "worked_example",
+   "title": "Finding the friction velocity from a measured profile",
+   "prompt": "A probe in a smooth air duct (kinematic viscosity 1.5e-5 m^2/s, density 1.20 kg/m^3) measures a mean velocity of 18.0 m/s at y = 4.0 mm from the wall. The log law (kappa = 0.41, B = 5.0) applies at this position. Find the friction velocity and wall shear stress.",
+   "steps": [
+    {
+     "text": "Write the log law with the unknown u_tau in both u+ and y+: u/u_tau = 2.439 ln(y u_tau/nu) + 5.0.",
+     "latex": "\\frac{18.0}{u_\\tau}=\\frac{1}{0.41}\\ln\\left(\\frac{0.004\\,u_\\tau}{1.5\\times10^{-5}}\\right)+5.0"
+    },
+    {
+     "text": "Solve by iteration (trial and error): try u_tau = 0.7 m/s, then refine; the equation balances at the value below, giving y+ = 259, which is inside the log region.",
+     "latex": "u_\\tau=0.970\\ \\text{m/s},\\quad y^+=259"
+    },
+    {
+     "text": "Wall shear stress from the friction velocity.",
+     "latex": "\\tau_w=\\rho u_\\tau^2=1.20\\times0.970^2=1.130\\ \\text{Pa}"
+    }
+   ],
+   "answer": "u_tau = 0.970 m/s, tau_w = 1.130 Pa."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Compute $\\tau_w$ from the pressure drop or from $f$: $\\tau_w=f\\rho V^2/8$.",
+    "Compute $u_\\tau=\\sqrt{\\tau_w/\\rho}$ and the wall coordinate $y^+=yu_\\tau/\\nu$.",
+    "Choose the region: sublayer ($y^+<5$), buffer, or log ($y^+>30$).",
+    "In the log region use $u=u_\\tau\\left(\\frac1\\kappa\\ln y^++B\\right)$.",
+    "Compare with laminar flow: $u_{max}=2V$ against $u_{max}\\approx1.2V$ for turbulent flow."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "A thin sublayer carries the shear",
+   "text": "Even in fully turbulent flow, the thin viscous sublayer of thickness $5\\nu/u_\\tau$ controls the wall shear stress. At $u_\\tau=0.1$ m/s in water it is only 50 micrometres thick, which is why the roughness of the wall can matter when its bumps poke through it."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Where the log law does not apply",
+   "text": "The log law fails in the viscous sublayer and buffer layer ($y^+<30$) and in the outer part of the layer (beyond about 10 to 20 per cent of the thickness or radius), where the profile has a wake component and the mean velocity follows other laws. Also $\\kappa$ and $B$ are empirical, typical values: $\\kappa=0.40$ to $0.41$ and $B=5.0$ to $5.5$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Wall variables: $u_\\tau=\\sqrt{\\tau_w/\\rho}$, $u^+=u/u_\\tau$, $y^+=yu_\\tau/\\nu$; in the viscous sublayer $u^+=y^+$.",
+    "In the logarithmic region $u^+=\\frac{1}{\\kappa}\\ln y^++B$ with $\\kappa\\approx0.41$ and $B\\approx5.0$.",
+    "Wall shear stress in a pipe is $\\tau_w=f\\rho V^2/8$ and $u_\\tau=V\\sqrt{f/8}$.",
+    "Turbulent mixing gives a fuller profile ($u_{max}\\approx1.2V$) and larger wall shear than laminar flow ($u_{max}=2V$)."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the logarithmic region of a turbulent boundary layer or pipe, which relation holds between the dimensionless velocity u+ and wall distance y+?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "u+ = y+"
+    },
+    {
+     "id": "b",
+     "text": "u+ = constant"
+    },
+    {
+     "id": "c",
+     "text": "u+ = (1/kappa) ln(y+) + B"
+    },
+    {
+     "id": "d",
+     "text": "u+ is proportional to the square of y+"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "u+ = (1/kappa) ln(y+) + B",
+   "distractorRationale": {
+    "a": "This holds only in the viscous sublayer (y+ < 5).",
+    "b": "Velocity increases with distance from the wall throughout the layer.",
+    "c": "Correct: this is the law of the wall.",
+    "d": "There is no such law in turbulent wall flows."
+   },
+   "explanation": "Away from the viscous sublayer the Reynolds stress dominates and dimensional analysis in terms of $u_\\tau$ and $y$ gives a logarithmic dependence: $u^+=\\frac1\\kappa\\ln y^++B$, with $\\kappa\\approx0.41$ and $B\\approx5.0$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a smooth air duct (kinematic viscosity 1.5e-5 m^2/s) the friction velocity is 0.12 m/s. Use the log law with kappa = 0.41 and B = 5.0 to estimate the mean velocity 6.0 mm from the wall, in m/s.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o1"
+   ],
+   "correctValue": 1.73303,
+   "tolerance": 0.02,
+   "unit": "m/s",
+   "explanation": "The wall coordinate is y+ = u_tau y/nu = 0.12 x 0.006/1.5e-5 = 48, inside the log region. Then u+ = ln(48)/0.41 + 5.0 = 14.44, and u = 14.44 x 0.12 = 1.733 m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water (density 998 kg/m^3) flows at a mean velocity of 1.5 m/s in a smooth pipe of diameter 0.200 m with a Darcy friction factor of 0.020. Find the wall shear stress in pascals.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o2"
+   ],
+   "correctValue": 5.61375,
+   "tolerance": 0.02,
+   "unit": "Pa",
+   "explanation": "The force balance on the pipe gives tau_w = f rho V^2/8. Hence tau_w = 0.020 x 998 x 1.5^2/8 = 5.614 Pa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Air flows at a mean speed of 10.0 m/s through a duct of 0.30 m diameter. The Darcy friction factor is 0.018. Find the friction velocity u_tau in m/s.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o2"
+   ],
+   "correctValue": 0.474342,
+   "tolerance": 0.002,
+   "unit": "m/s",
+   "explanation": "Since tau_w = f rho V^2/8, the friction velocity is u_tau = sqrt(tau_w/rho) = V sqrt(f/8). Numerically u_tau = 10.0 x sqrt(0.018/8) = 10.0 x 0.0474 = 0.4743 m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Compared with a laminar pipe flow at the same mean velocity, how does the velocity profile of a turbulent pipe flow look?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Linear from the wall to the centre"
+    },
+    {
+     "id": "b",
+     "text": "Identical, since the mean velocity is the same"
+    },
+    {
+     "id": "c",
+     "text": "Flatter across most of the pipe with a steeper gradient close to the wall"
+    },
+    {
+     "id": "d",
+     "text": "More pointed with a higher centreline velocity"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Flatter across most of the pipe with a steeper gradient close to the wall",
+   "distractorRationale": {
+    "a": "Neither profile is linear.",
+    "b": "Different profiles can have the same mean velocity.",
+    "c": "Correct: eddy mixing evens out the velocity in the core.",
+    "d": "Laminar flow has the pointed parabolic profile with u_max = 2V."
+   },
+   "explanation": "Turbulent mixing transports momentum across the pipe, flattening the core. For the same mean velocity the centreline value is about $1.2V$ against $2V$ for laminar flow, and the wall gradient is much steeper.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "For fully developed turbulent flow in a pipe, the ratio of centreline velocity to mean velocity is greater than 2.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The ratio of 2 belongs to the laminar parabolic profile. The flatter turbulent profile has a centreline velocity of only about 1.15 to 1.25 times the mean, which depends weakly on Reynolds number.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the viscous sublayer of a turbulent boundary layer (y+ below about 5), what is the relation between u+ and y+?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "u+ = (1/kappa) ln y+ + B"
+    },
+    {
+     "id": "b",
+     "text": "u+ = 0"
+    },
+    {
+     "id": "c",
+     "text": "u+ = sqrt(y+)"
+    },
+    {
+     "id": "d",
+     "text": "u+ = y+"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "u+ = y+",
+   "distractorRationale": {
+    "a": "This is the log law, which does not apply at such small y+.",
+    "b": "The fluid moves, with zero velocity only at the wall itself.",
+    "c": "There is no such relation in any region.",
+    "d": "Correct: the shear stress is nearly equal to the wall value, tau_w = mu du/dy, so u increases linearly with y."
+   },
+   "explanation": "Within the sublayer the viscous stress dominates and the total stress is almost constant, equal to $\\tau_w$, so $\\mu\\,du/dy=\\tau_w$. Integrating gives $u=\\tau_wy/\\mu$, i.e. $u^+=y^+$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why is the wall shear stress in turbulent pipe flow greater than in laminar flow at the same mean velocity and diameter?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The fluid viscosity is higher in turbulent flow"
+    },
+    {
+     "id": "b",
+     "text": "The pipe wall becomes rougher"
+    },
+    {
+     "id": "c",
+     "text": "Turbulent mixing flattens the profile so the velocity gradient at the wall is steeper"
+    },
+    {
+     "id": "d",
+     "text": "The pressure is lower in turbulent flow"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Turbulent mixing flattens the profile so the velocity gradient at the wall is steeper",
+   "distractorRationale": {
+    "a": "Viscosity is a fluid property and does not change with the flow regime.",
+    "b": "Wall roughness is not changed by the flow regime.",
+    "c": "Correct: a steeper near-wall gradient means a larger mu du/dy at the wall.",
+    "d": "Pressure drop is higher, not lower, in turbulent flow."
+   },
+   "explanation": "High-momentum fluid is carried to the wall by eddies, making the profile fuller and raising $du/dy$ at the wall. Since $\\tau_w=\\mu\\,(du/dy)_w$ this raises the shear stress, and with it the pressure drop and pumping power.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Compare laminar and turbulent flow in a pipe at the same mean velocity. In your answer discuss the shape of the mean velocity profile, the role of mixing, the centreline-to-mean velocity ratio and the wall shear stress, and give the regions of the turbulent wall layer.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o3"
+   ],
+   "markingGuide": [
+    "Laminar profile parabolic with u_max = 2V; momentum transported by viscosity only",
+    "Turbulent profile much flatter in the core with u_max about 1.2V",
+    "Turbulent eddies mix high- and low-momentum fluid across the pipe, flattening the profile",
+    "Steep gradient in thin layer near wall gives higher wall shear stress and friction factor",
+    "Wall layers: viscous sublayer (y+ < 5, u+ = y+), buffer layer (5 to 30), log region (u+ = ln(y+)/kappa + B) and outer wake region",
+    "Higher wall shear means larger pressure drop and pumping power for turbulent flow"
+   ],
+   "explanation": "Turbulent mixing is far more effective than molecular diffusion at transferring momentum, so the core velocity is nearly uniform and the gradient is concentrated in a thin layer at the wall. The resulting wall shear stress (and hence the pressure drop) is larger than for laminar flow at the same flow rate.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Water (density 998 kg/m^3, kinematic viscosity 1.0e-6 m^2/s, typical values) flows at 3.0 m/s in a smooth pipe of diameter 0.050 m with a friction factor f = 0.0175 (typical). (a) Calculate the wall shear stress and friction velocity. (b) Calculate y+ at 0.50 mm from the wall and decide whether the log law applies. (c) Estimate the velocity there with kappa = 0.41 and B = 5.0.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o1",
+    "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows.o2"
+   ],
+   "markingGuide": [
+    "tau_w = f rho V^2/8 = 0.0175 x 998 x 9.0/8 = 19.65 Pa",
+    "u_tau = sqrt(tau_w/rho) = 0.1403 m/s (equivalently V sqrt(f/8))",
+    "y+ = u_tau y/nu = 0.1403 x 0.0005/1.0e-6 = 70.2: above 30, so the log law can be used (y/R = 0.02)",
+    "u+ = ln(70.2)/0.41 + 5.0 = 15.37",
+    "u = u+ u_tau = 2.16 m/s (about 72 per cent of the mean velocity)"
+   ],
+   "explanation": "The friction velocity is 0.1403 m/s, so 0.50 mm corresponds to y+ = 70.2, within the log region. The log law then gives u+ = 15.37 and u = 2.16 m/s, consistent with a flat turbulent profile whose centreline speed is about 1.2 times the 3.0 m/s mean.",
+   "board": "internal"
+  }
+ ]
+}

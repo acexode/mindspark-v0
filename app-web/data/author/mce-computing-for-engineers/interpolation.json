@@ -1,0 +1,362 @@
+{
+ "lessonTitle": "Interpolation",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A thermodynamics table lists saturation pressure of water every 10 degrees C, but your boiler control needs the value at 105 degrees C. Engineers constantly read between tabulated entries, whether in a property table, a calibration sheet or a measured curve, and the method they use decides how much error they accept."
+  },
+  {
+   "type": "text",
+   "markdown": "**Interpolation** estimates the value of a function at a point between known data points $(x_i, y_i)$, assuming the function behaves smoothly there. An interpolating function passes **exactly** through the data. This is appropriate when the data are accurate, such as tabulated properties, and it is a poor choice when the data contain measurement noise."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Linear interpolation",
+   "text": "Given two neighbouring points $(x_1,y_1)$ and $(x_2,y_2)$ with $x_1\\le x\\le x_2$, linear interpolation draws the straight line between them (the chord) and reads off its value at $x$."
+  },
+  {
+   "type": "math",
+   "latex": "y(x)=y_1+\\frac{x-x_1}{x_2-x_1}\\,(y_2-y_1)",
+   "caption": "Linear interpolation. The fraction (x - x1)/(x2 - x1) is the proportion of the way from point 1 to point 2."
+  },
+  {
+   "type": "worked_example",
+   "title": "Interpolating a property table",
+   "prompt": "Typical saturation pressure data for water: $p=101.4$ kPa at $100$ C and $143.4$ kPa at $110$ C. Estimate $p$ at $105$ C.",
+   "steps": [
+    {
+     "text": "Identify the bracketing entries: $x_1=100$, $x_2=110$, $y_1=101.4$, $y_2=143.4$. The target $x=105$ lies between them."
+    },
+    {
+     "text": "Compute the fraction of the way: $(105-100)/(110-100)=0.5$.",
+     "latex": "\\frac{x-x_1}{x_2-x_1}=\\frac{5}{10}=0.5"
+    },
+    {
+     "text": "Apply the formula: $p=101.4+0.5\\times(143.4-101.4)=101.4+21.0=122.4$ kPa.",
+     "latex": "p=101.4+0.5\\times42.0=122.4\\ \\text{kPa}"
+    },
+    {
+     "text": "Reasonableness: the result lies between the two table values, as it must for interpolation. Because the true curve is convex (it bends upward), the chord lies above it, so this estimate is slightly high; the true value is near 120.8 kPa."
+    }
+   ],
+   "answer": "About 122.4 kPa by linear interpolation (slightly above the true value)."
+  },
+  {
+   "type": "text",
+   "markdown": "Using more points lets us fit a curve rather than a chord. A polynomial of degree $n$ can be made to pass through any $n+1$ points with distinct $x$ values. **Newton's divided-difference form** builds it step by step. With three points it is $p(x)=y_1+f[x_1,x_2](x-x_1)+f[x_1,x_2,x_3](x-x_1)(x-x_2)$, where $f[x_1,x_2]=(y_2-y_1)/(x_2-x_1)$ and $f[x_1,x_2,x_3]=(f[x_2,x_3]-f[x_1,x_2])/(x_3-x_1)$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Quadratic interpolation",
+   "prompt": "Add the typical entry $p=198.7$ kPa at $120$ C to the table above and estimate $p$ at $105$ C with a quadratic through the three points.",
+   "steps": [
+    {
+     "text": "First divided differences: $f[100,110]=(143.4-101.4)/10=4.20$ kPa/C and $f[110,120]=(198.7-143.4)/10=5.53$ kPa/C.",
+     "latex": "f[100,110]=4.20,\\quad f[110,120]=5.53"
+    },
+    {
+     "text": "Second divided difference: $f[100,110,120]=(5.53-4.20)/(120-100)=0.0665$ kPa/C^2.",
+     "latex": "f[100,110,120]=\\frac{5.53-4.20}{20}=0.0665"
+    },
+    {
+     "text": "Evaluate at 105: $p=101.4+4.20(5)+0.0665(5)(105-110)=101.4+21.0-1.66=120.74$ kPa.",
+     "latex": "p(105)=101.4+4.20(5)+0.0665(5)(-5)=120.7\\ \\text{kPa}"
+    },
+    {
+     "text": "The quadratic corrects the curvature and agrees with the true value (about 120.8 kPa) far better than the 122.4 kPa from the chord."
+    }
+   ],
+   "answer": "About 120.7 kPa from the quadratic."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "Passes through all points?",
+    "Best for",
+    "Weakness"
+   ],
+   "rows": [
+    [
+     "Linear interpolation",
+     "Yes",
+     "Accurate tabulated data",
+     "Error grows where the curve bends sharply"
+    ],
+    [
+     "High-order polynomial interpolation",
+     "Yes",
+     "Few, accurate, smoothly varying points",
+     "Oscillates between points, amplifies noise"
+    ],
+    [
+     "Piecewise (spline) interpolation",
+     "Yes",
+     "Many accurate points",
+     "Needs more coding"
+    ],
+    [
+     "Least squares fit",
+     "No (minimises total squared residual)",
+     "Noisy measurements with a known trend",
+     "Wrong model gives systematic error"
+    ]
+   ],
+   "caption": "Interpolation compared with least squares fitting."
+  },
+  {
+   "type": "text",
+   "markdown": "Real measurements carry noise. If a degree-$(n-1)$ polynomial is forced through $n$ noisy points, it reproduces every random error and may swing wildly between points. A **least squares** fit instead chooses a simple model (for example a straight line) with fewer parameters than points and minimises the sum of squared residuals $\\sum (y_i-\\hat y_i)^2$. It smooths the noise instead of copying it."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Runge phenomenon",
+   "text": "Raising the degree of the polynomial through **equally spaced** points does not always improve accuracy. For $f(x)=1/(1+25x^2)$ on $[-1,1]$ with 11 equally spaced points, the degree-10 interpolant oscillates strongly near the ends, with an error exceeding 1 even though $f$ never exceeds 1. Remedies: use low-degree piecewise interpolation (splines), unequally spaced (Chebyshev) points that cluster near the ends, or a least squares fit."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Linear interpolation: $y=y_1+(x-x_1)(y_2-y_1)/(x_2-x_1)$ between the bracketing entries.",
+    "Interpolation suits accurate data; least squares suits noisy data.",
+    "$n+1$ points determine a unique polynomial of degree at most $n$.",
+    "Avoid high-order polynomials on equally spaced points.",
+    "Never extrapolate far outside the data range."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Interpolation passes exactly through the data; linear interpolation uses the chord between two neighbouring entries.",
+    "Higher-order interpolation follows curvature better when the data are accurate and the order is modest.",
+    "For noisy data, a least squares fit with few parameters smooths the noise, whereas interpolation reproduces it.",
+    "High-order interpolation on equally spaced points oscillates near the ends (Runge phenomenon)."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Typical values of the thermal conductivity of air are $k=0.0263$ W/(m K) at 300 K and $k=0.0300$ W/(m K) at 350 K. Estimate $k$ at 320 K by linear interpolation, in W/(m K).",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o1"
+   ],
+   "correctValue": 0.02778,
+   "tolerance": 0.0002,
+   "unit": "W/(m K)",
+   "explanation": "The fraction of the way is (320-300)/(350-300) = 0.4. Then k = 0.0263 + 0.4 x (0.0300 - 0.0263) = 0.0263 + 0.00148 = 0.02778 W/(m K).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A table of a lubricating oil gives dynamic viscosity $\\mu=0.080$ Pa s at 40 C and $\\mu=0.032$ Pa s at 60 C. Using linear interpolation, at what temperature in C is the viscosity 0.050 Pa s?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o1"
+   ],
+   "correctValue": 52.5,
+   "tolerance": 0.1,
+   "unit": "C",
+   "explanation": "Solve the interpolation formula for x: fraction = (0.080 - 0.050)/(0.080 - 0.032) = 0.625. Then T = 40 + 0.625 x 20 = 52.5 C.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A point $x$ lies 30 percent of the way from $x_1$ to $x_2$. Which expression gives the linearly interpolated $y$?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$y_2+0.3\\,(y_1-y_2)$"
+    },
+    {
+     "id": "b",
+     "text": "$y_1+0.3\\,(x_2-x_1)$"
+    },
+    {
+     "id": "c",
+     "text": "$y_1+0.3\\,(y_2-y_1)$"
+    },
+    {
+     "id": "d",
+     "text": "$0.3\\,y_1+0.3\\,y_2$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$y_1+0.3\\,(y_2-y_1)$",
+   "distractorRationale": {
+    "c": "Correct: 30 percent of the y-difference added to y1.",
+    "a": "This starts at y2 and moves 30 percent back towards y1, i.e. 70 percent of the way along.",
+    "d": "The weights 0.3 and 0.3 do not sum to 1, so this does not give a point between y1 and y2.",
+    "b": "This scales an x-difference but adds it to a y-value, mixing quantities."
+   },
+   "explanation": "Linear interpolation moves from y1 towards y2 by the same fraction (0.3) of the difference y2 - y1. The result y1 + 0.3(y2 - y1) lies 30 percent of the way along.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Eight load-cell readings follow a straight-line calibration but have random scatter of about 1 percent. Which approach is most appropriate to obtain the calibration curve?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Pass a degree-7 polynomial exactly through all eight points"
+    },
+    {
+     "id": "b",
+     "text": "Join the points with a smooth spline"
+    },
+    {
+     "id": "c",
+     "text": "Use linear interpolation between neighbouring points only"
+    },
+    {
+     "id": "d",
+     "text": "Fit a straight line by least squares"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Fit a straight line by least squares",
+   "distractorRationale": {
+    "d": "Correct: a simple model fitted by least squares.",
+    "a": "A degree-7 interpolant reproduces the noise and oscillates between points.",
+    "c": "Interpolation between neighbours copies each point's random error.",
+    "b": "A spline still passes through every point and so reproduces the noise."
+   },
+   "explanation": "The physics says the response is linear and the scatter is noise, so a least squares line with two parameters averages out the noise. Any interpolating curve passes through every noisy point and so copies the noise into the calibration.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A least squares straight line fitted to a data set must pass through every data point.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "A least squares line minimises the sum of squared residuals but generally leaves non-zero residuals at the data points. Only an interpolating function is forced through every point.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A polynomial is to be made to pass exactly through 12 measured points with distinct x values. What is the minimum degree needed?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o2"
+   ],
+   "correctValue": 11,
+   "tolerance": 0.1,
+   "unit": "degree",
+   "explanation": "A polynomial of degree n has n+1 coefficients and is determined uniquely by n+1 points. With 12 points we need n + 1 = 12, so n = 11.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A degree-12 polynomial is fitted through 13 equally spaced points of a smooth bell-shaped function. What behaviour should you expect as the degree is increased further?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Growing oscillations near the ends of the interval"
+    },
+    {
+     "id": "b",
+     "text": "A straight line"
+    },
+    {
+     "id": "c",
+     "text": "Steadily smaller error everywhere"
+    },
+    {
+     "id": "d",
+     "text": "Exact agreement between the points only"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Growing oscillations near the ends of the interval",
+   "distractorRationale": {
+    "a": "Correct: the Runge oscillation.",
+    "c": "More points does not guarantee smaller error for equally spaced nodes.",
+    "d": "The polynomial matches at the nodes but can deviate greatly between them.",
+    "b": "A high-degree interpolant is not a line."
+   },
+   "explanation": "This is the Runge phenomenon: for equally spaced nodes the error of high-degree interpolants can grow near the ends of the interval even as the degree increases. Low-degree piecewise fits or Chebyshev nodes avoid it.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Typical water densities are $998.2$ kg/m^3 at 20 C, $992.2$ at 40 C and $983.2$ at 60 C. Use Newton's quadratic through these three points to estimate the density at 50 C, in kg/m^3.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o2"
+   ],
+   "correctValue": 988.075,
+   "tolerance": 0.05,
+   "unit": "kg/m^3",
+   "explanation": "First differences are (992.2-998.2)/20 = -0.30 and (983.2-992.2)/20 = -0.45, giving a second difference of (-0.45+0.30)/40 = -0.00375. Then p(50) = 998.2 - 0.30(30) - 0.00375(30)(10) = 998.2 - 9.0 - 1.125 = 988.075 kg/m^3, whereas the linear chord between 40 and 60 C gives 987.7.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain the Runge phenomenon: what it is, when it occurs, and give two ways to avoid it when constructing an interpolant through many data points.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o3"
+   ],
+   "markingGuide": [
+    "Defined: large oscillations of a high-degree polynomial interpolant, mainly near the ends of the interval",
+    "Occurs for equally spaced nodes with high degree (e.g. interpolating 1/(1+25x^2))",
+    "Increasing the degree can make the error worse rather than better",
+    "Remedy: piecewise low-order interpolation (splines or piecewise linear)",
+    "Remedy: Chebyshev (clustered) nodes, or a least squares fit with a low-order model"
+   ],
+   "explanation": "Equally spaced nodes make the interpolation error blow up near the ends for high degree. Using low-degree pieces or better-placed nodes keeps the error under control.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A student has 15 temperature measurements of a cooling plate that scatter by about 0.5 K about a smooth decay. She proposes a degree-14 interpolating polynomial. Discuss whether this is wise and what you would do instead.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.interpolation.o2"
+   ],
+   "markingGuide": [
+    "The interpolant passes through every point and so reproduces the measurement noise",
+    "A degree-14 polynomial is likely to oscillate between points, giving unphysical temperatures",
+    "A least squares fit of a simple model (e.g. exponential or low-order polynomial) smooths the noise",
+    "Chooses the model from the physics and checks the residuals for pattern",
+    "Interpolation is reserved for accurate data such as tabulated properties"
+   ],
+   "explanation": "Interpolation is only suitable when the data are exact. Fitting a low-parameter model by least squares averages the scatter, giving a smoother and more reliable curve.",
+   "board": "internal"
+  }
+ ]
+}

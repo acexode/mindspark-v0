@@ -1,0 +1,421 @@
+{
+ "lessonTitle": "Achievable Tolerances and Surface Finish",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bore ground to a tolerance of 0.01 mm passes inspection in a warm shop at 3 pm and fails at 8 am the next morning, with nothing touching it in between. The metal simply changed size with temperature. Reaching tight tolerances is only partly about the machine; it is also about wear, temperature and choosing a process whose natural capability already fits the drawing."
+  },
+  {
+   "type": "text",
+   "markdown": "Each manufacturing process has a typical range of **dimensional tolerance** (how closely the size can be held, usually expressed as a plus or minus band) and **surface roughness** (usually the arithmetic mean roughness $R_a$ in micrometres). As a rule, each step toward a finer tolerance and finish uses slower, more careful operations and costs considerably more, so the aim is to specify no tighter than the function needs. The values below are typical and depend on feature size, material and machine condition; use them for process selection, not as guarantees."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Dimensional tolerance and surface roughness",
+   "text": "Tolerance is the permitted variation of a dimension, written as $\\pm$ the deviation about the nominal size. Surface roughness $R_a$ is the average absolute deviation of the surface profile from its mean line, in $\\mu$m. Typically, roughness is much smaller than the dimensional tolerance but the two improve together as processes become finer."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Process",
+    "Typical tolerance for a 25 mm feature",
+    "Typical $R_a$ ($\\mu$m)"
+   ],
+   "rows": [
+    [
+     "Sand casting",
+     "$\\pm0.8$ mm or larger",
+     "6 to 25"
+    ],
+    [
+     "Investment or die casting",
+     "$\\pm0.1$ to $\\pm0.2$ mm",
+     "1 to 3"
+    ],
+    [
+     "Milling",
+     "$\\pm0.05$ mm",
+     "1.6 to 6.3"
+    ],
+    [
+     "Turning",
+     "$\\pm0.025$ mm",
+     "0.8 to 3.2"
+    ],
+    [
+     "Reaming",
+     "$\\pm0.012$ mm",
+     "0.8 to 1.6"
+    ],
+    [
+     "Cylindrical grinding",
+     "$\\pm0.005$ mm",
+     "0.2 to 0.8"
+    ],
+    [
+     "Honing",
+     "$\\pm0.003$ mm",
+     "0.1 to 0.4"
+    ],
+    [
+     "Lapping or superfinishing",
+     "$\\pm0.001$ mm",
+     "0.025 to 0.2"
+    ]
+   ],
+   "caption": "Typical process capability (orders of magnitude; consult your own process data)"
+  },
+  {
+   "type": "text",
+   "markdown": "To select a process, find the first process in the table whose typical tolerance and roughness are both at least as good as required, and then check cost and geometry. A requirement of $\\pm0.01$ mm and $R_a=0.8\\ \\mu$m on a shaft rules out milling and ordinary turning and points to cylindrical grinding. A requirement of $R_a=0.1\\ \\mu$m rules out grinding in its normal range and points to lapping or superfinishing."
+  },
+  {
+   "type": "worked_example",
+   "title": "Selecting a process",
+   "prompt": "A hydraulic piston rod needs a $30\\ \\text{mm}$ diameter held to $\\pm0.008$ mm with $R_a\\le0.4\\ \\mu$m. Which finishing process from the table is appropriate?",
+   "steps": [
+    {
+     "text": "Compare the tolerance. $\\pm0.008$ mm is tighter than turning ($\\pm0.025$) and reaming ($\\pm0.012$) but looser than grinding ($\\pm0.005$)."
+    },
+    {
+     "text": "Compare the finish. $R_a=0.4\\ \\mu$m is inside the grinding range (0.2 to 0.8) only at the fine end, so grinding with a fine wheel and sparkout, or finish with superfinishing."
+    },
+    {
+     "text": "Conclude: turn the rod oversize leaving finishing stock, then cylindrical grind; add superfinishing if the specified roughness is not reached."
+    }
+   ],
+   "answer": "Cylindrical grinding (with fine-wheel finishing or superfinishing) is the appropriate process."
+  },
+  {
+   "type": "text",
+   "markdown": "Even a capable process loses accuracy through **tool wear**. As a turning tool wears, its cutting edge recedes and the machined diameter creeps larger: if the radial wear of the nose is $w_r$ (mm), an outside diameter grows by $2w_r$. Production lines therefore set the first parts near the lower limit and let wear carry the dimension toward the upper limit before the operator or control system compensates with a tool offset."
+  },
+  {
+   "type": "worked_example",
+   "title": "Wear-limited run length",
+   "prompt": "An outside diameter has nominal size 40.000 mm and tolerance $\\pm0.020$ mm. The process is started at 39.985 mm. Radial wear increases the diameter by 0.004 mm per part. How many parts can be made before the diameter exceeds the upper limit?",
+   "steps": [
+    {
+     "text": "Available margin before the upper limit.",
+     "latex": "40.020-39.985=0.035\\ \\text{mm}"
+    },
+    {
+     "text": "Number of parts at 0.004 mm growth each.",
+     "latex": "\\frac{0.035}{0.004}=8.75"
+    },
+    {
+     "text": "Round down: the ninth part would exceed the limit."
+    }
+   ],
+   "answer": "About 8 parts can be made before an offset correction is needed."
+  },
+  {
+   "type": "text",
+   "markdown": "**Thermal expansion** is the second main source of error. A part of length $L$ whose temperature differs from the reference temperature (20 $^\\circ$C by convention for dimensional measurement) by $\\Delta T$ has changed in size by $\\Delta L=\\alpha L\\Delta T$, with $\\alpha$ the coefficient of linear thermal expansion (about $12\\times10^{-6}$ per $^\\circ$C for steel and $23\\times10^{-6}$ per $^\\circ$C for aluminium, typical values). Heat from cutting, from the ground workpiece and from the machine and the shop all matter."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta L=\\alpha\\,L\\,\\Delta T",
+   "caption": "Thermal change in length; $L$ in mm, $\\Delta T$ in $^\\circ$C, $\\alpha$ in 1/$^\\circ$C"
+  },
+  {
+   "type": "worked_example",
+   "title": "A warm ground part",
+   "prompt": "A steel ring of 60 mm diameter is ground and measured at 35 $^\\circ$C as exactly 60.000 mm. What is its size at 20 $^\\circ$C and is it within a tolerance of $\\pm0.005$ mm?",
+   "steps": [
+    {
+     "text": "Temperature difference.",
+     "latex": "\\Delta T=35-20=15\\ ^\\circ\\text{C}"
+    },
+    {
+     "text": "Change in diameter on cooling (shrinks).",
+     "latex": "\\Delta D=12\\times10^{-6}(60)(15)=0.0108\\ \\text{mm}"
+    },
+    {
+     "text": "Size at 20 degrees C.",
+     "latex": "D_{20}=60.000-0.0108=59.9892\\ \\text{mm}"
+    }
+   ],
+   "answer": "At 20 degrees C the diameter is 59.9892 mm, which is 0.0108 mm below nominal and outside the plus or minus 0.005 mm tolerance."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Fits and precision parts",
+   "text": "A precision bearing seat is a close fit: the shaft seat is usually ground (and sometimes superfinished) to a tight diameter tolerance, a roughness of about $R_a\\le0.4$ to $0.8\\ \\mu$m (typical bearing-seat guidance) and a tight form tolerance such as roundness. A rough surface would be flattened by the interference fit and lose some of the intended interference; a bore in a housing is typically fine bored or honed."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Measure at the reference temperature",
+   "text": "Always allow parts and gauges to reach 20 $^\\circ$C (or correct the reading) before judging a tight tolerance. Using a hot gauge or part adds an error of $\\alpha L\\Delta T$, which can exceed the whole tolerance."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Each process has a typical tolerance and $R_a$; choose the least costly process that meets both.",
+    "Grinding, honing and lapping reach tolerances of a few micrometres and $R_a$ below about 0.8 $\\mu$m; turning and milling do not.",
+    "Tool wear makes dimensions drift in one direction (for outside turning, diameter grows by twice the radial wear), requiring offsets.",
+    "Thermal expansion $\\Delta L=\\alpha L\\Delta T$ can exceed a fine tolerance, so measure at 20 $^\\circ$C.",
+    "Precision bearing seats are ground (and possibly superfinished) to tight size, roughness and form tolerances."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of the following processes typically gives the finest surface finish and tightest tolerance?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Milling"
+    },
+    {
+     "id": "b",
+     "text": "Lapping or superfinishing"
+    },
+    {
+     "id": "c",
+     "text": "Sand casting"
+    },
+    {
+     "id": "d",
+     "text": "Rough turning"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Lapping or superfinishing",
+   "distractorRationale": {
+    "a": "Milling typically gives $R_a$ of several micrometres and tolerances of about $\\pm0.05$ mm.",
+    "c": "Sand casting is the least accurate and roughest of the common processes.",
+    "d": "Rough turning is a preparatory step with coarse finish."
+   },
+   "explanation": "Lapping and superfinishing remove tiny amounts of material with very fine abrasives, giving tolerances of about a micrometre and $R_a$ down to a few hundredths of a micrometre. The other processes have far coarser capability.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A shaft diameter of 30 mm must be held to $\\pm0.01$ mm with $R_a\\le0.8\\ \\mu$m. Which finishing process is the most appropriate and economical?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Sand casting"
+    },
+    {
+     "id": "b",
+     "text": "Rough milling"
+    },
+    {
+     "id": "c",
+     "text": "Flame cutting"
+    },
+    {
+     "id": "d",
+     "text": "Cylindrical grinding"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Cylindrical grinding",
+   "distractorRationale": {
+    "a": "Sand casting cannot hold such a tolerance and finish.",
+    "b": "Rough milling gives coarse finish and a looser tolerance.",
+    "c": "Flame cutting is a rough cutting process."
+   },
+   "explanation": "Grinding routinely holds a few micrometres and $R_a$ around 0.2 to 0.8 $\\mu$m, so it meets the requirement. Lapping would also meet it but costs more than is necessary.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An aluminium housing has a bore of nominal diameter 150 mm at the reference temperature of 20 $^\\circ$C. It is machined and measured in a shop at 30 $^\\circ$C. Taking $\\alpha=23\\times10^{-6}$ per $^\\circ$C, calculate the increase in bore diameter in mm at 30 $^\\circ$C relative to 20 $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o2"
+   ],
+   "correctValue": 0.0345,
+   "tolerance": 0.003,
+   "unit": "mm",
+   "explanation": "The change is $\\Delta D=\\alpha D\\Delta T=23\\times10^{-6}\\times150\\times10=0.0345$ mm. This is greater than a typical ground tolerance of 0.01 mm, so the part must be measured at 20 $^\\circ$C or corrected.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel part 250 mm long is ground and measured at 24 $^\\circ$C. Taking $\\alpha=12\\times10^{-6}$ per $^\\circ$C, calculate by how much in mm the length will shrink when it cools to the 20 $^\\circ$C reference temperature.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o2"
+   ],
+   "correctValue": 0.012,
+   "tolerance": 0.001,
+   "unit": "mm",
+   "explanation": "The shrinkage is $\\Delta L=\\alpha L\\Delta T=12\\times10^{-6}\\times250\\times4=0.0120$ mm. This is a significant fraction of a precision tolerance of $\\pm0.01$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In turning an outside diameter, what is the usual effect of progressive tool flank and nose wear on the machined diameter, if no compensation is applied?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The diameter gradually increases"
+    },
+    {
+     "id": "b",
+     "text": "The diameter gradually decreases"
+    },
+    {
+     "id": "c",
+     "text": "The diameter does not change"
+    },
+    {
+     "id": "d",
+     "text": "The diameter oscillates randomly"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The diameter gradually increases",
+   "distractorRationale": {
+    "b": "A decrease would arise in boring operations where the tool recedes in the other sense, or from an overcompensated offset.",
+    "c": "Wear moves the cutting edge away from the work, so the dimension changes.",
+    "d": "Wear is progressive and systematic, so drift in one direction is typical."
+   },
+   "explanation": "As the cutting edge recedes the tool takes a shallower cut, leaving more material, so the outside diameter grows by about twice the radial wear. This steady drift is why the process mean is set low and offsets are applied periodically.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 100 mm long steel gauge block must be held to within $\\pm0.005$ mm when measured against a steel master. Taking $\\alpha=12\\times10^{-6}$ per $^\\circ$C, calculate the maximum temperature difference from the reference temperature, in $^\\circ$C, for which the thermal change in length does not exceed 0.005 mm.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o2"
+   ],
+   "correctValue": 4.166667,
+   "tolerance": 0.1,
+   "unit": "degC",
+   "explanation": "Setting $\\alpha L\\Delta T=0.005$ gives $\\Delta T=0.005/(12\\times10^{-6}\\times100)=4.17$ $^\\circ$C. A warm hand or sunlight can easily exceed this, which is why precision metrology is done in temperature-controlled rooms.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A bearing housing bore of 62 mm must be round and straight, $R_a\\approx0.4\\ \\mu$m, with a tolerance of a few micrometres. Which finishing process is the best choice?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o1",
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Drilling"
+    },
+    {
+     "id": "b",
+     "text": "Milling with an end mill"
+    },
+    {
+     "id": "c",
+     "text": "Honing"
+    },
+    {
+     "id": "d",
+     "text": "Sand casting"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Honing",
+   "distractorRationale": {
+    "a": "Drilling typically gives a rough, oversize hole with poor roundness.",
+    "b": "An end mill leaves a surface with $R_a$ of several micrometres.",
+    "d": "Sand casting gives a rough surface to be machined later."
+   },
+   "explanation": "Honing uses abrasive sticks that correct roundness and straightness while producing $R_a$ of about 0.1 to 0.4 $\\mu$m and tolerances of a few micrometres. Ground shafts and honed bores are the standard precision pair for bearing and cylinder surfaces.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A drawing requires $R_a=0.4\\ \\mu$m. Which process from the typical table can NOT normally achieve this?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Honing"
+    },
+    {
+     "id": "b",
+     "text": "Superfinishing"
+    },
+    {
+     "id": "c",
+     "text": "Cylindrical grinding at its fine end"
+    },
+    {
+     "id": "d",
+     "text": "Milling"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Milling",
+   "distractorRationale": {
+    "a": "Honing routinely reaches 0.1 to 0.4 $\\mu$m.",
+    "b": "Superfinishing is capable of 0.2 $\\mu$m or better.",
+    "c": "Fine grinding can reach about 0.2 to 0.4 $\\mu$m."
+   },
+   "explanation": "Milling typically gives $R_a$ from about 1.6 to 6.3 $\\mu$m, so 0.4 $\\mu$m is beyond its normal capability. A finishing process such as grinding or honing is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Specify an appropriate finishing process route for a 45 mm shaft seat for a deep-groove ball bearing in a gearbox. State the process, a realistic roughness and tolerance (typical values), the form requirement, and explain why a rough turned surface would be unsuitable.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o3"
+   ],
+   "markingGuide": [
+    "Process: turn with grinding allowance, then cylindrical grinding (superfinish if needed)",
+    "Typical roughness $R_a\\le0.8\\ \\mu$m (0.4 for better practice)",
+    "Typical diameter tolerance a few micrometres (a tolerance grade around IT5 or IT6)",
+    "Form: roundness and cylindricity controlled",
+    "Rough surface peaks are flattened in the interference fit, reducing grip; poor form causes bearing distortion and noise; measure at 20 $^\\circ$C"
+   ],
+   "explanation": "A bearing seat is ground so that the diameter, roundness and roughness meet the fit requirements. Rough turned peaks would be crushed by the fit, loosening it, and poor form would distort the bearing ring.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A batch of precision shafts drifts out of tolerance during a long shift: diameters grow steadily over the first hours and fluctuate with the time of day. Explain two separate physical causes, quantify each with the relevant formula, and suggest a compensation strategy for each.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.achievable-tolerances.o2"
+   ],
+   "markingGuide": [
+    "Tool wear: radial wear $w_r$ increases outside diameter by $2w_r$; drift is steady",
+    "Compensate for wear with periodic tool offsets or in-process gauging and a start setting near the lower limit",
+    "Thermal expansion: $\\Delta L=\\alpha L\\Delta T$ with $\\alpha\\approx12\\times10^{-6}$ per $^\\circ$C for steel",
+    "Compensate by temperature control, coolant, allowing parts to soak, measuring at 20 $^\\circ$C",
+    "Identifies that wear gives steady drift while temperature gives cyclic variation"
+   ],
+   "explanation": "Distinguishing the two causes matters because each needs a different fix. Wear produces a systematic growth in diameter that is corrected with offsets, while temperature produces a cyclic variation described by $\\alpha L\\Delta T$ that is controlled by stabilising temperature and measuring at 20 degrees C.",
+   "board": "internal"
+  }
+ ]
+}

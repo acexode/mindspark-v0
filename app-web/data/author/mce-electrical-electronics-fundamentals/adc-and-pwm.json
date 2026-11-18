@@ -1,0 +1,398 @@
+{
+ "lessonTitle": "Analogue Input and PWM Output",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A microcontroller on a hydraulic press reads a 0.5 to 4.5 V pressure transducer. Whether it can tell 100.0 bar from 100.1 bar depends entirely on how many bits its analogue-to-digital converter has and what voltage it uses as a reference."
+  },
+  {
+   "type": "text",
+   "markdown": "A microcontroller is a digital device: it stores integers, not volts. An **analogue-to-digital converter (ADC)** compares an input voltage $V_{in}$ with a reference voltage $V_{ref}$ and returns an integer code. An $n$-bit ADC has $2^n$ possible codes, so it divides the range $0$ to $V_{ref}$ into $2^n$ equal steps. Everything finer than one step is invisible to the program."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "ADC resolution (one LSB)",
+   "text": "The voltage step represented by one code is the least significant bit, $V_{LSB} = V_{ref}/2^n$, in volts, where $n$ is the number of bits and $V_{ref}$ is the full-scale reference voltage. This assumes an ideal, unipolar, single-ended converter."
+  },
+  {
+   "type": "math",
+   "latex": "V_{LSB}=\\frac{V_{ref}}{2^{n}},\\qquad N=\\left\\lfloor \\frac{V_{in}}{V_{ref}}\\,2^{n}\\right\\rfloor,\\qquad V_{in}\\approx N\\,V_{LSB}",
+   "caption": "Ideal ADC: step size, output code N (an integer 0 to 2^n - 1) and the reconstructed input"
+  },
+  {
+   "type": "worked_example",
+   "title": "Resolution of a 10-bit converter",
+   "prompt": "A 10-bit ADC uses a 5.0 V reference. Find the voltage resolution and the code produced by a 1.80 V input.",
+   "steps": [
+    {
+     "text": "Number of codes is $2^{10}=1024$, so the step is $V_{ref}/1024$.",
+     "latex": "V_{LSB}=\\frac{5.0}{1024}=4.883\\times10^{-3}\\ \\mathrm{V}"
+    },
+    {
+     "text": "The code is the input divided by the step, rounded down.",
+     "latex": "N=\\left\\lfloor\\frac{1.80}{4.883\\times10^{-3}}\\right\\rfloor=\\lfloor 368.6\\rfloor=368"
+    },
+    {
+     "text": "Reconstruct the voltage the program believes it saw.",
+     "latex": "368\\times4.883\\ \\mathrm{mV}=1.797\\ \\mathrm{V}"
+    }
+   ],
+   "answer": "Resolution 4.88 mV per code; a 1.80 V input reads as code 368, which represents 1.797 V (quantisation error 3 mV, less than one LSB)."
+  },
+  {
+   "type": "text",
+   "markdown": "The code is only a number. To act on it, the program needs a **calibration relation** that maps the sensor's output voltage to the physical quantity. Most sensors are linear, so the relation is a straight line $y = m V + c$, where $m$ is the sensitivity (for example bar per volt) and $c$ is the offset. Convert the code to volts first, then apply the line; or fold both steps into one expression in terms of $N$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading a pressure transducer",
+   "prompt": "A transducer outputs 0.50 V at 0 bar and 4.50 V at 10.0 bar, linearly. It feeds a 10-bit ADC with $V_{ref}=5.0$ V. The program reads code 512. Find the pressure.",
+   "steps": [
+    {
+     "text": "Convert the code to volts.",
+     "latex": "V=\\frac{512}{1024}\\times5.0=2.500\\ \\mathrm{V}"
+    },
+    {
+     "text": "Find the sensitivity from the two calibration points.",
+     "latex": "m=\\frac{10.0-0}{4.50-0.50}=2.50\\ \\mathrm{bar/V}"
+    },
+    {
+     "text": "Apply the line through the zero-pressure point.",
+     "latex": "P=m\\,(V-0.50)=2.50\\,(2.500-0.50)=5.00\\ \\mathrm{bar}"
+    }
+   ],
+   "answer": "The pressure is 5.00 bar. One ADC code corresponds to 4.883 mV x 2.5 bar/V = 0.0122 bar, so this is the finest pressure step the system can report."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Bits $n$",
+    "Codes $2^n$",
+    "LSB at $V_{ref}=5.0$ V",
+    "LSB at $V_{ref}=3.3$ V"
+   ],
+   "rows": [
+    [
+     "8",
+     "256",
+     "19.5 mV",
+     "12.9 mV"
+    ],
+    [
+     "10",
+     "1024",
+     "4.88 mV",
+     "3.22 mV"
+    ],
+    [
+     "12",
+     "4096",
+     "1.22 mV",
+     "0.806 mV"
+    ],
+    [
+     "16",
+     "65536",
+     "76.3 uV",
+     "50.4 uV"
+    ]
+   ],
+   "caption": "Each extra bit halves the step; lowering the reference also shrinks it but reduces the measurable range"
+  },
+  {
+   "type": "text",
+   "markdown": "**PWM output.** Microcontrollers rarely have a true analogue output. Instead they switch a digital pin fully on and fully off at a fixed frequency $f$ (period $T=1/f$). The fraction of each period spent on is the **duty cycle** $D=t_{on}/T$. A load that responds slowly (a motor's inductance, an LED's apparent brightness, an RC filter) sees the average value of the waveform."
+  },
+  {
+   "type": "math",
+   "latex": "V_{avg}=D\\,V_{supply}=\\frac{t_{on}}{T}\\,V_{supply},\\qquad t_{on}=\\frac{D}{f}",
+   "caption": "Average output of an ideal PWM stage that swings between 0 V and V_supply"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "An 8-bit PWM register holds an integer from 0 to 255; in the common convention used here, the duty cycle is value/255.",
+    "Duty cycle sets average voltage; frequency sets how finely the waveform is chopped.",
+    "Choose $f$ high enough that the load smooths the ripple, but low enough that switching losses and timer limits are acceptable.",
+    "The average is only meaningful if the load is slow compared with the period $T$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not confuse resolution with accuracy",
+   "text": "A 12-bit ADC has fine steps, but reference error, noise, and sensor non-linearity can still make the result wrong by many LSBs. Resolution is a property of the number of bits and $V_{ref}$ only."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "An $n$-bit ADC with reference $V_{ref}$ has resolution $V_{ref}/2^n$ and returns $N=\\lfloor V_{in}2^n/V_{ref}\\rfloor$.",
+    "Convert code to volts first, then use the sensor's linear calibration $y=mV+c$ to get the physical quantity.",
+    "PWM sets average output voltage as $V_{avg}=D\\,V_{supply}$, with $t_{on}=D/f$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 12-bit ADC uses a 3.3 V reference. What is its voltage resolution (one LSB)?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.806 mV"
+    },
+    {
+     "id": "b",
+     "text": "3.22 mV"
+    },
+    {
+     "id": "c",
+     "text": "1.61 mV"
+    },
+    {
+     "id": "d",
+     "text": "0.825 mV"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.806 mV",
+   "distractorRationale": {
+    "a": "Correct: 3.3/4096 = 0.806 mV.",
+    "b": "Wrong: 3.22 mV is 3.3/1024, the value for a 10-bit converter.",
+    "c": "Wrong: 1.61 mV is 3.3/2048, which is an 11-bit converter.",
+    "d": "Wrong: 0.825 mV is 3.3/4000, a code count that is not a power of two."
+   },
+   "explanation": "A 12-bit converter has $2^{12}=4096$ codes, so one LSB is $3.3/4096=0.806$ mV. Each added bit halves the step, which is why the 10-bit value of 3.22 mV is four times larger.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 24 V supply is switched by a PWM stage at 25 % duty cycle into a slow resistive load. What is the average load voltage?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "6 V"
+    },
+    {
+     "id": "b",
+     "text": "18 V"
+    },
+    {
+     "id": "c",
+     "text": "24 V"
+    },
+    {
+     "id": "d",
+     "text": "12 V"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "6 V",
+   "distractorRationale": {
+    "a": "Correct: 0.25 x 24 = 6 V.",
+    "b": "Wrong: 18 V is the average at 75 % duty, which is the off fraction.",
+    "c": "Wrong: 24 V would need 100 % duty.",
+    "d": "Wrong: 12 V is the average at 50 % duty."
+   },
+   "explanation": "Average voltage is $D\\,V_{supply}=0.25\\times24=6$ V. The off time contributes nothing to the average, so only the on fraction matters.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A temperature sensor obeys $V = 0.50 + 0.010\\,T$ (V, with $T$ in degrees Celsius). It is read by a 10-bit ADC with $V_{ref}=3.3$ V and returns code 300. What is $T$?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "46.7 C"
+    },
+    {
+     "id": "b",
+     "text": "96.7 C"
+    },
+    {
+     "id": "c",
+     "text": "29.3 C"
+    },
+    {
+     "id": "d",
+     "text": "86.7 C"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "46.7 C",
+   "distractorRationale": {
+    "a": "Correct: V = 300 x 3.3/1024 = 0.967 V, so T = (0.967-0.50)/0.010 = 46.7 C.",
+    "b": "Wrong: this forgets the 0.50 V offset (0.967/0.010).",
+    "c": "Wrong: this treats the code as 300/1024 x 100 and ignores both V_ref and the sensor offset.",
+    "d": "Wrong: this subtracts the offset in degrees rather than volts."
+   },
+   "explanation": "First convert the code to volts: $300\\times3.3/1024=0.967$ V. Then invert the calibration line, $T=(V-0.50)/0.010=46.7$ C, remembering the offset.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "With $V_{ref}=5.0$ V, what is the minimum ADC bit depth that gives a resolution finer than 1 mV?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "13 bits"
+    },
+    {
+     "id": "b",
+     "text": "10 bits"
+    },
+    {
+     "id": "c",
+     "text": "12 bits"
+    },
+    {
+     "id": "d",
+     "text": "16 bits"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "13 bits",
+   "distractorRationale": {
+    "a": "Correct: need 2^n > 5000, so n = 13 (0.61 mV).",
+    "b": "Wrong: 10 bits gives 4.88 mV.",
+    "c": "Wrong: 12 bits gives 1.22 mV, which is still coarser than 1 mV.",
+    "d": "Wrong: 16 bits works but is not the minimum."
+   },
+   "explanation": "We need $5.0/2^n<0.001$, i.e. $2^n>5000$. Since $2^{12}=4096$ is too small and $2^{13}=8192$ suffices, 13 bits is the minimum.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A fan driver uses 8-bit PWM (value 0 to 255 maps to 0 to 100 % duty) on a 5 V logic output filtered to its average. Which register value gives an average of 3.0 V?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "153"
+    },
+    {
+     "id": "b",
+     "text": "77"
+    },
+    {
+     "id": "c",
+     "text": "128"
+    },
+    {
+     "id": "d",
+     "text": "204"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "153",
+   "distractorRationale": {
+    "a": "Correct: D = 3.0/5.0 = 0.60, 0.60 x 255 = 153.",
+    "b": "Wrong: 77 corresponds to 30 % duty (1.5 V).",
+    "c": "Wrong: 128 is about 50 % duty (2.5 V).",
+    "d": "Wrong: 204 is 80 % duty (4.0 V)."
+   },
+   "explanation": "The required duty is $D=V_{avg}/V_{supply}=3.0/5.0=0.60$. Scaling to the 0 to 255 register range gives $0.60\\times255=153$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A load-cell amplifier outputs 0 to 2.50 V for 0 to 50.0 kg, linearly. It is read by a 12-bit ADC with $V_{ref}=2.50$ V. The code returned is 1000. What mass is indicated, in kg?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o1",
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o2"
+   ],
+   "correctValue": 12.21,
+   "tolerance": 0.1,
+   "unit": "kg",
+   "explanation": "The voltage is $1000/4096\\times2.50=0.6104$ V. The sensitivity is $50.0/2.50=20.0$ kg/V, so the mass is $20.0\\times0.6104=12.2$ kg. There is no offset, so no subtraction is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A linear potentiometer position sensor was calibrated with an ADC: code 205 at 10.0 mm and code 819 at 90.0 mm. Assuming a straight line between those points, what position (in mm) corresponds to code 600?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o2"
+   ],
+   "correctValue": 61.5,
+   "tolerance": 0.2,
+   "unit": "mm",
+   "explanation": "The slope is $(90.0-10.0)/(819-205)=0.1303$ mm per code. Then $x=10.0+0.1303\\times(600-205)=10.0+51.5=61.5$ mm. A two-point calibration fixes both gain and offset.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A PWM output runs at 20 kHz with a 30 % duty cycle. What is the on-time in each period, in microseconds?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o3"
+   ],
+   "correctValue": 15,
+   "tolerance": 0.1,
+   "unit": "us",
+   "explanation": "The period is $T=1/20000=50$ us. The on-time is $D\\,T=0.30\\times50=15$ us. This is the same as $D/f$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A designer says that moving from a 10-bit to a 12-bit ADC will make a sensor reading 4 times more accurate. Evaluate this claim, referring to quantisation, resolution and other error sources.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o1",
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o2"
+   ],
+   "markingGuide": [
+    "States that resolution improves by a factor of 4 (2^2) for the same V_ref",
+    "Identifies quantisation error as up to one LSB (or half an LSB with rounding)",
+    "Points out that accuracy also depends on reference error, noise, sensor non-linearity and calibration",
+    "Concludes that finer resolution does not guarantee proportionally better accuracy"
+   ],
+   "explanation": "Two extra bits give $2^2=4$ times as many codes, so the LSB shrinks by a factor of 4 and the quantisation error shrinks with it. But total error also includes reference drift, input noise and sensor error, which the ADC bit count does not change. Resolution is therefore an upper bound on achievable precision, not a measure of accuracy.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A 12 V DC motor is driven by PWM from a microcontroller. Explain why the motor behaves as if supplied with an average voltage, and what goes wrong if the PWM frequency is too low.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.adc-and-pwm.o3"
+   ],
+   "markingGuide": [
+    "States V_avg = D x V_supply",
+    "Explains the motor's inductance and mechanical inertia smooth the current and speed",
+    "Says smoothing requires the period to be much shorter than the electrical (L/R) and mechanical time constants",
+    "States that at low frequency the speed and current visibly ripple or the motor jerks or is audible",
+    "Mentions the trade-off that very high frequency raises switching losses"
+   ],
+   "explanation": "The motor winding has inductance and the rotor has inertia, so the current and speed respond to the average of the voltage over many switching periods, which is $D\\,V_{supply}$. If the period is not short compared with the time constants, the current and speed follow each pulse, causing ripple, jerking and audible noise. Very high frequency avoids this but increases switching losses in the driver.",
+   "board": "internal"
+  }
+ ]
+}

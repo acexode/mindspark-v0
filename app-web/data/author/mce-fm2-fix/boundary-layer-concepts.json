@@ -1,0 +1,412 @@
+{
+ "lessonTitle": "Boundary Layer Concepts: Thickness, Displacement and Momentum",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A thin film of air, only a few centimetres deep (about 28 mm at 1.5 m from the front at 30 m/s), clings to the roof of a car at motorway speed and decides most of the skin friction the car feels over its roof. Outside that film the air behaves almost as if it had no viscosity at all. This unit shows how to measure, and calculate, the thickness of such a viscous layer."
+  },
+  {
+   "type": "text",
+   "markdown": "When a real fluid flows past a solid surface, the fluid touching the wall has zero velocity (the **no-slip condition**), while far from the wall it moves at the free-stream speed $U$. All the velocity change is squeezed into a thin region next to the wall called the **boundary layer**. For high Reynolds number the layer is thin compared with the length of the body, so viscosity matters only inside it. Here we study the simplest case: steady, incompressible, laminar flow along a flat plate aligned with the stream, with no pressure gradient. The distance $x$ is measured from the leading edge and $y$ is the distance normal to the plate."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Boundary layer thickness and local Reynolds number",
+   "text": "The boundary layer thickness $\\delta$ is the distance from the wall at which the velocity reaches 99% of the free-stream value, $u(\\delta)=0.99U$. The local Reynolds number is $Re_x = \\rho U x/\\mu = Ux/\\nu$, where $\\rho$ is density (kg/m$^3$), $\\mu$ is dynamic viscosity (Pa s), $\\nu=\\mu/\\rho$ is kinematic viscosity (m$^2$/s), $U$ is free-stream speed (m/s) and $x$ is distance from the leading edge (m)."
+  },
+  {
+   "type": "text",
+   "markdown": "Because the thin layer grows by viscous diffusion while the fluid is carried downstream, a simple scaling argument gives the trend. Momentum diffuses a distance of order $\\sqrt{\\nu t}$ in time $t$, and a fluid particle takes $t\\approx x/U$ to reach station $x$. Hence $\\delta \\sim \\sqrt{\\nu x/U}$, i.e. $\\delta/x \\sim Re_x^{-1/2}$. The exact similarity solution of the boundary layer equations, due to Blasius, fixes the numerical constants (values below are rounded):"
+  },
+  {
+   "type": "math",
+   "latex": "\\delta = \\frac{5.0\\,x}{\\sqrt{Re_x}},\\qquad \\delta^*=\\frac{1.721\\,x}{\\sqrt{Re_x}},\\qquad \\theta=\\frac{0.664\\,x}{\\sqrt{Re_x}},\\qquad c_f=\\frac{\\tau_w}{\\tfrac12\\rho U^2}=\\frac{0.664}{\\sqrt{Re_x}}",
+   "caption": "Blasius laminar flat-plate results (valid for Re_x below about 5 x 10^5)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Displacement and momentum thickness",
+   "text": "The displacement thickness $\\delta^*=\\int_0^{\\infty}\\left(1-\\frac{u}{U}\\right)dy$ is the distance by which the outer streamlines are pushed away from the wall because of the slow fluid in the layer; it measures the mass-flow deficit. The momentum thickness $\\theta=\\int_0^{\\infty}\\frac{u}{U}\\left(1-\\frac{u}{U}\\right)dy$ measures the momentum-flow deficit, i.e. the thickness of free-stream fluid whose momentum equals the momentum lost to friction. The shape factor is $H=\\delta^*/\\theta$ (2.59 for Blasius, about 1.3 to 1.4 for a turbulent layer)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Blasius layer on a flat plate in air",
+   "prompt": "Air (typical values: density 1.20 kg/m^3, kinematic viscosity 1.5e-5 m^2/s) flows at U = 15 m/s along a smooth flat plate. At x = 0.40 m from the leading edge find the local Reynolds number, the thickness delta, the local skin friction coefficient and the wall shear stress.",
+   "steps": [
+    {
+     "text": "Local Reynolds number from its definition, using the given values.",
+     "latex": "Re_x=\\frac{Ux}{\\nu}=\\frac{15\\times0.40}{1.5\\times10^{-5}}=400000"
+    },
+    {
+     "text": "Re_x is below about 5e5, so the layer is laminar and the Blasius thickness applies.",
+     "latex": "\\delta=\\frac{5.0x}{\\sqrt{Re_x}}=\\frac{5.0\\times0.40}{632.5}=3.16\\ \\text{mm}"
+    },
+    {
+     "text": "Local skin friction coefficient from the Blasius result.",
+     "latex": "c_f=\\frac{0.664}{\\sqrt{Re_x}}=1.05e-03"
+    },
+    {
+     "text": "Wall shear stress follows from the definition of c_f with dynamic pressure 0.5 rho U^2 = 0.5(1.20)(15^2) = 135 Pa.",
+     "latex": "\\tau_w=c_f\\cdot\\tfrac12\\rho U^2=1.05e-03\\times135=0.142\\ \\text{Pa}"
+    }
+   ],
+   "answer": "Re_x = 4.0e5, delta = 3.16 mm, c_f = 1.05e-03, tau_w = 0.142 Pa."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Definition",
+    "Blasius value",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "99% thickness $\\delta$",
+     "$u=0.99U$",
+     "$5.0\\,x/\\sqrt{Re_x}$",
+     "Visible edge of the layer"
+    ],
+    [
+     "Displacement thickness $\\delta^*$",
+     "$\\int(1-u/U)\\,dy$",
+     "$1.721\\,x/\\sqrt{Re_x}$",
+     "Outer-flow shift (mass deficit)"
+    ],
+    [
+     "Momentum thickness $\\theta$",
+     "$\\int (u/U)(1-u/U)\\,dy$",
+     "$0.664\\,x/\\sqrt{Re_x}$",
+     "Momentum deficit, equals $\\tau_w$ integrated"
+    ],
+    [
+     "Local friction coefficient $c_f$",
+     "$\\tau_w/(\\tfrac12\\rho U^2)$",
+     "$0.664/\\sqrt{Re_x}$",
+     "Decreases as $x^{-1/2}$"
+    ],
+    [
+     "Plate drag coefficient $C_D$",
+     "$D/(\\tfrac12\\rho U^2 bL)$",
+     "$1.328/\\sqrt{Re_L}$",
+     "Twice $c_f$ at $x=L$"
+    ]
+   ],
+   "caption": "Laminar flat-plate boundary layer quantities (zero pressure gradient)"
+  },
+  {
+   "type": "text",
+   "markdown": "In practice we often know the velocity profile but not the Blasius constants, for example from a hot-wire traverse or from an assumed shape. Then $\\delta^*$ and $\\theta$ are found by integrating. Write $\\eta=y/\\delta$ so that the integrals run from 0 to 1 (outside the layer $u=U$ and the integrands vanish). Because $\\theta$ weights the deficit by $u/U$, it is always smaller than $\\delta^*$, and the ratio $H=\\delta^*/\\theta$ is always greater than 1."
+  },
+  {
+   "type": "worked_example",
+   "title": "Integral thicknesses from an assumed profile",
+   "prompt": "Within a laminar layer of thickness delta = 6.0 mm the velocity is approximated by u/U = 2 eta - eta^2, with eta = y/delta, for 0 <= y <= delta, and u = U outside. Find delta*, theta and H.",
+   "steps": [
+    {
+     "text": "Set up the displacement integral over the layer only.",
+     "latex": "\\delta^*=\\delta\\int_0^1\\left(1-2\\eta+\\eta^2\\right)d\\eta=\\delta\\int_0^1(1-\\eta)^2d\\eta"
+    },
+    {
+     "text": "Evaluate it: the integral of (1-eta)^2 from 0 to 1 is 1/3, so delta* = delta/3 = 2.0 mm.",
+     "latex": "\\delta^*=\\frac{\\delta}{3}=2.00\\ \\text{mm}"
+    },
+    {
+     "text": "Momentum thickness integrand is (2 eta - eta^2)(1 - eta)^2 = 2 eta - 5 eta^2 + 4 eta^3 - eta^4.",
+     "latex": "\\theta=\\delta\\int_0^1\\left(2\\eta-5\\eta^2+4\\eta^3-\\eta^4\\right)d\\eta"
+    },
+    {
+     "text": "Integrate term by term: 1 - 5/3 + 1 - 1/5 = 2/15, so theta = 2 delta/15 = 0.80 mm.",
+     "latex": "\\theta=\\delta\\left(1-\\tfrac53+1-\\tfrac15\\right)=\\frac{2\\delta}{15}=0.80\\ \\text{mm}"
+    },
+    {
+     "text": "Shape factor is the ratio of the two thicknesses.",
+     "latex": "H=\\frac{\\delta^*}{\\theta}=\\frac{1/3}{2/15}=2.5"
+    }
+   ],
+   "answer": "delta* = 2.00 mm, theta = 0.80 mm, H = 2.5."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Check the regime first: the Blasius formulas need $Re_x \\lesssim 5\\times10^5$ and zero pressure gradient.",
+    "Compute $Re_x$ with consistent SI units (use $\\nu=\\mu/\\rho$ if given $\\mu$).",
+    "Use $\\delta=5.0x/\\sqrt{Re_x}$ for the thickness, $0.664/\\sqrt{Re_x}$ for $c_f$.",
+    "For a given profile integrate $1-u/U$ for $\\delta^*$ and $(u/U)(1-u/U)$ for $\\theta$ over $0\\le\\eta\\le1$.",
+    "Convert $c_f$ to stress with $\\tau_w=c_f\\cdot\\tfrac12\\rho U^2$."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Local versus average friction",
+   "text": "Because $c_f\\propto x^{-1/2}$, the wall shear stress is largest at the leading edge and falls downstream. The total drag on a plate of length $L$ and width $b$ is $D=\\int\\tau_w b\\,dx$, which gives $C_D=1.328/\\sqrt{Re_L}$, exactly twice the local value at $x=L$."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Where Blasius stops working",
+   "text": "The Blasius solution assumes a laminar layer and no streamwise pressure gradient. Beyond transition ($Re_x$ of order $5\\times10^5$ for a smooth plate with a quiet free stream) the layer is turbulent and thickens roughly as $x^{4/5}$ instead of $x^{1/2}$, so the formulas above under-predict thickness and friction."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The laminar flat-plate boundary layer thickness grows as $\\delta=5.0x/\\sqrt{Re_x}$, so it grows like $\\sqrt{x}$ and shrinks as the speed rises.",
+    "$\\delta^*$ and $\\theta$ are integral measures of the mass and momentum deficit; $H=\\delta^*/\\theta=2.59$ for the Blasius profile.",
+    "The laminar skin friction coefficient is $c_f=0.664/\\sqrt{Re_x}$ and the plate drag coefficient is $C_D=1.328/\\sqrt{Re_L}$.",
+    "Given any profile $u(y)$, compute $\\delta^*$ and $\\theta$ by integrating over the layer."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A laminar boundary layer grows along a flat plate in a steady stream with zero pressure gradient. If the distance from the leading edge is increased from x to 4x with the free-stream conditions unchanged, by what factor does the Blasius thickness delta change?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2"
+    },
+    {
+     "id": "b",
+     "text": "4"
+    },
+    {
+     "id": "c",
+     "text": "1/2"
+    },
+    {
+     "id": "d",
+     "text": "16"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "2",
+   "distractorRationale": {
+    "a": "Correct: delta is proportional to sqrt(x), so quadrupling x doubles delta.",
+    "b": "delta is not proportional to x; that would be the (wrong) linear growth of a turbulent-looking guess.",
+    "c": "The thickness grows downstream; it never decreases with x.",
+    "d": "This squares the growth, as if delta were proportional to x squared."
+   },
+   "explanation": "Since $\\delta=5.0x/\\sqrt{Re_x}$ and $Re_x\\propto x$, we have $\\delta\\propto\\sqrt{x}$. Quadrupling x therefore multiplies delta by $\\sqrt4=2$.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "The Blasius flat-plate expressions for delta and c_f may be used for a turbulent boundary layer on the same plate, provided the distance x is large enough.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The Blasius solution is an exact solution of the laminar boundary layer equations only. A turbulent layer has a different velocity profile, grows roughly as $x^{4/5}$ and has higher wall shear, so the laminar formulas do not apply beyond transition.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water (typical values: density 998 kg/m^3, dynamic viscosity 1.0e-3 Pa s) flows at a free-stream speed of 0.80 m/s along a thin flat plate set parallel to the stream. Assuming the layer is laminar, calculate the 99% boundary layer thickness at 0.25 m from the leading edge, in millimetres.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o1"
+   ],
+   "correctValue": 2.79788,
+   "tolerance": 0.05,
+   "unit": "mm",
+   "explanation": "Re_x = 998(0.80)(0.25)/1.0e-3 = 199600, below 5e5, so the layer is laminar. Then delta = 5.0x/sqrt(Re_x) = 5.0(0.25)/446.8 = 2.80 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Air (typical kinematic viscosity 1.5e-5 m^2/s) flows at 30 m/s over a flat plate with zero pressure gradient. Find the local laminar skin friction coefficient c_f (dimensionless) at x = 0.10 m from the leading edge.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o3"
+   ],
+   "correctValue": 0.00148475,
+   "tolerance": 5e-05,
+   "unit": "dimensionless",
+   "explanation": "Re_x = Ux/nu = 30(0.10)/1.5e-5 = 200000, which is laminar. Then c_f = 0.664/sqrt(Re_x) = 0.664/447.2 = 1.485e-03.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A velocity profile in a laminar boundary layer of thickness delta is u/U = y/delta for 0 <= y <= delta and u = U beyond. What are the displacement thickness and momentum thickness?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "delta* = delta/3 and theta = 2 delta/15"
+    },
+    {
+     "id": "b",
+     "text": "delta* = delta/6 and theta = delta/2"
+    },
+    {
+     "id": "c",
+     "text": "delta* = delta/2 and theta = delta/2"
+    },
+    {
+     "id": "d",
+     "text": "delta* = delta/2 and theta = delta/6"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "delta* = delta/2 and theta = delta/6",
+   "distractorRationale": {
+    "a": "These are the values for the parabolic profile 2 eta - eta^2, not the linear one.",
+    "b": "The two values are swapped; delta* is always larger than theta.",
+    "c": "The momentum integral weights the deficit by u/U, so theta cannot equal delta*.",
+    "d": "Correct: the integrals of (1-eta) and eta(1-eta) are 1/2 and 1/6."
+   },
+   "explanation": "For $u/U=\\eta$, $\\delta^*=\\delta\\int_0^1(1-\\eta)d\\eta=\\delta/2$ and $\\theta=\\delta\\int_0^1\\eta(1-\\eta)d\\eta=\\delta(1/2-1/3)=\\delta/6$. The shape factor is therefore 3, larger than the Blasius value because this crude profile is less full near the wall.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In laminar flat-plate flow, how does the local skin friction coefficient c_f vary with distance x from the leading edge?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It decreases in proportion to $x^{-1}$"
+    },
+    {
+     "id": "b",
+     "text": "It increases in proportion to $x^{1/2}$"
+    },
+    {
+     "id": "c",
+     "text": "It is independent of x"
+    },
+    {
+     "id": "d",
+     "text": "It decreases in proportion to $x^{-1/2}$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It decreases in proportion to $x^{-1/2}$",
+   "distractorRationale": {
+    "a": "Re_x enters under a square root, so the exponent is -1/2, not -1.",
+    "b": "This would mean friction grows downstream, the opposite of the thickening layer reducing the wall gradient.",
+    "c": "c_f depends on Re_x, which varies with x.",
+    "d": "Correct: c_f = 0.664/sqrt(Re_x) and Re_x is proportional to x."
+   },
+   "explanation": "Because $c_f=0.664/\\sqrt{Re_x}$ and $Re_x=Ux/\\nu$ grows linearly with x, $c_f\\propto x^{-1/2}$. Physically, the layer thickens downstream so the wall velocity gradient and hence the shear stress fall.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water (typical values: density 998 kg/m^3, dynamic viscosity 1.0e-3 Pa s) flows at 0.50 m/s along a flat plate. Treat the layer as laminar and find the wall shear stress in pascals at x = 0.30 m from the leading edge.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o3"
+   ],
+   "correctValue": 0.214091,
+   "tolerance": 0.01,
+   "unit": "Pa",
+   "explanation": "Re_x = 998(0.50)(0.30)/1.0e-3 = 149700, so c_f = 0.664/sqrt(Re_x) = 1.716e-03. Dynamic pressure is 0.5(998)(0.50^2) = 124.75 Pa, so tau_w = 1.716e-03 x 124.75 = 0.2141 Pa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A plate of length L and width b is towed through still fluid so the laminar layer covers the whole plate. The local friction coefficient at the trailing edge is c_f(L). How is the plate drag coefficient C_D related to it?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "C_D = c_f(L)"
+    },
+    {
+     "id": "b",
+     "text": "C_D = 2 c_f(L)"
+    },
+    {
+     "id": "c",
+     "text": "C_D = c_f(L)/2"
+    },
+    {
+     "id": "d",
+     "text": "C_D = 4 c_f(L)"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "C_D = 2 c_f(L)",
+   "distractorRationale": {
+    "a": "This would hold only if shear stress were uniform along the plate, but it is higher near the leading edge.",
+    "b": "Correct: 1.328/sqrt(Re_L) is twice 0.664/sqrt(Re_L).",
+    "c": "This would require the average stress to be below the trailing-edge value, which is impossible as stress falls with x.",
+    "d": "There is no such factor in the Blasius result; the integral of x^(-1/2) gives a factor of 2."
+   },
+   "explanation": "Integrating $\\tau_w\\propto x^{-1/2}$ from 0 to L gives $2\\sqrt{L}$ times the constant, whereas the local value at L scales as $1/\\sqrt{L}$. So the average coefficient $C_D=1.328/\\sqrt{Re_L}$ is exactly twice $c_f(L)=0.664/\\sqrt{Re_L}$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A boundary layer of thickness delta has the cubic profile u/U = 1.5 eta - 0.5 eta^3 for 0 <= eta = y/delta <= 1, and u = U outside. (a) Derive the displacement thickness and momentum thickness as multiples of delta. (b) For delta = 8.0 mm give both in millimetres and state the shape factor.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o2"
+   ],
+   "markingGuide": [
+    "Writes delta* = delta * integral of (1 - u/U) d eta with the correct limits 0 to 1",
+    "Evaluates delta* = delta(1 - 3/4 + 1/8) = 3 delta/8",
+    "Writes theta = delta * integral of (u/U)(1-u/U) d eta and expands the integrand correctly",
+    "Obtains theta = 39 delta/280 (approximately 0.139 delta)",
+    "For delta = 8.0 mm: delta* = 3.00 mm and theta = 1.11 mm",
+    "Shape factor H = (3/8)/(39/280) = 2.69"
+   ],
+   "explanation": "The integrals are over the layer only because the integrands vanish where u = U. For this profile delta*/delta = 1 - 3/4 + 1/8 = 0.375 and theta/delta = 39/280 = 0.1393. For delta = 8.0 mm, delta* = 3.00 mm and theta = 1.11 mm, giving H = 2.69.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain physically what the displacement thickness delta* represents for a laminar boundary layer on a flat plate, and why the momentum thickness theta is always smaller than delta*. State how delta*, theta and c_f scale with Re_x for Blasius flow.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o2",
+    "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts.o3"
+   ],
+   "markingGuide": [
+    "Displacement thickness: distance the outer inviscid streamlines are displaced from the wall, equivalent to the mass-flow deficit in the layer",
+    "Equivalent statement: a layer of thickness delta* carrying no flow removes the same volume flux as the real slow layer",
+    "theta measures momentum deficit; its integrand is weighted by u/U which is less than 1, so theta < delta* and H > 1",
+    "delta* and theta both scale as x/sqrt(Re_x), i.e. as sqrt(x)",
+    "c_f scales as 1/sqrt(Re_x), with constants 1.721, 0.664 and 0.664 respectively (H = 2.59)"
+   ],
+   "explanation": "The displacement thickness integrates the fractional mass-flux deficit $1-u/U$, whereas the momentum thickness weights this by $u/U\\le1$, so it is smaller. Both follow the same $x/\\sqrt{Re_x}$ scaling for Blasius flow, which is why their ratio H is a constant 2.59.",
+   "board": "internal"
+  }
+ ]
+}

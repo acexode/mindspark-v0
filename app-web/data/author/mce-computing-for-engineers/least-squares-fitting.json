@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Least Squares Fitting",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A pressure transducer is checked against a deadweight tester at five pressures, and the five output voltages do not fall on a perfect line because every reading carries noise. The calibration constants you load into the data logger must come from the best straight line through the scatter, not from any two points you happen to pick."
+  },
+  {
+   "type": "text",
+   "markdown": "**Least squares fitting** chooses the parameters of a model so that the model comes as close as possible to *all* the data in an overall sense. For data $(x_i,y_i)$, $i=1\\dots n$, and a model $\\hat y(x)$, the **residual** at each point is $r_i=y_i-\\hat y(x_i)$, the vertical distance between the measurement and the model. The least squares criterion minimises the sum of squared residuals $S=\\sum r_i^2$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Least squares straight line",
+   "text": "For the model $\\hat y=mx+c$, setting $\\partial S/\\partial m=0$ and $\\partial S/\\partial c=0$ gives two linear equations (the normal equations) whose solution is the slope $m$ and intercept $c$ below. The fitted line always passes through the centroid $(\\bar x,\\bar y)$ of the data."
+  },
+  {
+   "type": "math",
+   "latex": "m=\\frac{n\\sum x_iy_i-\\sum x_i\\sum y_i}{n\\sum x_i^2-\\left(\\sum x_i\\right)^2},\\qquad c=\\bar y-m\\,\\bar x",
+   "caption": "Slope and intercept of the least squares line for n data points."
+  },
+  {
+   "type": "worked_example",
+   "title": "Calibrating a transducer",
+   "prompt": "A pressure transducer gives output $y$ (mV) at applied pressure $x$ (kPa): $(0,2)$, $(100,21)$, $(200,43)$, $(300,61)$, $(400,82)$. Fit a straight line.",
+   "steps": [
+    {
+     "text": "Compute the sums with $n=5$: $\\sum x=1000$, $\\sum y=209$, $\\sum xy=0\\cdot2+100\\cdot21+200\\cdot43+300\\cdot61+400\\cdot82=61\\,800$, and $\\sum x^2=300\\,000$.",
+     "latex": "\\sum x=1000,\\ \\sum y=209,\\ \\sum xy=61\\,800,\\ \\sum x^2=3\\times10^5"
+    },
+    {
+     "text": "Slope: $m=(5\\times61\\,800-1000\\times209)/(5\\times300\\,000-1000^2)=(309\\,000-209\\,000)/500\\,000=0.200$ mV/kPa.",
+     "latex": "m=\\frac{309\\,000-209\\,000}{1\\,500\\,000-1\\,000\\,000}=0.200\\ \\text{mV/kPa}"
+    },
+    {
+     "text": "Intercept: $\\bar x=200$, $\\bar y=41.8$, so $c=41.8-0.200\\times200=1.8$ mV.",
+     "latex": "c=41.8-0.200(200)=1.8\\ \\text{mV}"
+    },
+    {
+     "text": "Check: the line gives 1.8, 21.8, 41.8, 61.8, 81.8 mV, residuals $+0.2,-0.8,+1.2,-0.8,+0.2$ mV, which are small and scatter about zero."
+    }
+   ],
+   "answer": "y = 0.200 x + 1.8 (mV, with x in kPa): sensitivity 0.200 mV/kPa, zero offset 1.8 mV."
+  },
+  {
+   "type": "text",
+   "markdown": "Many engineering laws are **power laws**, $y=ax^b$, which are not linear in the parameters. A logarithm turns the product into a sum: $\\log_{10}y=\\log_{10}a+b\\log_{10}x$. Fitting a straight line to $(\\log x,\\log y)$ gives slope $b$ and intercept $\\log a$, so $a=10^{c}$. The same idea linearises $y=ae^{bx}$ using $\\ln y$ against $x$. Both need $x$ and $y$ to be positive."
+  },
+  {
+   "type": "worked_example",
+   "title": "Fitting a power law by log transform",
+   "prompt": "Tool life $T$ (min) is measured at cutting speeds $v$ (m/min): $(50,120)$, $(100,45)$, $(200,17)$. Fit $T=Cv^n$.",
+   "steps": [
+    {
+     "text": "Take $\\log_{10}$: $X=\\log v=1.699,\\ 2.000,\\ 2.301$ and $Y=\\log T=2.079,\\ 1.653,\\ 1.230$.",
+     "latex": "X=(1.699,\\,2.000,\\,2.301),\\quad Y=(2.079,\\,1.653,\\,1.230)"
+    },
+    {
+     "text": "Fit a line $Y=nX+c$ with $\\bar X=2.000$ and $\\bar Y=1.654$. Then $n=\\sum(X-\\bar X)(Y-\\bar Y)/\\sum(X-\\bar X)^2=-0.2555/0.1812=-1.41$.",
+     "latex": "n=\\frac{-0.2555}{0.1812}\\approx-1.41"
+    },
+    {
+     "text": "Intercept: $c=\\bar Y-n\\bar X=1.654+1.41\\times2.000=4.474$, so $C=10^{4.474}\\approx2.97\\times10^4$.",
+     "latex": "C=10^{4.474}\\approx2.97\\times10^{4}"
+    },
+    {
+     "text": "Result: $T\\approx2.97\\times10^4\\,v^{-1.41}$. Check at $v=100$: $2.97\\times10^4\\times100^{-1.41}=2.97\\times10^4/660=45$ min, matching the data."
+    }
+   ],
+   "answer": "T = 2.97e4 v^(-1.41) with T in min and v in m/min (n = -1.41)."
+  },
+  {
+   "type": "text",
+   "markdown": "How good is the fit? The **coefficient of determination** $R^2$ compares the residual scatter about the model with the total scatter of the data about its mean. $R^2=1$ means the model reproduces the data exactly; $R^2=0$ means it does no better than the mean $\\bar y$."
+  },
+  {
+   "type": "math",
+   "latex": "R^2=1-\\frac{SS_{\\text{res}}}{SS_{\\text{tot}}},\\qquad SS_{\\text{res}}=\\sum(y_i-\\hat y_i)^2,\\quad SS_{\\text{tot}}=\\sum(y_i-\\bar y)^2",
+   "caption": "Coefficient of determination."
+  },
+  {
+   "type": "worked_example",
+   "title": "Computing R squared",
+   "prompt": "For the transducer fit above, compute $R^2$.",
+   "steps": [
+    {
+     "text": "Residual sum: $SS_{\\text{res}}=0.2^2+0.8^2+1.2^2+0.8^2+0.2^2=0.04+0.64+1.44+0.64+0.04=2.80$ mV^2.",
+     "latex": "SS_{res}=2.80"
+    },
+    {
+     "text": "Total sum: with $\\bar y=41.8$, $SS_{\\text{tot}}=(2-41.8)^2+(21-41.8)^2+(43-41.8)^2+(61-41.8)^2+(82-41.8)^2=4002.8$ mV^2.",
+     "latex": "SS_{tot}=4002.8"
+    },
+    {
+     "text": "Then $R^2=1-2.80/4002.8=0.9993$.",
+     "latex": "R^2=1-\\frac{2.80}{4002.8}=0.9993"
+    }
+   ],
+   "answer": "R^2 = 0.9993: the line explains 99.93 percent of the variance."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Meaning",
+    "Value for the transducer fit"
+   ],
+   "rows": [
+    [
+     "Slope $m$",
+     "Sensitivity (mV per kPa)",
+     "0.200"
+    ],
+    [
+     "Intercept $c$",
+     "Zero offset (mV)",
+     "1.8"
+    ],
+    [
+     "$SS_{\\text{res}}$",
+     "Unexplained scatter",
+     "2.80 mV^2"
+    ],
+    [
+     "$R^2$",
+     "Fraction of variance explained",
+     "0.9993"
+    ]
+   ],
+   "caption": "Summary of the straight-line fit."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "R squared is not a proof of a good model",
+   "text": "A high $R^2$ does not show the model form is right. A curved relationship fitted by a straight line can still give $R^2>0.95$, with residuals that form a pattern (all positive in the middle, negative at the ends). Always plot the residuals. Also, log-transform fits weight relative errors, not absolute errors, so quote the transformed fit's parameters with that in mind."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Least squares minimises the sum of squared vertical residuals; for a line, m = (n Sxy - Sx Sy)/(n Sxx - Sx^2) and c = ybar - m xbar.",
+    "A power law y = a x^b is linearised by log y = log a + b log x; fit a line and recover a = 10^c.",
+    "R^2 = 1 - SSres/SStot measures the fraction of the variance explained by the model.",
+    "High R^2 does not prove the model is correct; check the residuals."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does the least squares criterion minimise for a straight-line fit $\\hat y=mx+c$?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The sum of the vertical distances (signed)"
+    },
+    {
+     "id": "b",
+     "text": "The largest single residual"
+    },
+    {
+     "id": "c",
+     "text": "The sum of the squared vertical distances between the data and the line"
+    },
+    {
+     "id": "d",
+     "text": "The distance from the line to the two end points"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The sum of the squared vertical distances between the data and the line",
+   "distractorRationale": {
+    "c": "Correct: sum of squared residuals.",
+    "a": "Signed distances can cancel to zero for a very poor line.",
+    "d": "Only two points are used by a line through the end points, not all the data.",
+    "b": "Minimising the largest residual is a different (minimax) criterion."
+   },
+   "explanation": "Least squares minimises the sum of squared residuals r_i = y_i - (m x_i + c). Squaring prevents positive and negative residuals from cancelling and weights large deviations more heavily.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A spring test records extension $y$ (mm) under loads $x=10,20,30,40$ N as $y=0.52,1.01,1.55,2.02$. Fit $y=mx+c$ by least squares and report the slope $m$ in mm/N.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o1"
+   ],
+   "correctValue": 0.0504,
+   "tolerance": 0.0005,
+   "unit": "mm/N",
+   "explanation": "Sums: Sx = 100, Sy = 5.10, Sxy = 152.7, Sxx = 3000, n = 4. Then m = (4 x 152.7 - 100 x 5.10)/(4 x 3000 - 100^2) = (610.8 - 510)/2000 = 0.0504 mm/N.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Data suggest $y=ax^b$. A least squares line fitted to $(\\log_{10}x,\\log_{10}y)$ has slope 1.8 and intercept 0.30. Which model results?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$y\\approx0.30\\,x^{1.8}$"
+    },
+    {
+     "id": "b",
+     "text": "$y\\approx 63\\,x^{0.30}$"
+    },
+    {
+     "id": "c",
+     "text": "$y\\approx2.0\\,x^{1.8}$"
+    },
+    {
+     "id": "d",
+     "text": "$y\\approx1.8\\,x^{0.30}$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$y\\approx2.0\\,x^{1.8}$",
+   "distractorRationale": {
+    "c": "Correct: b is the slope and a = 10^intercept.",
+    "a": "Uses the intercept itself as a instead of converting with 10^c.",
+    "d": "Swaps the roles of slope and intercept.",
+    "b": "Swaps the roles and also uses 10^1.8 = 63."
+   },
+   "explanation": "The slope of the log-log line is the exponent b = 1.8, and the intercept is log10 a = 0.30, so a = 10^0.30 = 2.0. The model is y = 2.0 x^1.8.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which transformation linearises $y=ae^{bx}$ so a straight-line fit can be used?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Fit $y^2$ against $x$"
+    },
+    {
+     "id": "b",
+     "text": "Fit $y$ against $\\ln x$"
+    },
+    {
+     "id": "c",
+     "text": "Fit $\\ln y$ against $x$"
+    },
+    {
+     "id": "d",
+     "text": "Fit $\\ln y$ against $\\ln x$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Fit $\\ln y$ against $x$",
+   "distractorRationale": {
+    "c": "Correct: ln y is linear in x.",
+    "b": "This would linearise y = a + b ln x, a logarithmic law.",
+    "d": "This linearises a power law, not an exponential.",
+    "a": "Squaring y does not remove the exponential."
+   },
+   "explanation": "Taking the natural log gives ln y = ln a + b x, which is linear in x with slope b and intercept ln a. The other transformations do not give a linear relation between the plotted variables.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An S-N relation $S=aN^b$ ($S$ in MPa, $N$ in cycles) passes through $(N=10^3, S=500)$ and $(N=10^6, S=250)$. Using the log-log line through these two points, find the exponent $b$.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o2"
+   ],
+   "correctValue": -0.1003,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "On log-log axes the slope is b = (log 250 - log 500)/(log 10^6 - log 10^3) = (-0.3010)/3 = -0.1003. The negative sign means strength falls as cycles increase.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A straight-line fit has residual sum of squares $SS_{\\text{res}}=3.5$ and total sum of squares $SS_{\\text{tot}}=140$ (same units). Compute the coefficient of determination $R^2$.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o3"
+   ],
+   "correctValue": 0.975,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "R^2 = 1 - SSres/SStot = 1 - 3.5/140 = 1 - 0.025 = 0.975. So 97.5 percent of the variance of y about its mean is explained by the fit.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A straight line fitted to stress-strain data gives $R^2=0.97$, but the residuals are positive in the middle of the range and negative at both ends. What is the best interpretation?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The slope must be negative"
+    },
+    {
+     "id": "b",
+     "text": "The data must contain errors and should be discarded"
+    },
+    {
+     "id": "c",
+     "text": "The line explains most of the variance but the pattern in the residuals shows a curved relationship the line cannot capture"
+    },
+    {
+     "id": "d",
+     "text": "The fit is perfect because R^2 is close to 1"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The line explains most of the variance but the pattern in the residuals shows a curved relationship the line cannot capture",
+   "distractorRationale": {
+    "c": "Correct: high R^2 can coexist with a poor model form.",
+    "d": "R^2 below 1 means imperfect, and a residual pattern shows a systematic problem.",
+    "b": "Curvature is a property of the physics, not a reason to discard data.",
+    "a": "The sign of the slope cannot be inferred from the residual pattern."
+   },
+   "explanation": "R^2 summarises the overall scatter, but a systematic pattern in the residuals reveals a model of the wrong form, here curvature. A quadratic or a different model should be tried.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "For a least squares straight line that includes an intercept, the coefficient of determination $R^2$ lies between 0 and 1.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Because the best line does at least as well as the horizontal line y = ybar, SSres cannot exceed SStot, so R^2 = 1 - SSres/SStot is between 0 and 1. A value near 0 means the fit explains little of the scatter.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why least squares minimises the sum of the *squared* residuals rather than the sum of the residuals, state the normal-equation results for a straight line (slope and intercept), and describe one consequence of a single outlying data point.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o1",
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o3"
+   ],
+   "markingGuide": [
+    "Positive and negative residuals would cancel if summed without squaring, allowing poor fits with zero total",
+    "Squaring gives a smooth function whose minimum is found by setting partial derivatives to zero",
+    "Slope m = (n Sxy - Sx Sy)/(n Sxx - Sx^2)",
+    "Intercept c = ybar - m xbar (line passes through the centroid)",
+    "Squaring weights large residuals heavily, so an outlier can pull the line substantially; examine and justify before removing"
+   ],
+   "explanation": "Squaring removes cancellation and leads to linear normal equations. The same weighting makes the fit sensitive to outliers, so they should be investigated.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how you would fit the model $y=ae^{bx}$ to measured decay data and how you would obtain $a$ and $b$. State one limitation of this approach.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.curve-fitting.least-squares-fitting.o2"
+   ],
+   "markingGuide": [
+    "Take natural logs: ln y = ln a + b x",
+    "Fit a straight line to (x, ln y) by least squares",
+    "Slope is b, intercept is ln a so a = exp(intercept)",
+    "Requires all y > 0 (cannot take the log of zero or negative values)",
+    "Limitation: the fit minimises squared errors in ln y, which weights small values heavily and differs from a direct nonlinear fit"
+   ],
+   "explanation": "Linearisation turns a nonlinear model into a line that can be fitted with closed-form formulas. Because the fitting is done in log space, the errors are weighted differently from a direct fit in y.",
+   "board": "internal"
+  }
+ ]
+}

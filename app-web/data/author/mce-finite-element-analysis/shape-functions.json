@@ -1,0 +1,374 @@
+{
+ "lessonTitle": "Shape Functions, Mapping and the Jacobian of the Q4 Element",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A crankshaft web, a bracket and a pressure-vessel nozzle all have curved or skewed outlines that no rectangle can follow. Isoparametric elements solve this by doing all the mathematics on a perfect square with coordinates between -1 and +1, and then stretching that square onto the real element. The stretch is described by the Jacobian, and its determinant is the first thing to check when a model refuses to run."
+  },
+  {
+   "type": "text",
+   "markdown": "**Natural coordinates.** The four-node quadrilateral (Q4) is defined on a parent square with natural coordinates $(\\xi,\\eta)$, each from $-1$ to $+1$ (dimensionless). The nodes are numbered counter-clockwise from the lower-left corner: node 1 at $(-1,-1)$, node 2 at $(1,-1)$, node 3 at $(1,1)$ and node 4 at $(-1,1)$. Each shape function $N_i$ is bilinear, equal to 1 at its own node and 0 at the other three."
+  },
+  {
+   "type": "math",
+   "latex": "N_1=\\tfrac14(1-\\xi)(1-\\eta),\\; N_2=\\tfrac14(1+\\xi)(1-\\eta),\\; N_3=\\tfrac14(1+\\xi)(1+\\eta),\\; N_4=\\tfrac14(1-\\xi)(1+\\eta)",
+   "caption": "Q4 shape functions in natural coordinates"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Isoparametric mapping",
+   "text": "An element is **isoparametric** when the same shape functions interpolate the geometry and the unknown field. The physical position of a point is $x=\\sum N_i(\\xi,\\eta)\\,x_i$ and $y=\\sum N_i\\,y_i$ with nodal coordinates $(x_i,y_i)$ in metres, and the displacement is $u=\\sum N_i\\,u_i$. Because $\\sum N_i=1$, the element reproduces any rigid translation and any constant field exactly."
+  },
+  {
+   "type": "text",
+   "markdown": "**The Jacobian.** To integrate over the real element we need derivatives with respect to $x$ and $y$, but the shape functions depend on $(\\xi,\\eta)$. The chain rule connects them through the Jacobian matrix $\\mathbf J$, whose entries are the derivatives of the physical coordinates with respect to the natural ones (units: metres per unit natural coordinate). We use the convention that the first row differentiates with respect to $\\xi$ and the second with respect to $\\eta$."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf J=\\begin{bmatrix}\\partial x/\\partial\\xi&\\partial y/\\partial\\xi\\\\ \\partial x/\\partial\\eta&\\partial y/\\partial\\eta\\end{bmatrix}=\\begin{bmatrix}\\sum N_{i,\\xi}x_i&\\sum N_{i,\\xi}y_i\\\\ \\sum N_{i,\\eta}x_i&\\sum N_{i,\\eta}y_i\\end{bmatrix},\\quad \\begin{Bmatrix}N_{i,x}\\\\N_{i,y}\\end{Bmatrix}=\\mathbf J^{-1}\\begin{Bmatrix}N_{i,\\xi}\\\\N_{i,\\eta}\\end{Bmatrix},\\quad dA=\\det\\mathbf J\\,d\\xi\\,d\\eta",
+   "caption": "Jacobian matrix, derivative transformation and area scaling"
+  },
+  {
+   "type": "worked_example",
+   "title": "Jacobian of a parallelogram element",
+   "prompt": "A Q4 element has nodes (in mm) 1: (0,0), 2: (4,0), 3: (5,3), 4: (1,3). Find the physical position of the centre $(\\xi,\\eta)=(0,0)$ and the Jacobian matrix and determinant there.",
+   "steps": [
+    {
+     "text": "At the centre every $N_i=1/4$, so $x=\\tfrac14(0+4+5+1)=2.5$ mm and $y=\\tfrac14(0+0+3+3)=1.5$ mm.",
+     "latex": "x=2.5\\ \\text{mm},\\; y=1.5\\ \\text{mm}"
+    },
+    {
+     "text": "At the centre the derivatives are $N_{i,\\xi}=\\tfrac14(-1,1,1,-1)$ and $N_{i,\\eta}=\\tfrac14(-1,-1,1,1)$. Then $x_{,\\xi}=\\tfrac14(0+4+5-1)=2$, $y_{,\\xi}=\\tfrac14(0+0+3-3)=0$, $x_{,\\eta}=\\tfrac14(0-4+5+1)=0.5$, $y_{,\\eta}=\\tfrac14(0-0+3+3)=1.5$.",
+     "latex": "\\mathbf J=\\begin{bmatrix}2&0\\\\0.5&1.5\\end{bmatrix}\\ \\text{mm}"
+    },
+    {
+     "text": "The determinant is $\\det\\mathbf J=2(1.5)-0(0.5)=3$ mm$^2$. For a parallelogram it is the same everywhere, and the area is $4\\det\\mathbf J=12$ mm$^2$, which agrees with base 4 mm times height 3 mm.",
+     "latex": "\\det\\mathbf J=3\\ \\text{mm}^2,\\quad A=4\\det\\mathbf J=12\\ \\text{mm}^2"
+    }
+   ],
+   "answer": "Centre at (2.5, 1.5) mm, J = [[2, 0],[0.5, 1.5]] mm, det J = 3 mm^2 (area 12 mm^2)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$\\det\\mathbf J$ at a point",
+    "Meaning",
+    "Action"
+   ],
+   "rows": [
+    [
+     "Positive",
+     "Mapping is locally one-to-one and keeps orientation",
+     "Element acceptable at that point"
+    ],
+    [
+     "Zero",
+     "Element collapsed to a line or a point (for example two nodes coincide)",
+     "Fix the geometry; $\\mathbf J^{-1}$ does not exist"
+    ],
+    [
+     "Negative",
+     "Element is inverted, folded, or has a re-entrant (reflex) corner or clockwise numbering",
+     "Renumber or remesh; stiffness has no physical meaning"
+    ]
+   ],
+   "caption": "Reading the sign of the Jacobian determinant"
+  },
+  {
+   "type": "text",
+   "markdown": "**Why the sign matters.** The factor $\\det\\mathbf J$ converts area in the parent square to area in the real element. A negative value means the map has turned the square inside out at that point, so computed areas and strain energies come out with the wrong sign. Because $\\det\\mathbf J$ of a Q4 varies linearly across the element, its smallest value occurs at a corner, so checking the four corners is sufficient."
+  },
+  {
+   "type": "worked_example",
+   "title": "A reflex corner gives a negative determinant",
+   "prompt": "A Q4 element has nodes (in mm) 1: (0,0), 2: (4,0), 3: (4,4), 4: (3,1), numbered counter-clockwise. Evaluate $\\det\\mathbf J$ at the four corners and at the centre.",
+   "steps": [
+    {
+     "text": "Node 4 at (3,1) lies inside the triangle formed by the other three nodes, so the interior angle at node 4 exceeds 180 degrees: the quadrilateral is concave."
+    },
+    {
+     "text": "Evaluate $\\det\\mathbf J=x_{,\\xi}y_{,\\eta}-y_{,\\xi}x_{,\\eta}$ at each corner using the shape-function derivatives of the Q4. At the corners of nodes 1, 2, 3 and 4 the values are 1, 4, 1, -2 mm$^2$ respectively."
+    },
+    {
+     "text": "The corner at node 4 has a negative determinant, so the mapping folds over there. At the centre $\\det\\mathbf J=1$ mm$^2$, which equals one quarter of the area (4 mm$^2$), and is positive."
+    },
+    {
+     "text": "A positive centre value does not make the element valid. Every Gauss point must have a positive determinant, and the corner check shows this element must be remeshed."
+    }
+   ],
+   "answer": "Corner determinants are 1, 4, 1, -2 mm^2; the negative value at node 4 shows the element is invalid."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Write each $N_i$ as the product of two linear factors that vanish on the two edges not touching node $i$, scaled so $N_i=1$ at node $i$.",
+    "Map $x=\\sum N_ix_i$, $y=\\sum N_iy_i$.",
+    "Differentiate to build $\\mathbf J$, then $\\det\\mathbf J$ and $\\mathbf J^{-1}$.",
+    "Check the sign of $\\det\\mathbf J$ at all corners and Gauss points."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Node numbering",
+   "text": "Numbering the nodes clockwise instead of counter-clockwise makes $\\det\\mathbf J$ negative throughout the element, even for a perfect rectangle. Always follow the numbering order your solver requires."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Q4 shape functions are bilinear products of $(1\\pm\\xi)$ and $(1\\pm\\eta)$ divided by 4; they equal 1 at their node, 0 at the others and sum to 1.",
+    "In an isoparametric element geometry and field share the same shape functions, so the Jacobian $\\mathbf J$ relates natural and physical derivatives.",
+    "$\\det\\mathbf J$ scales area from the parent square to the real element; at the centre of a Q4 it is a quarter of the element area.",
+    "A zero or negative determinant signals a collapsed, folded or wrongly numbered element."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For the four-node quadrilateral in natural coordinates, what is $N_1+N_2+N_3+N_4$ at any point $(\\xi,\\eta)$ in the element?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Exactly 1, which lets the element reproduce a uniform field"
+    },
+    {
+     "id": "b",
+     "text": "Exactly 0, because the functions cancel"
+    },
+    {
+     "id": "c",
+     "text": "It depends on $\\xi$ and $\\eta$, rising towards the centre"
+    },
+    {
+     "id": "d",
+     "text": "It equals the element area"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Exactly 1, which lets the element reproduce a uniform field",
+   "distractorRationale": {
+    "a": "Correct: the shape functions form a partition of unity, so a field with equal nodal values is reproduced everywhere.",
+    "b": "The functions are non-negative on the element, so they cannot cancel.",
+    "c": "Each function is 1 at its own node and 0 at the others, and the four always add to 1, so the sum is constant.",
+    "d": "The sum is dimensionless; area enters only through $\\det\\mathbf J$."
+   },
+   "explanation": "Adding the four products gives $\\tfrac14[(1-\\xi)+(1+\\xi)][(1-\\eta)+(1+\\eta)]=1$. This is the partition-of-unity property that guarantees rigid-body and constant-field representation.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A Q4 element has nodes at (1,1), (5,2), (6,5) and (0,4) mm, numbered counter-clockwise from the lower-left node. Using the isoparametric mapping, find the $x$-coordinate in mm of the point at $(\\xi,\\eta)=(0.5,-0.5)$.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o1"
+   ],
+   "correctValue": 4.125,
+   "tolerance": 0.02,
+   "unit": "mm",
+   "explanation": "At $(0.5,-0.5)$ the shape functions are $N_1=\\tfrac14(0.5)(1.5)=0.1875$, $N_2=\\tfrac14(1.5)(1.5)=0.5625$, $N_3=\\tfrac14(1.5)(0.5)=0.1875$, $N_4=\\tfrac14(0.5)(0.5)=0.0625$. Then $x=0.1875(1)+0.5625(5)+0.1875(6)+0.0625(0)=4.125$ mm. The weights add to 1 as they must.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The four nodal temperatures of a Q4 element, numbered counter-clockwise, are 100, 140, 180 and 120 degrees Celsius. Using the element's shape functions, what is the interpolated temperature at the element centre $(\\xi,\\eta)=(0,0)$?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "135 degrees Celsius"
+    },
+    {
+     "id": "b",
+     "text": "140 degrees Celsius"
+    },
+    {
+     "id": "c",
+     "text": "180 degrees Celsius"
+    },
+    {
+     "id": "d",
+     "text": "120 degrees Celsius"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "135 degrees Celsius",
+   "distractorRationale": {
+    "a": "Correct: at the centre every shape function is 1/4, so the value is the average (100+140+180+120)/4 = 135.",
+    "b": "This is the value at node 2, not at the centre.",
+    "c": "This is the highest nodal value, at node 3; the centre is an average of all four.",
+    "d": "This is the value at node 4; at the centre each node has equal weight."
+   },
+   "explanation": "Each $N_i=\\tfrac14(1\\pm0)(1\\pm0)=\\tfrac14$ at the centre, so the interpolated value is the arithmetic mean of the four nodal values. That is $540/4=135$ degrees Celsius.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A rectangular Q4 element is 8 mm long and 5 mm high. Its edges are parallel to the global axes. Find the Jacobian determinant $\\det\\mathbf J$ (the same everywhere in the element) in mm$^2$.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o2"
+   ],
+   "correctValue": 10.0,
+   "tolerance": 0.05,
+   "unit": "mm^2",
+   "explanation": "For a rectangle $x_{,\\xi}=a/2$ with $a=8$ mm and $y_{,\\eta}=b/2$ with $b=5$ mm, and the cross terms are zero. So $\\det\\mathbf J=(4)(2.5)=10$ mm$^2$, which is one quarter of the area 40 mm$^2$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A Q4 element has nodes (in mm) 1: (0,0), 2: (6,0), 3: (7,4), 4: (1,5), numbered counter-clockwise. Compute $\\det\\mathbf J$ at the element centre in mm$^2$, using $\\mathbf J=[x_{,\\xi},\\,y_{,\\xi};\\,x_{,\\eta},\\,y_{,\\eta}]$.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o2"
+   ],
+   "correctValue": 6.875,
+   "tolerance": 0.05,
+   "unit": "mm^2",
+   "explanation": "At the centre $x_{,\\xi}=\\tfrac14(-0+6+7-1)=3$, $y_{,\\xi}=\\tfrac14(-0+0+4-5)=-0.25$, $x_{,\\eta}=\\tfrac14(-0-6+7+1)=0.5$ and $y_{,\\eta}=\\tfrac14(-0-0+4+5)=2.25$. Then $\\det\\mathbf J=3(2.25)-(-0.25)(0.5)=6.875$ mm$^2$. As a check, the shoelace area is 27.5 mm$^2$ and a quarter of it is 6.875.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "During pre-processing a solver reports a negative Jacobian determinant at one Gauss point of a Q4 element. What does this indicate?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The element is inverted or has a re-entrant corner there, so the mapping from the parent square folds over"
+    },
+    {
+     "id": "b",
+     "text": "The element is stiffer than expected but otherwise valid"
+    },
+    {
+     "id": "c",
+     "text": "The material has a negative Poisson's ratio"
+    },
+    {
+     "id": "d",
+     "text": "The element is too large and should simply use more Gauss points"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The element is inverted or has a re-entrant corner there, so the mapping from the parent square folds over",
+   "distractorRationale": {
+    "a": "Correct: the sign of $\\det\\mathbf J$ is the local orientation of the map, and a negative sign means the element is turned inside out there.",
+    "b": "Negative $\\det\\mathbf J$ makes the integrated stiffness meaningless rather than larger.",
+    "c": "Material properties do not enter the Jacobian, which depends only on geometry.",
+    "d": "More Gauss points would sample the same folded map and give wrong results; the geometry must be corrected."
+   },
+   "explanation": "$\\det\\mathbf J$ depends only on nodal coordinates and measures the local area scaling with orientation. A negative value indicates clockwise numbering, a folded element or a concave corner, and the mesh must be repaired.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Numbering the nodes of a Q4 element clockwise, instead of counter-clockwise, produces a negative Jacobian determinant even when the element is a perfect rectangle.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. Reversing the node order reverses the orientation of the mapping from the parent square, flipping the sign of $\\det\\mathbf J$ everywhere. The geometry is fine, but the element must be renumbered for the solver.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the role of $\\det\\mathbf J$ when integrating an element stiffness matrix over the real element?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It converts the area element, $dA=\\det\\mathbf J\\,d\\xi\\,d\\eta$, so the integral can be done on the parent square"
+    },
+    {
+     "id": "b",
+     "text": "It converts displacement in metres into millimetres"
+    },
+    {
+     "id": "c",
+     "text": "It sets the value of Young's modulus used inside the element"
+    },
+    {
+     "id": "d",
+     "text": "It is only needed for triangular elements"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It converts the area element, $dA=\\det\\mathbf J\\,d\\xi\\,d\\eta$, so the integral can be done on the parent square",
+   "distractorRationale": {
+    "a": "Correct: the integral over the physical element becomes an integral over the parent square weighted by $\\det\\mathbf J$.",
+    "b": "Unit conversions are unrelated to the Jacobian; it is a coordinate-mapping quantity.",
+    "c": "Material properties are independent of the mapping.",
+    "d": "The same area scaling applies to any mapped element, quadrilateral or otherwise."
+   },
+   "explanation": "The stiffness integrand is evaluated in $(\\xi,\\eta)$, where limits are fixed at $\\pm1$, and multiplied by $\\det\\mathbf J$ to account for the area scaling. The same Jacobian also transforms the derivatives of the shape functions.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why a Q4 element with a negative $\\det\\mathbf J$ at a Gauss point must be rejected, and describe two mesh situations that cause it.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o3"
+   ],
+   "markingGuide": [
+    "$\\det\\mathbf J$ is the local area scaling with orientation, so negative means the mapping is inverted at that point",
+    "The integrand of the stiffness is weighted by $\\det\\mathbf J$, so negative values give negative or wrong-signed strain energy contributions",
+    "$\\mathbf J^{-1}$ gives wrong derivatives $N_{i,x}, N_{i,y}$, so strains are meaningless",
+    "Cause one: clockwise node numbering (or a mirrored element)",
+    "Cause two: a re-entrant or badly distorted corner where a node lies inside the triangle of its neighbours, or nodes crossing over"
+   ],
+   "explanation": "The determinant controls both the integration weight and the derivative transformation. When it changes sign the stiffness no longer represents a physical element, which is why solvers abort or warn.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Using the requirements that each shape function equals 1 at its own node and 0 at the other nodes of the parent square, and that it is bilinear in $\\xi$ and $\\eta$, derive $N_3$ for the Q4 element. Then show that $\\sum N_i=1$ and state what that implies for the element.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.shape-functions.o1"
+   ],
+   "markingGuide": [
+    "$N_3$ must vanish on the edges $\\xi=-1$ and $\\eta=-1$ (those not containing node 3)",
+    "So $N_3=C(1+\\xi)(1+\\eta)$, which is bilinear",
+    "Set $N_3(1,1)=1$: $C\\cdot2\\cdot2=1$ so $C=1/4$",
+    "Sum of all four shape functions $=\\tfrac14[(1-\\xi)+(1+\\xi)][(1-\\eta)+(1+\\eta)]=1$",
+    "Implication: rigid-body translation and a uniform field are represented exactly (partition of unity / completeness)"
+   ],
+   "explanation": "Building each function from linear factors that vanish on the opposite edges guarantees the nodal property. The partition of unity then follows from factorising the sum.",
+   "board": "internal"
+  }
+ ]
+}

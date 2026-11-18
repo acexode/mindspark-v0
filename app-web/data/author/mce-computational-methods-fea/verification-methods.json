@@ -1,0 +1,400 @@
+{
+ "lessonTitle": "Verification: Benchmarks, Reaction Balance and Mesh Independence",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A finite element model of a lifting lug predicts a hook deflection of 1.9 mm, and the engineer's report says 'FE confirms the design'. Nobody asked whether the code solves the right equations, whether the mesh is fine enough, or whether the reactions even balance the 120 kN load. Verification is the set of checks that answer those questions before the result is shown to anyone."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** **Verification** asks: *are we solving the equations correctly?* It compares the numerical solution with the exact or benchmark solution of the **same mathematical model**, and so is purely a mathematics and software question. **Validation** (next unit) asks whether the mathematical model represents reality. A model can be perfectly verified and still be physically wrong, and a model can be physically right but poorly solved; both checks are needed."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Verification checks",
+   "text": "Common verification checks are: (1) comparison with an **analytical solution** or published benchmark for a simplified version of the problem; (2) **equilibrium checks**: the reactions must balance the applied loads and moments; (3) **mesh independence** (convergence) studies with an estimate of the discretisation error; (4) simple sanity tests such as a patch test, symmetry of results for symmetric loading, and zero stress for free thermal expansion."
+  },
+  {
+   "type": "worked_example",
+   "title": "Verifying a beam model against beam theory",
+   "prompt": "A simply supported steel beam ($E=200$ GPa, $I=8.0\\times10^{-6}$ m$^4$, length $L=2.0$ m) carries a central point load $P=5.0$ kN. It is modelled with two Euler-Bernoulli beam elements. Compare the FE mid-span deflection and end rotation with the analytical results $\\delta=PL^3/(48EI)$ and $\\theta=PL^2/(16EI)$, and check the reactions.",
+   "steps": [
+    {
+     "text": "Beam stiffness $EI=1.6\\times10^{6}$ N m$^2$. Analytical solution.",
+     "latex": "\\delta=\\frac{(5000)(2.0)^3}{48(1.6\\times10^{6})}=0.5208\\ \\text{mm},\\quad \\theta=\\frac{(5000)(2.0)^2}{16(1.6\\times10^{6})}=0.000781\\ \\text{rad}"
+    },
+    {
+     "text": "FE solution of the reduced $4\\times4$ system (DOFs $\\theta_1,v_2,\\theta_2,\\theta_3$ with $v_1=v_3=0$).",
+     "latex": "v_2=-0.5208\\ \\text{mm},\\quad \\theta_1=-0.000781\\ \\text{rad}"
+    },
+    {
+     "text": "Differences against theory.",
+     "latex": "\\frac{v_{FE}-\\delta}{\\delta}=0.0000\\%,\\quad \\frac{\\theta_{FE}-\\theta}{\\theta}=0.0000\\%"
+    },
+    {
+     "text": "Reactions from the deleted rows must each equal $P/2=2500$ N and act upward.",
+     "latex": "R_1=2500.0\\ \\text{N},\\quad R_3=2500.0\\ \\text{N},\\quad R_1+R_3=5000.0\\ \\text{N}"
+    }
+   ],
+   "answer": "The FE deflection and rotation agree with beam theory to rounding (differences below $10^{-6}$ per cent) and the reactions sum to the applied 5000 N. The model is verified for this benchmark; the agreement is exact because the cubic beam elements reproduce the exact nodal values for loads applied at nodes."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Choosing a benchmark",
+   "text": "The analytical solution must correspond to the **same assumptions** as the model: slender-beam theory is not a valid benchmark for a deep, short beam in which shear deformation matters, nor is the infinite-plate stress concentration factor for a finite plate with a large hole. Agreement with an inappropriate benchmark proves nothing, and disagreement may only reflect the benchmark's limits."
+  },
+  {
+   "type": "text",
+   "markdown": "**Equilibrium check.** For a solved static model, sum the reaction forces and compare with the total applied load in each direction, and sum moments about a point. Agreement to within about 0.1 to 1 per cent (set by round-off and the way loads and constraints were applied) is expected. A larger imbalance indicates constraints applied to the wrong nodes, forces not applied, contact or constraint equations that carry load, or a solver tolerance that is too loose. Checking reactions is cheap and catches many mistakes, but a balanced reaction check does **not** prove the stiffness or stresses are right."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reaction balance on a plate model",
+   "prompt": "A plate is loaded by $F_x=+12.0$ kN and $F_y=-30.0$ kN. The solver reports reactions at two supports: $(R_{1x},R_{1y})=(-11.8,\\ +17.6)$ kN and $(R_{2x},R_{2y})=(-0.1,\\ +12.3)$ kN. Check the balance.",
+   "steps": [
+    {
+     "text": "Sum of horizontal forces: applied plus reactions.",
+     "latex": "\\sum F_x=12.0-11.8-0.1=0.10\\ \\text{kN}"
+    },
+    {
+     "text": "Sum of vertical forces.",
+     "latex": "\\sum F_y=-30.0+17.6+12.3=-0.10\\ \\text{kN}"
+    },
+    {
+     "text": "Relative imbalance referred to the corresponding applied load component.",
+     "latex": "\\frac{0.1}{12.0}=0.83\\%,\\quad \\frac{0.1}{30.0}=0.33\\%"
+    }
+   ],
+   "answer": "Both components are out by 0.1 kN: 0.83 per cent of the horizontal load and 0.33 per cent of the vertical load. Because the reactions are printed to 0.1 kN, rounding of up to 0.05 kN per value can explain this, so print the reactions to more digits before looking for a modelling error; if the imbalance persists above about 1 per cent, check the constraints and the load application."
+  },
+  {
+   "type": "text",
+   "markdown": "**Mesh independence and error estimate.** Solve on a sequence of at least three meshes with a constant refinement ratio $r$ (for example $r=2$), obtaining a quantity of interest $f_1$ (coarsest), $f_2$, $f_3$ (finest). The **observed order** is $p=\\ln[(f_2-f_1)/(f_3-f_2)]/\\ln r$, and the **Richardson extrapolated** value is $f_\\infty\\approx f_3+(f_3-f_2)/(r^p-1)$. The relative difference $|f_\\infty-f_3|/|f_\\infty|$ is an estimate of the discretisation error of the finest mesh, and the **grid convergence index** $\\text{GCI}=F_s|(f_3-f_2)/f_3|/(r^p-1)$ with safety factor $F_s=1.25$ (a typical value for three-grid studies) expresses it as an uncertainty band."
+  },
+  {
+   "type": "worked_example",
+   "title": "Mesh independence study of a bar on an elastic foundation",
+   "prompt": "A bar ($E=70$ GPa, $A=300$ mm$^2$, $L=1000$ mm) is embedded in a soil-like foundation of stiffness $k_s=50$ N/mm per mm of length and is fixed at the far end. A 10 kN axial load acts at the head. The governing equation is $EAu''=k_su$. FE head displacements for $n=4,8,16$ linear elements are used below. The exact value is $P\\tanh(\\lambda L)/(EA\\lambda)$ with $\\lambda=\\sqrt{k_s/EA}$. Estimate the converged value and the error of the finest mesh.",
+   "steps": [
+    {
+     "text": "Head displacements (mm): $f_1$ (4 elements), $f_2$ (8), $f_3$ (16). The exact value is given for comparison.",
+     "latex": "f_1=0.28041,\\ f_2=0.28133,\\ f_3=0.28157;\\quad \\text{exact}=0.28164"
+    },
+    {
+     "text": "Observed order with refinement ratio $r=2$.",
+     "latex": "p=\\frac{\\ln[(f_2-f_1)/(f_3-f_2)]}{\\ln2}=\\frac{\\ln[0.000924/0.000234]}{\\ln2}=1.982"
+    },
+    {
+     "text": "Richardson extrapolation.",
+     "latex": "f_\\infty=f_3+\\frac{f_3-f_2}{2^{p}-1}=0.28164\\ \\text{mm}"
+    },
+    {
+     "text": "Error estimate of the finest mesh and the grid convergence index.",
+     "latex": "\\frac{|f_\\infty-f_3|}{|f_\\infty|}=0.0282\\%,\\quad \\text{GCI}=1.25\\,\\frac{|f_3-f_2|/f_3}{2^p-1}=0.0352\\%"
+    }
+   ],
+   "answer": "The observed order is 1.98, as expected for linear elements; the extrapolated value 0.2816 mm agrees with the exact 0.2816 mm to the digits shown, and the finest mesh is within about 0.028 per cent of it. The head displacement of the 16-element mesh may be reported as 0.2816 mm with a discretisation uncertainty of about 0.035 per cent."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Check",
+    "What it tests",
+    "What it cannot show"
+   ],
+   "rows": [
+    [
+     "Analytical benchmark",
+     "Solver, element formulation and boundary condition implementation",
+     "Anything about real behaviour; benchmark limits"
+    ],
+    [
+     "Reaction balance",
+     "Constraints, loads, assembly",
+     "Wrong stiffness or material data"
+    ],
+    [
+     "Mesh convergence",
+     "Discretisation error",
+     "Modelling assumptions"
+    ],
+    [
+     "Patch test / symmetry test",
+     "Element consistency, coding errors",
+     "Physical accuracy"
+    ]
+   ],
+   "caption": "What verification checks can and cannot prove"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Run the simplest solvable version of your problem first and compare with theory.",
+    "Always sum reactions; use the same unit set for loads and reactions.",
+    "Use at least three meshes with a fixed ratio to estimate the order and error.",
+    "Report the error estimate with the result, e.g. 'converged to within 1 per cent'."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Verified is not valid",
+   "text": "Agreement with theory, balanced reactions and mesh independence prove only that the equations are being solved correctly. They do not show that the equations (material model, boundary conditions, geometry) describe the real structure."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Verification checks that the equations are solved correctly: comparison with analytical benchmarks that share the model's assumptions, reaction balance, and mesh independence studies.",
+    "Reactions must sum to the applied loads in each direction and in moment within a small tolerance; a mismatch signals constraint or load errors.",
+    "A three-mesh study gives the observed order $p$, a Richardson extrapolated value and an estimate of the discretisation error to report with the result."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of the following is an example of verification rather than validation?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Comparing an FE cantilever tip deflection with $PL^3/(3EI)$ for the same idealised model"
+    },
+    {
+     "id": "b",
+     "text": "Comparing FE strains with strain gauge readings on a tested bracket"
+    },
+    {
+     "id": "c",
+     "text": "Asking whether the real bolt preload matches the modelled value"
+    },
+    {
+     "id": "d",
+     "text": "Checking that the real material is as stiff as assumed"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Comparing an FE cantilever tip deflection with $PL^3/(3EI)$ for the same idealised model",
+   "distractorRationale": {
+    "b": "This compares with physical measurements, which is validation.",
+    "c": "This asks whether the model reflects reality, which is validation.",
+    "d": "This concerns the model's physical assumptions, again validation."
+   },
+   "explanation": "Verification compares the numerical solution with the exact solution of the same mathematical model, so a closed-form beam result is a verification benchmark. Comparisons with experiments or real-world properties belong to validation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A solved static FE model has total applied vertical load 80.0 kN and the support reactions sum to 79.2 kN vertically. What is the most appropriate response?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Investigate: a 1 per cent imbalance suggests loads or constraints are not applied as intended, and it exceeds typical round-off"
+    },
+    {
+     "id": "b",
+     "text": "Accept the result, since reactions never balance exactly"
+    },
+    {
+     "id": "c",
+     "text": "Increase the mesh density without further checks"
+    },
+    {
+     "id": "d",
+     "text": "Report the reaction as 80.0 kN"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Investigate: a 1 per cent imbalance suggests loads or constraints are not applied as intended, and it exceeds typical round-off",
+   "distractorRationale": {
+    "b": "Reactions should balance to a small fraction of a per cent unless something unusual is present.",
+    "c": "Mesh density is not the cause of a global force imbalance.",
+    "d": "Altering the report to hide the discrepancy would not fix the model."
+   },
+   "explanation": "For a linear static solution the reactions equal the applied load to within round-off and the accuracy of the constraint handling, usually far better than 1 per cent. A 1 per cent gap points to a modelling or solver issue that should be found before using the stresses.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Three mesh results with refinement ratio 2 give a quantity of interest of 5.20, 5.40 and 5.45. What can be concluded?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The differences shrink (0.20 then 0.05), so the solution is converging; the observed order is 2 and the finest result is within about 1 per cent of the extrapolated value"
+    },
+    {
+     "id": "b",
+     "text": "The solution diverges because it keeps increasing"
+    },
+    {
+     "id": "c",
+     "text": "The solution has converged to 5.20"
+    },
+    {
+     "id": "d",
+     "text": "No conclusion is possible with three meshes"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The differences shrink (0.20 then 0.05), so the solution is converging; the observed order is 2 and the finest result is within about 1 per cent of the extrapolated value",
+   "distractorRationale": {
+    "b": "Monotonic change with shrinking differences indicates convergence, not divergence.",
+    "c": "The coarsest mesh is the least accurate, not the limit.",
+    "d": "Three meshes is the minimum needed to estimate the order and error."
+   },
+   "explanation": "With $r=2$, $p=\\ln(0.20/0.05)/\\ln2=2$. Richardson extrapolation gives $5.45+0.05/(2^2-1)=5.467$, so the finest mesh is within about $0.017/5.467=0.3$ per cent of the limit.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An FE model of a short, deep beam (span only twice the depth) is compared with the slender-beam deflection formula $PL^3/(48EI)$ and shows a 20 per cent difference. What is the most likely explanation?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The benchmark neglects shear deformation, so it is not valid for a deep beam; use a Timoshenko (shear-corrected) benchmark"
+    },
+    {
+     "id": "b",
+     "text": "The solver has a coding error"
+    },
+    {
+     "id": "c",
+     "text": "Reaction forces do not balance"
+    },
+    {
+     "id": "d",
+     "text": "The mesh must have converged to the beam formula"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The benchmark neglects shear deformation, so it is not valid for a deep beam; use a Timoshenko (shear-corrected) benchmark",
+   "distractorRationale": {
+    "b": "A bug is possible but the discrepancy is explained by the benchmark's limits, which should be ruled out first.",
+    "c": "Reaction balance is a separate check.",
+    "d": "A converged solution converges to the solution of the model, which includes shear deformation, not to the simplified formula."
+   },
+   "explanation": "The Euler-Bernoulli formula assumes plane sections remain perpendicular to the axis; for a deep beam shear deformation adds significantly to the deflection. A valid benchmark must share the model's assumptions.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "If the reactions of an FE model balance the applied loads exactly, the model is verified as correct.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Reaction balance checks only that equilibrium is satisfied globally and that constraints and loads are consistent. It does not test stiffness, the stress calculation, the mesh error or the physical assumptions, so other verification checks are still needed.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A solved model has total applied load 45.0 kN and a sum of reactions of 44.6 kN. Compute the relative reaction imbalance as a percentage of the applied load.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o2"
+   ],
+   "correctValue": 0.8888888888888888,
+   "tolerance": 0.02,
+   "unit": "percent",
+   "explanation": "The difference is $45.0-44.6=0.4$ kN, which is $0.4/45.0=0.0089$, i.e. 0.89 per cent. That is larger than expected from round-off, so the load application and constraints should be examined.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An FE model predicts a tip deflection of 7.61 mm for a cantilever whose analytical value (valid for the same assumptions) is 7.50 mm. Compute the percentage difference relative to the analytical result.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o1"
+   ],
+   "correctValue": 1.466666666666671,
+   "tolerance": 0.02,
+   "unit": "percent",
+   "explanation": "The difference is $(7.61-7.50)/7.50=0.0147$, i.e. 1.47 per cent. For a mesh of moderate refinement this could be acceptable, but a convergence study would be needed to show the difference is shrinking.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Peak deflections on three meshes with refinement ratio 2 are $f_1=10.8$ mm (coarse), $f_2=11.6$ mm and $f_3=11.9$ mm (fine). Using the observed order from these data, compute the Richardson-extrapolated value in mm.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o3"
+   ],
+   "correctValue": 12.080000000000002,
+   "tolerance": 0.05,
+   "unit": "mm",
+   "explanation": "The observed order is $p=\\log_2[(11.6-10.8)/(11.9-11.6)]=\\log_2(2.667)=1.415$. The extrapolation is $11.9+0.3/(2^{1.415}-1)=12.08$ mm, so the finest mesh is about 1.5 per cent below the estimated limit.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how you would carry out a mesh-independence study for a peak-stress quantity and how you would report the result with an error estimate.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o3"
+   ],
+   "markingGuide": [
+    "At least three systematically refined meshes with a constant ratio (e.g. $r=2$) and same element type",
+    "Record the quantity of interest on each mesh and plot against element size or count",
+    "Observed order $p=\\ln[(f_2-f_1)/(f_3-f_2)]/\\ln r$ and Richardson value $f_3+(f_3-f_2)/(r^p-1)$",
+    "Report finest-mesh value with discretisation error estimate (relative difference from extrapolated value or GCI)",
+    "Check that the monotonic convergence assumption holds and that singularities are excluded"
+   ],
+   "explanation": "A single mesh gives no estimate of error. A sequence with a fixed ratio gives the rate and permits extrapolation, and the resulting error band can be quoted with the result.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "List and explain four verification checks you would apply to a new static FE model of a bracket, and for each say what kind of error it would reveal.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o1",
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o2",
+    "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.o3"
+   ],
+   "markingGuide": [
+    "Hand/analytical comparison for a simplified case: reveals element or boundary condition implementation errors",
+    "Reaction and moment balance: reveals missing loads or wrong constraints",
+    "Mesh convergence study with error estimate: reveals discretisation error",
+    "Sanity tests: symmetry of response for symmetric loading, rigid-body motion zero stress, patch test: reveal coding or assembly errors",
+    "Notes that none of these checks addresses whether the model matches reality (validation)"
+   ],
+   "explanation": "Each check targets a different class of numerical or implementation error. Together they establish that the equations are being solved correctly but say nothing about how well the model represents the physical bracket.",
+   "board": "internal"
+  }
+ ]
+}

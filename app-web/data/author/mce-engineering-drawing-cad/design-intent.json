@@ -1,0 +1,421 @@
+{
+ "lessonTitle": "Design Intent and Model Robustness",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A company sells one flange in eight bore sizes. Changing one dimension in the model should resize the flange, the bolt circle and the hole pattern; if it instead produces red rebuild errors, the model was built without design intent."
+  },
+  {
+   "type": "text",
+   "markdown": "A parametric model is a recipe, not a shape: each feature is rebuilt, in order, from its sketch dimensions and relations. **Design intent** is the reason behind those numbers: which dimensions are the real requirements (a bore for a particular shaft), and which follow from them (an outer diameter that is always 2.2 times the bore). A model that captures intent can be edited in one place and update everywhere; a model that records only the present geometry breaks when you touch it."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Design intent",
+   "text": "**Design intent** is the set of relationships a model must keep when a dimension changes. It is captured by choosing a few **key (driving) dimensions**, expressing other sizes as **equations** of them, and attaching features to stable references such as planes and the origin."
+  },
+  {
+   "type": "math",
+   "latex": "D = 2.2\\,d,\\qquad t = \\frac{d}{4},\\qquad \\text{PCD} = \\frac{d + D}{2}",
+   "caption": "Example equations for a flange: d is the bore diameter (mm, the key parameter), D the outer diameter, t the thickness, PCD the bolt-circle diameter"
+  },
+  {
+   "type": "worked_example",
+   "title": "A flange driven by the bore",
+   "prompt": "A flange has bore diameter d = 40 mm and the equations above. Compute D, t and PCD, then repeat for d = 60 mm.",
+   "steps": [
+    {
+     "text": "Substitute d = 40 mm into each equation.",
+     "latex": "D = 2.2 \\times 40 = 88\\ \\text{mm},\\quad t = 40/4 = 10\\ \\text{mm}"
+    },
+    {
+     "text": "The bolt circle is the mean of bore and outer diameters.",
+     "latex": "\\text{PCD} = (40 + 88)/2 = 64\\ \\text{mm}"
+    },
+    {
+     "text": "Repeat with d = 60 mm.",
+     "latex": "D = 132\\ \\text{mm},\\ t = 15\\ \\text{mm},\\ \\text{PCD} = (60 + 132)/2 = 96\\ \\text{mm}"
+    }
+   ],
+   "answer": "d = 40: D = 88, t = 10, PCD = 64 mm. d = 60: D = 132, t = 15, PCD = 96 mm. Only one number was edited."
+  },
+  {
+   "type": "text",
+   "markdown": "Models fail to rebuild when a feature loses something it depended on. Common causes: **dimensioning to an edge or face created by a fillet or chamfer** (which may disappear when sizes change), **fillet or chamfer sizes that are fixed numbers** (which can exceed the geometry), **sketching on a face that is later removed or re-created**, **cyclic equations** (two dimensions each defined in terms of the other), and **references to a later feature**. Robust models reference planes and the origin, add fillets last, and size them by equation."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Fragile practice",
+    "Why it breaks",
+    "Robust alternative"
+   ],
+   "rows": [
+    [
+     "Dimension to a fillet edge",
+     "The edge disappears if the radius changes",
+     "Dimension to the original sharp edge or a plane"
+    ],
+    [
+     "Fixed fillet radius R = 6 mm",
+     "Fails when the face becomes narrower than 2R",
+     "Set R as a fraction of the width, for example 0.4 w"
+    ],
+    [
+     "Sketch on a face of a feature",
+     "Face is lost if that feature is edited",
+     "Sketch on a datum plane"
+    ],
+    [
+     "Two equations that define each other",
+     "Circular reference, rebuild error",
+     "One driving dimension, the other driven"
+    ]
+   ],
+   "caption": "Typical rebuild failures and fixes"
+  },
+  {
+   "type": "worked_example",
+   "title": "A fillet that cannot fit",
+   "prompt": "A rib face is w = 10 mm wide and carries a fillet of fixed radius R = 6 mm on each of its two long edges. Why does the rebuild fail, and what equation makes it robust?",
+   "steps": [
+    {
+     "text": "Two fillets on one face consume 2R of its width.",
+     "latex": "2R = 2 \\times 6 = 12\\ \\text{mm}"
+    },
+    {
+     "text": "The face is only 10 mm wide, so 12 mm > 10 mm: the fillets overlap and the solver cannot form the geometry."
+    },
+    {
+     "text": "Replace the fixed radius by R = 0.4 w. Then 2R = 0.8 w, which is always less than w.",
+     "latex": "R = 0.4 \\times 10 = 4\\ \\text{mm}"
+    }
+   ],
+   "answer": "A fixed 6 mm radius fails since 12 mm > 10 mm; R = 0.4 w gives 4 mm and stays valid for every w."
+  },
+  {
+   "type": "text",
+   "markdown": "A **configuration** (also called a variant or family-table entry) stores a named set of parameter values and suppression states for the same part file. A flange for bores of 25 mm and 40 mm is one model with two configurations, not two files, so geometry fixes apply to both. Each configuration changes only the key parameters; the equations compute the rest."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Configuration",
+    "Key parameter d (mm)",
+    "D (mm)",
+    "t (mm)"
+   ],
+   "rows": [
+    [
+     "Flange-25",
+     "25",
+     "55",
+     "6.25"
+    ],
+    [
+     "Flange-40",
+     "40",
+     "88",
+     "10"
+    ]
+   ],
+   "caption": "Two configurations of one part from the same equations"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Avoid circular equations",
+   "text": "If d = D/2.2 and D = 2.2 d are both written, the solver cannot decide which drives which. Choose one driving dimension and make the others driven."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Choose the few dimensions that express the real requirement.",
+    "Write all other sizes as equations of those dimensions.",
+    "Reference planes and the origin, not fragile edges.",
+    "Add fillets and chamfers last, sized by equation.",
+    "Test by changing each key value across its full range."
+   ]
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Design intent means choosing key dimensions and expressing everything else as equations of them.",
+    "Rebuild failures come from fragile references, fixed sizes that stop fitting, and circular equations.",
+    "A configuration stores two or more sizes of one model by changing only the key parameters."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the equation D = 2.2 d for a flange, which dimension is the driving (key) dimension?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "D, the outer diameter"
+    },
+    {
+     "id": "b",
+     "text": "d, the bore diameter"
+    },
+    {
+     "id": "c",
+     "text": "Both equally"
+    },
+    {
+     "id": "d",
+     "text": "Neither"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "d, the bore diameter",
+   "distractorRationale": {
+    "a": "D is computed from d.",
+    "b": "Correct.",
+    "c": "Two drivers would conflict.",
+    "d": "One of them has to drive."
+   },
+   "explanation": "The equation computes D from d, so d is the value the designer edits. D becomes a driven dimension and must not also be typed in.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which modelling habit most commonly causes a rebuild failure when a dimension is changed?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Dimensioning to the edge created by a fillet"
+    },
+    {
+     "id": "b",
+     "text": "Naming features"
+    },
+    {
+     "id": "c",
+     "text": "Using the origin as a reference"
+    },
+    {
+     "id": "d",
+     "text": "Using equations"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Dimensioning to the edge created by a fillet",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Naming is harmless.",
+    "c": "Stable reference.",
+    "d": "Equations capture intent."
+   },
+   "explanation": "A fillet edge can vanish or move when sizes change, so features attached to it lose their reference. Referencing the origin and using equations are good practice.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A flange is built with D = 2.2 d and bolt-circle diameter PCD = (d + D)/2, where d is the bore. For a bore d = 25 mm, calculate the PCD in mm.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o1"
+   ],
+   "correctValue": 40,
+   "tolerance": 0.2,
+   "unit": "mm",
+   "explanation": "D = 2.2 x 25 = 55 mm, so PCD = (25 + 55)/2 = 40 mm. Equation-driven models avoid recalculating this by hand.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A shaft model uses the simplified rule b = d/4 for key width, where d is the shaft diameter (this is a teaching rule, not the standard key table). Calculate the key width b in mm for the configuration d = 32 mm.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o3"
+   ],
+   "correctValue": 8,
+   "tolerance": 0.05,
+   "unit": "mm",
+   "explanation": "Substituting d = 32 mm gives b = 32/4 = 8 mm. A configuration only needs the value of d to produce this.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which is the main advantage of using configurations of one part rather than separate files for two sizes?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Files are smaller on disk"
+    },
+    {
+     "id": "b",
+     "text": "A change to the shared feature logic fixes both sizes at once"
+    },
+    {
+     "id": "c",
+     "text": "The drawing needs no dimensions"
+    },
+    {
+     "id": "d",
+     "text": "Mates are unnecessary"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "A change to the shared feature logic fixes both sizes at once",
+   "distractorRationale": {
+    "a": "Not the main point.",
+    "b": "Correct.",
+    "c": "Drawings still need dimensions.",
+    "d": "Mates are still needed."
+   },
+   "explanation": "All configurations share one feature tree, so corrections propagate. File size or drawing dimensions are not the reason.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A plate carries two fillets of fixed radius 8 mm on one 14 mm wide face. What happens at rebuild, and why?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It rebuilds because 8 < 14"
+    },
+    {
+     "id": "b",
+     "text": "It fails because 2 x 8 = 16 mm exceeds 14 mm"
+    },
+    {
+     "id": "c",
+     "text": "It fails because fillets cannot be used on plates"
+    },
+    {
+     "id": "d",
+     "text": "It rebuilds with the fillet ignored"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It fails because 2 x 8 = 16 mm exceeds 14 mm",
+   "distractorRationale": {
+    "a": "Each radius alone fits but the two together do not.",
+    "b": "Correct.",
+    "c": "Fillets are allowed.",
+    "d": "The solver errors rather than ignoring the feature."
+   },
+   "explanation": "The two fillets together need 16 mm of face width but only 14 mm exists. Sizing the radius by an equation would prevent the failure.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A designer enters d = D/2.2 and D = 2.2 d as two separate equations in one sketch. What is the consequence?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o1",
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Both update perfectly"
+    },
+    {
+     "id": "b",
+     "text": "A circular definition that the solver cannot resolve"
+    },
+    {
+     "id": "c",
+     "text": "d and D are always equal"
+    },
+    {
+     "id": "d",
+     "text": "Nothing, the second equation is ignored"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "A circular definition that the solver cannot resolve",
+   "distractorRationale": {
+    "a": "Neither has a starting value.",
+    "b": "Correct.",
+    "c": "They are related by 2.2, not equal.",
+    "d": "Solvers report the conflict."
+   },
+   "explanation": "Each value is defined by the other and nothing fixes either, so the system is circular. One should be the driving dimension.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Name three modelling choices that make a part fail to rebuild when a dimension is changed, and give a robust alternative for each.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o2"
+   ],
+   "markingGuide": [
+    "Dimension to fillet/chamfer edge: use original edge or plane",
+    "Fixed fillet size that stops fitting: size by equation",
+    "Sketch on a face of a feature that may be edited: use a datum plane",
+    "Circular equation or reference to a later feature: single driving dimension, correct order"
+   ],
+   "explanation": "Each answer should pair a cause of failure with a concrete robust practice, such as referencing planes instead of faces. Each point in the marking guide earns credit, so state every point explicitly and give its reason.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A bearing housing is made in three sizes, with bore 20, 30 and 45 mm. Describe how you would build one model that produces all three, naming the key parameter, two equations and the configuration set-up.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o1",
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o3"
+   ],
+   "markingGuide": [
+    "Key parameter: bore diameter d",
+    "Equations for outer diameter, wall thickness, bolt circle as functions of d",
+    "Create three configurations changing only d to 20, 30, 45",
+    "Others are computed by equations",
+    "Test each configuration for rebuild errors"
+   ],
+   "explanation": "The answer must make one driving dimension and use equations and configurations so only the key value differs between sizes. Each point in the marking guide earns credit, so state every point explicitly and give its reason.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A configuration of a part can change dimension values and which features are suppressed.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.design-intent.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A configuration stores parameter values and suppression states for the same feature tree. This is how one model gives several sizes or variants.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,425 @@
+{
+ "lessonTitle": "Thermal Finite Element Analysis",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A furnace wall, a brake disc and a heat sink all have one thing in common: temperature varies through them and decides whether they survive. Finite element thermal analysis turns the heat conduction equation into the same kind of matrix problem as a stress analysis, with temperatures at nodes in place of displacements and heat flows in place of forces."
+  },
+  {
+   "type": "text",
+   "markdown": "**Governing equation and weak form.** For steady one-dimensional conduction in a rod of area $A$ (m$^2$) and conductivity $k$ (W/(m K)), energy balance gives $\\dfrac{d}{dx}\\left(kA\\dfrac{dT}{dx}\\right)+Q=0$ with temperature $T$ (K or degrees Celsius, only differences matter) and internal heat generation $Q$ (W/m). This has exactly the structure of the bar equation $(EA\\,u')'+b=0$, so the same weak form and linear shape functions apply: $T$ replaces $u$, $kA$ replaces $EA$ and heat flow replaces force."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf K_e=\\frac{kA}{L}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix},\\qquad \\mathbf K\\,\\mathbf T=\\mathbf F",
+   "caption": "Two-node conduction element (W/K) and the assembled system; F has units W"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Thermal boundary conditions",
+   "text": "A **prescribed temperature** is an essential condition (it removes a degree of freedom). A **prescribed heat flux** $q$ (W/m$^2$) adds the load $qA$ (W) to the node. **Convection** to an ambient at $T_\\infty$ with film coefficient $h$ (W/(m$^2$ K)) is a natural condition $-k\\,dT/dx=h(T-T_\\infty)$: it adds $hA$ to the diagonal of $\\mathbf K$ at that node and $hAT_\\infty$ to the load vector. An **insulated** surface has zero flux and needs no entry."
+  },
+  {
+   "type": "text",
+   "markdown": "**Assembly for two elements.** Number the nodes 1, 2, 3 along the rod. Each element contributes its $2\\times2$ matrix to the rows and columns of its two nodes, so the shared node 2 receives the sum of both stiffnesses. With conductances $c_1=k_1A/L_1$ and $c_2=k_2A/L_2$ (W/K), the matrix has first row $c_1,\\,-c_1,\\,0$, second row $-c_1,\\,c_1+c_2,\\,-c_2$ and third row $0,\\,-c_2,\\,c_2$."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf K=\\begin{bmatrix}c_1&-c_1&0\\\\-c_1&c_1+c_2&-c_2\\\\0&-c_2&c_2\\end{bmatrix}",
+   "caption": "Assembled conduction matrix of two elements in series"
+  },
+  {
+   "type": "worked_example",
+   "title": "Furnace wall with convection",
+   "prompt": "A composite wall of area $A=0.5$ m$^2$ has a steel layer ($k_1=45$ W/(m K), $L_1=20$ mm) and a refractory layer ($k_2=0.8$ W/(m K), $L_2=50$ mm). The inner face (node 1) is held at 500 degrees Celsius. The outer face (node 3) loses heat by convection with $h=25$ W/(m$^2$ K) to air at 30 degrees Celsius. Find the temperatures at nodes 2 and 3 using two elements.",
+   "steps": [
+    {
+     "text": "Conductances: $c_1=45(0.5)/0.02=1125$ W/K and $c_2=0.8(0.5)/0.05=8$ W/K. Convection at node 3 adds $hA=25(0.5)=12.5$ W/K to $K_{33}$ and $hAT_\\infty=375$ W to $F_3$."
+    },
+    {
+     "text": "Node 1 has a prescribed temperature, so its row is eliminated and its coupling moves to the load: $F_2=c_1T_1=562500$ W."
+    },
+    {
+     "text": "The reduced system for $(T_2,T_3)$ has first row $c_1+c_2,\\,-c_2$ (that is 1133, -8) and second row $-c_2,\\,c_2+hA$ (that is -8, 20.5), with right-hand side $(562500,\\,375)$ W.",
+     "latex": "\\begin{bmatrix}c_1+c_2&-c_2\\\\-c_2&c_2+hA\\end{bmatrix}\\begin{Bmatrix}T_2\\\\T_3\\end{Bmatrix}=\\begin{Bmatrix}c_1T_1\\\\hAT_\\infty\\end{Bmatrix}"
+    },
+    {
+     "text": "Solving gives $T_2=497.97$ degrees Celsius and $T_3=212.62$ degrees Celsius."
+    },
+    {
+     "text": "Check with thermal resistances: $R=L_1/(k_1A)+L_2/(k_2A)+1/(hA)=0.2059$ K/W, so the heat flow is $q=470/R=2282.78$ W, and $T_3=30+q/(hA)=212.62$, in agreement."
+    }
+   ],
+   "answer": "T2 = 497.97 and T3 = 212.62 degrees Celsius; heat flow 2282.78 W."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Boundary condition",
+    "Type",
+    "Effect on $\\mathbf K$",
+    "Effect on $\\mathbf F$"
+   ],
+   "rows": [
+    [
+     "Prescribed temperature",
+     "Essential",
+     "Remove the row and column (or penalty)",
+     "Move known $T$ terms to the right"
+    ],
+    [
+     "Heat flux $q$ (W/m$^2$)",
+     "Natural",
+     "None",
+     "Add $qA$ at the node"
+    ],
+    [
+     "Convection $h,T_\\infty$",
+     "Natural",
+     "Add $hA$ to the node diagonal",
+     "Add $hAT_\\infty$"
+    ],
+    [
+     "Insulated or symmetry plane",
+     "Natural (zero flux)",
+     "None",
+     "None"
+    ]
+   ],
+   "caption": "How thermal boundary conditions enter the matrices"
+  },
+  {
+   "type": "text",
+   "markdown": "**Transient analysis.** With heat capacity the equation becomes $\\mathbf C\\,\\dot{\\mathbf T}+\\mathbf K\\mathbf T=\\mathbf F$. The matrix $\\mathbf C$ has entries $\\rho cAL/2$ per node in lumped form, where $\\rho$ is density (kg/m$^3$) and $c$ specific heat (J/(kg K)). The thermal diffusivity $\\alpha=k/(\\rho c)$ (m$^2$/s) measures how fast heat spreads. Explicit (forward Euler) integration with a lumped $\\mathbf C$ is stable only if the Fourier number $\\alpha\\Delta t/h_e^2\\le1/2$, so the step limit shrinks with the **square** of the element size $h_e$ (m). Implicit schemes (backward Euler, Crank-Nicolson) are unconditionally stable, but the step must still be small enough to resolve the temperature change in time."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta t_{crit}=\\frac{h_e^2}{2\\alpha}\\ \\text{(lumped capacity)},\\qquad \\Delta t_{crit}=\\frac{h_e^2}{6\\alpha}\\ \\text{(consistent capacity)},\\qquad\\alpha=\\frac{k}{\\rho c}",
+   "caption": "Explicit stability limit for linear 1D elements"
+  },
+  {
+   "type": "worked_example",
+   "title": "Time step for an aluminium heat sink",
+   "prompt": "A transient model of an aluminium heat sink uses linear elements of size $h_e=2$ mm. Typical properties: $k=200$ W/(m K), $\\rho=2700$ kg/m$^3$, $c=900$ J/(kg K). Find the largest stable explicit time step for lumped and consistent capacity.",
+   "steps": [
+    {
+     "text": "Diffusivity: $\\alpha=k/(\\rho c)=200/(2700\\times900)=8.23\\times10^{-5}$ m$^2$/s."
+    },
+    {
+     "text": "Lumped capacity: $\\Delta t\\le h_e^2/(2\\alpha)=(0.002)^2/(2\\times8.23\\times10^{-5})=0.0243$ s."
+    },
+    {
+     "text": "Consistent capacity: $\\Delta t\\le h_e^2/(6\\alpha)=0.0081$ s, a factor of 3 smaller."
+    },
+    {
+     "text": "Halving $h_e$ to 1 mm cuts both limits by 4, so the step limit becomes impractical for fine meshes; an implicit scheme is then preferred, with $\\Delta t$ chosen to follow the heating transient."
+    }
+   ],
+   "answer": "About 0.0243 s for lumped and 0.0081 s for consistent capacity."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Scheme",
+    "Stability",
+    "Order of accuracy",
+    "Remark"
+   ],
+   "rows": [
+    [
+     "Forward Euler (explicit)",
+     "Conditional: $\\alpha\\Delta t/h_e^2\\le1/2$ (lumped)",
+     "First",
+     "Cheap per step, tiny steps for fine meshes"
+    ],
+    [
+     "Backward Euler (implicit)",
+     "Unconditional",
+     "First",
+     "Robust, damps fast transients"
+    ],
+    [
+     "Crank-Nicolson (implicit)",
+     "Unconditional",
+     "Second",
+     "May oscillate for very large steps"
+    ]
+   ],
+   "caption": "Time integration schemes for transient conduction"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Assemble conduction matrices element by element; shared nodes add.",
+    "Apply prescribed temperatures by elimination; add flux and convection terms to $\\mathbf F$ and $\\mathbf K$.",
+    "Solve $\\mathbf K\\mathbf T=\\mathbf F$ and check the result with a thermal-resistance network.",
+    "For transient runs, compute $\\alpha$ and the smallest element size and compare $\\Delta t$ with $h_e^2/(2\\alpha)$ before using an explicit scheme."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Convection changes the matrix",
+   "text": "Convection is not a load only: it adds $hA$ to the stiffness diagonal. Omitting the diagonal term gives a wrong temperature, and also removes the only restraint of a model with no fixed temperature, making $\\mathbf K$ singular."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The conduction element matrix is $\\dfrac{kA}{L}[1,-1;-1,1]$ (W/K) and assembly adds shared-node terms.",
+    "Convection adds $hA$ to $K$ at the surface node and $hAT_\\infty$ to $F$; prescribed flux adds $qA$; insulation adds nothing; prescribed temperature is essential.",
+    "Thermal diffusivity $\\alpha=k/(\\rho c)$ controls the speed of heat flow; explicit stability needs $\\Delta t\\le h_e^2/(2\\alpha)$ for a lumped capacity matrix.",
+    "Step limits scale with element size squared, so refining the mesh by 2 shrinks the explicit step by 4."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which matrix is the element conduction matrix of a two-node one-dimensional element of length $L$, area $A$ and conductivity $k$?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dfrac{kA}{L}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dfrac{L}{kA}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dfrac{kA}{L}\\begin{bmatrix}1&1\\\\1&1\\end{bmatrix}$"
+    },
+    {
+     "id": "d",
+     "text": "$kAL\\begin{bmatrix}2&1\\\\1&2\\end{bmatrix}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\dfrac{kA}{L}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}$",
+   "distractorRationale": {
+    "a": "Correct: conductance $kA/L$ relates heat flow to the temperature difference between the nodes, with the usual spring-like sign pattern.",
+    "b": "This is the thermal resistance, the reciprocal of the conductance.",
+    "c": "Positive off-diagonal terms would give heat flow proportional to the sum of the temperatures, not their difference.",
+    "d": "This resembles a capacity (mass) matrix, not a conduction matrix."
+   },
+   "explanation": "A uniform temperature must produce zero net heat flow, so each row must sum to zero, giving the pattern $[1,-1;-1,1]$. The scale factor is the conductance $kA/L$ in W/K.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A rod end surface of area $A=2.5\\times10^{-3}$ m$^2$ loses heat by convection with film coefficient $h=40$ W/(m$^2$ K) to air at $T_\\infty=300$ K. In the FE model, find the load vector contribution $hAT_\\infty$ at that node, in W.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o2"
+   ],
+   "correctValue": 30.0,
+   "tolerance": 0.1,
+   "unit": "W",
+   "explanation": "Convection adds $hA$ to the stiffness diagonal and $hAT_\\infty$ to the load vector. Here $hA=40\\times2.5\\times10^{-3}=0.1$ W/K and $hAT_\\infty=0.1\\times300=30$ W.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the correct treatment of an insulated (adiabatic) end of a one-dimensional thermal model?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "No term is added: zero flux is the natural boundary condition"
+    },
+    {
+     "id": "b",
+     "text": "Set the end temperature equal to the ambient temperature"
+    },
+    {
+     "id": "c",
+     "text": "Add $hA$ to the diagonal with a very large $h$"
+    },
+    {
+     "id": "d",
+     "text": "Add the flux $kA\\,dT/dx$ as an unknown to the load vector"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "No term is added: zero flux is the natural boundary condition",
+   "distractorRationale": {
+    "a": "Correct: the natural condition $-k\\,dT/dx=0$ is satisfied automatically in the weak form when no boundary term is added.",
+    "b": "Fixing the end temperature would be an essential condition and would force heat flow.",
+    "c": "A very large $h$ would tie the end to the ambient temperature, the opposite of insulation.",
+    "d": "The flux is zero, so there is nothing to add."
+   },
+   "explanation": "In the weak form the boundary term is $w\\,kA\\,dT/dx$ at the end. For an adiabatic surface this flux is zero, so the term vanishes and no modification of the equations is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which of these thermal boundary conditions is an essential (Dirichlet) condition?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A surface held at a prescribed temperature by a coolant bath"
+    },
+    {
+     "id": "b",
+     "text": "A uniform heat flux applied by a heater"
+    },
+    {
+     "id": "c",
+     "text": "Convection to ambient air"
+    },
+    {
+     "id": "d",
+     "text": "An insulated surface"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A surface held at a prescribed temperature by a coolant bath",
+   "distractorRationale": {
+    "a": "Correct: it prescribes the primary variable, temperature, and so removes a degree of freedom.",
+    "b": "Heat flux is a natural condition entered in the load vector.",
+    "c": "Convection is a natural (Robin) condition entering both the stiffness and load.",
+    "d": "Insulation is a natural condition with zero flux."
+   },
+   "explanation": "Essential conditions are on the primary unknown $T$ and are imposed on the solution space. Flux and convection conditions involve $k\\,dT/dx$ and enter the weak form's boundary term.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A steel rod of cross-section $A=1.0\\times10^{-3}$ m$^2$ and conductivity $k=40$ W/(m K) is modelled with two equal elements of length 0.1 m each (nodes 1, 2, 3). Node 1 is held at 100 degrees Celsius, and node 3 loses heat by convection with $h=20$ W/(m$^2$ K) to air at 20 degrees Celsius acting on the end area $A$. Find the temperature at node 3 in degrees Celsius.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o1",
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o2"
+   ],
+   "correctValue": 92.727,
+   "tolerance": 0.1,
+   "unit": "degrees Celsius",
+   "explanation": "The conductance per element is $kA/L=40(10^{-3})/0.1=0.4$ W/K and $hA=0.02$ W/K. Eliminating node 1, the equations are $0.8T_2-0.4T_3=0.4(100)$ and $-0.4T_2+0.42T_3=0.02(20)$. Solving gives $T_2=96.36$ and $T_3=92.73$ degrees Celsius. A resistance check gives $R=5+50=55$ K/W, $q=80/55=1.4545$ W and $T_3=20+50q=92.73$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel component is meshed with linear elements of size $h_e=1.5$ mm. Typical properties: $k=45$ W/(m K), $\\rho=7800$ kg/m$^3$, $c=470$ J/(kg K). Using a lumped capacity matrix and forward Euler integration, find the largest stable time step $\\Delta t=h_e^2/(2\\alpha)$ in seconds.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o3"
+   ],
+   "correctValue": 0.0917,
+   "tolerance": 0.003,
+   "unit": "s",
+   "explanation": "The diffusivity is $\\alpha=45/(7800\\times470)=1.2275\\times10^{-5}$ m$^2$/s. Then $\\Delta t_{crit}=(1.5\\times10^{-3})^2/(2\\times1.2275\\times10^{-5})=0.0916$ s. Beyond this step the explicit scheme becomes unstable.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An explicit transient thermal analysis is stable at a given time step. The mesh is then refined so that every element is half as large. By what factor must the stable time step be changed, all else being equal?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Reduced by a factor of 4, because the limit scales with the element size squared"
+    },
+    {
+     "id": "b",
+     "text": "Reduced by a factor of 2"
+    },
+    {
+     "id": "c",
+     "text": "Unchanged, because only the material sets the limit"
+    },
+    {
+     "id": "d",
+     "text": "Increased by a factor of 2"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Reduced by a factor of 4, because the limit scales with the element size squared",
+   "distractorRationale": {
+    "a": "Correct: the limit is $h_e^2/(2\\alpha)$, so halving $h_e$ divides it by 4.",
+    "b": "A factor of 2 would apply to a wave problem where the limit scales with $h_e$, not to diffusion.",
+    "c": "The limit depends on both diffusivity and element size.",
+    "d": "A finer mesh makes the explicit limit stricter, not looser."
+   },
+   "explanation": "For diffusion the stability limit scales as $h_e^2/\\alpha$. This is why fine meshes make explicit thermal integration prohibitively slow and implicit schemes are used.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "An implicit backward-Euler scheme is unconditionally stable for linear transient conduction, but a time step that is too large will still give a poorly resolved temperature history.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. Stability only means the solution does not blow up; the accuracy of a first-order scheme still depends on the step compared with the time scale of the temperature change. A step much larger than that time scale smears the transient.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A three-node rod has conductivity data $k_1=50$ W/(m K), $L_1=0.05$ m for element 1 and $k_2=10$ W/(m K), $L_2=0.025$ m for element 2, both with $A=4.0\\times10^{-3}$ m$^2$. Assemble the global conduction matrix, and describe how you would apply a prescribed temperature at node 1, a heat flux of $q=500$ W/m$^2$ into node 3 and convection ($h=15$ W/(m$^2$ K), $T_\\infty=25$ degrees Celsius) at node 3.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o1",
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o2"
+   ],
+   "markingGuide": [
+    "Element conductances $c_1=50(0.004)/0.05=4.0$ W/K and $c_2=10(0.004)/0.025=1.6$ W/K",
+    "Global matrix rows: $[4,-4,0]$, $[-4,5.6,-1.6]$, $[0,-1.6,1.6]$ (shared node adds $4+1.6=5.6$)",
+    "Node 1: essential condition, eliminate row and column and move $c_1T_1$ to the load of node 2",
+    "Heat flux: add $qA=500(0.004)=2.0$ W to $F_3$",
+    "Convection: add $hA=15(0.004)=0.06$ W/K to $K_{33}$ and $hAT_\\infty=1.5$ W to $F_3$"
+   ],
+   "explanation": "Assembly sums contributions at shared nodes, while flux and convection are natural conditions that modify the load and diagonal. Only the prescribed temperature removes an equation.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how the explicit time step for a transient thermal model is chosen from the element size and thermal diffusivity, and why implicit methods are used for fine meshes. State what limits the step in the implicit case.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.fe-thermal.o3"
+   ],
+   "markingGuide": [
+    "Diffusivity $\\alpha=k/(\\rho c)$; explicit lumped stability $\\Delta t\\le h_e^2/(2\\alpha)$ with the smallest $h_e$",
+    "Consistent capacity gives a stricter limit $h_e^2/(6\\alpha)$",
+    "Limit scales with $h_e^2$, so halving the element size divides the step by 4",
+    "Implicit schemes (backward Euler, Crank-Nicolson) are unconditionally stable so fine meshes can use larger steps",
+    "In the implicit case the step is limited by accuracy: it must resolve the time scale of the temperature change and any time-varying load"
+   ],
+   "explanation": "Explicit stability is a property of the smallest element and the diffusivity. Implicit methods remove that limit, leaving accuracy as the controlling factor.",
+   "board": "internal"
+  }
+ ]
+}

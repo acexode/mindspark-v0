@@ -1,0 +1,59 @@
+{
+  "subjectId": "ug.mce-control-engineering",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 17,
+  "summary": "All 17 units were read in full. Every numeric key, worked example and marking-guide value was recomputed independently (Python, standard library): state-space and transfer-function conversions, matrix-exponential responses, rank tests, pole placement and observer coefficient matching, the separation-principle examples, scalar and double-integrator LQR (including a numerical Riccati integration), Nyquist crossings, gain/phase margins and the Ms bounds (re-derived), lead and lag designs (crossover, PM, corner frequencies), error constants, integral-augmented state feedback, delay margins, z-plane mapping, ZOH gain limit, Jury-type tests, quantisation, windup timing and the WCET budgets. No key, explanation or lesson numeric was found wrong. The only content issues are one imprecisely stated robustness property (LQR guaranteed margins, which also omits the loss of guarantees with an observer) and a few minor clarity or wording points. No literal unicode escapes, tab or control characters, e+06-style numbers, placeholder steps, stale option-letter references, '[object Object]' or garbled characters were found. This is an AI review only: the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-control-engineering.state-feedback-observers.lqr-intro",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Comparison table: 'gain margin at least 2 in the upward direction and phase margin at least 60 degrees'. The Safonov-Athans guarantee is a gain margin range (1/2, infinity): the gain can increase without bound and can be reduced to one half (-6 dB). The factor 2 belongs to the downward (gain-reduction) direction, so the stated 'at least 2 upward' is a weak, mislabelled version of the result. The 60 degree PM bound is correct. I confirmed numerically that min|1+L(jw)| = 1.000 for the lesson's double-integrator LQR gain K=[10 4.472], consistent with the return-difference inequality |1+L|>=1 behind these margins.",
+      "suggestedFix": "State the guarantee as: gain margin range (1/2, infinity), i.e. at least 6 dB of gain reduction and unlimited gain increase, and phase margin at least 60 degrees, following from the return-difference inequality |1+L(jw)|>=1 at the plant input. Say it holds for full-state feedback with R>0 (and a diagonal R for multi-input), and with the loop broken at the plant input."
+    },
+    {
+      "subtopicId": "ug.mce-control-engineering.state-feedback-observers.lqr-intro",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "The warning callout advises combining LQR with an observer, and the table advertises the guaranteed margins, without saying the guarantees are lost once the state is estimated (LQG/observer-based loops can have arbitrarily small margins). A student could assume the 60 degree PM survives the observer.",
+      "suggestedFix": "Add one sentence: the guaranteed margins apply only to true full-state feedback; with an observer the margins must be re-checked (loop transfer recovery or a faster observer can restore them)."
+    },
+    {
+      "subtopicId": "ug.mce-control-engineering.nyquist-margins.gain-phase-margins",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Worked example 'Margins of a third-order loop': step 2 writes 'L(j2)=-K/20' but the loop is L(s)=5/(s(s+1)(s+4)); K is never defined (the 5 is the gain). Values themselves are correct (wpc=2, GM=4, wgc=0.904, PM=35.1 verified).",
+      "suggestedFix": "Write L(j2)=-5/20=-0.25, or define L(s)=K/(s(s+1)(s+4)) with K=5."
+    },
+    {
+      "subtopicId": "ug.mce-control-engineering.digital-control.discrete-controllers",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Warning callout: 'The backward difference maps every stable continuous pole to a stable discrete pole (inside a disc of radius 1/2 centred at z=1/2)'. The disc property (z=1/(1-sT)) is correct, but it applies to the poles of the continuous controller C(s) being discretised. As worded it can be read as a guarantee for the closed loop, which is false (the lesson's own ZOH example shows a sampled loop can go unstable). Forward Euler (which can destabilise a stable controller) and Tustin (which maps the imaginary axis exactly onto the unit circle) are not contrasted, though the objective is about discretisation choices.",
+      "suggestedFix": "Reword to 'every stable pole of the continuous controller maps to a stable pole of the discrete controller; the closed loop must still be re-checked'. Optionally add one line: forward Euler can map stable poles outside the unit circle, Tustin maps the left half-plane exactly onto the unit disc."
+    },
+    {
+      "subtopicId": "ug.mce-control-engineering.digital-control.sampling-z-transform",
+      "questionId": "ug.mce-control-engineering.digital-control.sampling-z-transform.q006",
+      "severity": "minor",
+      "category": "answer-key",
+      "problem": "Asks for the 'minimum sampling frequency satisfying the Nyquist condition' with key 900 Hz, but the lesson states the condition as strict (fs > 2 fmax), so no minimum exists; 900 Hz itself does not satisfy it. The tolerance of 1 hides this.",
+      "suggestedFix": "Reword to 'What is the Nyquist rate (the lower bound that fs must exceed)?', key 900."
+    },
+    {
+      "subtopicId": "ug.mce-control-engineering.control-hardware.embedded-implementation",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Worked example 'Comparing simulated and measured step responses': overshoot is taken from the largest of five sparse samples (1.12 and 1.18) and called 'the peak values'. With samples at 0.1, 0.2, 0.4, 0.8, 1.2 s the true peaks are not known, so the 6 point difference (and the pass/fail verdict) is not reliable. The RMS value 0.0415 is correct.",
+      "suggestedFix": "State that overshoot is measured from the full recorded traces (give peak values from the logged data), or say 'sampled maximum' and note it is only a lower bound on overshoot."
+    },
+    {
+      "subtopicId": "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking",
+      "questionId": "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.q003",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Explanation typo: 'The accelerations constant is Ka=...'. Ka=lim s^2 L = 10*2/5 = 4 is correct.",
+      "suggestedFix": "Change 'accelerations constant' to 'acceleration constant'."
+    }
+  ]
+}

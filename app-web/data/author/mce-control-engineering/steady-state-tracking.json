@@ -1,0 +1,395 @@
+{
+ "lessonTitle": "Steady-State Error and System Type",
+ "estimatedMinutes": 34,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A conveyor-fed packaging line must keep a film web at constant speed even when the roll's drag torque changes slowly, and a camera gantry must follow a target moving at constant velocity. Both are tracking problems in the long run, after the transient has died. Whether the final error is zero, constant or growing without bound is decided by one count: how many integrators sit in the loop."
+  },
+  {
+   "type": "text",
+   "markdown": "Consider a stable unity-feedback loop with open-loop transfer function $L(s)=G(s)C(s)$ and error $e=r-y$. The error transform is $E(s)=R(s)/(1+L(s))$. If the loop is stable, the final-value theorem gives the steady-state error $e_{ss}=\\lim_{s\\to0}sE(s)$ for a bounded limit. The behaviour depends on how many poles of $L(s)$ sit at the origin."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "System type and error constants",
+   "text": "The **type** of a loop is the number of free integrators ($1/s$ factors) in $L(s)$. Write $L(s)=\\dfrac{K\\,N(s)}{s^{n}D(s)}$ with $N(0)=D(0)=1$. The static error constants are $K_p=\\lim_{s\\to0}L(s)$, $K_v=\\lim_{s\\to0}sL(s)$ and $K_a=\\lim_{s\\to0}s^2L(s)$ (position, velocity and acceleration constants)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Loop type",
+    "Step input $A/s$",
+    "Ramp input $V/s^2$",
+    "Parabola input $P/s^3$"
+   ],
+   "rows": [
+    [
+     "0",
+     "$A/(1+K_p)$",
+     "$\\infty$",
+     "$\\infty$"
+    ],
+    [
+     "1",
+     "0",
+     "$V/K_v$",
+     "$\\infty$"
+    ],
+    [
+     "2",
+     "0",
+     "0",
+     "$P/K_a$"
+    ]
+   ],
+   "caption": "Steady-state error for a stable unity-feedback loop with the given input amplitude."
+  },
+  {
+   "type": "worked_example",
+   "title": "Error constants and steady-state error",
+   "prompt": "Find the steady-state error for (a) a unit step with $L(s)=\\dfrac{10}{(s+1)(s+5)}$, and (b) a ramp of slope 3 with $L(s)=\\dfrac{20}{s(s+4)}$. Both closed loops are stable.",
+   "steps": [
+    {
+     "text": "(a) The loop has no integrator, so it is type 0 and $K_p=L(0)$.",
+     "latex": "K_p=\\frac{10}{1\\times5}=2,\\quad e_{ss}=\\frac{1}{1+K_p}=\\frac{1}{3}=0.333"
+    },
+    {
+     "text": "(b) One free integrator: type 1, so a step would give zero error. The velocity constant is",
+     "latex": "K_v=\\lim_{s\\to0}s\\frac{20}{s(s+4)}=\\frac{20}{4}=5\\ \\mathrm{s^{-1}}"
+    },
+    {
+     "text": "For a ramp of slope $V=3$ the error is $V/K_v$.",
+     "latex": "e_{ss}=\\frac{3}{5}=0.6"
+    }
+   ],
+   "answer": "(a) $e_{ss}=1/3\\approx0.333$ (33%); (b) $e_{ss}=0.6$ in the units of the output."
+  },
+  {
+   "type": "text",
+   "markdown": "**Disturbance rejection.** Now add a constant disturbance $d$ at the plant input. With the reference at zero, the output is $Y=\\dfrac{G}{1+GC}D$. Everything again depends on whether the *controller* contains an integrator. The key physical argument: a constant disturbance needs a constant control signal $u=-d$ to hold the output still. A proportional controller can only produce a constant $u$ from a non-zero error, so some error must remain. An integrator can output any constant while its *input* (the error) is zero."
+  },
+  {
+   "type": "worked_example",
+   "title": "Constant disturbance with P and PI control",
+   "prompt": "A plant $G(s)=1/(s+2)$ is subject to a constant input disturbance $d=1$. Compare the steady-state output (with reference zero) for $C=8$ (P) and $C=8+4/s$ (PI).",
+   "steps": [
+    {
+     "text": "Closed-loop transfer from $d$ to $y$ is $G/(1+GC)$. For the P controller:",
+     "latex": "\\frac{G}{1+GC}=\\frac{1/(s+2)}{1+8/(s+2)}=\\frac{1}{s+10}"
+    },
+    {
+     "text": "The input is $D=1/s$; the loop is stable (pole at $-10$). The final-value theorem gives",
+     "latex": "y_{ss}=\\lim_{s\\to0}s\\cdot\\frac{1}{s+10}\\cdot\\frac{1}{s}=\\frac{1}{10}=0.1"
+    },
+    {
+     "text": "For the PI controller $C=(8s+4)/s$:",
+     "latex": "\\frac{G}{1+GC}=\\frac{s}{s(s+2)+8s+4}=\\frac{s}{s^2+10s+4}"
+    },
+    {
+     "text": "The poles are the roots of $s^2+10s+4$ (both negative), so the loop is stable and",
+     "latex": "y_{ss}=\\lim_{s\\to0}s\\cdot\\frac{s}{s^2+10s+4}\\cdot\\frac{1}{s}=\\frac{0}{4}=0"
+    }
+   ],
+   "answer": "P control leaves a constant offset of 0.1 (10% of the disturbance); PI control gives zero steady-state error. The integrator's output settles at $-d$ so that its input, the error, can be zero."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Internal model principle",
+   "text": "A controller can only completely reject (or track) a class of signals if it contains a model of them: an integrator ($1/s$) for constants, a double integrator for ramps, an oscillator $1/(s^2+\\omega^2)$ for a sinusoid of frequency $\\omega$. This is why integral action removes steady-state error for step references and constant disturbances alike."
+  },
+  {
+   "type": "text",
+   "markdown": "**Integral action in state feedback.** Pole placement on $\\dot x=Ax+Bu$, $y=Cx$ alone does not guarantee $y\\to r$: a pre-gain would work only if the plant model were exact. Instead add an integrator state of the tracking error, $\\dot\\xi=r-y$, and use the augmented state $(x,\\xi)$ with $u=-Kx+k_I\\xi$. At steady state $\\dot\\xi=0$ forces $y=r$ whatever the plant gain, as long as the augmented loop is stable."
+  },
+  {
+   "type": "math",
+   "latex": "\\begin{bmatrix}\\dot x\\\\\\dot\\xi\\end{bmatrix}=\\begin{bmatrix}A-BK&Bk_I\\\\-C&0\\end{bmatrix}\\begin{bmatrix}x\\\\\\xi\\end{bmatrix}+\\begin{bmatrix}0\\\\1\\end{bmatrix}r",
+   "caption": "Closed-loop augmented system with $u=-Kx+k_I\\xi$. Choose $K$ and $k_I$ to place the $n+1$ poles."
+  },
+  {
+   "type": "worked_example",
+   "title": "Integral action in a state-feedback design",
+   "prompt": "A plant has $A=\\begin{bmatrix}0&1\\\\-2&-3\\end{bmatrix}$, $B=[0\\;\\;1]^T$, $C=[1\\;\\;0]$. Design $K=[k_1\\;\\;k_2]$ and $k_I$ for the augmented loop with poles at $-2$, $-3$, $-6$, and show the step error is zero.",
+   "steps": [
+    {
+     "text": "Augmented closed-loop matrix with states $(x_1,x_2,\\xi)$:",
+     "latex": "M=\\begin{bmatrix}0&1&0\\\\-2-k_1&-3-k_2&k_I\\\\-1&0&0\\end{bmatrix}"
+    },
+    {
+     "text": "Characteristic polynomial by cofactor expansion:",
+     "latex": "\\det(sI-M)=s^3+(3+k_2)s^2+(2+k_1)s+k_I"
+    },
+    {
+     "text": "Desired polynomial: $(s+2)(s+3)(s+6)=s^3+11s^2+36s+36$. Matching coefficients:",
+     "latex": "3+k_2=11,\\ 2+k_1=36,\\ k_I=36\\ \\Rightarrow\\ k_2=8,\\ k_1=34,\\ k_I=36"
+    },
+    {
+     "text": "At steady state all derivatives vanish, so $\\dot\\xi=r-y=0$, giving $y_{ss}=r$ for any constant $r$. The result does not depend on the exact plant gain, so it still holds if $A$ or $B$ differ slightly from the model, as long as the loop stays stable.",
+     "latex": "y_{ss}=r\\quad(e_{ss}=0)"
+    }
+   ],
+   "answer": "$K=[34\\;\\;8]$ and $k_I=36$; the integrator forces zero steady-state error for a step reference (and for constant disturbances)."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Integrators have costs",
+   "text": "Integral action adds a pole (slower response, less phase margin) and can wind up when the actuator saturates. Zero error to a step does not mean zero error to a ramp: that needs a type-2 loop. Also, the final-value theorem applies only when the closed loop is stable, so always check stability before computing $e_{ss}$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The type of a loop is its number of free integrators; for stable unity feedback, type 0 has a finite step error $1/(1+K_p)$, type 1 has zero step error and ramp error $V/K_v$, and type 2 has zero ramp error.",
+    "A constant disturbance needs a constant control; an integrator can provide it while its input (the error) is zero, so integral action removes the constant-disturbance error that P control leaves.",
+    "In state feedback, augmenting with $\\dot\\xi=r-y$ and placing the $n+1$ poles gives zero step error independent of the exact plant gain."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How is the type of a unity-feedback loop determined?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "By the number of poles of the open-loop transfer function $L(s)$ at the origin"
+    },
+    {
+     "id": "b",
+     "text": "By the number of zeros of $L(s)$ at the origin"
+    },
+    {
+     "id": "c",
+     "text": "By the number of poles in the right half-plane"
+    },
+    {
+     "id": "d",
+     "text": "By the order of the closed-loop polynomial"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "By the number of poles of the open-loop transfer function $L(s)$ at the origin",
+   "distractorRationale": {
+    "a": "Each free integrator contributes one factor $1/s$.",
+    "b": "Zeros at the origin differentiate and do not define the type.",
+    "c": "This concerns open-loop stability, not tracking type.",
+    "d": "The order counts all poles, not only those at the origin."
+   },
+   "explanation": "The type is the number of free integrators in the open loop, i.e. the multiplicity of the pole at $s=0$. Higher types track faster-growing inputs with zero error, provided the loop is stable.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A stable unity-feedback loop is type 1. What is its steady-state error to a unit step?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$1/(1+K_p)$ with $K_p$ finite"
+    },
+    {
+     "id": "b",
+     "text": "Zero"
+    },
+    {
+     "id": "c",
+     "text": "$1/K_v$"
+    },
+    {
+     "id": "d",
+     "text": "Infinite"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Zero",
+   "distractorRationale": {
+    "a": "That is for type 0, where $K_p$ is finite.",
+    "b": "The integrator forces the error to zero for a constant reference.",
+    "c": "That is the ramp error of a type-1 loop.",
+    "d": "The error grows without bound only for inputs faster than the type can follow."
+   },
+   "explanation": "In a type-1 loop $K_p$ is infinite, so $1/(1+K_p)=0$. The integrator keeps changing the control until the error is zero.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement is correct for $L(s)=\\dfrac{10(s+2)}{s^2(s+5)}$ with a stable closed loop?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is type 1 and has finite error to a ramp"
+    },
+    {
+     "id": "b",
+     "text": "It is type 0 because there is a zero at $-2$"
+    },
+    {
+     "id": "c",
+     "text": "It is type 2, so the steady-state error is zero for step and ramp inputs and finite for a parabola"
+    },
+    {
+     "id": "d",
+     "text": "It is type 2 and has infinite error for a ramp"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It is type 2, so the steady-state error is zero for step and ramp inputs and finite for a parabola",
+   "distractorRationale": {
+    "a": "Two poles at the origin make it type 2, not type 1.",
+    "b": "Zeros do not affect the type.",
+    "c": "Two free integrators give zero error for step and ramp.",
+    "d": "A type-2 loop follows a ramp with zero error."
+   },
+   "explanation": "The factor $s^2$ in the denominator gives two free integrators, so $L$ is type 2. The accelerations constant is $K_a=\\lim s^2L=10\\cdot2/5=4$, giving a finite parabolic error and zero error for step and ramp.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does adding an integrator to the controller remove the steady-state error caused by a constant disturbance?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases the loop gain at all frequencies equally"
+    },
+    {
+     "id": "b",
+     "text": "It makes the disturbance smaller before it reaches the plant"
+    },
+    {
+     "id": "c",
+     "text": "It removes the plant's poles"
+    },
+    {
+     "id": "d",
+     "text": "Its output can settle at any constant while its input, the error, is zero"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Its output can settle at any constant while its input, the error, is zero",
+   "distractorRationale": {
+    "a": "Gain at all frequencies would not give an exact cancellation and would hurt stability.",
+    "b": "The disturbance is unaffected at its source; the controller cancels its effect.",
+    "c": "An integrator adds a pole and does not cancel any of the plant's poles.",
+    "d": "The integrator supplies the constant control that cancels the disturbance."
+   },
+   "explanation": "At steady state the integrator state is constant, which requires its input to be zero. That input is the error, so the error is zero while the integrator output holds the constant control needed to cancel the disturbance.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: adding integral action to a stable type-0 loop makes it type 1, giving zero steady-state error to a step reference provided the loop remains stable.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The integrator adds a pole at the origin, increasing the type by one, and the error constants become infinite. The final-value argument needs the new closed loop to be stable, which must be checked.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A stable type-0 loop has $K_p=9$. Find the steady-state error to a unit step (as a fraction, dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o1"
+   ],
+   "correctValue": 0.1,
+   "tolerance": 0.001,
+   "unit": "dimensionless",
+   "explanation": "For a type-0 loop $e_{ss}=1/(1+K_p)=1/10=0.1$. A higher gain would reduce it but never reach zero without an integrator.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A stable loop has $L(s)=\\dfrac{40}{s(s+8)}$ and the reference is a ramp of slope 3 rad/s. Find the steady-state error in rad.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o1"
+   ],
+   "correctValue": 0.6,
+   "tolerance": 0.01,
+   "unit": "rad",
+   "explanation": "$K_v=\\lim sL=40/8=5\\ \\mathrm{s^{-1}}$, and the ramp error is $V/K_v=3/5=0.6$ rad.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A plant has $A=\\begin{bmatrix}0&1\\\\-4&-5\\end{bmatrix}$, $B=[0\\;\\;1]^T$, $C=[1\\;\\;0]$. With $u=-Kx+k_I\\xi$ and $\\dot\\xi=r-y$ the augmented characteristic polynomial is $s^3+(5+k_2)s^2+(4+k_1)s+k_I$. For augmented poles at $-3,-4,-5$, find $k_1$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o3"
+   ],
+   "correctValue": 43.0,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "The desired polynomial is $(s+3)(s+4)(s+5)=s^3+12s^2+47s+60$. Matching the $s$ coefficient: $4+k_1=47$, so $k_1=43$ (and $k_2=7$, $k_I=60$).",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A heater control loop with a proportional controller settles 4 degrees C below its setpoint when a cold draught blows. Explain this offset and describe how integral action removes it, with reference to what the integrator holds at steady state.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o2"
+   ],
+   "markingGuide": [
+    "A constant disturbance needs a constant heater power to cancel it.",
+    "With P control, power equals $K_p\\times$ error, so a nonzero constant power requires a nonzero error (offset).",
+    "With an integrator, the controller output is the integral of the error and can be any constant while the error is zero.",
+    "At steady state the integrator state stops changing so its input (the error) is zero, and its output equals the power needed to cancel the draught; stability must be maintained."
+   ],
+   "explanation": "A proportional controller produces power only from error, so cancelling a constant draught requires a constant error. An integrator can hold any constant output while its input is zero, so at steady state the error vanishes and the integrator output supplies the required heater power.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A type-1 position loop has $L(s)=\\dfrac{50}{s(s+10)}$ and must follow a ramp of slope 2 rad/s. Compute the steady-state error, and describe how you would change the controller to get zero ramp error, including the effect on stability.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o1",
+    "ug.mce-control-engineering.disturbance-rejection.steady-state-tracking.o2"
+   ],
+   "markingGuide": [
+    "$K_v=\\lim sL=50/10=5\\ \\mathrm{s^{-1}}$, so $e_{ss}=2/5=0.4$ rad.",
+    "Zero ramp error needs a type-2 loop, i.e. a second integrator in the controller (for example a PI-type factor $(s+z)/s$ in series).",
+    "Explains by the internal model principle that the controller must model the ramp's double integrator.",
+    "Notes the extra integrator reduces phase margin and can destabilise the loop, so the zero must be placed to retain adequate margin and stability must be checked before applying the final-value theorem."
+   ],
+   "explanation": "With $K_v=50/10=5$ s$^{-1}$ the ramp error is $2/5=0.4$ rad. A second integrator makes the loop type 2, giving zero ramp error, but it adds $90^\\circ$ of phase lag at low frequency, so a zero is added to keep the margin and the closed loop must be verified stable.",
+   "board": "internal"
+  }
+ ]
+}

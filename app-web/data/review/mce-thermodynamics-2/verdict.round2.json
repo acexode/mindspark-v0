@@ -1,0 +1,73 @@
+{
+  "subjectId": "ug.mce-thermodynamics-2",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 14,
+  "summary": "Re-review of all 14 units. The three requested fixes are confirmed: psychrometric constant-RH curves now correctly 'rise to the right' with saturation as the upper boundary; the ideal-gas-mixtures example is consistently on a 100 kg basis (n = 2.142, 0.781, 0.341, total 3.264 kmol, Mm = 100/3.264 = 30.64 kg/kmol, R = 0.2714); and the flash-chamber data are explicitly labelled hypothetical (x = 0.1911, 0.0667 and 0.0824 kg/s; q008 key 0.0505 kg/s recomputed and correct) with a critical-temperature column added and the R-744 latent-heat cell fixed. Every numeric key, worked example and marking-guide figure was recomputed in Python (mixtures, combustion and flame temperature, exergy, Brayton variants, Otto/Diesel, mep, psychrometrics, vapour compression and flash chamber, Rankine reheat and regeneration) and all keys agree within tolerance; steam-table values (8 MPa/500 C, 2 MPa reheat, 15 MPa/600 C, 1.2/1.0/0.7 MPa extraction, 10 kPa) and the R-134a 0.14/0.8 MPa and refrigerant-table properties match the standard tables as I recall them. No tab or control characters, literal escape sequences, placeholder text or '[object Object]' were found in any packet, and all inline-math delimiters balance. One new factual error was found (a wrong ideal net-work figure in brayton-real) and several round-1 minor items remain unchanged. This is an AI review; the course still needs a subject-matter expert before engineering reliance, and the property data written from memory (sensible-enthalpy table, representative R-134a enthalpies) should be checked against published tables.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Lesson text says \"for r_p = 10, T_3 = 1400 K and efficiencies of 0.80 and 0.85 the net work falls from about 398 to 226 kJ/kg\". The ideal net work at r_p = 10, T_1 = 300 K, T_3 = 1400 K is 1.005[(1400 - 579.2) - (579.2 - 300)] = 544.3 kJ/kg, not 398. The 226 kJ/kg real value is correct (225.8).",
+      "suggestedFix": "Change to \"falls from about 544 to 226 kJ/kg\" (a reduction of about 59%), and check that the table entry 'often 30 to 50% lower' is still appropriate or widen it."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Bullet (unchanged from round 1): \"The ideal r_p,opt for max work is the geometric mean of the minimum and maximum temperature ratios.\" It is the temperature ratio T2/T1 = r_p^((k-1)/k) = sqrt(T3/T1) (equivalently T2 = sqrt(T1 T3)) that is the geometric mean, not the pressure ratio.",
+      "suggestedFix": "Rewrite as: \"At the optimum the compressor exit temperature is the geometric mean of the extreme temperatures, T2 = sqrt(T1 T3), so r_p^((k-1)/k) = sqrt(T3/T1).\""
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Lesson text says the ideal Brayton thermal efficiency \"rises without limit as r_p increases\". It is bounded above by 1 (1 - r_p^-(k-1)/k tends to 1) and, in practice, by the Carnot limit for the cycle temperatures.",
+      "suggestedFix": "Say \"rises steadily towards 1 as r_p increases\" (or \"increases monotonically with r_p\")."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.combustion-and-gas-mixtures.ideal-gas-mixtures",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Bullet: \"A light gas (high R, e.g. CH4, H2) has a larger mass fraction contribution to cp per kg.\" The wording is garbled and not a statement the lesson supports; the intended point is that light gases have high specific heats per kg.",
+      "suggestedFix": "Rewrite: \"Light gases (high R, e.g. H2, CH4) have high specific heats per kg, so they raise c_p of a mass-weighted mixture more per unit mass\", or delete the bullet."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.combustion-and-gas-mixtures.combustion-energy-balance",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Unchanged from round 1: the H2O column of the sensible-enthalpy table (72 790, 83 150, 93 740 kJ/kmol at 2000/2200/2400 K) appears about 0.1 to 0.15% above the usual ideal-gas table values (about 72 690, 83 040, 93 600). CO2, N2 and O2 columns agree to within about 0.05%. The effect on T_ad is a few kelvin, so the keys (2327 K worked example, ethane q008 2113 K with tolerance 15) remain acceptable, but the data are unverified.",
+      "suggestedFix": "Check the H2O column against JANAF or Cengel Table A-23 and correct or cite the source; re-derive 2327 K and 2112.9 K if values change."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.combustion-and-gas-mixtures.combustion-energy-balance",
+      "questionId": "ug.mce-thermodynamics-2.combustion-and-gas-mixtures.combustion-energy-balance.q009",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Unchanged from round 1: the marking guide says a condensing boiler's efficiency \"should be quoted against the HHV, while a non-condensing boiler is usually quoted against the LHV\". Basis conventions vary by region (LHV-based ratings, which can exceed 100% for condensing boilers, are common in Europe), so the rule is over-firm.",
+      "suggestedFix": "Say that on an HHV basis a condensing boiler stays below 100%, whereas on an LHV basis it can exceed 100% because it recovers latent heat; the basis must always be stated."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.psychrometrics.humid-air-properties",
+      "questionId": "ug.mce-thermodynamics-2.psychrometrics.humid-air-properties.q009",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Unchanged from round 1: the stem refers to a \"polished metal plate\" but the marking guide and explanation say the air next to \"the glass\" mists and the dew point is when \"the glass just mists\". Numbers are correct (Pg(12 C) about 1.40 kPa, Pg(24 C) about 2.98 kPa, RH about 47%).",
+      "suggestedFix": "Use one object throughout (plate or glass) in stem, marking guide and explanation."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Hook (unchanged): \"a single compressor would have to work across a pressure ratio near 10\" for -30 C evaporating and 45 C condensing. For R-134a (the fluid in the lesson's table and the previous unit) this is about 1.16 MPa / 0.084 MPa, roughly 14, and for ammonia about 15; about 10 applies only to fluids such as R-22 or propane. The fluid is not stated.",
+      "suggestedFix": "Say \"a pressure ratio of well over 10 (about 14 for R-134a)\" or name the fluid."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.vapour-compression",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Unchanged from round 1: the 'representative' R-134a values in q006/q007 (h1 = 235.3, h2 = 272.0, h3 = 101.6) do not form one consistent cycle. h3 = 101.6 matches saturated liquid at about 0.9 MPa and h1 = 235.3 matches saturated vapour near 0.1 MPa, for which the isentropic compressor work would be well above the stated 36.7 kJ/kg (roughly 40 to 45 kJ/kg). The cold-store worked example (h1 = 244.5, h2 = 272.0, h3 = 88.8, i.e. -10 C to 0.7 MPa) is self-consistent, and the 0.14/0.8 MPa example (239.16, 275.39, 95.47, COP 3.97) is correct. The key 2.196 kW follows arithmetically from the stated data; the data are plausible but unverified.",
+      "suggestedFix": "Take h1, h2 and h3 for a single stated cycle from R-134a tables (state evaporating and condensing pressures) or label them hypothetical, and recompute q007 (2.196 kW) if the values change."
+    }
+  ]
+}

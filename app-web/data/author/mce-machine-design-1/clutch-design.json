@@ -1,0 +1,394 @@
+{
+ "lessonTitle": "Clutch Design",
+ "estimatedMinutes": 55,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "When a driver lets the clutch pedal up, a pair of discs that were turning at different speeds must slip for a fraction of a second, then lock together and pass the full engine torque without any further slip. The torque a clutch can carry depends on the friction material, the size of the annular face and the force pressing it, but also on how the pressure is distributed over the face."
+  },
+  {
+   "type": "text",
+   "markdown": "A **plate (disc) clutch** transmits torque by friction between one or more flat annular friction faces with outer radius $r_o$ and inner radius $r_i$, pressed together by an axial force $F$. A single plate has a friction lining on both faces, so it provides $N=2$ friction surfaces; a multi-plate clutch has $N=2\\times$(number of friction plates) surfaces, and more surfaces give proportionally more torque in the same diameter. The torque is found by summing the friction force $\\mu p\\,dA$ times its radius over the annulus, so it depends on the pressure distribution $p(r)$, which cannot be known exactly. Two limiting assumptions are used."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Assumption",
+    "Physical basis",
+    "Pressure distribution",
+    "Used for"
+   ],
+   "rows": [
+    [
+     "Uniform pressure",
+     "Plates are rigid and new; pressure is the same everywhere",
+     "$p=\\text{constant}$",
+     "New, unworn clutches and as an upper bound"
+    ],
+    [
+     "Uniform wear",
+     "After run-in, wear is equal everywhere, so pressure adjusts to give equal wear rate",
+     "$p\\,r=\\text{constant}$, highest at $r_i$",
+     "Design of clutches that have worn in, the standard design basis"
+    ]
+   ],
+   "caption": "Two assumptions for the pressure on a clutch face"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Wear rate and uniform wear",
+   "text": "The wear rate of a friction lining is taken to be proportional to the pressure and to the sliding speed, $\\dot w\\propto p\\,v$. In a rotating clutch the sliding speed at radius $r$ is $v=\\omega r$, which is greater at the outer radius, so if the pressure were uniform the outer lining would wear faster. Wear continues until the pressure redistributes so that $p\\,r$ is constant (the pressure is higher near the inner radius). This is the uniform-wear condition."
+  },
+  {
+   "type": "text",
+   "markdown": "**Uniform pressure.** With constant $p$ the axial force is $F=p\\pi(r_o^2-r_i^2)$ and the torque transmitted by $N$ surfaces is found by integrating $\\mu p\\,r\\,dA$ with $dA=2\\pi r\\,dr$. The result is the force multiplied by an effective friction radius, $r_{eff}=\\tfrac23(r_o^3-r_i^3)/(r_o^2-r_i^2)$. **Uniform wear.** With $p\\,r=p_a r_i$ (where $p_a$ is the maximum pressure at the inner radius) the axial force is $F=2\\pi p_ar_i(r_o-r_i)$ and the torque is the force times the mean radius, $r_{eff}=(r_o+r_i)/2$. In both cases the torque is $T=N\\mu F r_{eff}$."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{Uniform pressure: }T=\\frac{2}{3}N\\mu F\\frac{r_o^3-r_i^3}{r_o^2-r_i^2},\\ F=p\\,\\pi(r_o^2-r_i^2);\\qquad \\text{Uniform wear: }T=\\frac{N\\mu F(r_o+r_i)}{2},\\ F=2\\pi p_a r_i(r_o-r_i)",
+   "caption": "Torque capacity of a plate clutch with N friction surfaces and axial force F (consistent units: N and mm, results in N mm)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Torque capacity of a single-plate clutch",
+   "prompt": "A single-plate dry clutch has outer radius $r_o=125$ mm, inner radius $r_i=75$ mm, $\\mu=0.3$ (typical for organic facing on steel or cast iron, dry) and a maximum allowable pressure $p_a=0.35$ MPa. Find the axial force and torque capacity under the uniform-wear assumption, and the torque if the same force were spread with uniform pressure.",
+   "steps": [
+    {
+     "text": "Axial force at the allowable maximum pressure, uniform wear (single plate, $N=2$).",
+     "latex": "F=2\\pi\\times0.35\\times75\\times(125-75)=8247\\ \\text{N}"
+    },
+    {
+     "text": "Torque with the mean radius $(125+75)/2=100$ mm.",
+     "latex": "T=2\\times0.3\\times8247\\times100\\times10^{-3}=495\\ \\text{N m}"
+    },
+    {
+     "text": "Uniform-pressure effective radius.",
+     "latex": "r_{eff}=\\frac{2}{3}\\frac{125^3-75^3}{125^2-75^2}=\\frac{2}{3}\\times\\frac{1531250}{10000}=102.08\\ \\text{mm}"
+    },
+    {
+     "text": "Torque with the same force and uniform pressure, and the resulting ratio.",
+     "latex": "T=2\\times0.3\\times8247\\times102.08\\times10^{-3}=505\\ \\text{N m},\\qquad \\frac{T_{UP}}{T_{UW}}=1.021"
+    }
+   ],
+   "answer": "Under uniform wear the clutch needs F = 8247 N and transmits 495 N m. Uniform pressure would predict 505 N m for the same force, about 2 per cent higher, so uniform wear is the more conservative design basis."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Axial force required.** In design the torque to be transmitted is specified, usually as the engine (or motor) torque multiplied by a service factor so that the clutch does not slip when torque peaks, and the axial force needed is found by rearranging the torque equation. The pressure is then checked against the allowable lining pressure. Since the torque follows from the power $P$ and speed $n$ (rev/min), the design torque is $T_d=K_sP/\\omega=K_s\\times60P/(2\\pi n)$, where a typical service factor $K_s$ lies between about 1.25 and 2 depending on the drive."
+  },
+  {
+   "type": "worked_example",
+   "title": "Axial force for a given duty",
+   "prompt": "A clutch of the same size as in the previous example ($r_o=125$ mm, $r_i=75$ mm, $\\mu=0.3$, $N=2$) must transmit the output of a 35 kW engine at 2000 rev/min with a service factor of 1.5. Using uniform wear, find the axial force needed and check the maximum pressure against 0.35 MPa.",
+   "steps": [
+    {
+     "text": "Engine torque from power and speed.",
+     "latex": "T=\\frac{35000\\times60}{2\\pi\\times2000}=167.1\\ \\text{N m}"
+    },
+    {
+     "text": "Design torque with the service factor.",
+     "latex": "T_d=1.5\\times167.1=250.7\\ \\text{N m}"
+    },
+    {
+     "text": "Axial force from uniform wear, $F=T_d/(N\\mu r_{eff})$ with $r_{eff}=100$ mm.",
+     "latex": "F=\\frac{250.7\\times10^3}{2\\times0.3\\times100}=4178\\ \\text{N}"
+    },
+    {
+     "text": "Maximum pressure (at the inner radius) from the uniform-wear force relation.",
+     "latex": "p_a=\\frac{F}{2\\pi r_i(r_o-r_i)}=\\frac{4178}{2\\pi\\times75\\times50}=0.177\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The clutch needs an axial force of about 4178 N and works at a maximum pressure of 0.18 MPa, well below the 0.35 MPa allowable, so the size is adequate."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why uniform wear is the design assumption.** A new clutch may well have close to uniform pressure, because the faces are flat and the springs press them evenly. But the outer part rubs at a higher speed and wears faster, so after a short run-in the pressure there falls and the inner lining takes more, until the wear rate is equal everywhere. The clutch then operates close to the uniform-wear condition for the rest of its life. Uniform wear also predicts a slightly lower torque for a given force than uniform pressure (the effective radius is smaller), so a clutch designed on this basis will not slip if the pressure distribution is somewhere between the two."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Uniform wear: $r_{eff}=(r_o+r_i)/2$; maximum pressure is at $r_i$ and varies as $1/r$.",
+    "Uniform pressure: $r_{eff}=\\tfrac23(r_o^3-r_i^3)/(r_o^2-r_i^2)$, slightly larger.",
+    "Multi-plate clutches multiply the torque by the number of friction surfaces.",
+    "The ratio $r_i/r_o\\approx0.6$ to $0.7$ is often used; for a given outer radius and maximum pressure the uniform-wear torque is greatest at $r_i=r_o/\\sqrt3\\approx0.58r_o$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Choose the assumption and state it",
+   "text": "If the question does not say which assumption to use, state that you use uniform wear (after run-in) as the conservative design basis, and note that the uniform-pressure value is larger by only a few per cent. Check that you use $N=2$ for one friction plate and that all radii are in the same units."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Plate clutch torque is $T=N\\mu F r_{eff}$; $N$ counts friction surfaces (two for a single plate).",
+    "Uniform wear: $r_{eff}=(r_o+r_i)/2$ and $F=2\\pi p_ar_i(r_o-r_i)$; uniform pressure: $r_{eff}=\\tfrac23(r_o^3-r_i^3)/(r_o^2-r_i^2)$ and $F=p\\pi(r_o^2-r_i^2)$.",
+    "Axial force for a given torque follows by rearranging $T=N\\mu Fr_{eff}$, after multiplying the engine torque by a service factor.",
+    "Wear is proportional to $pv$ and the outer region slides faster, so pressure redistributes until $pr$ is constant after run-in; uniform wear is therefore the appropriate and conservative basis."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the effective friction radius of a clutch face with outer radius 100 mm and inner radius 60 mm under the uniform-wear assumption?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "80 mm"
+    },
+    {
+     "id": "b",
+     "text": "160 mm"
+    },
+    {
+     "id": "c",
+     "text": "78 mm"
+    },
+    {
+     "id": "d",
+     "text": "60 mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "80 mm",
+   "distractorRationale": {
+    "a": "Correct: r_eff = (100 + 60)/2 = 80 mm.",
+    "b": "160 mm is the sum without halving.",
+    "c": "About 82 mm would be the uniform-pressure value; 78 mm is not obtained from either formula.",
+    "d": "60 mm is only the inner radius."
+   },
+   "explanation": "Under uniform wear the torque acts at the mean of the inner and outer radii, so $r_{eff}=(r_o+r_i)/2=80$ mm. The uniform-pressure value for the same face would be slightly larger.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why does a single-plate dry clutch have $N=2$ in the torque equation?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The friction plate has a lining on both faces, so there are two friction surfaces"
+    },
+    {
+     "id": "b",
+     "text": "There are two springs pressing the plate"
+    },
+    {
+     "id": "c",
+     "text": "The torque is transmitted twice per revolution"
+    },
+    {
+     "id": "d",
+     "text": "Because the radii are inner and outer"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The friction plate has a lining on both faces, so there are two friction surfaces",
+   "distractorRationale": {
+    "a": "Correct: the plate is gripped by the flywheel on one side and the pressure plate on the other.",
+    "b": "The number of springs is not related to N.",
+    "c": "Torque transmission is continuous.",
+    "d": "Inner and outer radii define the annulus, not the number of faces."
+   },
+   "explanation": "A single driven plate is clamped between the flywheel and the pressure plate, giving two friction interfaces. Each interface transmits the torque $\\mu Fr_{eff}$, so the total is $2\\mu Fr_{eff}$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For the same axial force, friction coefficient, and radii, how does the torque capacity from the uniform-pressure assumption compare with uniform wear?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Uniform pressure gives a slightly higher torque"
+    },
+    {
+     "id": "b",
+     "text": "Uniform pressure gives a much lower torque"
+    },
+    {
+     "id": "c",
+     "text": "They are always equal"
+    },
+    {
+     "id": "d",
+     "text": "Uniform wear gives a higher torque"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Uniform pressure gives a slightly higher torque",
+   "distractorRationale": {
+    "a": "Correct: its effective radius is a little greater.",
+    "b": "The difference is only a few per cent and in the other direction.",
+    "c": "They agree only when r_i equals r_o.",
+    "d": "Uniform wear is the more conservative of the two."
+   },
+   "explanation": "The uniform-pressure effective radius $\\tfrac23(r_o^3-r_i^3)/(r_o^2-r_i^2)$ exceeds the mean radius for any annulus, so it predicts more torque. This is why uniform wear is the safer design basis.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A new clutch lining has the same pressure everywhere. Which region wears fastest, and why?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The outer region, because the sliding speed $\\omega r$ is greatest there"
+    },
+    {
+     "id": "b",
+     "text": "The inner region, because the pressure is greatest there"
+    },
+    {
+     "id": "c",
+     "text": "The middle region, because it carries most of the force"
+    },
+    {
+     "id": "d",
+     "text": "All regions wear equally"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The outer region, because the sliding speed $\\omega r$ is greatest there",
+   "distractorRationale": {
+    "a": "Correct: wear rate is proportional to p v and v grows with radius.",
+    "b": "With uniform pressure, the pressure is equal at all radii.",
+    "c": "The middle has neither the highest speed nor the highest pressure.",
+    "d": "Equal wear is only achieved later, once the pressure redistributes."
+   },
+   "explanation": "Wear is proportional to the product of pressure and sliding speed. With equal pressure, the outer lining slides faster and wears more quickly, which transfers load inwards until $pr$ becomes constant.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the uniform-wear condition, how does the contact pressure vary with radius on the clutch face?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is inversely proportional to radius and greatest at the inner radius"
+    },
+    {
+     "id": "b",
+     "text": "It is constant"
+    },
+    {
+     "id": "c",
+     "text": "It is proportional to radius and greatest at the outer radius"
+    },
+    {
+     "id": "d",
+     "text": "It is zero at the inner radius"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is inversely proportional to radius and greatest at the inner radius",
+   "distractorRationale": {
+    "a": "Correct: p r = constant means p is greatest at r_i.",
+    "b": "That is the uniform-pressure case.",
+    "c": "That would make the outer lining wear faster still.",
+    "d": "The pressure is non-zero everywhere on the lining."
+   },
+   "explanation": "Equal wear requires $p\\,v=p\\omega r$ to be constant, so $p\\propto1/r$ and the maximum pressure $p_a$ is at the inner radius. The axial force then is $F=2\\pi p_ar_i(r_o-r_i)$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A single-plate clutch has $r_o=110$ mm and $r_i=70$ mm, $\\mu=0.25$ and carries an axial force of 3000 N. Using uniform wear, find the torque capacity in N m (two friction surfaces).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o1"
+   ],
+   "correctValue": 135.0,
+   "tolerance": 1.0,
+   "unit": "N m",
+   "explanation": "The mean radius is $(110+70)/2=90$ mm. The torque is $T=N\\mu Fr_{eff}=2\\times0.25\\times3000\\times0.090=135$ N m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A single-plate clutch with $r_o=120$ mm, $r_i=60$ mm and $\\mu=0.28$ must transmit 200 N m. Assuming uniform pressure and two friction surfaces, find the required axial force in N.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o2"
+   ],
+   "correctValue": 3826.530612,
+   "tolerance": 40,
+   "unit": "N",
+   "explanation": "For uniform pressure the effective radius is $\\tfrac23(0.120^3-0.060^3)/(0.120^2-0.060^2)=\\tfrac23\\times0.001512/0.0108=0.0933$ m. Then $F=T/(N\\mu r_{eff})=200/(2\\times0.28\\times0.0933)=3827$ N.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A clutch face has $r_i=75$ mm and $r_o=125$ mm and works under uniform wear with an axial force of 6000 N. Find the maximum contact pressure, at the inner radius, in MPa.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o2"
+   ],
+   "correctValue": 0.254648,
+   "tolerance": 0.01,
+   "unit": "MPa",
+   "explanation": "From $F=2\\pi p_ar_i(r_o-r_i)$ we get $p_a=F/[2\\pi r_i(r_o-r_i)]=6000/(2\\pi\\times75\\times50)=0.255$ MPa. The pressure falls as $1/r$ to 0.153 MPa at the outer radius.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the torque capacity of a plate clutch with $N$ friction surfaces under the uniform-wear assumption, and the expression for the axial force. State what $p_a$ means.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o1",
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o2"
+   ],
+   "markingGuide": [
+    "Uniform wear: $p\\,r=\\text{constant}=p_ar_i$, with $p_a$ the maximum pressure at the inner radius.",
+    "Axial force: $F=\\int_{r_i}^{r_o}p\\,2\\pi r\\,dr=2\\pi p_ar_i(r_o-r_i)$.",
+    "Friction torque per surface: $dT=\\mu p\\,2\\pi r\\,dr\\cdot r$, so $T=2\\pi\\mu p_ar_i\\int r\\,dr=\\pi\\mu p_ar_i(r_o^2-r_i^2)$.",
+    "Substituting $F$: $T=\\mu F(r_o+r_i)/2$ per surface, so $T=N\\mu F(r_o+r_i)/2$ in total.",
+    "Axial force required for a design torque: $F=2T/[N\\mu(r_o+r_i)]$; check $p_a$ against the allowable lining pressure."
+   ],
+   "explanation": "The integral over the annulus gives a mean radius as the effective radius. The pressure $p_a$ is the highest value on the face and is the one limited by the lining.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain physically why the uniform-wear assumption is more appropriate than uniform pressure for the design of a plate clutch after it has run in, and explain how the choice affects the calculated torque capacity and the safety of the design.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.brakes-and-clutches.clutch-design.o3"
+   ],
+   "markingGuide": [
+    "Wear rate is proportional to the product of contact pressure and sliding speed, $\\dot w\\propto pv$ with $v=\\omega r$.",
+    "With uniform pressure the outer region slides faster and wears faster, so the lining thins there first.",
+    "Pressure then redistributes towards the inner radius until the wear rate is the same everywhere, which requires $p\\,r=\\text{constant}$ (uniform wear).",
+    "After run-in the clutch operates at this condition for most of its life, so it is the realistic basis.",
+    "Uniform wear gives the smaller effective radius $(r_o+r_i)/2$, hence a lower predicted torque for a given force than uniform pressure; designing on it is conservative, so the clutch will not slip when the real pressure distribution lies between the two."
+   ],
+   "explanation": "The wear law drives the pressure to a distribution in which the outer lining unloads. The resulting design torque is slightly lower, which errs on the safe side.",
+   "board": "internal"
+  }
+ ]
+}

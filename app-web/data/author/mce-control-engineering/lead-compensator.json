@@ -1,0 +1,405 @@
+{
+ "lessonTitle": "Lead Compensators",
+ "estimatedMinutes": 34,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A camera gimbal axis is stable but rings for half a second after every nudge: the loop has only 20 degrees of phase margin. The motor and the mechanics cannot be changed, and raising the gain only makes it worse. A lead compensator adds a controlled bump of positive phase exactly around the crossover frequency, and the price is paid at high frequency, where it also amplifies sensor noise."
+  },
+  {
+   "type": "text",
+   "markdown": "A **lead compensator** has the transfer function"
+  },
+  {
+   "type": "math",
+   "latex": "C(s)=\\frac{1+\\alpha Ts}{1+Ts},\\qquad \\alpha>1",
+   "caption": "Zero at $1/(\\alpha T)$ rad/s and pole at $1/T$ rad/s; the pole is $\\alpha$ times farther from the origin than the zero. Low-frequency gain is 1, high-frequency gain is $\\alpha$."
+  },
+  {
+   "type": "text",
+   "markdown": "Between the zero and the pole the numerator contributes $+90^\\circ$ and the denominator has not yet contributed its lag, so the compensator adds positive phase (lead). The lead is largest at the geometric mean of the two corner frequencies, and its value depends only on the pole-zero ratio $\\alpha$."
+  },
+  {
+   "type": "math",
+   "latex": "\\varphi_{max}=\\arcsin\\!\\Big(\\frac{\\alpha-1}{\\alpha+1}\\Big),\\qquad \\omega_m=\\frac{1}{T\\sqrt{\\alpha}},\\qquad |C(j\\omega_m)|=\\sqrt{\\alpha}",
+   "caption": "Maximum phase lead, the frequency where it occurs, and the compensator gain there."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading the lead from the corners",
+   "prompt": "A lead compensator has its zero at 2 rad/s and its pole at 20 rad/s. Find the maximum phase lead, where it occurs and the gain at that frequency.",
+   "steps": [
+    {
+     "text": "The pole-zero ratio is $\\alpha=20/2=10$.",
+     "latex": "\\alpha=10"
+    },
+    {
+     "text": "Maximum phase lead:",
+     "latex": "\\varphi_{max}=\\arcsin(9/11)=54.9^\\circ"
+    },
+    {
+     "text": "Frequency of maximum lead (geometric mean of the corners):",
+     "latex": "\\omega_m=\\sqrt{2\\times20}=6.32\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "Gain there is $\\sqrt\\alpha$, and the high-frequency gain is $\\alpha$.",
+     "latex": "|C(j\\omega_m)|=\\sqrt{10}=3.16\\ (10\\ \\mathrm{dB}),\\quad |C(j\\infty)|=10\\ (20\\ \\mathrm{dB})"
+    }
+   ],
+   "answer": "$\\varphi_{max}\\approx54.9^\\circ$ at 6.32 rad/s, with gain 3.16 (10 dB) there and 10 (20 dB) at high frequency."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Pole-zero ratio $\\alpha$",
+    "$\\varphi_{max}$ (degrees)",
+    "High-frequency gain (dB)"
+   ],
+   "rows": [
+    [
+     "3",
+     "30.0",
+     "9.5"
+    ],
+    [
+     "4",
+     "36.9",
+     "12.0"
+    ],
+    [
+     "10",
+     "54.9",
+     "20.0"
+    ],
+    [
+     "20",
+     "64.8",
+     "26.0"
+    ]
+   ],
+   "caption": "Maximum lead and the high-frequency gain it costs."
+  },
+  {
+   "type": "text",
+   "markdown": "**Design procedure for a phase-margin target.** (1) Set the gain to meet the steady-state requirement and measure the uncompensated phase margin. (2) Required lead $=$ target PM $-$ current PM $+$ a safety allowance of about $5^\\circ$ to $10^\\circ$, because adding gain at the new crossover pushes the crossover frequency to a higher frequency where the plant phase is worse. (3) Find $\\alpha$ from $\\alpha=(1+\\sin\\varphi_{max})/(1-\\sin\\varphi_{max})$. (4) Place $\\omega_m$ where the uncompensated gain is $-10\\log_{10}\\alpha$ dB, since the compensator raises the gain there by $\\sqrt\\alpha$ and the new crossover will be at $\\omega_m$. (5) Compute $T=1/(\\omega_m\\sqrt\\alpha)$. (6) Check the achieved PM."
+  },
+  {
+   "type": "worked_example",
+   "title": "Designing a lead for 50 degrees of margin",
+   "prompt": "A plant with the loop $G(s)=\\dfrac{10}{s(s+2)}$ (rad/s) must have a phase margin of at least $50^\\circ$. Design a lead compensator with unity DC gain.",
+   "steps": [
+    {
+     "text": "Uncompensated crossover: $|G(j\\omega)|=1$ gives $\\omega^4+4\\omega^2=100$, so $\\omega_{gc}=2.863$ rad/s. The phase is $-90^\\circ-\\arctan(\\omega/2)=-145.1^\\circ$.",
+     "latex": "\\mathrm{PM}_0=34.9^\\circ"
+    },
+    {
+     "text": "Required lead is $50-34.9=15.1^\\circ$; add $10^\\circ$ of allowance for the shift of crossover to a higher frequency.",
+     "latex": "\\varphi_{max}=25^\\circ"
+    },
+    {
+     "text": "Pole-zero ratio:",
+     "latex": "\\alpha=\\frac{1+\\sin25^\\circ}{1-\\sin25^\\circ}=2.464"
+    },
+    {
+     "text": "Place $\\omega_m$ where $|G|=1/\\sqrt\\alpha=0.637$ (about $-3.9$ dB), found numerically.",
+     "latex": "\\omega_m=3.718\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "Time constant and corner frequencies:",
+     "latex": "T=\\frac{1}{\\omega_m\\sqrt\\alpha}=0.1713\\ \\mathrm{s},\\quad \\text{zero at }2.37,\\ \\text{pole at }5.84\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "Check: the compensated loop crosses 0 dB at $\\omega_m$, and the phase there is the plant phase plus $25^\\circ$.",
+     "latex": "\\mathrm{PM}\\approx53.3^\\circ\\ \\ge50^\\circ"
+    }
+   ],
+   "answer": "$C(s)=\\dfrac{1+0.422s}{1+0.171s}$ (zero at 2.37 rad/s, pole at 5.84 rad/s), giving PM $\\approx53^\\circ$ at 3.72 rad/s."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "What lead does to the response",
+   "text": "Lead raises the gain at and above crossover, so the crossover frequency rises (a faster response), and it adds phase there (more damping). It does nothing for steady-state error because the DC gain stays at 1. Its natural use is when the plant is too slow or too oscillatory and the steady-state accuracy is already adequate."
+  },
+  {
+   "type": "worked_example",
+   "title": "The noise penalty",
+   "prompt": "A position sensor adds broadband noise of 0.02 V rms at frequencies above 100 rad/s. Compare the noise at the controller output for a proportional gain of 1 and a lead with $\\alpha=8$ and its pole at 30 rad/s.",
+   "steps": [
+    {
+     "text": "Above the lead's pole (30 rad/s) the compensator gain is flat at $\\alpha=8$, and 100 rad/s is above it.",
+     "latex": "|C(j\\omega)|\\to\\alpha=8"
+    },
+    {
+     "text": "Output noise is the input noise times the gain.",
+     "latex": "v_{out}=8\\times0.02=0.16\\ \\mathrm{V\\ rms}\\ \\text{versus}\\ 1\\times0.02=0.02\\ \\mathrm{V\\ rms}"
+    },
+    {
+     "text": "The increase is $\\alpha=8$, i.e. $20\\log_{10}8=18$ dB, which can saturate the amplifier or heat the motor.",
+     "latex": "20\\log_{10}8\\approx18.1\\ \\mathrm{dB}"
+    }
+   ],
+   "answer": "The lead multiplies high-frequency sensor noise by $\\alpha=8$ (18 dB): 0.16 V rms instead of 0.02 V rms."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "The price of phase",
+   "text": "Each extra degree of lead costs high-frequency gain. If a single lead would need $\\alpha$ above about 10 to 15 (roughly $55^\\circ$ to $65^\\circ$), split the lead into two cascaded stages with half the phase each (their HF gain is $\\alpha_1\\alpha_2$, much lower than a single $\\alpha$ for the same total phase), add a roll-off pole above the pole, or reduce the gain at higher frequencies."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A lead compensator $(1+\\alpha Ts)/(1+Ts)$ with $\\alpha>1$ adds a maximum phase of $\\arcsin\\big((\\alpha-1)/(\\alpha+1)\\big)$ at $\\omega_m=1/(T\\sqrt\\alpha)$.",
+    "Design: choose $\\varphi_{max}$ with a margin, find $\\alpha$, put $\\omega_m$ where the plant gain is $-10\\log_{10}\\alpha$ dB, compute $T$ and check the achieved phase margin.",
+    "Lead raises high-frequency gain by $\\alpha$, so it amplifies sensor noise; large phase boosts are costly."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the effect of a lead compensator on the loop frequency response near the crossover frequency?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It adds positive phase and increases gain, so phase margin and crossover frequency rise"
+    },
+    {
+     "id": "b",
+     "text": "It adds negative phase and reduces gain"
+    },
+    {
+     "id": "c",
+     "text": "It adds phase but leaves the gain unchanged at all frequencies"
+    },
+    {
+     "id": "d",
+     "text": "It removes steady-state error to a step"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It adds positive phase and increases gain, so phase margin and crossover frequency rise",
+   "distractorRationale": {
+    "a": "This is exactly the intended action of a lead.",
+    "b": "This describes a lag compensator.",
+    "c": "The compensator has gain between 1 and $\\alpha$, so gain changes above the zero.",
+    "d": "Lead does not change the DC gain; steady-state error is unaffected."
+   },
+   "explanation": "A lead has a zero below its pole, so between them the numerator's phase lead dominates and the gain climbs from 1 to $\\alpha$. The extra phase at crossover raises phase margin, while the extra gain pushes the crossover frequency up.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which expression gives the maximum phase lead of $C(s)=(1+\\alpha Ts)/(1+Ts)$?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\arcsin\\big((\\alpha+1)/(\\alpha-1)\\big)$"
+    },
+    {
+     "id": "b",
+     "text": "$\\arcsin\\big((\\alpha-1)/(\\alpha+1)\\big)$"
+    },
+    {
+     "id": "c",
+     "text": "$\\arctan(\\alpha T)$"
+    },
+    {
+     "id": "d",
+     "text": "$\\alpha\\times 90^\\circ$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$\\arcsin\\big((\\alpha-1)/(\\alpha+1)\\big)$",
+   "distractorRationale": {
+    "a": "The ratio exceeds 1, so the arcsine is undefined.",
+    "b": "This depends only on the pole-zero ratio.",
+    "c": "This is the phase of the numerator at a given frequency, not the maximum of the compensator.",
+    "d": "The lead is bounded below $90^\\circ$ for any finite ratio."
+   },
+   "explanation": "The lead is the difference of two arctangents, maximised at the geometric mean of the corners, giving $\\arcsin((\\alpha-1)/(\\alpha+1))$. It approaches $90^\\circ$ only as $\\alpha\\to\\infty$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A lead has its zero at 4 rad/s and its pole at 36 rad/s. At what frequency does it give maximum phase lead?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "20 rad/s, the arithmetic mean of the corner frequencies"
+    },
+    {
+     "id": "b",
+     "text": "4 rad/s, at the zero"
+    },
+    {
+     "id": "c",
+     "text": "12 rad/s, the geometric mean of the corner frequencies"
+    },
+    {
+     "id": "d",
+     "text": "36 rad/s, at the pole"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "12 rad/s, the geometric mean of the corner frequencies",
+   "distractorRationale": {
+    "a": "Phase is symmetric in log frequency, not linear frequency.",
+    "b": "At the zero the lead is only $45^\\circ$ of the numerator and not the maximum.",
+    "c": "The lead is symmetric on a logarithmic frequency axis about the geometric mean.",
+    "d": "The pole's lag has partially cancelled the lead by then."
+   },
+   "explanation": "The maximum occurs where $\\omega_m=\\sqrt{z\\,p}=\\sqrt{4\\times36}=12$ rad/s because the phase is symmetric on a logarithmic axis. The arithmetic mean has no special significance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does a lead compensator make a control loop more sensitive to sensor noise?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It adds a delay that distorts the noise"
+    },
+    {
+     "id": "b",
+     "text": "It reduces the phase margin at high frequencies"
+    },
+    {
+     "id": "c",
+     "text": "It lowers the DC gain, so the noise-to-signal ratio worsens"
+    },
+    {
+     "id": "d",
+     "text": "Its gain rises to $\\alpha$ at high frequency, amplifying the high-frequency noise"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Its gain rises to $\\alpha$ at high frequency, amplifying the high-frequency noise",
+   "distractorRationale": {
+    "a": "Lead adds phase advance, not delay.",
+    "b": "The lead improves phase and does not worsen the margin.",
+    "c": "The DC gain is unchanged at 1.",
+    "d": "The extra high-frequency gain multiplies noise by up to $\\alpha$."
+   },
+   "explanation": "The zero raises the gain above the corner $1/(\\alpha T)$, and it levels at $\\alpha$ above the pole. Sensor noise is broadband, so the high-frequency portion is magnified by that factor at the actuator.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: a lead compensator with a larger pole-zero ratio $\\alpha$ gives more phase lead but also more high-frequency noise amplification.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Both the maximum lead $\\arcsin((\\alpha-1)/(\\alpha+1))$ and the high-frequency gain $\\alpha$ increase with $\\alpha$, so more phase costs more noise gain. The designer therefore uses the smallest $\\alpha$ that meets the margin.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A lead compensator has a pole-zero ratio $\\alpha=6$. Find the maximum phase lead in degrees.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o1"
+   ],
+   "correctValue": 45.584691,
+   "tolerance": 0.1,
+   "unit": "degrees",
+   "explanation": "$\\varphi_{max}=\\arcsin((6-1)/(6+1))=\\arcsin(0.7143)=45.6^\\circ$. A ratio of about 6 therefore gives roughly $45^\\circ$ of lead.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "What pole-zero ratio $\\alpha$ is needed for a maximum phase lead of $40^\\circ$ (dimensionless)?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o1",
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o2"
+   ],
+   "correctValue": 4.59891,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "$\\alpha=(1+\\sin40^\\circ)/(1-\\sin40^\\circ)=(1+0.6428)/(1-0.6428)=4.599$. This also means the high-frequency gain is about 4.6 (13 dB).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An uncompensated loop has a phase margin of $20^\\circ$ and the target is $50^\\circ$. A safety allowance of $5^\\circ$ is added. The lead is centred at the new crossover, where it adds gain $\\sqrt\\alpha$. By how many dB below 0 dB must the uncompensated loop magnitude be at the chosen centre frequency $\\omega_m$, i.e. find $-10\\log_{10}\\alpha$ as a positive number of dB?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o2"
+   ],
+   "correctValue": 5.670466,
+   "tolerance": 0.05,
+   "unit": "dB",
+   "explanation": "Required lead is $50-20+5=35^\\circ$, so $\\alpha=(1+\\sin35^\\circ)/(1-\\sin35^\\circ)=3.690$. The lead adds $\\sqrt\\alpha$ at $\\omega_m$, so the uncompensated gain there must be $-10\\log_{10}\\alpha=-5.67$ dB, i.e. 5.67 dB below 0 dB.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "List the steps for designing a lead compensator to meet a phase-margin target, and explain why an allowance is added to the required phase lead.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o2"
+   ],
+   "markingGuide": [
+    "Set gain for the steady-state specification and find the uncompensated phase margin and crossover.",
+    "Required lead = target PM minus current PM plus an allowance of about 5 to 10 degrees.",
+    "Compute $\\alpha=(1+\\sin\\varphi)/(1-\\sin\\varphi)$.",
+    "Place $\\omega_m$ where the uncompensated magnitude is $-10\\log_{10}\\alpha$ dB, then $T=1/(\\omega_m\\sqrt\\alpha)$.",
+    "The allowance is needed because the compensator raises the crossover to a higher frequency where the plant phase is more negative; check the achieved PM afterwards."
+   ],
+   "explanation": "After fixing the gain, add the shortfall in phase margin plus an allowance to get $\\varphi_{max}$, convert it to $\\alpha$ and centre the lead at the frequency where the plant gain is $-10\\log_{10}\\alpha$ dB. The allowance covers the fact that the crossover moves up to a frequency where the plant has more phase lag, so the result must be verified.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A design needs $60^\\circ$ of phase lead. Sensor noise is significant. Compare a single lead stage with a cascade of two identical stages, each giving $30^\\circ$, in terms of the pole-zero ratio and the high-frequency gain, and say which you would choose.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o3",
+    "ug.mce-control-engineering.compensator-design.lead-compensator.o1"
+   ],
+   "markingGuide": [
+    "Single stage: $\\alpha=(1+\\sin60^\\circ)/(1-\\sin60^\\circ)\\approx13.9$, high-frequency gain about 13.9 (22.9 dB).",
+    "Two stages at $30^\\circ$ each: $\\alpha=(1+0.5)/(1-0.5)=3$ per stage, total high-frequency gain $3\\times3=9$ (19.1 dB).",
+    "Notes the cascade has lower high-frequency gain, hence less noise amplification, for the same phase at the centre frequency (up to the reduced bandwidth of the lead).",
+    "Chooses the cascade (or adds a roll-off pole), while noting extra complexity and verifying the margins by simulation."
+   ],
+   "explanation": "A single lead for $60^\\circ$ needs $\\alpha\\approx13.9$ (high-frequency gain 23 dB), while two $30^\\circ$ stages need $\\alpha=3$ each with total gain 9 (19 dB). The cascade amplifies noise less for the same peak phase, so it is preferred when noise matters.",
+   "board": "internal"
+  }
+ ]
+}

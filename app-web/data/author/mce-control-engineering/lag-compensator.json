@@ -1,0 +1,408 @@
+{
+ "lessonTitle": "Lag Compensators",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A telescope mount tracks stars with a steady drift, but its tracking loop lags the target by a visible amount: the ramp error is ten times larger than the optics tolerate. The transient response is already pleasant and the phase margin is comfortable, so the designer must not touch the crossover region. A lag compensator raises the gain only at low frequency, which is precisely where steady-state error lives."
+  },
+  {
+   "type": "text",
+   "markdown": "A **lag compensator** in pole-zero form is"
+  },
+  {
+   "type": "math",
+   "latex": "C(s)=\\frac{s+z}{s+p},\\qquad z>p>0,\\qquad \\beta=\\frac{z}{p}",
+   "caption": "Zero at $z$ and pole at $p$ (rad/s), with $p$ closer to the origin. Low-frequency (DC) gain $z/p=\\beta$, high-frequency gain 1."
+  },
+  {
+   "type": "text",
+   "markdown": "Below $p$ the gain is flat at $\\beta$; between $p$ and $z$ it falls at $-20$ dB/decade; above $z$ it is flat at 1. In the same range the phase is *negative* (lag), because the pole acts before the zero. The aim is to multiply the low-frequency loop gain by $\\beta$ (raising the static error constants by the same factor) while leaving the loop gain near crossover essentially unchanged."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Static error constants",
+   "text": "For a unity-feedback loop, the position constant is $K_p=\\lim_{s\\to0}L(s)$ and the velocity constant is $K_v=\\lim_{s\\to0}sL(s)$. For a unit step the steady-state error is $1/(1+K_p)$ (type 0) and for a unit ramp it is $1/K_v$ (type 1). A lag compensator multiplies $K_p$ or $K_v$ by $\\beta=z/p$, so these errors fall by about the same factor."
+  },
+  {
+   "type": "worked_example",
+   "title": "Error improvement from a lag",
+   "prompt": "A type-0 loop has $L_0(s)=\\dfrac{5}{s+1}$. Find the steady-state error to a unit step before and after adding a lag with $z/p=10$ (assume the loop remains stable).",
+   "steps": [
+    {
+     "text": "Before: the position constant is the DC gain.",
+     "latex": "K_p=L_0(0)=5,\\quad e_{ss}=\\frac{1}{1+5}=0.1667"
+    },
+    {
+     "text": "The lag multiplies the DC gain by $\\beta=10$.",
+     "latex": "K_p'=10\\times5=50"
+    },
+    {
+     "text": "After:",
+     "latex": "e_{ss}'=\\frac{1}{1+50}=0.0196"
+    },
+    {
+     "text": "The error drops by a factor of about 8.5 (not exactly 10, because of the 1 in $1+K_p$). For a type-1 loop the ramp error $1/K_v$ would fall by exactly $\\beta$.",
+     "latex": "0.1667/0.0196=8.5"
+    }
+   ],
+   "answer": "Step error falls from 0.167 (16.7%) to 0.0196 (about 2%)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Placing the zero and pole.** The lag compensator costs some phase near crossover. At the gain crossover frequency $\\omega_{gc}$ it contributes $\\varphi=\\arctan(\\omega_{gc}/z)-\\arctan(\\omega_{gc}/p)$, which is negative. To keep this lag small, put the zero (and pole) well below crossover, typically $z\\approx\\omega_{gc}/10$. Then the compensator's magnitude at $\\omega_{gc}$ is only slightly above 1 and its phase lag is about $5^\\circ$ for $\\beta=10$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Designing a lag compensator",
+   "prompt": "A loop $G(s)=\\dfrac{K}{s(s+1)}$ with $K=1$ has a ramp error of $1/K_v=1$. Meet a ramp error of 0.1 (so $K_v=10$) with phase margin of at least $45^\\circ$.",
+   "steps": [
+    {
+     "text": "Uncompensated: crossover from $\\omega^4+\\omega^2=1$ gives $\\omega_{gc}=0.786$ rad/s and the phase margin is",
+     "latex": "\\mathrm{PM}_0=90^\\circ-\\arctan(0.786)=51.8^\\circ"
+    },
+    {
+     "text": "The velocity constant is $K_v=1$, so the lag must multiply it by $\\beta=10$.",
+     "latex": "\\beta=K_{v,req}/K_{v,0}=10"
+    },
+    {
+     "text": "Place the zero a decade below crossover, $z\\approx0.1\\times0.786\\approx0.08$ rad/s, and then $p=z/\\beta$.",
+     "latex": "z=0.08,\\quad p=0.008\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "Phase lag of the lag at the new crossover (about 0.79 rad/s) and the magnitude there:",
+     "latex": "\\varphi=\\arctan(0.79/0.08)-\\arctan(0.79/0.008)\\approx-5.2^\\circ,\\quad|C|\\approx1.005"
+    },
+    {
+     "text": "The crossover moves only slightly (to 0.789 rad/s) and the new margin is",
+     "latex": "\\mathrm{PM}\\approx46.5^\\circ\\ge45^\\circ"
+    },
+    {
+     "text": "Check the error: the new velocity constant is $K_v=1\\times z/p=10$.",
+     "latex": "e_{ss}=1/K_v=0.1"
+    }
+   ],
+   "answer": "$C(s)=(s+0.08)/(s+0.008)$ gives $K_v=10$ and PM $\\approx47^\\circ$, meeting both specifications."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Compensator",
+    "Main effect",
+    "Effect on crossover and phase margin",
+    "Noise",
+    "Use when"
+   ],
+   "rows": [
+    [
+     "Lead",
+     "Adds phase near crossover",
+     "Raises crossover, increases PM",
+     "Raises high-frequency gain by $\\alpha$",
+     "Transient response too slow or oscillatory"
+    ],
+    [
+     "Lag",
+     "Raises low-frequency gain by $\\beta=z/p$",
+     "Crossover about unchanged, PM slightly reduced",
+     "Unchanged at high frequency",
+     "Steady-state error too large, transient already fine"
+    ],
+    [
+     "PI",
+     "Infinite DC gain (an integrator, a lag with $p=0$)",
+     "Small PM loss if the zero is placed well below crossover",
+     "Unchanged",
+     "Zero steady-state step error needed"
+    ],
+    [
+     "PID",
+     "Integral action plus derivative lead",
+     "Can improve both error and margin",
+     "Derivative term amplifies noise",
+     "Both error and transient need improvement"
+    ]
+   ],
+   "caption": "Comparing compensators against a specification."
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a compensator",
+   "prompt": "A type-1 position loop has $K_v=2\\ \\mathrm{s^{-1}}$ and a phase margin of $55^\\circ$ at $\\omega_{gc}=1.2$ rad/s. Which compensator suits each requirement: (a) $K_v\\ge20$ with the same bandwidth; (b) a bandwidth of about 6 rad/s with the same error constant?",
+   "steps": [
+    {
+     "text": "(a) The error constant must rise by $20/2=10$ while crossover and margin must stay put. This is the lag's job: $\\beta=10$ with the zero near $\\omega_{gc}/10=0.12$ rad/s.",
+     "latex": "\\beta=10,\\quad z\\approx0.12,\\ p\\approx0.012\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "(b) Crossover must rise by a factor 5, into a region where the plant phase is worse and the gain is lower. A lag cannot help because it does nothing there. A lead centred near 6 rad/s adds phase and gain.",
+     "latex": "\\text{lead with }\\omega_m\\approx6\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "If both were needed (high $K_v$ and faster response), combine them: a lag for low-frequency gain and a lead for crossover phase (a lead-lag, or a PID).",
+     "latex": "\\text{lead-lag or PID}"
+    }
+   ],
+   "answer": "(a) lag; (b) lead; both requirements together call for a lead-lag or PID."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Lag slows the response",
+   "text": "The pole near the origin adds a slow closed-loop pole-zero pair, producing a long, small tail in the step response that decays at roughly the rate $p$. This is acceptable for regulation but not for fast tracking. Never use a lag to speed up a response."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A lag compensator $(s+z)/(s+p)$ with $z>p$ multiplies low-frequency gain by $\\beta=z/p$ and leaves high-frequency gain at 1, so $K_p$ or $K_v$ rises by $\\beta$.",
+    "Place the zero about a decade below the gain crossover so the phase lag there is only a few degrees ($\\approx5^\\circ$ for $\\beta=10$).",
+    "Choose lag for steady-state accuracy, lead for speed and margin, and PID or lead-lag when both are required."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the main purpose of a lag compensator?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "To add phase lead at crossover"
+    },
+    {
+     "id": "b",
+     "text": "To raise low-frequency gain, reducing steady-state error, without changing the gain near crossover"
+    },
+    {
+     "id": "c",
+     "text": "To raise the crossover frequency for a faster response"
+    },
+    {
+     "id": "d",
+     "text": "To reduce the noise at the actuator by raising high-frequency gain"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "To raise low-frequency gain, reducing steady-state error, without changing the gain near crossover",
+   "distractorRationale": {
+    "a": "That is the purpose of a lead compensator.",
+    "b": "The DC gain rises by $z/p$ while the high-frequency gain stays at 1.",
+    "c": "A lag keeps the crossover frequency about the same.",
+    "d": "A lag leaves the high-frequency gain unchanged; raising it would increase noise."
+   },
+   "explanation": "A lag makes the loop gain larger at low frequency by the ratio $z/p$ while leaving the gain near and above crossover practically unchanged. It therefore reduces steady-state error without much effect on the transient.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Where should the zero of a lag compensator be placed relative to the gain crossover frequency, to keep the phase margin loss small?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About a decade below the crossover"
+    },
+    {
+     "id": "b",
+     "text": "At the crossover frequency"
+    },
+    {
+     "id": "c",
+     "text": "A decade above the crossover"
+    },
+    {
+     "id": "d",
+     "text": "At the phase crossover frequency"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About a decade below the crossover",
+   "distractorRationale": {
+    "a": "There the lag contributes only a few degrees at crossover.",
+    "b": "The compensator would add about $45^\\circ$ of lag at crossover and reduce the margin.",
+    "c": "The gain increase at low frequency would be lost and the lag would act on the crossover region.",
+    "d": "The lag there would reduce the gain margin and has no relation to error."
+   },
+   "explanation": "The lag is largest between its pole and zero, so these should lie far below the crossover. A zero near $\\omega_{gc}/10$ means the lag at $\\omega_{gc}$ is only about $5^\\circ$ for a ratio of 10.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A lag compensator has its zero at 0.2 rad/s and pole at 0.02 rad/s. By what factor does it multiply the velocity constant $K_v$ of a type-1 loop?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.1"
+    },
+    {
+     "id": "b",
+     "text": "0.22"
+    },
+    {
+     "id": "c",
+     "text": "10"
+    },
+    {
+     "id": "d",
+     "text": "1"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "10",
+   "distractorRationale": {
+    "a": "That would be $p/z$, which is for a lead-type arrangement or a reduction.",
+    "b": "This adds the two corner frequencies, which has no meaning here.",
+    "c": "The DC gain is $z/p=0.2/0.02=10$.",
+    "d": "The high-frequency gain is 1 but the low-frequency gain, which sets $K_v$, is 10."
+   },
+   "explanation": "The velocity constant is a low-frequency quantity, and the lag raises the DC gain from 1 to $z/p=10$. Steady-state ramp error therefore falls ten-fold.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A loop has a good transient response and phase margin but a ramp error that is too large. Which choice is appropriate?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A lead compensator to increase bandwidth"
+    },
+    {
+     "id": "b",
+     "text": "A derivative-only controller"
+    },
+    {
+     "id": "c",
+     "text": "Lowering the gain to improve phase margin"
+    },
+    {
+     "id": "d",
+     "text": "A lag compensator or PI controller to raise $K_v$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "A lag compensator or PI controller to raise $K_v$",
+   "distractorRationale": {
+    "a": "Lead does not change the DC gain and leaves the ramp error as it is.",
+    "b": "Derivative action does nothing for steady-state error and amplifies noise.",
+    "c": "Lower gain would worsen the steady-state error.",
+    "d": "The need is more low-frequency gain, not a faster response."
+   },
+   "explanation": "The specification missing is a larger error constant, which a lag (or PI) provides without disturbing the crossover region. Lead, derivative action and a reduced gain do not fix this.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: a lag compensator slightly reduces the phase margin, so its zero and pole are placed well below the gain crossover frequency.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A lag adds negative phase, and the amount at crossover depends on how close its corners are to $\\omega_{gc}$. Placing them about a decade below makes the loss small, typically around $5^\\circ$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A type-0 loop has $K_p=8$. A lag compensator with $z/p=5$ is added. Find the new steady-state error to a unit step (as a fraction, dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o1"
+   ],
+   "correctValue": 0.02439,
+   "tolerance": 0.0005,
+   "unit": "dimensionless",
+   "explanation": "The new position constant is $5\\times8=40$, so the error is $1/(1+40)=0.0244$. Without the lag the error would have been $1/9=0.111$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A lag compensator $(s+0.5)/(s+0.1)$ is used in a loop whose gain crossover is at 4 rad/s. Find its phase contribution at 4 rad/s, in degrees (negative for lag).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o2"
+   ],
+   "correctValue": -5.69292,
+   "tolerance": 0.1,
+   "unit": "degrees",
+   "explanation": "The phase is $\\arctan(4/0.5)-\\arctan(4/0.1)=82.87^\\circ-88.57^\\circ=-5.69^\\circ$. The lag is only about $5.7^\\circ$ because both corners are far below 4 rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A type-1 loop has $L_0(s)=\\dfrac{4}{s(s+3)}$. The loop must track a ramp of slope 0.3 rad/s with a steady-state error of at most 0.006 rad, using a lag with unity high-frequency gain. What minimum ratio $\\beta=z/p$ is required (dimensionless)?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o1"
+   ],
+   "correctValue": 37.5,
+   "tolerance": 0.1,
+   "unit": "dimensionless",
+   "explanation": "For a ramp of slope $V$ the error is $V/K_v$, so $K_v\\ge0.3/0.006=50$ s$^{-1}$. The uncompensated constant is $K_v=\\lim sL_0=4/3$, so $\\beta=50/(4/3)=37.5$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the zero and pole of a lag compensator are placed well below the gain crossover frequency, and why a lag compensator cannot be used to speed up a response.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o2"
+   ],
+   "markingGuide": [
+    "Lag contributes negative phase between its pole and zero, so these corners must be far below crossover to keep the phase loss there small.",
+    "At crossover the magnitude of $(s+z)/(s+p)$ is only slightly above 1, so crossover frequency is almost unchanged.",
+    "A lag does not raise gain or add phase near or above crossover, so bandwidth is not increased.",
+    "The slow pole-zero pair adds a slow tail to the step response, so a lag slows (rather than speeds) the settling."
+   ],
+   "explanation": "Lag adds phase lag between $p$ and $z$, so the corners are put well below crossover (about a decade) to limit the loss of phase margin there. Since it does nothing to gain or phase near crossover and adds a slow pole, it can only improve steady-state accuracy, not speed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A type-1 servo has $K_v=2\\ \\mathrm{s^{-1}}$, a phase margin of $55^\\circ$ and a gain crossover of 1.2 rad/s. The specification requires $K_v=20\\ \\mathrm{s^{-1}}$ and a phase margin of at least $45^\\circ$. A colleague suggests a lead compensator, another suggests a PI controller. Compare the options and recommend one, with numbers.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o2",
+    "ug.mce-control-engineering.compensator-design.lag-compensator.o3"
+   ],
+   "markingGuide": [
+    "Required improvement factor $K_v$: $20/2=10$, i.e. $\\beta=10$ for a lag, or equivalent PI.",
+    "Lag or PI: zero near $\\omega_{gc}/10=0.12$ rad/s gives about $5^\\circ$ of phase lag at crossover, so PM stays above $45^\\circ$ ($55-5\\approx50^\\circ$).",
+    "A lead does not change DC gain, so the $K_v$ would have to be raised by gain alone, pushing crossover to a much higher frequency where the plant phase is worse and noise is amplified.",
+    "Recommends lag (or PI) as the simpler, less noisy route, verifying PM and transient by simulation."
+   ],
+   "explanation": "The required rise in $K_v$ is a factor 10, which a lag with $z/p=10$ and $z\\approx0.12$ rad/s provides while costing only about $5^\\circ$ of margin (leaving about $50^\\circ$). A lead leaves the DC gain unchanged, so gain alone would have to rise ten-fold and push the crossover to a much higher frequency, so the lag or PI is preferred.",
+   "board": "internal"
+  }
+ ]
+}

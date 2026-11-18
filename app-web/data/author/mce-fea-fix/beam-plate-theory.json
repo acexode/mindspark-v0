@@ -1,0 +1,398 @@
+{
+ "lessonTitle": "Beam and Plate Elements",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A machine-tool boom, a crane jib and a car axle are all slender members whose deflection is dominated by bending, and the beam element is the cheapest accurate way to model them. Yet the same element gives errors of several percent once a beam is short and deep, and it says nothing about a wide thin plate. Knowing where each theory stops is as important as knowing its stiffness matrix."
+  },
+  {
+   "type": "text",
+   "markdown": "**Euler-Bernoulli beam element.** Consider a straight beam element of length $L$ (m), Young's modulus $E$ (Pa) and second moment of area $I$ (m$^4$), loaded in bending in the $x$-$y$ plane. The Euler-Bernoulli theory assumes small deflections, that plane sections stay plane and perpendicular to the deflected neutral axis (no shear deformation), and linear elasticity. Each of the two nodes has two degrees of freedom, the transverse deflection $v$ (m, positive in $+y$) and the rotation $\\theta=dv/dx$ (rad, positive counter-clockwise). The element therefore has four degrees of freedom $\\{v_1,\\theta_1,v_2,\\theta_2\\}$."
+  },
+  {
+   "type": "text",
+   "markdown": "The displacement is interpolated with the four **Hermite cubic** shape functions, with $\\xi=x/L$. They are cubic because four conditions (two values and two slopes) must be matched, and slopes must be continuous between elements ($C^1$), because the strain energy contains $v''$."
+  },
+  {
+   "type": "math",
+   "latex": "N_1=1-3\\xi^2+2\\xi^3,\\; N_2=L(\\xi-2\\xi^2+\\xi^3),\\; N_3=3\\xi^2-2\\xi^3,\\; N_4=L(-\\xi^2+\\xi^3),\\qquad v(x)=\\sum N_i d_i",
+   "caption": "Hermite shape functions"
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf k=\\int_0^L EI\\,\\mathbf N''^{T}\\mathbf N''\\,dx=\\frac{EI}{L^3}\\begin{bmatrix}12&6L&-12&6L\\\\6L&4L^2&-6L&2L^2\\\\-12&-6L&12&-6L\\\\6L&2L^2&-6L&4L^2\\end{bmatrix}",
+   "caption": "Element stiffness matrix for the order $(v_1,\\theta_1,v_2,\\theta_2)$; forces and moments are N and N m"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Meaning of the columns",
+   "text": "Column $j$ of $\\mathbf k$ holds the nodal forces and moments needed to impose a unit value of degree of freedom $j$ while all the others are held at zero. For example $k_{11}=12EI/L^3$ is the shear force at node 1 for a unit deflection of node 1, and $k_{22}=4EI/L$ is the moment at node 1 for a unit rotation of node 1. The matrix is symmetric and singular (two rigid-body modes)."
+  },
+  {
+   "type": "worked_example",
+   "title": "One-element cantilever",
+   "prompt": "A steel cantilever ($E=200$ GPa) has a rectangular section 40 mm wide and 60 mm deep and length $L=0.5$ m. A tip load $P=2$ kN acts in the $+y$ direction at node 2. Model it with one element, node 1 fixed, and find $v_2$ and $\\theta_2$.",
+   "steps": [
+    {
+     "text": "$I=bh^3/12=0.040(0.060)^3/12=7.2\\times10^{-7}$ m$^4$, so $EI=1.44\\times10^{5}$ N m$^2$ and $EI/L^3=1.152\\times10^{6}$ N/m."
+    },
+    {
+     "text": "Fixing node 1 removes $v_1$ and $\\theta_1$, so only rows and columns 3 and 4 remain: the $2\\times2$ system has entries $12,\\,-6L$ in the first row and $-6L,\\,4L^2$ in the second, multiplied by $EI/L^3$. The load vector is $\\{P,\\,0\\}$ because no moment is applied.",
+     "latex": "\\frac{EI}{L^3}\\begin{bmatrix}12&-6L\\\\-6L&4L^2\\end{bmatrix}\\begin{Bmatrix}v_2\\\\\\theta_2\\end{Bmatrix}=\\begin{Bmatrix}P\\\\0\\end{Bmatrix}"
+    },
+    {
+     "text": "Eliminating gives $\\theta_2=\\tfrac{3}{2L}v_2$ and then $v_2=PL^3/(3EI)$, $\\theta_2=PL^2/(2EI)$, the exact cantilever results because the cubic is exact for a tip load.",
+     "latex": "v_2=\\frac{PL^3}{3EI},\\quad\\theta_2=\\frac{PL^2}{2EI}"
+    },
+    {
+     "text": "Numerically $v_2=2000(0.125)/(3\\times1.44\\times10^{5})=5.787\\times10^{-4}$ m and $\\theta_2=2000(0.25)/(2\\times1.44\\times10^{5})=1.736\\times10^{-3}$ rad."
+    }
+   ],
+   "answer": "$v_2=5.787\\times10^{-4}$ m (0.5787 mm) and $\\theta_2=1.736\\times10^{-3}$ rad, in agreement with beam theory."
+  },
+  {
+   "type": "text",
+   "markdown": "**When shear matters: Timoshenko theory.** If the beam is short and deep, shear deformation adds to deflection and sections do not stay perpendicular to the neutral axis. The Timoshenko beam treats $v$ and $\\theta$ as independent. For a cantilever with tip load $P$ the bending deflection is $PL^3/(3EI)$ and the shear deflection is $PL/(\\kappa GA)$, where $G$ is the shear modulus (Pa), $A$ the area (m$^2$) and $\\kappa$ the shear correction factor (about 5/6 for a rectangle). For a rectangular section their ratio depends only on slenderness: $\\delta_s/\\delta_b=\\dfrac{E}{4\\kappa G}\\left(\\dfrac hL\\right)^2$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Size of the shear error",
+   "prompt": "Take the cantilever above ($E=200$ GPa, $\\nu=0.3$, so $G=E/2.6=76.9$ GPa, $\\kappa=5/6$, $h=60$ mm). Find the ratio $\\delta_s/\\delta_b$ at $L=0.5$ m and at $L=0.18$ m.",
+   "steps": [
+    {
+     "text": "Substituting gives $\\dfrac{E}{4\\kappa G}=\\dfrac{2.6}{4(5/6)}=0.78$, so $\\delta_s/\\delta_b=0.78(h/L)^2$.",
+     "latex": "\\frac{\\delta_s}{\\delta_b}=0.78\\left(\\frac hL\\right)^2"
+    },
+    {
+     "text": "At $L=0.5$ m: $h/L=0.12$, so the ratio is $0.78(0.0144)=0.0112$, about 1.12%."
+    },
+    {
+     "text": "At $L=0.18$ m: $h/L=0.333$, so the ratio is $0.78(0.111)=0.0867$, about 8.7%."
+    },
+    {
+     "text": "Euler-Bernoulli theory is adequate at the first slenderness (about 1% error) but not the second, where Timoshenko elements are needed."
+    }
+   ],
+   "answer": "Shear/bending deflection ratio is about 1.12% at L = 0.5 m and about 8.7% at L = 0.18 m."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Member",
+    "Theory/element",
+    "Governing ratio (typical limits)",
+    "Extra DOF or note"
+   ],
+   "rows": [
+    [
+     "Slender beam",
+     "Euler-Bernoulli",
+     "$L/h\\gtrsim10$",
+     "$v$, $\\theta$ per node; $C^1$ Hermite"
+    ],
+    [
+     "Short, deep or sandwich beam",
+     "Timoshenko",
+     "$L/h\\lesssim10$, or low shear modulus",
+     "$v$ and $\\theta$ independent; $C^0$"
+    ],
+    [
+     "Thin plate",
+     "Kirchhoff or thin shell element",
+     "$t/L\\lesssim1/20$",
+     "Bending dominated; use plate or shell elements"
+    ],
+    [
+     "Moderately thick plate",
+     "Mindlin plate element",
+     "$1/20\\lesssim t/L\\lesssim1/5$",
+     "Includes transverse shear"
+    ],
+    [
+     "Thick block",
+     "Solid (3D) elements",
+     "$t/L\\gtrsim1/5$",
+     "Through-thickness stress matters"
+    ]
+   ],
+   "caption": "Choosing the model from slenderness. The limits are typical guidance and vary between textbooks and solvers."
+  },
+  {
+   "type": "text",
+   "markdown": "**Plates.** A plate is the two-dimensional analogue of a beam: thickness $t$ (m) is small compared with the in-plane span $L$ (m) and loads act normal to its plane. Kirchhoff plate theory extends Euler-Bernoulli ideas (no shear deformation), Mindlin plate theory extends Timoshenko ideas. Use the thickness-to-span ratio $t/L$ to decide between plate or shell elements and full solid elements."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Pick the theory from slenderness: $L/h$ for beams, $t/L$ for plates.",
+    "For a slender beam use two-node Hermite elements with $(v,\\theta)$ per node and compare with beam theory.",
+    "For short, deep members add shear deformation (Timoshenko) or switch to solid elements.",
+    "Never use plate or shell elements for a thick block: the through-thickness stresses are lost."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Units and sign conventions",
+   "text": "In the $4\\times4$ beam matrix, entries mix N/m, N and N m per radian. A moment applied counter-clockwise is positive and a rotation counter-clockwise is positive. Mixing mm and m without conversion changes $EI$ by a factor of $10^{12}$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The Euler-Bernoulli element has four degrees of freedom $(v_1,\\theta_1,v_2,\\theta_2)$ and the stiffness $\\dfrac{EI}{L^3}[\\,12,6L,-12,6L;\\ldots]$ from cubic Hermite shape functions.",
+    "Shear deformation adds $PL/(\\kappa GA)$ to a cantilever tip deflection; its ratio to bending is $\\dfrac{E}{4\\kappa G}(h/L)^2$ for a rectangle, so it matters for short deep beams.",
+    "Plate or shell elements suit thin members ($t/L$ small); thick members need solid elements.",
+    "Euler-Bernoulli and Kirchhoff theories neglect shear; Timoshenko and Mindlin theories include it."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How many degrees of freedom does a two-node planar Euler-Bernoulli beam element have, and what are they?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Four: a transverse deflection and a rotation at each node"
+    },
+    {
+     "id": "b",
+     "text": "Two: one transverse deflection at each node"
+    },
+    {
+     "id": "c",
+     "text": "Six: two displacements and one rotation at each node"
+    },
+    {
+     "id": "d",
+     "text": "Three: deflection at each node and the mid-span slope"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Four: a transverse deflection and a rotation at each node",
+   "distractorRationale": {
+    "a": "Correct: the cubic Hermite interpolation needs the deflection and slope at both ends.",
+    "b": "Deflection alone cannot enforce slope continuity between elements, which the energy $\\int EI\\,v''^2dx$ requires.",
+    "c": "This is the count for a planar frame element that also includes axial displacement, not a pure bending element.",
+    "d": "The slope is a nodal variable at the ends, not at mid-span."
+   },
+   "explanation": "Slopes must be continuous between beam elements, so each node carries the rotation $\\theta=dv/dx$ as well as the deflection. Two nodes with two degrees of freedom each give four.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the $4\\times4$ Euler-Bernoulli beam stiffness matrix, what does the entry $k_{11}=12EI/L^3$ represent?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The transverse force at node 1 needed to give node 1 a unit deflection while all other degrees of freedom are held at zero"
+    },
+    {
+     "id": "b",
+     "text": "The moment at node 1 needed for a unit rotation at node 1"
+    },
+    {
+     "id": "c",
+     "text": "The axial force for unit elongation"
+    },
+    {
+     "id": "d",
+     "text": "The deflection of node 1 under a unit load"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The transverse force at node 1 needed to give node 1 a unit deflection while all other degrees of freedom are held at zero",
+   "distractorRationale": {
+    "a": "Correct: a stiffness coefficient is the force at one degree of freedom per unit displacement at that same degree of freedom with the rest fixed.",
+    "b": "A moment per unit rotation at node 1 is $k_{22}=4EI/L$, not the first entry.",
+    "c": "Axial effects are not in the bending matrix.",
+    "d": "That is a flexibility (inverse stiffness), not a stiffness coefficient."
+   },
+   "explanation": "Each column of $\\mathbf k$ holds the forces for a unit imposed displacement of one degree of freedom. Entry $k_{11}$ pairs the deflection at node 1 with the force at node 1, which has dimensions of N/m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "An aluminium beam element ($E=70$ GPa) has a rectangular section 30 mm wide by 50 mm deep (bending about the axis giving depth 50 mm) and length $L=0.8$ m. Compute the stiffness coefficient $k_{11}=12EI/L^3$ in kN/m.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o1"
+   ],
+   "correctValue": 512.695,
+   "tolerance": 1.0,
+   "unit": "kN/m",
+   "explanation": "The second moment of area is $I=bh^3/12=0.030(0.050)^3/12=3.125\\times10^{-7}$ m$^4$, so $EI=70\\times10^{9}\\times3.125\\times10^{-7}=21875$ N m$^2$. Then $12EI/L^3=12(21875)/0.512=5.127\\times10^{5}$ N/m, i.e. 512.7 kN/m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel cantilever with $EI=4.0\\times10^{5}$ N m$^2$ and length $L=1.2$ m is modelled with one beam element and loaded at its free end by $P=3$ kN. Find the tip rotation $\\theta_2$ from the one-element solution of the reduced system, in milliradians.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o1"
+   ],
+   "correctValue": 5.4,
+   "tolerance": 0.05,
+   "unit": "mrad",
+   "explanation": "After fixing node 1 the solution of the reduced $2\\times2$ system gives $\\theta_2=PL^2/(2EI)$. Then $\\theta_2=3000(1.44)/(2\\times4.0\\times10^{5})=5.4\\times10^{-3}$ rad, or 5.4 mrad. The sign is positive (counter-clockwise) for an upward load on a beam extending in $+x$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For which beam is Euler-Bernoulli theory most likely to be inadequate and a Timoshenko element required?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A short, deep steel beam with a span of only about three times its depth"
+    },
+    {
+     "id": "b",
+     "text": "A long slender steel beam with a span of 30 times its depth"
+    },
+    {
+     "id": "c",
+     "text": "A uniform steel beam loaded by end moments"
+    },
+    {
+     "id": "d",
+     "text": "A beam in pure bending under small deflections"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A short, deep steel beam with a span of only about three times its depth",
+   "distractorRationale": {
+    "a": "Correct: shear deflection grows with $(h/L)^2$ and becomes a large fraction of the total for short, deep members.",
+    "b": "For a slender beam the shear contribution is below about 0.1%.",
+    "c": "End moments produce no shear force, so shear deformation is absent.",
+    "d": "Pure bending produces no shear, so Euler-Bernoulli is exact."
+   },
+   "explanation": "The ratio of shear to bending deflection is proportional to $(h/L)^2$, so it matters only for short deep members, composite or sandwich sections with low shear stiffness, or high-frequency dynamics.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A rectangular steel cantilever with $E=200$ GPa and $G=80$ GPa, shear correction factor $\\kappa=5/6$, has span-to-depth ratio $L/h=4$ and carries a tip load. Using $\\delta_s/\\delta_b=\\dfrac{E}{4\\kappa G}\\left(\\dfrac hL\\right)^2$, find the shear deflection as a percentage of the bending deflection.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o2"
+   ],
+   "correctValue": 4.6875,
+   "tolerance": 0.1,
+   "unit": "%",
+   "explanation": "Compute $E/(4\\kappa G)=200/(4\\times0.8333\\times80)=0.75$. With $h/L=1/4$, $(h/L)^2=0.0625$, so the ratio is $0.75\\times0.0625=0.0469$. The shear deflection is therefore about 4.7% of the bending deflection, so Euler-Bernoulli would under-predict the deflection by about this amount.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Euler-Bernoulli beam theory neglects shear deformation, so it under-predicts the deflection of short, deep beams.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. Plane sections are assumed to remain perpendicular to the neutral axis, which removes shear strain from the energy and makes the beam too stiff. The error is small for slender members and large for deep ones.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A flat steel panel spans 1.8 m and is 8 mm thick, loaded by lateral pressure. Which discretisation is appropriate?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Plate or shell elements, because $t/L\\approx1/225$ is very thin and bending dominates"
+    },
+    {
+     "id": "b",
+     "text": "Eight-node solid elements with a single layer, because all parts are three-dimensional"
+    },
+    {
+     "id": "c",
+     "text": "Beam elements along the diagonal"
+    },
+    {
+     "id": "d",
+     "text": "Axisymmetric elements"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Plate or shell elements, because $t/L\\approx1/225$ is very thin and bending dominates",
+   "distractorRationale": {
+    "a": "Correct: thickness is far below 1/20 of the span, so a plate or shell element captures bending economically.",
+    "b": "A single layer of linear solids would lock in bending and waste degrees of freedom.",
+    "c": "A beam idealisation cannot capture two-way plate action.",
+    "d": "Axisymmetric elements need a rotationally symmetric geometry and loading."
+   },
+   "explanation": "With $t/L=8/1800=1/225$, the plate is very thin, so Kirchhoff or thin-shell elements with rotational degrees of freedom represent bending well. Solid elements would need several layers to avoid locking.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A design team has three components: (a) a 2 m long, 50 mm deep steel boom, (b) a 120 mm span, 60 mm thick bracket block, and (c) a 1.5 m wide, 6 mm thick cover plate under pressure. State the element type you would choose for each and justify it using slenderness ratios.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o2",
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o3"
+   ],
+   "markingGuide": [
+    "(a) $L/h=40$: Euler-Bernoulli beam elements (shear error negligible)",
+    "(b) $t/L=0.5$: thick, three-dimensional stress state, so solid elements",
+    "(c) $t/L=0.004$: thin plate or shell elements, bending dominated",
+    "Justification uses typical limits ($L/h\\gtrsim10$ beams, $t/L\\lesssim1/20$ thin plates, $t/L\\gtrsim1/5$ solids) and states that they are guidance",
+    "Mention of Timoshenko/Mindlin option for intermediate ratios"
+   ],
+   "explanation": "Each choice follows from the ratio of thickness to span. Slender members justify beam or plate theories, while stocky members need solid elements to capture through-thickness stress.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why the Euler-Bernoulli beam element requires cubic Hermite shape functions with rotational degrees of freedom, and derive the form of $N_1(\\xi)$ with $\\xi=x/L$ from its nodal conditions.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.beam-plate-theory.o1"
+   ],
+   "markingGuide": [
+    "Strain energy contains $v''$, so $v$ must be $C^1$ (continuous slope) between elements",
+    "Therefore slope is a nodal unknown; four nodal conditions need four coefficients, a cubic",
+    "$N_1$ conditions: $N_1(0)=1$, $N_1'(0)=0$, $N_1(1)=0$, $N_1'(1)=0$",
+    "Solving $a+b\\xi+c\\xi^2+d\\xi^3$ gives $a=1$, $b=0$, then $c+d=-1$ and $2c+3d=0$, so $c=-3$, $d=2$",
+    "Result $N_1=1-3\\xi^2+2\\xi^3$"
+   ],
+   "explanation": "Slope continuity forces rotational variables, and the four conditions fix a cubic uniquely. The solution is the Hermite function $N_1=1-3\\xi^2+2\\xi^3$.",
+   "board": "internal"
+  }
+ ]
+}

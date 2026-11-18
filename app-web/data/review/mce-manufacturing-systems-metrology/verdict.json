@@ -1,0 +1,81 @@
+{
+  "subjectId": "ug.mce-manufacturing-systems-metrology",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 14,
+  "summary": "Round 2 full review of all 14 units. Every round-1 major fix was verified: flow-and-takt q010 now correctly says three of four stations exceed the 48 s takt; the control-charts hook and callout now state about 10.9% (z=1.23) and about 0.29% (z=2.75) above the 25.05 mm USL with sigma-hat 0.0138; cell-design q005 distractor d is clearly wrong and the utilisation guidance is consistent; quality-management uses undersize bores from boring-tool wear throughout; measurement-uncertainty q009 now calls the micrometer unsuitable (3.3x too coarse); process-costing q005-q008 keys are b, c, d, a with matching options and rationales. Every numeric key, worked example and table value was recomputed in Python (binomial and hypergeometric tables, Cp/Cpk tails, GUM budgets, takt and balancing, kanban, costing, CNC arithmetic) and all match. Scans of parsed strings found no tab or control characters, python format placeholders, e+06-style numbers, plain-x multiplication, bare times10 outside math, placeholder steps or stale option-letter references. No critical or major issues remain; only minor wording and scope points, several carried over from round 1. This is an AI review only; the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling",
+      "questionId": "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.q004",
+      "severity": "minor",
+      "category": "explanation",
+      "problem": "The key 0.553 is correct (C(18,5)/C(20,5)=8568/15504), but the explanation says 'the binomial shortcut overstates the chance of meeting a defective here'. The binomial value is 0.9^5=0.590 acceptance, so it overstates the chance of accepting (0.590 vs 0.553) and understates the chance of meeting a defective (0.410 vs 0.447).",
+      "suggestedFix": "Say the binomial shortcut overstates the probability of acceptance (0.590, which is distractor a) and understates the chance of drawing a defective."
+    },
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.spc.control-charts",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The hook says roughly 11 percent of shafts already exceed the USL, and the callout says about 0.3 percent exceed it even at the old mean, yet the hook ends 'notices the change before the first bad shaft is made'. This contradicts the lesson's own numbers.",
+      "suggestedFix": "Reword to 'notices the change before the reject rate becomes serious' (or 'before many bad shafts are made')."
+    },
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The waste table's Defects example 'Rework of oversize bores' conflicts with the corrected quality-management unit, where bore defects are undersize and re-boring is the rework. An oversize bore generally cannot be reworked by re-boring.",
+      "suggestedFix": "Change to 'Rework of undersize bores' or 'Scrap of oversize bores'."
+    },
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.metrology.measurement-uncertainty",
+      "questionId": "ug.mce-manufacturing-systems-metrology.metrology.measurement-uncertainty.q009",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "For the 0.012 mm band (needs 0.0012 mm accuracy) the guide recommends 'a high-accuracy comparator or CMM'. A typical shop CMM has a maximum permissible error of a few micrometres, so it would not meet 1.2 micrometres either. Unverified for any specific machine; source check recommended.",
+      "suggestedFix": "Recommend a comparator with a calibrated master or gauge blocks (or an air gauge), and note that 10-to-1 is often impractical here so a looser ratio such as 4-to-1 may be accepted; drop the unqualified CMM suggestion."
+    },
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Carried over from round 1, unchanged: the profile worked example says 'Write the cutting blocks' but shows no Z plunge or spindle start and does not say the path is the tool-centre path (cutter compensation or an offset is needed to cut the stated outline). The hook mentions a plunge.",
+      "suggestedFix": "Add one line saying the blocks assume Z depth and spindle are already set and the path is the tool-centre path (or add G01 Z- and a G41/G42 note)."
+    },
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths",
+      "questionId": "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.q005",
+      "severity": "minor",
+      "category": "explanation",
+      "problem": "Carried over from round 1, unchanged: key 0.08 mm is correct (0.10/1.25) but the explanation never shows the calculation, and option a) 'the same feed rate is spread over more teeth passes' is an imprecise reason.",
+      "suggestedFix": "Show f_z = F/(zN) so f_z,new = 0.10/1.25 = 0.08 mm, and reword a) to 'because chip thickness is inversely proportional to spindle speed at constant F'."
+    },
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.process-planning.process-costing",
+      "severity": "minor",
+      "category": "level",
+      "problem": "Carried over from round 1, unchanged: the unit title is 'Time Standards and Costing' but no time-standard content (normal time, allowances, time study) is taught; only machining-time formulas and costing appear.",
+      "suggestedFix": "Rename to 'Machining Time and Costing' or add a short standard-time section."
+    },
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection",
+      "severity": "minor",
+      "category": "level",
+      "problem": "Carried over from round 1, unchanged: the unit is titled 'CMM and Geometric Inspection' (id cmm-gdt-inspection) and the hook quotes a 'position tolerance of 0.04 mm', but no position tolerance, feature-control frames or MMC/bonus tolerance are taught. The stated objectives (DRF, flatness, traceability) are covered.",
+      "suggestedFix": "Retitle to 'CMM Inspection and Datum Frames' or add a short position-tolerance section."
+    },
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.metrology.measurement-uncertainty",
+      "severity": "minor",
+      "category": "level",
+      "problem": "Carried over from round 1, unchanged: Type A and Type B evaluation are never named, and u_c = sqrt(sum u_i^2) omits sensitivity coefficients (the temperature term is converted to length by hand without saying so). The formulas given are correct as far as they go.",
+      "suggestedFix": "Add one sentence labelling repeatability as Type A and the rectangular terms as Type B, and state u_c = sqrt(sum (c_i u_i)^2) with c_i = 1 when each term is already in the unit of the measurand."
+    },
+    {
+      "subtopicId": "ug.mce-manufacturing-systems-metrology.spc.process-capability",
+      "severity": "minor",
+      "category": "level",
+      "problem": "Carried over from round 1, unchanged: sigma is used for Cp/Cpk without saying whether it is the within-subgroup estimate (R-bar/d2) or the overall standard deviation, and Pp/Ppk are not distinguished. The worked example also pairs z=2.67 with 0.00383, which is the value for z=2.667 (Phi(-2.67)=0.00379). No key is affected.",
+      "suggestedFix": "Add one sentence that Cp/Cpk use the within-subgroup sigma while Pp/Ppk use the overall standard deviation, and quote 0.0038 for z=2.67."
+    }
+  ]
+}

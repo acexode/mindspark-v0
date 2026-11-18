@@ -1,0 +1,75 @@
+{
+  "subjectId": "ug.mce-fluid-mechanics-2",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "All 16 units across 8 modules were read in full and every numeric key, worked example and derivation was recomputed independently in Python (differential continuity and stream functions, Couette/Poiseuille/film/journal-bearing results, potential flow and cylinder Cp, Blasius and momentum-integral coefficients including the 0.37 Re^(-1/5) correlation, log law, Hagen-Poiseuille, isentropic and normal-shock ratios, the area-Mach solution Me = 2.197, nozzle regime pressures, Euler head, specific speed, affinity laws and operating points). No wrong keys, wrong signs or reversed conventions were found; the shock-movement answer (shock moves towards the exit as back pressure falls) and the nozzle regime table are correct. The problems are two shuffled-option explanations that cite the wrong option position and contradict the displayed key, one misleading laminar-film Reynolds-number remark, and several minor factual or wording issues. No tab or control characters, literal unicode-escape text, placeholder steps or object-object strings were found (only a legitimate psi character in one callout title). This is an AI review only: the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows",
+      "questionId": "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.q003",
+      "severity": "major",
+      "category": "explanation",
+      "problem": "Explanation says 'The film Reynolds number rho q/mu = 767 is modest, so the laminar assumption is at least reasonable'. The arithmetic is right (766.8) but a falling film at this Re is far beyond the onset of surface waves (Re of order 10-30; for a 4 degree incline the instability threshold is about (5/6)cot(theta) = 12) and nearing transition, so a smooth laminar parabolic film is not reasonable. It also conflicts with the lesson warning that real films become wavy at modest Reynolds numbers. The key 768.31 cm^3/s per m is correct under the stated assumption.",
+      "suggestedFix": "Keep the key. Reword the explanation: the result holds only for the idealised smooth, wave-free laminar film; at Re = 767 a real film would be wavy and close to transitional, so treat the value as an estimate. Optionally pick thickness and slope giving Re below about 20."
+    },
+    {
+      "subtopicId": "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity",
+      "questionId": "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.differential-continuity.q001",
+      "severity": "major",
+      "category": "explanation",
+      "problem": "Explanation says 'Only the first field gives 5+(-5)=0' but the marked key is option d (u = 5x - 2y, v = 2x - 5y); option a (first listed) gives 5+5 = 10. The explanation cites a position that no longer matches the key, so it contradicts the displayed answer.",
+      "suggestedFix": "Make the explanation position-independent and list each field: a) 5+5 = 10, b) 5+5 = 10, c) 2+2 = 4, d) 5-5 = 0, so only u = 5x - 2y, v = 2x - 5y is divergence-free."
+    },
+    {
+      "subtopicId": "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential",
+      "questionId": "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.q006",
+      "severity": "major",
+      "category": "explanation",
+      "problem": "Explanation says 'Only the first field gives 3-3=0; the others give -6, -3 and 1-2y, respectively' but the key is option b (u = 2x+3y, v = 3x-2y). The first listed field (a: u = y^2, v = x) gives 1-2y, and the listed values -6, -3, 1-2y correspond to c, d, a, not to the other options in order. The key itself is correct.",
+      "suggestedFix": "State field by field: a) zeta = 1-2y, b) 3-3 = 0 (irrotational), c) -3-3 = -6, d) 0-3 = -3."
+    },
+    {
+      "subtopicId": "ug.mce-fluid-mechanics-2.turbulence-intro.turbulent-wall-flows",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Table row 'Wall shear stress at the same V' says turbulent tau_w = f rho V^2/8 'with f >~ 0.015 for Re > 10^4'. Recomputed smooth-pipe f (Colebrook/Prandtl) is 0.031 at 1e4, 0.018 at 1e5, 0.0156 at 2e5, 0.0116 at 1e6 and 0.0081 at 1e7, so f drops below 0.015 above Re of roughly 3e5. The bound is not valid in general.",
+      "suggestedFix": "Say 'f of order 0.01 to 0.03 for typical Re (smooth pipe about 0.03 at Re = 1e4 falling to about 0.012 at 1e6)', or drop the numeric bound."
+    },
+    {
+      "subtopicId": "ug.mce-fluid-mechanics-2.boundary-layers.boundary-layer-concepts",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Hook says air on a car roof at motorway speed forms a layer 'only a few millimetres deep'. For a roof about 1.5 m long at 30 m/s, Re_x is about 3e6, the layer is turbulent and 0.37 x Re^(-1/5) gives roughly 28 mm.",
+      "suggestedFix": "Change to 'a few centimetres deep', or use a shorter plate or lower speed if millimetres are wanted."
+    },
+    {
+      "subtopicId": "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Key-point callout says golf-ball dimples, vortex generators and trip wires 'exploit this by deliberately making the layer turbulent'. Dimples and trip wires trigger transition, but vortex generators do not trip the layer; they create streamwise vortices that mix high-momentum outer fluid towards the wall.",
+      "suggestedFix": "Reword: dimples and trip wires trigger a turbulent layer; vortex generators re-energise the layer by mixing in high-momentum fluid."
+    },
+    {
+      "subtopicId": "ug.mce-fluid-mechanics-2.compressible-flow.normal-shocks",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The nozzle-operation paragraph says that between the subsonic (p_b1) and supersonic design (p_b3) back pressures 'a normal shock stands in the diverging section', then says it reaches the exit at p_b2. This conflicts with the regime table and q009: an internal shock exists only for p_b2 < p_b < p_b1; between p_b2 and p_b3 the nozzle is shock-free inside and overexpanded. Recomputed for Ae/A* = 2.0, p0 = 500 kPa: p_b1 = 468.6 kPa, p_b2 = 256.7 kPa, p_b3 = 47.0 kPa, matching the table order.",
+      "suggestedFix": "Write: between p_b1 and p_b2 a normal shock stands in the diverging section and moves to the exit as p_b falls to p_b2; between p_b2 and p_b3 the internal flow is shock-free and the nozzle is overexpanded."
+    },
+    {
+      "subtopicId": "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations",
+      "questionId": "ug.mce-fluid-mechanics-2.continuity-and-navier-stokes.navier-stokes-equations.q010",
+      "severity": "minor",
+      "category": "explanation",
+      "problem": "Explanation says the wall shear G h/2 'equals the pressure force on the fluid per unit wall area'. The net pressure force on the fluid is G h per unit plate area, carried by two walls, so each wall carries G h/2; as worded it can be read as G h.",
+      "suggestedFix": "Say the pressure force on the fluid (G h per unit plate area) is balanced equally by the two walls, so each wall shear stress is G h/2."
+    },
+    {
+      "subtopicId": "ug.mce-fluid-mechanics-2.potential-flow.superposition-flows",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Hook claims the ideal solution 'predicts the surface pressure almost perfectly on the front half of the cylinder'. Measured subcritical Cp at the shoulders is well above the ideal -3; agreement is good only up to roughly 60 to 70 degrees from the stagnation point.",
+      "suggestedFix": "Say 'reasonably well on the forward part of the cylinder (up to about 60 to 70 degrees from the stagnation point)'."
+    }
+  ]
+}

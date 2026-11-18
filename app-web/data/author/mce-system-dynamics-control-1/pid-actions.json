@@ -1,0 +1,395 @@
+{
+ "lessonTitle": "Proportional, Integral and Derivative Actions",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 3D-printer heated bed is told to jump from 25 degC to 60 degC. A controller that only reacts in proportion to the error stops short and sits 3 degC low; one with an integral term gets there but overshoots by 8 degC after a long warm-up; one with a derivative term brakes before the target. Proportional, integral and derivative actions each fix a different defect, and each has its own price."
+  },
+  {
+   "type": "text",
+   "markdown": "A **PID controller** computes the actuator command from the error $e(t)=r(t)-y(t)$ between the reference $r$ and the measured output $y$. In the time domain and as a transfer function (zero initial conditions):"
+  },
+  {
+   "type": "math",
+   "latex": "u(t)=K_pe(t)+K_i\\int_0^te(\\tau)\\,d\\tau+K_d\\frac{de(t)}{dt},\\qquad C(s)=K_p+\\frac{K_i}{s}+K_ds",
+   "caption": "Gains $K_p$ (actuator units per error unit), $K_i$ (per error-second) and $K_d$ (per error per second)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Proportional action** responds to the present error: a larger $K_p$ gives a larger corrective effort, shortening the rise time, but too much gives overshoot and eventually instability. A pure P controller leaves a steady-state error whenever the plant needs a non-zero input to hold the output. **Integral action** accumulates past error and keeps increasing the command until the error is exactly zero, so it removes steady-state error for step inputs, at the cost of extra phase lag and overshoot. **Derivative action** responds to the rate of change of error, anticipating where the output is heading; it adds damping and reduces overshoot, but amplifies measurement noise because differentiating a noisy signal produces large values."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Increase...",
+    "Rise time",
+    "Overshoot",
+    "Settling time",
+    "Steady-state error",
+    "Main risk"
+   ],
+   "rows": [
+    [
+     "$K_p$",
+     "Decreases",
+     "Increases",
+     "Small change",
+     "Decreases (not removed)",
+     "Instability at high gain"
+    ],
+    [
+     "$K_i$",
+     "Decreases slightly",
+     "Increases",
+     "Increases",
+     "Eliminated for step input",
+     "Slow, oscillatory response; windup"
+    ],
+    [
+     "$K_d$",
+     "Small change",
+     "Decreases",
+     "Decreases",
+     "No effect on a constant error",
+     "Noise amplification"
+    ]
+   ],
+   "caption": "Typical effect of increasing each gain on a stable loop (qualitative; interactions exist)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Steady-state error with proportional control.** For a unity feedback loop with controller $K_p$ and plant $G(s)$, the error for a step of height $R$ is $e_{ss}=\\lim_{s\\to0}\\dfrac{sR/s}{1+K_pG(s)}=\\dfrac{R}{1+K_pG(0)}$ if the plant has no integrator (a **type-0** plant, finite DC gain $G(0)=K_0$). If the plant has one integrator ($G(s)=G_1(s)/s$, **type 1**), $G(0)\\to\\infty$ and the step error is zero. The ramp-input error of a type-1 plant is finite, $e_{ss}=1/K_v$ with the velocity constant $K_v=\\lim_{s\\to0}sK_pG(s)$."
+  },
+  {
+   "type": "math",
+   "latex": "e_{ss}^{\\text{step}}=\\frac{R}{1+K_pK_0}\\ \\ (\\text{type }0),\\qquad e_{ss}^{\\text{step}}=0\\ \\ (\\text{type }1)",
+   "caption": "Unity feedback, proportional control, step of height $R$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Steady-state error of a heated bed",
+   "prompt": "A bed has transfer function $G(s)=\\dfrac{2.5}{40s+1}$ (degC per unit of heater command, $s$ in 1/s). It is controlled by $K_p=7$ in a unity-feedback loop to a step of $R=35$ degC above ambient. Find the steady-state error and the final temperature rise. Then state what an integrator would do.",
+   "steps": [
+    {
+     "text": "The plant has no integrator, so it is type 0 with DC gain $K_0=G(0)=2.5$.",
+     "latex": "K_0=2.5"
+    },
+    {
+     "text": "Loop DC gain: $K_pK_0=7\\times2.5=17.5$.",
+     "latex": "K_pK_0=17.5"
+    },
+    {
+     "text": "Steady-state error: $e_{ss}=35/(1+17.5)=1.89$ degC, so the final rise is $35-1.89=33.1$ degC.",
+     "latex": "e_{ss}=\\frac{35}{18.5}=1.89\\ ^{\\circ}\\text{C}"
+    },
+    {
+     "text": "Adding integral action makes the loop type 1; the integrator drives the error to zero for a step, so the final value would be exactly 35 degC (provided the loop is stable).",
+     "latex": "e_{ss}\\to0"
+    }
+   ],
+   "answer": "$e_{ss}=1.89$ degC (5.4% of the step), final rise 33.1 degC with P control only; integral action would remove the error."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Integral windup.** Real actuators saturate: a heater cannot exceed 100% power, a valve cannot open past 100%. During a large step the error stays large and positive for a long time. The integral term keeps accumulating $\\int e\\,dt$ while the actuator is already pinned at its limit, so the controller output $u$ becomes very large compared with what the actuator can deliver. When the output finally crosses the reference the error reverses, but the stored integral must be unwound by an equal amount of negative error before $u$ drops below the saturation limit. The result is a long overshoot. This is **integral windup**."
+  },
+  {
+   "type": "worked_example",
+   "title": "How long does windup last?",
+   "prompt": "A PI controller has $K_i=4$ s$^{-1}$ (per unit error). During a step the actuator is saturated for 5 s with a constant error of 2 units. After that the error reverses to a constant $-0.5$ units while the actuator stays at its limit until the integral falls back. Estimate how long it takes the integral of the error to return to zero.",
+   "steps": [
+    {
+     "text": "Accumulated integral at the end of saturation: $\\int e\\,dt=2\\times5=10$ unit-seconds, so the integral term is $K_i\\times10=40$ (command units), far above any saturation limit.",
+     "latex": "\\int e\\,dt=2\\times5=10"
+    },
+    {
+     "text": "Unwinding: the integral decreases at $0.5$ unit per second, so it needs $10/0.5=20$ s to reach zero. Until then the command remains above the limit and the actuator keeps pushing.",
+     "latex": "t_{\\text{unwind}}=\\frac{10}{0.5}=20\\ \\text{s}"
+    },
+    {
+     "text": "A common fix, **clamping** (conditional integration), stops integrating whenever the actuator is saturated and the error would push it further. Then the integral stays near the value at the start of saturation and unwinding is almost immediate.",
+     "latex": "\\text{if }|u|\\ge u_{max}\\text{ and }e\\,u>0:\\ \\dot I=0"
+    }
+   ],
+   "answer": "About 20 s of extra overshoot from windup, instead of an immediate recovery; clamping or back-calculation anti-windup removes it."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "P action: instantaneous, sets stiffness and speed, leaves a residual error on a type-0 plant.",
+    "I action: removes steady-state error for steps (raises system type by one) but adds phase lag.",
+    "D action: adds damping and cuts overshoot, but needs a filter to limit noise gain.",
+    "Anti-windup: clamp the integrator or feed back the difference between commanded and applied actuator output (back-calculation).",
+    "Always check actuator limits and sensor noise before raising a gain."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Do not assume a P controller removes all error: $e_{ss}=R/(1+K_pK_0)$ is only small for large $K_pK_0$, and a high gain risks instability. Integral action does not remove the error for a ramp reference on a type-0 loop without further integrators. Derivative action cannot correct a constant error because $de/dt=0$ at steady state."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Each term has a job",
+   "text": "P sets the speed, I removes the offset, D adds damping. The system type (number of integrators in the loop) determines what steady-state error a given controller leaves."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The PID law is $u=K_pe+K_i\\int e\\,dt+K_d\\,de/dt$, or $C(s)=K_p+K_i/s+K_ds$.",
+    "Raising $K_p$ speeds up the response and reduces but does not remove steady-state error; raising $K_i$ removes it for steps but adds overshoot; raising $K_d$ adds damping but amplifies noise.",
+    "A type-0 plant with P control has $e_{ss}=R/(1+K_pK_0)$; a type-1 plant has zero step error.",
+    "Integral windup occurs when the integrator accumulates during actuator saturation; clamping or back-calculation prevents it."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A positioning axis is modelled as the type-0 plant $G(s)=\\dfrac{8}{0.5s+1}$ (mm per unit command) under proportional control with $K_p=4$ in a unity-feedback loop. A step command of 2 mm is applied. Find the steady-state error in mm.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o2"
+   ],
+   "correctValue": 0.0606,
+   "tolerance": 0.002,
+   "unit": "mm",
+   "explanation": "The plant has finite DC gain $K_0=8$, so the loop DC gain is $K_pK_0=32$. The steady-state error is $R/(1+K_pK_0)=2/33=0.0606$ mm. A type-0 loop therefore always leaves a small residual error with P control.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A plant $G(s)=\\dfrac{4}{s(s+2)}$ is controlled with a proportional gain $K_p=5$ in a unity-feedback loop that is stable. What is the steady-state error for a unit step input?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero"
+    },
+    {
+     "id": "b",
+     "text": "$1/(1+5\\times4/2)=0.09$"
+    },
+    {
+     "id": "c",
+     "text": "$1/(1+5)=0.167$"
+    },
+    {
+     "id": "d",
+     "text": "$0.5$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Zero",
+   "distractorRationale": {
+    "a": "Correct: the plant contains an integrator (type 1), so $G(0)\\to\\infty$ and the step error vanishes.",
+    "b": "This treats the loop as type 0 with a finite DC gain, but the integrator makes the DC gain infinite.",
+    "c": "This ignores the plant altogether, using only $K_p$.",
+    "d": "This is not derived from the error formula and has no basis."
+   },
+   "explanation": "With an integrator in the loop the error $E=R/(1+K_pG)\\to0$ as $s\\to0$ for $R=1/s$. The integrator keeps changing the output until the error is exactly zero, so a type-1 loop tracks a step with no steady error.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A type-0 process has DC gain 4 (output units per unit command) and is controlled with proportional gain $K_p$ in unity feedback. Find the smallest $K_p$ (dimensionless) that keeps the steady-state step error below 2 percent of the step height.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o2"
+   ],
+   "correctValue": 12.25,
+   "tolerance": 0.1,
+   "unit": "dimensionless",
+   "explanation": "The error fraction is $1/(1+4K_p)$. Requiring this to be at most 0.02 gives $1+4K_p\\ge50$, so $K_p\\ge12.25$. A real design must still check stability and actuator limits at this gain.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A well-damped loop is modified by increasing the derivative gain $K_d$ (with a noise filter in place). Which effect is expected?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Overshoot decreases, but high-frequency noise in the actuator command increases"
+    },
+    {
+     "id": "b",
+     "text": "Steady-state step error is eliminated"
+    },
+    {
+     "id": "c",
+     "text": "Overshoot increases and settling time lengthens"
+    },
+    {
+     "id": "d",
+     "text": "The system type increases by one"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Overshoot decreases, but high-frequency noise in the actuator command increases",
+   "distractorRationale": {
+    "a": "Correct: derivative action adds damping, reducing overshoot, but differentiating the measurement amplifies noise.",
+    "b": "A derivative term is zero at steady state; it cannot remove a constant error.",
+    "c": "These are the effects of increasing the integral gain, not the derivative gain.",
+    "d": "Only an added integrator raises the system type."
+   },
+   "explanation": "Derivative action is proportional to the rate of change of the error, so it opposes fast movement and adds damping. It does nothing when the error is constant, and it amplifies high-frequency noise because the gain of $K_ds$ grows with frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A type-0 temperature loop with P control has a persistent offset. The engineer adds integral action. What is the expected effect on the step response of the closed loop?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The offset is eliminated, but overshoot generally rises and the response may become more oscillatory"
+    },
+    {
+     "id": "b",
+     "text": "The offset is eliminated and the overshoot always falls"
+    },
+    {
+     "id": "c",
+     "text": "The offset remains but the rise time becomes zero"
+    },
+    {
+     "id": "d",
+     "text": "Nothing changes unless a derivative term is added"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The offset is eliminated, but overshoot generally rises and the response may become more oscillatory",
+   "distractorRationale": {
+    "a": "Correct: the integrator drives the error to zero but adds phase lag, so damping typically falls.",
+    "b": "The integrator adds lag; overshoot usually increases unless the gains are retuned.",
+    "c": "The integrator does not change the offset formula for a P-only loop; it changes it to zero, and rise time cannot be zero.",
+    "d": "Integral action alone removes the offset without needing derivative action."
+   },
+   "explanation": "The integral term keeps increasing the command while any error persists, so the steady-state error to a step is zero. It also contributes $-90^\\circ$ of phase lag, which reduces the phase margin and raises overshoot unless $K_i$ is kept small.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which description of integral windup is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The integrator keeps accumulating error while the actuator is saturated, so the controller output greatly exceeds what the actuator can deliver and the response overshoots for a long time afterwards"
+    },
+    {
+     "id": "b",
+     "text": "The derivative term amplifies measurement noise so the actuator chatters"
+    },
+    {
+     "id": "c",
+     "text": "The integral gain is set so high that the loop is unstable at all amplitudes"
+    },
+    {
+     "id": "d",
+     "text": "The integrator stops accumulating error whenever the error is large"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The integrator keeps accumulating error while the actuator is saturated, so the controller output greatly exceeds what the actuator can deliver and the response overshoots for a long time afterwards",
+   "distractorRationale": {
+    "a": "Correct: the stored integral must be unwound before the output desaturates, causing prolonged overshoot.",
+    "b": "That describes noise amplification by derivative action, not windup.",
+    "c": "Windup is a nonlinear effect of saturation; it can occur even when the linear loop is stable.",
+    "d": "The opposite: an unprotected integrator continues to accumulate when the error is large."
+   },
+   "explanation": "Windup is caused by the combination of integral action and actuator saturation. The integral state keeps growing while the saturated actuator cannot reduce the error, so a long time (or large negative error) is needed to bring it back, which produces large overshoot.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "In a PI loop the actuator is saturated for 4 s while the error is a constant $+3$ units. Afterwards the error reverses to a constant $-0.6$ units while the actuator is still at its limit. How long (in s) does the integral of the error take to return to zero?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o3"
+   ],
+   "correctValue": 20.0,
+   "tolerance": 0.5,
+   "unit": "s",
+   "explanation": "The accumulated integral is $3\\times4=12$ unit-seconds. It falls at $0.6$ unit per second, so it reaches zero after $12/0.6=20$ s. This unwinding delay is the extra time the controller continues to push in the wrong direction, which is what anti-windup prevents.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "For a loop at steady state with a constant non-zero error, the derivative term of a PID controller contributes zero to the controller output.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The derivative of a constant error is zero, so $K_d\\,de/dt=0$ in steady state. Derivative action therefore cannot change the steady-state error; it only influences the transient and the damping.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the effect of increasing each of the proportional, integral and derivative gains on rise time, overshoot and steady-state error of a stable loop. For which of these does the choice involve a trade-off with noise?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o1"
+   ],
+   "markingGuide": [
+    "Proportional: shorter rise time, larger overshoot, smaller (not zero) steady-state error for a type-0 plant",
+    "Integral: eliminates steady-state error for steps, tends to raise overshoot and lengthen settling because of phase lag",
+    "Derivative: adds damping so overshoot falls, with little effect on steady-state error",
+    "Derivative gain amplifies high-frequency noise, so a filter or limited gain is needed",
+    "Notes interactions between the gains (qualitative effects)"
+   ],
+   "explanation": "A good answer links each action to its physical meaning: present error, accumulated error and predicted error. Noting the trade-offs is part of the expected reasoning.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe integral windup in a PI loop with a saturating actuator, explaining why it causes overshoot and name one method to prevent it, with the reasoning for why that method works.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-actions.o3"
+   ],
+   "markingGuide": [
+    "The actuator saturates so the error persists while the integral keeps accumulating",
+    "The controller output grows far beyond the actuator limit",
+    "When the error reverses the stored integral must be unwound before the actuator leaves saturation, giving large, long overshoot",
+    "Names a method: clamping (conditional integration), back-calculation, or setpoint ramping",
+    "Explains that the method stops or bleeds the integrator while saturated so the stored integral stays consistent with the actuator output"
+   ],
+   "explanation": "The key idea is that the controller state no longer corresponds to what the actuator actually delivers. Anti-windup restores consistency by limiting the integral state.",
+   "board": "internal"
+  }
+ ]
+}

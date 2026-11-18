@@ -1,0 +1,378 @@
+{
+ "lessonTitle": "Radius of Gyration and Equivalent Systems",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A servo drive for a robot joint is sized by one number: the total inertia the motor 'feels' at its own shaft. A heavy load behind a 10:1 gearbox adds only one hundredth of its inertia to the motor, which is why gearing makes small motors practical. Radius of gyration and reflected inertia are the tools for this."
+  },
+  {
+   "type": "text",
+   "markdown": "The mass moment of inertia $I=\\int r^2dm$ (kg m$^2$) can be summarised by a single length. The **radius of gyration** $k$ is the radius of a thin ring of the same total mass $m$ whose moment of inertia about the same axis would equal $I$."
+  },
+  {
+   "type": "math",
+   "latex": "I=mk^{2}\\quad\\Longleftrightarrow\\quad k=\\sqrt{\\frac{I}{m}}",
+   "caption": "$I$ in kg m$^2$, $m$ in kg, $k$ in m; $k$ must be quoted with its axis."
+  },
+  {
+   "type": "worked_example",
+   "title": "Radius of gyration of a flywheel",
+   "prompt": "A flywheel has mass 15 kg and moment of inertia 2.4 kg m$^2$ about its axle. Find $k$ and compare it with a rim radius of 0.5 m.",
+   "steps": [
+    {
+     "text": "Apply $k=\\sqrt{I/m}$.",
+     "latex": "k=\\sqrt{\\frac{2.4}{15}}=\\sqrt{0.16}"
+    },
+    {
+     "text": "Evaluate and compare.",
+     "latex": "k=0.40\\ \\text{m}<0.5\\ \\text{m}"
+    }
+   ],
+   "answer": "$k=0.40$ m. It is less than the rim radius, which means the mass is spread out between the axle and the rim rather than concentrated at the rim."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Body (axis)",
+    "$I$",
+    "$k$"
+   ],
+   "rows": [
+    [
+     "Thin hoop (own axis)",
+     "$mR^2$",
+     "$R$"
+    ],
+    [
+     "Solid disc (own axis)",
+     "$\\tfrac12mR^2$",
+     "$R/\\sqrt2=0.707R$"
+    ],
+    [
+     "Solid sphere (diameter)",
+     "$\\tfrac25mR^2$",
+     "$0.632R$"
+    ],
+    [
+     "Slender rod (end, perpendicular)",
+     "$\\tfrac13mL^2$",
+     "$L/\\sqrt3=0.577L$"
+    ],
+    [
+     "Slender rod (centre, perpendicular)",
+     "$\\tfrac1{12}mL^2$",
+     "$L/\\sqrt{12}=0.289L$"
+    ]
+   ],
+   "caption": "Radii of gyration of standard bodies."
+  },
+  {
+   "type": "text",
+   "markdown": "**Effect on angular acceleration.** For rotation about a fixed axis, $\\sum M=I\\alpha=mk^2\\alpha$. For a given torque $T$ and mass $m$, a larger radius of gyration means a smaller angular acceleration. A disc and a ring of the same mass and radius have $k$ of $0.707R$ and $R$, so the disc accelerates twice as fast under the same torque, and the ring stores twice as much kinetic energy at the same speed."
+  },
+  {
+   "type": "math",
+   "latex": "\\alpha=\\frac{T}{mk^{2}},\\qquad E_k=\\tfrac12mk^{2}\\omega^{2}",
+   "caption": "Distribution of mass about the axis (through $k$), not just the mass, sets the response to torque and the stored energy."
+  },
+  {
+   "type": "text",
+   "markdown": "**Equivalent inertia through gears.** A load of inertia $I_L$ on a shaft turning at $\\omega_L$ is driven through a gear pair from a motor turning at $\\omega_m$. Let the gear ratio be $N=\\omega_m/\\omega_L$ ($N>1$ for a speed reduction). The kinetic energy of the load, $\\tfrac12I_L\\omega_L^2$, equals $\\tfrac12I_{\\text{ref}}\\omega_m^2$ for the equivalent inertia referred to the motor shaft."
+  },
+  {
+   "type": "math",
+   "latex": "I_{\\text{ref}}=I_L\\left(\\frac{\\omega_L}{\\omega_m}\\right)^{2}=\\frac{I_L}{N^{2}},\\qquad I_{\\text{eq}}=I_m+\\frac{I_L}{N^{2}}",
+   "caption": "Gear inertias on the load shaft are also divided by $N^2$; those on the motor shaft are added directly."
+  },
+  {
+   "type": "worked_example",
+   "title": "Servo drive",
+   "prompt": "A motor ($I_m=0.004$ kg m$^2$) drives a load ($I_L=0.8$ kg m$^2$) through a 10:1 reduction. The motor produces 0.5 N m. Find the equivalent inertia at the motor shaft, the motor angular acceleration and the load angular acceleration.",
+   "steps": [
+    {
+     "text": "Reflect the load.",
+     "latex": "I_{\\text{ref}}=\\frac{0.8}{10^2}=0.008\\ \\text{kg m}^2"
+    },
+    {
+     "text": "Total at the motor shaft.",
+     "latex": "I_{\\text{eq}}=0.004+0.008=0.012\\ \\text{kg m}^2"
+    },
+    {
+     "text": "Motor acceleration.",
+     "latex": "\\alpha_m=\\frac{0.5}{0.012}=41.7\\ \\text{rad/s}^2"
+    },
+    {
+     "text": "Load acceleration is $1/N$ of this.",
+     "latex": "\\alpha_L=\\frac{41.7}{10}=4.17\\ \\text{rad/s}^2"
+    }
+   ],
+   "answer": "$I_{\\text{eq}}=0.012$ kg m$^2$, $\\alpha_m=41.7$ rad/s$^2$ and $\\alpha_L=4.17$ rad/s$^2$. The load contributes twice as much inertia as the motor itself even though it is 200 times heavier in inertia."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Design rule",
+   "text": "Servo motors are best 'inertia matched' when the reflected load inertia is comparable to the motor's own inertia. Choosing the ratio $N$ sets this, since reflected inertia falls as $1/N^2$."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Dividing by $N$ instead of $N^2$, multiplying instead of dividing, forgetting the inertia of the gears themselves, and quoting $k$ without specifying which axis it refers to."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "$k=\\sqrt{I/m}$ is a length (m); parallel-axis: $k^2=k_G^2+d^2$.",
+    "Larger $k$ at fixed mass: lower $\\alpha$, higher stored energy.",
+    "Inertia reflected to the motor shaft: divide load-shaft inertias by $N^2$."
+   ]
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Radius of gyration $k=\\sqrt{I/m}$ is the radius of a thin ring with the same mass and inertia about the axis.",
+    "Angular acceleration under torque is $\\alpha=T/(mk^2)$: mass far from the axis resists angular acceleration.",
+    "Load inertia referred to the motor shaft is $I_L/N^2$, where $N=\\omega_m/\\omega_L$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A body has mass $m$ and moment of inertia $I$ about a given axis. What is its radius of gyration about that axis?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\sqrt{I/m}$"
+    },
+    {
+     "id": "b",
+     "text": "$I/m$"
+    },
+    {
+     "id": "c",
+     "text": "$\\sqrt{Im}$"
+    },
+    {
+     "id": "d",
+     "text": "$I/\\sqrt m$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\sqrt{I/m}$",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "This has units of m$^2$, not m.",
+    "c": "This has the wrong dimensions.",
+    "d": "This also has the wrong dimensions."
+   },
+   "explanation": "The definition is $I=mk^2$, so $k=\\sqrt{I/m}$, a length in metres. It is the distance at which a point mass $m$ would have the same moment of inertia.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A rotor has mass 8 kg and a moment of inertia of 0.90 kg m$^2$ about its axis. Find its radius of gyration in m.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o1"
+   ],
+   "correctValue": 0.3354,
+   "tolerance": 0.002,
+   "unit": "m",
+   "explanation": "$k=\\sqrt{I/m}=\\sqrt{0.90/8}=\\sqrt{0.1125}=0.335$ m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Find the radius of gyration, in m, of a uniform slender rod of length 1.5 m about a perpendicular axis through one end.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o1"
+   ],
+   "correctValue": 0.866,
+   "tolerance": 0.005,
+   "unit": "m",
+   "explanation": "About one end $I=\\tfrac13mL^2$, so $k=L/\\sqrt3=1.5/1.732=0.866$ m. The mass cancels in $k$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A motor with $I_m=0.012$ kg m$^2$ drives a load of inertia 6.4 kg m$^2$ through a gearbox that reduces speed by 8:1 (the motor turns 8 times for each load revolution). Neglecting gear inertias, find the total equivalent inertia at the motor shaft in kg m$^2$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o2"
+   ],
+   "correctValue": 0.112,
+   "tolerance": 0.002,
+   "unit": "kg m^2",
+   "explanation": "The reflected load inertia is $I_L/N^2=6.4/64=0.100$ kg m$^2$. Adding the motor inertia gives $0.012+0.100=0.112$ kg m$^2$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A geared drive has its ratio $N$ doubled (more speed reduction), with the same load. What happens to the load inertia reflected to the motor shaft?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It falls to one half"
+    },
+    {
+     "id": "b",
+     "text": "It falls to one quarter"
+    },
+    {
+     "id": "c",
+     "text": "It doubles"
+    },
+    {
+     "id": "d",
+     "text": "It does not change"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It falls to one quarter",
+   "distractorRationale": {
+    "a": "The reflection factor is $1/N^2$, so doubling $N$ gives $1/4$.",
+    "b": "Correct.",
+    "c": "Higher reduction decreases, not increases, the reflected inertia.",
+    "d": "It is proportional to $1/N^2$ and so changes."
+   },
+   "explanation": "Equating kinetic energies gives $I_{\\text{ref}}=I_L/N^2$. Doubling $N$ divides this by $2^2=4$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A motor ($I_m=0.010$ kg m$^2$) carries a pinion of inertia 0.002 kg m$^2$ on its shaft. Through a 5:1 reduction it drives a gear (0.05 kg m$^2$) on the load shaft, which also carries a load of inertia 3.0 kg m$^2$. Find the angular acceleration of the motor shaft in rad/s$^2$ when the motor torque is 2.68 N m (no losses).",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o2"
+   ],
+   "correctValue": 20.0,
+   "tolerance": 0.2,
+   "unit": "rad/s^2",
+   "explanation": "Motor-shaft inertias add directly: $0.010+0.002=0.012$. Load-shaft inertias are reflected: $(0.05+3.0)/25=0.122$. So $I_{\\text{eq}}=0.134$ kg m$^2$ and $\\alpha_m=2.68/0.134=20.0$ rad/s$^2$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A thin ring and a solid disc have the same mass and the same outer radius. The same torque is applied to each about its own axis, starting from rest. How do their angular accelerations compare?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The disc accelerates twice as fast as the ring"
+    },
+    {
+     "id": "b",
+     "text": "The ring accelerates twice as fast as the disc"
+    },
+    {
+     "id": "c",
+     "text": "They accelerate equally because their masses are equal"
+    },
+    {
+     "id": "d",
+     "text": "The disc accelerates four times as fast"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The disc accelerates twice as fast as the ring",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "The ring has the larger $k$ (all mass at the rim) and so the smaller acceleration.",
+    "c": "Acceleration depends on $mk^2$, not mass alone.",
+    "d": "The ratio of inertias is $mR^2/(\\tfrac12mR^2)=2$, not 4."
+   },
+   "explanation": "Ring $I=mR^2$ and disc $I=\\tfrac12mR^2$, so $\\alpha=T/I$ is twice as large for the disc. Equivalent radii of gyration are $R$ and $0.707R$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The same torque of 20 N m acts on two bodies of equal mass 10 kg, one with radius of gyration 0.10 m and the other with 0.30 m. What is the ratio $\\alpha_A/\\alpha_B$ of the angular accelerations ($A$ with $k=0.10$ m)?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3"
+    },
+    {
+     "id": "b",
+     "text": "1/9"
+    },
+    {
+     "id": "c",
+     "text": "1"
+    },
+    {
+     "id": "d",
+     "text": "9"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "9",
+   "distractorRationale": {
+    "a": "This is the ratio of the radii of gyration, not of their squares.",
+    "b": "This is the inverted ratio.",
+    "c": "Equal masses do not give equal accelerations when $k$ differs.",
+    "d": "Correct."
+   },
+   "explanation": "With $\\alpha=T/(mk^2)$, $\\alpha_A/\\alpha_B=k_B^2/k_A^2=(0.30/0.10)^2=9$. For example $\\alpha_A=20/(10\\cdot0.01)=200$ rad/s$^2$ and $\\alpha_B=22.2$ rad/s$^2$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how the distribution of mass about the axis of rotation affects the angular acceleration produced by a given torque, using the concept of radius of gyration. Give one design example where you would want a large $k$ and one where you would want a small $k$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o3"
+   ],
+   "markingGuide": [
+    "States $T=I\\alpha=mk^2\\alpha$ so $\\alpha=T/(mk^2)$",
+    "Mass far from the axis (large $k$) gives large $I$ and small $\\alpha$ for the same torque and total mass",
+    "Mass near the axis (small $k$) gives a more responsive body",
+    "Large $k$ example: flywheel (stores energy $\\tfrac12mk^2\\omega^2$, smooths speed fluctuations)",
+    "Small $k$ example: robot arm, rotor or servo shaft needing fast response; mass concentrated near the axis"
+   ],
+   "explanation": "Equal masses can have very different responses to torque because inertia depends on the square of the distance. Designers move mass outward or inward to suit the application.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Show, using kinetic energy, that a load inertia $I_L$ turning at $\\omega_L$ is equivalent to an inertia $I_L/N^2$ on a motor shaft turning at $\\omega_m=N\\omega_L$, and explain why this matters when selecting a servo motor and gear ratio.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.radius-of-gyration.o2"
+   ],
+   "markingGuide": [
+    "Kinetic energy of the load is $\\tfrac12I_L\\omega_L^2$",
+    "Equates to $\\tfrac12I_{\\text{ref}}\\omega_m^2$ with $\\omega_L=\\omega_m/N$",
+    "Obtains $I_{\\text{ref}}=I_L/N^2$",
+    "Notes gear inertias on the load shaft are also reflected by $1/N^2$ and motor-shaft inertias are added directly",
+    "Explains inertia matching: higher $N$ reduces reflected inertia, so the motor can accelerate the load with less torque and avoid poor controllability, while speed is reduced"
+   ],
+   "explanation": "The energy argument is valid because ideal gears do not store or dissipate energy. The same reflection applies to torques: $T_{\\text{ref}}=T_L/N$ for an ideal reduction.",
+   "board": "internal"
+  }
+ ]
+}

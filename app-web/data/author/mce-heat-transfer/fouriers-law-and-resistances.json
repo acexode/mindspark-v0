@@ -1,0 +1,373 @@
+{
+ "lessonTitle": "Fourier's Law and Thermal Resistances",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A pottery kiln wall is 20 cm thick yet its steel shell must stay cool enough to touch. The designer does not guess: she adds up thermal resistances layer by layer, exactly as an electrical engineer adds resistors, and reads the shell temperature off the result."
+  },
+  {
+   "type": "text",
+   "markdown": "Heat flows by conduction whenever neighbouring regions of a material are at different temperatures. Experiments on solids show that the heat flow is proportional to the area normal to the flow and to the temperature gradient, and it always runs from hot to cold. That observation is **Fourier's law**. Because heat flow ($q$, in W) and temperature difference ($\\Delta T$, in K) play the roles of current and voltage, a steady heat flow problem can be solved with a resistance network."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Fourier's law",
+   "text": "The conduction heat flux in the $x$-direction is $q''_x=-k\\,dT/dx$ (W/m$^2$), where $k$ is the thermal conductivity (W/m K), a property of the material. The minus sign makes heat flow in the direction of falling temperature. For heat flow $q=q''A$ through area $A$ (m$^2$), $q=-kA\\,dT/dx$."
+  },
+  {
+   "type": "math",
+   "latex": "q=-kA\\frac{dT}{dx}\\;\\Rightarrow\\;q=\\frac{kA}{L}(T_1-T_2)=\\frac{T_1-T_2}{R_{cond}},\\qquad R_{cond}=\\frac{L}{kA}",
+   "caption": "Plane wall of thickness L, steady, 1-D, constant k, no internal heat generation"
+  },
+  {
+   "type": "text",
+   "markdown": "Convection at a surface obeys Newton's law of cooling, $q=hA(T_s-T_\\infty)$, so a convective film has resistance $R_{conv}=1/(hA)$. Elements the same heat flow passes through, one after another, are **in series** and their resistances add. Elements that split the flow between side-by-side paths are **in parallel** and their conductances ($1/R$) add. Across each element the temperature drop equals $q\\times R$ of that element."
+  },
+  {
+   "type": "worked_example",
+   "title": "Composite furnace wall with interface temperatures",
+   "prompt": "A furnace wall of area 1 m$^2$ has a 115 mm firebrick layer ($k=1.1$ W/m K, typical), a 75 mm insulating brick layer ($k=0.15$ W/m K, typical) and a 5 mm steel casing ($k=45$ W/m K, typical). Hot gas at 900 $^\\circ$C has $h_i=30$ W/m$^2$K on the inside; room air at 25 $^\\circ$C has $h_o=12$ W/m$^2$K on the outside. Find the heat loss and the temperature at the firebrick/insulating brick interface. Assume steady 1-D conduction and ignore contact resistance.",
+   "steps": [
+    {
+     "text": "Draw the series network from the gas to the air: inside convection, firebrick, insulating brick, steel, outside convection. The same heat flow passes through every element."
+    },
+    {
+     "text": "Convective and conductive resistances for 1 m$^2$: $R_i=1/(30)=0.0333$, firebrick $0.115/1.1=0.1045$, insulating brick $0.075/0.15=0.5000$, steel $0.005/45=0.00011$, outside $1/12=0.0833$ K/W.",
+     "latex": "R=\\frac{1}{hA},\\quad R=\\frac{L}{kA}"
+    },
+    {
+     "text": "Add the resistances in series: $R_{tot}=0.7213$ K/W.",
+     "latex": "R_{tot}=\\sum R_i"
+    },
+    {
+     "text": "Heat loss: $q=(900-25)/0.7213=1213$ W.",
+     "latex": "q=\\frac{T_i-T_o}{R_{tot}}"
+    },
+    {
+     "text": "Temperature drops are $q R$ for each element. The inner gas film drops 40 K, so the hot face of the firebrick is 860 $^\\circ$C; the firebrick drops 127 K, giving an interface temperature 733 $^\\circ$C.",
+     "latex": "T_{int}=T_i-q(R_i+R_{fb})"
+    }
+   ],
+   "answer": "$q\\approx1213$ W; the firebrick/insulating brick interface is at about 733 $^\\circ$C. (Check: the steel outer face is at 126 $^\\circ$C, and the outside film drop is 101 K to reach 25 $^\\circ$C.)"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Geometry",
+    "Conduction resistance",
+    "Convection resistance",
+    "Notes"
+   ],
+   "rows": [
+    [
+     "Plane wall (area $A$)",
+     "$L/(kA)$ (K/W)",
+     "$1/(hA)$",
+     "$q$ and area constant, $q''$ constant"
+    ],
+    [
+     "Cylindrical shell (length $L$)",
+     "$\\ln(r_2/r_1)/(2\\pi kL)$ (K/W)",
+     "$1/(h\\,2\\pi r L)$",
+     "$q$ constant, $q''$ falls as $1/r$"
+    ],
+    [
+     "Spherical shell",
+     "$(1/r_1-1/r_2)/(4\\pi k)$ (K/W)",
+     "$1/(h\\,4\\pi r^2)$",
+     "$q$ constant, $q''$ falls as $1/r^2$"
+    ]
+   ],
+   "caption": "Thermal resistances for steady one-dimensional conduction without heat generation"
+  },
+  {
+   "type": "text",
+   "markdown": "For a long pipe the area through which heat passes grows with radius, so the flux $q''$ falls with radius while the total heat flow $q$ is the same at every radius (steady state, no generation). Solving $q=-k(2\\pi rL)\\,dT/dr$ with constant $q$ gives a logarithmic temperature profile and the logarithmic resistance in the table. Always work per unit length ($q'=q/L$, in W/m) for pipes."
+  },
+  {
+   "type": "math",
+   "latex": "q'=\\frac{T_i-T_\\infty}{\\dfrac{1}{h_i2\\pi r_1}+\\dfrac{\\ln(r_2/r_1)}{2\\pi k_1}+\\dfrac{\\ln(r_3/r_2)}{2\\pi k_2}+\\dfrac{1}{h_o2\\pi r_3}}",
+   "caption": "Heat loss per metre of a pipe with one wall layer and one insulation layer"
+  },
+  {
+   "type": "worked_example",
+   "title": "Insulated steam pipe, heat loss per metre",
+   "prompt": "A steel pipe (inner radius 30 mm, outer radius 35 mm, $k=50$ W/m K, typical) carries steam at 180 $^\\circ$C with an inside coefficient of 1000 W/m$^2$K. It is lagged with insulation of conductivity 0.06 W/m K (typical) to an outer radius of 75 mm. Outside air is at 20 $^\\circ$C with $h_o=10$ W/m$^2$K. Find the heat loss per metre of pipe and the outer surface temperature of the lagging.",
+   "steps": [
+    {
+     "text": "For a cylinder the heat flow in W is constant with radius, so work per metre of length: each layer has resistance $R'=\\ln(r_{out}/r_{in})/(2\\pi k)$ and each film has $R'=1/(h\\,2\\pi r)$.",
+     "latex": "R'_{cyl}=\\frac{\\ln(r_2/r_1)}{2\\pi k}"
+    },
+    {
+     "text": "Inside film: $1/(1000\\cdot2\\pi\\cdot0.03)=0.00531$ m K/W. Steel wall: $\\ln(35/30)/(2\\pi\\cdot50)=0.000491$ m K/W."
+    },
+    {
+     "text": "Lagging: $\\ln(75/35)/(2\\pi\\cdot0.06)=2.0216$ m K/W. Outside film: $1/(10\\cdot2\\pi\\cdot0.075)=0.2122$ m K/W."
+    },
+    {
+     "text": "Total $R'=2.2396$ m K/W, so $q'=(180-20)/2.2396=71.4$ W/m.",
+     "latex": "q'=\\frac{T_i-T_\\infty}{\\sum R'}"
+    },
+    {
+     "text": "Outer surface temperature: $T_s=T_\\infty+q'R'_{o}=20+71.4\\times0.2122=35.2$ $^\\circ$C."
+    }
+   ],
+   "answer": "$q'\\approx71$ W per metre; lagging outer surface about 35 $^\\circ$C. The lagging supplies nearly all the resistance, and the steel and steam film are negligible."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Sketch the path of heat flow and name each element (films, layers).",
+    "Compute each resistance with the correct geometry formula and consistent SI units (mm to m!).",
+    "Add series resistances; combine parallel branches by adding conductances.",
+    "Heat flow $q=\\Delta T_{overall}/R_{tot}$.",
+    "Interface or surface temperature: start from a known temperature and subtract $q R$ for each element passed."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Do not use the plane-wall formula $L/(kA)$ for a thick pipe wall; the area changes with radius. Do not average the two surface temperatures to get an interface temperature: the temperature drop across a layer is proportional to its resistance, so the interface sits closer to the temperature on the side of the less resistive layer. Real interfaces also have a small contact resistance that is ignored here."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Resistance network rule",
+   "text": "In series, heat flow is common and temperature drops share in proportion to resistance: $\\Delta T_j/\\Delta T_{tot}=R_j/R_{tot}$. The layer with the largest resistance carries the largest drop, which is why a thin insulating layer dominates a wall."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Fourier's law: $q''=-k\\,dT/dx$; heat flows from hot to cold.",
+    "Resistances: $L/(kA)$ for a plane layer, $\\ln(r_2/r_1)/(2\\pi kL)$ for a cylindrical shell, $1/(hA)$ for a convective film.",
+    "Series resistances add; $q=\\Delta T_{overall}/R_{tot}$ and each layer's temperature drop is $qR$.",
+    "For pipes, $q$ (not flux) is constant with radius; work per metre of length."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Two plane layers of different materials are pressed together and a steady one-dimensional heat flow passes through both with no heat generation. Which quantity is the same in both layers?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o1",
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The temperature drop across each layer"
+    },
+    {
+     "id": "b",
+     "text": "The heat flow $q$ (W) through each layer"
+    },
+    {
+     "id": "c",
+     "text": "The temperature gradient $dT/dx$"
+    },
+    {
+     "id": "d",
+     "text": "The thermal conductivity $k$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The heat flow $q$ (W) through each layer",
+   "distractorRationale": {
+    "a": "The drop is $qR$ and depends on each layer's resistance, so it differs.",
+    "c": "The gradient is $q''/k$ and changes with $k$, so it is not common.",
+    "d": "$k$ is a property of each material and differs by layer."
+   },
+   "explanation": "In steady state with no generation, energy entering a layer must leave it, so the heat flow $q$ is common to all series layers. Gradients and temperature drops differ because $dT/dx=-q''/k$ and $\\Delta T=qR$ vary with each layer's properties.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A thick-walled pipe has inner radius $r_1$ and outer radius $r_2$ and conductivity $k$. Its conduction resistance over length $L$ is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$(r_2-r_1)/(2\\pi k L)$"
+    },
+    {
+     "id": "b",
+     "text": "$(r_2-r_1)/(k\\,2\\pi r_1 L)$"
+    },
+    {
+     "id": "c",
+     "text": "$2\\pi kL/\\ln(r_2/r_1)$"
+    },
+    {
+     "id": "d",
+     "text": "$\\ln(r_2/r_1)/(2\\pi kL)$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$\\ln(r_2/r_1)/(2\\pi kL)$",
+   "distractorRationale": {
+    "a": "This treats the wall as a plane slab; the area changes with radius.",
+    "b": "This uses the inner area only, an approximation valid only for a very thin wall.",
+    "c": "This is the conductance (inverse of resistance)."
+   },
+   "explanation": "Integrating $q=-k(2\\pi rL)\\,dT/dr$ between $r_1$ and $r_2$ gives $q=2\\pi kL\\,\\Delta T/\\ln(r_2/r_1)$, so the resistance is $\\ln(r_2/r_1)/(2\\pi kL)$. The plain slab formula only works if the wall is so thin that the area barely changes.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cold-room wall has a 12 mm plywood sheet ($k=0.12$ W/m K), 80 mm of foam ($k=0.025$ W/m K) and another 12 mm plywood sheet, all typical values. Outside air at 30 $^\\circ$C has $h=10$ W/m$^2$K; inside air at $-20$ $^\\circ$C has $h=8$ W/m$^2$K. Find the steady heat gain per square metre of wall in W/m$^2$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o1"
+   ],
+   "correctValue": 13.79,
+   "tolerance": 0.1,
+   "unit": "W/m^2",
+   "explanation": "Series resistances per m$^2$: 0.1000+0.1000+3.2000+0.1000+0.1250 = 3.6250 m$^2$K/W. The flux is $50/3.6250=13.79$ W/m$^2$. The foam contributes most of the resistance, so it controls the heat gain.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A hot-water line has an outer radius of 25 mm and is covered with foam ($k=0.05$ W/m K, typical) out to a radius of 50 mm. The foam inner surface is at 95 $^\\circ$C and its outer surface at 35 $^\\circ$C. Find the heat loss per metre of length in W/m.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o2"
+   ],
+   "correctValue": 27.19,
+   "tolerance": 0.5,
+   "unit": "W/m",
+   "explanation": "For a cylindrical shell $q'=2\\pi k\\,\\Delta T/\\ln(r_2/r_1)=2\\pi(0.05)(60)/\\ln 2=27.19$ W/m. The outer radius is twice the inner radius, so the log term is $\\ln 2=0.693$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 20 mm layer of concrete ($k=1.4$ W/m K) sits against a 50 mm layer of insulation ($k=0.04$ W/m K), all typical values. The free concrete face is held at 25 $^\\circ$C and the free insulation face at $-5$ $^\\circ$C. Find the temperature of the interface between the two layers in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o3"
+   ],
+   "correctValue": 24.66,
+   "tolerance": 0.2,
+   "unit": "degC",
+   "explanation": "Resistances per m$^2$: concrete 0.01429, insulation 1.2500 m$^2$K/W. The flux is $30/1.26429=23.73$ W/m$^2$. Starting from 25 $^\\circ$C, the concrete drops $qR=0.339$ K, so the interface is at 24.66 $^\\circ$C. It is close to the concrete face temperature because the concrete resistance is tiny.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Three layers in series have resistances 0.10, 0.50 and 0.05 m$^2$K/W per unit area. The overall temperature difference across the wall is 60 K. What is the temperature drop across the middle layer?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o3",
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "20.0 K"
+    },
+    {
+     "id": "b",
+     "text": "30.0 K"
+    },
+    {
+     "id": "c",
+     "text": "46.2 K"
+    },
+    {
+     "id": "d",
+     "text": "9.2 K"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "46.2 K",
+   "distractorRationale": {
+    "a": "This divides the 60 K equally between three layers; drops are proportional to resistance, not equal.",
+    "b": "This multiplies by 0.5 without normalising by the total resistance.",
+    "d": "This is the drop across the first layer, not the middle one."
+   },
+   "explanation": "The drop across a layer is its share of the total resistance times the total difference: $60\\times0.50/0.65=46.2$ K. Equal division or ignoring the total resistance both ignore the series-network rule.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "Two plane layers of equal thickness are in series, one with $k=0.2$ W/m K and one with $k=2.0$ W/m K. In steady flow the interface temperature is exactly midway between the two outer surface temperatures.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The interface temperature is midway only if the two resistances are equal. Here $R=L/k$ differs by a factor of 10, so the low-conductivity layer carries about 91% of the total temperature drop and the interface lies close to the outer-face temperature on the high-conductivity side.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A steam pipe is wrapped in insulation. Explain why the heat flow $q$ (W) is the same at every radius in the insulation in steady state, yet the heat flux $q''$ (W/m$^2$) falls with increasing radius. State the assumptions.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o2"
+   ],
+   "markingGuide": [
+    "Steady state with no heat generation means energy in equals energy out of any cylindrical shell, so $q$ is the same through every radius.",
+    "Flux is $q''=q/(2\\pi rL)$, and the area grows linearly with $r$, so $q''\\propto1/r$.",
+    "Therefore the temperature gradient $dT/dr=-q''/k$ is steeper near the inner surface, giving a logarithmic temperature profile.",
+    "Assumptions: 1-D radial conduction, constant $k$, no generation, negligible axial conduction."
+   ],
+   "explanation": "The argument starts from conservation of energy on a shell, then uses the area growth to deduce the flux variation. A student should connect this to the logarithmic resistance rather than a linear temperature profile.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A designer needs the interface temperature between a thin ceramic coating and a thick metal substrate in a heated plate. A colleague proposes taking the average of the two outer surface temperatures. Describe the correct procedure, show why the colleague's method is wrong in general, and say what extra effect might change the result at a real interface.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o3",
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o1"
+   ],
+   "markingGuide": [
+    "Compute $R=L/(kA)$ for each layer and the total resistance of the series path.",
+    "Compute $q=(T_1-T_2)/R_{tot}$ then $T_{int}=T_1-qR_1$ (or $T_2+qR_2$).",
+    "The temperature drop across a layer is proportional to its resistance, so the interface is only at the average if the resistances are equal.",
+    "Here the coating is thin but low in $k$ and the metal is high in $k$, so the drop is mostly across whichever has the larger $L/k$.",
+    "Contact resistance at the interface adds an extra series resistance and a step in temperature."
+   ],
+   "explanation": "The key idea is that the temperature drops in series are in proportion to resistance, so averaging is wrong unless the resistances match. Naming contact resistance shows awareness of real interfaces.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Hot water at 80 $^\\circ$C sits inside a thin-walled copper pipe of outer radius 25 mm (assume the pipe wall and inside film have negligible resistance, so the insulation inner surface is at 80 $^\\circ$C). The pipe is covered with insulation of $k=0.04$ W/m K to an outer radius of 45 mm. Outside air is at 20 $^\\circ$C with $h=9$ W/m$^2$K. Find the heat loss per metre of pipe in W/m.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.steady-conduction.fouriers-law-and-resistances.o2"
+   ],
+   "correctValue": 21.96,
+   "tolerance": 0.2,
+   "unit": "W/m",
+   "explanation": "The resistances per metre are the insulation $\\ln(45/25)/(2\\pi\\cdot0.04)=2.3387$ m K/W and the outer film $1/(9\\cdot2\\pi\\cdot0.045)=0.3930$ m K/W, total 2.7317. Then $q'=60/2.7317=21.96$ W/m. The outer lagging surface is at 28.6 $^\\circ$C.",
+   "board": "internal"
+  }
+ ]
+}

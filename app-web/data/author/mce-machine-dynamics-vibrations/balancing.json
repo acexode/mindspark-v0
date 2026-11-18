@@ -1,0 +1,399 @@
+{
+ "lessonTitle": "Static and Dynamic Balancing",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A tyre fitter clips a 30 g weight on the inner rim flange of a wheel and another 30 g weight on the outer flange, exactly opposite. The wheel is perfectly still on the stand, yet at 110 km/h it would shake the steering. That is the difference between static and dynamic balance."
+  },
+  {
+   "type": "text",
+   "markdown": "An unbalanced rotor has mass distributed unevenly about its axis. Describe each unbalance by a vector $U=m\\,r$ (kg m), the product of an eccentric mass and its radius, pointing from the axis to that mass and carried with the rotor. At speed $\\omega$ (rad/s) it produces a rotating force $U\\omega^2$ (N). **Balancing** adds correction masses so that the resultant force and the resultant moment of the unbalances both vanish. All angles are measured from a reference mark on the rotor, in the direction of rotation, and axial positions $z$ (m) from a chosen plane."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Static and dynamic balance",
+   "text": "A rotor is **statically balanced** when the vector sum of all unbalances is zero, $\\sum U_i=0$: its centre of mass lies on the axis, so it will not turn by itself when placed on level knife-edges. It is **dynamically balanced** when, in addition, the sum of the moments of the unbalances about any point on the axis is zero, $\\sum U_iz_i=0$, so there is no rotating couple on the bearings."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why static balance is not enough.** Take two equal masses $m$ at the same radius $r$, 180$^\\circ$ apart, mounted in two planes a distance $a$ along the shaft. Their unbalance vectors cancel ($\\sum U=0$), so the rotor sits still on knife-edges. But the two rotating forces $mr\\omega^2$ act in opposite directions along lines a distance $a$ apart, forming a couple of magnitude $mr\\omega^2a$ that rotates with the shaft. The bearings, a span $L$ apart, must supply an equal and opposite couple, so each carries a force of $mr\\omega^2a/L$, oppositely directed, rotating with the shaft. That is a dynamic unbalance, and it is the wheel-shake in the hook."
+  },
+  {
+   "type": "math",
+   "latex": "\\sum_iU_i=0\\quad(\\text{static}),\\qquad \\sum_iU_iz_i=0\\quad(\\text{dynamic, in addition})",
+   "caption": "Balancing conditions with U = m r as a vector"
+  },
+  {
+   "type": "text",
+   "markdown": "**Single-plane balancing by the trial-weight method.** For a narrow disc, all the unbalance can be treated as in one plane. Run the machine at the balancing speed and record the vibration vector $V_0$ (amplitude and phase relative to the shaft reference mark). Stop, fix a trial mass $m_t$ at a known radius and angle $\\theta_t$, and run again at the same speed to get $V_1$. If the response is linear, the vector change $V_1-V_0$ is caused by the trial unbalance alone, which defines the **influence coefficient** $\\alpha=(V_1-V_0)/(m_t\\angle\\theta_t)$. The correction mass must cancel $V_0$: $m_c\\angle\\theta_c=-V_0/\\alpha$."
+  },
+  {
+   "type": "math",
+   "latex": "m_c\\angle\\theta_c=-\\frac{V_0}{V_1-V_0}\\,\\bigl(m_t\\angle\\theta_t\\bigr)",
+   "caption": "Correction mass from a trial run (complex numbers, same radius for trial and correction)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Trial-weight balancing in one plane",
+   "prompt": "A narrow rotor vibrates with V0 = 6.0 mm/s at phase 40 deg. A 20 g trial mass at radius 100 mm and angle 0 deg gives V1 = 8.0 mm/s at 100 deg (same speed). Find the correction mass at the same radius, and its angle.",
+   "steps": [
+    {
+     "text": "Write the vectors as complex numbers (components in mm/s).",
+     "latex": "V_0=4.596+3.857i,\\quad V_1=-1.389+7.878i"
+    },
+    {
+     "text": "The effect of the trial mass is the vector difference.",
+     "latex": "V_1-V_0=-5.985+4.022i\\;\\Rightarrow\\;|-5.985+4.022i|=7.211,\\ \\angle146.1^\\circ"
+    },
+    {
+     "text": "Magnitude of the correction: trial mass scaled by the ratio of the original response to the trial effect.",
+     "latex": "m_c=20\\times\\frac{6.000}{7.211}=16.64\\ \\text{g}"
+    },
+    {
+     "text": "Angle: the trial angle, plus 180 degrees to reverse the sign, plus the angle of V0 minus the angle of the change.",
+     "latex": "\\theta_c=0+180+(40.0)-(146.1)=73.9^\\circ\\ (\\text{mod }360^\\circ)"
+    }
+   ],
+   "answer": "Correction mass 16.6 g at 74 degrees from the reference mark, measured in the same sense as the trial angle."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Rotor type",
+    "Typical shape",
+    "Condition needed",
+    "Correction planes"
+   ],
+   "rows": [
+    [
+     "Thin disc (flywheel, grinding wheel)",
+     "Length much less than diameter",
+     "Static balance ($\\sum U=0$)",
+     "1"
+    ],
+    [
+     "Long rotor (armature, crankshaft)",
+     "Length comparable with or larger than diameter",
+     "Static and dynamic ($\\sum U=0$, $\\sum Uz=0$)",
+     "2 or more"
+    ],
+    [
+     "Flexible rotor above first critical",
+     "Shaft bends at speed",
+     "Modal balancing in several planes",
+     "3 or more (beyond this unit)"
+    ]
+   ],
+   "caption": "Choosing the balancing method"
+  },
+  {
+   "type": "text",
+   "markdown": "**Two-plane balancing.** Place the corrections in two chosen planes $A$ and $B$, at axial positions $z_A$ and $z_B$, with unbalances $U_A$ and $U_B$ (vectors, kg m). Force balance requires $\\sum U_i+U_A+U_B=0$. Taking moments about plane $A$ requires $\\sum U_i(z_i-z_A)+U_B(z_B-z_A)=0$. The moment equation gives $U_B$ directly; the force equation then gives $U_A$. The unbalance $U$ is a complex number, so both equations are solved with complex arithmetic."
+  },
+  {
+   "type": "worked_example",
+   "title": "Two unbalances, two correction planes",
+   "prompt": "A rotor has unbalance 1 of 0.05 kg m (0.5 kg at 100 mm) at angle 0 deg, 0.2 m from plane A, and unbalance 2 of 0.048 kg m (0.4 kg at 120 mm) at angle 90 deg, 0.5 m from plane A. Correction planes A (z = 0) and B (z = 0.8 m) take masses at radius 100 mm. Find the correction masses and angles.",
+   "steps": [
+    {
+     "text": "Moment equation about plane A for the unbalance in plane B.",
+     "latex": "U_B=-\\frac{U_1z_1+U_2z_2}{z_B-z_A}=-\\frac{0.050(0.2)+0.048i(0.5)}{0.8}=-0.01250-0.03000i\\ \\text{kg m}"
+    },
+    {
+     "text": "Magnitude and angle of U_B, then mass at the correction radius.",
+     "latex": "|U_B|=0.0325\\ \\text{kg m},\\ \\angle247.4^\\circ,\\ m_B=325.0\\ \\text{g}"
+    },
+    {
+     "text": "Force equation for plane A.",
+     "latex": "U_A=-(U_1+U_2)-U_B=-0.03750-0.01800i\\ \\text{kg m}"
+    },
+    {
+     "text": "Magnitude and angle of U_A, then mass at the correction radius.",
+     "latex": "|U_A|=0.0416\\ \\text{kg m},\\ \\angle205.6^\\circ,\\ m_A=416.0\\ \\text{g}"
+    }
+   ],
+   "answer": "Plane A: 416 g at 206 deg. Plane B: 325 g at 247 deg (angles from the reference mark in the direction of rotation)."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Decide whether the rotor is narrow enough for single-plane balancing; otherwise use two planes.",
+    "Single plane: record $V_0$, add a trial mass, record $V_1$ at the same speed, and compute $m_c\\angle\\theta_c=-V_0\\,(m_t\\angle\\theta_t)/(V_1-V_0)$.",
+    "Two planes: write each unbalance as $U_i\\angle\\theta_i$ with axial position $z_i$; solve moments for one plane, forces for the other.",
+    "Convert $U$ to mass by dividing by the correction radius; check by recomputing $\\sum U$ and $\\sum Uz$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Check the sums",
+   "text": "After computing corrections, the total $\\sum U=0$ and the total moment about any point on the axis must be zero. If either check fails, an arithmetic or sign error has crept in. A correction can be applied by adding mass at the computed angle or by removing the same mass 180$^\\circ$ away."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Assumptions of the trial-weight method",
+   "text": "It assumes a linear system (vibration proportional to unbalance), the same speed and trial radius in both runs, and a reference mark whose phase can be read consistently. Near a critical speed the response is steep, so small speed drift can destroy the linearity."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A rotor is statically balanced when $\\sum U=0$ and dynamically balanced when $\\sum U=0$ and $\\sum Uz=0$.",
+    "Equal masses 180$^\\circ$ apart in different planes are statically balanced but produce a rotating couple $mr\\omega^2a$, so the rotor is dynamically unbalanced.",
+    "Single-plane trial-weight balancing: $m_c\\angle\\theta_c=-V_0(m_t\\angle\\theta_t)/(V_1-V_0)$.",
+    "Two-plane balancing uses complex moment and force equations to find $U_B$ then $U_A$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A rotor carries two equal masses at the same radius, 180 degrees apart in angle but fixed in two different transverse planes along the shaft. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is statically balanced but dynamically unbalanced, because the two forces form a rotating couple"
+    },
+    {
+     "id": "b",
+     "text": "It is both statically and dynamically balanced, because the forces cancel"
+    },
+    {
+     "id": "c",
+     "text": "It is statically unbalanced, because the masses are in different planes"
+    },
+    {
+     "id": "d",
+     "text": "It is dynamically balanced, because couples do not load bearings"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is statically balanced but dynamically unbalanced, because the two forces form a rotating couple",
+   "distractorRationale": {
+    "a": "Correct: The unbalance vectors cancel, so the rotor does not turn on knife-edges: it is statically balanced.",
+    "b": "Forces cancelling is only half the requirement; the moments about the axis must also cancel.",
+    "c": "The vector sum of the unbalances is zero, so static balance holds.",
+    "d": "A rotating couple must be reacted by the bearings, so it does load them."
+   },
+   "explanation": "The unbalance vectors cancel, so the rotor does not turn on knife-edges: it is statically balanced. The two equal and opposite rotating forces are a distance a apart and form a couple m r omega^2 a, which the bearings must resist, so the rotor is dynamically unbalanced.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a single-plane balancing run the original vibration is 3.0 mm/s at phase 0 degrees. A trial mass of 24 g at angle 0 degrees (at the radius where the correction will be fitted) changes the vibration to 5.0 mm/s at a phase of 53.13 degrees, which is the vector 3 + 4i mm/s. Find the magnitude of the correction mass in grams.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o1"
+   ],
+   "correctValue": 18.0,
+   "tolerance": 0.1,
+   "unit": "g",
+   "explanation": "The change due to the trial mass is (3 + 4i) - 3 = 4i mm/s, of magnitude 4.0 mm/s. The correction mass magnitude is m_t |V0|/|V1 - V0| = 24 x 3.0/4.0 = 18.0 g.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A trial mass of 10 g is placed at 0 degrees on a rotor. The initial vibration vector is 2.0 mm/s at 30 degrees and, with the trial mass, 3.0 mm/s at 150 degrees. Taking all angles in the same sense, at what angle should the correction mass be placed (at the same radius)?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "217 degrees"
+    },
+    {
+     "id": "b",
+     "text": "37 degrees"
+    },
+    {
+     "id": "c",
+     "text": "127 degrees"
+    },
+    {
+     "id": "d",
+     "text": "323 degrees"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "37 degrees",
+   "distractorRationale": {
+    "a": "That is the correct direction reversed by 180 degrees, which would double the vibration instead of cancelling it.",
+    "b": "Correct: The change due to the trial mass is V1 - V0 = -4.330+0.500i mm/s, magnitude 4.359 at 173.4 degrees.",
+    "c": "That is a quarter turn away; it neglects the sign of the cancelling correction.",
+    "d": "That is the mirror image of the angle, which reverses the sense of the phase measurement."
+   },
+   "explanation": "The change due to the trial mass is V1 - V0 = -4.330+0.500i mm/s, magnitude 4.359 at 173.4 degrees. The correction is m_c = -V0 m_t/(V1 - V0), which has magnitude 4.59 g at an angle of 36.6 degrees.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A single unbalance of 0.05 kg m (for example 0.5 kg at 100 mm) is located 0.2 m from correction plane A. Correction plane B is 0.6 m from plane A, on the same side as the unbalance. Find the magnitude of the correction mass in plane B, in kilograms, if the correction radius is 100 mm.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o3"
+   ],
+   "correctValue": 0.166667,
+   "tolerance": 0.005,
+   "unit": "kg",
+   "explanation": "Taking moments about plane A, |U_B| x 0.6 = 0.05 x 0.2, so |U_B| = 0.0167 kg m, with direction opposite to the unbalance. The mass at 100 mm radius is 0.0167/0.1 = 0.167 kg.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A rotor has unbalance 1 of 0.045 kg m at 60 degrees located 0.25 m from correction plane A, and unbalance 2 of 0.045 kg m at 200 degrees located 0.60 m from plane A. Correction plane B is 0.90 m from plane A. Both corrections will be fitted at a radius of 80 mm, with angles measured from the same mark in the same sense. Find the magnitude of the correction mass needed in plane A in kilograms.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o3"
+   ],
+   "correctValue": 0.288952,
+   "tolerance": 0.00577904,
+   "unit": "kg",
+   "explanation": "The moment equation about plane A gives U_B = -(U1 x 0.25 + U2 x 0.60)/0.90 = 0.02194-0.00056i kg m, magnitude 0.0219. The force equation gives U_A = -(U1 + U2) - U_B = -0.00215-0.02302i kg m, magnitude 0.0231 kg m, at 265 degrees. Dividing by 0.08 m gives m_A = 0.289 kg.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which rotor can normally be balanced adequately in a single correction plane?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o2",
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A long crankshaft with throws spaced along its length"
+    },
+    {
+     "id": "b",
+     "text": "A multi-stage compressor rotor with several wheels along a long shaft"
+    },
+    {
+     "id": "c",
+     "text": "A thin flywheel whose length is much smaller than its diameter"
+    },
+    {
+     "id": "d",
+     "text": "Any rotor, provided the correction mass is large enough"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "A thin flywheel whose length is much smaller than its diameter",
+   "distractorRationale": {
+    "a": "The axial spread of the unbalances means that moments matter, so two planes are needed.",
+    "b": "Several wheels spread along the shaft produce moments as well as forces.",
+    "c": "Correct: For a narrow disc, all the unbalance lies essentially in one transverse plane, so the moment condition is automatically satisfied once the force vector sum is zero.",
+    "d": "If the unbalances lie in different planes, a single mass cannot cancel the moment however large it is."
+   },
+   "explanation": "For a narrow disc, all the unbalance lies essentially in one transverse plane, so the moment condition is automatically satisfied once the force vector sum is zero. Long rotors have unbalances at different axial positions, so both force and moment must be balanced using at least two planes.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain, using a simple two-mass example, why a rotor can be statically balanced yet dynamically unbalanced. State the extra condition required for dynamic balance and what is felt at the bearings.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o2"
+   ],
+   "markingGuide": [
+    "Example: equal masses m at radius r, 180 degrees apart, in planes separated by a along the shaft",
+    "Vector sum of unbalances is zero, so the centre of mass is on the axis (static balance: it stays at rest on knife-edges)",
+    "The two rotating forces m r omega^2 are equal, opposite and a apart: they form a couple m r omega^2 a rotating with the shaft",
+    "Dynamic balance requires sum U z = 0 as well as sum U = 0",
+    "Bearings must supply an opposing rotating couple, giving oppositely directed rotating reactions of m r omega^2 a / L at bearing span L",
+    "Fix: add corrections in two planes"
+   ],
+   "explanation": "Static balance only guarantees that the net force vanishes. The unbalances here are separated axially, so their forces have a moment, and that rotating couple loads the bearings.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement about the trial-weight method for single-plane balancing is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It works at any speed, since the vibration vector is independent of speed"
+    },
+    {
+     "id": "b",
+     "text": "It requires the trial mass to be placed at a randomly different radius in each run"
+    },
+    {
+     "id": "c",
+     "text": "It determines the unbalance directly from a single run without adding any mass"
+    },
+    {
+     "id": "d",
+     "text": "It assumes the vibration changes linearly with unbalance, so the runs must be at the same speed with the same measurement reference"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It assumes the vibration changes linearly with unbalance, so the runs must be at the same speed with the same measurement reference",
+   "distractorRationale": {
+    "a": "The influence coefficient depends on speed, so both runs must use the same one.",
+    "b": "The trial mass radius and angle must be known; otherwise the influence coefficient cannot be found.",
+    "c": "One run gives only the response, not the influence coefficient; the trial run provides that calibration.",
+    "d": "Correct: The influence coefficient is the vibration change per unit added unbalance."
+   },
+   "explanation": "The influence coefficient is the vibration change per unit added unbalance. It is only constant if the system is linear and the speed, radius and reference mark are unchanged between the runs.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A rotor has unbalances of known size and angle in two transverse planes, and two chosen correction planes A and B. Describe how you would calculate the correction masses (size and angle) and how you would check them.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o3"
+   ],
+   "markingGuide": [
+    "Treat each unbalance as a vector U = m r at angle theta, with axial position z measured from plane A",
+    "Moment equation about A: sum U_i (z_i - z_A) + U_B (z_B - z_A) = 0, solved with complex numbers for U_B",
+    "Force equation: sum U_i + U_A + U_B = 0 gives U_A",
+    "Magnitude and angle of each U; divide by correction radius for mass",
+    "Opposite sign: correction goes opposite to the net unbalance direction (or remove mass at the same angle)",
+    "Check: total vector sum and total moment about any axial point are zero"
+   ],
+   "explanation": "Moments about one correction plane eliminate the other plane's unknown, which makes the two complex equations easy to solve in turn. The check is that both sums vanish.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A rotor that is statically balanced has its centre of mass on the axis of rotation.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.rotating-balancing.balancing.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Static balance means the vector sum of the unbalances is zero, which is the same as saying the centre of mass lies on the rotation axis. It does not guarantee that the moments of the unbalances about the axis cancel.",
+   "board": "internal"
+  }
+ ]
+}

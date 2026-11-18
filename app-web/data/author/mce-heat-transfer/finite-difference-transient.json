@@ -1,0 +1,413 @@
+{
+ "lessonTitle": "Transient Finite-Difference Methods",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A weld cools through a thin steel plate over seconds, and a simulation must advance the temperature of thousands of nodes by tiny steps. Make the step too long and the computed temperatures swing wildly and blow up, even though the physics is gentle. The cure is a rule about the time step called the stability criterion."
+  },
+  {
+   "type": "text",
+   "markdown": "Transient conduction on a grid combines the spatial finite-difference approximation with a time discretisation: temperatures at the new time level $p+1$ are found from those at the present level $p$. Writing the energy balance on a node (energy stored equals net conduction in) gives the nodal equation. How the conduction terms are evaluated, at the old or the new time, defines the scheme."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Mesh Fourier number",
+   "text": "$Fo=\\alpha\\Delta t/(\\Delta x)^2$ is a dimensionless time step, with $\\alpha=k/(\\rho c)$ the thermal diffusivity (m$^2$/s), $\\Delta t$ the time step (s) and $\\Delta x$ the node spacing (m). It compares the time step with the time heat takes to diffuse one cell."
+  },
+  {
+   "type": "math",
+   "latex": "T_i^{p+1}=Fo\\left(T_{i-1}^p+T_{i+1}^p\\right)+(1-2Fo)\\,T_i^p",
+   "caption": "Explicit scheme, interior node, 1-D, no generation; superscript is the time level, subscript the node"
+  },
+  {
+   "type": "text",
+   "markdown": "In the **explicit** scheme the right-hand side uses only known old temperatures, so each new node temperature is computed directly with no equation solving. The cost per step is tiny. But the scheme is only **conditionally stable**: if $1-2Fo<0$, the node would be assigned a weight that makes its new temperature lower the larger its old temperature is, which is unphysical, and errors grow by alternating overshoot."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Node type",
+    "Explicit update",
+    "Stability limit"
+   ],
+   "rows": [
+    [
+     "1-D interior",
+     "$T^{p+1}=Fo(T_{i-1}+T_{i+1})+(1-2Fo)T_i$",
+     "$Fo\\le\\tfrac12$"
+    ],
+    [
+     "2-D interior ($\\Delta x=\\Delta y$)",
+     "$T^{p+1}=Fo(\\sum_4T_{nb})+(1-4Fo)T_i$",
+     "$Fo\\le\\tfrac14$"
+    ],
+    [
+     "1-D convective surface",
+     "$T_0^{p+1}=2Fo(T_1+Bi\\,T_\\infty)+(1-2Fo-2FoBi)T_0$",
+     "$Fo(1+Bi)\\le\\tfrac12$"
+    ],
+    [
+     "2-D convective surface (plane)",
+     "$T^{p+1}=Fo(2T_{in}+T_a+T_b+2BiT_\\infty)+(1-4Fo-2FoBi)T$",
+     "$Fo(2+Bi)\\le\\tfrac12$"
+    ]
+   ],
+   "caption": "Explicit transient nodal equations ($Bi=h\\Delta x/k$); the strictest limit on the grid governs"
+  },
+  {
+   "type": "worked_example",
+   "title": "Two explicit time steps in a steel bar",
+   "prompt": "A steel bar has $\\alpha=1.2\\times10^{-5}$ m$^2$/s (typical) and is modelled with nodes 0 to 4 spaced $\\Delta x=10$ mm apart. Initially every node is at 20 $^\\circ$C. At $t=0$ node 0 is raised to 100 $^\\circ$C and held there; node 4 is held at 20 $^\\circ$C. Use the explicit scheme with a time step $\\Delta t=2$ s and find the temperatures of nodes 1 to 3 after two steps.",
+   "steps": [
+    {
+     "text": "Mesh Fourier number: $Fo=\\alpha\\Delta t/\\Delta x^2=1.2\\times10^{-5}\\times2/(0.01)^2=0.24$. This is below 0.5, so the scheme is stable.",
+     "latex": "Fo=\\frac{\\alpha\\,\\Delta t}{(\\Delta x)^2}"
+    },
+    {
+     "text": "Explicit interior-node update: the new temperature is computed from the old temperatures of the node and its neighbours only.",
+     "latex": "T_i^{p+1}=Fo\\left(T_{i-1}^p+T_{i+1}^p\\right)+(1-2Fo)\\,T_i^p"
+    },
+    {
+     "text": "Step 1 (coefficient $1-2Fo=0.52$): $T_1=0.24(100+20)+0.52(20)=39.20$; $T_2=0.24(20+20)+0.52(20)=20.00$; $T_3=20.00$ $^\\circ$C."
+    },
+    {
+     "text": "Step 2 uses the step-1 values: $T_1=0.24(100+20.0)+0.52(39.20)=49.184$; $T_2=0.24(39.20+20.0)+0.52(20.0)=24.608$; $T_3=0.24(20.0+20)+0.52(20)=20.00$ $^\\circ$C."
+    }
+   ],
+   "answer": "After two steps (4 s): $T_1\\approx49.18$, $T_2\\approx24.61$ and $T_3\\approx20.00$ $^\\circ$C. The heat front moves one node per step at most."
+  },
+  {
+   "type": "text",
+   "markdown": "The **implicit** scheme evaluates the conduction terms at the new time level, so the new temperatures all appear together in a set of simultaneous equations, one per node. For a 1-D interior node: $(1+2Fo)T_i^{p+1}-Fo(T_{i-1}^{p+1}+T_{i+1}^{p+1})=T_i^p$. The set is solved each step (efficiently, by the tridiagonal algorithm in 1-D). Because the diagonal coefficient $1+2Fo$ is always positive, the implicit scheme is unconditionally stable for any $Fo$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Maximum stable time step for an aluminium plate",
+   "prompt": "An aluminium plate ($k=237$ W/m K, $\\rho=2700$ kg/m$^3$, $c=900$ J/kg K, typical) is modelled with spacing $\\Delta x=5$ mm. Find the largest stable explicit time step for (a) one-dimensional interior nodes, (b) two-dimensional interior nodes with $\\Delta y=\\Delta x$, and (c) a surface node with convection $h=100$ W/m$^2$K.",
+   "steps": [
+    {
+     "text": "Thermal diffusivity $\\alpha=k/(\\rho c)=237/(2700\\times900)=9.750e-05$ m$^2$/s.",
+     "latex": "\\alpha=\\frac{k}{\\rho c}"
+    },
+    {
+     "text": "(a) The coefficient of the old node temperature, $1-2Fo$, must not be negative, so $Fo\\le\\tfrac12$ and $\\Delta t\\le\\Delta x^2/(2\\alpha)=(0.005)^2/(2\\times9.750e-05)=0.128$ s.",
+     "latex": "Fo\\le\\frac12\\Rightarrow\\Delta t\\le\\frac{\\Delta x^2}{2\\alpha}"
+    },
+    {
+     "text": "(b) In 2-D the centre coefficient is $1-4Fo$, so $Fo\\le\\tfrac14$ and $\\Delta t\\le\\Delta x^2/(4\\alpha)=0.064$ s.",
+     "latex": "Fo\\le\\frac14\\Rightarrow\\Delta t\\le\\frac{\\Delta x^2}{4\\alpha}"
+    },
+    {
+     "text": "(c) For a 1-D convective surface node the coefficient is $1-2Fo(1+Bi)$ with $Bi=h\\Delta x/k=100\\times0.005/237=0.0021$, so $Fo(1+Bi)\\le\\tfrac12$ and $\\Delta t\\le\\Delta x^2/[2\\alpha(1+Bi)]=0.128$ s. The surface node is the most restrictive, and the smallest limit governs the whole grid.",
+     "latex": "Fo(1+Bi)\\le\\frac12"
+    }
+   ],
+   "answer": "(a) 0.128 s, (b) 0.064 s, (c) 0.128 s. Use the smallest relevant limit for the grid."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Aspect",
+    "Explicit",
+    "Implicit"
+   ],
+   "rows": [
+    [
+     "Evaluation of conduction terms",
+     "Old time level $p$",
+     "New time level $p+1$"
+    ],
+    [
+     "Stability",
+     "Conditional: $Fo\\le\\tfrac12$ (1-D), $\\tfrac14$ (2-D)",
+     "Unconditional for any $\\Delta t$"
+    ],
+    [
+     "Cost per step",
+     "Low: direct update of each node",
+     "Higher: solve a system of equations"
+    ],
+    [
+     "Time step",
+     "Limited by stability, so many small steps",
+     "Chosen by accuracy requirements"
+    ],
+    [
+     "Typical use",
+     "Simple codes; short transients; fine control",
+     "Long transients; fine meshes; stiff problems"
+    ]
+   ],
+   "caption": "Explicit versus implicit finite-difference schemes"
+  },
+  {
+   "type": "text",
+   "markdown": "Refining the mesh has a double penalty for the explicit scheme. Halving $\\Delta x$ doubles the number of nodes in 1-D and, because $\\Delta t_{max}\\propto\\Delta x^2$, quarters the time step, so the cost for a given simulated time rises by a factor of 8. Implicit methods avoid the time-step restriction but need more work per step, and accuracy still demands reasonably small $\\Delta t$."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Compute $\\alpha=k/(\\rho c)$ and choose $\\Delta x$.",
+    "Pick $\\Delta t$ so that $Fo$ satisfies the stability limit of every node type in the grid (interior and boundary).",
+    "Advance each node by its explicit update, using only old values; update boundary nodes with their own equations.",
+    "Repeat step by step to the required time; record $T$ against time.",
+    "If the required $\\Delta t$ is impractically small, switch to the implicit scheme."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Check every node type",
+   "text": "The stability limit is set by the strictest node in the grid: surface nodes with convection or corner nodes are more restrictive than interior nodes. Do not use a time step that is stable for the interior only. And stability is not accuracy: a stable step may still be too long to follow the temperature history precisely."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Stability limits",
+   "text": "Explicit: $Fo\\le1/2$ (1-D) or $1/4$ (2-D) for interior nodes, giving $\\Delta t\\le\\Delta x^2/(2\\alpha)$ or $\\Delta x^2/(4\\alpha)$. Implicit schemes have no such limit, because their equations are diagonally dominant for any $\\Delta t$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Explicit 1-D interior update: $T_i^{p+1}=Fo(T_{i-1}^p+T_{i+1}^p)+(1-2Fo)T_i^p$ with $Fo=\\alpha\\Delta t/\\Delta x^2$.",
+    "Stability: $Fo\\le1/2$ in 1-D and $Fo\\le1/4$ in 2-D (interior); surface nodes require $Fo(1+Bi)\\le1/2$ in 1-D.",
+    "Maximum stable step: $\\Delta t=\\Delta x^2/(2\\alpha)$ in 1-D; halving $\\Delta x$ cuts $\\Delta t_{max}$ by 4.",
+    "Implicit schemes are unconditionally stable but need a system solution each step."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The explicit finite-difference scheme for transient conduction is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "unconditionally stable for any time step"
+    },
+    {
+     "id": "b",
+     "text": "conditionally stable, requiring $Fo\\le1/2$ for 1-D interior nodes"
+    },
+    {
+     "id": "c",
+     "text": "stable only for $Fo\\ge1/2$"
+    },
+    {
+     "id": "d",
+     "text": "unstable for all time steps"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "conditionally stable, requiring $Fo\\le1/2$ for 1-D interior nodes",
+   "distractorRationale": {
+    "a": "That is the property of implicit schemes.",
+    "c": "A large $Fo$ causes instability, not a small one.",
+    "d": "It is stable when the time step satisfies the Fourier number limit."
+   },
+   "explanation": "The explicit update has coefficient $1-2Fo$ on the old node temperature. Keeping it non-negative requires $Fo\\le1/2$, which limits $\\Delta t$ to $\\Delta x^2/(2\\alpha)$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The mesh Fourier number used in the explicit stability criterion is defined as",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$Fo=\\alpha\\Delta x/\\Delta t$"
+    },
+    {
+     "id": "b",
+     "text": "$Fo=\\Delta t/(\\alpha\\Delta x^2)$"
+    },
+    {
+     "id": "c",
+     "text": "$Fo=h\\Delta x/k$"
+    },
+    {
+     "id": "d",
+     "text": "$Fo=\\alpha\\Delta t/(\\Delta x)^2$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$Fo=\\alpha\\Delta t/(\\Delta x)^2$",
+   "distractorRationale": {
+    "a": "The dimensions do not form a dimensionless group.",
+    "b": "This inverts $\\alpha$ and has wrong dimensions.",
+    "c": "This is the grid Biot number $Bi$."
+   },
+   "explanation": "$\\alpha\\Delta t/\\Delta x^2$ is the ratio of the time step to the diffusion time across a cell. It must be at most 1/2 (1-D) for stability of the explicit scheme.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "In a one-dimensional explicit calculation with $Fo=0.25$, the old temperatures at three adjacent nodes are $T_{i-1}=90$, $T_i=50$ and $T_{i+1}=40$ $^\\circ$C. Find $T_i$ after one time step in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o1"
+   ],
+   "correctValue": 57.5,
+   "tolerance": 0.05,
+   "unit": "degC",
+   "explanation": "$T_i^{p+1}=Fo(T_{i-1}+T_{i+1})+(1-2Fo)T_i=0.25(130)+0.5(50)=32.5+25.0=57.5$ $^\\circ$C. With $Fo=0.25$ it is stable, and the new temperature lies between the neighbours and the old value.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A concrete slab has $\\alpha=7.0\\times10^{-7}$ m$^2$/s (typical) and is modelled with a one-dimensional grid of $\\Delta x=10$ mm. Find the maximum stable time step of the explicit scheme for interior nodes in seconds.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o2"
+   ],
+   "correctValue": 71.4,
+   "tolerance": 0.5,
+   "unit": "s",
+   "explanation": "The criterion $Fo\\le1/2$ gives $\\Delta t\\le\\Delta x^2/(2\\alpha)=(0.01)^2/(2\\times7.0\\times10^{-7})=71.4$ s. A time step of about 71 s is practical for concrete because it diffuses slowly.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel plate with $\\alpha=1.2\\times10^{-5}$ m$^2$/s is modelled in two dimensions with $\\Delta x=\\Delta y=5$ mm. Find the maximum stable explicit time step for interior nodes in seconds.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o2"
+   ],
+   "correctValue": 0.521,
+   "tolerance": 0.01,
+   "unit": "s",
+   "explanation": "In 2-D the criterion is $Fo\\le1/4$, so $\\Delta t\\le\\Delta x^2/(4\\alpha)=(0.005)^2/(4\\times1.2\\times10^{-5})=0.521$ s. The time step is half that of the 1-D limit (1.042 s).",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An explicit 1-D transient calculation uses the maximum stable time step. The node spacing is halved. Ignoring boundary details, the work needed to simulate the same total time is multiplied by about",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "8"
+    },
+    {
+     "id": "b",
+     "text": "2"
+    },
+    {
+     "id": "c",
+     "text": "4"
+    },
+    {
+     "id": "d",
+     "text": "16"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "8",
+   "distractorRationale": {
+    "b": "This counts only the number of nodes doubling.",
+    "c": "This counts only the number of time steps rising fourfold.",
+    "d": "This would be a 2-D problem with four times as many nodes and four times as many steps."
+   },
+   "explanation": "Halving $\\Delta x$ doubles the nodes in 1-D (factor 2) and, since $\\Delta t_{max}\\propto\\Delta x^2$, requires four times as many steps (factor 4), so the work rises by $2\\times4=8$. In 2-D it would be 16.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "When $Fo=1/2$ in the 1-D explicit scheme, the new temperature of an interior node is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "equal to its own old temperature"
+    },
+    {
+     "id": "b",
+     "text": "the sum of the two neighbours' temperatures"
+    },
+    {
+     "id": "c",
+     "text": "the average of the old temperatures of its two neighbours"
+    },
+    {
+     "id": "d",
+     "text": "unstable and meaningless"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "the average of the old temperatures of its two neighbours",
+   "distractorRationale": {
+    "a": "This would need $Fo=0$.",
+    "b": "This would give a temperature twice as large; the weights sum to 1.",
+    "d": "$Fo=1/2$ is exactly on the stability limit but the scheme is still stable."
+   },
+   "explanation": "With $Fo=1/2$ the coefficient $1-2Fo$ is zero, so $T_i^{p+1}=\\tfrac12(T_{i-1}^p+T_{i+1}^p)$. The node ignores its own old temperature; any larger $Fo$ would give a negative weight.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A surface node in a 1-D explicit calculation convects to fluid at 20 $^\\circ$C with grid Biot number $Bi=0.4$ and $Fo=0.2$. The old temperatures are $T_0=150$ $^\\circ$C (surface node) and $T_1=140$ $^\\circ$C. Using $T_0^{p+1}=2Fo(T_1+Bi\\,T_\\infty)+(1-2Fo-2FoBi)T_0$, find $T_0^{p+1}$ in $^\\circ$C and confirm that $Fo(1+Bi)\\le1/2$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o1",
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o2"
+   ],
+   "correctValue": 125.2,
+   "tolerance": 0.05,
+   "unit": "degC",
+   "explanation": "$Fo(1+Bi)=0.2\\times1.4=0.28\\le0.5$, so the step is stable. $T_0^{p+1}=2(0.2)(140+0.4\\times20)+(1-0.4-0.16)(150)=0.4\\times148+0.44\\times150=59.2+66.0=125.2$ $^\\circ$C. The surface cools because the convective term lowers its temperature.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare the explicit and implicit finite-difference schemes for transient conduction in terms of stability and cost per step. Describe a situation where each is preferred.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o3"
+   ],
+   "markingGuide": [
+    "Explicit: new temperatures computed directly from old values; cost per step is low, but stability needs $Fo\\le1/2$ (1-D) or $1/4$ (2-D), so $\\Delta t\\le\\Delta x^2/(2\\alpha)$.",
+    "Implicit: conduction terms at the new time; a system of simultaneous equations must be solved each step (tridiagonal in 1-D), so the cost per step is higher.",
+    "Implicit is unconditionally stable, so $\\Delta t$ is chosen for accuracy.",
+    "Explicit for short transients and simple codes with moderate meshes; implicit for long transients, fine meshes and large $\\alpha$ where the explicit limit would force very small steps."
+   ],
+   "explanation": "A good answer sets the stability benefit of the implicit scheme against its extra work per step, and indicates that the choice depends on the required duration and mesh fineness.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain physically why the explicit scheme becomes unstable when $Fo>1/2$ (1-D interior nodes). Use the nodal equation to show what goes wrong, and describe the symptom in the computed temperatures.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient.o2"
+   ],
+   "markingGuide": [
+    "The update is $T_i^{p+1}=Fo(T_{i-1}^p+T_{i+1}^p)+(1-2Fo)T_i^p$.",
+    "For $Fo>1/2$ the coefficient of the node's own old temperature, $1-2Fo$, is negative, so a hotter node would become colder, and could be colder than its neighbours.",
+    "This violates the second law: a node cannot end up colder than both neighbours with heat flowing from them, since heat only flows from hot to cold.",
+    "Symptom: temperatures oscillate from step to step with growing amplitude, producing nonsense (overshoots beyond the boundary values) that blows up."
+   ],
+   "explanation": "The weights in a physical update must be non-negative since the new temperature must be an averaging of old temperatures. A negative weight allows extrapolation beyond the neighbouring values, which amplifies errors.",
+   "board": "internal"
+  }
+ ]
+}

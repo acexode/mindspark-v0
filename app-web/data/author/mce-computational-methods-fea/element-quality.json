@@ -1,0 +1,375 @@
+{
+ "lessonTitle": "Element Quality and Locking in Bending",
+ "estimatedMinutes": 38,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 100 mm long, 10 mm deep aluminium strip is loaded at its tip by 100 N and meshed with one layer of ten square four-node quadrilaterals. Beam theory predicts a tip deflection of 5.71 mm, yet the solver reports 3.88 mm, only 68 per cent. Nothing is wrong with the load or the supports: the elements are too stiff in bending, a numerical artefact known as locking, and no amount of staring at the contour plot will reveal it."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** The accuracy of a finite element solution depends on two things you control: the **shape** of each element and the **kind** of element. A well-shaped element has a mapping from its ideal square or equilateral shape to the real shape that is nearly uniform; a distorted element has a poorly conditioned mapping and loses accuracy. Independently, some element types cannot represent certain deformation modes and respond with spurious stiffness."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Shape measures",
+   "text": "**Aspect ratio**: length of the longest edge divided by the length of the shortest edge (a simple definition; some programs use the ratio of the longest edge to the smallest altitude). **Skewness (equiangle)**: for a quadrilateral $\\max\\{(\\theta_{max}-90^{\\circ})/90^{\\circ},\\ (90^{\\circ}-\\theta_{min})/90^{\\circ}\\}$; for a triangle $\\max\\{(\\theta_{max}-60^{\\circ})/120^{\\circ},\\ (60^{\\circ}-\\theta_{min})/60^{\\circ}\\}$. A value of 0 is ideal and 1 is degenerate. Typical guidance is aspect ratio below about 5 and skewness below about 0.5 in important regions; these are rules of thumb and vary between codes."
+  },
+  {
+   "type": "worked_example",
+   "title": "Measuring two quadrilaterals",
+   "prompt": "Quad A has corners $(0,0)$, $(40,0)$, $(40,5)$, $(0,5)$ mm. Quad B has corners $(0,0)$, $(30,0)$, $(40,20)$, $(10,20)$ mm. Find the aspect ratio and skewness of each.",
+   "steps": [
+    {
+     "text": "Quad A edges: $40$, $5$, $40$, $5$ mm; all four angles $90^{\\circ}$.",
+     "latex": "AR_A=\\frac{40}{5}=8.00,\\quad \\text{skew}_A=0.00"
+    },
+    {
+     "text": "Quad B edges from the coordinates.",
+     "latex": "\\ell=\\{30.00,\\ 22.36,\\ 30.00,\\ 22.36\\}\\ \\text{mm}"
+    },
+    {
+     "text": "Quad B angles (interior) from dot products of adjacent edge vectors.",
+     "latex": "\\theta=\\{63.4^{\\circ},\\ 116.6^{\\circ},\\ 63.4^{\\circ},\\ 116.6^{\\circ}\\}"
+    },
+    {
+     "text": "Apply the definitions to quad B.",
+     "latex": "AR_B=\\frac{30.00}{22.36}=1.34,\\quad \\text{skew}_B=\\max\\left\\{\\frac{116.6-90}{90},\\frac{90-63.4}{90}\\right\\}=0.295"
+    }
+   ],
+   "answer": "Quad A has a high aspect ratio (8.0) but is perfectly rectangular (skewness 0); quad B has a modest aspect ratio (1.34) but a skewness of 0.30, so it is moderately sheared (acceptable by the usual 0.5 rule of thumb but not ideal). The two measures detect different defects and both must be checked."
+  },
+  {
+   "type": "text",
+   "markdown": "**Shear locking.** In pure bending a beam cross-section rotates and the axial strain varies linearly through the depth, while the shear strain is zero. A four-node bilinear element has straight edges: when it is bent, its edges remain straight, so the displacement field it can produce contains a term in $xy$ that is accompanied by a **spurious (parasitic) shear strain**. The element stores shear energy that does not exist physically, so it appears to be stiffer in bending; the thinner and longer the element relative to its depth, the more the parasitic shear dominates and the stiffer the response ('locking'). Elements of higher order can bend and so do not lock in the same way."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Element choice",
+    "Behaviour in thin-walled bending",
+    "Remedy / comment"
+   ],
+   "rows": [
+    [
+     "4-node quad, full (2×2) integration",
+     "Locks: over-stiff, deflection far too small",
+     "Needs many elements through thickness; avoid for bending"
+    ],
+    [
+     "4-node quad, reduced (1-point) integration",
+     "No parasitic shear, but hourglass (zero-energy) modes",
+     "Add hourglass control; check the energy of the hourglass modes"
+    ],
+    [
+     "8-node quadrilateral (quadratic)",
+     "Represents curvature, accurate with few elements",
+     "Costs more per element"
+    ],
+    [
+     "4-node quad with incompatible modes / selective integration",
+     "Removes parasitic shear without hourglassing",
+     "Good general choice in many codes"
+    ],
+    [
+     "Shell elements",
+     "Designed for thin-walled structures",
+     "Use when thickness is much less than the other dimensions"
+    ]
+   ],
+   "caption": "Element types for bending problems"
+  },
+  {
+   "type": "worked_example",
+   "title": "Locking study of a cantilever strip",
+   "prompt": "A cantilever strip is 100 mm long, 10 mm deep and 1 mm thick, with $E=70$ GPa, $\\nu=0.3$ (plane stress). A tip load of 100 N is applied. Beam theory gives $\\delta=PL^3/(3EI)$ with $I=th^3/12$. FE models use four-node quads with full integration. Compare the tip deflections.",
+   "steps": [
+    {
+     "text": "Second moment of area and Euler-Bernoulli tip deflection.",
+     "latex": "I=\\frac{(1)(10)^3}{12}=83.33\\ \\text{mm}^4,\\quad \\delta=\\frac{(100)(100)^3}{3(70\\,000)(83.33)}=5.714\\ \\text{mm}"
+    },
+    {
+     "text": "Run four meshes (elements along $\\times$ through the depth) and record the computed tip deflection in mm (computed with a four-node plane-stress code with $2\\times2$ Gauss integration).",
+     "latex": "10\\times1:\\ 3.879,\\quad 10\\times2:\\ 4.063,\\quad 20\\times4:\\ 5.202,\\quad 40\\times8:\\ 5.599"
+    },
+    {
+     "text": "Express each as a percentage of the beam-theory value.",
+     "latex": "67.9\\%,\\quad 71.1\\%,\\quad 91.0\\%,\\quad 98.0\\%"
+    },
+    {
+     "text": "Interpretation: the one-layer mesh is far too stiff; the result approaches the exact value only as many elements are placed through the depth, so the parasitic shear is diluted. Beam theory ignores shear deformation, which adds about 0.045 mm for this strip, so 98 per cent is close to full convergence.",
+     "latex": "\\delta_{\\text{shear}}\\approx\\frac{PL}{\\kappa GA}=\\frac{(100)(100)}{(5/6)(26\\,900)(10)}=0.045\\ \\text{mm}"
+    }
+   ],
+   "answer": "The coarsest mesh gives only 68 per cent of the beam-theory deflection. Refining through the depth reaches 98 per cent with 320 elements, so locked meshes waste computational effort and are best replaced by a better element."
+  },
+  {
+   "type": "text",
+   "markdown": "**Reduced integration and hourglassing.** Evaluating the element stiffness with one Gauss point removes the parasitic shear (the shear strain is exactly zero at the centre in pure bending) and makes the element cheaper, but it leaves two **hourglass modes**: deformation patterns that give zero strain at the single sample point and hence no stiffness. A single layer of such elements bent like the strip above can deform as a mechanism with enormous deflection, as the one-point test gave, and a model with these modes needs hourglass control. Selective integration, incompatible modes or higher-order elements avoid both problems."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Check aspect ratio and skewness in regions of interest, not only the average.",
+    "Always compare a simple bending result with hand theory to expose locking early.",
+    "Thin-walled structures in bending: choose shell elements, or quadratic solids with enough elements through the thickness.",
+    "Refine so the shape measures stay within limits: a few well-shaped elements beat many distorted ones."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Locking looks plausible",
+   "text": "A locked model produces smooth, reasonable-looking contours and passes the equilibrium check, but the displacements and stresses are too small. This is non-conservative: the structure looks safer than it is."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Choosing the element for a thin-walled bending problem",
+   "text": "Use shell elements when the thickness is much smaller than the other dimensions (typically less than about one tenth of the span). If solids are required, use quadratic (8-node or 20-node) elements or elements with incompatible modes and put at least three or four elements through the depth. In all cases verify with a hand calculation."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Element quality is measured by aspect ratio and skewness; high aspect ratio and large angles reduce accuracy, and the two measures detect different defects.",
+    "Four-node fully integrated elements show shear locking in bending: the parasitic shear makes them over-stiff, giving, for example, only 68 per cent of the beam-theory deflection with one layer of elements.",
+    "Remedies are higher-order elements, selective or reduced integration with hourglass control, incompatible modes, or shell elements for thin-walled structures."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A rectangular mesh element has corners at $(0,0)$, $(24,0)$, $(24,3)$ and $(0,3)$ mm. Compute its aspect ratio (longest edge divided by shortest edge).",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o1"
+   ],
+   "correctValue": 8.0,
+   "tolerance": 0.05,
+   "unit": "(dimensionless)",
+   "explanation": "The edges are 24 mm and 3 mm, so the ratio is $24/3=8$. All angles are $90^{\\circ}$, so the skewness is zero; such an element would be flagged on aspect ratio even though it is not distorted in angle.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A quadrilateral element has interior angles of $60^{\\circ}$, $120^{\\circ}$, $60^{\\circ}$ and $120^{\\circ}$. Using the equiangle definition (reference angle $90^{\\circ}$), compute its skewness.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o1"
+   ],
+   "correctValue": 0.3333333333333333,
+   "tolerance": 0.01,
+   "unit": "(dimensionless)",
+   "explanation": "The skewness is $\\max\\{(120-90)/90,\\ (90-60)/90\\}=30/90=0.333$. Both terms agree because the angles deviate equally above and below $90^{\\circ}$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A triangular element has interior angles of $30^{\\circ}$, $30^{\\circ}$ and $120^{\\circ}$. Using the equiangle definition for triangles, $\\max\\{(\\theta_{max}-60)/120,\\ (60-\\theta_{min})/60\\}$, find the skewness.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o1"
+   ],
+   "correctValue": 0.5,
+   "tolerance": 0.01,
+   "unit": "(dimensionless)",
+   "explanation": "The first term is $(120-60)/120=0.5$ and the second is $(60-30)/60=0.5$. A skewness of 0.5 is at the border of what is usually considered acceptable, so this element would be questionable in a region of high stress gradient.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What causes shear locking in a four-node quadrilateral element used for a slender beam in bending?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The element's straight edges cannot bend without producing a spurious shear strain, which adds artificial stiffness"
+    },
+    {
+     "id": "b",
+     "text": "The material is assumed to be incompressible"
+    },
+    {
+     "id": "c",
+     "text": "The mesh has too few degrees of freedom to satisfy equilibrium"
+    },
+    {
+     "id": "d",
+     "text": "The loads are applied at nodes instead of over a surface"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The element's straight edges cannot bend without producing a spurious shear strain, which adds artificial stiffness",
+   "distractorRationale": {
+    "b": "Incompressibility causes volumetric locking, a different phenomenon.",
+    "c": "The number of degrees of freedom is not what is at issue; the interpolation cannot represent curvature without shear.",
+    "d": "Nodal loads are fine; the problem lies in the kinematics of the element."
+   },
+   "explanation": "In pure bending the exact shear strain is zero. The bilinear element represents bending through a term proportional to $xy$, whose derivative gives a non-zero shear strain over the element. The resulting shear energy opposes bending, so the element is too stiff, increasingly so for slender elements.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cantilever beam analysed with one layer of fully integrated four-node quadrilaterals gives a tip deflection of 70 per cent of the hand-calculated value. What is the most appropriate response?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Switch to quadratic or incompatible-mode elements, or refine through the depth, and re-check against hand theory"
+    },
+    {
+     "id": "b",
+     "text": "Accept the result since the stress contours look smooth"
+    },
+    {
+     "id": "c",
+     "text": "Increase the material modulus to compensate"
+    },
+    {
+     "id": "d",
+     "text": "Reduce the load until the deflection matches"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Switch to quadratic or incompatible-mode elements, or refine through the depth, and re-check against hand theory",
+   "distractorRationale": {
+    "b": "Smooth contours do not show locking; the displacements are still too small.",
+    "c": "Changing the modulus would give nonsense for any other case and is not a fix.",
+    "d": "Scaling the load would hide the error rather than remove it."
+   },
+   "explanation": "A deflection far below the beam-theory value in a bending-dominated problem is the classic symptom of locking. Elements with better bending behaviour, or several elements through the depth, remove the spurious stiffness.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the main drawback of using one-point (reduced) integration in a four-node quadrilateral to avoid locking?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Hourglass modes: deformation patterns with zero strain at the integration point and therefore no stiffness"
+    },
+    {
+     "id": "b",
+     "text": "The element becomes more expensive than the fully integrated one"
+    },
+    {
+     "id": "c",
+     "text": "It cannot represent a uniform stretch"
+    },
+    {
+     "id": "d",
+     "text": "It only works for triangular elements"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Hourglass modes: deformation patterns with zero strain at the integration point and therefore no stiffness",
+   "distractorRationale": {
+    "b": "Reduced integration is cheaper, not more expensive.",
+    "c": "Uniform strain states are represented exactly at the single point.",
+    "d": "The technique is used for quadrilateral and hexahedral elements."
+   },
+   "explanation": "With a single sample point the strain components vanish for the hourglass displacement patterns, so they cost no energy. Unless controlled, these modes can grow and give unrealistically large deflections, as in the one-layer cantilever with a single Gauss point.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 1.2 mm thick aluminium sheet panel, 400 mm by 600 mm, is loaded by wind pressure and bends significantly. Which element choice is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Shell elements, because the thickness is much smaller than the other dimensions and bending dominates"
+    },
+    {
+     "id": "b",
+     "text": "Four-node fully integrated plane-stress quadrilaterals"
+    },
+    {
+     "id": "c",
+     "text": "Three-node triangles with one element across the thickness"
+    },
+    {
+     "id": "d",
+     "text": "One-dimensional bar elements"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Shell elements, because the thickness is much smaller than the other dimensions and bending dominates",
+   "distractorRationale": {
+    "b": "These lock in bending and cannot represent out-of-plane behaviour.",
+    "c": "Constant-strain triangles are even stiffer in bending.",
+    "d": "Bar elements carry axial force only."
+   },
+   "explanation": "The thickness-to-span ratio is about $1.2/400=0.003$, far below 0.1, so classical thin-shell or plate theory applies. Shell elements carry out-of-plane bending and avoid the need for a fine solid mesh through the thickness.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A hand calculation for a cantilever gives a tip deflection of 4.4 mm while an FE model gives 3.1 mm. Express the FE result as a percentage of the hand calculation.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o2"
+   ],
+   "correctValue": 70.45454545454545,
+   "tolerance": 0.2,
+   "unit": "percent",
+   "explanation": "The ratio is $3.1/4.4=0.705$, i.e. 70.5 per cent. A shortfall of nearly 30 per cent in a bending problem points to locking or an over-stiff boundary, and should lead to an element or mesh change before any stresses are used.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain, in terms of the element's displacement field, why a four-node fully integrated quadrilateral suffers from shear locking in bending, and list two remedies together with one disadvantage of each.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o2"
+   ],
+   "markingGuide": [
+    "Bilinear field: edges remain straight, so bending of the element creates a shear strain term (parasitic shear) where the exact value is zero",
+    "Parasitic shear stores energy that resists bending: over-stiff element, worse for slender elements",
+    "Remedy: reduced/selective integration; disadvantage: hourglass modes (needs control) or complexity",
+    "Remedy: higher-order (quadratic) elements or incompatible modes; disadvantage: more cost / sensitivity to distortion",
+    "Or use shell elements, or refine with many elements through the depth (costly)"
+   ],
+   "explanation": "Locking arises because the interpolation cannot represent pure bending without also generating a shear strain. Remedies either change the interpolation (quadratic, incompatible modes) or the integration of the shear part, and each has a price in cost or stability.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "You are asked to analyse a thin-walled aluminium channel (1.5 mm wall) loaded in bending. State the element type and meshing choices you would make, the element quality checks you would apply, and how you would verify that locking is not affecting the result.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o1",
+    "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.o3"
+   ],
+   "markingGuide": [
+    "Shell elements (or quadratic solids with several elements through thickness): thickness far smaller than span",
+    "Mesh with controlled aspect ratio (e.g. below about 5) and low skewness, particularly in regions of high gradient",
+    "Check element quality metrics (aspect ratio, skewness, Jacobian) and fix flagged elements",
+    "Verify with a hand calculation of a simple bending case (e.g. beam theory deflection) to expose locking",
+    "Compare with a finer mesh or a different element formulation; results should agree within a small tolerance"
+   ],
+   "explanation": "The choice of element is driven by the dominant behaviour (bending of a thin wall). Quality metrics protect against distortion errors, while a comparison with theory or an alternative element is the only way to detect locking, since the contours alone look plausible.",
+   "board": "internal"
+  }
+ ]
+}

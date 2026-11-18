@@ -1,0 +1,366 @@
+{
+ "lessonTitle": "Solving the Discrete System: Tridiagonal, Direct and Iterative Solvers",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A cooling fin 0.20 m long gives a one-dimensional temperature equation that a 4-interval grid turns into just three equations, solved by hand in minutes. A real model of the same fin with 100 000 intervals gives 100 000 equations; a dense solver would need about 80 GB of memory for the matrix, while a tridiagonal solver needs a few megabytes. The structure of the equations, not their number, decides which solver is sensible."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** Discretising a boundary value problem on a grid gives a linear system $\\mathbf{A}\\mathbf{u}=\\mathbf{b}$. For one-dimensional diffusion each equation involves only a node and its two neighbours, so $\\mathbf{A}$ is **tridiagonal**: non-zero only on the main diagonal and the two diagonals adjacent to it. Finite-element and finite-difference matrices in two and three dimensions are likewise **sparse**: almost all entries are zero. A good solver uses that structure."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Direct and iterative solvers",
+   "text": "A **direct solver** (Gauss elimination, LU, Cholesky) finds $\\mathbf{u}$ after a fixed, finite number of operations, apart from round-off. An **iterative solver** (Jacobi, Gauss-Seidel, conjugate gradients) starts from a guess and improves it repeatedly until the residual $\\mathbf{r}=\\mathbf{b}-\\mathbf{A}\\mathbf{u}$ is below a tolerance; it never forms a factorisation."
+  },
+  {
+   "type": "text",
+   "markdown": "**Model problem: a fin.** A thin fin with perimeter losses satisfies $\\theta''=m^2\\theta$, where $\\theta=T-T_\\infty$ (K) and $m$ (1/m) combines the film coefficient, perimeter, conductivity and cross-section. With uniform spacing $h$ the three-point formula gives, at each interior node, $\\theta_{i-1}-(2+m^2h^2)\\theta_i+\\theta_{i+1}=0$. The known end values $\\theta_0$ and $\\theta_n$ move to the right-hand side of the first and last equations."
+  },
+  {
+   "type": "math",
+   "latex": "\\begin{bmatrix}-(2+m^2h^2)&1&&\\\\1&-(2+m^2h^2)&1&\\\\&\\ddots&\\ddots&\\ddots\\\\&&1&-(2+m^2h^2)\\end{bmatrix}\\begin{Bmatrix}\\theta_1\\\\\\theta_2\\\\\\vdots\\\\\\theta_{n-1}\\end{Bmatrix}=\\begin{Bmatrix}-\\theta_0\\\\0\\\\\\vdots\\\\-\\theta_n\\end{Bmatrix}",
+   "caption": "Tridiagonal system for the fin"
+  },
+  {
+   "type": "worked_example",
+   "title": "Solve a four-interval fin model",
+   "prompt": "A fin of length $L=0.20$ m has $m=10$ m$^{-1}$, root excess temperature $\\theta_0=75$ K and tip excess temperature $\\theta_L=25$ K. Use $n=4$ intervals and solve the tridiagonal system. The exact solution is $\\theta(x)=[\\theta_0\\sinh m(L-x)+\\theta_L\\sinh mx]/\\sinh mL$.",
+   "steps": [
+    {
+     "text": "Grid and coefficient: $h=0.05$ m so $m^2h^2=0.25$ and the diagonal is $-2.25$.",
+     "latex": "\\mathbf{A}=\\begin{bmatrix}-2.25&1&0\\\\1&-2.25&1\\\\0&1&-2.25\\end{bmatrix},\\quad \\mathbf{b}=\\{-75,\\ 0,\\ -25\\}^T"
+    },
+    {
+     "text": "Thomas algorithm, forward sweep: normalise each row by its pivot after eliminating the sub-diagonal. The modified super-diagonal $c'_i$ and right-hand side $d'_i$ are:",
+     "latex": "c'_1=-0.4444,\\ c'_2=-0.5538;\\quad d'_1=33.3333,\\ d'_2=18.4615,\\ d'_3=25.6236"
+    },
+    {
+     "text": "Back substitution: $\\theta_3=d'_3$, $\\theta_2=d'_2-c'_2\\theta_3$, $\\theta_1=d'_1-c'_1\\theta_2$.",
+     "latex": "\\theta_3=25.624,\\ \\theta_2=32.653,\\ \\theta_1=47.846\\ \\text{K}"
+    },
+    {
+     "text": "Exact values at $x=0.05,0.10,0.15$ m, and the difference.",
+     "latex": "\\theta_{ex}=47.623,\\ 32.403,\\ 25.453\\ \\text{K};\\quad \\text{errors}=0.222,\\ 0.250,\\ 0.171\\ \\text{K}"
+    }
+   ],
+   "answer": "$\\theta=(47.85,\\ 32.65,\\ 25.62)$ K, which is within 0.25 K of the exact values at every node. The cost was $O(n)$ operations; a dense solver would need $O(n^3)$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Solver",
+    "Operations (n unknowns)",
+    "Memory",
+    "Best for"
+   ],
+   "rows": [
+    [
+     "Dense Gauss / LU",
+     "$O(n^3)$",
+     "$O(n^2)$",
+     "Small or dense systems"
+    ],
+    [
+     "Tridiagonal (Thomas)",
+     "$O(n)$",
+     "$O(n)$",
+     "1D problems"
+    ],
+    [
+     "Banded LU / Cholesky",
+     "$O(nb^2)$ for half-bandwidth $b$",
+     "$O(nb)$",
+     "2D meshes with moderate size"
+    ],
+    [
+     "Gauss-Seidel / Jacobi",
+     "$O(n)$ per sweep, many sweeps",
+     "$O(n)$",
+     "Teaching; smoothers in multigrid"
+    ],
+    [
+     "Conjugate gradient (preconditioned)",
+     "$O(n)$ per iteration, about $\\sqrt{\\kappa}$ iterations",
+     "$O(n)$",
+     "Very large symmetric positive-definite systems"
+    ]
+   ],
+   "caption": "Solver comparison for sparse systems"
+  },
+  {
+   "type": "text",
+   "markdown": "**Why iterations grow with refinement.** For the 1D model problem the Jacobi iteration matrix has spectral radius $\\rho=\\cos(\\pi h/L)\\approx1-\\pi^2h^2/(2L^2)$. The number of sweeps needed to cut the error by a factor $10^{-6}$ is about $\\ln(10^{-6})/\\ln\\rho$, which grows like $1/h^2$: for 10, 100 and 1000 intervals about 275, 27991 and 2799603 sweeps. A direct tridiagonal solve costs the same few operations per unknown at any $n$. Gauss-Seidel halves the sweep count; conjugate gradients reduces the growth to $O(1/h)$, and multigrid removes it."
+  },
+  {
+   "type": "worked_example",
+   "title": "Convergence of Gauss-Seidel on the fin system",
+   "prompt": "Apply Gauss-Seidel to the four-interval fin system written with positive diagonal: $2.25\\theta_1-\\theta_2=75$, $-\\theta_1+2.25\\theta_2-\\theta_3=0$, $-\\theta_2+2.25\\theta_3=25$. Start from zero and report the iterates and the number of sweeps for the residual below $10^{-3}$ K.",
+   "steps": [
+    {
+     "text": "Update each unknown in turn using the newest values: $\\theta_i\\leftarrow(b_i-\\sum_{j\\ne i}A_{ij}\\theta_j)/A_{ii}$. Sweep 1 gives",
+     "latex": "\\theta^{(1)}=(33.333,\\ 14.815,\\ 17.695)"
+    },
+    {
+     "text": "Sweep 2 and sweep 3.",
+     "latex": "\\theta^{(2)}=(39.918,\\ 25.606,\\ 22.491),\\quad \\theta^{(3)}=(44.714,\\ 29.869,\\ 24.386)"
+    },
+    {
+     "text": "Continue until the largest residual $\\max|b_i-\\sum_jA_{ij}\\theta_j|$ is below $10^{-3}$ K.",
+     "latex": "\\text{sweeps}=12,\\quad \\theta=(47.845,\\ 32.652,\\ 25.623)\\ \\text{K}"
+    }
+   ],
+   "answer": "Gauss-Seidel reaches the direct solution $(47.85,\\ 32.65,\\ 25.62)$ K after 12 sweeps. The system is strictly diagonally dominant ($2.25>1+1$), which guarantees convergence."
+  },
+  {
+   "type": "text",
+   "markdown": "**Checking against the exact solution.** Compute the error $e(h)=|\\theta_h-\\theta_{exact}|$ at a fixed location (here mid-length $x=0.10$ m) for a sequence of grids and plot $\\log e$ against $\\log h$. A straight line of slope 2 confirms second-order accuracy. For this fin the errors at $n=4,8,16,32$ intervals are 0.25035, 0.06383, 0.01604, 0.00401 K, and each halving of $h$ divides the error by 3.92, 3.98, 3.99 (close to 4)."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Assemble $\\mathbf{A}$ and $\\mathbf{b}$, put boundary values on the right-hand side, then choose the solver by structure and size.",
+    "Banded and tridiagonal systems should never be stored or factorised as dense matrices.",
+    "Iterative methods need a diagonally dominant or positive-definite matrix, a good starting guess and a stopping tolerance on the residual.",
+    "Verify with a case that has an exact solution and look at the log-log error plot: its slope is the order of accuracy."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Residual is not error",
+   "text": "A small residual does not guarantee a small error when the matrix is ill-conditioned: the error can be as large as $\\kappa(\\mathbf{A})\\|\\mathbf{r}\\|/\\|\\mathbf{b}\\|$ times the relative residual, with $\\kappa$ the condition number. Stopping an iteration on residual alone should be accompanied by a check on the solution."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "One-dimensional diffusion with three-point differences gives a tridiagonal system, solved in $O(n)$ operations by the Thomas algorithm, while a dense solve costs $O(n^3)$ and $O(n^2)$ memory.",
+    "Iterative solvers cost less per step and keep the matrix sparse, but the number of sweeps grows as the grid is refined (about $1/h^2$ for Jacobi) unless a good method or preconditioner is used.",
+    "A discrete solution is checked against the exact solution; the slope of $\\log e$ versus $\\log h$ gives the order of accuracy, here close to 2."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which condition on a matrix guarantees that the Jacobi and Gauss-Seidel iterations converge?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Strict diagonal dominance"
+    },
+    {
+     "id": "b",
+     "text": "Symmetry alone"
+    },
+    {
+     "id": "c",
+     "text": "All entries being positive"
+    },
+    {
+     "id": "d",
+     "text": "A zero determinant"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Strict diagonal dominance",
+   "distractorRationale": {
+    "b": "A symmetric matrix can still give divergent Jacobi iterations; Gauss-Seidel additionally needs positive definiteness.",
+    "c": "Positive entries are neither necessary nor sufficient; the stencil has negative off-diagonals.",
+    "d": "A zero determinant means the matrix is singular and has no unique solution."
+   },
+   "explanation": "Strict diagonal dominance guarantees $\\rho<1$ for the iteration matrices of both methods. For the fin system the diagonal 2.25 exceeds the sum of the off-diagonals, 2, so the iteration converges.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 1D diffusion problem is refined from 100 to 400 intervals and solved with Jacobi iteration to the same tolerance. Roughly how does the number of sweeps change?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases by about a factor of 16"
+    },
+    {
+     "id": "b",
+     "text": "It stays about the same"
+    },
+    {
+     "id": "c",
+     "text": "It increases by about a factor of 4"
+    },
+    {
+     "id": "d",
+     "text": "It decreases by a factor of 4"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It increases by about a factor of 16",
+   "distractorRationale": {
+    "b": "The count does not stay constant: the spectral radius approaches 1 as $h\\to0$.",
+    "c": "A factor of 4 corresponds to a doubling of the intervals, not a quadrupling.",
+    "d": "The iteration slows down on finer grids; it does not speed up."
+   },
+   "explanation": "The Jacobi spectral radius is $\\cos(\\pi h/L)\\approx1-\\pi^2h^2/(2L^2)$, so the number of sweeps $\\propto1/h^2$. Quadrupling the number of intervals gives $4^2=16$ times more sweeps.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The error at a fixed point from a finite-difference solution is $4.0\\times10^{-3}$ for $h=0.10$ and $1.0\\times10^{-3}$ for $h=0.05$. What does the log-log plot of error against $h$ show?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A straight line of slope 2, indicating second-order convergence"
+    },
+    {
+     "id": "b",
+     "text": "A straight line of slope 1, indicating first-order convergence"
+    },
+    {
+     "id": "c",
+     "text": "A horizontal line, indicating no convergence"
+    },
+    {
+     "id": "d",
+     "text": "A line of slope 4, indicating fourth-order convergence"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A straight line of slope 2, indicating second-order convergence",
+   "distractorRationale": {
+    "b": "A first-order method would show an error ratio of 2.",
+    "c": "A horizontal line would mean the error did not change.",
+    "d": "Fourth order would give a ratio of 16."
+   },
+   "explanation": "The observed order is $p=\\ln(e_1/e_2)/\\ln(h_1/h_2)=\\ln4/\\ln2=2$. The slope on the log-log plot equals this order, here consistent with the second-order three-point scheme.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 3,
+   "stem": "A small residual always guarantees a small error in the computed solution of $\\mathbf{A}\\mathbf{u}=\\mathbf{b}$, regardless of the condition number of $\\mathbf{A}$.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The error can be as large as the condition number times the relative residual, so for an ill-conditioned matrix a tiny residual may still correspond to a large error in the solution. The residual test must therefore be combined with a check on the solution or the condition number.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A dense $2000\\times2000$ matrix of double-precision numbers (8 bytes each) is stored for a 1D diffusion model with 2000 unknowns. How much memory does it need, in MB (1 MB = $10^{6}$ bytes)?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o2"
+   ],
+   "correctValue": 32.0,
+   "tolerance": 0.5,
+   "unit": "MB",
+   "explanation": "The matrix has $2000^2=4\\times10^{6}$ entries, each 8 bytes, so it needs $3.2\\times10^{7}$ bytes = 32.0 MB. A tridiagonal store of $3n$ entries would need only 48 kB.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Apply two Jacobi sweeps to $4x_1-x_2=3$, $-x_1+4x_2-x_3=2$, $-x_2+4x_3=3$ starting from $\\mathbf{x}=\\mathbf{0}$. Give the first component $x_1$ after the second sweep.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o2"
+   ],
+   "correctValue": 0.875,
+   "tolerance": 0.002,
+   "unit": "(dimensionless)",
+   "explanation": "Sweep 1 gives $(0.75,0.50,0.75)$. Sweep 2 uses these old values: $x_1=(3+0.50)/4=0.875$, $x_2=(2+0.75+0.75)/4=0.875$. The exact solution is $(1,1,1)$, so Jacobi is still converging.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A one-dimensional diffusion problem $u''=2$ on $0\\le x\\le1$ has $u(0)=1$ and $u(1)=3$. Use $h=0.25$ (three interior nodes), assemble the tridiagonal system and solve for $u(0.5)$.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o1"
+   ],
+   "correctValue": 1.75,
+   "tolerance": 0.005,
+   "unit": "(dimensionless)",
+   "explanation": "At each node $u_{i-1}-2u_i+u_{i+1}=2h^2=0.125$. With $u_0=1$ and $u_4=3$ the right-hand side is $(-0.875,\\ 0.125,\\ -2.875)$, and solving gives $u=(1.3125,\\ 1.7500,\\ 2.3125)$. This equals the exact solution $x^2+x+1$ at the nodes, since it is a quadratic.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A second-order finite-difference solution has an error of $3.2\\times10^{-3}$ at a monitoring point when $h=0.10$ m. Assuming the leading error term dominates, predict the error when $h=0.025$ m, expressed in units of $10^{-4}$.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o3"
+   ],
+   "correctValue": 2.0,
+   "tolerance": 0.05,
+   "unit": "multiples of 10^-4",
+   "explanation": "The step is reduced by a factor of 4, so the error of a second-order scheme falls by $4^2=16$: $3.2\\times10^{-3}/16=0.00020$. A measured ratio far from 16 would suggest the asymptotic regime has not been reached or that boundary conditions are only first-order accurate.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare direct and iterative solvers for the sparse symmetric positive-definite systems produced by a fine finite-difference or finite-element mesh. Give at least two advantages of each type and state a typical use.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o2"
+   ],
+   "markingGuide": [
+    "Direct: fixed operation count, robust, no convergence issues; reuses the factorisation for multiple right-hand sides",
+    "Direct: fill-in raises memory and cost for 3D problems; banded/skyline storage reduces it",
+    "Iterative: low memory ($O(n)$), no fill-in, cost per iteration proportional to non-zeros",
+    "Iterative: convergence rate depends on conditioning, so preconditioning (e.g. incomplete Cholesky, multigrid) is needed; conjugate gradients is the standard choice",
+    "Uses: direct for 1D, 2D moderate size; iterative for very large 3D models"
+   ],
+   "explanation": "The trade-off is robustness and multiple right-hand sides versus memory and speed on very large systems. Both rely on sparsity, and the right choice depends on mesh dimension, size and conditioning.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "For the tridiagonal system from a one-dimensional diffusion problem, describe how you would check the discrete solution against the exact solution and plot the error against step size, and state what slope you expect and why.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems.o3"
+   ],
+   "markingGuide": [
+    "Solve on a sequence of grids, e.g. $n=4,8,16,32$ ($h$ halved each time)",
+    "Compute the error at a fixed point (or a norm such as the maximum nodal error) against the exact solution",
+    "Plot $\\log e$ against $\\log h$; the slope is the observed order of accuracy",
+    "Expect slope 2 for the three-point scheme because truncation error is $O(h^2)$",
+    "Departures: first-order boundary treatment, round-off at small $h$, or solver tolerance larger than the truncation error"
+   ],
+   "explanation": "The slope on a log-log plot equals the order of accuracy of the scheme. Seeing slope 2 confirms that the implementation, including boundary conditions, matches the theoretical second-order accuracy; a lower slope reveals an error in the discretisation or the tolerance.",
+   "board": "internal"
+  }
+ ]
+}

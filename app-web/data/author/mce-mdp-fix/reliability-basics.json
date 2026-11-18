@@ -1,0 +1,405 @@
+{
+ "lessonTitle": "Reliability Calculations: Series, Parallel and Exponential Life",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A railway door actuator that works 99% of the time sounds dependable, until you realise a train has 40 doors, each with an actuator, a latch and a sensor, and that one failure can hold the whole train at a platform. Reliability engineering turns the reliability of single parts into the reliability of the whole system, and shows when adding a second part is worth its cost."
+  },
+  {
+   "type": "text",
+   "markdown": "**Reliability** $R(t)$ is the probability that an item performs its required function, under stated conditions, for a stated time $t$. It is a number between 0 and 1. Component reliabilities come from tests or supplier data; the engineer's job in design is to combine them according to how the system is arranged and to decide where improvement is cheapest. We assume throughout that failures of different components are statistically independent."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Series and parallel systems",
+   "text": "In a **series** system every component must work for the system to work (a chain is as weak as its weakest link). In a **parallel** (redundant) system the system works if at least one component works. Reliability block diagrams draw series elements one after another and parallel elements on separate branches."
+  },
+  {
+   "type": "math",
+   "latex": "R_{\\mathrm{series}}=\\prod_{i=1}^{n}R_i,\\qquad R_{\\mathrm{parallel}}=1-\\prod_{i=1}^{n}(1-R_i)",
+   "caption": "R_i is the reliability of component i over the same time period. The parallel formula multiplies the probabilities of failure, because the system fails only if all branches fail."
+  },
+  {
+   "type": "worked_example",
+   "title": "Series and parallel combinations",
+   "prompt": "A drive has three components in series with reliabilities 0.98, 0.95 and 0.99. Find the series reliability. Then find the reliability of two 0.95 components placed in parallel.",
+   "steps": [
+    {
+     "text": "Series arrangement: multiply the three reliabilities, since all must work.",
+     "latex": "R=0.98\\times0.95\\times0.99=0.9217"
+    },
+    {
+     "text": "The system is less reliable than its weakest component (0.95), as expected for a series arrangement."
+    },
+    {
+     "text": "Parallel pair: probability that both fail is $0.05\\times0.05=0.0025$.",
+     "latex": "R=1-(0.05)^2=0.9975"
+    }
+   ],
+   "answer": "Series 0.9217; parallel pair 0.9975."
+  },
+  {
+   "type": "text",
+   "markdown": "**Life distributions.** Reliability depends on time. The simplest model assumes a constant failure rate $\\lambda$ (failures per hour): the chance of failing in the next small interval does not depend on how long the item has already run. This gives the **exponential** model. It describes random failures of many electronic and some mechanical items in their useful life, but not wear-out, where the failure rate rises with age. Over a whole life the failure rate often follows a **bathtub curve**: it falls during early life (infant mortality, from defects and poor assembly), stays roughly constant through the useful life, and rises again in wear-out. The mean time between failures for a repaired item is $\\mathrm{MTBF}=1/\\lambda$."
+  },
+  {
+   "type": "math",
+   "latex": "R(t)=e^{-\\lambda t},\\qquad \\mathrm{MTBF}=\\frac{1}{\\lambda}",
+   "caption": "lambda is the constant failure rate in 1/h and t is the operating time in h. At t equal to the MTBF, R = e^{-1} = 0.368."
+  },
+  {
+   "type": "worked_example",
+   "title": "Exponential reliability of a pump",
+   "prompt": "A pump has a constant failure rate $\\lambda=2\\times10^{-4}\\ \\mathrm{h^{-1}}$ (assumed). Find the MTBF and the reliability over a 1500 h campaign.",
+   "steps": [
+    {
+     "text": "The mean time between failures is the reciprocal of the failure rate.",
+     "latex": "\\mathrm{MTBF}=\\frac{1}{2\\times10^{-4}}=5000\\ \\mathrm{h}"
+    },
+    {
+     "text": "Form the exponent: failure rate multiplied by operating time.",
+     "latex": "\\lambda t=2\\times10^{-4}\\times1500=0.30"
+    },
+    {
+     "text": "Evaluate the exponential reliability over the campaign.",
+     "latex": "R=e^{-0.30}=0.741"
+    }
+   ],
+   "answer": "MTBF 5000 h; reliability 0.741 over 1500 h, so about a 26% chance of at least one failure."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Arrangement",
+    "Formula",
+    "Effect on reliability",
+    "Typical cost"
+   ],
+   "rows": [
+    [
+     "Series",
+     "Product of $R_i$",
+     "Lower than the weakest component",
+     "None; more parts lower it"
+    ],
+    [
+     "Parallel (active redundancy)",
+     "$1-\\prod(1-R_i)$",
+     "Higher than the best component",
+     "Extra part, mass, space, cost"
+    ],
+    [
+     "Standby redundancy",
+     "Depends on switch reliability",
+     "Higher, if switch is reliable",
+     "Extra part, switch, sensing"
+    ],
+    [
+     "Higher quality component",
+     "Raises one $R_i$",
+     "Raises system reliability",
+     "Higher unit cost"
+    ]
+   ],
+   "caption": "Ways to arrange or improve reliability."
+  },
+  {
+   "type": "text",
+   "markdown": "**Redundancy and its cost.** Adding a parallel unit sharply reduces the probability of system failure: two units of $R=0.95$ in parallel give 0.9975, a twenty-fold cut in unreliability from 0.05 to 0.0025 if failures are independent. But redundancy costs money, mass, volume and power; adds complexity such as switching and monitoring that can itself fail; and gives less benefit if both units share a *common cause* (the same power supply, the same contamination or the same design error). It is a last resort for critical functions, after simplifying and strengthening the design."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Draw a reliability block diagram: which components are in series and which are in parallel?",
+    "Check that all reliabilities refer to the same time period.",
+    "Combine parallel blocks first, then multiply the series chain.",
+    "Test whether the independence assumption is plausible before trusting the result."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Weakest link and diminishing returns",
+   "text": "In series, improving the least reliable component gives the biggest gain; in parallel, the first added unit gives most of the benefit and further units add less each time."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "MTBF is not a guaranteed life",
+   "text": "With a constant failure rate, only about 37% of items survive to the MTBF. An MTBF of 5000 h does not mean that an item lasts 5000 h."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Series reliability is the product of the component reliabilities; parallel reliability is one minus the product of the unreliabilities.",
+    "The exponential model $R=e^{-\\lambda t}$ assumes a constant failure rate and has $\\mathrm{MTBF}=1/\\lambda$.",
+    "Redundancy raises reliability at the cost of mass, space, money and complexity, and loses value against common-cause failures."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Four components with different reliabilities all work in series. Which statement about the system reliability is always true?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is lower than the reliability of the least reliable component"
+    },
+    {
+     "id": "b",
+     "text": "It equals the average of the four reliabilities"
+    },
+    {
+     "id": "c",
+     "text": "It is higher than the most reliable component"
+    },
+    {
+     "id": "d",
+     "text": "It equals the reliability of the most reliable component"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is lower than the reliability of the least reliable component",
+   "distractorRationale": {
+    "a": "Correct: multiplying numbers below 1 can only reduce the product.",
+    "b": "The average is not the combination rule for series.",
+    "c": "That would apply to parallel arrangements.",
+    "d": "Series reliability depends on all components, not only the best."
+   },
+   "explanation": "Every extra component multiplies the running product by a number between 0 and 1. The result is therefore below even the lowest single reliability.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Two identical, independent valves, each with reliability 0.90 over a mission, are placed in parallel so that either alone is sufficient. What is the system reliability?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.99"
+    },
+    {
+     "id": "b",
+     "text": "0.81"
+    },
+    {
+     "id": "c",
+     "text": "0.90"
+    },
+    {
+     "id": "d",
+     "text": "0.95"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.99",
+   "distractorRationale": {
+    "a": "Correct: $1-(0.10)^2=0.99$.",
+    "b": "This is the series result, $0.9\\times0.9$.",
+    "c": "This is the reliability of one valve, so redundancy would have no benefit.",
+    "d": "This is the average of 0.9 and 1; it does not follow from the formula."
+   },
+   "explanation": "The system fails only if both valves fail, with probability $0.10\\times0.10=0.01$. The reliability is therefore $1-0.01=0.99$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does a constant failure rate in the exponential model imply?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The probability of failing in the next short interval does not depend on the age of the item"
+    },
+    {
+     "id": "b",
+     "text": "The item will fail exactly at the time given by the MTBF"
+    },
+    {
+     "id": "c",
+     "text": "Failures become more likely as the item ages"
+    },
+    {
+     "id": "d",
+     "text": "Failures are guaranteed not to happen before the MTBF"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The probability of failing in the next short interval does not depend on the age of the item",
+   "distractorRationale": {
+    "a": "Correct: this is the memoryless property.",
+    "b": "Failure times are random and not fixed.",
+    "c": "That describes wear-out, which the model excludes.",
+    "d": "Some failures occur before the MTBF; only about 63% occur before it."
+   },
+   "explanation": "A constant $\\lambda$ means the hazard does not change with age. That is a good model for random failures but not for fatigue wear-out.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An item has an exponential life with an MTBF of 8000 h. What is the probability that it survives 8000 h of operation?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 0.37"
+    },
+    {
+     "id": "b",
+     "text": "About 0.50"
+    },
+    {
+     "id": "c",
+     "text": "About 0.90"
+    },
+    {
+     "id": "d",
+     "text": "1.00"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About 0.37",
+   "distractorRationale": {
+    "a": "Correct: $R=e^{-1}=0.368$.",
+    "b": "0.5 would apply at the median life of about 5545 h, not at the MTBF.",
+    "c": "This is far too high for a full MTBF of operation.",
+    "d": "Items can fail before the MTBF."
+   },
+   "explanation": "At $t=\\mathrm{MTBF}=1/\\lambda$ the exponent is $-1$, and $e^{-1}=0.368$. Only about 37% of items survive that long.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer duplicates a cooling pump in parallel, with both pumps fed from one shared power supply and one shared filter. Which statement about the benefit of redundancy is most accurate?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The gain is limited because common elements can fail both branches at once"
+    },
+    {
+     "id": "b",
+     "text": "The gain is as large as for fully independent pumps"
+    },
+    {
+     "id": "c",
+     "text": "Redundancy has no cost in a cooling system"
+    },
+    {
+     "id": "d",
+     "text": "The gain is greater because the pumps share components"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The gain is limited because common elements can fail both branches at once",
+   "distractorRationale": {
+    "a": "Correct: a shared supply or filter is a common cause that defeats the independence assumption.",
+    "b": "The formula for independent units overestimates the benefit when parts are shared.",
+    "c": "Redundancy costs extra parts, mass and power.",
+    "d": "Sharing components reduces the independence and the benefit."
+   },
+   "explanation": "The parallel formula assumes independent failures. If one shared item can stop both pumps, that item sits in series with the redundant pair and caps the system reliability.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A mechanism has four components in series with reliabilities 0.97, 0.96, 0.99 and 0.95 over the mission. Find the system reliability (dimensionless), to three decimal places.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o1"
+   ],
+   "correctValue": 0.875794,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "The product is $0.97\\times0.96\\times0.99\\times0.95=0.876$. The system is less reliable than any single component, as expected for a series arrangement.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A gearbox bearing has a constant failure rate of $5\\times10^{-5}\\ \\mathrm{h^{-1}}$ (assumed). Find its reliability over 8000 h of operation (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o2"
+   ],
+   "correctValue": 0.67032,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "The exponent is $5\\times10^{-5}\\times8000=0.40$, so $R=e^{-0.40}=0.670$. About one in three bearings would be expected to fail within 8000 h.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A hydraulic supply has two identical pumps in parallel, each with a mission reliability of 0.90, followed in series by a pressure relief valve of reliability 0.99. Treat all failures as independent. Find the system reliability (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o1",
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o3"
+   ],
+   "correctValue": 0.9801,
+   "tolerance": 0.001,
+   "unit": "dimensionless",
+   "explanation": "The parallel pump pair has $R=1-(0.10)^2=0.99$. In series with the valve the system reliability is $0.99\\times0.99=0.9801$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A product team proposes fitting two parallel cooling fans instead of one to improve the reliability of a drive. Explain how redundancy improves reliability, state what it costs, and give two reasons why the improvement may be less than the independent-failure formula predicts.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o3"
+   ],
+   "markingGuide": [
+    "Parallel arrangement fails only if both fans fail, with unreliability equal to the product of the individual unreliabilities",
+    "Quantifies (example: two fans of 0.9 give 0.99)",
+    "Costs: extra part cost, mass, space, power, wiring and possible switching or monitoring",
+    "Common-cause failures (shared supply, shared dust or blocked inlet, same design flaw)",
+    "Failure of the switching or detection mechanism, or load sharing that overloads the remaining fan",
+    "Concludes with when it is worth adding redundancy"
+   ],
+   "explanation": "Redundancy turns a single point of failure into a requirement for two failures. The result is only as good as the independence of the two fans and the reliability of whatever connects them.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A supplier states that a seal has an MTBF of 10 000 h under a constant failure rate. A student claims the seal will last 10 000 h. Explain what is wrong with the claim, compute the reliability over 1000 h, and state the assumption under which your calculation is valid.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.reliability-basics.o2"
+   ],
+   "markingGuide": [
+    "Constant failure rate means failures occur randomly; MTBF is a mean, not a guaranteed life",
+    "R at the MTBF is $e^{-1}=0.368$, so most items fail before that time or about 63%",
+    "$\\lambda=1/10000=1\\times10^{-4}\\ \\mathrm{h^{-1}}$",
+    "$R(1000)=e^{-0.1}=0.905$",
+    "Assumption: constant failure rate in the useful life; it excludes wear-out or early failures",
+    "Assumption that operating conditions match those of the quoted data"
+   ],
+   "explanation": "The MTBF only fixes the scale of the exponential distribution. For 1000 h the reliability is $e^{-0.1}=0.905$, valid only while the failure rate is genuinely constant.",
+   "board": "internal"
+  }
+ ]
+}

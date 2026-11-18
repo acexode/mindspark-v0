@@ -1,0 +1,413 @@
+{
+ "lessonTitle": "Design for Manufacture: Features, Processes and Relative Cost",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A designer specifies a rectangular pocket 30 mm deep with perfectly sharp internal corners in an aluminium housing. A round milling cutter cannot cut a sharp internal corner, so the shop must either use electrical discharge machining at several times the cost or the corner is quietly rounded and the part rejected. Changing one drawing note to a corner radius makes the same part cheap to cut."
+  },
+  {
+   "type": "text",
+   "markdown": "**Design for manufacture (DFM)** means choosing features, tolerances and a process together, so that the part can be made reliably at low cost. Every manufacturing process has a *natural geometry* it produces easily and *forbidden geometry* it cannot make at all. A good designer learns the rules of the process before dimensioning the part, rather than leaving the manufacturer to sort out conflicts later. The values below are typical and vary between suppliers; always confirm with the intended manufacturer."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Typical feature rules",
+   "text": "Machining: internal corners need a radius larger than the cutter radius; avoid deep narrow pockets (depth much greater than about 3 to 4 times the cutter diameter requires special tools); give tapped holes a relief or run-out. Injection moulding: keep wall thickness as uniform as possible (thick sections cause sink marks and voids), add draft of roughly 1 to 2 degrees on walls parallel to the mould opening, avoid undercuts that need side-actions, and use ribs rather than thick walls for stiffness. Casting: round all corners, avoid abrupt section changes and allow machining stock on faces that need good finish."
+  },
+  {
+   "type": "text",
+   "markdown": "**Revising a feature.** The method is: (1) identify which process is intended; (2) check each feature against that process's rules; (3) for each violation, ask whether the function really needs it; (4) either change the geometry (add a radius, draft, relief) or relax the requirement (tolerance or finish) to the minimum that the function needs. Tight tolerances are among the most expensive features, because cost typically rises steeply as the tolerance band narrows."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Process",
+    "Typical volume",
+    "Typical tolerance (typical)",
+    "Tooling cost",
+    "Suits"
+   ],
+   "rows": [
+    [
+     "CNC machining",
+     "1 to a few hundred",
+     "about $\\pm0.05$ mm",
+     "Very low (fixtures)",
+     "Metals, prototypes, tight features"
+    ],
+    [
+     "Sand casting",
+     "10 to a few thousand",
+     "about $\\pm1$ mm",
+     "Low (patterns)",
+     "Large metal parts, rough surfaces"
+    ],
+    [
+     "Pressure die casting",
+     "Tens of thousands upward",
+     "about $\\pm0.1$ to $0.25$ mm",
+     "High (steel die)",
+     "Aluminium, zinc, thin walls"
+    ],
+    [
+     "Injection moulding",
+     "Tens of thousands upward",
+     "about $\\pm0.1$ mm",
+     "High (steel mould)",
+     "Thermoplastics, complex shapes"
+    ],
+    [
+     "Sheet-metal stamping",
+     "Thousands upward",
+     "about $\\pm0.1$ mm",
+     "Medium to high",
+     "Thin flat or formed parts"
+    ]
+   ],
+   "caption": "Typical process selection guide. Values are representative, not guaranteed."
+  },
+  {
+   "type": "text",
+   "markdown": "**Selecting a process.** Three inputs drive the choice. *Volume*: tooling cost is spread over the number of parts, so high volumes favour processes with expensive tooling but cheap parts. *Material*: thermoplastics suggest moulding; aluminium suggests casting or machining; hard steels favour machining or forging. *Tolerance*: if the process cannot hold the tolerance, a secondary operation (for example machining the critical faces of a casting) must be added and costed."
+  },
+  {
+   "type": "math",
+   "latex": "C_{\\mathrm{part}}=\\frac{C_{\\mathrm{tool}}}{N}+c_{\\mathrm{var}}",
+   "caption": "Relative cost per part for a route. C_tool is one-off setup or tooling cost, N the number of parts, c_var the variable cost per part (material, machine time, labour)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Break-even volume between machining and moulding",
+   "prompt": "A plastic housing can be machined (set-up and fixture cost 400, variable cost 18 per part) or injection moulded (tooling 15000, variable cost 1.2 per part), in the same cost units. Compare the routes at 500 parts and find the break-even volume.",
+   "steps": [
+    {
+     "text": "Machined cost per part at $N=500$.",
+     "latex": "C_A=\\frac{400}{500}+18=18.80"
+    },
+    {
+     "text": "Moulded cost per part at $N=500$.",
+     "latex": "C_B=\\frac{15000}{500}+1.2=31.20"
+    },
+    {
+     "text": "Set the total costs equal to find break-even $N^{*}$: $400+18N=15000+1.2N$.",
+     "latex": "N^{*}=\\frac{15000-400}{18-1.2}=\\frac{14600}{16.8}\\approx 869"
+    }
+   ],
+   "answer": "At 500 parts machining is cheaper (18.80 against 31.20 per part); the routes break even at about 870 parts."
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing the route at 3000 parts",
+   "prompt": "For the same housing, 3000 parts are required with a tolerance of $\\pm0.2$ mm on the critical features, and the moulding process typically holds about $\\pm0.1$ mm. Which route should be selected and how much cheaper is it per part?",
+   "steps": [
+    {
+     "text": "The volume of 3000 is far above break-even of about 870, so the low variable cost of moulding should dominate."
+    },
+    {
+     "text": "Machined cost per part.",
+     "latex": "C_A=\\frac{400}{3000}+18=18.13"
+    },
+    {
+     "text": "Moulded cost per part.",
+     "latex": "C_B=\\frac{15000}{3000}+1.2=6.20"
+    },
+    {
+     "text": "Tolerance check: the typical moulding capability of $\\pm0.1$ mm meets the $\\pm0.2$ mm requirement, so no secondary machining is needed. The cost ratio is $18.13/6.20\\approx2.9$."
+    }
+   ],
+   "answer": "Choose injection moulding at 6.20 per part; the machined route costs about 2.9 times as much."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Fix the volume, material and tolerance requirements first.",
+    "Eliminate processes that cannot make the material or hold the tolerance.",
+    "Among the remaining, compute $C_{\\mathrm{part}}$ at the expected volume and at the low and high volume estimates.",
+    "Revise any feature that violates the chosen process's rules, then re-estimate the cost."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Volume uncertainty",
+   "text": "A route chosen at an expected 3000 parts becomes expensive if only 600 are ever sold, because the mould is never paid off. Always test the decision at pessimistic volumes before committing to expensive tooling."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Show units and the assumed cost basis",
+   "text": "When comparing routes, state what is included in the variable cost (material, labour, machine time, inspection) and that the figures are relative. Marks are lost for comparing routes with different cost bases."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Revise features to the rules of the chosen process: corner radii in machining, uniform walls and draft in moulding, relief for thread run-out.",
+    "Select a process from volume, material and tolerance; high volumes favour expensive tooling with low variable cost.",
+    "Compare routes with $C_{\\mathrm{part}}=C_{\\mathrm{tool}}/N+c_{\\mathrm{var}}$ and find break-even where total costs are equal."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 25 mm deep pocket in a steel block is drawn with sharp 90 degree internal corners and will be milled with a 10 mm diameter end mill. Which revision makes the part machinable by ordinary milling?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Specify an internal corner radius larger than 5 mm"
+    },
+    {
+     "id": "b",
+     "text": "Specify the corners with a tolerance of $\\pm0.01$ mm"
+    },
+    {
+     "id": "c",
+     "text": "Reduce the pocket width to under 10 mm"
+    },
+    {
+     "id": "d",
+     "text": "Change the pocket to a through slot of the same width"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Specify an internal corner radius larger than 5 mm",
+   "distractorRationale": {
+    "a": "Correct: a round cutter of 5 mm radius leaves at least that radius in every internal corner.",
+    "b": "A tighter tolerance does not remove the geometric limit of the cutter.",
+    "c": "A pocket narrower than the cutter cannot be cut at all.",
+    "d": "The slot changes the function and does not address the corner."
+   },
+   "explanation": "A milling cutter is round, so an internal corner can never be sharper than the cutter radius. Specifying a corner radius bigger than the cutter radius lets the cutter follow the contour with an ordinary tool.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An injection-moulded plastic cover has a thick 12 mm boss on a 2 mm wall, and the surface above the boss shows dents after moulding. Which revision is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Core out the boss to a thin wall and support it with ribs"
+    },
+    {
+     "id": "b",
+     "text": "Increase the thickness of the whole wall to 12 mm"
+    },
+    {
+     "id": "c",
+     "text": "Remove all draft angles"
+    },
+    {
+     "id": "d",
+     "text": "Mould the part from a stiffer metal alloy without changing geometry"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Core out the boss to a thin wall and support it with ribs",
+   "distractorRationale": {
+    "a": "Correct: thin sections of similar thickness cool evenly and avoid sink marks.",
+    "b": "A much thicker wall makes the cooling problem worse and wastes material.",
+    "c": "Removing draft makes ejection harder and risks damage.",
+    "d": "Changing the material means a different process rather than a feature revision."
+   },
+   "explanation": "Thick sections shrink more as they cool, so the surface above them sinks. Coring out the boss and adding ribs keeps the wall thickness uniform and the stiffness adequate.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A medium-sized aluminium housing with complex internal ribs is needed in a quantity of 150 000 per year. Its tolerance requirement is typically $\\pm0.2$ mm and surfaces need only a standard finish. Which process is most suitable?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Pressure die casting"
+    },
+    {
+     "id": "b",
+     "text": "Machining each housing from solid billet"
+    },
+    {
+     "id": "c",
+     "text": "Sand casting with hand finishing"
+    },
+    {
+     "id": "d",
+     "text": "One-off 3D printing of each housing"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Pressure die casting",
+   "distractorRationale": {
+    "a": "Correct: high volume and aluminium make a die with high tooling cost economic, and the tolerance is within its capability.",
+    "b": "Machining from billet has high variable cost at this volume.",
+    "c": "Sand casting cannot typically hold this tolerance and is labour-intensive at this volume.",
+    "d": "Printing is slow and expensive per part at this volume."
+   },
+   "explanation": "At very high volume the tooling cost is spread over many parts, so a process with low variable cost wins. Die casting suits aluminium, can make complex ribs, and typically holds the stated tolerance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A research group needs three identical steel mounting brackets for a test rig. They need dimensions held to about $\\pm0.1$ mm. Which route is the sensible choice?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "CNC machining from plate"
+    },
+    {
+     "id": "b",
+     "text": "Making a steel die for pressure die casting"
+    },
+    {
+     "id": "c",
+     "text": "Injection moulding of steel powder in a new mould"
+    },
+    {
+     "id": "d",
+     "text": "Progressive stamping tooling"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "CNC machining from plate",
+   "distractorRationale": {
+    "a": "Correct: low volume and moderate tolerance suit machining, which has almost no tooling cost.",
+    "b": "A die cannot be paid off by three parts, and steel is unsuitable for pressure die casting.",
+    "c": "A new mould carries high tooling cost for three parts.",
+    "d": "Progressive tooling is expensive and only pays off at high volume."
+   },
+   "explanation": "With only three parts, any process with tooling in the thousands makes each part very expensive. Machining needs only a fixture and holds the tolerance directly.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A turned steel stud is threaded right up to a shoulder, and the shop reports that the threading tool cannot finish the last thread. Which revision follows DFM practice?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Add a relief groove at the thread run-out next to the shoulder"
+    },
+    {
+     "id": "b",
+     "text": "Specify a finer thread tolerance"
+    },
+    {
+     "id": "c",
+     "text": "Replace the shoulder by a larger diameter bar"
+    },
+    {
+     "id": "d",
+     "text": "Increase the surface finish requirement on the shoulder"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Add a relief groove at the thread run-out next to the shoulder",
+   "distractorRationale": {
+    "a": "Correct: a groove gives the tool somewhere to exit, so the thread can be completed.",
+    "b": "A finer tolerance does not make the tool geometry possible.",
+    "c": "A larger bar does not give the tool run-out space.",
+    "d": "A finish requirement is unrelated to the tool exit problem."
+   },
+   "explanation": "A threading tool must be able to leave the cut, so threads that run straight into a shoulder cannot be completed. A relief groove at the end of the thread provides the run-out space at negligible cost.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Using the cost model $C=C_{\\mathrm{tool}}/N+c_{\\mathrm{var}}$, a machined route has a set-up cost of 400 and a variable cost of 18 per part (same cost units). Find the cost per part, in cost units, for a batch of 2000 parts.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o3"
+   ],
+   "correctValue": 18.2,
+   "tolerance": 0.01,
+   "unit": "cost units per part",
+   "explanation": "The set-up cost per part is $400/2000=0.20$, so the total is $0.20+18=18.20$. At large batches the set-up contribution becomes negligible.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Route 1 (fixture and programming) has a one-off cost of 2500 and a variable cost of 9.5 per part. Route 2 (a mould) has a one-off cost of 21000 and a variable cost of 2.1 per part, in the same cost units. Find the break-even volume, in parts, above which route 2 is cheaper.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o3"
+   ],
+   "correctValue": 2500.0,
+   "tolerance": 2,
+   "unit": "parts",
+   "explanation": "Set $2500+9.5N=21000+2.1N$, giving $N=(21000-2500)/(9.5-2.1)=18500/7.4=2500$. Above 2500 parts the lower variable cost of route 2 outweighs its larger tooling cost.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A bracket can be made by sand casting plus machining (pattern cost 3000, variable cost 14.0 per part) or by pressure die casting (die cost 40000, variable cost 5.5 per part), in the same cost units. For a production of 8000 parts, what is the saving per part, in cost units, from choosing the cheaper route over the dearer one?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o3"
+   ],
+   "correctValue": 3.875,
+   "tolerance": 0.02,
+   "unit": "cost units per part",
+   "explanation": "Sand casting costs $3000/8000+14.0=14.375$ per part and die casting costs $40000/8000+5.5=10.5$ per part. The die casting route is cheaper by $14.375-10.5=3.875$ per part.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A designer draws an aluminium bracket to be CNC machined from a block. It has a 60 mm deep pocket only 8 mm wide with sharp internal corners, a $\\pm0.01$ mm tolerance on every face, and a thread running right up to a shoulder. List the DFM revisions you would make and justify each in terms of the machining process.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o1"
+   ],
+   "markingGuide": [
+    "Corner radius larger than the cutter radius in the pocket",
+    "Reduce depth-to-width ratio or widen the pocket; deep narrow pockets need long, flexible tools",
+    "Relax the tolerance to the value needed for function on non-critical faces, since cost rises steeply with tighter tolerance",
+    "Add thread relief groove at the shoulder",
+    "Each point justified by a cutter or tool limitation"
+   ],
+   "explanation": "Each change removes a feature the tool cannot produce, or needs special tooling, or was over-specified. Relaxing tolerances on faces that do not need precision removes costly finishing operations without affecting function.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A start-up expects to sell between 400 and 6000 plastic enclosures. A moulding route has a high tooling cost and low variable cost; a machining route has the opposite. Explain how you would use break-even analysis to recommend a route, what other process-selection inputs you would check, and what you would do about the uncertainty in volume.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o2",
+    "ug.mce-machine-design-project.dfm-dfa.dfm.o3"
+   ],
+   "markingGuide": [
+    "States $C=C_{\\mathrm{tool}}/N+c_{\\mathrm{var}}$ and finds break-even where total costs are equal",
+    "Compares expected volume with break-even and notes that 400 may be below break-even, 6000 above",
+    "Checks material suitability and whether the process can hold the required tolerance, adding secondary operations if not",
+    "Proposes a sensitivity check at low and high volume, or a staged approach (machine or soft-tool first, then hard tooling when volume is proven)",
+    "Reaches a justified recommendation and states cost assumptions"
+   ],
+   "explanation": "Because the break-even volume lies inside the volume range, the decision is sensitive to the sales outcome. A staged plan limits the risk of paying for tooling that is never paid off while still capturing the low per-part cost if volumes materialise.",
+   "board": "internal"
+  }
+ ]
+}

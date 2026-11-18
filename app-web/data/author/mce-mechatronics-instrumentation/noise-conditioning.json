@@ -1,0 +1,400 @@
+{
+ "lessonTitle": "Noise and Signal Conditioning",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A strain-gauge torque sensor on a motor shaft produces a 10 mV signal, but the cable runs alongside a 15 kW drive whose switching edges inject volts of interference. Whether the ADC sees torque or noise depends on gain placement, cable wiring and where the shield is grounded."
+  },
+  {
+   "type": "text",
+   "markdown": "**Noise** is any unwanted signal added to a measurement. Sources include thermal noise in resistors, amplifier noise, interference coupled from mains and switching drives, and differences in ground potential. We quantify the damage with the **signal-to-noise ratio (SNR)** and defend with amplification close to the sensor, differential measurement, filtering and careful wiring."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Signal-to-noise ratio",
+   "text": "SNR compares the signal and noise amplitudes (rms, in volts) on a logarithmic scale, in decibels (dB). Because power goes as amplitude squared, the factor is 20, not 10."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathrm{SNR}_{dB}=20\\log_{10}\\!\\left(\\frac{V_{signal}}{V_{noise}}\\right)=10\\log_{10}\\!\\left(\\frac{P_{signal}}{P_{noise}}\\right)",
+   "caption": "SNR from rms amplitudes or powers"
+  },
+  {
+   "type": "worked_example",
+   "title": "Computing an SNR",
+   "prompt": "A sensor output has a 50 mV rms signal and 0.50 mV rms noise. Find the SNR in decibels. What happens to the SNR if the noise is reduced by a factor of 10?",
+   "steps": [
+    {
+     "text": "Take the amplitude ratio.",
+     "latex": "\\frac{50}{0.50}=100"
+    },
+    {
+     "text": "Apply the logarithmic formula.",
+     "latex": "\\mathrm{SNR}=20\\log_{10}(100)=40.0\\ \\text{dB}"
+    },
+    {
+     "text": "Reducing the noise tenfold multiplies the ratio by 10, which adds 20 dB.",
+     "latex": "20\\log_{10}(1000)=60\\ \\text{dB}"
+    }
+   ],
+   "answer": "SNR is 40 dB; cutting noise by a factor of 10 raises it to 60 dB (each factor of 10 in amplitude is 20 dB)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Instrumentation amplifiers.** A sensor such as a bridge gives a small *differential* voltage on top of a large *common-mode* voltage shared by both wires. A **differential amplifier** amplifies the difference and rejects the common part. The three-op-amp **instrumentation amplifier (in-amp)** adds high input resistance and sets gain with one resistor $R_g$. Its ability to ignore common-mode voltage is the **common-mode rejection ratio (CMRR)**."
+  },
+  {
+   "type": "math",
+   "latex": "G=1+\\frac{2R}{R_g},\\qquad \\mathrm{CMRR}_{dB}=20\\log_{10}\\!\\left(\\frac{A_d}{A_{cm}}\\right)",
+   "caption": "In-amp gain (two input-stage resistors R, equal; output stage unity gain) and CMRR"
+  },
+  {
+   "type": "worked_example",
+   "title": "Designing an in-amp stage",
+   "prompt": "A bridge gives 0 to 10 mV and the ADC accepts 0 to 5 V. The in-amp input stage uses two 25 k$\\Omega$ resistors ($R=25$ k$\\Omega$). Choose $R_g$ and check the output.",
+   "steps": [
+    {
+     "text": "Required gain is the output span over the input span.",
+     "latex": "G=\\frac{5\\ \\text{V}}{10\\ \\text{mV}}=500"
+    },
+    {
+     "text": "Solve the gain equation for $R_g$.",
+     "latex": "R_g=\\frac{2R}{G-1}=\\frac{50\\,000}{499}=100.2\\ \\Omega"
+    },
+    {
+     "text": "A 100 ohm standard resistor would give $G=501$ and 5.01 V, which saturates the ADC. Choose 102 ohm for margin.",
+     "latex": "G=1+\\frac{50\\,000}{102}=491.2"
+    },
+    {
+     "text": "Output at full scale with 102 ohm.",
+     "latex": "V_{out}=10\\ \\text{mV}\\times491.2=4.91\\ \\text{V}"
+    }
+   ],
+   "answer": "Use R_g about 102 ohm: G = 491 and the full-scale output is 4.91 V, below the 5 V limit."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Source",
+    "Mechanism",
+    "Typical signature",
+    "Remedy"
+   ],
+   "rows": [
+    [
+     "Ground loop",
+     "Two ground points at different potentials drive current through the signal return",
+     "Mains-frequency hum",
+     "Single-point (star) grounding, isolation, differential input"
+    ],
+    [
+     "Magnetic pickup",
+     "Changing flux from a motor cable induces voltage in the signal loop",
+     "Low-frequency noise related to load current",
+     "Twisted pair, route away from power cables, small loop area"
+    ],
+    [
+     "Electric (capacitive) pickup",
+     "Switching edges couple through stray capacitance",
+     "Spikes at switching edges",
+     "Shielded cable with shield grounded at one end"
+    ],
+    [
+     "Thermal noise",
+     "Random motion of charge in resistors",
+     "Broadband, small",
+     "Lower resistance, narrower bandwidth"
+    ]
+   ],
+   "caption": "Noise sources and remedies"
+  },
+  {
+   "type": "text",
+   "markdown": "**Wiring practice.** Twisting the two conductors makes adjacent loops pick up opposite voltages from a changing magnetic field, so they cancel. A shield intercepts electric fields but should be grounded at **one end only** for low-frequency signals; grounding at both ends creates a ground loop, with current flowing along the shield. Place amplification near the sensor so that the low-level signal travels as little as possible."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Gain first, filter second",
+   "text": "Amplify the small differential signal early so that later noise matters less, but the amplifier input must tolerate the common-mode voltage. Add a low-pass filter before the ADC for aliasing."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "CMRR falls with frequency",
+   "text": "The quoted CMRR is usually at DC or 50 Hz. At higher frequencies, and with unbalanced source resistances, it is worse, so common-mode interference from drives can still leak through."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "SNR in decibels is $20\\log_{10}(V_s/V_n)$; a factor of 10 in amplitude is 20 dB.",
+    "An instrumentation amplifier has gain $G=1+2R/R_g$ and rejects common-mode voltage according to its CMRR.",
+    "Ground loops arise from multiple ground connections at different potentials; fix them with single-point grounding or isolation.",
+    "Twisted pairs reduce magnetic pickup, and a shield grounded at one end reduces capacitive pickup."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A signal has an rms amplitude of 2.0 V and the noise is 2.0 mV rms. What is the SNR?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "60 dB"
+    },
+    {
+     "id": "b",
+     "text": "30 dB"
+    },
+    {
+     "id": "c",
+     "text": "20 dB"
+    },
+    {
+     "id": "d",
+     "text": "1000 dB"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "60 dB",
+   "distractorRationale": {
+    "a": "Correct: 20 times the log of 1000 is 60 dB.",
+    "b": "This uses 10 log of the amplitude ratio, the power formula applied to amplitudes.",
+    "c": "This corresponds to an amplitude ratio of only 10.",
+    "d": "The ratio itself is 1000; decibels are logarithmic."
+   },
+   "explanation": "The amplitude ratio is 1000, so $20\\log_{10}(1000)=60$ dB. The factor 20 is used because the quantities are amplitudes rather than powers.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A ground loop in a measurement system is caused by which of the following?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Two ground connections at slightly different potentials that let current flow through the signal return"
+    },
+    {
+     "id": "b",
+     "text": "A twisted pair carrying a differential signal"
+    },
+    {
+     "id": "c",
+     "text": "A very high op-amp gain"
+    },
+    {
+     "id": "d",
+     "text": "Using an ADC with too few bits"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Two ground connections at slightly different potentials that let current flow through the signal return",
+   "distractorRationale": {
+    "a": "Correct: current through a shared return between two ground points.",
+    "b": "Twisting reduces pickup rather than creating a loop.",
+    "c": "Gain amplifies noise but does not create a ground loop.",
+    "d": "Resolution affects quantisation, not ground potential."
+   },
+   "explanation": "When the sensor and the data logger are grounded at different points, the potential difference drives current through the cable shield or return, which appears as hum on the signal. Single-point grounding or isolation removes the loop.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why is an instrumentation amplifier preferred over a single op-amp inverting stage for reading a bridge sensor?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It makes the signal larger than the supply voltage"
+    },
+    {
+     "id": "b",
+     "text": "It has high input resistance and high CMRR, so it amplifies the small differential voltage and rejects common-mode voltage"
+    },
+    {
+     "id": "c",
+     "text": "It removes the need for any shielding"
+    },
+    {
+     "id": "d",
+     "text": "It converts the signal to digital"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It has high input resistance and high CMRR, so it amplifies the small differential voltage and rejects common-mode voltage",
+   "distractorRationale": {
+    "a": "An amplifier cannot exceed its supply voltage.",
+    "b": "Correct: high input resistance and common-mode rejection.",
+    "c": "Shielding is still needed against pickup.",
+    "d": "An amplifier produces an analogue output, not digital."
+   },
+   "explanation": "A bridge has a small differential output on a large common-mode level and non-negligible source resistance. An in-amp presents high input resistance and rejects the common component, and its gain is set by one resistor.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does twisting a signal pair reduce magnetic pickup from a nearby motor cable?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Twisting increases the wire resistance"
+    },
+    {
+     "id": "b",
+     "text": "Adjacent twists enclose opposite-sense loops, so the voltages induced in them cancel"
+    },
+    {
+     "id": "c",
+     "text": "Twisting shields the wires from electric fields"
+    },
+    {
+     "id": "d",
+     "text": "Twisting raises the signal frequency above the noise"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Adjacent twists enclose opposite-sense loops, so the voltages induced in them cancel",
+   "distractorRationale": {
+    "a": "Resistance is not the mechanism and would worsen the signal.",
+    "b": "Correct: opposite loops cancel the induced emf.",
+    "c": "Shielding against electric fields requires a conductive shield.",
+    "d": "Twisting does not change the signal frequency."
+   },
+   "explanation": "A changing magnetic flux induces a voltage in each loop of the pair, and successive twists reverse the loop orientation so the induced voltages oppose and largely cancel. Small loop area also reduces pickup.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A shielded cable carries a low-frequency sensor signal between a machine and a cabinet that have different ground potentials. How should the shield be connected?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Grounded at both ends"
+    },
+    {
+     "id": "b",
+     "text": "Left floating at both ends"
+    },
+    {
+     "id": "c",
+     "text": "Grounded at one end only"
+    },
+    {
+     "id": "d",
+     "text": "Connected to the signal conductor"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Grounded at one end only",
+   "distractorRationale": {
+    "a": "Both ends create a ground loop for low-frequency signals.",
+    "b": "A floating shield gives little protection against electric pickup.",
+    "c": "Correct: one end avoids a ground loop.",
+    "d": "Shorting it to the signal would defeat its purpose."
+   },
+   "explanation": "Grounding both ends lets the ground potential difference drive current along the shield, which couples into the signal. Grounding at one end keeps the shield effective against electric fields without forming a loop.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A sensor signal is 2.0 V rms and the noise is 4.0 mV rms. Calculate the SNR in decibels.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o1"
+   ],
+   "correctValue": 54.0,
+   "tolerance": 0.2,
+   "unit": "dB",
+   "explanation": "The amplitude ratio is $2.0/0.004=500$, so $\\mathrm{SNR}=20\\log_{10}(500)=53.98$ dB. The result is about 54 dB.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An instrumentation amplifier has input-stage resistors $R=10$ k$\\Omega$ and a gain-setting resistor $R_g=200\\ \\Omega$. Using $G=1+2R/R_g$, calculate the gain.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o2"
+   ],
+   "correctValue": 101,
+   "tolerance": 1,
+   "unit": "dimensionless",
+   "explanation": "The gain is $1+20\\,000/200=101$. A smaller $R_g$ gives a larger gain.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 50 Hz common-mode voltage of 1.5 V appears on both inputs of an instrumentation amplifier whose CMRR is 100 dB. Calculate the equivalent input-referred error voltage in microvolts.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o2",
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o3"
+   ],
+   "correctValue": 15,
+   "tolerance": 0.3,
+   "unit": "microvolts",
+   "explanation": "A CMRR of 100 dB is a ratio of $10^{5}$, so the input-referred error is $1.5/10^{5}=15\\ \\mu$V. Compared with a 10 mV signal this is 0.15 percent.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Distinguish a ground loop from electromagnetic pickup. For each, describe how it arises, what it looks like in the measurement, and give two wiring remedies.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o3"
+   ],
+   "markingGuide": [
+    "Ground loop arises from two ground points at different potentials driving current in the signal return (2 marks)",
+    "Ground loop appears as mains-frequency hum; remedies are single-point grounding, isolation amplifier or differential input (2 marks)",
+    "Magnetic pickup arises from changing flux inducing voltage in the signal loop, and capacitive pickup from stray capacitance to switching conductors (2 marks)",
+    "Remedies: twisted pair, minimum loop area, separation from power cables, shield grounded at one end (2 marks)",
+    "Mentions that differential measurement rejects common-mode interference from either source (1 mark)"
+   ],
+   "explanation": "A ground loop is a conduction path between two grounds, while pickup is coupling through fields. Different mechanisms need different fixes: grounding changes for the first, twisting and shielding for the second.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A load cell has a sensitivity of 2 mV/V and is excited with 10 V (full-scale output 20 mV). The ADC input range is 0 to 3.3 V. Using a three-op-amp in-amp with two 25 k$\\Omega$ resistors, choose a gain and $R_g$, justify the choice with a standard resistor value, and state two measures to protect the signal from interference on a 10 m cable.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o2",
+    "ug.mce-mechatronics-instrumentation.sensors-noise.noise-conditioning.o3"
+   ],
+   "markingGuide": [
+    "Full-scale output 20 mV and target of about 3 V gives $G\\approx150$ (2 marks)",
+    "Computes $R_g=2R/(G-1)=50\\,000/149=336\\ \\Omega$ (2 marks)",
+    "Chooses a standard value such as 332 ohm giving $G=151.6$ and a full-scale output of 3.03 V, below 3.3 V (2 marks)",
+    "States two protective measures: shielded twisted pair with shield grounded at one end, in-amp near the sensor, or low-pass filter before the ADC (2 marks)",
+    "Mentions leaving headroom for tolerances and offset (1 mark)"
+   ],
+   "explanation": "A gain near 150 maps 20 mV to about 3 V. A 332 ohm resistor gives G = 151.6 and 3.03 V, leaving headroom below the 3.3 V limit.",
+   "board": "internal"
+  }
+ ]
+}

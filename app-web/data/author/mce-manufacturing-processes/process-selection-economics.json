@@ -1,0 +1,392 @@
+{
+ "lessonTitle": "Process Selection Economics",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hydraulic manifold block is needed as 100 prototypes next month and, if the product succeeds, 100 000 a year afterwards. Machining each from a solid bar needs no tooling and can start tomorrow; casting needs a pattern that takes weeks to make. Neither route is right for both quantities, and a good manufacturing engineer is expected to show why with numbers."
+  },
+  {
+   "type": "text",
+   "markdown": "A process route is chosen by comparing **cost, quality and lead time**. Cost depends on volume through the fixed-versus-variable split: machining from bar has little fixed cost but a large variable cost (expensive bar stock, long machining time), whereas casting followed by finish machining has a large fixed cost (pattern or die) but a small variable cost (less material removed). To compare routes numerically we first need to estimate the machining time and cost of the turned or finished features."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Machining time for turning",
+   "text": "For one pass of turning a bar of diameter $D$ (mm) over a length $L$ (mm) at cutting speed $V$ (m/min) and feed $f$ (mm/rev), the spindle speed is $N=1000V/(\\pi D)$ (rev/min) and the cutting time is $t_m=L/(fN)=\\pi DL/(1000Vf)$ minutes. Several passes multiply this by the number of passes."
+  },
+  {
+   "type": "math",
+   "latex": "t_m=\\frac{\\pi D L}{1000\\,V f}\\ [\\text{min}],\\qquad c_{part}=C_m\\,(t_m+t_{load})+C_{tool}",
+   "caption": "Turning time and cost per part: $C_m$ machine-plus-operator rate (currency/min), $t_{load}$ load and unload time (min), $C_{tool}$ tool cost per part (currency)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Time and cost of a turned part",
+   "prompt": "A 50 mm bar is turned over 120 mm in one pass at $V=150$ m/min with $f=0.25$ mm/rev. Loading takes 1.5 min, the machine-plus-operator rate is 1.00 currency unit/min and tool wear costs 0.20 units per part. Find the spindle speed, cutting time and cost per part.",
+   "steps": [
+    {
+     "text": "Spindle speed.",
+     "latex": "N=\\frac{1000(150)}{\\pi(50)}=955\\ \\text{rev/min}"
+    },
+    {
+     "text": "Cutting time.",
+     "latex": "t_m=\\frac{120}{0.25(955)}=0.503\\ \\text{min}"
+    },
+    {
+     "text": "Cost per part.",
+     "latex": "c=1.00(0.503+1.5)+0.20=2.20\\ \\text{units}"
+    }
+   ],
+   "answer": "The spindle runs at about 955 rev/min, cutting takes 0.50 min and the machining cost is about 2.20 units per part."
+  },
+  {
+   "type": "text",
+   "markdown": "Now compare two routes for the same finished manifold block. Route A machines it from bar stock: fixed cost 1500 units (programming and fixtures), variable cost 12.50 units per part (6.50 for bar material and 6.00 for 6.0 min of machining at 1.00/min). Route B casts a near-net-shape blank and finish machines only the critical faces: fixed cost 19 500 units (pattern 18 000 and fixtures 1500) and variable cost 5.30 units (3.80 for the casting and 1.50 for 1.5 min of finish machining). These are illustrative figures chosen to show the pattern."
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparison for 100 and 100 000 parts",
+   "prompt": "Using the unit cost $c=F/N+v$ for each route, compare the routes at 100 and at 100 000 parts and find the break-even quantity.",
+   "steps": [
+    {
+     "text": "Route A unit cost.",
+     "latex": "c_A(100)=\\frac{1500}{100}+12.50=27.50,\\qquad c_A(100000)=\\frac{1500}{100000}+12.50=12.515"
+    },
+    {
+     "text": "Route B unit cost.",
+     "latex": "c_B(100)=\\frac{19500}{100}+5.30=200.30,\\qquad c_B(100000)=\\frac{19500}{100000}+5.30=5.495"
+    },
+    {
+     "text": "Break-even.",
+     "latex": "Q^*=\\frac{19500-1500}{12.50-5.30}=2500\\ \\text{parts}"
+    }
+   ],
+   "answer": "At 100 parts machining from bar costs 27.5 per part against 200.3 for casting; at 100 000 parts casting costs 5.50 against 12.52. The break-even is 2500 parts."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Criterion",
+    "Machining from bar",
+    "Casting plus finish machining"
+   ],
+   "rows": [
+    [
+     "Fixed cost",
+     "Low (programming, fixtures)",
+     "High (pattern or die)"
+    ],
+    [
+     "Variable cost",
+     "High (material, long cycle)",
+     "Low (near-net shape)"
+    ],
+    [
+     "Lead time to first part",
+     "Short (days to 1 to 2 weeks)",
+     "Long (typically 6 to 12 weeks for tooling)"
+    ],
+    [
+     "Material integrity",
+     "Wrought bar, uniform and dense",
+     "Possible porosity or inclusions; grain unrefined"
+    ],
+    [
+     "Design change",
+     "Easy, reprogram",
+     "Costly, new pattern"
+    ],
+    [
+     "Best volume",
+     "Prototypes and low volume",
+     "Medium to high volume"
+    ]
+   ],
+   "caption": "Typical trade-offs between the two routes"
+  },
+  {
+   "type": "text",
+   "markdown": "Cost alone does not decide the route. **Quality** requirements (fatigue strength, leak-tightness, surface finish) may rule out a route even if it is cheaper, for instance a cast part with porosity may leak under pressure. **Lead time** may rule out a route that cannot deliver by the date: a pattern that takes ten weeks cannot support a launch in four. A sound recommendation names the route, gives the cost comparison at the expected volume, checks quality and lead time, and says what would change the decision."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Structure of a recommendation",
+   "text": "State the volume, cost per part for each route, break-even quantity, quality and lead-time checks, and the conclusion. Often the answer is staged: machine from bar for prototypes, then invest in casting once the volume is confirmed."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Illustrative data",
+   "text": "The cost, rate and lead-time values in this unit are examples to demonstrate the method. Real quotations also include scrap, setup per batch, inspection, finishing and transport."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Turning time is $t_m=\\pi DL/(1000Vf)$ and the cost per part is $C_m(t_m+t_{load})+C_{tool}$.",
+    "Compare routes with $c=F/N+v$ at the actual volumes; machining from bar wins at low volume and casting plus finish machining wins at high volume.",
+    "The break-even quantity is $(F_B-F_A)/(v_A-v_B)$.",
+    "Recommend a route using cost, quality and lead time together, and state the assumptions."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A bar of diameter 30 mm is turned over a length of 80 mm in one pass at a cutting speed of 120 m/min and a feed of 0.20 mm/rev. Calculate the cutting time in minutes.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o1"
+   ],
+   "correctValue": 0.314159,
+   "tolerance": 0.01,
+   "unit": "min",
+   "explanation": "The time is $t_m=\\pi DL/(1000Vf)=\\pi(30)(80)/(1000\\times120\\times0.20)=7540/24000=0.314$ min. This ignores loading time and any additional passes.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A turned part has a machining time of 0.8 min and a loading time of 1.2 min. The machine-plus-operator rate is 54 currency units per hour and the tool cost is 0.15 units per part. Calculate the machining cost per part in currency units.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o1"
+   ],
+   "correctValue": 1.95,
+   "tolerance": 0.01,
+   "unit": "currency units/part",
+   "explanation": "The rate is $54/60=0.90$ units/min. The time cost is $0.90\\times(0.8+1.2)=1.80$ and adding the tool cost gives $1.80+0.15=1.95$ units.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A turning pass is repeated with the feed doubled (cutting speed and other values unchanged). What happens to the cutting time per pass?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It doubles"
+    },
+    {
+     "id": "b",
+     "text": "It halves"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "It quadruples"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It halves",
+   "distractorRationale": {
+    "a": "Time is inversely proportional to feed, so it falls with a higher feed.",
+    "c": "Feed is in the denominator of $t_m=\\pi DL/(1000Vf)$, so it matters.",
+    "d": "Time depends on $1/f$ to the first power, not on a square."
+   },
+   "explanation": "Since $t_m=\\pi DL/(1000Vf)$, doubling $f$ halves the time. In practice the feed is limited by surface finish and tool force.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Machining a bracket from bar has a fixed cost of 800 units and variable cost 18.00 units/part. Casting plus finish machining has a tooling cost of 25 000 units and 7.50 units/part. Calculate the break-even quantity in parts.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o2"
+   ],
+   "correctValue": 2304.761905,
+   "tolerance": 25,
+   "unit": "parts",
+   "explanation": "Equating total costs gives $800+18Q=25000+7.5Q$, so $10.5Q=24200$ and $Q^*=2305$ parts. For quantities below this machining from bar is cheaper.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For the machined-from-bar and casting-plus-finish routes, which is normally cheaper per part at 100 parts and at 100 000 parts?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Casting at 100; machining from bar at 100 000"
+    },
+    {
+     "id": "b",
+     "text": "Machining from bar at both volumes"
+    },
+    {
+     "id": "c",
+     "text": "Casting plus finish machining at both volumes"
+    },
+    {
+     "id": "d",
+     "text": "Machining from bar at 100; casting plus finish machining at 100 000"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Machining from bar at 100; casting plus finish machining at 100 000",
+   "distractorRationale": {
+    "a": "This is reversed: the pattern cost cannot be recovered at 100 parts.",
+    "b": "At very high volume the high variable cost of machining from bar makes it more expensive.",
+    "c": "At 100 parts the pattern cost per part is hundreds of units, which makes casting very expensive."
+   },
+   "explanation": "At low volume the fixed cost of casting tooling dominates, so machining from bar is cheaper. At high volume the lower variable cost of casting plus finish machining wins.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A customer needs 50 manifold blocks delivered in three weeks. A casting pattern would take about ten weeks. What is the best recommendation?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Machine the blocks from bar stock"
+    },
+    {
+     "id": "b",
+     "text": "Wait for the casting pattern"
+    },
+    {
+     "id": "c",
+     "text": "Order the casting pattern and accept late delivery"
+    },
+    {
+     "id": "d",
+     "text": "Reduce the order to 5 pieces"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Machine the blocks from bar stock",
+   "distractorRationale": {
+    "b": "The pattern lead time cannot meet the delivery date.",
+    "c": "The delivery date would still be missed, so the customer's requirement fails.",
+    "d": "The customer's quantity is the requirement; changing it is not a manufacturing solution."
+   },
+   "explanation": "Machining from bar needs only programming and fixtures, so it can meet a short lead time even though the unit cost is higher. At 50 parts the fixed cost of casting could not be recovered in any case.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A part is a high-pressure fluid manifold made in 100 units. It is fatigue loaded and must be leak-tight at 300 bar. A foundry offers a casting at a lower unit cost. Which recommendation is best?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o2",
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Cast, because casting is always cheaper"
+    },
+    {
+     "id": "b",
+     "text": "Cast it and rely on final inspection to remove the porosity risk"
+    },
+    {
+     "id": "c",
+     "text": "Machine from wrought bar, since low volume does not justify tooling and cast porosity risks leaks and fatigue"
+    },
+    {
+     "id": "d",
+     "text": "Machine from bar only if the quantity exceeds 100 000"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Machine from wrought bar, since low volume does not justify tooling and cast porosity risks leaks and fatigue",
+   "distractorRationale": {
+    "a": "Casting is not always cheaper, and at 100 parts the pattern cost dominates.",
+    "b": "Inspection can reject leaking parts but cannot remove porosity, so scrap and risk remain high.",
+    "d": "Machining from bar is favoured at low volume, not high volume."
+   },
+   "explanation": "At 100 parts the casting tooling is expensive per part, and wrought bar has uniform dense material that suits high-pressure, fatigue-loaded service. A cast part would need pressure testing and possibly impregnation, adding cost and risk.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A bar of larger diameter is turned over the same length at the same cutting speed and feed. How does the cutting time per pass change?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It decreases in proportion to the diameter"
+    },
+    {
+     "id": "b",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "c",
+     "text": "It increases with the square of the diameter"
+    },
+    {
+     "id": "d",
+     "text": "It increases in proportion to the diameter"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It increases in proportion to the diameter",
+   "distractorRationale": {
+    "a": "A larger diameter has a longer helical path per revolution at the same cutting speed, so time cannot fall.",
+    "b": "Diameter appears in the numerator of $\\pi DL/(1000Vf)$.",
+    "c": "Diameter appears to the first power, not squared."
+   },
+   "explanation": "With $t_m=\\pi DL/(1000Vf)$ the time is proportional to $D$. At fixed cutting speed, a larger diameter means a lower rev/min but a longer path per turn, with the net effect that the time rises in proportion.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Route A (machining from bar) has a fixed cost of 2000 units and variable cost 15.00 units/part. Route B (casting plus finish) has a fixed cost of 30 000 units and variable cost 6.00 units/part. Compare unit costs at 100 and 100 000 parts, find the break-even quantity and state your recommendation for each volume.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o2",
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o3"
+   ],
+   "markingGuide": [
+    "Route A at 100: 2000/100 + 15 = 35.00; Route B at 100: 30 000/100 + 6 = 306.00",
+    "Route A at 100 000: 15.02; Route B at 100 000: 6.30",
+    "Break-even $Q^*=(30000-2000)/(15-6)\\approx3111$ parts",
+    "Recommend A at 100 and B at 100 000",
+    "Mentions quality and lead time, or staged investment"
+   ],
+   "explanation": "At 100 parts the unit costs are 35.00 against 306.00, favouring machining from bar. At 100 000 parts they are 15.02 against 6.30, favouring casting, with the break-even at about 3100 parts.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A company will make 5000 aluminium pump flanges per year for five years. Write a short recommendation between machining from bar and casting plus finish machining, discussing cost per part, quality (pressure integrity, surface finish) and lead time, and stating what information you would need to confirm the choice.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o2",
+    "ug.mce-manufacturing-processes.cost-estimation.process-selection-economics.o3"
+   ],
+   "markingGuide": [
+    "Estimates or uses unit cost $c=F/N+v$ with tooling amortised over the volume (25 000 parts over five years)",
+    "Notes casting is likely cheaper at this medium volume if break-even is a few thousand parts",
+    "Quality: porosity and leak-tightness, need for pressure testing or impregnation; wrought bar has better integrity",
+    "Lead time: pattern weeks versus immediate for bar; bridging with machined parts is possible",
+    "Information needed: quotes, scrap rate, tolerance and finish requirements, design stability, demand certainty"
+   ],
+   "explanation": "At about 25 000 parts over the life, the tooling is spread thinly and the lower variable cost of casting probably wins, provided leak-tightness is demonstrated. The recommendation should be tied to quotations and confirmed volume, with machining from bar as a bridge.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,395 @@
+{
+ "lessonTitle": "First-Order Response: Time Constant and DC Gain",
+ "estimatedMinutes": 28,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A DC motor driving a conveyor is switched from rest to a constant 5 V. The speed does not jump: it climbs smoothly, quickly at first and then ever more slowly, until it settles at 120 rad/s. Two numbers describe the entire curve: where it ends up and how long it takes to get most of the way. These are the DC gain and the time constant of a first-order system."
+  },
+  {
+   "type": "text",
+   "markdown": "A **first-order system** has one energy store (rotor inertia, a thermal mass, a capacitor) and a transfer function of the form $G(s)=\\dfrac{K}{\\tau s+1}$. Here $K$ is the **DC gain** (output units per input unit, for example rad/s per V) and $\\tau$ is the **time constant** in seconds. It corresponds to the differential equation $\\tau\\dot y+y=Ku$. We assume the system is linear, time-invariant and starts at rest."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Time constant and DC gain",
+   "text": "The DC (steady-state) gain is $K=G(0)$, the ratio of final output to a constant input once transients decay. The time constant $\\tau$ is the time for the step response to reach $1-e^{-1}=63.2\\%$ of its final value; equivalently $-1/\\tau$ is the real pole of $G(s)$, and the tangent to the response at $t=0$ would reach the final value at $t=\\tau$."
+  },
+  {
+   "type": "text",
+   "markdown": "**Step response.** For a step of amplitude $A$ the input transform is $U(s)=A/s$, so $Y(s)=\\dfrac{KA}{s(\\tau s+1)}=KA\\left(\\dfrac1s-\\dfrac{\\tau}{\\tau s+1}\\right)=KA\\left(\\dfrac1s-\\dfrac{1}{s+1/\\tau}\\right)$ by partial fractions. Inverting gives the response below. The final value is $y_\\infty=KA$ (also from the final-value theorem $\\lim_{s\\to0}sY(s)=KA$), which depends on $K$ and $A$ only and never on $\\tau$."
+  },
+  {
+   "type": "math",
+   "latex": "y(t)=KA\\left(1-e^{-t/\\tau}\\right),\\qquad y_\\infty=KA,\\qquad \\dot y(0)=\\frac{KA}{\\tau}",
+   "caption": "Step response of $G(s)=K/(\\tau s+1)$ to an input step of height $A$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Identify the motor from measurements",
+   "prompt": "A motor is stepped from 0 to $A=5$ V. The speed settles at 120 rad/s and reaches 75.8 rad/s (63.2% of final) at $t=0.30$ s. Find $K$ and $\\tau$, and write $G(s)$.",
+   "steps": [
+    {
+     "text": "Final value divides by step height to give the DC gain.",
+     "latex": "K=\\frac{y_\\infty}{A}=\\frac{120\\ \\text{rad/s}}{5\\ \\text{V}}=24\\ \\text{rad/s per V}"
+    },
+    {
+     "text": "Check the 63.2% level: $0.632\\times120=75.8$ rad/s, which is reached at 0.30 s, so $\\tau=0.30$ s.",
+     "latex": "0.632\\times120=75.8\\ \\text{rad/s}\\Rightarrow\\tau=0.30\\ \\text{s}"
+    },
+    {
+     "text": "Assemble the transfer function.",
+     "latex": "G(s)=\\frac{24}{0.30\\,s+1}"
+    }
+   ],
+   "answer": "$K=24$ rad/s per V, $\\tau=0.30$ s, so $G(s)=24/(0.3s+1)$ with a pole at $s=-3.33$ rad/s."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Time",
+    "Fraction of final value $1-e^{-t/\\tau}$",
+    "Remaining error"
+   ],
+   "rows": [
+    [
+     "$t=\\tau$",
+     "63.2%",
+     "36.8%"
+    ],
+    [
+     "$t=2\\tau$",
+     "86.5%",
+     "13.5%"
+    ],
+    [
+     "$t=2.303\\tau$",
+     "90.0%",
+     "10.0%"
+    ],
+    [
+     "$t=3\\tau$",
+     "95.0%",
+     "5.0%"
+    ],
+    [
+     "$t=4\\tau$",
+     "98.2%",
+     "1.8%"
+    ],
+    [
+     "$t=5\\tau$",
+     "99.3%",
+     "0.7%"
+    ]
+   ],
+   "caption": "Step response of a first-order system in units of the time constant"
+  },
+  {
+   "type": "text",
+   "markdown": "**Time to a given fraction.** Setting $1-e^{-t/\\tau}=f$ and solving gives $t_f=-\\tau\\ln(1-f)$. For the 90% point $t_{90}=\\tau\\ln10=2.303\\tau$ (the 10-90% rise time is $2.2\\tau$). The same $\\tau$ governs the settling time to 2%, which is about $4\\tau$. Notice that $t_f$ does not depend on the step amplitude $A$ or the gain $K$: a first-order system is equally fast for large or small steps, as long as it stays linear."
+  },
+  {
+   "type": "worked_example",
+   "title": "Speed at a given time and 90% time",
+   "prompt": "For the motor above ($K=24$ rad/s per V, $\\tau=0.30$ s) find the time to reach 90% of final speed for the 5 V step, and the speed at $t=0.5$ s. Then state the final speed for an 8 V step.",
+   "steps": [
+    {
+     "text": "90% time: $t_{90}=\\tau\\ln10$.",
+     "latex": "t_{90}=0.30\\times2.303=0.691\\ \\text{s}"
+    },
+    {
+     "text": "Speed at $t=0.5$ s with final value 120 rad/s: $\\omega=120(1-e^{-0.5/0.3})$ and $e^{-1.667}=0.1889$.",
+     "latex": "\\omega(0.5)=120(1-0.1889)=97.3\\ \\text{rad/s}"
+    },
+    {
+     "text": "For an 8 V step the final value scales linearly with the amplitude, $y_\\infty=KA=24\\times8=192$ rad/s, while $t_{90}$ is unchanged at 0.691 s.",
+     "latex": "y_\\infty=24\\times8=192\\ \\text{rad/s}"
+    }
+   ],
+   "answer": "$t_{90}=0.691$ s, $\\omega(0.5\\ \\text{s})=97.3$ rad/s, and the 8 V step settles at 192 rad/s in the same 0.691 s to 90%."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Apply the step of known amplitude $A$ from rest and record the output until it stops changing.",
+    "Read the final value $y_\\infty$ and compute $K=y_\\infty/A$.",
+    "Find the time at which the output reaches $0.632\\,y_\\infty$; that time is $\\tau$.",
+    "Cross-check using the initial slope ($\\tau=y_\\infty/\\dot y(0)$) or a plot of $\\ln(1-y/y_\\infty)$ against $t$, which is a straight line of slope $-1/\\tau$.",
+    "Predict any other response with $y(t)=KA(1-e^{-t/\\tau})$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "The time constant is the time to reach 63.2%, not the time to reach the final value (which is never reached exactly). Do not confuse the pole location $-1/\\tau$ (rad/s) with $\\tau$ (s). Do not forget to multiply by the step amplitude: the gain $K$ alone is not the steady output unless $A=1$."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Two numbers describe everything",
+   "text": "$K$ sets the final value for any constant input and $\\tau$ sets how long it takes. A faster system (a larger pole magnitude $1/\\tau$) has a smaller time constant and a shorter $t_{90}$, but its steady-state gain is independent of speed."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A first-order system $K/(\\tau s+1)$ responds to a step $A$ with $y=KA(1-e^{-t/\\tau})$.",
+    "The DC gain is $K=y_\\infty/A$; the steady-state output for a step of height $A$ is $KA$.",
+    "The time constant is the time to reach 63.2% of the final value; $t_{90}=2.303\\tau$, $t_{95}\\approx3\\tau$ and 2% settling is about $4\\tau$.",
+    "Times to reach a given fraction are independent of the step amplitude for a linear system."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A load cell is stepped by a force of 40 N and its output rises to a final value of 8.0 V. The output reaches 5.06 V at $t=0.12$ s. Which pair gives the gain $K$ and time constant $\\tau$ of the first-order model?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$K=0.2$ V/N, $\\tau=0.12$ s"
+    },
+    {
+     "id": "b",
+     "text": "$K=0.2$ V/N, $\\tau=0.19$ s"
+    },
+    {
+     "id": "c",
+     "text": "$K=5$ N/V, $\\tau=0.12$ s"
+    },
+    {
+     "id": "d",
+     "text": "$K=8.0$ V/N, $\\tau=0.12$ s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$K=0.2$ V/N, $\\tau=0.12$ s",
+   "distractorRationale": {
+    "a": "Correct: $K=8.0/40=0.2$ V/N, and $5.06/8.0=0.632$ so $\\tau=0.12$ s.",
+    "b": "The gain is right, but the time constant was taken from the 90% level instead of the 63.2% level.",
+    "c": "The ratio was inverted: $K$ is output over input, not input over output.",
+    "d": "The final output was used as the gain without dividing by the step amplitude."
+   },
+   "explanation": "The DC gain is final output over step height, $8.0/40=0.2$ V/N. The time constant is the time at which the response reaches 63.2% of its final value, and $0.632\\times8.0=5.06$ V, so $\\tau=0.12$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A first-order mechanical positioner is given a step input of 2 V. Its output eventually settles at 100 mm, and the initial slope of the output (at $t=0$) is 50 mm/s. Find the time constant in seconds.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o1"
+   ],
+   "correctValue": 2.0,
+   "tolerance": 0.05,
+   "unit": "s",
+   "explanation": "For a first-order system the tangent at $t=0$ reaches the final value at $t=\\tau$, because $\\dot y(0)=y_\\infty/\\tau$. So $\\tau=100/50=2.0$ s. The step height of 2 V is not needed for $\\tau$ (it is needed for the gain $K=50$ mm per V).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A thermocouple in a gas stream behaves as a first-order system with time constant $\\tau=0.8$ s. How long does it take to reach 90 percent of the final value after a sudden change in gas temperature? Give the time in seconds.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o2"
+   ],
+   "correctValue": 1.84,
+   "tolerance": 0.03,
+   "unit": "s",
+   "explanation": "The 90% time is $t_{90}=\\tau\\ln10=0.8\\times2.303=1.842$ s. This is independent of the size of the temperature step because the system is linear.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A first-order temperature process has transfer function $G(s)=\\dfrac{15}{2s+1}$, with input heater power in kW and output temperature rise in $^\\circ$C. The heater power is stepped from 0 to 0.6 kW. Find the steady-state temperature rise in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o3"
+   ],
+   "correctValue": 9.0,
+   "tolerance": 0.1,
+   "unit": "degC",
+   "explanation": "The DC gain is $G(0)=15$ $^\\circ$C per kW, and the step height is 0.6 kW, so the steady-state output is $KA=15\\times0.6=9.0$ $^\\circ$C. The time constant of 2 s affects how fast it gets there, not the final value.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A first-order system has $K=2.5$ and $\\tau=1.5$ s and receives a step of amplitude 4 at $t=0$. What is the output at $t=3$ s?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o2",
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$6.32$"
+    },
+    {
+     "id": "b",
+     "text": "$8.65$"
+    },
+    {
+     "id": "c",
+     "text": "$9.50$"
+    },
+    {
+     "id": "d",
+     "text": "$8.00$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$8.65$",
+   "distractorRationale": {
+    "a": "That is $KA(1-e^{-1})$, which would be the value at $t=\\tau=1.5$ s, not 3 s.",
+    "b": "Correct: $y=10(1-e^{-3/1.5})=10(1-e^{-2})=10(0.8647)=8.65$.",
+    "c": "That is the 95% level ($t=3\\tau$) applied to the wrong time; $t/\\tau=2$ here, not 3.",
+    "d": "This incorrectly assumes the response is linear in time up to 80% of final."
+   },
+   "explanation": "The final value is $KA=2.5\\times4=10$, and $t/\\tau=3/1.5=2$ so the fraction reached is $1-e^{-2}=0.8647$. The output is therefore 8.65, which agrees with the table entry of 86.5% at $t=2\\tau$.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "The time constant of a first-order system is the time taken for its step response to reach its final value.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The step response approaches its final value asymptotically and never reaches it exactly. The time constant is the time to reach 63.2% of the final value, and about $4\\tau$ is needed to be within 2%.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A first-order system initially at rest has its step input amplitude doubled from $A$ to $2A$. Which statement is correct for the linear model?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o2",
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Both the final value and the 90% time double"
+    },
+    {
+     "id": "b",
+     "text": "The final value doubles and the 90% time is unchanged"
+    },
+    {
+     "id": "c",
+     "text": "The final value is unchanged and the 90% time halves"
+    },
+    {
+     "id": "d",
+     "text": "The final value doubles and the 90% time halves"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The final value doubles and the 90% time is unchanged",
+   "distractorRationale": {
+    "a": "The 90% time depends on $\\tau$ only, so it does not scale with the input.",
+    "b": "Correct: $y_\\infty=KA$ scales with $A$, while $t_{90}=2.303\\tau$ does not depend on $A$.",
+    "c": "The final value is proportional to the input amplitude for a linear system.",
+    "d": "A larger input does not make a linear system respond faster; $\\tau$ is fixed by the system."
+   },
+   "explanation": "For a linear first-order system $y=KA(1-e^{-t/\\tau})$, so doubling $A$ doubles every output value and hence the final value. The time to reach any given fraction of the final value depends only on $\\tau$, so $t_{90}$ stays at $2.303\\tau$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A pressure transducer is stepped and its reading takes 4.6 s to reach 90 percent of its final value. Assuming first-order behaviour, what is its time constant?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$2.0$ s"
+    },
+    {
+     "id": "b",
+     "text": "$4.6$ s"
+    },
+    {
+     "id": "c",
+     "text": "$1.15$ s"
+    },
+    {
+     "id": "d",
+     "text": "$1.5$ s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$2.0$ s",
+   "distractorRationale": {
+    "a": "Correct: $\\tau=t_{90}/\\ln10=4.6/2.303=2.0$ s.",
+    "b": "That is the 90% time itself, not the time constant.",
+    "c": "This divides by 4, the factor relating the 2% settling time (not the 90% time) to $\\tau$.",
+    "d": "This divides by 3, which relates the 95% time to $\\tau$ rather than the 90% time."
+   },
+   "explanation": "The 90% time of a first-order system is $t_{90}=\\tau\\ln10=2.303\\tau$. Hence $\\tau=4.6/2.303=2.0$ s, and the 63.2% time is 2.0 s, shorter than the 90% time as expected.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A step of amplitude $A$ is applied to $G(s)=K/(\\tau s+1)$ from rest. Derive $y(t)$ using partial fractions and use your result to show (a) the value at $t=\\tau$ and (b) the 90% time.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o1",
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o2",
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o3"
+   ],
+   "markingGuide": [
+    "Writes $Y(s)=KA/[s(\\tau s+1)]$",
+    "Performs partial fractions to $KA[1/s-1/(s+1/\\tau)]$",
+    "Inverts to $y=KA(1-e^{-t/\\tau})$ and states $y_\\infty=KA$",
+    "Shows $y(\\tau)=0.632KA$",
+    "Solves $1-e^{-t/\\tau}=0.9$ to get $t_{90}=\\tau\\ln10=2.303\\tau$"
+   ],
+   "explanation": "The derivation uses a standard Laplace pair with the pole at $-1/\\tau$. Both quoted results follow directly from the exponential, so the 63.2% and 2.303 values are not extra facts to memorise.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe, with the quantities you would measure, two independent graphical ways to find the time constant of a first-order process from a recorded step response, and explain how you would check that the first-order model is adequate.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.first-order-response.o1"
+   ],
+   "markingGuide": [
+    "Reads final value and finds the time at which the response reaches 63.2% of it",
+    "Alternatively draws the tangent at $t=0$ and finds where it meets the final value (time equals $\\tau$)",
+    "Mentions plotting $\\ln(1-y/y_\\infty)$ versus $t$, a straight line with slope $-1/\\tau$",
+    "Checks consistency: the two estimates agree, and the plot is straight; curvature or an initial delay indicates higher order or dead time",
+    "Computes $K$ from $y_\\infty/A$"
+   ],
+   "explanation": "Independent estimates guard against reading errors, and the semi-log plot is the most sensitive test of first-order behaviour. A pure first-order response has a non-zero slope at $t=0$, while higher-order responses start with zero slope.",
+   "board": "internal"
+  }
+ ]
+}

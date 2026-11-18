@@ -1,0 +1,395 @@
+{
+ "lessonTitle": "Observability",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A test rig measures only the angle of a motor shaft. A student asks the obvious question: can the speed be recovered from that single signal? Differentiating the angle gives a noisy answer, but a more fundamental question comes first: does the angle record contain enough information to reconstruct the whole state at all? Observability answers it before any sensor is bought."
+  },
+  {
+   "type": "text",
+   "markdown": "A linear system $\\dot x=Ax+Bu$, $y=Cx$ is **observable** if the initial state $x(0)$ can be determined uniquely from the measured output $y(t)$ and the known input $u(t)$ over a finite time interval. Because the input and the system model are known, the effect of $u$ can be subtracted, so observability depends only on the pair $(A,C)$, not on $B$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Observability matrix",
+   "text": "For $A\\in\\mathbb{R}^{n\\times n}$ and $C\\in\\mathbb{R}^{p\\times n}$, the observability matrix stacks the output matrix and its successive products with $A$: $\\mathcal{O}=[C;\\,CA;\\,CA^2;\\,\\dots;\\,CA^{n-1}]$ ($np\\times n$). The pair $(A,C)$ is observable if and only if $\\operatorname{rank}\\mathcal{O}=n$."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathcal{O}=\\begin{bmatrix}C\\\\ CA\\\\ CA^{2}\\\\ \\vdots\\\\ CA^{n-1}\\end{bmatrix},\\qquad \\text{observable}\\iff\\operatorname{rank}\\mathcal{O}=n",
+   "caption": "Kalman rank test for observability."
+  },
+  {
+   "type": "text",
+   "markdown": "The idea: $y=Cx$ shows one linear combination of the state; $\\dot y=CAx+CBu$ shows another; each further derivative reveals one more combination $CA^kx$. If the $n$ rows are independent, the derivatives of $y$ determine $x$. If they are dependent, some combination of states never shows up in $y$ however long we watch: an *unobservable mode*."
+  },
+  {
+   "type": "worked_example",
+   "title": "Which sensor on a spring-mass plant?",
+   "prompt": "A mass-spring-damper has states $x_1$ (position) and $x_2$ (velocity) with $A=\\begin{bmatrix}0&1\\\\-4&-1\\end{bmatrix}$ (so $k/m=4$, $c/m=1$). Test observability for (a) a position sensor, $C=[1\\;\\;0]$ and (b) a velocity sensor, $C=[0\\;\\;1]$.",
+   "steps": [
+    {
+     "text": "Position sensor: $CA=[1\\;0]A=[0\\;1]$, so the stacked matrix is the identity.",
+     "latex": "\\mathcal{O}_a=\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix},\\quad\\det\\mathcal{O}_a=1\\neq0"
+    },
+    {
+     "text": "Velocity sensor: $CA=[0\\;1]A=[-4\\;-1]$.",
+     "latex": "\\mathcal{O}_b=\\begin{bmatrix}0&1\\\\-4&-1\\end{bmatrix},\\quad\\det\\mathcal{O}_b=4\\neq0"
+    },
+    {
+     "text": "Both determinants are nonzero, so both sensors make the plant observable. With a spring ($k>0$) the position feeds back into the acceleration, so the velocity record also carries position information.",
+     "latex": "\\operatorname{rank}\\mathcal{O}_a=\\operatorname{rank}\\mathcal{O}_b=2"
+    }
+   ],
+   "answer": "Observable with either sensor; the position sensor is the simplest case ($\\mathcal{O}=I$)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Controllability",
+    "Observability"
+   ],
+   "rows": [
+    [
+     "Question",
+     "Can $u$ steer every state?",
+     "Can $y$ reveal every state?"
+    ],
+    [
+     "Depends on",
+     "$(A,B)$",
+     "$(A,C)$"
+    ],
+    [
+     "Rank test",
+     "$[B\\;AB\\cdots A^{n-1}B]$",
+     "$[C;\\,CA;\\cdots;CA^{n-1}]$"
+    ],
+    [
+     "Failure means",
+     "Some mode cannot be moved by the input",
+     "Some mode is invisible in the output"
+    ],
+    [
+     "Consequence for design",
+     "State feedback cannot place that pole",
+     "An observer cannot estimate that state"
+    ]
+   ],
+   "caption": "Controllability and observability side by side (dual concepts)."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Duality",
+   "text": "The pair $(A,C)$ is observable if and only if the pair $(A^T,C^T)$ is controllable, because $\\mathcal{O}(A,C)=\\mathcal{C}(A^T,C^T)^T$. Every theorem about controllability therefore has a mirror theorem about observability: state feedback and the observer gain are dual design problems."
+  },
+  {
+   "type": "worked_example",
+   "title": "Duality in practice",
+   "prompt": "For $A=\\begin{bmatrix}-2&1\\\\0&-5\\end{bmatrix}$ and $C=[0\\;\\;1]$, test observability directly and by checking controllability of the dual pair $(A^T,C^T)$.",
+   "steps": [
+    {
+     "text": "Direct test: $CA=[0\\;1]A=[0\\;-5]$.",
+     "latex": "\\mathcal{O}=\\begin{bmatrix}0&1\\\\0&-5\\end{bmatrix},\\quad\\operatorname{rank}\\mathcal{O}=1<2"
+    },
+    {
+     "text": "Dual pair: $A^T=\\begin{bmatrix}-2&0\\\\1&-5\\end{bmatrix}$, $B_d=C^T=[0\\;1]^T$, with $A^TB_d=[0\\;-5]^T$.",
+     "latex": "\\mathcal{C}_d=\\begin{bmatrix}0&0\\\\1&-5\\end{bmatrix},\\quad\\operatorname{rank}\\mathcal{C}_d=1"
+    },
+    {
+     "text": "The two tests agree: the pair is not observable. Physically $\\dot x_2=-5x_2$ evolves on its own and the output is $x_2$, so the output never sees $x_1$, whose eigenvalue $-2$ is the unobservable mode.",
+     "latex": "\\lambda_{unobs}=-2"
+    }
+   ],
+   "answer": "Not observable (rank 1); the unobservable mode is at $s=-2$. Both the direct and the dual test agree."
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing a sensor set.** For a two-state plant you need $\\operatorname{rank}\\mathcal{O}=2$. Sometimes a single sensor works and sometimes it cannot, depending on how the states couple. A free inertia with viscous friction is the standard trap: nothing in the dynamics depends on position, so a velocity sensor can never reveal it."
+  },
+  {
+   "type": "worked_example",
+   "title": "A free inertia with friction",
+   "prompt": "A rotating disc has states $\\theta$ (angle) and $\\omega$ (angular velocity), with $A=\\begin{bmatrix}0&1\\\\0&-2\\end{bmatrix}$. Compare an angle sensor with a speed sensor.",
+   "steps": [
+    {
+     "text": "Angle sensor $C=[1\\;0]$: $CA=[0\\;1]$.",
+     "latex": "\\mathcal{O}_\\theta=\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix},\\quad\\operatorname{rank}=2"
+    },
+    {
+     "text": "Speed sensor $C=[0\\;1]$: $CA=[0\\;-2]$, which is parallel to $C$.",
+     "latex": "\\mathcal{O}_\\omega=\\begin{bmatrix}0&1\\\\0&-2\\end{bmatrix},\\quad\\operatorname{rank}=1"
+    },
+    {
+     "text": "The speed record is a decaying exponential that does not depend on the angle, so the initial angle cannot be recovered from it.",
+     "latex": "\\text{angle is unobservable from speed alone}"
+    }
+   ],
+   "answer": "The angle sensor makes the plant observable; the speed sensor alone leaves the angle unobservable."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Observable on paper is not the same as well-measured",
+   "text": "A pair can be observable but poorly conditioned, so that a state is recoverable only by dividing by a tiny number and amplifying noise. Check how large the rank-test determinant is relative to typical values, and prefer sensors that measure the state of interest directly."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The pair $(A,C)$ is observable if and only if the stacked matrix $[C;\\,CA;\\cdots;CA^{n-1}]$ has rank $n$.",
+    "Duality: $(A,C)$ is observable exactly when $(A^T,C^T)$ is controllable.",
+    "Whether a sensor set makes a plant observable depends on the coupling between states; a measurement of a state that nothing else depends on cannot reveal the state it does not drive."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a plant with three states and one output, which stacked matrix must have rank 3 for observability?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\begin{bmatrix}C\\\\CA\\\\CA^2\\end{bmatrix}$"
+    },
+    {
+     "id": "b",
+     "text": "$[B\\;\\;AB\\;\\;A^2B]$"
+    },
+    {
+     "id": "c",
+     "text": "$[C\\;\\;CB\\;\\;CAB]$"
+    },
+    {
+     "id": "d",
+     "text": "$\\begin{bmatrix}C\\\\C^2\\\\C^3\\end{bmatrix}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\begin{bmatrix}C\\\\CA\\\\CA^2\\end{bmatrix}$",
+   "distractorRationale": {
+    "a": "The output and its successive derivatives give three independent combinations of the state.",
+    "b": "This is the controllability matrix and involves the input matrix instead.",
+    "c": "These are Markov parameters of the transfer function, not the observability test.",
+    "d": "The powers must be of $A$, not of $C$, and $C$ is not square in general."
+   },
+   "explanation": "Observability stacks $C$, $CA$, $CA^2$ so that each row is one more output derivative with respect to the unforced dynamics. The controllability matrix and the Markov parameters answer different questions.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "If the observability matrix of a four-state system has rank 3, what is true?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The input cannot influence one combination of states"
+    },
+    {
+     "id": "b",
+     "text": "The system has three poles"
+    },
+    {
+     "id": "c",
+     "text": "The output equals three times the input"
+    },
+    {
+     "id": "d",
+     "text": "One independent combination of states never appears in the output"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "One independent combination of states never appears in the output",
+   "distractorRationale": {
+    "a": "That describes an uncontrollable mode and depends on $B$.",
+    "b": "A four-state system has four poles regardless of observability.",
+    "c": "The rank test says nothing about the input-output gain.",
+    "d": "The rank deficiency counts the dimension of the unobservable subspace."
+   },
+   "explanation": "A rank of three for $n=4$ means the output reveals three independent combinations of the state while one combination is invisible. The input matrix plays no role in this test.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement of duality is correct?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$(A,C)$ is observable if and only if $(A,C)$ is controllable"
+    },
+    {
+     "id": "b",
+     "text": "$(A,C)$ is observable if and only if $(A^T,C^T)$ is controllable"
+    },
+    {
+     "id": "c",
+     "text": "$(A,C)$ is observable if and only if $A$ is stable"
+    },
+    {
+     "id": "d",
+     "text": "$(A,C)$ is observable if and only if $CB\\neq0$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$(A,C)$ is observable if and only if $(A^T,C^T)$ is controllable",
+   "distractorRationale": {
+    "a": "Controllability involves $B$, so the same pair cannot be tested this way.",
+    "b": "Transposing swaps the roles of $B$ and $C$, so the tests are mirrors.",
+    "c": "Observability is unrelated to stability.",
+    "d": "The product $CB$ is a Markov parameter and does not decide observability."
+   },
+   "explanation": "Since $\\mathcal{O}(A,C)=\\mathcal{C}(A^T,C^T)^T$ and a matrix and its transpose have the same rank, observability of $(A,C)$ is equivalent to controllability of $(A^T,C^T)$. This is why observer design mirrors state-feedback design.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 4 kg cart on a spring of stiffness 100 N/m (no damping) has states position and velocity, so $A=\\begin{bmatrix}0&1\\\\-25&0\\end{bmatrix}$. Only a velocity sensor is fitted. Is the plant observable?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "No, because the sensor does not measure position directly"
+    },
+    {
+     "id": "b",
+     "text": "No, because there is no damping"
+    },
+    {
+     "id": "c",
+     "text": "Yes, because $CA=[-25\\;\\;0]$ is independent of $C=[0\\;\\;1]$"
+    },
+    {
+     "id": "d",
+     "text": "Yes, but only if the cart starts at zero velocity"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Yes, because $CA=[-25\\;\\;0]$ is independent of $C=[0\\;\\;1]$",
+   "distractorRationale": {
+    "a": "Observability does not require every state to be measured directly.",
+    "b": "Damping is not required for observability.",
+    "c": "The spring couples position into the velocity equation, so the velocity record carries position information.",
+    "d": "Observability holds for all initial states and is not tied to a particular one."
+   },
+   "explanation": "The stacked matrix is $\\begin{bmatrix}0&1\\\\-25&0\\end{bmatrix}$ with determinant 25, so the rank is two. The spring makes acceleration depend on position, so the velocity trace oscillates with a phase and amplitude that encode the initial position.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: the choice of the input signal $u(t)$ affects whether a linear system is observable.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Observability is a property of $(A,C)$ only. The known input contributes a known term to the output that can be computed and subtracted, so it neither helps nor hinders reconstruction of the initial state.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "For $A=\\begin{bmatrix}0&1\\\\-8&-6\\end{bmatrix}$ and $C=[3\\;\\;1]$, compute the determinant of the observability matrix $[C;\\,CA]$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o1"
+   ],
+   "correctValue": -1.0,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "Here $CA=[3\\;1]A=[-8\\;\\;3-6]=[-8\\;\\;-3]$, so $\\mathcal{O}=\\begin{bmatrix}3&1\\\\-8&-3\\end{bmatrix}$. The determinant is $3(-3)-1(-8)=-9+8=-1$, nonzero, so the pair is observable.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A plant has $A=\\begin{bmatrix}0&1\\\\-6&-5\\end{bmatrix}$ and output matrix $C=[1\\;\\;\\gamma]$. There are two positive values of $\\gamma$ (dimensionless) that make the system unobservable. Give the smaller one.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o1"
+   ],
+   "correctValue": 0.333333,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "With $CA=[-6\\gamma\\;\\;1-5\\gamma]$, $\\det\\mathcal{O}=1-5\\gamma+6\\gamma^2=(1-2\\gamma)(1-3\\gamma)$. This vanishes at $\\gamma=1/3$ and $\\gamma=1/2$, so the smaller value is $1/3\\approx0.333$ (where $C$ is a left eigenvector of $A$ for eigenvalue $-2$).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A plant has $A=\\begin{bmatrix}-3&2\\\\0&-6\\end{bmatrix}$ and output $y=x_2$ (so $C=[0\\;\\;1]$). The plant is not observable. What is the time constant, in seconds, of the unobservable mode?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o1",
+    "ug.mce-control-engineering.controllability-observability.observability.o2"
+   ],
+   "correctValue": 0.333333,
+   "tolerance": 0.01,
+   "unit": "s",
+   "explanation": "Here $\\dot x_2=-6x_2$ is independent of $x_1$ and the output is $x_2$, so the output shows only the mode at $-6$; $\\mathcal{O}=\\begin{bmatrix}0&1\\\\0&-6\\end{bmatrix}$ has rank 1. The unobservable mode is the remaining eigenvalue $-3$, so its time constant is $1/3\\approx0.333$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "State the duality between controllability and observability and explain, using it, why the observability test has the form of a stacked matrix of $C,CA,\\dots,CA^{n-1}$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o2",
+    "ug.mce-control-engineering.controllability-observability.observability.o1"
+   ],
+   "markingGuide": [
+    "States that $(A,C)$ is observable if and only if $(A^T,C^T)$ is controllable.",
+    "Writes the controllability matrix of the dual pair, $[C^T\\;A^TC^T\\cdots(A^T)^{n-1}C^T]$.",
+    "Observes that transposing it gives the stacked matrix with rows $C, CA,\\dots,CA^{n-1}$.",
+    "Notes that rank is unchanged by transposition, so rank $n$ in one is rank $n$ in the other."
+   ],
+   "explanation": "The dual pair has controllability matrix $[C^T\\;A^TC^T\\cdots]$, and transposing it yields rows $C, CA,\\dots,CA^{n-1}$ since $(A^T)^kC^T$ transposes to $CA^k$. A matrix and its transpose have the same rank, so the two tests are equivalent.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Two tanks are connected in cascade: $\\dot x_1=-x_1$ (upstream level deviation, draining only into tank 2) and $\\dot x_2=x_1-2x_2$. Decide which single level sensor, on tank 1 or on tank 2, makes the plant observable, and justify your answer with the rank test and a physical argument.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.observability.o3",
+    "ug.mce-control-engineering.controllability-observability.observability.o1"
+   ],
+   "markingGuide": [
+    "Writes $A=\\begin{bmatrix}-1&0\\\\1&-2\\end{bmatrix}$.",
+    "Sensor on tank 1: $C=[1\\;0]$, $CA=[-1\\;0]$, rank 1 so tank 2 is unobservable.",
+    "Sensor on tank 2: $C=[0\\;1]$, $CA=[1\\;-2]$, determinant $-1\\neq0$, so rank 2 and the plant is observable.",
+    "Physical argument: flow goes only downstream, so the downstream level is affected by the upstream level but not vice versa; the downstream sensor sees both, the upstream sensor sees only itself."
+   ],
+   "explanation": "The upstream level evolves independently of tank 2, so a sensor there carries no information about $x_2$ and the observability matrix has rank 1. A sensor on tank 2 has $\\mathcal{O}=\\begin{bmatrix}0&1\\\\1&-2\\end{bmatrix}$ with determinant $-1$, and physically the downstream level integrates the upstream signal, so it reveals both states.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,408 @@
+{
+ "lessonTitle": "Superheat, Reheat and Real Turbine Efficiency",
+ "estimatedMinutes": 28,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "In a 500 MW power station, the last rows of low-pressure turbine blades spin at hundreds of metres per second. If the steam leaving them is more than about 10 to 15% liquid water, droplet impact erodes the steel within a few years. Raising the steam temperature before the turbine helps, but there is a metallurgical limit. Reheat gets around it by returning the partly expanded steam to the boiler for a second heating."
+  },
+  {
+   "type": "text",
+   "markdown": "Efficiency of the Rankine cycle rises with the average temperature at which heat is added. **Superheating** the steam at fixed boiler pressure raises that temperature and moves the turbine exhaust to a higher dryness fraction. Beyond a certain temperature (set by materials), the only way to keep the exhaust dry at high boiler pressure is **reheat**: expand in a high-pressure turbine to an intermediate pressure, send the steam back to the boiler to be heated at constant pressure, then expand in a low-pressure turbine to the condenser."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Ideal Rankine cycle with reheat",
+   "text": "State 1: sat. liquid at condenser; 2: pump exit (boiler pressure); 3: superheated steam at turbine inlet; 4: HP turbine exit at the reheat pressure (isentropic); 5: reheated steam at the reheat pressure; 6: LP turbine exit at condenser pressure (isentropic from state 5). Heat input occurs twice: in the boiler and in the reheater."
+  },
+  {
+   "type": "math",
+   "latex": "q_{in} = (h_3 - h_2) + (h_5 - h_4) \\qquad w_{turb} = (h_3 - h_4) + (h_5 - h_6) \\qquad w_{pump} = v_1 (P_2 - P_1) = h_2 - h_1",
+   "caption": "All h in kJ/kg; $v_1$ in m³/kg and pressures in kPa give $w_{pump}$ in kJ/kg."
+  },
+  {
+   "type": "math",
+   "latex": "\\eta_{th} = \\frac{w_{turb} - w_{pump}}{q_{in}} \\qquad x_6 = \\frac{h_6 - h_f}{h_{fg}}",
+   "caption": "Thermal efficiency and dryness fraction at the condenser pressure."
+  },
+  {
+   "type": "worked_example",
+   "title": "Ideal reheat cycle",
+   "prompt": "Steam at 8 MPa and 500 °C ($h_3 = 3399.5$ kJ/kg, $s_3 = 6.7266$ kJ/kg K) expands to 2 MPa. It is reheated to 500 °C ($h_5 = 3467.6$ kJ/kg, $s_5 = 7.4337$ kJ/kg K) and expands to 10 kPa ($h_f = 191.8$, $h_{fg} = 2392.1$ kJ/kg, $s_f = 0.6492$, $s_{fg} = 7.4996$ kJ/kg K, $v_1 = 0.00101$ m³/kg). Take $h_4 \\approx 3002$ kJ/kg (isentropic expansion to 2 MPa, approximate). Find the thermal efficiency and the dryness fraction at exit.",
+   "steps": [
+    {
+     "text": "Pump: $w_p = 0.00101\\,(8000-10)$, so $h_2 = h_1 + w_p$.",
+     "latex": "w_p = 8.07\\ \\mathrm{kJ/kg},\\quad h_2 = 199.9"
+    },
+    {
+     "text": "State 6: isentropic from $s_5 = 7.4337$: find quality, then enthalpy.",
+     "latex": "x_6 = \\frac{7.4337 - 0.6492}{7.4996} = 0.9046,\\quad h_6 = 191.8 + 0.9046(2392.1) = 2355.8"
+    },
+    {
+     "text": "Heat input (boiler plus reheater).",
+     "latex": "q_{in} = (3399.5 - 199.9) + (3467.6 - 3002) = 3665.2"
+    },
+    {
+     "text": "Turbine work and net work.",
+     "latex": "w_t = (3399.5 - 3002) + (3467.6 - 2355.8) = 1509.3,\\quad w_{net} = 1509.3 - 8.07 = 1501.2"
+    },
+    {
+     "text": "Efficiency.",
+     "latex": "\\eta = 1501.2/3665.2 = 0.4096"
+    }
+   ],
+   "answer": "Efficiency = 41.0% and exit dryness x = 0.905. Without reheat the same expansion from state 3 would end at x = 0.810."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Cycle",
+    "Turbine exit dryness (same 8 MPa, 500 °C, 10 kPa)",
+    "Efficiency (ideal)",
+    "Comment"
+   ],
+   "rows": [
+    [
+     "Simple Rankine",
+     "0.810",
+     "39.4%",
+     "About 19% liquid at exit: blade erosion risk"
+    ],
+    [
+     "Rankine with reheat at 2 MPa",
+     "0.905",
+     "41.0%",
+     "About 10% liquid: acceptable"
+    ]
+   ],
+   "caption": "Comparison using the typical values above."
+  },
+  {
+   "type": "text",
+   "markdown": "Real machines are not isentropic. **Isentropic efficiency** compares actual work to isentropic work for the same inlet state and exit pressure. A turbine delivers less work than the ideal one and exhausts steam at a higher enthalpy (drier), so it contributes to dryness but reduces net work. A pump requires more work than the ideal pump."
+  },
+  {
+   "type": "math",
+   "latex": "\\eta_T = \\frac{h_{in} - h_{out,a}}{h_{in} - h_{out,s}} \\qquad \\eta_P = \\frac{h_{2s} - h_1}{h_{2a} - h_1} \\qquad w_{pump,a} = \\frac{w_{pump,s}}{\\eta_P}",
+   "caption": "Subscripts s and a denote isentropic and actual exit states."
+  },
+  {
+   "type": "worked_example",
+   "title": "Effect of non-ideal turbine and pump",
+   "prompt": "Repeat the previous cycle with $\\eta_T = 0.85$ for both turbine stages and $\\eta_P = 0.80$.",
+   "steps": [
+    {
+     "text": "Actual turbine exit enthalpies.",
+     "latex": "h_{4a} = 3399.5 - 0.85(3399.5-3002) = 3061.6,\\quad h_{6a} = 3467.6 - 0.85(3467.6-2355.8) = 2522.6"
+    },
+    {
+     "text": "Actual pump work and exit enthalpy.",
+     "latex": "w_{p,a} = 8.07/0.80 = 10.09,\\quad h_{2a} = 201.9"
+    },
+    {
+     "text": "Heat input and work.",
+     "latex": "q_{in} = (3399.5-201.9)+(3467.6-3061.6) = 3603.6,\\quad w_{net} = 1282.9 - 10.09 = 1272.8"
+    },
+    {
+     "text": "Efficiency and exit dryness.",
+     "latex": "\\eta = 0.3532,\\quad x_{6a} = (2522.6 - 191.8)/2392.1 = 0.974"
+    }
+   ],
+   "answer": "Efficiency falls to 35.3% (from 41.0%); exit dryness improves to 0.974 because irreversibility raises exit enthalpy."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Reheat pressure",
+   "text": "Reheat gives its largest benefit when the reheat pressure is chosen well: too high and the extra heat is added at a low temperature with little gain, too low and the reheated steam wastes expansion range. A common rule of thumb is a reheat pressure of roughly 20 to 25% of the boiler pressure."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Superheat raises the mean heat-addition temperature and the exit dryness.",
+    "Reheat allows a high boiler pressure without wet exhaust steam.",
+    "Real efficiency is lower than ideal because of turbine and pump irreversibility.",
+    "Pump work is about 1% of turbine work, so $\\eta_P$ matters little; $\\eta_T$ matters a lot."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Do not forget to include reheater heat $h_5 - h_4$ in $q_{in}$. Do not apply the isentropic efficiency formula to pumps inverted: $w_{actual} = w_s/\\eta_P$ for the pump but $w_{actual} = \\eta_T\\,w_s$ for the turbine."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Reheat: $q_{in} = (h_3-h_2)+(h_5-h_4)$ and $w_t = (h_3-h_4)+(h_5-h_6)$.",
+    "Reheat limits exhaust moisture by returning steam to a high temperature before the final expansion.",
+    "Isentropic efficiencies: turbine delivers $\\eta_T w_s$; pump needs $w_s/\\eta_P$.",
+    "Irreversibility lowers cycle efficiency but raises exit dryness."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How does reheat limit the moisture content of the steam leaving the low-pressure turbine?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It reduces the condenser pressure so less condensation occurs"
+    },
+    {
+     "id": "b",
+     "text": "It increases the boiler pressure so the steam holds more water vapour"
+    },
+    {
+     "id": "c",
+     "text": "The partly expanded steam is reheated to a high temperature before the final expansion, so it ends at a higher dryness"
+    },
+    {
+     "id": "d",
+     "text": "It removes liquid droplets using a separator at the pump"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The partly expanded steam is reheated to a high temperature before the final expansion, so it ends at a higher dryness",
+   "distractorRationale": {
+    "a": "Reheat does not change condenser pressure.",
+    "b": "Boiler pressure is unchanged; higher boiler pressure in fact increases moisture.",
+    "c": "Correct.",
+    "d": "Moisture is not removed at the pump; it is avoided by moving the expansion line to a higher entropy."
+   },
+   "explanation": "Returning steam to a high temperature moves the final expansion to a higher entropy, so it ends nearer the saturated vapour line. A drier exhaust reduces droplet erosion of the last blade rows.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For an ideal single-reheat Rankine cycle with states 1 (condenser liquid), 2 (pump exit), 3 (HP turbine inlet), 4 (HP turbine exit), 5 (reheater exit) and 6 (LP turbine exit), what is the total heat input?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$(h_3 - h_2) + (h_5 - h_4)$"
+    },
+    {
+     "id": "b",
+     "text": "$(h_3 - h_2)$ only"
+    },
+    {
+     "id": "c",
+     "text": "$(h_3 - h_4) + (h_5 - h_6)$"
+    },
+    {
+     "id": "d",
+     "text": "$(h_5 - h_2)$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$(h_3 - h_2) + (h_5 - h_4)$",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Omits the heat added in the reheater.",
+    "c": "This is turbine work, not heat input.",
+    "d": "Treats reheat as if the full range were one process at the boiler pressure; ignores the cooling in the HP turbine."
+   },
+   "explanation": "Heat is added twice: in the boiler from $h_2$ to $h_3$ and in the reheater from $h_4$ to $h_5$. These sum to $(h_3-h_2) + (h_5-h_4)$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the effect of a turbine isentropic efficiency below 100% on the steam leaving the turbine, for a fixed inlet state and exit pressure?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The exit enthalpy is lower than the isentropic value and the net work is higher"
+    },
+    {
+     "id": "b",
+     "text": "The exit enthalpy equals the isentropic value because pressure is fixed"
+    },
+    {
+     "id": "c",
+     "text": "The exit is wetter but net work is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "The exit enthalpy is higher than the isentropic value and the net work is lower"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The exit enthalpy is higher than the isentropic value and the net work is lower",
+   "distractorRationale": {
+    "a": "Reverses the effect of irreversibility.",
+    "b": "Exit state depends on entropy production, not only on pressure.",
+    "c": "Higher exit enthalpy means drier steam and less work.",
+    "d": "Correct."
+   },
+   "explanation": "Irreversibility generates entropy, so the actual exit state lies at a higher enthalpy than the isentropic exit. Since $w = h_{in} - h_{out}$, the work is lower, and the steam is drier.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why does the pump isentropic efficiency change the thermal efficiency of a steam power plant so little compared with the turbine isentropic efficiency?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Pumps are always 100% efficient"
+    },
+    {
+     "id": "b",
+     "text": "Pump work is only about 1% of the turbine work for steam, since the working fluid is a liquid"
+    },
+    {
+     "id": "c",
+     "text": "The pump works with superheated steam, so its work is large"
+    },
+    {
+     "id": "d",
+     "text": "Pump work cancels with the condenser heat rejection"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Pump work is only about 1% of the turbine work for steam, since the working fluid is a liquid",
+   "distractorRationale": {
+    "a": "Pumps have losses like any machine.",
+    "b": "Correct.",
+    "c": "The pump handles liquid water.",
+    "d": "The two are unrelated terms in the energy balance."
+   },
+   "explanation": "Compressing liquid water needs $w = v\\,\\Delta P$ with a very small $v$, so pump work is roughly 1% of the turbine output. A 20% change in the pump work therefore moves net work by a fraction of a percent.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A boiler operates at 12 MPa. Using the usual rule of thumb, which reheat pressure is closest to the optimum for a single reheat?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 0.1 MPa"
+    },
+    {
+     "id": "b",
+     "text": "About 6 to 8 MPa"
+    },
+    {
+     "id": "c",
+     "text": "About 2.4 to 3.0 MPa"
+    },
+    {
+     "id": "d",
+     "text": "About 11 MPa"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "About 2.4 to 3.0 MPa",
+   "distractorRationale": {
+    "a": "Far too low: the HP turbine would expand almost to condenser pressure.",
+    "b": "Too high: reheat adds heat at a low gain.",
+    "c": "Correct.",
+    "d": "Nearly boiler pressure; essentially no expansion before reheat."
+   },
+   "explanation": "The rule of thumb is a reheat pressure of 20 to 25% of boiler pressure, which for 12 MPa gives 2.4 to 3.0 MPa. This strikes a balance between the reheat temperature benefit and the lost expansion range.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A steam turbine stage has an isentropic enthalpy drop of 1200 kJ/kg and an isentropic efficiency of 0.88. Find the actual specific work output in kJ/kg.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o3"
+   ],
+   "correctValue": 1056.0,
+   "tolerance": 1.0,
+   "unit": "kJ/kg",
+   "explanation": "Actual work = $\\eta_T \\times w_s = 0.88 \\times 1200 = 1056$ kJ/kg. The unconverted 144 kJ/kg ends up as extra exit enthalpy.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Steam leaves the LP turbine at 10 kPa with specific enthalpy 2330 kJ/kg. At 10 kPa take $h_f = 191.8$ kJ/kg and $h_{fg} = 2392.1$ kJ/kg. Find the dryness fraction (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o2"
+   ],
+   "correctValue": 0.8939,
+   "tolerance": 0.003,
+   "unit": "dimensionless",
+   "explanation": "For a saturated mixture $x = (h - h_f)/h_{fg} = (2330 - 191.8)/2392.1 = 0.8939$. About 10.6% of the exhaust is liquid, which is near the commonly accepted limit.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A reheat cycle has turbine inlet $h_3 = 3350.0$ kJ/kg, isentropic HP exit $h_{4s} = 3000.0$ kJ/kg, reheater exit $h_5 = 3450.0$ kJ/kg and isentropic LP exit $h_{6s} = 2400.0$ kJ/kg. The condenser liquid has $h_1 = 190.0$ kJ/kg and the isentropic pump work is 10.0 kJ/kg. Both turbine stages have $\\eta_T = 0.85$ and the pump has $\\eta_P = 0.80$. Calculate the thermal efficiency as a percentage.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o1",
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o3"
+   ],
+   "correctValue": 33.2158,
+   "tolerance": 0.3,
+   "unit": "%",
+   "explanation": "Actual HP exit $h_4 = 3350 - 0.85(350) = 3052.5$; actual LP exit $h_6 = 3450 - 0.85(1050) = 2557.5$; pump work $= 10/0.80 = 12.5$, so $h_2 = 202.5$. Heat input $= (3350-202.5) + (3450-3052.5) = 3545.0$ kJ/kg. Turbine work $= 0.85(1400) = 1190.0$, net $= 1190.0 - 12.5 = 1177.5$, so $\\eta = 0.3322$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain, with reference to the T-s diagram, why a simple Rankine cycle with a high boiler pressure produces wet steam at the turbine exit and how reheat solves this. State one drawback of excessive moisture.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o2"
+   ],
+   "markingGuide": [
+    "Higher boiler pressure moves the expansion line to the left in the T-s diagram so it ends in the wet region (low dryness)",
+    "Reheat returns the steam to a high temperature, which moves the second expansion to higher entropy",
+    "The final expansion therefore ends nearer the saturated vapour line or in the superheated region",
+    "Moisture droplets erode blades and reduce turbine efficiency; limit commonly about 10 to 15% liquid",
+    "States that reheat also increases mean heat-addition temperature (modestly) and net work per kg",
+    "Mentions that superheat temperature is limited by materials, so reheat is the alternative"
+   ],
+   "explanation": "A high boiler pressure with limited steam temperature pushes the expansion into the wet region. Reheat resets the expansion to a higher temperature and entropy, giving a drier exhaust and less blade erosion.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "For a reheat Rankine cycle, the turbine isentropic efficiency falls from 0.92 to 0.80 while the pump efficiency stays at 0.75. Discuss the effect on net work, thermal efficiency and exit dryness, and justify why the pump efficiency has a much smaller influence.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.superheat-and-reheat.o3"
+   ],
+   "markingGuide": [
+    "Turbine actual work $= \\eta_T w_s$ so net work falls when $\\eta_T$ falls",
+    "Heat input changes slightly: the reheater inlet enthalpy $h_4$ is higher, so the reheater heat falls a little, and the cycle efficiency falls",
+    "Exit enthalpy rises so the exhaust is drier with higher dryness fraction",
+    "Pump actual work is $w_s/\\eta_P$ and is about 1% of turbine work",
+    "So a change in $\\eta_P$ shifts net work by a tiny fraction",
+    "Concludes that turbine efficiency is the dominant irreversibility"
+   ],
+   "explanation": "Lower $\\eta_T$ reduces turbine work and efficiency while giving drier exhaust. The pump handles liquid, so its work is small and $\\eta_P$ has a negligible effect.",
+   "board": "internal"
+  }
+ ]
+}

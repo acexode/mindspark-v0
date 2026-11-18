@@ -1,0 +1,403 @@
+{
+ "lessonTitle": "Reading and Cleaning Data",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A data logger records one reading a second for an hour. When the file is opened, two readings say -999 where a connector dropped out, and in another channel one pressure reading jumps to 14.7 bar where the rest sit near 10 bar. If you average the raw numbers, the dropout values alone ruin the answer. Engineers clean data with stated rules before computing anything from it."
+  },
+  {
+   "type": "text",
+   "markdown": "Measured data usually arrive as a text or CSV file with a header row and one row per sample. The first step is to **import** the numbers into arrays, the second is to **clean** them (find missing and implausible values and treat them by an explicit rule), and the third is to **summarise** them with statistics reported to a sensible precision. We use NumPy; the same ideas apply in MATLAB or pandas."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Importing a table into arrays",
+   "text": "`np.genfromtxt('log.csv', delimiter=',', skip_header=1)` reads a comma-separated file, skipping one header line, and returns a 2-D array with one row per sample and one column per variable. Adding `unpack=True` returns each column as its own 1-D array, so `t, T = np.genfromtxt(..., unpack=True)` gives time and temperature separately. Empty fields become `nan` (not-a-number)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Importing and handling dropouts",
+   "prompt": "A file `log.csv` has the header `time_s,temp_C` and the temperature column reads `21.4, 21.9, -999, 22.5, 22.8, -999, 23.6`. The value -999 is the logger's flag for a dropped reading. Find the mean temperature.",
+   "steps": [
+    {
+     "text": "Import with `t, T = np.genfromtxt('log.csv', delimiter=',', skip_header=1, unpack=True)`. `T` is a float array of 7 values."
+    },
+    {
+     "text": "Replace the sentinel by NaN so it cannot be mistaken for data: `T[T == -999] = np.nan`. Two entries become NaN."
+    },
+    {
+     "text": "The plain `np.mean(T)` would return `nan`, because any NaN spreads through the sum. Use `np.nanmean(T)`, or a mask `T[~np.isnan(T)]`."
+    },
+    {
+     "text": "The valid readings are 21.4, 21.9, 22.5, 22.8, 23.6, so the sum is 112.2 and the mean is $112.2/5=22.44$ C. Including the -999 values would give $-1885.8/7=-269.4$ C, a physically impossible temperature that exposes the error.",
+     "latex": "\\bar T=\\frac{21.4+21.9+22.5+22.8+23.6}{5}=22.44\\ \\text{C}"
+    }
+   ],
+   "answer": "Mean = 22.4 C from the 5 valid readings."
+  },
+  {
+   "type": "text",
+   "markdown": "**Outliers** are readings far from the rest. Before removing any, state a rule in advance and a physical reason. Two common rules are (i) **physical limits**, rejecting values outside what the instrument or process can produce; and (ii) the **interquartile-range (IQR) rule**: with first quartile $Q_1$, third quartile $Q_3$ and $\\text{IQR}=Q_3-Q_1$, reject readings outside the fences below."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{lower fence}=Q_1-1.5\\,\\text{IQR},\\qquad \\text{upper fence}=Q_3+1.5\\,\\text{IQR}",
+   "caption": "The IQR rule for flagging outliers; it does not assume a normal distribution."
+  },
+  {
+   "type": "worked_example",
+   "title": "Applying a stated outlier rule",
+   "prompt": "Eight repeat readings of a pressure (bar) are $9.8, 10.1, 9.9, 10.0, 10.2, 14.7, 9.7, 10.0$. Apply the IQR rule and summarise the cleaned data.",
+   "steps": [
+    {
+     "text": "Sort: $9.7, 9.8, 9.9, 10.0, 10.0, 10.1, 10.2, 14.7$. Using linear interpolation (the NumPy default), $Q_1=9.875$ and $Q_3=10.125$, so $\\text{IQR}=0.25$ bar.",
+     "latex": "Q_1=9.875,\\quad Q_3=10.125,\\quad \\text{IQR}=0.25"
+    },
+    {
+     "text": "Fences: lower $=9.875-0.375=9.5$ bar and upper $=10.125+0.375=10.5$ bar. Only 14.7 lies outside, so it is flagged.",
+     "latex": "[9.5,\\ 10.5]\\ \\text{bar}"
+    },
+    {
+     "text": "Flagged values should be investigated, not silently deleted. Here a log note says the sensor was knocked at that time, giving a physical reason to remove it. Record the rule and the removed value."
+    },
+    {
+     "text": "For the remaining 7 values, mean $=9.957$ bar and sample standard deviation $s=0.172$ bar. With the outlier included the mean would be 10.55 bar and $s=1.68$ bar, ten times larger.",
+     "latex": "\\bar x=9.957,\\quad s=0.172"
+    }
+   ],
+   "answer": "14.7 bar is flagged and removed by a stated rule; the cleaned mean is 9.96 bar with s = 0.17 bar."
+  },
+  {
+   "type": "text",
+   "markdown": "**Summary statistics** condense a data set. For $n$ readings $x_i$, the mean is $\\bar x=\\frac1n\\sum x_i$ and the **sample standard deviation** is $s=\\sqrt{\\frac{1}{n-1}\\sum(x_i-\\bar x)^2}$, with $n-1$ (in NumPy, `ddof=1`) because $\\bar x$ was estimated from the same data. The **standard error of the mean** is $s/\\sqrt n$; it says how well the mean is known, whereas $s$ describes the scatter of individual readings."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reporting with appropriate precision",
+   "prompt": "For the 7 cleaned readings above ($\\bar x=9.957$ bar, $s=0.172$ bar), report the mean with its uncertainty.",
+   "steps": [
+    {
+     "text": "Standard error: $s/\\sqrt n=0.172/\\sqrt7=0.065$ bar.",
+     "latex": "\\frac{s}{\\sqrt n}=\\frac{0.172}{2.646}=0.065\\ \\text{bar}"
+    },
+    {
+     "text": "Round the uncertainty to one or two significant figures: $0.065\\approx0.07$ bar."
+    },
+    {
+     "text": "Round the mean to the same decimal place as the uncertainty: $9.957\\to9.96$ bar. Writing 9.957142857 would claim a precision the data do not have."
+    }
+   ],
+   "answer": "p = 9.96 +/- 0.07 bar (mean +/- standard error of the mean)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Formula",
+    "What it tells you"
+   ],
+   "rows": [
+    [
+     "Mean $\\bar x$",
+     "$\\frac1n\\sum x_i$",
+     "Central value"
+    ],
+    [
+     "Median",
+     "middle value of sorted data",
+     "Central value resistant to outliers"
+    ],
+    [
+     "Sample SD $s$",
+     "$\\sqrt{\\sum(x_i-\\bar x)^2/(n-1)}$",
+     "Scatter of individual readings"
+    ],
+    [
+     "Standard error",
+     "$s/\\sqrt n$",
+     "Uncertainty in the mean"
+    ],
+    [
+     "IQR fences",
+     "$Q_1-1.5\\,\\text{IQR}$, $Q_3+1.5\\,\\text{IQR}$",
+     "Flag outlying readings"
+    ]
+   ],
+   "caption": "Common summary measures."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Read the file into arrays, check `shape` and the first few values.",
+    "Convert sentinel codes such as -999 to NaN straight after import.",
+    "Use `np.nanmean`, `np.nanstd(..., ddof=1)` or masks to ignore NaN.",
+    "State the outlier rule and the reason before applying it; record what was removed.",
+    "Report the mean to the decimal place of its uncertainty."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Cleaning is a judgement that must be disclosed",
+   "text": "Deleting points until the data look good is manipulation, not cleaning. A real extreme value may be the most important reading in the data set, such as a genuine pressure spike. Do not remove a point just because it lies outside a rule; investigate it, and report what you did. Note also that a 3-sigma rule cannot flag any point in a small sample: for $n=8$ the largest possible deviation is $(n-1)/\\sqrt n=2.47$ standard deviations."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Import tables with genfromtxt or loadtxt, skipping headers and using unpack=True to get column arrays.",
+    "Convert sentinel codes to NaN and use nan-aware functions or masks; one NaN makes np.mean return NaN.",
+    "Remove outliers only by a stated rule (physical limits or IQR) with a documented reason.",
+    "Use the sample standard deviation (n-1) and report the mean to the precision of its uncertainty."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A file `rig.csv` has a one-line text header followed by comma-separated numeric rows. Which call imports the numbers into a 2-D array?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "`np.genfromtxt('rig.csv', delimiter=',', skip_header=1)`"
+    },
+    {
+     "id": "b",
+     "text": "`np.arange('rig.csv')`"
+    },
+    {
+     "id": "c",
+     "text": "`np.genfromtxt('rig.csv')`"
+    },
+    {
+     "id": "d",
+     "text": "`np.mean('rig.csv')`"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "`np.genfromtxt('rig.csv', delimiter=',', skip_header=1)`",
+   "distractorRationale": {
+    "a": "Correct: delimiter plus skip_header.",
+    "c": "The default delimiter is whitespace, so the commas and the header text cause errors or NaNs.",
+    "b": "arange builds a range of numbers; it does not read files.",
+    "d": "mean computes an average and does not read files."
+   },
+   "explanation": "The delimiter argument tells NumPy the columns are separated by commas, and skip_header=1 passes over the text line. Without them the parser would fail on the header text and the commas.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A two-column file is read with `t, p = np.genfromtxt('run.csv', delimiter=',', skip_header=1, unpack=True)`. What do `t` and `p` contain?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The first and second rows as separate arrays"
+    },
+    {
+     "id": "b",
+     "text": "The first column and the second column as separate 1-D arrays"
+    },
+    {
+     "id": "c",
+     "text": "Text strings of the column headings"
+    },
+    {
+     "id": "d",
+     "text": "Both contain the whole table"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The first column and the second column as separate 1-D arrays",
+   "distractorRationale": {
+    "b": "Correct: one 1-D array per column.",
+    "a": "Rows correspond to samples; unpacking separates columns, not rows.",
+    "d": "Each variable receives only its own column.",
+    "c": "The header line has been skipped, so no headings are read."
+   },
+   "explanation": "unpack=True transposes the result and returns one array per column, so t holds the first column and p the second. Without it you would get a single 2-D array with one row per sample.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A flow meter logs `5.2, -999, 5.6, 5.4, -999, 5.0` (m^3/h), where -999 flags a missing reading. What is the mean of the valid readings, in m^3/h?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o2"
+   ],
+   "correctValue": 5.3,
+   "tolerance": 0.01,
+   "unit": "m^3/h",
+   "explanation": "Discard the two -999 flags, leaving 5.2, 5.6, 5.4 and 5.0. Their sum is 21.2 and the mean is 21.2/4 = 5.3 m^3/h; including the flags would give a meaningless negative mean.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Repeat measurements of a tensile strength give a first quartile $Q_1=412$ MPa and a third quartile $Q_3=428$ MPa. Using the IQR rule, what is the upper fence above which a reading is flagged as an outlier, in MPa?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o2"
+   ],
+   "correctValue": 452,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "IQR = 428 - 412 = 16 MPa. The upper fence is Q3 + 1.5 IQR = 428 + 24 = 452 MPa; readings above this value are flagged for investigation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A reading of a strain gauge is 40 percent above all the others in a set of 20. Which action is the most defensible?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Keep it without comment since all data must be kept"
+    },
+    {
+     "id": "b",
+     "text": "Replace it by the mean of its neighbours without recording this"
+    },
+    {
+     "id": "c",
+     "text": "Apply a stated rule (for example the IQR rule), check the log for a physical cause, and report the treatment"
+    },
+    {
+     "id": "d",
+     "text": "Delete it because it spoils the fit"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Apply a stated rule (for example the IQR rule), check the log for a physical cause, and report the treatment",
+   "distractorRationale": {
+    "c": "Correct: rule, cause and disclosure.",
+    "d": "Removing it simply to improve the fit is not justified.",
+    "a": "A real extreme value can be important; keeping it without examination is also poor practice.",
+    "b": "Undisclosed replacement hides the issue from readers."
+   },
+   "explanation": "A pre-stated rule and an investigation of the cause make the decision objective and reproducible, and reporting the treatment keeps the analysis honest. Deleting or altering data to improve the fit is data manipulation.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "If one element of a NumPy float array is `nan`, `np.mean` of the whole array returns `nan`.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "NaN propagates through arithmetic, so a single NaN in the sum makes the mean NaN. np.nanmean ignores NaN values, or the NaNs can be removed with a mask first.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Five repeat measurements of a spring force are $49.8, 50.4, 50.1, 49.7, 50.0$ N. Compute the sample standard deviation (with $n-1$) in newtons.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o3"
+   ],
+   "correctValue": 0.274,
+   "tolerance": 0.002,
+   "unit": "N",
+   "explanation": "The mean is 50.0 N. The deviations are -0.2, +0.4, +0.1, -0.3 and 0.0, with squares summing to 0.04 + 0.16 + 0.01 + 0.09 + 0 = 0.30. Then s = sqrt(0.30/4) = sqrt(0.075) = 0.274 N.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Ten repeat readings of a shaft diameter have mean 12.3456 mm and standard error 0.0872 mm. Which report is the most appropriate?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "12.3456 mm +/- 0.0872 mm"
+    },
+    {
+     "id": "b",
+     "text": "12.35 mm +/- 0.09 mm"
+    },
+    {
+     "id": "c",
+     "text": "12 mm +/- 0.09 mm"
+    },
+    {
+     "id": "d",
+     "text": "12.35 mm +/- 0.0872 mm"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "12.35 mm +/- 0.09 mm",
+   "distractorRationale": {
+    "b": "Correct: matching decimal places.",
+    "a": "Too many digits, implying a precision of 0.0001 mm.",
+    "c": "The mean is rounded to the wrong decimal place, hiding the 0.01 mm detail.",
+    "d": "The mean and uncertainty have inconsistent decimal places."
+   },
+   "explanation": "Round the uncertainty to one or two significant figures (0.09 mm) and the mean to the same decimal place (12.35 mm). Quoting more digits implies precision the data do not support.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A pressure log contains -999 values marking dropouts and one reading far from the rest. Describe step by step how you would clean and summarise the data, including how you would justify your treatment.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o2",
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o3"
+   ],
+   "markingGuide": [
+    "Import into arrays and inspect the shape and a few values",
+    "Convert the -999 sentinel to NaN (or mask it) and use nan-aware statistics",
+    "Apply a stated outlier rule (physical limits or IQR fences) decided before looking at the result",
+    "Investigate the flagged reading (log notes, instrument check) before removing it",
+    "Report the rule, the number of points removed and summary statistics (mean, sample SD or standard error) with appropriate precision"
+   ],
+   "explanation": "Sentinels must be converted before any calculation, because they are not measurements. Outlier treatment must follow a pre-stated rule and be disclosed so that others can reproduce the analysis.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain the difference between the sample standard deviation and the standard error of the mean, why $n-1$ appears in the formula for $s$, and how you would report a mean of 20.4637 with $s=0.52$ for $n=9$ readings.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.reading-and-cleaning-data.o3"
+   ],
+   "markingGuide": [
+    "s measures the scatter of individual readings; the standard error s/sqrt(n) measures the uncertainty of the mean",
+    "Standard error decreases as n increases, s does not",
+    "n-1 is used because the mean was estimated from the same data (one degree of freedom lost), which otherwise biases s low",
+    "Standard error = 0.52/3 = 0.17",
+    "Report 20.46 +/- 0.17 (mean rounded to the decimal place of its uncertainty)"
+   ],
+   "explanation": "Averaging more readings improves the mean but does not change the scatter of single readings. The mean is quoted to the same decimal place as its uncertainty to avoid false precision.",
+   "board": "internal"
+  }
+ ]
+}

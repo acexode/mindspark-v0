@@ -1,0 +1,411 @@
+{
+ "lessonTitle": "UART, SPI and I2C",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A circuit board carries a temperature sensor, an accelerometer, an SD card and a GPS module, yet the microcontroller has only a handful of spare pins. Serial buses let each of these chips talk over two to four wires, but each bus makes a different trade between wire count, speed and addressing."
+  },
+  {
+   "type": "text",
+   "markdown": "A **serial bus** sends data one bit at a time. Three protocols dominate board-level and sensor links: **UART** (asynchronous, point-to-point, no shared clock), **SPI** (synchronous, a master with one chip-select line per slave), and **I2C** (synchronous, a two-wire shared bus with addresses). Choosing between them is mostly a question of how many wires, how fast and how many devices."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "UART frame and baud rate",
+   "text": "A UART sends a **frame** per byte: one start bit (0), 5 to 9 data bits (least significant first), an optional parity bit, then one or more stop bits (1). The **baud rate** is the number of symbols (here, bits) per second, so the bit time is $1/\\text{baud}$. The common format 8N1 has 1 start, 8 data, no parity and 1 stop bit: 10 bits per byte."
+  },
+  {
+   "type": "math",
+   "latex": "t_{frame}=\\frac{N_{bits}}{\\text{baud}},\\qquad N_{bits}=1_{start}+N_{data}+N_{parity}+N_{stop}",
+   "caption": "Time to send one UART frame in seconds"
+  },
+  {
+   "type": "worked_example",
+   "title": "UART timing and throughput",
+   "prompt": "A message of 20 bytes is sent in 8N1 format at 115 200 baud. Find the time per byte, the total time and the data throughput.",
+   "steps": [
+    {
+     "text": "Bits per frame: 1 + 8 + 0 + 1 = 10.",
+     "latex": "N_{bits}=10"
+    },
+    {
+     "text": "Time per byte.",
+     "latex": "t_{frame}=\\frac{10}{115\\,200}=86.8\\ \\mu\\text{s}"
+    },
+    {
+     "text": "Time for 20 bytes.",
+     "latex": "20\\times86.8\\ \\mu\\text{s}=1.74\\ \\text{ms}"
+    },
+    {
+     "text": "Throughput: 8 data bits in each 10-bit frame.",
+     "latex": "\\frac{8}{10}\\times115\\,200=92\\,160\\ \\text{bit/s}=11\\,520\\ \\text{byte/s}"
+    }
+   ],
+   "answer": "86.8 microseconds per byte, 1.74 ms for the message, and 11 520 bytes of data per second."
+  },
+  {
+   "type": "text",
+   "markdown": "**SPI** uses four signals: SCLK (clock from the master), MOSI (master out), MISO (master in) and one chip-select (CS) per slave. Data move in both directions on each clock edge. There are no addresses; the master selects a slave by pulling its CS low. Clock rates of many megahertz are typical, and there is no per-byte acknowledgment. **I2C** uses only SDA (data) and SCL (clock), both open-drain with pull-up resistors. Each device has a 7-bit **address**, and the receiver acknowledges each byte with an ACK bit."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "UART",
+    "SPI",
+    "I2C"
+   ],
+   "rows": [
+    [
+     "Signals",
+     "2 (TX, RX) plus ground",
+     "4 plus 1 extra CS per slave",
+     "2 shared (SDA, SCL)"
+    ],
+    [
+     "Clock",
+     "None (agreed baud)",
+     "Master supplies SCLK",
+     "Master supplies SCL"
+    ],
+    [
+     "Typical speed",
+     "Up to about 1 Mbit/s",
+     "Several to tens of Mbit/s",
+     "100 kbit/s or 400 kbit/s (standard, fast)"
+    ],
+    [
+     "Addressing",
+     "None (point to point)",
+     "Chip-select line",
+     "7-bit address in first byte"
+    ],
+    [
+     "Acknowledge",
+     "No",
+     "No",
+     "ACK after every byte"
+    ],
+    [
+     "Best for",
+     "Console, GPS, modems",
+     "Fast ADCs, flash, displays",
+     "Many slow sensors on few pins"
+    ]
+   ],
+   "caption": "Comparison of UART, SPI and I2C (typical values)"
+  },
+  {
+   "type": "text",
+   "markdown": "**An I2C register read.** To read a register from a sensor, the master (1) sends a START, then the address byte: the 7-bit address shifted left by one with the read/write bit $R/\\overline{W}=0$ (write); (2) the slave ACKs and the master sends the register number, again ACKed; (3) the master sends a repeated START and the address with $R/\\overline{W}=1$ (read); (4) the slave ACKs and sends the data byte(s); (5) the master ACKs every byte except the last, which it NACKs to say it is finished, and sends a STOP. Each byte takes 9 clock pulses (8 data bits and 1 ACK)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Decoding an I2C read",
+   "prompt": "A sensor at 7-bit address 0x48 has its register 0x00 read as one byte. Give the bytes on the bus and the number of SCL clock pulses (ignoring START and STOP).",
+   "steps": [
+    {
+     "text": "Write address byte: $(0x48\\ll1)\\,|\\,0=0x90$.",
+     "latex": "0x48\\ll1=0x90"
+    },
+    {
+     "text": "Then the register byte 0x00, sent by the master and ACKed by the slave."
+    },
+    {
+     "text": "Repeated START, then read address byte $(0x48\\ll1)\\,|\\,1=0x91$."
+    },
+    {
+     "text": "The slave sends the data byte; the master replies NACK and then sends STOP."
+    },
+    {
+     "text": "Clock count: four bytes of 9 pulses each.",
+     "latex": "4\\times9=36\\ \\text{pulses}=90\\ \\mu\\text{s at }400\\ \\text{kHz}"
+    }
+   ],
+   "answer": "Bus sequence: START, 0x90, reg 0x00, repeated START, 0x91, data byte, NACK, STOP; 36 SCL pulses, 90 microseconds at 400 kHz."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "The read bit is the lowest bit of the first byte",
+   "text": "The first byte after START is 7 address bits followed by the read/write bit, so 0x91 means address 0x48, read. Always shift or mask correctly when you read a datasheet address."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "I2C needs pull-up resistors",
+   "text": "The lines are open-drain: devices only pull them low. Without pull-ups the lines never rise, and with too weak pull-ups the rise time is too slow for the bus speed."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A UART frame takes $N_{bits}/\\text{baud}$ seconds; 8N1 has 10 bits per byte.",
+    "SPI is fast and uses one chip-select line per slave; I2C uses two shared wires and addresses; UART is point to point.",
+    "An I2C read writes the register address, uses a repeated START, then reads data, NACKing the last byte.",
+    "The first I2C byte is the 7-bit address followed by the read/write bit."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement about a UART link is correct?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It uses a shared clock line from the master"
+    },
+    {
+     "id": "b",
+     "text": "It addresses devices with a 7-bit address"
+    },
+    {
+     "id": "c",
+     "text": "It uses a transmit and a receive line plus ground, with no shared clock, so both ends must agree the baud rate"
+    },
+    {
+     "id": "d",
+     "text": "It needs one chip-select line per slave"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It uses a transmit and a receive line plus ground, with no shared clock, so both ends must agree the baud rate",
+   "distractorRationale": {
+    "a": "A shared clock belongs to synchronous buses.",
+    "b": "Addressing is an I2C feature.",
+    "c": "Correct: two data lines, agreed baud rate, no clock.",
+    "d": "Chip-select lines belong to SPI."
+   },
+   "explanation": "A UART is asynchronous, so the receiver derives timing from the start bit and its own clock set to the agreed baud rate. It has no addressing and connects one device to one other.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How many signal wires does an I2C bus use, regardless of the number of devices?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Three"
+    },
+    {
+     "id": "b",
+     "text": "Four"
+    },
+    {
+     "id": "c",
+     "text": "One per device"
+    },
+    {
+     "id": "d",
+     "text": "Two: SDA and SCL"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Two: SDA and SCL",
+   "distractorRationale": {
+    "a": "Three would not include a clock and data line plus address.",
+    "b": "Four is the SPI count with one chip select.",
+    "c": "One line per device describes chip-select style wiring.",
+    "d": "Correct: two shared lines."
+   },
+   "explanation": "I2C uses a shared data line (SDA) and clock line (SCL), with each device selected by its address. This is why it is popular for connecting many slow sensors to few pins.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A microcontroller must stream samples from a 12 MHz-clocked high-speed ADC. Which bus is the best choice?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "I2C at 100 kbit/s"
+    },
+    {
+     "id": "b",
+     "text": "SPI, because it is clocked at several megahertz and has no addressing overhead"
+    },
+    {
+     "id": "c",
+     "text": "UART at 9600 baud"
+    },
+    {
+     "id": "d",
+     "text": "I2C with a longer cable"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "SPI, because it is clocked at several megahertz and has no addressing overhead",
+   "distractorRationale": {
+    "a": "100 kbit/s is far below the required rate.",
+    "b": "Correct: SPI supports MHz clock rates.",
+    "c": "9600 baud is about a thousand times too slow.",
+    "d": "Longer cable would make I2C slower, not faster."
+   },
+   "explanation": "A fast ADC needs a high data rate, which SPI supports with a simple shift-register interface at megahertz clock rates. I2C and UART at the stated speeds are far too slow.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The first byte after START on an I2C bus is 0x9B. What does it mean?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Write to the device with 7-bit address 0x9B"
+    },
+    {
+     "id": "b",
+     "text": "Read from the device with address 0x9B"
+    },
+    {
+     "id": "c",
+     "text": "Read from the device with 7-bit address 0x4D"
+    },
+    {
+     "id": "d",
+     "text": "Write to the device with address 0x4D"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Read from the device with 7-bit address 0x4D",
+   "distractorRationale": {
+    "a": "The address is only seven bits, so 0x9B is not the address.",
+    "b": "Same error as before, and the read bit is also misread.",
+    "c": "Correct: address bits 0x4D with the read bit set.",
+    "d": "The lowest bit is 1, which means read, not write."
+   },
+   "explanation": "0x9B is 1001 1011 in binary. The upper seven bits 1001101 give the address 0x4D and the lowest bit, 1, means a read operation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A master sends the address byte of a sensor and the 9th clock pulse shows SDA high (a NACK). What is the most likely cause?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The baud rate is wrong"
+    },
+    {
+     "id": "b",
+     "text": "No device with that address answered, for example a wrong address or an unpowered sensor"
+    },
+    {
+     "id": "c",
+     "text": "The chip-select line is high"
+    },
+    {
+     "id": "d",
+     "text": "The UART parity is wrong"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "No device with that address answered, for example a wrong address or an unpowered sensor",
+   "distractorRationale": {
+    "a": "Baud rate is a UART concept, I2C uses a clock.",
+    "b": "Correct: nobody acknowledged the address.",
+    "c": "Chip-select belongs to SPI.",
+    "d": "Parity is a UART feature."
+   },
+   "explanation": "On I2C a receiving device pulls SDA low during the ninth clock to acknowledge. If SDA stays high, nobody responded, typically because the address is wrong, the sensor is unpowered or disconnected, or it is busy.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A UART uses 8E1 format (1 start bit, 8 data bits, 1 even-parity bit and 1 stop bit) at 19 200 baud. Calculate the time to send one byte in microseconds.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o1"
+   ],
+   "correctValue": 572.9,
+   "tolerance": 1,
+   "unit": "microseconds",
+   "explanation": "The frame has $1+8+1+1=11$ bits, so the time is $11/19\\,200=5.729\\times10^{-4}$ s, which is 572.9 microseconds. Parity costs an extra bit time per byte.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 50-byte message is sent in 8N1 format at 57 600 baud. How long does the transmission take in milliseconds?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o1"
+   ],
+   "correctValue": 8.68,
+   "tolerance": 0.05,
+   "unit": "ms",
+   "explanation": "There are $50\\times10=500$ bits to send, so the time is $500/57\\,600=8.68$ ms. The start and stop bits add 25 percent overhead to the 8 data bits.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An I2C master reads three consecutive data bytes starting at a register: address+write byte, register byte, repeated START with address+read byte, then three data bytes (each byte takes 9 SCL pulses; ignore START and STOP overhead). Find the time in microseconds at an SCL frequency of 400 kHz.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o1",
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o3"
+   ],
+   "correctValue": 135,
+   "tolerance": 1,
+   "unit": "microseconds",
+   "explanation": "There are $3$ bytes of overhead and $3$ data bytes, so $6\\times9=54$ SCL pulses. At 400 kHz the period is 2.5 microseconds, so the time is $54\\times2.5=135$ microseconds.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare UART, SPI and I2C on the number of wires, achievable speed and addressing. For a board with one fast display, one GPS module and eight slow temperature sensors, recommend which bus to use for each and justify the choice.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o2"
+   ],
+   "markingGuide": [
+    "UART: two signal wires, point to point, no clock, no addressing, moderate speed (2 marks)",
+    "SPI: clock, MOSI, MISO plus one chip select per slave, high speed (2 marks)",
+    "I2C: two shared wires, 7-bit addressing, 100 or 400 kbit/s, ACK per byte (2 marks)",
+    "Recommends SPI for the display, UART for the GPS and I2C for the eight sensors, with reasons (3 marks)",
+    "Notes that I2C pull-up and bus capacitance limit speed and device count (1 mark)"
+   ],
+   "explanation": "SPI gives the display its needed speed, the GPS module normally communicates by UART, and I2C lets eight sensors share two wires using addresses.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A logic analyser captures this I2C sequence: START, 0xD0 (ACK), 0x3B (ACK), repeated START, 0xD1 (ACK), 0x12 (master ACK), 0x34 (master NACK), STOP. Decode the transaction: give the device address, the register, the data and the 16-bit value (most significant byte first), and explain the role of the repeated START and the final NACK.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses.o3"
+   ],
+   "markingGuide": [
+    "Device address 0x68: 0xD0 is address 0x68 shifted left with write bit 0 (2 marks)",
+    "Register 0x3B was selected by the write phase (1 mark)",
+    "Repeated START then 0xD1 means address 0x68 with the read bit set, switching direction without releasing the bus (2 marks)",
+    "Two data bytes 0x12 and 0x34 are read, giving 0x1234 = 4660 (2 marks)",
+    "Master ACKs the first byte to request more and NACKs the last to tell the slave to stop sending (2 marks)"
+   ],
+   "explanation": "The transaction reads two bytes starting at register 0x3B of device 0x68, giving 0x1234. The repeated START changes direction without releasing the bus, and the final NACK ends the read.",
+   "board": "internal"
+  }
+ ]
+}

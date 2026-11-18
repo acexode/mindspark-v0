@@ -1,0 +1,409 @@
+{
+ "lessonTitle": "Unsymmetric Bending and Principal Axes",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A roof purlin made from an angle section sits on a sloping roof and carries a vertical snow load. It is loaded in a vertical plane, yet it sags diagonally and sideways as well as downward, because the bending axes of an angle section are not the horizontal and vertical axes. Applying the simple formula $\\sigma=My/I$ with horizontal and vertical axes would put the highest stress in the wrong place."
+  },
+  {
+   "type": "text",
+   "markdown": "The simple bending formula $\\sigma=-My/I$ assumes the section is symmetrical about the plane of loading, or that the load acts in a **principal plane**. For a general section (an angle, a channel or a Z-section) loaded in a vertical plane, the beam bends in a plane different from the load plane. We assume linear-elastic material, a straight beam, pure bending (no twist: the load acts through the shear centre), small deflections, and plane sections remaining plane. Axes $x$ (horizontal) and $y$ (vertical) pass through the **centroid**; $z$ is along the beam."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Product of area and principal axes",
+   "text": "The **product of area** about centroidal axes is $I_{xy}=\\int xy\\,dA$. It is zero if either axis is an axis of symmetry. The two perpendicular axes about which $I_{xy}=0$ are the **principal axes**. They carry the maximum and minimum second moments of area, $I_{max}$ and $I_{min}$."
+  },
+  {
+   "type": "math",
+   "latex": "I_{1,2}=\\frac{I_x+I_y}{2}\\pm\\sqrt{\\left(\\frac{I_x-I_y}{2}\\right)^2+I_{xy}^2},\\qquad\\tan2\\theta_p=\\frac{-2I_{xy}}{I_x-I_y}",
+   "caption": "Principal second moments of area and orientation: $\\theta_p$ is the angle, counter-clockwise from the $x$ axis, to the axis carrying $I_1$ (take $2\\theta_p=\\mathrm{atan2}(-2I_{xy},\\,I_x-I_y)$)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Principal properties of an equal-leg angle",
+   "prompt": "An equal-leg angle has legs of outer length $80$ mm and thickness $t=8$ mm. Place the heel (outer corner) at the origin with one leg vertical along $+y$ (outer face at $x=0$) and the other horizontal along $+x$ (bottom face at $y=0$). Find the centroid, $I_x$, $I_y$, $I_{xy}$ and the principal values.",
+   "steps": [
+    {
+     "text": "Split into a vertical rectangle $8\\times80$ mm and a horizontal rectangle $72\\times8$ mm; total area.",
+     "latex": "A=8(80)+72(8)=1216\\ \\text{mm}^2"
+    },
+    {
+     "text": "Centroid from the heel (by symmetry $\\bar x=\\bar y$).",
+     "latex": "\\bar x=\\bar y=\\frac{640(4)+576(44)}{1216}=22.95\\ \\text{mm}"
+    },
+    {
+     "text": "Second moments about centroidal axes (parallel axis theorem for both rectangles).",
+     "latex": "I_x=I_y=737298\\ \\text{mm}^4"
+    },
+    {
+     "text": "Product of area: both rectangles lie in opposite quadrants of the centroid, so $I_{xy}<0$.",
+     "latex": "I_{xy}=\\sum A_i\\,d_{xi}\\,d_{yi}=-436547\\ \\text{mm}^4"
+    },
+    {
+     "text": "Principal values: $I_x=I_y$ so $\\tan2\\theta_p\\to\\infty$ and $\\theta_p=45^\\circ$.",
+     "latex": "I_1=1173845\\ \\text{mm}^4,\\quad I_2=300751\\ \\text{mm}^4,\\quad\\theta_p=45^\\circ"
+    },
+    {
+     "text": "$I_1$ is about the axis along the heel-to-opposite-diagonal (axis of symmetry); $I_2$ is about the perpendicular axis, which is the weak axis."
+    }
+   ],
+   "answer": "$\\bar x=\\bar y=22.95$ mm, $I_x=I_y=7.37e+05$ mm$^4$, $I_{xy}=-4.37e+05$ mm$^4$, $I_1=1.174e+06$ mm$^4$ at $45^\\circ$, $I_2=3.008e+05$ mm$^4$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Stress with an arbitrary moment.** Define $M_x$ as positive when it causes compression on the $+y$ side (a sagging moment for $y$ up) and $M_y$ as positive when it causes tension on the $+x$ side. Requiring zero net axial force and balancing the two moments gives the general bending stress at a point $(x,y)$ measured from the centroid. When the axes are principal ($I_{xy}=0$) the expression splits into the two familiar terms $-M_xy/I_x$ and $M_yx/I_y$."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma=\\frac{(I_xM_y+I_{xy}M_x)\\,x-(I_yM_x+I_{xy}M_y)\\,y}{I_xI_y-I_{xy}^2}",
+   "caption": "General unsymmetric bending stress (sign convention stated above; tension positive)"
+  },
+  {
+   "type": "math",
+   "latex": "\\tan\\alpha=\\left.\\frac{y}{x}\\right|_{\\sigma=0}=\\frac{I_xM_y+I_{xy}M_x}{I_yM_x+I_{xy}M_y}",
+   "caption": "Neutral axis: the line through the centroid on which the stress is zero, at angle $\\alpha$ from the $x$ axis"
+  },
+  {
+   "type": "worked_example",
+   "title": "Rectangular beam loaded off its principal planes",
+   "prompt": "A rectangular timber beam is 60 mm wide ($x$) and 120 mm deep ($y$). A bending moment of 4.0 kN m acts in a plane inclined at $30^\\circ$ to the vertical, so $M_x=M\\cos30^\\circ$ (sagging, compression on top) and $M_y=M\\sin30^\\circ$ (tension on the right face, $+x$). Find the stress at the top-left and bottom-right corners, and the neutral axis angle.",
+   "steps": [
+    {
+     "text": "Section and moment components.",
+     "latex": "I_x=\\frac{60(120)^3}{12}=8.64e+06,\\quad I_y=\\frac{120(60)^3}{12}=2.16e+06\\ \\text{mm}^4,\\quad M_x=3.46e+06,\\ M_y=2e+06\\ \\text{N mm}"
+    },
+    {
+     "text": "Axes are principal, so $\\sigma=-M_xy/I_x+M_yx/I_y$. At the top-left corner $(x,y)=(-30,60)$ mm.",
+     "latex": "\\sigma=-\\frac{3.46e+06(60)}{8.64e+06}+\\frac{2e+06(-30)}{2.16e+06}=-51.8\\ \\text{MPa (compression)}"
+    },
+    {
+     "text": "Bottom-right corner $(30,-60)$: both terms change sign.",
+     "latex": "\\sigma=+51.8\\ \\text{MPa (tension)}"
+    },
+    {
+     "text": "Other corners: top-right +3.7 MPa and bottom-left -3.7 MPa (smaller magnitude because the two bending effects oppose each other there)."
+    },
+    {
+     "text": "Neutral axis angle.",
+     "latex": "\\tan\\alpha=\\frac{I_xM_y}{I_yM_x}=\\frac{8.64e+06(2e+06)}{2.16e+06(3.46e+06)}=2.309,\\quad\\alpha=66.6^\\circ"
+    }
+   ],
+   "answer": "$\\sigma_{max}=51.8$ MPa (tension) at the bottom-right corner and $-51.8$ MPa (compression) at the top-left; the neutral axis is at $66.6^\\circ$ to the $x$ axis, far from the load plane's own neutral axis at $0^\\circ$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Neutral axis and extreme stresses of an angle section",
+   "prompt": "The 80 mm by 8 mm equal-leg angle above carries a sagging moment $M_x=1.0$ kN m about the horizontal centroidal axis and $M_y=0$ (load through the shear centre, in a vertical plane). Find the neutral axis orientation and the extreme stresses.",
+   "steps": [
+    {
+     "text": "Neutral axis from the general formula, with $M_y=0$.",
+     "latex": "\\tan\\alpha=\\frac{I_{xy}}{I_y}=\\frac{-436547}{737298}=-0.592,\\quad\\alpha=-30.6^\\circ"
+    },
+    {
+     "text": "The negative angle means the neutral axis slopes downward to the right (towards the horizontal leg). It is not horizontal, although the moment is about the horizontal axis."
+    },
+    {
+     "text": "Corner stresses (MPa, tension positive) from the general formula, using coordinates relative to the centroid at (22.95, 22.95) mm: heel (0,0): +76.3; vertical-leg tip, outer face (0,80): -90.8; vertical-leg tip, inner face (8,80): -100.7; inner corner (8,8): +49.7; horizontal-leg tip, upper (80,8): -39.3; horizontal-leg tip, lower (80,0): -22.6."
+    },
+    {
+     "text": "The largest tensile stress is at the heel (0,0), +76.3 MPa; the largest compressive stress is at the vertical-leg tip, inner face (8,80), -100.7 MPa."
+    },
+    {
+     "text": "Check on the horizontal-leg tip: it is below the centroid but lies above the neutral axis line, so the stress there is compressive. The 'top is compression, bottom is tension' rule from a symmetric section fails here."
+    }
+   ],
+   "answer": "Neutral axis at $-30.6^\\circ$ to the horizontal (sloping down towards the horizontal leg); $\\sigma_{max}=+76.3$ MPa at the heel (0,0) and $-100.7$ MPa at the vertical-leg tip, inner face (8,80)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Case",
+    "Principal axes?",
+    "Stress formula",
+    "Neutral axis"
+   ],
+   "rows": [
+    [
+     "Symmetric section, load in plane of symmetry",
+     "Yes (and aligned with load)",
+     "$-M_xy/I_x$",
+     "Horizontal, through centroid"
+    ],
+    [
+     "Symmetric section, load off the principal planes",
+     "Yes",
+     "$-M_xy/I_x+M_yx/I_y$",
+     "Inclined, $\\tan\\alpha=I_xM_y/(I_yM_x)$"
+    ],
+    [
+     "Unsymmetric section (angle, Z)",
+     "No",
+     "General formula with $I_{xy}$",
+     "Inclined even for a vertical load"
+    ]
+   ],
+   "caption": "Which bending formula to use"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Locate the centroid and find $I_x$, $I_y$ and $I_{xy}$ about centroidal axes.",
+    "Decide whether the principal axes are known (symmetry) or must be found from the principal-value formulas.",
+    "Resolve the moment into $M_x$ and $M_y$ using one stated sign convention.",
+    "Compute the stress at each corner with the general formula; the extremes are at the corners furthest from the neutral axis."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not assume top-compression, bottom-tension",
+   "text": "For an unsymmetric section, whether a point is in tension or compression is decided by which side of the **neutral axis** it lies on, not by whether it is above or below the centroid. Always compute the sign from the stress formula."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Deflection also leaves the load plane",
+   "text": "The beam deflects perpendicular to the neutral axis rather than perpendicular to the load plane, so an angle or Z-section under a vertical load deflects sideways as well as downwards."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The product of area $I_{xy}$ vanishes on principal axes, whose orientation is $\\tan2\\theta_p=-2I_{xy}/(I_x-I_y)$ and whose second moments are $I_{1,2}=(I_x+I_y)/2\\pm\\sqrt{((I_x-I_y)/2)^2+I_{xy}^2}$.",
+    "For a moment not aligned with a principal axis, resolve it into components or use the general formula for $\\sigma$.",
+    "The neutral axis passes through the centroid at an angle $\\alpha$ with $\\tan\\alpha=(I_xM_y+I_{xy}M_x)/(I_yM_x+I_{xy}M_y)$ and is generally not parallel to the load plane.",
+    "For an angle section the principal axes lie at $45^\\circ$ to the legs and the maximum stresses occur at corners furthest from the neutral axis."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the value of the product of area $I_{xy}$ about the principal axes of a cross-section?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero"
+    },
+    {
+     "id": "b",
+     "text": "Equal to $I_{max}$"
+    },
+    {
+     "id": "c",
+     "text": "Equal to $I_{max}-I_{min}$"
+    },
+    {
+     "id": "d",
+     "text": "Always negative"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Zero",
+   "distractorRationale": {
+    "a": "Correct: the principal axes are the pair of axes for which $I_{xy}=0$.",
+    "b": "$I_{max}$ is the second moment about one of the axes, not the product of area.",
+    "c": "Half this difference is the radius of the inertia circle; the product of area itself is zero on principal axes.",
+    "d": "The sign of $I_{xy}$ depends on the axes chosen; on principal axes it is zero."
+   },
+   "explanation": "Principal axes are defined as the orthogonal axes where the product of area vanishes, at which $I$ takes its maximum and minimum values. Symmetry axes are always principal axes.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A section has centroidal second moments $I_x=8.0\\times10^6$ mm$^4$, $I_y=2.0\\times10^6$ mm$^4$ and product of area $I_{xy}=-2.0\\times10^6$ mm$^4$. Find the larger principal second moment $I_1$, giving the answer in units of $10^6$ mm$^4$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o1"
+   ],
+   "correctValue": 8.605551,
+   "tolerance": 0.01,
+   "unit": "10^6 mm^4",
+   "explanation": "$I_1=\\frac{I_x+I_y}{2}+\\sqrt{\\left(\\frac{I_x-I_y}{2}\\right)^2+I_{xy}^2}=5.0+\\sqrt{3.0^2+2.0^2}=5.0+3.606=8.606$ ($\\times10^6$ mm$^4$). The smaller value is 1.394, and their sum equals $I_x+I_y=10$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "For the same section ($I_x=8.0\\times10^6$, $I_y=2.0\\times10^6$, $I_{xy}=-2.0\\times10^6$ mm$^4$), find the angle $\\theta_p$ in degrees, counter-clockwise from the $x$ axis, to the principal axis carrying the larger second moment, using $2\\theta_p=\\mathrm{atan2}(-2I_{xy},\\,I_x-I_y)$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o1"
+   ],
+   "correctValue": 16.845034,
+   "tolerance": 0.2,
+   "unit": "degrees",
+   "explanation": "$-2I_{xy}=+4.0\\times10^6$ and $I_x-I_y=6.0\\times10^6$, both positive, so $2\\theta_p=\\arctan(4/6)=33.69^\\circ$ and $\\theta_p=16.85^\\circ$. Evaluating $I_\\theta=I_x\\cos^2\\theta+I_y\\sin^2\\theta-I_{xy}\\sin2\\theta$ at this angle gives the maximum, 8.606 $\\times10^6$ mm$^4$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A rectangular beam is 50 mm wide ($x$) and 100 mm deep ($y$) and carries a bending moment of 3.0 kN m in a plane inclined at $20^\\circ$ to the vertical, so $M_x=3.0\\cos20^\\circ$ kN m (sagging, compression on top) and $M_y=3.0\\sin20^\\circ$ kN m (tension on the right face). Find the magnitude of the compressive stress at the top-left corner $(x,y)=(-25,50)$ mm, in MPa.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o2"
+   ],
+   "correctValue": 58.454385,
+   "tolerance": 0.3,
+   "unit": "MPa",
+   "explanation": "$I_x=4.167\\times10^6$ and $I_y=1.042\\times10^6$ mm$^4$; $M_x=2.819\\times10^6$, $M_y=1.026\\times10^6$ N mm. Then $\\sigma=-M_xy/I_x+M_yx/I_y=-33.83+(-24.62)=-58.5$ MPa, i.e. compressive: the top face is in compression from $M_x$, and the left face is in compression from $M_y$ (it sits on the $-x$ side), so the two effects add.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A cantilever of equal-leg angle section carries a vertical load through its shear centre. Why does the tip move sideways as well as downward?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o2",
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The material is anisotropic"
+    },
+    {
+     "id": "b",
+     "text": "The principal axes of an angle lie at 45 degrees to the legs, so a vertical moment is not aligned with a principal axis and the beam bends about a tilted neutral axis"
+    },
+    {
+     "id": "c",
+     "text": "The load is always applied with a small horizontal component"
+    },
+    {
+     "id": "d",
+     "text": "The cross-section has no centroid"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The principal axes of an angle lie at 45 degrees to the legs, so a vertical moment is not aligned with a principal axis and the beam bends about a tilted neutral axis",
+   "distractorRationale": {
+    "a": "Steel is isotropic; this is purely geometry.",
+    "b": "Correct: the neutral axis is inclined, so the deflection is perpendicular to it rather than to the load plane.",
+    "c": "The cause is geometric, not accidental loading.",
+    "d": "Every section has a centroid."
+   },
+   "explanation": "For an unsymmetric section the product of area is non-zero in the horizontal-vertical axes. A vertical moment then has components about both principal axes, and the resulting deflection direction differs from the load direction.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A timber joist is 40 mm wide and 140 mm deep and lies on a roof so that the bending moment acts in a plane inclined at $25^\\circ$ to the web (the strong-axis plane), so that $M_y/M_x=\\tan25^\\circ$ about the principal axes. Find the angle $\\alpha$ in degrees between the neutral axis and the strong principal axis ($x$), from $\\tan\\alpha=(I_x/I_y)\\tan25^\\circ$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o3"
+   ],
+   "correctValue": 80.070319,
+   "tolerance": 0.3,
+   "unit": "degrees",
+   "explanation": "$I_x/I_y=(140/40)^2=12.25$, so $\\tan\\alpha=12.25\\times\\tan25^\\circ=5.712$ and $\\alpha=80.1^\\circ$. A small tilt of the load plane makes the neutral axis nearly parallel to the weak axis, which is why unintended skew loading of deep narrow sections is so severe.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A section has $I_x=6.0\\times10^6$ mm$^4$, $I_y=2.0\\times10^6$ mm$^4$ and $I_{xy}=-1.5\\times10^6$ mm$^4$. A sagging moment $M_x=20$ kN m acts with $M_y=0$. What is the bending stress at the point $(x,y)=(10,-20)$ mm from the centroid, using $\\sigma=[(I_xM_y+I_{xy}M_x)x-(I_yM_x+I_{xy}M_y)y]/(I_xI_y-I_{xy}^2)$ with tension positive?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "+51 MPa"
+    },
+    {
+     "id": "b",
+     "text": "-51 MPa"
+    },
+    {
+     "id": "c",
+     "text": "+67 MPa"
+    },
+    {
+     "id": "d",
+     "text": "+82 MPa"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "+51 MPa",
+   "distractorRationale": {
+    "a": "Correct: $\\sigma=20\\times10^6[-1.5\\times10^6(10)-2.0\\times10^6(-20)]/(9.75\\times10^{12})=+51.3$ MPa.",
+    "b": "Right size but with the wrong sign, from reversing the sign convention or the sign of $y$.",
+    "c": "Ignores the product of area and uses $-M_xy/I_x=+66.7$ MPa.",
+    "d": "Omits the $I_{xy}M_xx$ term in the numerator, keeping only $-I_yM_xy$."
+   },
+   "explanation": "The denominator is $I_xI_y-I_{xy}^2=12\\times10^{12}-2.25\\times10^{12}=9.75\\times10^{12}$ mm$^8$ and the numerator is $20\\times10^6\\times(-1.5\\times10^7+4.0\\times10^7)=5.0\\times10^{14}$. The stress is $+51.3$ MPa, so the sign comes out of the formula and not from a rule of thumb.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Define the product of area and the principal axes of a section. Explain why an axis of symmetry is always a principal axis, and why a Z-section or angle loaded in a vertical plane does not simply bend about the horizontal axis.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o1",
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o3"
+   ],
+   "markingGuide": [
+    "$I_{xy}=\\int xy\\,dA$ about centroidal axes; the principal axes are the orthogonal pair for which $I_{xy}=0$ and the second moments are maximum and minimum.",
+    "For a symmetric section, every area element at $(x,y)$ has a mirror element at $(-x,y)$ (or $(x,-y)$), so the integrand cancels in pairs and $I_{xy}=0$: the symmetry axis is principal.",
+    "An angle or Z-section has no symmetry axis aligned with the load, so $I_{xy}\\neq0$ about the horizontal and vertical axes.",
+    "A vertical moment therefore has components about both principal axes, giving a tilted neutral axis and a deflection direction different from the load direction.",
+    "Use the principal-axis transformation or the general stress formula with $I_{xy}$."
+   ],
+   "explanation": "The product of area measures the asymmetry of the area distribution about the chosen axes. When it is zero, bending in one plane produces curvature in that same plane; when it is not, the two directions are coupled.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "An equal-leg angle with outer leg length 60 mm and thickness 6 mm has its heel at the bottom left, one leg vertical (outer face on the left) and one leg horizontal (lower face at the bottom). It carries a sagging moment $M_x=1.0$ kN m about the horizontal centroidal axis ($M_y=0$). Find the centroid, principal second moments, neutral axis orientation, and say at which corner the largest tension and largest compression occur.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o1",
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o2",
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o3"
+   ],
+   "markingGuide": [
+    "Area $A=684$ mm$^2$; centroid at $17.21$ mm from both outer faces.",
+    "$I_x=I_y=233286$ mm$^4$ and $I_{xy}=-138126$ mm$^4$ (negative).",
+    "Principal values $I_1=371412$ mm$^4$ at $45^\\circ$ and $I_2=95159$ mm$^4$.",
+    "Neutral axis: $\\tan\\alpha=I_{xy}/I_y=-0.592$, so $\\alpha=-30.6^\\circ$ (sloping down towards the horizontal leg).",
+    "Largest tension at the heel (0,0), +181 MPa; largest compression at the vertical-leg tip, inner face (6,60), -239 MPa.",
+    "The tip of the horizontal leg lies above the neutral axis line and is compressive despite being below the centroid."
+   ],
+   "explanation": "The neutral axis tilts because $I_{xy}\\neq0$, and the extreme stresses are found by evaluating the general stress formula at each corner of the section. Points above the sloping neutral axis are in compression (for a sagging moment) and those below it in tension.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: the principal axes of an equal-leg angle section lie at 45 degrees to its legs, along and perpendicular to its axis of symmetry.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The equal-leg angle is symmetric about the diagonal through the heel. The symmetry axis is a principal axis, and the other principal axis is perpendicular to it, so both lie at 45 degrees to the legs, with the larger second moment about the symmetry axis.",
+   "board": "internal"
+  }
+ ]
+}

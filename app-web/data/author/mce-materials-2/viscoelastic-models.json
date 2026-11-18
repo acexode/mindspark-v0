@@ -1,0 +1,408 @@
+{
+ "lessonTitle": "Viscoelastic Models",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A polyethylene gas pipe is clamped between two flanges with bolts tightened to a fixed torque. A year later the bolts are loose, although nothing has moved: the clamped gasket has slowly relaxed. A plastic shelf holding a fixed load sags a little more each month, although the load is unchanged. Polymers are neither elastic solids nor viscous liquids, but both at once, and two spring-and-dashpot models capture how."
+  },
+  {
+   "type": "text",
+   "markdown": "A **viscoelastic** material shows both elastic (recoverable, instantaneous) and viscous (time-dependent, dissipative) behaviour. Two tests reveal it: **creep**, a constant stress with the strain growing over time, and **stress relaxation**, a constant strain with the stress decaying over time. Simple models combine an ideal spring (modulus $E$) and an ideal dashpot (viscosity $\\eta$)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Spring, dashpot and relaxation time",
+   "text": "A **spring** obeys $\\sigma=E\\varepsilon$ (stress proportional to strain, instantaneous, recoverable). A **dashpot** obeys $\\sigma=\\eta\\,\\dot\\varepsilon$ (stress proportional to strain rate, so strain accumulates steadily and is not recovered). The ratio $\\tau=\\eta/E$ has units of time and sets how quickly a model responds; it is called the **relaxation time** (Maxwell) or **retardation time** (Kelvin-Voigt)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Maxwell model: stress relaxation.** A spring and dashpot **in series** carry the same stress, and the strains add: $\\varepsilon=\\sigma/E+\\int\\sigma/\\eta\\,dt$. If the total strain is held at $\\varepsilon_0$ (so $\\dot\\varepsilon=0$), the stresses obey $\\dot\\sigma/E+\\sigma/\\eta=0$. The solution is an exponential decay of stress with time constant $\\tau=\\eta/E$. The initial stress is $\\sigma_0=E\\varepsilon_0$, because the dashpot has no time to move at the instant of loading."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma(t)=\\sigma_0\\,e^{-t/\\tau}=E\\varepsilon_0\\,e^{-t/\\tau},\\qquad \\tau=\\frac{\\eta}{E}",
+   "caption": "Maxwell stress relaxation at constant strain eps_0. After one time constant the stress has fallen to 37 % of its initial value; after t = tau ln 2 it has halved. The stress relaxes to zero, since the dashpot can flow indefinitely."
+  },
+  {
+   "type": "worked_example",
+   "title": "Stress relaxation of a clamped gasket",
+   "prompt": "A polymer gasket is modelled as a Maxwell element with $E=2.5$ GPa and $\\eta=5.0\\times10^{11}$ Pa s. It is compressed to a strain of 0.8 % (so the stress $\\sigma_0=E\\varepsilon_0$) and held. Find the initial stress, the relaxation time, the stress after 500 s and the time for the stress to halve.",
+   "steps": [
+    {
+     "text": "Initial stress and relaxation time.",
+     "latex": "\\sigma_0=2.5\\times10^{9}\\times0.008=20\\ \\mathrm{MPa},\\qquad\\tau=\\frac{5.0\\times10^{11}}{2.5\\times10^{9}}=200\\ \\mathrm{s}"
+    },
+    {
+     "text": "Stress at 500 s.",
+     "latex": "\\sigma(500)=20\\,e^{-500/200}=20\\,e^{-2.5}=20\\times0.0821=1.64\\ \\mathrm{MPa}"
+    },
+    {
+     "text": "Time to halve: set $e^{-t/\\tau}=0.5$.",
+     "latex": "t_{1/2}=\\tau\\ln2=200\\times0.693=139\\ \\mathrm{s}"
+    }
+   ],
+   "answer": "Initial stress 20 MPa, tau = 200 s, stress after 500 s about 1.64 MPa, half-life about 139 s: the clamp load has almost disappeared."
+  },
+  {
+   "type": "text",
+   "markdown": "**Kelvin-Voigt model: creep.** A spring and dashpot **in parallel** have the same strain, and the stresses add: $\\sigma=E\\varepsilon+\\eta\\dot\\varepsilon$. Under a constant stress $\\sigma_0$ applied at $t=0$, the dashpot prevents any instantaneous strain; the strain increases and approaches the final spring value $\\sigma_0/E$ with time constant $\\tau=\\eta/E$. When the stress is removed, the strain decays back exponentially, so the Kelvin-Voigt model is fully recoverable."
+  },
+  {
+   "type": "math",
+   "latex": "\\varepsilon(t)=\\frac{\\sigma_0}{E}\\left(1-e^{-t/\\tau}\\right)\\quad(\\text{creep}),\\qquad\\varepsilon(t')=\\varepsilon_1\\,e^{-t'/\\tau}\\quad(\\text{recovery}),\\qquad\\tau=\\frac{\\eta}{E}",
+   "caption": "In creep the strain rises from zero to sigma_0/E (63 % complete after one tau). On unloading at strain eps_1, t' is the time since the removal of the stress."
+  },
+  {
+   "type": "worked_example",
+   "title": "Creep of a polymer rod",
+   "prompt": "A rod is modelled as a Kelvin-Voigt element with $E=2.0$ GPa and $\\eta=7.0\\times10^{11}$ Pa s, and carries a constant tensile stress of 12 MPa. Find the retardation time, the final strain, and the strain after 700 s.",
+   "steps": [
+    {
+     "text": "Retardation time and final strain.",
+     "latex": "\\tau=\\frac{7.0\\times10^{11}}{2.0\\times10^{9}}=350\\ \\mathrm{s},\\qquad\\varepsilon_\\infty=\\frac{\\sigma_0}{E}=\\frac{12}{2000}=0.0060"
+    },
+    {
+     "text": "Strain at 700 s, that is $t/\\tau=2$.",
+     "latex": "\\varepsilon(700)=0.0060\\left(1-e^{-2}\\right)=0.0060\\times0.8647=0.00519"
+    },
+    {
+     "text": "Interpretation: after two retardation times the rod has reached 86 % of its final strain of 0.60 %; on removing the load it recovers its original length exponentially with the same time constant."
+    }
+   ],
+   "answer": "Retardation time 350 s, final strain 0.60 %, strain at 700 s about 0.52 %."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Maxwell (series)",
+    "Kelvin-Voigt (parallel)"
+   ],
+   "rows": [
+    [
+     "Elements",
+     "Spring and dashpot in series",
+     "Spring and dashpot in parallel"
+    ],
+    [
+     "Same quantity in both elements",
+     "Stress",
+     "Strain"
+    ],
+    [
+     "Instantaneous response",
+     "Elastic strain sigma/E at once",
+     "No instantaneous strain"
+    ],
+    [
+     "Stress relaxation (constant strain)",
+     "Decays to zero, exp(-t/tau)",
+     "Stress stays at E times strain (no relaxation) plus a transient"
+    ],
+    [
+     "Creep (constant stress)",
+     "Unbounded linear flow (strain grows without limit)",
+     "Approaches sigma/E with exp(-t/tau)"
+    ],
+    [
+     "Recovery on unloading",
+     "Elastic part only; viscous strain is permanent",
+     "Complete, exponential"
+    ],
+    [
+     "Best suited to",
+     "Stress relaxation of gaskets, seals",
+     "Delayed-elastic creep of solid polymers"
+    ]
+   ],
+   "caption": "Comparison of the two models."
+  },
+  {
+   "type": "text",
+   "markdown": "**Temperature and rate.** The viscosity of a polymer depends very strongly on temperature, so $\\tau$ changes. In the **glassy** state well below $T_g$ the chains are frozen and the modulus is high (about 3 GPa, typical). As temperature rises through the glass transition the modulus falls by about three orders of magnitude over some 20 to 30 C to the soft **rubbery** plateau (about 1 to 10 MPa for an entangled or lightly crosslinked polymer). A fast loading rate leaves little time for chain motion, so the polymer behaves as if it were colder and appears stiffer; slow loading allows relaxation, so it appears softer. This equivalence is the **time-temperature superposition principle**, quantified by a shift factor $a_T$ (the Williams-Landel-Ferry, or WLF, equation)."
+  },
+  {
+   "type": "math",
+   "latex": "\\log_{10}a_T=-\\frac{C_1\\,(T-T_{\\mathrm{ref}})}{C_2+(T-T_{\\mathrm{ref}})}",
+   "caption": "With the glass transition temperature as the reference (Tref = Tg) the typical constants are C1 = 17.44 and C2 = 51.6 K; T in kelvin or celsius differences. A shift factor a_T smaller than 1 (T above Tref) means that relaxation processes take place a factor 1/a_T faster."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Rate and temperature are interchangeable",
+   "text": "Heating a polymer by about 10 C above $T_g$ speeds up its relaxation by a factor of several hundred (here $1/a_T=10^{2.83}\\approx680$ with the typical WLF constants). Hence a polymer that is stiff and brittle in a fast impact test can creep under a small steady load, and a gasket relaxes faster on a hot day."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Maxwell (series) model: $\\sigma(t)=E\\varepsilon_0e^{-t/\\tau}$ with $\\tau=\\eta/E$; the stress decays to zero at constant strain.",
+    "Kelvin-Voigt (parallel) model: $\\varepsilon(t)=(\\sigma_0/E)(1-e^{-t/\\tau})$ with $\\tau=\\eta/E$; creep is bounded and fully recoverable.",
+    "Cooling or faster loading stiffens a polymer (glassy modulus about 3 GPa), heating through $T_g$ or slower loading softens it; the WLF equation gives the time shift $a_T$ equivalent to a temperature change."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A Maxwell element (spring and dashpot in series) is stretched to a fixed strain and held there. Which statement describes its stress?",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It stays constant at $E\\varepsilon_0$"
+    },
+    {
+     "id": "b",
+     "text": "It rises slowly to the value $E\\varepsilon_0$"
+    },
+    {
+     "id": "c",
+     "text": "It decays exponentially towards zero with time constant $\\eta/E$"
+    },
+    {
+     "id": "d",
+     "text": "It oscillates around $E\\varepsilon_0$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It decays exponentially towards zero with time constant $\\eta/E$",
+   "distractorRationale": {
+    "a": "Wrong: a constant stress is the behaviour of a spring alone.",
+    "b": "Wrong: stress rising with time describes the Kelvin-Voigt strain in creep, not stress in a Maxwell element at constant strain.",
+    "c": "Correct: the dashpot gradually takes up the strain so the spring unloads and the stress relaxes to zero.",
+    "d": "Wrong: the model contains no inertia or elasticity that could cause oscillation."
+   },
+   "explanation": "At constant total strain the spring strain declines as the dashpot extends, so the stress decays as $\\sigma_0e^{-t/\\tau}$ with $\\tau=\\eta/E$. The stress falls to zero because the dashpot can flow without limit.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A polymer seal is modelled as a Maxwell element with $E=4.0$ GPa and $\\eta=2.0\\times10^{12}$ Pa s. It is held at a constant strain that produces an initial stress of 30 MPa. Find the stress after 1000 s, in MPa.",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o1"
+   ],
+   "correctValue": 4.06,
+   "tolerance": 0.08,
+   "unit": "MPa",
+   "explanation": "The relaxation time is $\\tau=\\eta/E=2.0\\times10^{12}/4.0\\times10^{9}=500$ s. At 1000 s, $\\sigma=30\\,e^{-1000/500}=30\\,e^{-2}=30\\times0.1353=4.06$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The relaxation time of a Maxwell element is 250 s. How long does it take for the stress to fall to 25 % of its initial value at constant strain?",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 347 s"
+    },
+    {
+     "id": "b",
+     "text": "About 250 s"
+    },
+    {
+     "id": "c",
+     "text": "About 1000 s"
+    },
+    {
+     "id": "d",
+     "text": "About 173 s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About 347 s",
+   "distractorRationale": {
+    "a": "Correct: $t=\\tau\\ln4=250\\times1.386=347$ s.",
+    "b": "Wrong: after one time constant the stress is still 37 % of the initial value.",
+    "c": "Wrong: this is $4\\tau$, which treats the decay as linear.",
+    "d": "Wrong: this is the time to halve the stress, $\\tau\\ln2$."
+   },
+   "explanation": "The stress falls as $e^{-t/\\tau}$, and setting this equal to 0.25 gives $t=\\tau\\ln4=250\\times1.386=347$ s. A common error is to use 4 times $\\tau$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A Kelvin-Voigt element is loaded with a constant tensile stress $\\sigma_0$, held, and then unloaded. Which description is correct?",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Strain appears instantly as $\\sigma_0/E$ and then stays constant"
+    },
+    {
+     "id": "b",
+     "text": "Strain rises without limit, and part of it is permanent after unloading"
+    },
+    {
+     "id": "c",
+     "text": "Strain stays zero because the dashpot blocks all deformation"
+    },
+    {
+     "id": "d",
+     "text": "Strain rises gradually towards $\\sigma_0/E$ and, after unloading, decays back to zero exponentially"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Strain rises gradually towards $\\sigma_0/E$ and, after unloading, decays back to zero exponentially",
+   "distractorRationale": {
+    "a": "Wrong: there is no instantaneous strain, since the dashpot cannot move instantly.",
+    "b": "Wrong: unbounded flow with permanent strain is the behaviour of a Maxwell element, not of Kelvin-Voigt.",
+    "c": "Wrong: the dashpot delays but does not stop the deformation, since the spring finally extends.",
+    "d": "Correct: the parallel dashpot delays the spring, so strain tends to $\\sigma_0/E$, and it recovers fully on unloading."
+   },
+   "explanation": "In the parallel model the spring and the dashpot extend together, so the dashpot slows the spring's extension. The strain approaches $\\sigma_0/E$ with time constant $\\eta/E$, and on unloading the spring pulls the dashpot back to zero strain.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A polymer is modelled as a Kelvin-Voigt element with $E=1.2$ GPa and $\\eta=2.4\\times10^{11}$ Pa s under a constant tensile stress of 8 MPa. Find the strain after 300 s, expressed as a percentage.",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o2"
+   ],
+   "correctValue": 0.518,
+   "tolerance": 0.01,
+   "unit": "%",
+   "explanation": "The retardation time is $\\tau=2.4\\times10^{11}/1.2\\times10^{9}=200$ s and the final strain is $8/1200=0.00667$. At 300 s, $\\varepsilon=0.00667(1-e^{-1.5})=0.00667\\times0.7769=0.00518$, which is 0.518 %.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A Kelvin-Voigt element has been loaded for a long time to its final strain and the stress is then removed. How much of the strain remains after a time equal to the retardation time $\\tau$?",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 63 %"
+    },
+    {
+     "id": "b",
+     "text": "About 37 %"
+    },
+    {
+     "id": "c",
+     "text": "About 50 %"
+    },
+    {
+     "id": "d",
+     "text": "None, since recovery is instantaneous"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "About 37 %",
+   "distractorRationale": {
+    "a": "Wrong: 63 % is the fraction recovered, not the fraction remaining.",
+    "b": "Correct: the strain decays as $e^{-t/\\tau}$ and $e^{-1}=0.368$.",
+    "c": "Wrong: 50 % remains at $\\tau\\ln2$, which is shorter than $\\tau$.",
+    "d": "Wrong: the dashpot delays recovery, so it cannot be instantaneous."
+   },
+   "explanation": "On unloading the strain decays as $\\varepsilon_1e^{-t'/\\tau}$. At $t'=\\tau$ the remaining fraction is $e^{-1}=0.368$, so 63 % of the strain has been recovered.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A polymer is tested at the same temperature, first slowly and then in a rapid impact. How does the measured stiffness differ?",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is softer in the rapid test, because the strain rate is higher"
+    },
+    {
+     "id": "b",
+     "text": "It is the same, since the temperature is the same"
+    },
+    {
+     "id": "c",
+     "text": "It is stiffer in the slow test, because relaxation increases the modulus"
+    },
+    {
+     "id": "d",
+     "text": "It is stiffer in the rapid test, because chains have little time to move"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It is stiffer in the rapid test, because chains have little time to move",
+   "distractorRationale": {
+    "a": "Wrong: a higher rate gives less time to relax, not more.",
+    "b": "Wrong: viscoelastic stiffness depends on both temperature and time scale.",
+    "c": "Wrong: relaxation lowers the stress and so lowers the apparent modulus.",
+    "d": "Correct: fast loading prevents relaxation, so the polymer behaves like a colder material."
+   },
+   "explanation": "Time and temperature are equivalent for a viscoelastic polymer. A shorter test time gives chain segments less opportunity to move, which has the same effect as cooling, so the polymer appears stiffer and more glassy.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The WLF equation is $\\log_{10}a_T=-C_1(T-T_g)/[C_2+(T-T_g)]$, with $C_1=17.44$ and $C_2=51.6$ K, using $T_g$ as the reference temperature. A polymer is used 10 K above $T_g$. By what factor $1/a_T$ are its relaxation processes faster than at $T_g$? Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o3"
+   ],
+   "correctValue": 679,
+   "tolerance": 15,
+   "unit": "(dimensionless)",
+   "explanation": "With $T-T_g=10$ K, $\\log_{10}a_T=-17.44\\times10/(51.6+10)=-2.831$. Therefore $1/a_T=10^{2.831}=679$, so a 10 K rise speeds up the relaxation by almost three orders of magnitude.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Compare the Maxwell and Kelvin-Voigt models. For each, state how the elements are arranged, write the response to constant strain (relaxation) or constant stress (creep) and say what the model can and cannot represent in a real polymer.",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o1",
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o2"
+   ],
+   "markingGuide": [
+    "Maxwell: spring and dashpot in series; same stress; strains add",
+    "Maxwell relaxation: $\\sigma(t)=E\\varepsilon_0e^{-t/\\tau}$, $\\tau=\\eta/E$; stress decays to zero; also gives unbounded creep, with permanent viscous strain",
+    "Kelvin-Voigt: spring and dashpot in parallel; same strain; stresses add",
+    "Kelvin-Voigt creep: $\\varepsilon(t)=(\\sigma_0/E)(1-e^{-t/\\tau})$, tends to a limit, fully recoverable",
+    "Limitations: Maxwell has no bounded creep or instant recovery and Kelvin-Voigt has no stress relaxation or instantaneous elastic strain; real polymers have a spread of relaxation times",
+    "Mentions a combination (standard linear solid or multi-element model) as a better description"
+   ],
+   "explanation": "The series model lets the dashpot flow, so stress relaxes but strain is unbounded under constant stress. The parallel model forces a bounded, recoverable creep but cannot relax. Neither captures both effects, so real polymers need combined models.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain how temperature and loading rate affect the stiffness of an amorphous polymer, using the glass transition and the idea of time-temperature superposition. A polymer is used 20 K above its glass transition temperature: use the WLF equation (with $C_1=17.44$, $C_2=51.6$ K, referenced to $T_g$) to find by what factor its relaxation is faster than at $T_g$.",
+   "objectiveIds": [
+    "ug.mce-materials-2.polymers-viscoelasticity.viscoelastic-models.o3"
+   ],
+   "markingGuide": [
+    "Below Tg the polymer is glassy with a high modulus (about 3 GPa); through Tg the modulus falls by about three orders of magnitude to a rubbery plateau",
+    "Chain motion needs time and thermal energy: cooling or fast loading prevents motion (stiffer), heating or slow loading allows it (softer)",
+    "Time-temperature superposition: a change of temperature is equivalent to a shift in time scale by the factor $a_T$",
+    "WLF: $\\log_{10}a_T=-17.44\\times20/(51.6+20)=-4.87$",
+    "So $1/a_T=10^{4.87}\\approx7.4\\times10^{4}$, relaxation is about 74 000 times faster than at Tg",
+    "Practical consequence: polymers creep and relax faster when hot; impact tests overestimate stiffness for slow loads"
+   ],
+   "explanation": "A polymer behaves as a solid only when chain motion is slow compared with the loading time. The WLF shift factor shows that a modest temperature rise above $T_g$ changes the time scale by many orders of magnitude, so temperature and rate are interchangeable.",
+   "board": "internal"
+  }
+ ]
+}

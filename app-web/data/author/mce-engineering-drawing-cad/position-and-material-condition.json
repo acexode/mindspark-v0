@@ -1,0 +1,398 @@
+{
+ "lessonTitle": "Position and Material Condition",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "An inspector rejects a flange because one bolt hole is 0.18 mm off its drawn position in x and 0.15 mm in y. Another inspector, measuring the same hole, accepts it. The difference is whether the drawing used a coordinate tolerance or a position tolerance with a material condition modifier."
+  },
+  {
+   "type": "text",
+   "markdown": "A **position tolerance** controls where a hole or other feature of size is, relative to its **true position** (the theoretically exact location given by basic dimensions) and the datum frame. The tolerance zone is usually a **cylinder** of diameter $T$, centred on the true position, within which the **axis** of the actual hole must lie. This is a different idea from a plus-minus coordinate tolerance, which gives a square zone."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Position tolerance zone",
+   "text": "A **cylindrical zone** of diameter $T$ centred on the true position. A hole is acceptable if its axis lies inside the zone. If the measured axis deviates by $\\Delta x$ and $\\Delta y$ from the true position, the radial error is $\\sqrt{\\Delta x^2 + \\Delta y^2}$ and the diameter of zone it uses is twice that."
+  },
+  {
+   "type": "math",
+   "latex": "T_{\\text{used}} = 2\\sqrt{\\Delta x^{2} + \\Delta y^{2}}",
+   "caption": "Diameter of the position zone consumed by a hole whose axis is displaced by Delta x and Delta y (mm) from true position"
+  },
+  {
+   "type": "text",
+   "markdown": "**Material condition.** The **maximum material condition (MMC)** is the size at which a feature has the most material: the *smallest* hole or the *largest* shaft. The **least material condition (LMC)** is the opposite. When a position tolerance carries the modifier M (MMC), the stated tolerance applies only when the hole is at MMC. As the hole gets larger, more clearance for the fastener exists, so the position tolerance may increase by the same amount: this extra is the **bonus tolerance**."
+  },
+  {
+   "type": "math",
+   "latex": "T_{\\text{allowed}} = T_{\\text{stated}} + \\left|\\,D_{\\text{actual}} - D_{\\text{MMC}}\\right|",
+   "caption": "Bonus tolerance for a hole at MMC: D_actual is the measured hole diameter, D_MMC the smallest permitted hole diameter"
+  },
+  {
+   "type": "worked_example",
+   "title": "Accept or reject?",
+   "prompt": "A hole is specified as diameter 12.0 to 12.2 mm, with position tolerance diameter 0.30 mm at MMC. The measured hole diameter is 12.12 mm and its axis is displaced from true position by 0.18 mm in x and 0.15 mm in y. Does it pass?",
+   "steps": [
+    {
+     "text": "MMC of a hole is its smallest size, 12.0 mm. Bonus tolerance.",
+     "latex": "12.12 - 12.0 = 0.12\\ \\text{mm}"
+    },
+    {
+     "text": "Allowed zone diameter.",
+     "latex": "0.30 + 0.12 = 0.42\\ \\text{mm}"
+    },
+    {
+     "text": "Zone diameter used by the measured axis.",
+     "latex": "2\\sqrt{0.18^2 + 0.15^2} = 2\\sqrt{0.0549} = 2(0.2343) = 0.469\\ \\text{mm}"
+    },
+    {
+     "text": "Compare: 0.469 mm exceeds 0.42 mm."
+    }
+   ],
+   "answer": "The hole fails by about 0.05 mm, even with the bonus."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Zone shape",
+    "Size effect"
+   ],
+   "rows": [
+    [
+     "Coordinate +/- tolerance",
+     "Square (rectangle)",
+     "None: fixed regardless of hole size"
+    ],
+    [
+     "Position tolerance, RFS",
+     "Cylinder",
+     "None"
+    ],
+    [
+     "Position tolerance at MMC",
+     "Cylinder",
+     "Grows as hole departs from MMC (bonus)"
+    ]
+   ],
+   "caption": "Coordinate versus position tolerancing"
+  },
+  {
+   "type": "worked_example",
+   "title": "Why geometric tolerance can be larger",
+   "prompt": "A hole location is toleranced +/-0.10 mm in x and y (a 0.20 mm square). What is the diameter of the circle that just encloses this square, and by what ratio is the allowed area larger if the position tolerance is given as that circle?",
+   "steps": [
+    {
+     "text": "The square has side 0.20 mm. Its half-diagonal is the largest permitted radial error.",
+     "latex": "\\sqrt{0.10^2 + 0.10^2} = 0.1414\\ \\text{mm}"
+    },
+    {
+     "text": "A circular zone that reaches the corners has diameter 0.283 mm.",
+     "latex": "2 \\times 0.1414 = 0.283\\ \\text{mm}"
+    },
+    {
+     "text": "Area ratio of the circle to the square.",
+     "latex": "\\frac{\\pi (0.1414)^2}{0.20^2} = \\frac{0.0628}{0.04} = 1.57"
+    }
+   ],
+   "answer": "A circle of diameter 0.283 mm encloses the square corners and has 57 percent more area. The same hole centre can therefore sit in the circular zone with a bigger tolerance."
+  },
+  {
+   "type": "text",
+   "markdown": "Geometric tolerances can permit a larger tolerance than a coordinate tolerance for two reasons. First, the **circular zone** accepts holes that fall in the corner region of a square. Second, **MMC bonus** adds tolerance as the hole becomes larger. Both are functionally justified because assembly with a fastener of fixed size depends on the radial gap, not on the direction of the error."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Check the modifier",
+   "text": "If the frame has no M the tolerance is regardless of feature size (RFS) and no bonus is allowed."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find the true position from basic dimensions.",
+    "Compute radial error and the zone used: twice the radius.",
+    "Find the bonus from MMC and the measured hole size.",
+    "Compare used zone with allowed zone."
+   ]
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Position tolerance is a cylindrical zone around the true position; the zone used is 2 times the radial error.",
+    "At MMC the tolerance grows by the amount the hole is larger than its smallest size.",
+    "Circular zones and MMC bonus can allow more tolerance than a square +/- zone."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A hole axis is measured 0.03 mm from true position in x and 0.04 mm in y. What is the radial error?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.07 mm"
+    },
+    {
+     "id": "b",
+     "text": "0.05 mm"
+    },
+    {
+     "id": "c",
+     "text": "0.01 mm"
+    },
+    {
+     "id": "d",
+     "text": "0.035 mm"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "0.05 mm",
+   "distractorRationale": {
+    "a": "Adds the components.",
+    "b": "Correct.",
+    "c": "Subtracts.",
+    "d": "Average."
+   },
+   "explanation": "Radial error is the square root of 0.03^2 + 0.04^2 = 0.0025, that is 0.05 mm. The zone diameter used is therefore 0.10 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the maximum material condition of a hole?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Its largest size"
+    },
+    {
+     "id": "b",
+     "text": "Its smallest size"
+    },
+    {
+     "id": "c",
+     "text": "Its mean size"
+    },
+    {
+     "id": "d",
+     "text": "The size at which it fits the bolt exactly"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Its smallest size",
+   "distractorRationale": {
+    "a": "That is LMC.",
+    "b": "Correct.",
+    "c": "Not a limit.",
+    "d": "Not a definition."
+   },
+   "explanation": "A hole contains most material when it is smallest. A shaft is at MMC when it is largest.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A hole has true position (60, 40) mm. Its measured axis is at (60.08, 39.94) mm. Calculate the diameter of the position zone it uses, in mm.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o1"
+   ],
+   "correctValue": 0.2,
+   "tolerance": 0.005,
+   "unit": "mm",
+   "explanation": "Deviations are 0.08 and 0.06; radial error = sqrt(0.0064 + 0.0036) = 0.10 mm, so the zone diameter used is 0.20 mm. The zone diameter is always twice the radial error.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A hole is specified as diameter 8.00 to 8.10 mm with a position tolerance of diameter 0.20 mm at MMC. The measured hole is 8.06 mm. Calculate the allowed position tolerance zone diameter, in mm.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o2"
+   ],
+   "correctValue": 0.26,
+   "tolerance": 0.005,
+   "unit": "mm",
+   "explanation": "MMC is 8.00 mm, so the bonus is 8.06 - 8.00 = 0.06 mm; allowed is 0.20 + 0.06 = 0.26 mm. The bonus is zero at MMC and grows as the hole gets larger.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A hole of diameter 10.00 to 10.15 mm has a position tolerance diameter 0.10 at MMC. The hole is measured at 10.09 mm and uses a zone diameter 0.20 mm. What is the result?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Pass, 0.20 is within 0.19"
+    },
+    {
+     "id": "b",
+     "text": "Fail, allowed 0.19 mm is less than the 0.20 mm used"
+    },
+    {
+     "id": "c",
+     "text": "Pass, since the bonus is 0.15 mm"
+    },
+    {
+     "id": "d",
+     "text": "Fail, because the hole is oversize"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Fail, allowed 0.19 mm is less than the 0.20 mm used",
+   "distractorRationale": {
+    "a": "0.20 > 0.19.",
+    "b": "Correct.",
+    "c": "Bonus is 0.09.",
+    "d": "Size is within limits."
+   },
+   "explanation": "Bonus is 10.09 - 10.00 = 0.09 mm, so allowed is 0.19 mm. The used 0.20 mm exceeds it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a position tolerance diameter 0.25 mm without modifier (RFS), a hole is at its largest size. What is the allowed zone?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.25 mm plus bonus"
+    },
+    {
+     "id": "b",
+     "text": "0.25 mm, no bonus"
+    },
+    {
+     "id": "c",
+     "text": "Zero"
+    },
+    {
+     "id": "d",
+     "text": "Twice 0.25 mm"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "0.25 mm, no bonus",
+   "distractorRationale": {
+    "a": "Needs M.",
+    "b": "Correct.",
+    "c": "Not zero.",
+    "d": "Not doubled."
+   },
+   "explanation": "Without the M modifier the tolerance applies regardless of feature size, so no bonus is added. Bonus tolerance is available only when the M modifier is shown.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A hole location is given as +/-0.10 mm in x and in y. A designer changes it to a cylindrical position tolerance that just encloses the square. What diameter is needed?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.20 mm"
+    },
+    {
+     "id": "b",
+     "text": "0.283 mm"
+    },
+    {
+     "id": "c",
+     "text": "0.40 mm"
+    },
+    {
+     "id": "d",
+     "text": "0.141 mm"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "0.283 mm",
+   "distractorRationale": {
+    "a": "Inscribed circle.",
+    "b": "Correct.",
+    "c": "Twice the side.",
+    "d": "Radius not diameter."
+   },
+   "explanation": "Half-diagonal sqrt(0.10^2 + 0.10^2) = 0.1414 mm, so the diameter is 0.283 mm, which allows the corner positions. The inscribed circle of 0.20 mm would wrongly reject the corner positions.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain bonus tolerance for a hole with a position tolerance at MMC, using a hole of 12.0 to 12.2 mm and a stated tolerance of diameter 0.30 mm measured at 12.1 mm.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o2"
+   ],
+   "markingGuide": [
+    "MMC is smallest hole, 12.0 mm",
+    "Bonus = 12.1 - 12.0 = 0.1 mm",
+    "Allowed = 0.30 + 0.10 = 0.40 mm",
+    "Reason: larger hole gives more clearance for the fastener",
+    "Applies only with the M modifier"
+   ],
+   "explanation": "A complete answer states the formula, the number and the functional reason. Each point in the marking guide earns credit, so state every point explicitly and give its reason.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A drawing gives a hole position as +/-0.15 mm. Explain two ways in which a position tolerance with MMC can permit a larger usable tolerance, with numbers for the first.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o3"
+   ],
+   "markingGuide": [
+    "Square +/-0.15: half-diagonal 0.212 mm, so a 0.424 mm circle contains the corners",
+    "Circle accepts holes in the corner regions",
+    "MMC bonus adds as the hole is larger",
+    "Functional reason: assembly depends on radial gap"
+   ],
+   "explanation": "The square zone has a half-diagonal of 0.212 mm, so a circle of 0.424 mm diameter encloses it. MMC adds a second, size-dependent allowance on top of that.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Bonus tolerance at MMC increases as the hole departs from its smallest size toward its largest.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.gdt-basics.position-and-material-condition.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The bonus equals the actual size minus the MMC size, so it grows with hole size. At MMC it is zero.",
+   "board": "internal"
+  }
+ ]
+}

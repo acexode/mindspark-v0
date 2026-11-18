@@ -1,0 +1,374 @@
+{
+ "lessonTitle": "The Constant-Strain Triangle: B Matrix, D Matrix and Piecewise-Constant Stress",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A thin gusset plate in a machine frame is meshed with three-node triangles, and a student plots the von Mises stress: it comes out as a mosaic of flat-coloured tiles with sudden steps across element edges. That is not a plotting artefact. It follows directly from the matrix that converts nodal displacements to strains, which for the three-node triangle contains only constants."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** The simplest two-dimensional element has three nodes at its corners, each with two DOFs: the horizontal and vertical displacements $(u_i,v_i)$ in mm. Inside the triangle the displacement is interpolated **linearly**, $u=\\alpha_1+\\alpha_2x+\\alpha_3y$ and the same for $v$. A linear field has constant derivatives, so the strains $\\varepsilon_x=\\partial u/\\partial x$, $\\varepsilon_y=\\partial v/\\partial y$ and $\\gamma_{xy}=\\partial u/\\partial y+\\partial v/\\partial x$ are constant in each element: hence the name *constant-strain triangle* (CST)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Strain-displacement matrix of the CST",
+   "text": "For a triangle with vertices $(x_1,y_1),(x_2,y_2),(x_3,y_3)$ numbered anticlockwise, define $b_1=y_2-y_3$, $b_2=y_3-y_1$, $b_3=y_1-y_2$, $c_1=x_3-x_2$, $c_2=x_1-x_3$, $c_3=x_2-x_1$ and the area $A=\\tfrac12[(x_2-x_1)(y_3-y_1)-(x_3-x_1)(y_2-y_1)]$ (mm$^2$). The strains are $\\boldsymbol{\\varepsilon}=\\mathbf{B}\\mathbf{u}_e$ where $\\mathbf{u}_e=\\{u_1,v_1,u_2,v_2,u_3,v_3\\}^T$ and $\\mathbf{B}$ is given below."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{B}=\\frac{1}{2A}\\begin{bmatrix}b_1&0&b_2&0&b_3&0\\\\0&c_1&0&c_2&0&c_3\\\\c_1&b_1&c_2&b_2&c_3&b_3\\end{bmatrix}",
+   "caption": "Strain-displacement matrix, $\\{\\varepsilon_x,\\varepsilon_y,\\gamma_{xy}\\}^T=\\mathbf{B}\\mathbf{u}_e$ (units 1/mm)"
+  },
+  {
+   "type": "text",
+   "markdown": "The entries come from the linear shape functions $N_i=(a_i+b_ix+c_iy)/(2A)$, whose derivatives are the constants $b_i/(2A)$ and $c_i/(2A)$. Node numbering must be anticlockwise so $A>0$; clockwise numbering gives a negative area and corrupts the stiffness matrix. The element stiffness is $\\mathbf{k}=tA\\,\\mathbf{B}^T\\mathbf{D}\\mathbf{B}$ for thickness $t$, because $\\mathbf{B}$ and $\\mathbf{D}$ are constant over the element."
+  },
+  {
+   "type": "worked_example",
+   "title": "The B matrix of a right triangle",
+   "prompt": "A triangle has nodes 1 $(0,0)$, 2 $(40,0)$ and 3 $(0,30)$, with coordinates in mm. Find its area and $\\mathbf{B}$.",
+   "steps": [
+    {
+     "text": "Area from the determinant form: $2A=(x_2-x_1)(y_3-y_1)-(x_3-x_1)(y_2-y_1)$.",
+     "latex": "2A=(40)(30)-(0)(0)=1200\\ \\text{mm}^2\\ \\Rightarrow\\ A=600\\ \\text{mm}^2"
+    },
+    {
+     "text": "The coefficients $b_i$ and $c_i$ come from cyclic differences of the coordinates.",
+     "latex": "b=\\{-30,30,0\\}\\ \\text{mm},\\quad c=\\{-40,0,40\\}\\ \\text{mm}"
+    },
+    {
+     "text": "Divide by $2A=1200$ mm$^2$ and place the entries in the pattern of $\\mathbf{B}$ (units 1/mm).",
+     "latex": "\\mathbf{B}=\\begin{bmatrix}-25.00&0.00&25.00&0.00&0.00&0.00\\\\0.00&-33.33&0.00&0.00&0.00&33.33\\\\-33.33&-25.00&0.00&25.00&33.33&0.00\\end{bmatrix}\\times10^{-3}\\ \\text{mm}^{-1}"
+    }
+   ],
+   "answer": "$A=600$ mm$^2$; the first row has $-0.025$, $0.025$ and $0$ (1/mm) in the $u_1$, $u_2$, $u_3$ columns, so $\\varepsilon_x=0.025(u_2-u_1)$ per mm, the stretch along the bottom edge divided by its length 40 mm."
+  },
+  {
+   "type": "text",
+   "markdown": "**Constitutive matrix (plane stress).** For a thin plate with no out-of-plane stress ($\\sigma_z=0$), Hooke's law $\\varepsilon_x=(\\sigma_x-\\nu\\sigma_y)/E$, $\\varepsilon_y=(\\sigma_y-\\nu\\sigma_x)/E$, $\\gamma_{xy}=\\tau_{xy}/G$ with $G=E/[2(1+\\nu)]$ is inverted. Here $E$ is Young's modulus (MPa) and $\\nu$ is Poisson's ratio (dimensionless)."
+  },
+  {
+   "type": "math",
+   "latex": "\\begin{Bmatrix}\\sigma_x\\\\\\sigma_y\\\\\\tau_{xy}\\end{Bmatrix}=\\frac{E}{1-\\nu^2}\\begin{bmatrix}1&\\nu&0\\\\\\nu&1&0\\\\0&0&\\dfrac{1-\\nu}{2}\\end{bmatrix}\\begin{Bmatrix}\\varepsilon_x\\\\\\varepsilon_y\\\\\\gamma_{xy}\\end{Bmatrix}",
+   "caption": "Plane-stress constitutive matrix $\\mathbf{D}$ (MPa)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Strains and stresses in a steel triangle",
+   "prompt": "The triangle above is steel ($E=200$ GPa, $\\nu=0.3$). Its nodal displacements are $u_1=v_1=0$, $u_2=0.010$ mm, $v_2=0.002$ mm, $u_3=0.004$ mm, $v_3=-0.006$ mm. Find the strains and the plane-stress stresses.",
+   "steps": [
+    {
+     "text": "Compute the plane-stress factor and the entries of $\\mathbf{D}$.",
+     "latex": "\\frac{E}{1-\\nu^2}=\\frac{2.0\\times10^{5}}{0.91}=219780\\ \\text{MPa},\\quad D_{12}=65934,\\ D_{33}=76923\\ \\text{MPa}"
+    },
+    {
+     "text": "Strains $\\boldsymbol{\\varepsilon}=\\mathbf{B}\\mathbf{u}_e$ using the matrix just found.",
+     "latex": "\\varepsilon_x=2.500\\times10^{-4},\\ \\varepsilon_y=-2.000\\times10^{-4},\\ \\gamma_{xy}=1.833\\times10^{-4}"
+    },
+    {
+     "text": "Stresses $\\boldsymbol{\\sigma}=\\mathbf{D}\\boldsymbol{\\varepsilon}$ (MPa), the same everywhere inside the element.",
+     "latex": "\\sigma_x=41.8,\\ \\sigma_y=-27.5,\\ \\tau_{xy}=14.1\\ \\text{MPa}"
+    },
+    {
+     "text": "Equivalent stress for yield comparison: $\\sigma_{vM}=\\sqrt{\\sigma_x^2-\\sigma_x\\sigma_y+\\sigma_y^2+3\\tau_{xy}^2}$.",
+     "latex": "\\sigma_{vM}=65.1\\ \\text{MPa}"
+    }
+   ],
+   "answer": "$\\varepsilon=(2.500,\\ -2.000,\\ 1.833)\\times10^{-4}$ and $\\sigma=(41.8,\\ -27.5,\\ 14.1)$ MPa, with von Mises 65.1 MPa, one uniform state for the whole triangle."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why stress is piecewise constant",
+   "text": "Both $\\mathbf{B}$ and $\\mathbf{D}$ are constant inside a CST, so the stress $\\mathbf{D}\\mathbf{B}\\mathbf{u}_e$ is constant over each element and jumps from one element to the next. The model satisfies displacement continuity along edges but not stress continuity. The stress is best regarded as the value at the centroid; refining the mesh makes the steps smaller."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Constant-strain triangle",
+    "Consequence"
+   ],
+   "rows": [
+    [
+     "Nodes and DOFs",
+     "3 nodes, 6 DOFs",
+     "Small matrix, easy to assemble"
+    ],
+    [
+     "Displacement field",
+     "Linear in $x$ and $y$",
+     "Cannot show curvature inside one element"
+    ],
+    [
+     "Strain and stress",
+     "Constant in each element",
+     "Stress jumps across edges; needs fine meshes where gradients are large"
+    ],
+    [
+     "Bending behaviour",
+     "Poor: cannot represent a linear strain gradient",
+     "Over-stiff in bending; use several elements through depth or higher-order elements"
+    ]
+   ],
+   "caption": "Properties of the CST"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Number nodes anticlockwise so that the area $A$ is positive.",
+    "$\\mathbf{k}=tA\\,\\mathbf{B}^T\\mathbf{D}\\mathbf{B}$ for a plate of thickness $t$ (a constant integrand needs no numerical integration).",
+    "The element reproduces rigid-body motion and any constant strain state exactly, which is why it converges as the mesh is refined.",
+    "Plane stress assumes $\\sigma_z=0$; plane strain would use a different $\\mathbf{D}$ (next unit)."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Sign of the area",
+   "text": "If the nodes are numbered clockwise, $2A$ computed from the determinant is negative. Using its absolute value in $\\mathbf{B}$ but not in the sign of the $b_i$ and $c_i$ reverses the strains. Always check $A>0$ before assembling."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The three-node triangle interpolates displacement linearly, so $\\mathbf{B}=\\frac{1}{2A}[\\ldots]$ built from $b_i$, $c_i$ is constant and the strain is uniform over the element.",
+    "The plane-stress matrix $\\mathbf{D}=\\frac{E}{1-\\nu^2}\\begin{bmatrix}1&\\nu&0\\\\\\nu&1&0\\\\0&0&(1-\\nu)/2\\end{bmatrix}$ follows from inverting Hooke's law with $\\sigma_z=0$.",
+    "Because $\\mathbf{B}$ and $\\mathbf{D}$ are constant, stress is piecewise constant, with jumps across element boundaries that signal where refinement is needed."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why is the stress inside a three-node triangular (CST) element uniform?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The displacement field is linear, so the strains are constant and the stress follows through the constant $\\mathbf{D}$"
+    },
+    {
+     "id": "b",
+     "text": "The material is assumed to have zero Poisson's ratio"
+    },
+    {
+     "id": "c",
+     "text": "The element is assumed to carry only uniform loads"
+    },
+    {
+     "id": "d",
+     "text": "The element has only three nodes so there is not enough information to vary stress"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The displacement field is linear, so the strains are constant and the stress follows through the constant $\\mathbf{D}$",
+   "distractorRationale": {
+    "b": "Poisson's ratio affects the size of $\\mathbf{D}$ but not whether it is constant.",
+    "c": "Load type does not enter the shape function argument; the uniformity is a property of the interpolation.",
+    "d": "The count of nodes is a consequence of the linear field, but the real reason is that the derivatives of the field are constant."
+   },
+   "explanation": "With $u=\\alpha_1+\\alpha_2x+\\alpha_3y$, the derivatives $\\partial u/\\partial x$ and $\\partial u/\\partial y$ are constants, so $\\boldsymbol{\\varepsilon}=\\mathbf{B}\\mathbf{u}_e$ is uniform. $\\mathbf{D}$ is a constant material matrix, so the stress is uniform too.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement about the plane-stress matrix $\\mathbf{D}$ is correct?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is built assuming $\\sigma_z=0$, and its shear entry equals the shear modulus $G=E/[2(1+\\nu)]$"
+    },
+    {
+     "id": "b",
+     "text": "It is built assuming $\\varepsilon_z=0$, and its shear entry is $E/(1-\\nu^2)$"
+    },
+    {
+     "id": "c",
+     "text": "Its entries do not depend on Poisson's ratio"
+    },
+    {
+     "id": "d",
+     "text": "It is the inverse of the matrix used in plane strain"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is built assuming $\\sigma_z=0$, and its shear entry equals the shear modulus $G=E/[2(1+\\nu)]$",
+   "distractorRationale": {
+    "b": "$\\varepsilon_z=0$ describes plane strain, not plane stress.",
+    "c": "$\\nu$ appears in the off-diagonal terms and in the $1/(1-\\nu^2)$ factor.",
+    "d": "Plane strain uses a different $\\mathbf{D}$; the two are not inverses of each other."
+   },
+   "explanation": "The plane-stress matrix comes from inverting Hooke's law in the thin-plate assumption $\\sigma_z=0$. The shear coefficient simplifies to $E/[2(1+\\nu)]$, the shear modulus, as it must for pure shear.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A student numbers the nodes of a triangle clockwise. What happens when the area is computed from the determinant formula?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It comes out negative, so the node numbering must be reversed or the formula corrected before computing $\\mathbf{B}$"
+    },
+    {
+     "id": "b",
+     "text": "It comes out too large by a factor of two"
+    },
+    {
+     "id": "c",
+     "text": "It is unaffected, because the area does not depend on node order"
+    },
+    {
+     "id": "d",
+     "text": "The stiffness matrix becomes non-symmetric"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It comes out negative, so the node numbering must be reversed or the formula corrected before computing $\\mathbf{B}$",
+   "distractorRationale": {
+    "b": "The factor of two is in the determinant form already; ordering changes the sign, not the magnitude.",
+    "c": "The magnitude is independent of order but the signed value used in the formulas is not.",
+    "d": "Symmetry is preserved because $\\mathbf{B}^T\\mathbf{D}\\mathbf{B}$ is always symmetric; the sign error shows up in the sign of the stiffness terms."
+   },
+   "explanation": "The determinant form gives the signed area, positive for anticlockwise numbering. For clockwise ordering it is negative, which reverses the sign of $\\mathbf{B}$'s prefactor and corrupts element stiffness and recovered strains.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Across the common edge of two adjacent CST elements in a loaded plate, which quantities are continuous in the FE solution?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The displacements, but in general not the stresses"
+    },
+    {
+     "id": "b",
+     "text": "The stresses, but not the displacements"
+    },
+    {
+     "id": "c",
+     "text": "Both displacements and stresses"
+    },
+    {
+     "id": "d",
+     "text": "Neither displacements nor stresses"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The displacements, but in general not the stresses",
+   "distractorRationale": {
+    "b": "Reversed: displacement continuity is built into the shared nodal DOFs.",
+    "c": "Stress continuity is not enforced and generally fails, which is the basis of error indicators.",
+    "d": "Displacements are continuous because the edge is shared by nodes."
+   },
+   "explanation": "The shared edge carries the same two nodal displacements for both elements, and a linear variation along it, so displacement is continuous. Each element has its own constant stress, and the jump across the edge is a measure of discretisation error.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A triangle has vertices at $(10,5)$, $(70,15)$ and $(30,55)$ mm, numbered anticlockwise. Compute its area in mm$^2$ from the determinant formula.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o1"
+   ],
+   "correctValue": 1400.0,
+   "tolerance": 2.0,
+   "unit": "mm^2",
+   "explanation": "$2A=(70-10)(55-5)-(30-10)(15-5)=3000-200=2800$ mm$^2$, so $A=1400$ mm$^2$. A positive value confirms anticlockwise numbering.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "For a plane-stress plate with $E=70$ GPa and $\\nu=0.33$, compute the shear entry $D_{33}$ of the constitutive matrix in GPa.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o2"
+   ],
+   "correctValue": 26.31578947368421,
+   "tolerance": 0.05,
+   "unit": "GPa",
+   "explanation": "$D_{33}=\\dfrac{E}{1-\\nu^2}\\dfrac{1-\\nu}{2}=78.555\\times0.335=26.316$ GPa, the same as $G=E/[2(1+\\nu)]=70/2.66=26.32$ GPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A CST element made of steel ($E=200$ GPa, $\\nu=0.3$) in plane stress has computed strains $\\varepsilon_x=4.0\\times10^{-4}$, $\\varepsilon_y=-1.0\\times10^{-4}$ and $\\gamma_{xy}=0$. Compute the normal stress $\\sigma_x$ in MPa.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o2"
+   ],
+   "correctValue": 81.31868131868131,
+   "tolerance": 0.3,
+   "unit": "MPa",
+   "explanation": "$\\sigma_x=\\dfrac{E}{1-\\nu^2}(\\varepsilon_x+\\nu\\varepsilon_y)=219\\,780\\,(4.0\\times10^{-4}-0.3\\times10^{-4})=81.32$ MPa. The transverse contraction ($\\varepsilon_y<0$) reduces the stress compared with $E\\varepsilon_x=80$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A CST element has vertices $(0,0)$, $(60,0)$ and $(20,40)$ mm. Find the entry $B_{13}$ (first row, third column: the coefficient of $u_2$ in $\\varepsilon_x$) in units of $10^{-3}$ mm$^{-1}$.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o1"
+   ],
+   "correctValue": 16.666666666666668,
+   "tolerance": 0.05,
+   "unit": "10^-3 per mm",
+   "explanation": "With $b_2=y_3-y_1=40$ mm and $2A=2400$ mm$^2$, $B_{13}=b_2/(2A)=0.016667$ mm$^{-1}$ = 16.667$\\times10^{-3}$ mm$^{-1}$. Since $b_1=-40$ the first column is the negative, so a uniform translation gives zero strain.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the constant-strain triangle gives piecewise-constant stress, and describe two practical consequences for an analyst plotting stress contours.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o3"
+   ],
+   "markingGuide": [
+    "Linear shape functions: displacement is linear in $x,y$ within the element",
+    "Strain is the derivative of displacement, so $\\mathbf{B}$ is constant and strain is uniform per element",
+    "$\\mathbf{D}$ is constant, so stress is constant per element; jumps across element edges",
+    "Consequence: unaveraged contours look blocky; averaged contours smooth them, so a large jump indicates a poor mesh",
+    "Consequence: needs many elements where stress gradients are high (e.g. bending, stress concentrations) because one element cannot represent a gradient"
+   ],
+   "explanation": "A linear field can only reproduce a constant strain, so the element gives a single stress value that should be associated with the centroid. The jumps between neighbours measure the error and fall as the mesh is refined, but a coarse CST mesh in bending is too stiff.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Starting from Hooke's law for a thin plate with $\\sigma_z=0$, outline how the plane-stress matrix $\\mathbf{D}$ is obtained, and state its size and the physical meaning of each of its three rows.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.constant-strain-triangle.o2"
+   ],
+   "markingGuide": [
+    "Hooke's law for the in-plane components: $\\varepsilon_x=(\\sigma_x-\\nu\\sigma_y)/E$, $\\varepsilon_y=(\\sigma_y-\\nu\\sigma_x)/E$, $\\gamma_{xy}=\\tau_{xy}/G$ with $G=E/[2(1+\\nu)]$",
+    "Invert the $3\\times3$ compliance relation to get stress in terms of strain, giving $E/(1-\\nu^2)$ times the matrix",
+    "Result is $3\\times3$, symmetric, with entries $1,\\nu,0;\\ \\nu,1,0;\\ 0,0,(1-\\nu)/2$",
+    "Rows give $\\sigma_x$, $\\sigma_y$ and $\\tau_{xy}$ from the three strains; the out-of-plane strain $\\varepsilon_z=-\\nu(\\sigma_x+\\sigma_y)/E$ is not needed in the stiffness"
+   ],
+   "explanation": "The plane-stress matrix is the inverse of the compliance matrix for the in-plane components. The factor $1/(1-\\nu^2)$ arises from the inversion and the shear term simplifies to the shear modulus.",
+   "board": "internal"
+  }
+ ]
+}

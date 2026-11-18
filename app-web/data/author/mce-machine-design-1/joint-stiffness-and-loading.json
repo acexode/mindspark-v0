@@ -1,0 +1,424 @@
+{
+ "lessonTitle": "Joint Stiffness and External Loading",
+ "estimatedMinutes": 55,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The root bolts that hold a wind-turbine blade to its hub see a load that swings with every revolution, yet they rarely fail in fatigue. The reason is not that the bolts are huge but that the joint is arranged so that the bolt feels only a small slice of each load swing. The stiffness of the bolt compared with the clamped members decides how big that slice is."
+  },
+  {
+   "type": "text",
+   "markdown": "A tightened bolt and the members it clamps behave like two springs that share the same force path. Tightening stretches the bolt (a spring of stiffness $k_b$) and compresses the members (a spring of stiffness $k_m$) by the same force, the preload $F_i$. When an external tensile load $P$ then pulls the joint apart, the bolt stretches a little more and the members relax a little, and the extra force is divided between them in proportion to their stiffnesses."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Joint constant",
+   "text": "The joint constant (stiffness ratio) is $C=k_b/(k_b+k_m)$, a dimensionless number between 0 and 1. A fraction $C$ of any external tensile load $P$ is added to the bolt load, and a fraction $1-C$ is taken from the clamp load. A soft bolt in stiff members gives a small $C$ and a well-protected bolt."
+  },
+  {
+   "type": "text",
+   "markdown": "**Bolt stiffness.** The bolt acts as two springs in series: the unthreaded shank of length $l_d$ in the grip with area $A_d=\\pi d^2/4$, and the threaded length $l_t$ in the grip with area $A_t$. The series stiffness is shown below, where $E$ is the bolt modulus (steel $E\\approx207$ GPa, typical). **Member stiffness.** The clamped members are stressed in a spreading cone under the bolt head and nut, usually idealised as a frustum of half-apex angle $30^\\circ$. For two identical steel plates of total grip $l$ and a washer-face diameter $D=1.5d$, the Shigley closed form below follows from placing two frustums in series."
+  },
+  {
+   "type": "math",
+   "latex": "k_b=\\frac{A_dA_tE}{A_dl_d+A_tl_t},\\qquad k_m=\\frac{0.5774\\,\\pi E d}{2\\ln\\!\\left[5\\,\\dfrac{0.5774\\,l+0.5\\,d}{0.5774\\,l+2.5\\,d}\\right]}",
+   "caption": "Bolt and member stiffness (N/mm when E is in N/mm^2 and lengths in mm); frustum half-angle 30 degrees, D = 1.5 d, two identical members"
+  },
+  {
+   "type": "worked_example",
+   "title": "Joint constant for an M12 joint",
+   "prompt": "Two steel plates, each 20 mm thick, are clamped by an M12 bolt ($d=12$ mm, $A_t=84.3$ mm$^2$). Of the 40 mm grip, 25 mm lies on the unthreaded shank and 15 mm on the thread. Take $E=207$ GPa for bolt and plates. Find $k_b$, $k_m$ and $C$.",
+   "steps": [
+    {
+     "text": "Shank area, then bolt stiffness from the series formula. $A_d=\\pi\\times12^2/4=113.1$ mm$^2$.",
+     "latex": "k_b=\\frac{113.1\\times84.3\\times207000}{113.1\\times25+84.3\\times15}=482305\\ \\text{N/mm}=482\\ \\text{MN/m}"
+    },
+    {
+     "text": "Member stiffness for $l=40$ mm and $d=12$ mm. The log argument is $5(0.5774\\times40+6)/(0.5774\\times40+30)=2.740$.",
+     "latex": "k_m=\\frac{0.5774\\pi\\times207000\\times12}{2\\ln(2.740)}=2235192\\ \\text{N/mm}=2235\\ \\text{MN/m}"
+    },
+    {
+     "text": "Joint constant. The members are about 4.6 times stiffer than the bolt, so the bolt gets under a third of any external load.",
+     "latex": "C=\\frac{k_b}{k_b+k_m}=\\frac{482}{482+2235}=0.177"
+    }
+   ],
+   "answer": "$k_b\\approx482$ MN/m, $k_m\\approx2235$ MN/m and $C\\approx0.18$."
+  },
+  {
+   "type": "text",
+   "markdown": "**Loads under external tension.** Let the external tensile load per bolt be $P$ and assume the members stay in contact. The bolt load rises and the clamp load falls according to the relations below. The members separate when the clamp load reaches zero, which defines the separation load $P_0$. Two safety factors are used: the load factor $n_L$ against the bolt reaching proof strength (with $F_p=S_pA_t$), and the separation factor $n_0$."
+  },
+  {
+   "type": "math",
+   "latex": "F_b=F_i+CP,\\quad F_m=F_i-(1-C)P,\\quad P_0=\\frac{F_i}{1-C},\\quad n_L=\\frac{F_p-F_i}{CP},\\quad n_0=\\frac{F_i}{(1-C)P}",
+   "caption": "Load relations for a preloaded joint (valid while F_m is greater than zero)"
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "worked_example",
+   "title": "Loads and safety factors in the same joint",
+   "prompt": "The M12 joint above (class 8.8, $S_p=600$ MPa, so $F_p=50.6$ kN) has a preload $F_i=37.9$ kN and carries an external load $P=20$ kN per bolt with $C=0.177$. Find the bolt load, the clamp load, the separation load and both factors.",
+   "steps": [
+    {
+     "text": "Bolt load: preload plus its share of $P$.",
+     "latex": "F_b=37.9+0.177\\times20=41.4\\ \\text{kN}"
+    },
+    {
+     "text": "Clamp load: preload minus the members' share, which is the larger share $1-C$.",
+     "latex": "F_m=37.9-(1-0.177)\\times20=21.4\\ \\text{kN}"
+    },
+    {
+     "text": "Separation load and separation factor.",
+     "latex": "P_0=\\frac{37.9}{1-0.177}=46.1\\ \\text{kN},\\qquad n_0=\\frac{P_0}{P}=2.30"
+    },
+    {
+     "text": "Load factor against proof.",
+     "latex": "n_L=\\frac{50.6-37.9}{0.177\\times20}=3.57"
+    }
+   ],
+   "answer": "$F_b=41.4$ kN, $F_m=21.4$ kN, $P_0=46.1$ kN, $n_0=2.30$ and $n_L=3.57$, so the joint is safe against both proof loading and separation."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Joint feature",
+    "Effect on $k_m$",
+    "Effect on $C$",
+    "Consequence for the bolt"
+   ],
+   "rows": [
+    [
+     "Stiff steel members, thick grip",
+     "Large",
+     "Small",
+     "Bolt sees little of each load swing"
+    ],
+    [
+     "Soft gasket in the grip",
+     "Much lower (gasket dominates)",
+     "Larger",
+     "Bolt takes more load, fatigue worse, preload relaxes"
+    ],
+    [
+     "Longer, more flexible bolt",
+     "Unchanged",
+     "Smaller",
+     "Better fatigue life"
+    ],
+    [
+     "Higher preload",
+     "Unchanged",
+     "Unchanged",
+     "Greater separation margin, but $n_L$ falls"
+    ]
+   ],
+   "caption": "How joint design changes load sharing"
+  },
+  {
+   "type": "text",
+   "markdown": "**Shear on the fastener group.** Not every joint is loaded in tension. When a transverse force $V$ is applied through the centroid of a group of $n$ identical bolts, each takes the primary shear $F'=V/n$. If the line of action is offset by an eccentricity $e$ from the group centroid, a moment $M=Ve$ also acts, and each bolt takes a secondary shear $F''=Mr_i/\\sum r_j^2$ perpendicular to its radius vector from the centroid. The bolt with the largest vector sum of $F'$ and $F''$ is the critical one."
+  },
+  {
+   "type": "worked_example",
+   "title": "Eccentric shear on a four-bolt group",
+   "prompt": "Four M12 bolts sit at the corners of a rectangle, 120 mm wide and 80 mm high (centre to centre). A vertical downward force $V=12$ kN acts 300 mm to the right of the group centroid. Find the largest bolt force and the shear stress if the shear plane passes through the unthreaded shank ($A_d=113.1$ mm$^2$).",
+   "steps": [
+    {
+     "text": "Primary shear on each bolt, shared equally, and the radius of each bolt from the centroid: $r=\\sqrt{60^2+40^2}=72.11$ mm.",
+     "latex": "F'=\\frac{12000}{4}=3000\\ \\text{N}"
+    },
+    {
+     "text": "Moment about the centroid and the secondary shear. All four bolts have the same $r$, so $\\sum r^2=4r^2$ and $F''=M/(4r)$.",
+     "latex": "M=12000\\times0.300=3600\\ \\text{N m},\\qquad F''=\\frac{3600}{4\\times0.07211}=12481\\ \\text{N}"
+    },
+    {
+     "text": "Resolve $F''$ (it is perpendicular to the radius). At the lower right and upper right bolts it has vertical component $F''x/r$ and horizontal component $F''y/r$. The right-hand bolts have the vertical parts adding to $F'$, so they are critical: vertical 13385 N and horizontal 6923 N.",
+     "latex": "F_{max}=\\sqrt{13385^2+6923^2}=15069\\ \\text{N}"
+    },
+    {
+     "text": "Shear stress on the shank area.",
+     "latex": "\\tau=\\frac{15069}{113.1}=133.2\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The critical bolts carry about 15.1 kN each, giving a shear stress of about 133 MPa, which would then be compared with the shear strength with a design factor."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Check three failure modes",
+   "text": "A bolted joint can fail by the bolt reaching proof or fatigue strength (load factor and joint constant), by loss of clamping (separation factor), or by fastener shear and bearing under transverse loads (primary plus secondary shear). Each check uses a different formula, and the weakest one governs."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$C=k_b/(k_b+k_m)$ is the fraction of external load that goes to the bolt; $k_b$ is a series spring of shank and thread, $k_m$ comes from a 30 degree frustum model.",
+    "$F_b=F_i+CP$ and $F_m=F_i-(1-C)P$ while the members remain in contact; separation occurs at $P_0=F_i/(1-C)$.",
+    "The load factor $n_L=(F_p-F_i)/(CP)$ and separation factor $n_0=F_i/[(1-C)P]$ measure margin against proof and against opening.",
+    "For transverse loads the bolt group takes primary shear $V/n$ plus secondary shear $Mr/\\sum r^2$ from any eccentricity."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does the joint constant $C=k_b/(k_b+k_m)$ tell a designer about a bolted joint under an external tensile load?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o1",
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The fraction of the external load that is added to the bolt load"
+    },
+    {
+     "id": "b",
+     "text": "The fraction of the preload that is lost in service"
+    },
+    {
+     "id": "c",
+     "text": "The ratio of proof load to preload"
+    },
+    {
+     "id": "d",
+     "text": "The ratio of the clamp load to the external load"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The fraction of the external load that is added to the bolt load",
+   "distractorRationale": {
+    "a": "Correct: the bolt picks up C times P and the members give up (1 - C) times P.",
+    "b": "Preload loss through relaxation is a different effect and is not given by C.",
+    "c": "That ratio defines a load factor, not the joint constant.",
+    "d": "The clamp load is F_i - (1 - C)P, which is not C."
+   },
+   "explanation": "Because the bolt and members form parallel load paths, the external load divides in proportion to the stiffnesses, and the bolt's share is $k_b/(k_b+k_m)$. A small $C$ means most of the swing is absorbed by the members.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which change to a steel joint reduces the joint constant $C$ and therefore improves the bolt's fatigue life?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Using a longer, more flexible bolt with the same clamped members"
+    },
+    {
+     "id": "b",
+     "text": "Using a larger-diameter bolt of the same length"
+    },
+    {
+     "id": "c",
+     "text": "Replacing a steel plate by a soft gasket"
+    },
+    {
+     "id": "d",
+     "text": "Using a stiffer, shorter bolt"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Using a longer, more flexible bolt with the same clamped members",
+   "distractorRationale": {
+    "a": "Correct: a lower $k_b$ with unchanged $k_m$ gives a smaller $C$.",
+    "b": "A larger diameter raises $k_b$ and so raises C.",
+    "c": "A gasket reduces $k_m$ strongly, which raises C.",
+    "d": "A stiffer bolt raises $k_b$ and C."
+   },
+   "explanation": "Reducing $k_b$ (a longer or thinner-shanked bolt) or increasing $k_m$ lowers $C=k_b/(k_b+k_m)$. The bolt then sees a smaller share of each load swing.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A joint has $C=0.20$, a preload of 32 kN and an external tensile load of 30 kN per bolt (members still in contact). What is the bolt load?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "38 kN"
+    },
+    {
+     "id": "b",
+     "text": "6 kN"
+    },
+    {
+     "id": "c",
+     "text": "62 kN"
+    },
+    {
+     "id": "d",
+     "text": "8 kN"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "38 kN",
+   "distractorRationale": {
+    "a": "Correct: F_b = 32 + 0.20 x 30 = 38 kN.",
+    "b": "6 kN is only the bolt's share of the load, C times P.",
+    "c": "62 kN adds the whole external load to the preload and ignores load sharing.",
+    "d": "8 kN is the remaining clamp load F_m = 32 - 0.8 x 30, not the bolt load."
+   },
+   "explanation": "The bolt load is $F_b=F_i+CP=32+0.2\\times30=38$ kN. The members give up the other 24 kN of the external load, so the clamp load falls to 8 kN, which is still positive, so the formula is valid.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A joint is preloaded to 30 kN and has a joint constant $C=0.25$. At what external tensile load per bolt do the members just separate?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "40 kN"
+    },
+    {
+     "id": "b",
+     "text": "7.5 kN"
+    },
+    {
+     "id": "c",
+     "text": "120 kN"
+    },
+    {
+     "id": "d",
+     "text": "22.5 kN"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "40 kN",
+   "distractorRationale": {
+    "a": "Correct: P_0 = F_i/(1 - C) = 30/0.75 = 40 kN.",
+    "b": "7.5 kN is C times F_i, which has no meaning here.",
+    "c": "120 kN divides by C instead of (1 - C).",
+    "d": "22.5 kN multiplies F_i by (1 - C) rather than dividing."
+   },
+   "explanation": "Separation occurs when the clamp load $F_i-(1-C)P$ falls to zero, giving $P_0=F_i/(1-C)=30/0.75=40$ kN. Any load above this makes the bolt carry the entire load.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A rectangular pattern of identical bolts carries a transverse force that is offset from the centroid of the group. Which bolt is the most heavily loaded?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The bolt far from the centroid at which the primary and secondary shear forces most nearly point in the same direction"
+    },
+    {
+     "id": "b",
+     "text": "The bolt closest to the centroid"
+    },
+    {
+     "id": "c",
+     "text": "Every bolt equally, because the bolts are identical"
+    },
+    {
+     "id": "d",
+     "text": "The bolt whose secondary shear is zero"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The bolt far from the centroid at which the primary and secondary shear forces most nearly point in the same direction",
+   "distractorRationale": {
+    "a": "Correct: the largest resultant of F' and F'' governs.",
+    "b": "Secondary shear grows with distance from the centroid, so the nearest bolt carries the least.",
+    "c": "Identical bolts only share equally when the load passes through the centroid.",
+    "d": "The secondary shear is zero only at the centroid, where there is no bolt."
+   },
+   "explanation": "The primary shear is the same in every bolt, but the secondary shear is proportional to the radius and perpendicular to it. The critical bolt is the one far from the centroid where the two vectors add up the most.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A M10 bolt ($d=10$ mm, $A_t=58.0$ mm$^2$) in a clamped joint has $18$ mm of unthreaded shank and $12$ mm of thread in the grip. With $E=207$ GPa, find the bolt stiffness $k_b$ in MN/m (equal to kN/mm).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o1"
+   ],
+   "correctValue": 446.955289,
+   "tolerance": 10,
+   "unit": "MN/m",
+   "explanation": "The shank area is $A_d=\\pi\\times10^2/4=78.54$ mm$^2$. Then $k_b=A_dA_tE/(A_dl_d+A_tl_t)=78.54\\times58.0\\times207000/(78.54\\times18+58.0\\times12)=446955$ N/mm, which is 447 MN/m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A bolted joint has $k_b=380$ MN/m and $k_m=1520$ MN/m, a preload of 24 kN and an external tensile load of 15 kN per bolt. Assuming the members remain in contact, find the bolt load in kN.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o1",
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o2"
+   ],
+   "correctValue": 27.0,
+   "tolerance": 0.2,
+   "unit": "kN",
+   "explanation": "The joint constant is $C=380/(380+1520)=0.20$. The bolt load is $F_b=F_i+CP=24+0.20\\times15=27.0$ kN.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A class 8.8 M16 bolt ($F_p=94.0$ kN) is preloaded to 70 kN in a joint with $C=0.28$ and an external tensile load of 45 kN per bolt. Find the load factor $n_L$ against proof loading (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o2"
+   ],
+   "correctValue": 1.906349,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "The load factor is $n_L=(F_p-F_i)/(CP)=(94.0-70)/(0.28\\times45)=1.91$. The bolt therefore has a margin of about 1.9 on the external load before proof stress is reached, assuming no separation (clamp load $70-0.72\\times45=37.6$ kN remains positive).",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A bolted joint is preloaded and then subjected to an external tensile load $P$ per bolt. Derive expressions for the bolt load and the clamp load in terms of $F_i$, $P$ and the joint constant $C$, and find the load at which the members separate.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o2",
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o3"
+   ],
+   "markingGuide": [
+    "Bolt and members share the extra load in proportion to stiffness: the bolt's added force is $CP$ with $C=k_b/(k_b+k_m)$.",
+    "Bolt load $F_b=F_i+CP$.",
+    "Members unload by $(1-C)P$, so clamp load $F_m=F_i-(1-C)P$ (equilibrium: $F_b-F_m=P$).",
+    "Separation when $F_m=0$, giving $P_0=F_i/(1-C)$.",
+    "Beyond $P_0$ the bolt carries all of $P$, so the relations no longer hold."
+   ],
+   "explanation": "Equilibrium requires $F_b-F_m=P$, and compatibility requires that the bolt extension equals the member relaxation. Together these give the load-sharing equations.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A fabricated bracket is bolted to a column with four bolts in a rectangular pattern. A vertical load acts at a horizontal offset from the bolt group centroid. Outline the procedure for checking the bolts in shear, identify which bolt governs and say what additional checks are needed beyond bolt shear.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading.o3"
+   ],
+   "markingGuide": [
+    "Replace the load by the same force at the centroid plus a moment $M=Ve$.",
+    "Primary shear: $F'=V/n$ in each bolt, in the direction of the load.",
+    "Secondary shear: $F''_i=Mr_i/\\sum r_j^2$, perpendicular to the line from the centroid to the bolt.",
+    "Add the vectors for each bolt; the governing bolt has the largest resultant.",
+    "Shear stress $=F_{max}/A$, using the shank area if the shear plane is on the shank and the stress area if on the thread; compare with shear strength divided by a design factor.",
+    "Other checks: bearing stress on the plate and bolt, plate tear-out or net-section, and preload or slip if the joint relies on friction."
+   ],
+   "explanation": "Eccentric loading turns a simple direct shear problem into a combined force-plus-moment problem, so the critical bolt is not found from $V/n$ alone. The vector sum of primary and secondary shear must be formed for each bolt.",
+   "board": "internal"
+  }
+ ]
+}

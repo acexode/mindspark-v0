@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "Transfer Functions: Laplace Transforms, Poles and Zeros",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A lab technician taps a sensor bracket with an instrumented hammer and watches it ring for half a second. Differential equations describe that ringing, but solving one for every new bracket, mass and damper is slow. Laplace transforms turn the differential equation into algebra, and the resulting transfer function exposes the ringing frequency and decay directly in the location of its poles."
+  },
+  {
+   "type": "text",
+   "markdown": "The **Laplace transform** of a signal $f(t)$ (zero for $t<0$) is $F(s)=\\int_0^\\infty f(t)e^{-st}\\,dt$ with complex $s=\\sigma+j\\omega$ (units 1/s). Its key property is that differentiation becomes multiplication by $s$: $\\mathcal{L}\\{\\dot f\\}=sF(s)-f(0)$ and $\\mathcal{L}\\{\\ddot f\\}=s^2F(s)-sf(0)-\\dot f(0)$. With **zero initial conditions** a linear time-invariant differential equation therefore becomes a polynomial equation in $s$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Transfer function",
+   "text": "The transfer function $G(s)=Y(s)/U(s)$ is the ratio of the Laplace transforms of output and input with all initial conditions zero. For a linear time-invariant system it is a ratio of polynomials in $s$. Its roots of the numerator are **zeros**; the roots of the denominator are **poles**."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$f(t)$ for $t\\ge0$",
+    "$F(s)$",
+    "Note"
+   ],
+   "rows": [
+    [
+     "Unit impulse $\\delta(t)$",
+     "$1$",
+     "Impulse response of $G$ is $g(t)=\\mathcal{L}^{-1}\\{G\\}$"
+    ],
+    [
+     "Unit step $1$",
+     "$1/s$",
+     "Final value $=\\lim sF$"
+    ],
+    [
+     "$e^{-at}$",
+     "$1/(s+a)$",
+     "Decay rate $a$ (1/s)"
+    ],
+    [
+     "$t$",
+     "$1/s^2$",
+     "Ramp"
+    ],
+    [
+     "$\\sin\\omega t$",
+     "$\\omega/(s^2+\\omega^2)$",
+     "Undamped oscillation"
+    ],
+    [
+     "$e^{-at}\\sin\\omega t$",
+     "$\\omega/((s+a)^2+\\omega^2)$",
+     "Damped oscillation, poles at $-a\\pm j\\omega$"
+    ]
+   ],
+   "caption": "Laplace pairs used in this unit"
+  },
+  {
+   "type": "text",
+   "markdown": "**Mass-spring-damper.** A mass $m$ (kg) on a spring of stiffness $k$ (N/m) with a viscous damper of coefficient $c$ (N s/m) and an applied force $f(t)$ (N) satisfies Newton's second law $m\\ddot x=f-c\\dot x-kx$, where $x$ is the displacement (m) from static equilibrium. Rearranging gives the equation of motion, and transforming with zero initial conditions gives the transfer function from force to displacement."
+  },
+  {
+   "type": "math",
+   "latex": "m\\ddot x+c\\dot x+kx=f(t)\\;\\Rightarrow\\;(ms^2+cs+k)X(s)=F(s)\\;\\Rightarrow\\;G(s)=\\frac{X(s)}{F(s)}=\\frac{1}{ms^2+cs+k}",
+   "caption": "Force-to-displacement transfer function of a mass-spring-damper, in m/N."
+  },
+  {
+   "type": "worked_example",
+   "title": "Transfer function of a bracket",
+   "prompt": "A sensor bracket is modelled as a mass $m=2$ kg on a spring $k=26$ N/m with damper $c=8$ N s/m. Find $G(s)=X/F$, the DC gain, the poles, the natural frequency and the damping ratio.",
+   "steps": [
+    {
+     "text": "Write the equation of motion and transform it.",
+     "latex": "2\\ddot x+8\\dot x+26x=f\\;\\Rightarrow\\;(2s^2+8s+26)X=F"
+    },
+    {
+     "text": "Divide by 2 to get the monic form.",
+     "latex": "G(s)=\\frac{1}{2s^2+8s+26}=\\frac{0.5}{s^2+4s+13}"
+    },
+    {
+     "text": "DC gain: $G(0)=1/26=0.0385$ m/N, the static deflection per newton.",
+     "latex": "G(0)=\\frac{1}{k}=0.0385\\ \\text{m/N}"
+    },
+    {
+     "text": "Poles: $s^2+4s+13=0$ gives $s=-2\\pm\\sqrt{4-13}=-2\\pm3j$ (decay rate 2 1/s, oscillation 3 rad/s).",
+     "latex": "s=-2\\pm 3j"
+    },
+    {
+     "text": "Match $s^2+2\\zeta\\omega_ns+\\omega_n^2$: $\\omega_n=\\sqrt{13}=3.606$ rad/s and $\\zeta=4/(2\\times3.606)=0.555$.",
+     "latex": "\\omega_n=3.606\\ \\text{rad/s},\\quad\\zeta=0.555"
+    }
+   ],
+   "answer": "$G(s)=0.5/(s^2+4s+13)$, DC gain $0.0385$ m/N, poles $-2\\pm3j$ rad/s, $\\omega_n=3.61$ rad/s, $\\zeta=0.555$ (underdamped)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Poles and zeros.** Each real pole at $s=-a$ ($a>0$) contributes a decaying exponential $e^{-at}$ with time constant $1/a$ s; a complex pair at $-\\sigma\\pm j\\omega_d$ contributes a decaying oscillation $e^{-\\sigma t}\\sin(\\omega_dt+\\phi)$. A pole with a positive real part gives growth, so stability requires all poles in the left half-plane. Zeros do not set the exponents; they change how the modes are weighted (the residues), and a zero near a pole nearly cancels that mode."
+  },
+  {
+   "type": "worked_example",
+   "title": "Inverting a step response",
+   "prompt": "The plant $G(s)=\\dfrac{10}{(s+2)(s+5)}$ is given a unit step. Find $y(t)$ using partial fractions.",
+   "steps": [
+    {
+     "text": "Multiply by the step transform $1/s$.",
+     "latex": "Y(s)=\\frac{10}{s(s+2)(s+5)}=\\frac{A}{s}+\\frac{B}{s+2}+\\frac{C}{s+5}"
+    },
+    {
+     "text": "Residues by cover-up: $A=10/(2\\times5)=1$; $B=10/[(-2)(3)]=-5/3$; $C=10/[(-5)(-3)]=2/3$.",
+     "latex": "A=1,\\quad B=-\\tfrac53,\\quad C=\\tfrac23"
+    },
+    {
+     "text": "Invert each term with $1/(s+a)\\to e^{-at}$.",
+     "latex": "y(t)=1-\\tfrac53e^{-2t}+\\tfrac23e^{-5t}"
+    },
+    {
+     "text": "Check: $y(0)=1-1.667+0.667=0$ and $y(\\infty)=1=G(0)$, both as expected.",
+     "latex": "y(0)=0,\\quad y(\\infty)=1"
+    }
+   ],
+   "answer": "$y(t)=1-\\tfrac53e^{-2t}+\\tfrac23e^{-5t}$ for $t\\ge0$. The slow pole at $-2$ dominates the settling (time constant 0.5 s)."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Write the differential equation from physical laws (Newton, Kirchhoff) with all variables as deviations from equilibrium.",
+    "Take Laplace transforms with zero initial conditions and solve for $Y(s)/U(s)$.",
+    "Factor the denominator to find the poles and the numerator to find the zeros.",
+    "For a response, multiply $G$ by the input transform and expand in partial fractions.",
+    "Invert term by term using the table, and check the initial and final values."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Transfer functions assume zero initial conditions, so they describe the forced response only. When the roots are repeated or complex the cover-up rule must be modified (repeated roots need extra terms; complex pairs are inverted via the damped-sine pair). Do not cancel a pole against a zero without noting that the cancelled mode can still be excited or unstable."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Poles tell the story",
+   "text": "The poles of $G(s)$ are the roots of the characteristic equation, and they determine every mode of the response: $-\\sigma$ sets decay rate, $\\omega_d$ sets oscillation frequency, and the sign of the real part sets stability. The zeros only reshape amplitudes."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The Laplace transform turns differentiation into multiplication by $s$, so linear ODEs become algebra.",
+    "The mass-spring-damper has $G(s)=1/(ms^2+cs+k)$ from force to displacement, with $\\omega_n=\\sqrt{k/m}$ and $\\zeta=c/(2\\sqrt{km})$.",
+    "Poles set the exponents of the response (decay and oscillation) and stability; zeros alter the weighting of the modes.",
+    "Partial fractions and the Laplace table invert a response; verify with $y(0)$ and the final value."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A machine mount is modelled as a mass of 5 kg on a spring of stiffness 100 N/m with a damper of 20 N s/m, with force $f$ (N) as input and displacement $x$ (m) as output. Which transfer function $X(s)/F(s)$ is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dfrac{1}{5s^2+20s+100}$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dfrac{1}{5s^2+100s+20}$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dfrac{5}{s^2+20s+100}$"
+    },
+    {
+     "id": "d",
+     "text": "$5s^2+20s+100$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\dfrac{1}{5s^2+20s+100}$",
+   "distractorRationale": {
+    "a": "Correct: $m s^2+cs+k=5s^2+20s+100$, and $X/F$ is its reciprocal.",
+    "b": "The damping and stiffness coefficients are swapped.",
+    "c": "The mass was placed in the numerator, which is not what Newton's law gives.",
+    "d": "This is the dynamic stiffness $F/X$, the inverse of the transfer function."
+   },
+   "explanation": "Newton's second law gives $m\\ddot x+c\\dot x+kx=f$, so with zero initial conditions $(ms^2+cs+k)X=F$. The transfer function from force to displacement is $1/(5s^2+20s+100)$, with $\\omega_n=\\sqrt{20}$ rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A mass of 0.5 kg is on a spring of stiffness 200 N/m with a viscous damper of coefficient 6 N s/m. Find the damping ratio $\\zeta$ of the mass-spring-damper (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o1",
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o2"
+   ],
+   "correctValue": 0.3,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "From $ms^2+cs+k=0$, $\\omega_n=\\sqrt{k/m}=\\sqrt{400}=20$ rad/s and $2\\zeta\\omega_n=c/m=12$, so $\\zeta=12/40=0.3$. Equivalently $\\zeta=c/(2\\sqrt{km})=6/(2\\times10)=0.3$, so the system is underdamped.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A transfer function is $G(s)=\\dfrac{s+4}{(s+2)(s^2+2s+10)}$. Which statement identifies its poles and zeros correctly?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero at $s=-4$; poles at $s=-2$ and $s=-1\\pm3j$; all poles in the left half-plane"
+    },
+    {
+     "id": "b",
+     "text": "Zero at $s=+4$; poles at $s=-2$ and $s=-1\\pm3j$"
+    },
+    {
+     "id": "c",
+     "text": "Zero at $s=-4$; poles at $s=-2$ and $s=+1\\pm3j$"
+    },
+    {
+     "id": "d",
+     "text": "Zero at $s=-4$; poles at $s=2$ and $s=-1\\pm\\sqrt{10}\\,j$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Zero at $s=-4$; poles at $s=-2$ and $s=-1\\pm3j$; all poles in the left half-plane",
+   "distractorRationale": {
+    "a": "Correct: $s+4=0$ gives the zero $-4$; $s+2=0$ gives $-2$; $s^2+2s+10=0$ gives $-1\\pm\\sqrt{1-10}=-1\\pm3j$.",
+    "b": "Sign error: $s+4=0$ gives $s=-4$, not $+4$.",
+    "c": "Sign error: the roots of $s^2+2s+10$ have real part $-1$, in the left half-plane.",
+    "d": "The real pole is at $-2$, and the imaginary part is $\\sqrt{9}=3$, not $\\sqrt{10}$."
+   },
+   "explanation": "Zeros are roots of the numerator and poles are roots of the denominator. The quadratic factor has roots $-1\\pm3j$, so all three poles have negative real parts and the system is stable.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The characteristic polynomial of a vibrating system is $s^2+6s+34$ with $s$ in 1/s. Find the frequency of the oscillation (the imaginary part of the poles) in rad/s.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o2"
+   ],
+   "correctValue": 5.0,
+   "tolerance": 0.05,
+   "unit": "rad/s",
+   "explanation": "The roots are $s=-3\\pm\\sqrt{9-34}=-3\\pm5j$. The imaginary part 5 rad/s is the damped oscillation frequency, and the real part $-3$ sets the decay envelope $e^{-3t}$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A system output has Laplace transform $Y(s)=\\dfrac{4s+10}{(s+1)(s+4)}$. Using partial fractions find $y(t)$ and evaluate it at $t=0.5$ s. Give the value of $y(0.5)$ (same units as $y$).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o3"
+   ],
+   "correctValue": 1.484,
+   "tolerance": 0.01,
+   "unit": "same as y",
+   "explanation": "The cover-up residues are $A=(-4+10)/(-1+4)=2$ at $s=-1$ and $B=(-16+10)/(-4+1)=2$ at $s=-4$. Thus $y(t)=2e^{-t}+2e^{-4t}$ and $y(0.5)=2(0.6065)+2(0.1353)=1.484$. A check: $y(0)=4$, which equals $\\lim_{s\\to\\infty}sY(s)=4$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A plant has Laplace-domain response $Y(s)=\\dfrac{5}{(s+1)(s+6)}$. What is $y(t)$ for $t\\ge0$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$e^{-t}-e^{-6t}$"
+    },
+    {
+     "id": "b",
+     "text": "$e^{-t}+e^{-6t}$"
+    },
+    {
+     "id": "c",
+     "text": "$5e^{-t}-5e^{-6t}$"
+    },
+    {
+     "id": "d",
+     "text": "$1-e^{-t}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$e^{-t}-e^{-6t}$",
+   "distractorRationale": {
+    "a": "Correct: the residues are $5/(6-1)=1$ at $-1$ and $5/(1-6)=-1$ at $-6$.",
+    "b": "The residue at $-6$ is negative, so the sign is wrong; also $y(0)=0$ is required.",
+    "c": "The residues are 1 and $-1$, not 5; the 5 is the numerator before dividing by the other factor.",
+    "d": "This drops the second pole; the response has two exponentials."
+   },
+   "explanation": "By cover-up, $A=5/(-1+6)=1$ and $B=5/(-6+1)=-1$. The result $y(0)=1-1=0$ matches $\\lim sY=0$ because the numerator order is two below the denominator.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A pole at $s=-3$ contributes a term proportional to $e^{-3t}$ to the response, corresponding to a time constant of $1/3$ s.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A real pole at $s=-a$ gives the term $e^{-at}$, which decays with time constant $\\tau=1/a$. For $a=3$ this is $0.333$ s, so the mode is essentially gone after about $4\\tau=1.33$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "Two systems have identical poles, but system B has an additional left-half-plane zero. Which statement about their responses is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The zero changes the weighting (residues) of the modes but not their exponents or stability"
+    },
+    {
+     "id": "b",
+     "text": "The zero moves the poles of B to the right"
+    },
+    {
+     "id": "c",
+     "text": "The zero makes B unstable"
+    },
+    {
+     "id": "d",
+     "text": "The zero removes the slowest mode completely, whatever its location"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The zero changes the weighting (residues) of the modes but not their exponents or stability",
+   "distractorRationale": {
+    "a": "Correct: zeros appear in the numerator, so they change residues but the exponents are set by the poles.",
+    "b": "Pole locations are the roots of the denominator and are unaffected by a numerator zero.",
+    "c": "A left-half-plane zero does not cause instability; stability depends on the poles only.",
+    "d": "Only a zero that exactly cancels a pole removes its mode, and that requires matching locations."
+   },
+   "explanation": "Partial fractions show that the response is a sum of modes $r_ie^{p_it}$, where the exponents are the poles and the residues $r_i$ depend on the zeros. A zero close to a pole makes that residue small, but stability is unaffected.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the transfer function $X(s)/F(s)$ of a mass-spring-damper from Newton's second law, stating the assumptions, and show how the natural frequency and damping ratio follow from it. Say what the DC gain means physically.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o1",
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o2"
+   ],
+   "markingGuide": [
+    "States Newton's law $m\\ddot x=f-c\\dot x-kx$ with $x$ measured from static equilibrium and linear spring and viscous damper",
+    "Takes Laplace transforms with zero initial conditions to get $(ms^2+cs+k)X=F$",
+    "Gives $G=1/(ms^2+cs+k)$",
+    "$\\omega_n=\\sqrt{k/m}$ and $\\zeta=c/(2\\sqrt{km})$",
+    "DC gain $1/k$ is the static deflection per unit force"
+   ],
+   "explanation": "A complete answer lists the assumptions that make the model linear and time-invariant. The DC gain $1/k$ shows that stiffness alone sets the steady deflection under constant force, while $m$ and $c$ only affect the transient.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain how the poles and zeros of $G(s)$ determine the shape of a step response. Illustrate with $G(s)=\\dfrac{3}{(s+1)(s+3)}$ by finding the partial-fraction form of the unit-step response and say which pole dominates.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o2",
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.laplace-transfer-functions.o3"
+   ],
+   "markingGuide": [
+    "Real poles give exponentials with time constant $1/a$; complex pairs give decaying oscillations; right-half-plane poles give growth",
+    "Zeros change the residues without changing the exponents",
+    "Writes $Y=3/[s(s+1)(s+3)]=1/s-\\tfrac32/(s+1)+\\tfrac12/(s+3)$",
+    "$y(t)=1-1.5e^{-t}+0.5e^{-3t}$ with $y(0)=0$ and $y(\\infty)=1$",
+    "The pole at $-1$ is slower (time constant 1 s) and dominates the settling"
+   ],
+   "explanation": "The residues are $A=3/3=1$, $B=3/[(-1)(2)]=-1.5$, $C=3/[(-3)(-2)]=0.5$, which sum to zero as required for $y(0)=0$. The pole closer to the origin decays more slowly and so dominates.",
+   "board": "internal"
+  }
+ ]
+}

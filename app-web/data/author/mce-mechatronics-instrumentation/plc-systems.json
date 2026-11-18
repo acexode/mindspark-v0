@@ -1,0 +1,395 @@
+{
+ "lessonTitle": "PLC Systems and Safety: I/O, Scan Cycle and Safety",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A reject gate on a bottling line must fire within 30 ms of a photo-eye detecting a bad bottle, but the PLC runs a program scan every 25 ms. Whether the gate fires in time depends on exactly when, inside the scan, the PLC looks at its input."
+  },
+  {
+   "type": "text",
+   "markdown": "A **programmable logic controller (PLC)** is an industrial computer with rugged input and output modules. Its processor runs the user program repeatedly in a fixed loop called the **scan cycle**. Understanding the scan cycle explains the PLC's response time, why some short pulses are missed, and why the order of rungs matters."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "**Read inputs:** copy the state of all physical inputs into an input image table in memory.",
+    "**Execute program:** solve all rungs top to bottom using the image table; outputs are written to an output image table.",
+    "**Write outputs:** copy the output image table to the physical output modules.",
+    "**Housekeeping:** communications, diagnostics and the watchdog timer, then repeat."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Scan time and response time",
+   "text": "The **scan time** $T_{scan}$ (seconds) is the duration of one complete cycle. The **response time** is the delay from an input change to the resulting output change. Inputs are read only once per scan, so an input that changes just after the read is not seen until the next scan."
+  },
+  {
+   "type": "math",
+   "latex": "t_{resp,\\max}\\approx t_{filter}+2\\,T_{scan}+t_{out},\\qquad t_{resp,\\min}\\approx t_{filter}+T_{scan}+t_{out}",
+   "caption": "Worst-case and best-case response; filter delay on the input, output module delay (all in seconds)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Response time estimate",
+   "prompt": "A PLC has a scan time of 12 ms, an input filter delay of 2 ms and an output module delay of 1 ms. Estimate the best-case and worst-case response times.",
+   "steps": [
+    {
+     "text": "Worst case: the input changes just after the input read, so it waits almost one full scan to be read and one more to execute and write.",
+     "latex": "t_{resp,\\max}=2+2(12)+1=27\\ \\text{ms}"
+    },
+    {
+     "text": "Best case: the input changes just before the read, so it is processed in a single scan.",
+     "latex": "t_{resp,\\min}=2+12+1=15\\ \\text{ms}"
+    },
+    {
+     "text": "Conclusion: the response varies between about 15 ms and 27 ms, so a requirement of 30 ms is met but 20 ms would not be met guaranteed."
+    }
+   ],
+   "answer": "Response time lies between about 15 ms and 27 ms; design to the worst case of 27 ms."
+  },
+  {
+   "type": "text",
+   "markdown": "**Short pulses and fast events.** An input pulse shorter than the scan time may be missed entirely, since inputs are sampled only once per scan. Fast events need hardware help: high-speed counter inputs, interrupt inputs, or pulse-stretching input modules. **Rung order** matters too: a coil set in a lower rung is seen by upper rungs only in the next scan."
+  },
+  {
+   "type": "text",
+   "markdown": "**Input wiring: sinking and sourcing.** A DC input module has a common terminal. A **sinking input** has its common connected to 0 V, and current flows into the input terminal from the field device. A **sourcing input** has its common connected to +24 V, and current flows out of the input terminal into the field device. Three-wire proximity sensors are either **PNP** (the output switches +24 V to the load, so it sources current) or **NPN** (the output switches to 0 V, so it sinks current)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Field device",
+    "Output behaviour",
+    "Compatible input module",
+    "Current path when active"
+   ],
+   "rows": [
+    [
+     "PNP sensor",
+     "Sources current from +24 V",
+     "Sinking input (common to 0 V)",
+     "+24 V through sensor into input terminal, then to 0 V"
+    ],
+    [
+     "NPN sensor",
+     "Sinks current to 0 V",
+     "Sourcing input (common to +24 V)",
+     "+24 V from common through the input into the sensor, then to 0 V"
+    ],
+    [
+     "Dry contact (switch)",
+     "Mechanical contact only",
+     "Either, with the supply on the common",
+     "Depends on how the common is wired"
+    ]
+   ],
+   "caption": "Matching sensor outputs to input modules"
+  },
+  {
+   "type": "worked_example",
+   "title": "Selecting input wiring",
+   "prompt": "A three-wire PNP proximity sensor on a 24 V supply drives a module whose input has an effective resistance of 5.6 k$\\Omega$. The sensor's on-state voltage drop is 2 V. Choose the input type and find the input current.",
+   "steps": [
+    {
+     "text": "A PNP sensor sources current to the input, so the module must be a sinking input with its common tied to 0 V."
+    },
+    {
+     "text": "Voltage across the input resistance is the supply less the sensor drop.",
+     "latex": "V=24-2=22\\ \\text{V}"
+    },
+    {
+     "text": "Input current from Ohm's law.",
+     "latex": "I=\\frac{22}{5600}=3.93\\ \\text{mA}"
+    }
+   ],
+   "answer": "Use a sinking input; the input current is about 3.9 mA, which is above the typical on-threshold of a 24 V DC input (a few milliamps; check the module datasheet)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Why safety functions use dedicated devices.** A standard PLC is designed to be reliable, not to guarantee that a dangerous failure is detected. A single input channel can fail stuck-at-1, a program can have a bug, and a failed output transistor can short on. A **safety-rated device** (safety relay, safety light curtain, safety PLC) uses redundant channels, continuous cross-checking, forced-guided contacts and a certified design process, so that any single fault is detected and drives the system to a safe state."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Fail safe, not just fail rarely",
+   "text": "Safety circuits are judged on the probability of a dangerous undetected failure. Use dual-channel safety devices for emergency stops, guard doors and light curtains, and do not depend on a standard input and ordinary program logic for them."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Software cannot make a standard input safe",
+   "text": "A standard PLC input that silently fails will keep reporting its last value. Adding more ladder logic cannot detect a failed input channel; only redundant, monitored hardware can."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The scan cycle reads inputs, solves the program, writes outputs and does housekeeping; inputs are seen once per scan.",
+    "Response time is roughly filter plus one to two scan times plus output delay; design to the worst case.",
+    "PNP sensors need sinking inputs and NPN sensors need sourcing inputs.",
+    "Safety functions use certified, redundant, self-monitoring devices because a standard PLC cannot detect all its own dangerous failures."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which sequence correctly describes one PLC scan cycle?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Execute the program, read inputs, write outputs, housekeeping"
+    },
+    {
+     "id": "b",
+     "text": "Write outputs, read inputs, housekeeping, execute the program"
+    },
+    {
+     "id": "c",
+     "text": "Read inputs, execute the program, write outputs, housekeeping"
+    },
+    {
+     "id": "d",
+     "text": "Read inputs, write outputs, execute the program, housekeeping"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Read inputs, execute the program, write outputs, housekeeping",
+   "distractorRationale": {
+    "a": "The program cannot run on inputs it has not read.",
+    "b": "Outputs written before solving logic would carry results from the previous scan.",
+    "c": "Correct: inputs, program, outputs, housekeeping.",
+    "d": "Writing outputs before the program is solved means the new results wait a whole scan."
+   },
+   "explanation": "The PLC first copies the physical inputs into an image table, solves the logic using that table, then writes the output image to the output modules before communications and diagnostics. Reading inputs before solving ensures the whole program sees one consistent snapshot.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A three-wire PNP proximity sensor should be connected to which type of PLC input?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A sourcing input, with the common tied to +24 V"
+    },
+    {
+     "id": "b",
+     "text": "An analogue input"
+    },
+    {
+     "id": "c",
+     "text": "A relay output"
+    },
+    {
+     "id": "d",
+     "text": "A sinking input, with the common tied to 0 V"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "A sinking input, with the common tied to 0 V",
+   "distractorRationale": {
+    "a": "That pairing suits NPN sensors, which sink current.",
+    "b": "A discrete sensor does not need an analogue input.",
+    "c": "An output module cannot read a sensor.",
+    "d": "Correct: current flows from the sensor into the sinking input."
+   },
+   "explanation": "A PNP sensor sources current from +24 V when it is active, so the module must provide a path to 0 V, which is a sinking input. An NPN sensor would need the opposite.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A photo-eye produces a 5 ms pulse and the PLC scan time is 20 ms, using ordinary input reads. What may happen?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The pulse is always seen, because the input module latches it"
+    },
+    {
+     "id": "b",
+     "text": "The pulse may be missed completely, because inputs are sampled only once per scan"
+    },
+    {
+     "id": "c",
+     "text": "The scan time automatically shortens"
+    },
+    {
+     "id": "d",
+     "text": "The pulse is seen twice"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The pulse may be missed completely, because inputs are sampled only once per scan",
+   "distractorRationale": {
+    "a": "Ordinary inputs do not latch events.",
+    "b": "Correct: short pulses between samples are missed.",
+    "c": "Scan time is set by program length and does not respond to events.",
+    "d": "An input is sampled once per scan, so it cannot see a pulse twice."
+   },
+   "explanation": "Inputs are copied once per scan, so a pulse shorter than the scan that falls between two reads is never seen. Remedies include a high-speed counter or interrupt input, or a pulse-stretching input.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An NPN sensor (output switches to 0 V when active) must be wired to a DC input card. Which input type is required?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Sinking input, with the common tied to 0 V"
+    },
+    {
+     "id": "b",
+     "text": "Either type, because the polarity is irrelevant"
+    },
+    {
+     "id": "c",
+     "text": "AC input"
+    },
+    {
+     "id": "d",
+     "text": "Sourcing input, with the common tied to +24 V"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Sourcing input, with the common tied to +24 V",
+   "distractorRationale": {
+    "a": "A sinking input also needs current from the field device, which an NPN sensor cannot supply.",
+    "b": "DC sensors are polarity sensitive in the wiring.",
+    "c": "An AC input does not suit a 24 V DC sensor.",
+    "d": "Correct: the module sources current that the NPN output sinks."
+   },
+   "explanation": "An NPN output sinks current to 0 V, so the module must source current from +24 V through the input into the sensor. This is a sourcing input with its common at +24 V.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "Why is a guard-door interlock typically connected to a dedicated safety relay or safety PLC rather than to a standard PLC input?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A safety relay is faster than a standard PLC input"
+    },
+    {
+     "id": "b",
+     "text": "Standard PLC inputs cannot read switches"
+    },
+    {
+     "id": "c",
+     "text": "The safety device uses redundant channels with cross-monitoring, so a single fault is detected and causes a safe stop"
+    },
+    {
+     "id": "d",
+     "text": "The safety device saves wiring"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The safety device uses redundant channels with cross-monitoring, so a single fault is detected and causes a safe stop",
+   "distractorRationale": {
+    "a": "Speed is not the main reason and some safety relays are slower.",
+    "b": "Standard PLC inputs can read switches.",
+    "c": "Correct: redundancy and monitoring detect a single fault.",
+    "d": "Wiring saving is not a safety justification."
+   },
+   "explanation": "A standard input is a single channel whose failure may go unnoticed, for example stuck at 1. Safety devices duplicate the channel and compare them continuously, so one fault is detected and the system moves to a safe state.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A PLC has an input filter delay of 3 ms, a scan time of 15 ms and an output delay of 2 ms. Using $t_{filter}+2T_{scan}+t_{out}$, find the worst-case response time in milliseconds.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o1"
+   ],
+   "correctValue": 35,
+   "tolerance": 0.5,
+   "unit": "ms",
+   "explanation": "The worst case adds the filter delay, two scans and the output delay: $3+2(15)+2=35$ ms. The best case would be $3+15+2=20$ ms.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A PNP sensor with an on-state voltage drop of 1.5 V is wired from a 24 V supply to a sinking input whose effective resistance is 4.7 k$\\Omega$. Calculate the input current in milliamps.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o2"
+   ],
+   "correctValue": 4.79,
+   "tolerance": 0.05,
+   "unit": "mA",
+   "explanation": "The voltage across the input is $24-1.5=22.5$ V, so $I=22.5/4700=4.79$ mA. This current must exceed the module's on-threshold for a reliable input.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A machine needs a worst-case response of 50 ms. The input filter delay is 5 ms and the output delay is 4 ms. Using the worst-case formula, find the largest permitted scan time in milliseconds.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o1"
+   ],
+   "correctValue": 20.5,
+   "tolerance": 0.2,
+   "unit": "ms",
+   "explanation": "The budget gives $50=5+2T_{scan}+4$, so $T_{scan}=(50-9)/2=20.5$ ms. A longer scan could violate the requirement.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the PLC scan cycle and describe how it determines the response time to an input change. Explain what happens to a pulse shorter than the scan time and how to handle fast events.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o1"
+   ],
+   "markingGuide": [
+    "Lists read inputs, execute program, write outputs, housekeeping (2 marks)",
+    "Explains inputs are sampled once per scan, so response varies between about one and two scans plus filter and output delays (2 marks)",
+    "States the pulse shorter than the scan may be missed entirely (1 mark)",
+    "Gives remedies: high-speed counter, interrupt input, pulse-stretching, or a faster scan (2 marks)",
+    "Mentions rung order affects when a result is seen within a scan (1 mark)"
+   ],
+   "explanation": "Each input is read once per scan and each output written once, which gives a response between about one and two scan times plus module delays. Fast events need dedicated hardware.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why an emergency-stop function on a press must use dedicated safety-rated devices instead of a standard PLC input and ordinary ladder logic. Discuss failure modes, redundancy and the safe state.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.plc-systems.o3"
+   ],
+   "markingGuide": [
+    "Identifies standard input, program and output as single channels whose dangerous failures may go undetected (2 marks)",
+    "Describes redundant dual-channel wiring with cross-monitoring so one fault is detected (2 marks)",
+    "Describes forced-guided or positive-opening contacts and welded-contact detection (1 mark)",
+    "States the safe state is power removed from hazardous actuators, reached on any detected fault (2 marks)",
+    "Mentions that safety devices are certified to a recognised safety integrity or performance level (1 mark)"
+   ],
+   "explanation": "Safety devices detect single faults and fall to the safe, de-energised state; a standard input fails silently, which could leave the press running during an emergency.",
+   "board": "internal"
+  }
+ ]
+}

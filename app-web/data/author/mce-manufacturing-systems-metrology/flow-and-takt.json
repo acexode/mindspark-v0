@@ -1,0 +1,422 @@
+{
+ "lessonTitle": "Takt Time and Line Balancing",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bicycle-brake assembly line has seven operators, but the people at stations 2 and 4 are always waiting while the person at station 3 is rushing. Customers buy exactly 420 brake sets a day. The line should produce one set every 60 seconds, no faster and no slower. Takt time gives that target, and line balancing divides the work so that nobody is the bottleneck or sits idle."
+  },
+  {
+   "type": "text",
+   "markdown": "**Takt time** (from the German *Takt*, beat) is the pace of production needed to meet customer demand. It is a property of demand and available time, not of the equipment. **Cycle time** at a station is the time that station actually needs per unit. For a line to keep pace, every station's time must be at most the takt time."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Takt time",
+   "text": "Takt time $T_t=T_{\\text{avail}}/D$, where $T_{\\text{avail}}$ is the net available production time in the period (after breaks, planned maintenance and meetings) and $D$ is the customer demand in the same period. Units are seconds per unit if $T_{\\text{avail}}$ is in seconds. Takt time falls when demand rises and rises when available time rises."
+  },
+  {
+   "type": "math",
+   "latex": "T_t=\\frac{T_{\\text{avail}}}{D}",
+   "caption": "T_avail: net available time (s); D: demand (units) over that time; T_t: takt time (s per unit)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Takt time for one shift",
+   "prompt": "A line runs one 8 hour shift with two 30 minute breaks (not paid production time). Daily demand is 420 units. Find the takt time and the effect of demand rising by 25%.",
+   "steps": [
+    {
+     "text": "Net available time: 8 h minus 1 h of breaks.",
+     "latex": "T_{\\text{avail}}=(8-1)\\times3600=25200\\ \\text{s}"
+    },
+    {
+     "text": "Divide the available time by the demand.",
+     "latex": "T_t=\\frac{25200}{420}=60\\ \\text{s per unit}"
+    },
+    {
+     "text": "Demand $525=1.25\\times420$; takt is inversely proportional to demand.",
+     "latex": "T_t=\\frac{25200}{525}=48\\ \\text{s per unit}"
+    }
+   ],
+   "answer": "The takt time is 60 s per unit; with 25% more demand it falls to 48 s, so every station must be 20% faster."
+  },
+  {
+   "type": "text",
+   "markdown": "**Line balancing.** An assembly line splits the work into tasks with times $t_i$ and *precedence constraints* (task $i$ cannot start before its predecessors are done). Tasks are grouped into **stations**, each performing its tasks in the cycle. The balancing problem: assign every task to a station so that (1) precedence is respected and (2) each station's total time is at most the cycle time $C$ (usually $C=T_t$), using as few stations as possible."
+  },
+  {
+   "type": "math",
+   "latex": "N_{\\min}=\\left\\lceil\\frac{\\sum t_i}{C}\\right\\rceil",
+   "caption": "Theoretical minimum number of stations: round the ratio up to the next whole number. Precedence usually forces one or more extra stations."
+  },
+  {
+   "type": "text",
+   "markdown": "A common manual method is the **largest-candidate rule**: open a station and repeatedly add, among the tasks whose predecessors are already assigned and whose time fits in the remaining time, the one with the longest task time. When nothing fits, open the next station."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Task",
+    "Time (s)",
+    "Immediate predecessors"
+   ],
+   "rows": [
+    [
+     "A",
+     "30",
+     "none"
+    ],
+    [
+     "B",
+     "25",
+     "A"
+    ],
+    [
+     "C",
+     "20",
+     "A"
+    ],
+    [
+     "D",
+     "40",
+     "B"
+    ],
+    [
+     "E",
+     "15",
+     "C"
+    ],
+    [
+     "F",
+     "35",
+     "D, E"
+    ],
+    [
+     "G",
+     "25",
+     "F"
+    ]
+   ],
+   "caption": "Seven assembly tasks for a worked example. Total task time is 190 s."
+  },
+  {
+   "type": "worked_example",
+   "title": "Balance the line at 60 s takt",
+   "prompt": "Balance the seven tasks in the table with the largest-candidate rule at $C=60$ s, and find the efficiency.",
+   "steps": [
+    {
+     "text": "Minimum stations from the total task time.",
+     "latex": "N_{\\min}=\\lceil190/60\\rceil=\\lceil3.17\\rceil=4"
+    },
+    {
+     "text": "Station 1: A (30 s) first. Candidates B (25) and C (20): add B for 55 s. Remaining 5 s, nothing fits.",
+     "latex": "S_1=\\{A,B\\}=55\\ \\text{s}"
+    },
+    {
+     "text": "Station 2: only C and D are available (D needs B, now done): take D (40) then C (20) for exactly 60 s.",
+     "latex": "S_2=\\{D,C\\}=60\\ \\text{s}"
+    },
+    {
+     "text": "Station 3: E (15) and then F (35), since D and E are done: 50 s with 10 s left, G (25) does not fit.",
+     "latex": "S_3=\\{E,F\\}=50\\ \\text{s}"
+    },
+    {
+     "text": "Station 4: the only task left is G, which takes 25 s.",
+     "latex": "S_4=\\{G\\}=25\\ \\text{s}"
+    }
+   ],
+   "answer": "Four stations with times 55, 60, 50 and 25 s, which meets the minimum of 4. The efficiency is computed below."
+  },
+  {
+   "type": "math",
+   "latex": "\\eta=\\frac{\\sum t_i}{N\\,C}\\times100\\%,\\qquad \\text{balance delay}=100\\%-\\eta",
+   "caption": "N is the number of stations and C the cycle time (the takt time if the line is set to it). If the line cycle is set by the slowest station, use that time for C."
+  },
+  {
+   "type": "worked_example",
+   "title": "Line balance efficiency",
+   "prompt": "Compute the efficiency of the four-station balance.",
+   "steps": [
+    {
+     "text": "Add up all task times to get the total work content.",
+     "latex": "\\sum t_i=190\\ \\text{s}"
+    },
+    {
+     "text": "Time available across the stations in one cycle.",
+     "latex": "N\\,C=4\\times60=240\\ \\text{s}"
+    },
+    {
+     "text": "Divide the work content by the capacity of the stations.",
+     "latex": "\\eta=\\frac{190}{240}=79.2\\%"
+    }
+   ],
+   "answer": "$\\eta=79.2\\%$, a balance delay of 20.8%: about 50 s of idle time per cycle spread over the four stations (mostly at station 4)."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Efficiency can only reach 100% when the tasks can be grouped to fill every station exactly.",
+    "Reducing the number of stations at a fixed takt raises efficiency, but only down to $N_{\\min}$.",
+    "Unequal station times produce waiting (idle operators) and, if one station exceeds the takt, a bottleneck that misses demand.",
+    "If takt falls (higher demand), re-balance: more stations, faster tasks or tasks split between stations."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Takt is a target, cycle time is a result",
+   "text": "Set station times at or below takt. Running the line faster than takt only builds inventory; running slower fails to meet demand."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Takt time is net available time divided by demand, and every station's time must be at most the takt time for the line to meet demand.",
+    "Balance a line by assigning tasks to stations respecting precedence and station time at most the takt, aiming for $N_{\\min}=\\lceil\\sum t_i/C\\rceil$ stations.",
+    "Line balance efficiency is $\\sum t_i/(N\\,C)$; the remainder is balance delay (idle time)."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A line runs two shifts of 8 hours each. Each shift loses 45 minutes to breaks and planned maintenance. Daily demand is 1160 units. Calculate the takt time in seconds per unit.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o1"
+   ],
+   "correctValue": 45,
+   "tolerance": 0.2,
+   "unit": "s per unit",
+   "explanation": "Net available time is $2\\times(8-0.75)=14.5$ h, which is 52200 s. Takt time is $52200/1160=45.0$ s per unit.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A weekly demand of 1400 units must be met by a cell that works 5 days per week, with 7 hours net available per day. Calculate the takt time in seconds per unit.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o1"
+   ],
+   "correctValue": 90,
+   "tolerance": 0.5,
+   "unit": "s per unit",
+   "explanation": "Weekly available time is $5\\times7\\times3600=126000$ s. Dividing by the demand gives $126000/1400=90$ s per unit.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An assembly line has total task time 156 s, five stations and a cycle time of 36 s. Calculate the line balance efficiency as a percentage.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o3"
+   ],
+   "correctValue": 86.7,
+   "tolerance": 0.2,
+   "unit": "per cent",
+   "explanation": "Efficiency is $\\sum t_i/(NC)=156/(5\\times36)=156/180=0.867$, which is 86.7%. The balance delay is 13.3%, equal to 24 s of idle time per cycle.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The tasks of an assembly job total 215 s. The takt time is 50 s. Using the formula for the theoretical minimum, find the minimum whole number of stations needed.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o2"
+   ],
+   "correctValue": 5,
+   "tolerance": 0.1,
+   "unit": "stations",
+   "explanation": "The ratio is $215/50=4.3$, which must be rounded up because a station cannot be fractional. The theoretical minimum is therefore 5 stations, and precedence constraints may force more.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Tasks P (20 s), Q (30 s), R (25 s), S (35 s) and T (30 s) have precedence P before Q and R; Q and R before S; S before T. The takt time is 60 s. Which assignment of tasks to three stations is feasible?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Station 1: P, Q; Station 2: R, S; Station 3: T"
+    },
+    {
+     "id": "b",
+     "text": "Station 1: P; Station 2: Q, R; Station 3: S, T"
+    },
+    {
+     "id": "c",
+     "text": "Station 1: P, R, S; Station 2: Q; Station 3: T"
+    },
+    {
+     "id": "d",
+     "text": "Station 1: P, Q, R; Station 2: S; Station 3: T"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Station 1: P, Q; Station 2: R, S; Station 3: T",
+   "distractorRationale": {
+    "a": "Station times are 50 s, 60 s and 30 s, all within 60 s, and every task follows its predecessors.",
+    "b": "Station 3 would take $35+30=65$ s, which exceeds the 60 s takt.",
+    "c": "S is placed before its predecessor Q, which violates the precedence constraint.",
+    "d": "Station 1 would take $20+30+25=75$ s, exceeding the takt time."
+   },
+   "explanation": "A feasible balance must satisfy both precedence and the station time limit. The chosen assignment meets both: R and S together take exactly 60 s, and S comes after both Q and R.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A line is balanced for a takt time of 60 s. Demand then rises by 25% with the same available time. What is the new takt time?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "75 s, because takt rises with demand"
+    },
+    {
+     "id": "b",
+     "text": "48 s, because takt is inversely proportional to demand"
+    },
+    {
+     "id": "c",
+     "text": "60 s, because takt is a property of the equipment"
+    },
+    {
+     "id": "d",
+     "text": "45 s, because takt falls by 25%"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "48 s, because takt is inversely proportional to demand",
+   "distractorRationale": {
+    "a": "Higher demand needs a faster pace, so takt falls.",
+    "b": "$T_t=60/1.25=48$ s.",
+    "c": "Takt is set by demand and available time, not by the equipment.",
+    "d": "Takt falls to $1/1.25=0.8$ of its value, a drop of 20% and not 25%."
+   },
+   "explanation": "Takt time equals available time divided by demand, so 25% more demand with the same time divides the takt by 1.25. Every station must then be at most 48 s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A balanced line has efficiency of 79% at its takt time. What does the remaining 21% represent?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Idle time (balance delay) because the station times do not exactly fill the takt time"
+    },
+    {
+     "id": "b",
+     "text": "Defective output, because some units fail inspection"
+    },
+    {
+     "id": "c",
+     "text": "Operator error, because the efficiency measures human reliability"
+    },
+    {
+     "id": "d",
+     "text": "Extra demand that the line cannot meet"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Idle time (balance delay) because the station times do not exactly fill the takt time",
+   "distractorRationale": {
+    "a": "Balance delay is the share of station time not filled by tasks.",
+    "b": "Efficiency here is about time utilisation; quality losses are a separate measure.",
+    "c": "Line balance efficiency measures how well tasks fill the stations, not how well people perform.",
+    "d": "Demand shortfall depends on takt, not on balance efficiency."
+   },
+   "explanation": "Efficiency $=\\sum t_i/(NC)$ compares total task time with total station time. The remainder is waiting time created because tasks cannot be grouped to fill every station exactly.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A station's task time is 70 s on a line whose takt time is 60 s. What is the likely consequence?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o1",
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "That station is a bottleneck: the line cannot meet demand unless the work is reduced or shared"
+    },
+    {
+     "id": "b",
+     "text": "Nothing, because the line runs at the average station time"
+    },
+    {
+     "id": "c",
+     "text": "The line will exceed demand, because the station works longer"
+    },
+    {
+     "id": "d",
+     "text": "Takt time will automatically increase to 70 s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "That station is a bottleneck: the line cannot meet demand unless the work is reduced or shared",
+   "distractorRationale": {
+    "a": "A station time above takt limits output to one unit per 70 s, below the required rate of one per 60 s.",
+    "b": "The slowest station sets the pace, not the average.",
+    "c": "Longer station time means fewer units per hour, not more.",
+    "d": "Takt is set by demand; it does not adjust to fit the station."
+   },
+   "explanation": "The line can only produce at the rate of its slowest station. A 70 s station yields about 51 units per hour against 60 per hour needed, so work must be moved or the station duplicated.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Six tasks have times and precedence: A 18 s (none); B 24 s (A); C 12 s (A); D 30 s (B, C); E 22 s (D); F 16 s (E). The takt time is 50 s. Find the theoretical minimum number of stations, balance the line using the largest-candidate rule, give each station's time and compute the efficiency.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o2",
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o3"
+   ],
+   "markingGuide": [
+    "Total time 122 s; $N_{\\min}=\\lceil122/50\\rceil=\\lceil2.44\\rceil=3$",
+    "Station 1: A then B (largest candidate), time 42 s",
+    "Station 2: C then D, time 42 s (D needs C)",
+    "Station 3: E and F, time 38 s",
+    "Check precedence satisfied and each station at most 50 s",
+    "Efficiency $=122/(3\\times50)=81.3\\%$"
+   ],
+   "explanation": "The largest-candidate rule gives stations {A,B}=42 s, {C,D}=42 s and {E,F}=38 s, using the minimum of three stations. The efficiency is $122/150=81.3\\%$, and the 28 s of idle time per cycle is the balance delay.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Distinguish takt time, cycle time and line balance efficiency, and explain what a manager should do if the takt time falls from 60 s to 48 s because of a demand increase, and the current station times are 55, 60, 50 and 25 s.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o1",
+    "ug.mce-manufacturing-systems-metrology.lean-production.flow-and-takt.o3"
+   ],
+   "markingGuide": [
+    "Takt time is demand-driven: available time divided by demand",
+    "Cycle (station) time is the actual time each station needs",
+    "Efficiency measures how well total task time fills the station capacity",
+    "New takt 48 s: stations at 55 s and 60 s now exceed it and are bottlenecks",
+    "Action: re-balance tasks across stations, add stations (total work 190 s needs at least $\\lceil190/48\\rceil=4$ stations, and precedence may need 5), speed up tasks, or add parallel stations",
+    "Notes efficiency may fall when stations are added"
+   ],
+   "explanation": "Takt is the pace the customer requires; station times must be at most this value. With takt at 48 s the 55 s and 60 s stations cannot keep up, so the tasks must be redistributed or extra capacity added, which is likely to lower efficiency.",
+   "board": "internal"
+  }
+ ]
+}

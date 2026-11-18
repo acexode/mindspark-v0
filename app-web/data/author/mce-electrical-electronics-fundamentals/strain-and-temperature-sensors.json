@@ -1,0 +1,392 @@
+{
+ "lessonTitle": "Strain Gauges and Thermocouples",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bonded foil gauge glued to a bridge girder stretches by one part in a thousand and changes its resistance by only 0.2 per cent, a few tenths of an ohm. Detecting that, while the steel's temperature drifts through the day, takes a Wheatstone bridge. A thermocouple, in contrast, makes its own voltage from heat, but only if you know the temperature of its other end."
+  },
+  {
+   "type": "text",
+   "markdown": "**Strain** $\\varepsilon$ is the fractional change in length, $\\Delta L/L$ (dimensionless, often quoted in microstrain, $1\\ \\mu\\varepsilon=10^{-6}$). A **resistive strain gauge** is a thin conductive foil pattern whose resistance changes when it is stretched. The relative resistance change is proportional to strain, with the constant of proportionality called the **gauge factor** $GF$ (about 2 for metal foil gauges, a typical value)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Gauge factor",
+   "text": "$GF=\\dfrac{\\Delta R/R}{\\varepsilon}$, so $\\Delta R/R=GF\\,\\varepsilon$. For a 350 ohm gauge with $GF=2.0$ at 1000 microstrain, $\\Delta R=350\\times2.0\\times0.001=0.70$ ohm. Such a small change must be measured with a bridge."
+  },
+  {
+   "type": "text",
+   "markdown": "**Wheatstone bridge.** Four resistors form two voltage dividers across an excitation voltage $V_{ex}$. The output is the difference between the two divider midpoints. With all four resistors equal to $R$, the bridge is balanced and $V_{out}=0$. Replace one resistor by a gauge ($R+\\Delta R$) to make a **quarter bridge**. The output is $V_{out}=V_{ex}\\left[\\dfrac{R+\\Delta R}{2R+\\Delta R}-\\dfrac12\\right]$. For small $\\Delta R/R$ this simplifies to a linear result."
+  },
+  {
+   "type": "math",
+   "latex": "V_{out}=V_{ex}\\left[\\frac{R+\\Delta R}{2R+\\Delta R}-\\frac12\\right]\\approx\\frac{V_{ex}}{4}\\,\\frac{\\Delta R}{R}=\\frac{V_{ex}\\,GF\\,\\varepsilon}{4}",
+   "caption": "Quarter bridge (one active gauge), small-strain approximation"
+  },
+  {
+   "type": "worked_example",
+   "title": "Quarter-bridge output",
+   "prompt": "A 350 ohm gauge with $GF=2.0$ is one arm of a bridge excited with 5.0 V. The strain is 1000 microstrain. Find $\\Delta R$ and the bridge output.",
+   "steps": [
+    {
+     "text": "Relative resistance change.",
+     "latex": "\\frac{\\Delta R}{R}=GF\\,\\varepsilon=2.0\\times1.0\\times10^{-3}=2.0\\times10^{-3}"
+    },
+    {
+     "text": "Resistance change.",
+     "latex": "\\Delta R=350\\times2.0\\times10^{-3}=0.70\\ \\Omega"
+    },
+    {
+     "text": "Bridge output (small-strain formula).",
+     "latex": "V_{out}=\\frac{5.0\\times2.0\\times10^{-3}}{4}=2.5\\ \\mathrm{mV}"
+    }
+   ],
+   "answer": "Delta R = 0.70 ohm and V_out = 2.5 mV (the exact bridge equation gives 2.499 mV). A 1000 microstrain input gives a signal of only a few millivolts, so an amplifier is needed."
+  },
+  {
+   "type": "text",
+   "markdown": "**Half and full bridges.** A quarter bridge has two weaknesses: its output is small and a temperature change that alters the gauge resistance (and the steel's expansion) adds an error that looks like strain. Better layouts use more active gauges. In a **half bridge**, two gauges in adjacent arms see opposite strains (one in tension, one in compression, as on the two faces of a bent beam) so their effects add in the output. In a **full bridge** all four arms are active in the pattern +, -, +, -. Because gauges in **adjacent** arms experience the same temperature, a temperature-induced resistance change $\\Delta R_T$ appears in both arms and cancels in the output, whereas the strain signals add."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Bridge",
+    "Active gauges",
+    "Output for strain $\\varepsilon$",
+    "Temperature compensation"
+   ],
+   "rows": [
+    [
+     "Quarter",
+     "1 (a dummy or fixed resistor in the other arms)",
+     "$V_{ex}GF\\varepsilon/4$",
+     "None unless a dummy gauge is in the adjacent arm"
+    ],
+    [
+     "Half",
+     "2 (opposite strains, adjacent arms)",
+     "$V_{ex}GF\\varepsilon/2$",
+     "Yes, adjacent arms cancel temperature"
+    ],
+    [
+     "Full",
+     "4 (+, -, +, -)",
+     "$V_{ex}GF\\varepsilon$",
+     "Yes, and best linearity"
+    ]
+   ],
+   "caption": "Sensitivity doubles from quarter to half and quadruples to full"
+  },
+  {
+   "type": "math",
+   "latex": "V_{out,half}=\\frac{V_{ex}\\,GF\\,\\varepsilon}{2},\\qquad V_{out,full}=V_{ex}\\,GF\\,\\varepsilon",
+   "caption": "Half bridge and full bridge outputs (ideal, equal and opposite strains in the active gauges)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Thermocouples.** Join two different metals at two junctions and keep the junctions at different temperatures: a small voltage appears, the **Seebeck effect**. The voltage depends on the **difference** between the measuring (hot) junction and the **reference (cold) junction**, $V\\approx S\\,(T_{hot}-T_{ref})$, where $S$ is the Seebeck coefficient, about 41 uV per degree Celsius for a type K thermocouple (typical value over the mid range). The voltmeter terminals form the reference junction. Therefore the reading gives only the temperature **difference**, and the absolute temperature requires knowing $T_{ref}$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Thermocouple with cold-junction compensation",
+   "prompt": "A type K thermocouple ($S=41\\ \\mu$V/degree C) gives 2.87 mV. The connection terminals (reference junction), measured by a separate sensor, are at 22 degrees C. Find the hot-junction temperature.",
+   "steps": [
+    {
+     "text": "Temperature difference from the voltage.",
+     "latex": "\\Delta T=\\frac{2870\\ \\mu\\mathrm{V}}{41\\ \\mu\\mathrm{V/^{\\circ}C}}=70.0^{\\circ}\\mathrm{C}"
+    },
+    {
+     "text": "Add the reference temperature.",
+     "latex": "T_{hot}=22+70.0=92.0^{\\circ}\\mathrm{C}"
+    }
+   ],
+   "answer": "The hot junction is at 92.0 degrees C. Ignoring the 22 degrees C reference would give 70 degrees C, an error of 22 degrees C."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Bridge output is differential and small, so amplify it with an instrumentation or difference amplifier.",
+    "Gauges in adjacent arms cancel common temperature effects; gauges in opposite arms add strain signals of the same sign.",
+    "A thermocouple measures a temperature difference; cold-junction compensation adds $T_{ref}$.",
+    "Real thermocouples are slightly non-linear: use the standard tables or polynomial for the type."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Cold-junction error",
+   "text": "Connecting a thermocouple to copper leads creates two more junctions. If their temperature is not measured and compensated, every change in room temperature changes the reading."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$\\Delta R/R=GF\\,\\varepsilon$; a quarter bridge gives $V_{out}\\approx V_{ex}GF\\varepsilon/4$.",
+    "Half and full bridges give 2x and 4x the output, and adjacent active gauges cancel temperature effects.",
+    "A thermocouple gives a voltage proportional to the temperature difference between its junctions, so a cold-junction reference is needed."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A strain gauge with $GF=2.1$ experiences 500 microstrain. What is the fractional resistance change $\\Delta R/R$?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$1.05\\times10^{-3}$"
+    },
+    {
+     "id": "b",
+     "text": "$4.2\\times10^{-3}$"
+    },
+    {
+     "id": "c",
+     "text": "$2.4\\times10^{-4}$"
+    },
+    {
+     "id": "d",
+     "text": "$1.05\\times10^{-6}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$1.05\\times10^{-3}$",
+   "distractorRationale": {
+    "a": "Correct: 2.1 x 500e-6 = 1.05e-3.",
+    "b": "Wrong: this uses 2000 microstrain by mistake.",
+    "c": "Wrong: this divides strain by GF.",
+    "d": "Wrong: this reads microstrain as strain-squared units, giving 10^-6 of the correct value."
+   },
+   "explanation": "$\\Delta R/R=GF\\,\\varepsilon=2.1\\times500\\times10^{-6}=1.05\\times10^{-3}$, or 0.105 per cent.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Compared with a quarter bridge, a full bridge (four active gauges) with the same excitation and strain gives an output that is:",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Four times larger"
+    },
+    {
+     "id": "b",
+     "text": "Two times larger"
+    },
+    {
+     "id": "c",
+     "text": "The same"
+    },
+    {
+     "id": "d",
+     "text": "Four times smaller"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Four times larger",
+   "distractorRationale": {
+    "a": "Correct: V_out = V_ex GF eps versus one quarter of that.",
+    "b": "Wrong: two times is the half-bridge figure.",
+    "c": "Wrong: more active arms increase output.",
+    "d": "Wrong: this inverts the ratio."
+   },
+   "explanation": "Quarter bridge output is $V_{ex}GF\\varepsilon/4$ and full bridge output is $V_{ex}GF\\varepsilon$, which is 4 times larger.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How does a thermocouple produce a voltage?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Two dissimilar metals joined at two junctions at different temperatures generate a voltage (Seebeck effect)"
+    },
+    {
+     "id": "b",
+     "text": "Its resistance changes with temperature, and a current source converts this to voltage"
+    },
+    {
+     "id": "c",
+     "text": "It converts light into voltage"
+    },
+    {
+     "id": "d",
+     "text": "A battery inside drives a current through the junction"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Two dissimilar metals joined at two junctions at different temperatures generate a voltage (Seebeck effect)",
+   "distractorRationale": {
+    "a": "Correct: Seebeck effect; the voltage depends on the temperature difference.",
+    "b": "Wrong: this describes a resistance temperature detector (RTD) or thermistor.",
+    "c": "Wrong: this describes a photodiode.",
+    "d": "Wrong: a thermocouple is self-generating."
+   },
+   "explanation": "The Seebeck effect produces an EMF around a loop of two dissimilar metals when the two junctions are at different temperatures. No external power is required.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does a half bridge made from two gauges in adjacent arms compensate for temperature changes?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A temperature change alters both gauges by the same fraction, so the effects cancel in the bridge output"
+    },
+    {
+     "id": "b",
+     "text": "The gauges have opposite gauge factors"
+    },
+    {
+     "id": "c",
+     "text": "The bridge excitation is regulated by temperature"
+    },
+    {
+     "id": "d",
+     "text": "The temperature change only affects the other two resistors"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A temperature change alters both gauges by the same fraction, so the effects cancel in the bridge output",
+   "distractorRationale": {
+    "a": "Correct: identical changes in adjacent arms cancel (the output depends on the difference of ratios).",
+    "b": "Wrong: gauge factors are the same sign; it is the strains that are opposite.",
+    "c": "Wrong: excitation is a fixed supply and does not compensate.",
+    "d": "Wrong: the gauges are bonded to the same part and see the same temperature."
+   },
+   "explanation": "A temperature rise changes $R$ in both adjacent gauges by the same fraction, so the bridge stays balanced for that component. The strain components, being opposite in sign, add.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A type K thermocouple output corresponds to a 60 degree C difference. The reference junction is at 25 degrees C. What is the measured junction temperature?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "85 degrees C"
+    },
+    {
+     "id": "b",
+     "text": "60 degrees C"
+    },
+    {
+     "id": "c",
+     "text": "35 degrees C"
+    },
+    {
+     "id": "d",
+     "text": "25 degrees C"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "85 degrees C",
+   "distractorRationale": {
+    "a": "Correct: T = T_ref + delta T = 25 + 60.",
+    "b": "Wrong: this ignores the reference junction temperature.",
+    "c": "Wrong: this subtracts the reference temperature.",
+    "d": "Wrong: this is only the reference temperature."
+   },
+   "explanation": "The thermocouple measures $T_{hot}-T_{ref}=60$ degrees C, so $T_{hot}=T_{ref}+60=85$ degrees C. This is the cold-junction compensation step.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A quarter bridge uses one 120 ohm gauge with $GF=2.1$, excitation 10.0 V and a strain of 800 microstrain. What is the bridge output, in millivolts?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o1"
+   ],
+   "correctValue": 4.2,
+   "tolerance": 0.05,
+   "unit": "mV",
+   "explanation": "$\\Delta R/R=2.1\\times800\\times10^{-6}=1.68\\times10^{-3}$. Then $V_{out}\\approx10.0\\times1.68\\times10^{-3}/4=4.2$ mV. The gauge's nominal resistance does not appear because the bridge responds to the ratio $\\Delta R/R$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A type K thermocouple (41 uV per degree C) reads 2.87 mV with the reference junction at 22.0 degrees C. What is the hot-junction temperature in degrees C?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o3"
+   ],
+   "correctValue": 92.0,
+   "tolerance": 0.5,
+   "unit": "degC",
+   "explanation": "$\\Delta T=2870/41=70.0$ degrees C. Adding the reference gives $T_{hot}=22.0+70.0=92.0$ degrees C.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A cantilever has two gauges ($GF=2.0$) in adjacent arms of a bridge, one in tension and one in compression, each at 600 microstrain. The excitation is 5.0 V. The bridge output feeds an amplifier of gain 400. What is the amplifier output, in volts?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o1",
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o2"
+   ],
+   "correctValue": 1.2,
+   "tolerance": 0.02,
+   "unit": "V",
+   "explanation": "A half bridge gives $V_{out}=V_{ex}GF\\varepsilon/2=5.0\\times2.0\\times600\\times10^{-6}/2=3.0$ mV. After a gain of 400 the output is $3.0\\times10^{-3}\\times400=1.2$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how a half-bridge or full-bridge strain-gauge arrangement improves sensitivity and compensates for temperature, compared with a single-gauge quarter bridge.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o2"
+   ],
+   "markingGuide": [
+    "Quarter bridge output is V_ex GF eps/4; half bridge doubles and full bridge quadruples the output",
+    "Active gauges are arranged so that adjacent arms experience opposite strain (tension and compression) so outputs add",
+    "Adjacent arms see the same temperature, so temperature-induced resistance changes cancel",
+    "Also reduces non-linearity and cancels some unwanted strains (e.g. axial) in a full bridge",
+    "Quarter bridge has no such compensation unless a dummy gauge is used"
+   ],
+   "explanation": "In a half bridge, two gauges in adjacent arms see equal and opposite strains so their output contributions add, doubling the sensitivity over a quarter bridge; a full bridge with four active gauges gives four times the output. Gauges in adjacent arms share the same temperature, so a temperature-induced change in resistance occurs in both and cancels at the bridge output, whereas a single active gauge has no such cancellation.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe the principle of a thermocouple and explain why a cold-junction (reference junction) measurement or compensation is required. Describe one practical way of providing it.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.strain-and-temperature-sensors.o3"
+   ],
+   "markingGuide": [
+    "Seebeck effect: two dissimilar metals joined at two junctions at different temperatures produce a voltage",
+    "Voltage depends on the temperature difference between the hot and reference junctions, not on absolute temperature",
+    "The connection to the measuring instrument forms a reference junction at ambient temperature that varies",
+    "Without compensation, changes in ambient temperature are read as changes in measured temperature",
+    "Method: ice bath at 0 degrees C, or measure the terminal block temperature (thermistor or IC sensor) and add the equivalent voltage or temperature in software or hardware"
+   ],
+   "explanation": "A thermocouple exploits the Seebeck effect: two dissimilar metals joined in a loop produce a voltage proportional to the temperature difference between their two junctions. The voltage therefore gives only $T_{hot}-T_{ref}$, and the connection terminals at the instrument form an unknown reference junction at ambient temperature. Compensation is made by measuring the terminal temperature with a separate sensor (or holding the reference at 0 degrees C in an ice bath) and adding its contribution.",
+   "board": "internal"
+  }
+ ]
+}

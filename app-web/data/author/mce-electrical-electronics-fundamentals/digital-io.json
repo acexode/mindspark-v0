@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Digital Input and Output",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A single press of a limit switch on a CNC door interlock registers as seven separate presses in the controller, and an unconnected input pin flickers between 0 and 1 whenever someone walks past. Both faults come from treating a switch as a perfect digital signal. Reading one correctly takes one resistor and a few lines of timing logic."
+  },
+  {
+   "type": "text",
+   "markdown": "A microcontroller **digital input** pin compares its voltage with fixed thresholds and reports a logic level: **HIGH** (a 1) above roughly 70 % of the supply $V_{DD}$, **LOW** (a 0) below roughly 30 % (typical values; check the datasheet). Between them the result is undefined. A pin connected to nothing is **floating**: its tiny capacitance picks up noise and it reads randomly. A bare push button is no better, because when open it leaves the pin floating."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Pull-up resistor",
+   "text": "A resistor of resistance $R_{pu}$ connected between the input pin and the supply $V_{DD}$. It holds the pin HIGH when the switch is open. The button connects the pin to ground (0 V), forcing LOW when pressed. This is called an active-low input, because pressed means 0."
+  },
+  {
+   "type": "math",
+   "latex": "I_{pressed}=\\frac{V_{DD}}{R_{pu}},\\qquad P_{pu}=\\frac{V_{DD}^{2}}{R_{pu}}",
+   "caption": "Current and power in the pull-up while the button is pressed (closed switch assumed ideal, 0 V across it)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a pull-up",
+   "prompt": "A 3.3 V controller reads a push button wired from the input pin to ground, with a 10 k$\\Omega$ pull-up to 3.3 V. Find the pin voltage with the button open and closed, and the current drawn when it is pressed.",
+   "steps": [
+    {
+     "text": "Open: no current flows (input draws almost nothing), so there is no drop across the resistor.",
+     "latex": "V_{pin}=V_{DD}=3.3\\ \\mathrm{V}\\Rightarrow\\text{HIGH}"
+    },
+    {
+     "text": "Closed: the switch shorts the pin to ground.",
+     "latex": "V_{pin}=0\\ \\mathrm{V}\\Rightarrow\\text{LOW}"
+    },
+    {
+     "text": "Current through the pull-up in the pressed state.",
+     "latex": "I=\\frac{3.3}{10\\times10^{3}}=0.33\\ \\mathrm{mA}"
+    }
+   ],
+   "answer": "Open = 3.3 V (HIGH), pressed = 0 V (LOW), and only 0.33 mA is drawn while pressed, so the pull-up wastes little power."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Wiring",
+    "Open switch",
+    "Pressed",
+    "Comment"
+   ],
+   "rows": [
+    [
+     "No resistor",
+     "Floating (random)",
+     "LOW",
+     "Unreliable; never use"
+    ],
+    [
+     "Pull-up to $V_{DD}$, switch to GND",
+     "HIGH",
+     "LOW",
+     "Active-low; most common"
+    ],
+    [
+     "Pull-down to GND, switch to $V_{DD}$",
+     "LOW",
+     "HIGH",
+     "Active-high; same idea mirrored"
+    ],
+    [
+     "Internal pull-up enabled in software",
+     "HIGH",
+     "LOW",
+     "Saves a part; resistance is typically tens of k$\\Omega$"
+    ]
+   ],
+   "caption": "Ways to wire a push button to a digital input"
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing the value.** $R_{pu}$ must be small enough that the pin sits above the HIGH threshold in spite of the pin's input leakage current $I_{leak}$ (a drop $I_{leak}R_{pu}$ across the resistor), and large enough not to waste current when pressed. A typical compromise is 4.7 k$\\Omega$ to 47 k$\\Omega$. The bound for the HIGH level is $R_{pu}\\le (V_{DD}-V_{IH})/I_{leak}$, where $V_{IH}$ is the minimum voltage accepted as HIGH."
+  },
+  {
+   "type": "text",
+   "markdown": "**Reading the pin and driving an output.** A program configures pins as input or output, then repeatedly reads and acts. With an active-low button, the logic must test for LOW:\n\n```\npinMode(BUTTON, INPUT_PULLUP);   // input with pull-up\npinMode(LED, OUTPUT);\nloop() {\n  if (digitalRead(BUTTON) == LOW)  digitalWrite(LED, HIGH);  // pressed: LED on\n  else                              digitalWrite(LED, LOW);\n}\n```\n\nNote the inversion: pressed is LOW, but we want the LED ON."
+  },
+  {
+   "type": "text",
+   "markdown": "**Switch bounce.** A mechanical contact does not close cleanly: the metal springs and makes and breaks contact several times over a few milliseconds (typically 1 to 20 ms). A fast loop reads each of these as a separate press. The simplest cure is a **time-based debounce**: accept a new level only after the input has stayed unchanged for a debounce interval $t_{db}$ longer than the bounce, but shorter than the quickest real press (tens of milliseconds)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Time-based debounce",
+   "prompt": "A button's contacts produce level changes at 0, 1.2, 2.1 and 3.0 ms after the first touch, then stay LOW. The program records the time of every change and accepts a level only after it has been stable for 20 ms. When is the press accepted?",
+   "steps": [
+    {
+     "text": "Every change resets the timer, so the last relevant change is at 3.0 ms."
+    },
+    {
+     "text": "The input must then stay unchanged for the debounce interval.",
+     "latex": "t_{accept}=3.0+20=23.0\\ \\mathrm{ms}"
+    },
+    {
+     "text": "Only one event is produced instead of four edges."
+    }
+   ],
+   "answer": "The press is accepted once, at about 23 ms after first contact. A 20 ms interval is long enough to cover the 3 ms of bounce and short enough that the user perceives no delay."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Pin without a defined level (floating) gives random readings.",
+    "A pull-up makes the idle state HIGH; pressing gives LOW (active-low).",
+    "Use a non-blocking millis()-style timestamp rather than a long delay, so the program still does other work.",
+    "Choose $t_{db}$ larger than the contact bounce but smaller than the shortest real press."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Active-low inversion",
+   "text": "With a pull-up wiring, `digitalRead` returns LOW when the button is pressed. Forgetting to invert the logic is the most common first bug in digital input code."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A floating input reads randomly; a pull-up resistor ties it to $V_{DD}$ so open = HIGH and pressed (to GND) = LOW.",
+    "Read the pin, test the active-low level and write the output pin accordingly.",
+    "Contacts bounce for milliseconds; debounce by requiring a stable level for a time $t_{db}$ longer than the bounce."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why is a pull-up resistor connected to a push-button input?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It defines a HIGH level when the switch is open so the pin does not float"
+    },
+    {
+     "id": "b",
+     "text": "It limits the current through the microcontroller output"
+    },
+    {
+     "id": "c",
+     "text": "It removes contact bounce"
+    },
+    {
+     "id": "d",
+     "text": "It raises the supply voltage"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It defines a HIGH level when the switch is open so the pin does not float",
+   "distractorRationale": {
+    "a": "Correct: with the switch open the resistor pulls the pin to V_DD.",
+    "b": "Wrong: this describes an LED series resistor on an output.",
+    "c": "Wrong: bounce is a timing problem handled in software or with an RC filter, not by a pull-up.",
+    "d": "Wrong: a resistor cannot raise a voltage above the supply."
+   },
+   "explanation": "Without a pull-up an open switch leaves the pin floating and the read is random. The pull-up gives the pin a defined HIGH, and closing the switch overrides it with a firm LOW.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A button is wired between an input pin and ground with a pull-up to $V_{DD}$. What does the pin read while the button is held down?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "LOW"
+    },
+    {
+     "id": "b",
+     "text": "HIGH"
+    },
+    {
+     "id": "c",
+     "text": "Floating"
+    },
+    {
+     "id": "d",
+     "text": "Alternating HIGH/LOW"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "LOW",
+   "distractorRationale": {
+    "a": "Correct: the closed switch connects the pin to 0 V.",
+    "b": "Wrong: HIGH is the idle state with the button released.",
+    "c": "Wrong: the pin is only floating without a pull-up and with the switch open.",
+    "d": "Wrong: alternation only occurs briefly during bounce."
+   },
+   "explanation": "The button creates a direct path to ground, which overpowers the much larger pull-up resistance, so the pin is at about 0 V and reads LOW.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A contact bounces for up to 8 ms and the quickest deliberate press lasts about 100 ms. Which debounce interval is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "20 ms"
+    },
+    {
+     "id": "b",
+     "text": "1 ms"
+    },
+    {
+     "id": "c",
+     "text": "500 ms"
+    },
+    {
+     "id": "d",
+     "text": "0.1 ms"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "20 ms",
+   "distractorRationale": {
+    "a": "Correct: it exceeds the 8 ms bounce with margin and is far below 100 ms.",
+    "b": "Wrong: 1 ms is shorter than the bounce and would not filter it.",
+    "c": "Wrong: 500 ms exceeds the shortest real press, so real presses would be missed.",
+    "d": "Wrong: 0.1 ms is far shorter than the bounce."
+   },
+   "explanation": "The debounce interval must exceed the bounce time but stay below the shortest real press. 20 ms satisfies both, with margin over 8 ms.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A button (active-low, with pull-up) is on pin 2 and an LED on pin 13. The code is: if digitalRead(2) == HIGH then digitalWrite(13, HIGH). What does the LED do?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is on while the button is released and off while it is pressed"
+    },
+    {
+     "id": "b",
+     "text": "It is on only while the button is pressed"
+    },
+    {
+     "id": "c",
+     "text": "It is always off"
+    },
+    {
+     "id": "d",
+     "text": "It flashes continuously"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is on while the button is released and off while it is pressed",
+   "distractorRationale": {
+    "a": "Correct: released means HIGH, so the LED is lit then.",
+    "b": "Wrong: this assumes the button gives HIGH when pressed, which is the active-high case.",
+    "c": "Wrong: the pin is HIGH whenever the button is released.",
+    "d": "Wrong: nothing in the code toggles the output."
+   },
+   "explanation": "With an active-low button the pin is HIGH when released, so testing for HIGH turns the LED on in the idle state. The test should be for LOW to light the LED on a press.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer replaces a 10 k$\\Omega$ pull-up on a 3.3 V input with 100 $\\Omega$. What is the main drawback?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 33 mA flows through it whenever the button is pressed, wasting power"
+    },
+    {
+     "id": "b",
+     "text": "The input will never read HIGH"
+    },
+    {
+     "id": "c",
+     "text": "The button will no longer be able to pull the pin LOW"
+    },
+    {
+     "id": "d",
+     "text": "The pin voltage will exceed 3.3 V"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About 33 mA flows through it whenever the button is pressed, wasting power",
+   "distractorRationale": {
+    "a": "Correct: I = 3.3/100 = 33 mA, 100 times larger than before.",
+    "b": "Wrong: a small pull-up gives a stronger HIGH, not a failure to read HIGH.",
+    "c": "Wrong: the switch is a near-short and still pulls the pin LOW, though with high current.",
+    "d": "Wrong: a resistor to the supply cannot raise the voltage above 3.3 V."
+   },
+   "explanation": "The pressed current is $V_{DD}/R_{pu}=3.3/100=33$ mA instead of 0.33 mA. That is wasteful and could stress the button contacts and the supply.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 5.0 V controller uses a 4.7 k$\\Omega$ pull-up on a button wired to ground. What current (in mA) is drawn through the pull-up while the button is pressed?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o1"
+   ],
+   "correctValue": 1.06,
+   "tolerance": 0.02,
+   "unit": "mA",
+   "explanation": "With the switch closed the full 5.0 V is across the pull-up, so $I=5.0/4700=1.06$ mA. The pin itself is at 0 V.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A button bounces for up to 12 ms. A program samples the pin every 5 ms and accepts a new level only after the level has stayed unchanged for 25 ms. How many 5 ms sample intervals must pass with no change before the level is accepted?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o3"
+   ],
+   "correctValue": 5,
+   "tolerance": 0.1,
+   "unit": "intervals",
+   "explanation": "The required stable time is 25 ms, and each interval is 5 ms, so 25/5 = 5 intervals must pass without a change. Any change in the reading restarts the count, which is why the bounce (shorter than 25 ms) is filtered out.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 3.3 V controller accepts a HIGH only above $V_{IH}=0.7V_{DD}$. Its pin leaks up to 2.0 uA out of the node when idle (switch open). What is the largest pull-up resistance (in k$\\Omega$) that still guarantees a valid HIGH?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o1"
+   ],
+   "correctValue": 495,
+   "tolerance": 5,
+   "unit": "kOhm",
+   "explanation": "The allowed drop across the pull-up is $V_{DD}-V_{IH}=3.3-2.31=0.99$ V. With $I_{leak}=2.0\\ \\mu$A, $R_{pu}\\le0.99/2.0\\times10^{-6}=495$ k$\\Omega$. In practice a much smaller value is chosen for noise immunity.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain what a floating input is, why an unconnected or open-switch input is unreliable, and how a pull-up resistor fixes the problem. Describe what the pin reads in both switch states.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o1"
+   ],
+   "markingGuide": [
+    "Defines floating: pin not connected to a defined voltage",
+    "Explains noise or leakage can drive the pin randomly between HIGH and LOW",
+    "Pull-up connects pin to V_DD through a resistor giving HIGH when switch open",
+    "Closed switch connects pin to ground giving LOW",
+    "States the logic is active-low (pressed = 0)"
+   ],
+   "explanation": "A floating pin has no defined voltage, so stray charge and noise drive it randomly across the logic thresholds. The pull-up resistor ties the pin to $V_{DD}$ so the open state is a clean HIGH, and a pressed switch connects it to ground giving LOW; the resistor value is large enough to limit the pressed current.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Write pseudocode (or C-style code) for a program that toggles an LED each time a push button (active-low, with pull-up) is pressed, using a time-based debounce of 20 ms without blocking delays. Explain the logic.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o2",
+    "ug.mce-electrical-electronics-fundamentals.microcontroller-io.digital-io.o3"
+   ],
+   "markingGuide": [
+    "Configures button as input with pull-up and LED as output",
+    "Reads the pin each loop pass and compares it to the last raw reading",
+    "Records a timestamp (millis) whenever the raw reading changes",
+    "Accepts the new state only if the reading has been stable for at least 20 ms",
+    "Toggles the LED only on the accepted falling edge (HIGH to LOW), not continuously while held",
+    "Avoids delay() so the loop keeps running"
+   ],
+   "explanation": "A correct program stores the last raw reading and the time of the last change. When the raw reading differs it resets the timestamp; when the time since the last change exceeds 20 ms and the stable level differs from the accepted state, it updates the accepted state and, if that state is LOW (pressed), toggles the LED. Using timestamps rather than delay() keeps the loop responsive, and acting only on the edge avoids repeated toggling while the button is held.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,398 @@
+{
+ "lessonTitle": "One-Dimensional Conduction Elements: Conductivity Matrix and Boundary Conditions",
+ "estimatedMinutes": 36,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A furnace door has a 150 mm refractory layer backed by 100 mm of mineral-wool insulation, a hot face near 900 degrees Celsius and a cold surface that must stay below 100 degrees Celsius for safety. The same matrix machinery that gave bar stiffness gives the temperature at every node of this wall, and the answer matches the thermal-resistance method to the last digit."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** Steady heat conduction in one dimension obeys Fourier's law $q=-k\\,\\mathrm{d}T/\\mathrm{d}x$, where $q$ is the heat flux (W/m$^2$), $k$ the thermal conductivity (W/(m K)) and $T$ the temperature (degrees Celsius or K). The finite element method treats the temperature at each node as the unknown, exactly as displacement was the unknown for a bar. Interpolating $T$ **linearly** between two nodes gives a constant gradient, so the heat flow $Q=kA(T_1-T_2)/L$ through an element of area $A$ (m$^2$) and length $L$ (m) is the product of a conductance and a temperature difference."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Element conductivity matrix",
+   "text": "For a two-node element with constant $k$ and area $A$, the nodal heat flows $\\{Q_1,Q_2\\}$ (W, positive into the element from outside) relate to the nodal temperatures through $\\mathbf{K}_e\\mathbf{T}_e=\\mathbf{Q}_e$ with $\\mathbf{K}_e=\\dfrac{kA}{L}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}$ (W/K). The conductance $kA/L$ is the reciprocal of the thermal resistance $R=L/(kA)$ (K/W)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Derivation.** With $T(x)=N_1T_1+N_2T_2$ and $N_1=1-x/L$, $N_2=x/L$, the temperature gradient is $(T_2-T_1)/L$. Steady energy balance requires the heat flowing in at node 1 to leave at node 2, so $Q_1=-Q_2=kA(T_1-T_2)/L$. Writing this for both nodes gives the matrix above. It is the same pattern as the bar stiffness $AE/L$ with $T$ in place of $u$ and heat flow in place of force."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{kA}{L}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}\\begin{Bmatrix}T_1\\\\T_2\\end{Bmatrix}=\\begin{Bmatrix}Q_1\\\\Q_2\\end{Bmatrix}",
+   "caption": "One-dimensional conduction element"
+  },
+  {
+   "type": "worked_example",
+   "title": "Conductance and heat flow for one element",
+   "prompt": "An aluminium rod element ($k=200$ W/(m K)) has $A=4.0\\times10^{-4}$ m$^2$ and $L=0.050$ m. Its end temperatures are $T_1=80$ degrees Celsius and $T_2=60$ degrees Celsius. Find its conductance, the element matrix and the heat flow.",
+   "steps": [
+    {
+     "text": "Conductance $kA/L$.",
+     "latex": "\\frac{kA}{L}=\\frac{(200)(4.0\\times10^{-4})}{0.050}=1.60\\ \\text{W/K}"
+    },
+    {
+     "text": "Element matrix.",
+     "latex": "\\mathbf{K}_e=1.60\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}\\ \\text{W/K}"
+    },
+    {
+     "text": "Heat flow from node 1 to node 2 for $\\Delta T=20$ K, with thermal resistance $R=1/(kA/L)$.",
+     "latex": "Q=\\frac{kA}{L}(T_1-T_2)=(1.60)(20)=32.0\\ \\text{W},\\quad R=0.625\\ \\text{K/W}"
+    }
+   ],
+   "answer": "Conductance $1.60$ W/K, so $Q=32.0$ W flows from the hot end to the cold end (resistance $0.625$ K/W)."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Boundary conditions for thermal problems",
+   "text": "A **fixed temperature** at a node (essential condition) is applied like a fixed displacement: remove that row and column and move $K_{i1}T_1$ to the right-hand side. A **convective surface** at node $n$ with film coefficient $h$ (W/(m$^2$ K)) and ambient $T_\\infty$ adds a conductance $hA$ to the diagonal term $K_{nn}$ and a heat load $hAT_\\infty$ to the load vector $F_n$. A prescribed heat flux simply adds $qA$ to $F_n$. In each case the heat leaving a fixed node is its reaction."
+  },
+  {
+   "type": "worked_example",
+   "title": "Two-layer furnace wall with convection",
+   "prompt": "Layer 1 (fireclay): $k_1=1.1$ W/(m K), $L_1=0.15$ m. Layer 2 (insulation): $k_2=0.12$ W/(m K), $L_2=0.10$ m. Area $A=1$ m$^2$. The hot face (node 1) is held at 900 degrees Celsius and the outer face (node 3) loses heat by convection with $h=15$ W/(m$^2$ K) to ambient air at 25 degrees Celsius. Find the interface temperature $T_2$, the outer surface temperature $T_3$ and the heat flow, and compare with the resistance method.",
+   "steps": [
+    {
+     "text": "Element conductances $kA/L$ in W/K.",
+     "latex": "c_1=7.333,\\quad c_2=1.200,\\quad hA=15.0\\ \\text{W/K}"
+    },
+    {
+     "text": "Assemble: the shared node adds both conductances and the convective face adds $hA$ to the last diagonal term; $F_3=hAT_\\infty$.",
+     "latex": "\\mathbf{K}=\\begin{bmatrix}7.333&-7.333&0.000\\\\-7.333&8.533&-1.200\\\\0.000&-1.200&16.200\\end{bmatrix},\\quad \\mathbf{F}=\\{0,\\ 0,\\ 375.0\\}"
+    },
+    {
+     "text": "Fix $T_1=900$: delete row and column 1. Move $-c_1T_1$ to the right-hand side of row 2: $F_2'=c_1T_1=6600.0$.",
+     "latex": "\\begin{bmatrix}8.533&-1.200\\\\-1.200&16.200\\end{bmatrix}\\begin{Bmatrix}T_2\\\\T_3\\end{Bmatrix}=\\begin{Bmatrix}6600.0\\\\375.0\\end{Bmatrix}"
+    },
+    {
+     "text": "Solve by Gauss elimination.",
+     "latex": "T_2=784.9\\ ^{\\circ}\\text{C},\\quad T_3=81.3\\ ^{\\circ}\\text{C}"
+    },
+    {
+     "text": "Heat flow = reaction at node 1 (heat leaving the hot face).",
+     "latex": "Q=c_1(T_1-T_2)=(7.333)(115.1)=844.3\\ \\text{W}"
+    },
+    {
+     "text": "Resistance method for comparison: series resistances.",
+     "latex": "R_{tot}=\\frac{0.15}{1.1}+\\frac{0.10}{0.12}+\\frac{1}{15}=1.0364\\ \\text{K/W},\\quad Q=\\frac{900-25}{1.0364}=844.3\\ \\text{W},\\ T_2=784.9,\\ T_3=81.3"
+    }
+   ],
+   "answer": "$T_2=784.9$ degrees Celsius, $T_3=81.3$ degrees Celsius and $Q=844.3$ W; the FE results equal the resistance-method values. The outer surface is far below the hot face, but still above ambient, because of the convective resistance."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "FE conduction element",
+    "Bar element (previous module)"
+   ],
+   "rows": [
+    [
+     "Unknown",
+     "Temperature $T$ (K)",
+     "Displacement $u$ (m)"
+    ],
+    [
+     "Element matrix",
+     "$(kA/L)[1,-1;-1,1]$",
+     "$(AE/L)[1,-1;-1,1]$"
+    ],
+    [
+     "Load",
+     "Heat flow $Q$ (W)",
+     "Force $F$ (N)"
+    ],
+    [
+     "Fixed boundary",
+     "Prescribed $T$",
+     "Prescribed $u$"
+    ],
+    [
+     "Reaction at a fixed node",
+     "Heat flow to the source",
+     "Support force"
+    ],
+    [
+     "Special condition",
+     "Convection: add $hA$ to $K_{nn}$, $hAT_\\infty$ to $F_n$",
+     "Elastic support: add spring stiffness"
+    ]
+   ],
+   "caption": "Heat conduction and bar elements are analogous"
+  },
+  {
+   "type": "text",
+   "markdown": "**Why the FE result matches the resistance method.** In a steady one-dimensional wall without heat generation, the exact temperature in each homogeneous layer is linear in $x$, which a linear element represents exactly. The assembled equations enforce continuity of temperature and of heat flow at the interface, which are precisely the series-resistance conditions. With any mesh of linear elements through the layers, the nodal temperatures are therefore exact; refinement only matters when $k$ varies with temperature or there is internal heat generation."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Conductance $kA/L$ is the reciprocal of resistance; layers in series add resistances.",
+    "A larger resistance carries a larger share of the temperature drop: here the insulation takes most of it.",
+    "The reaction at a fixed-temperature node is the heat flow through it; it must equal the flow through the whole wall.",
+    "Keep units consistent: $k$ in W/(m K), $L$ in m, $A$ in m$^2$, $T$ in K or degrees Celsius (differences are the same)."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Convection applies at a surface node",
+   "text": "The term $hA$ belongs only to the node on the convective surface, and the load $hAT_\\infty$ uses the ambient temperature. A common slip is to use $h$ without $A$ or to forget that the surface temperature $T_3$ stays above $T_\\infty$ by the film drop $Q/(hA)$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The two-node conduction element has matrix $(kA/L)\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}$, the thermal twin of the bar element.",
+    "Fixed temperatures are applied by eliminating rows and moving terms to the load; convection adds $hA$ to a diagonal term and $hAT_\\infty$ to the load.",
+    "For a layered wall, the nodal temperatures from the FE solution agree with the series thermal-resistance method, which provides an independent check."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does the off-diagonal term $-kA/L$ in the conduction element matrix represent?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The change in heat flow at one node when the other node's temperature changes by one degree, with a sign showing flow leaves the first node"
+    },
+    {
+     "id": "b",
+     "text": "The thermal resistance of the element in K/W"
+    },
+    {
+     "id": "c",
+     "text": "The energy stored in the element per kelvin"
+    },
+    {
+     "id": "d",
+     "text": "The ratio of surface convection to conduction"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The change in heat flow at one node when the other node's temperature changes by one degree, with a sign showing flow leaves the first node",
+   "distractorRationale": {
+    "b": "Resistance is the reciprocal $L/(kA)$, not $kA/L$.",
+    "c": "Stored energy involves specific heat and mass, which appear only in transient problems.",
+    "d": "This ratio is the Biot number, which is a different quantity."
+   },
+   "explanation": "Each entry $K_{ij}$ is the heat flow into node $i$ per unit temperature at node $j$. The off-diagonal entries are negative because a hotter neighbour pushes heat out of the node, and they have magnitude $kA/L$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In an FE model of a wall, how is a convective boundary at the last node, with film coefficient $h$, surface area $A$ and ambient temperature $T_\\infty$, applied?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Add $hA$ to the last diagonal term of $\\mathbf{K}$ and $hAT_\\infty$ to the last load entry"
+    },
+    {
+     "id": "b",
+     "text": "Set the last node's temperature equal to $T_\\infty$"
+    },
+    {
+     "id": "c",
+     "text": "Add $hAT_\\infty$ to the last diagonal term and $hA$ to the load"
+    },
+    {
+     "id": "d",
+     "text": "Multiply the whole $\\mathbf{K}$ by $h$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Add $hA$ to the last diagonal term of $\\mathbf{K}$ and $hAT_\\infty$ to the last load entry",
+   "distractorRationale": {
+    "b": "That would be a fixed-temperature condition, which ignores the film resistance.",
+    "c": "The roles are swapped: the conductance goes on the left, the heat load on the right.",
+    "d": "The matrix is scaled by $kA/L$ per element; $h$ only affects the surface node."
+   },
+   "explanation": "Convection removes heat from the surface node at the rate $hA(T_n-T_\\infty)$. Moving the unknown part $hAT_n$ to the left adds $hA$ to $K_{nn}$, and the known part $hAT_\\infty$ stays on the right as a load.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a steady two-layer wall without heat generation, the layer with the higher thermal resistance $R=L/(kA)$ experiences which of the following?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The larger share of the total temperature drop"
+    },
+    {
+     "id": "b",
+     "text": "The smaller share of the total temperature drop"
+    },
+    {
+     "id": "c",
+     "text": "The same temperature drop as the other layer"
+    },
+    {
+     "id": "d",
+     "text": "A larger heat flow than the other layer"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The larger share of the total temperature drop",
+   "distractorRationale": {
+    "b": "This is the reverse of $\\Delta T=QR$.",
+    "c": "Equal drops would need equal resistances.",
+    "d": "The heat flow is the same through both layers in steady state."
+   },
+   "explanation": "Steady state forces the same heat flow $Q$ through every layer in series. The temperature drop across a layer is $\\Delta T=QR$, so the more resistive layer, usually the insulation, carries most of the drop.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "When the hot-face temperature at node 1 is prescribed in an FE conduction model, how is it handled in the solution?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Delete the node's row and column and move the known term $K_{i1}T_1$ to the right-hand side of the remaining equations"
+    },
+    {
+     "id": "b",
+     "text": "Add a very small conductance to node 1 and set its load to zero"
+    },
+    {
+     "id": "c",
+     "text": "Treat $T_1$ as an unknown and solve it with the others"
+    },
+    {
+     "id": "d",
+     "text": "Apply a convective condition with $h=0$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Delete the node's row and column and move the known term $K_{i1}T_1$ to the right-hand side of the remaining equations",
+   "distractorRationale": {
+    "b": "A very small conductance is not how prescribed values are imposed; the penalty method uses a very large one.",
+    "c": "Leaving it unknown cannot give a unique solution since $\\mathbf{K}$ is singular without a fixed temperature.",
+    "d": "$h=0$ means an insulated surface, not a fixed temperature."
+   },
+   "explanation": "The unconstrained conduction matrix is singular (a uniform temperature produces no heat flow), so at least one temperature must be prescribed. Eliminating the row and moving the known contribution to the right makes the reduced system non-singular.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 3,
+   "stem": "For a steady one-dimensional wall made of two homogeneous layers with no heat generation, a mesh of one linear element per layer gives the same nodal temperatures as the thermal-resistance method.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Within each layer the exact temperature is linear, so linear elements represent it exactly, and the assembly enforces equal temperature and equal heat flow at the interface, which are the series-resistance conditions. Refinement therefore changes nothing here, in contrast to problems with heat generation or varying conductivity.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A steel plate element has $k=50$ W/(m K), area $A=0.020$ m$^2$ and thickness $L=0.010$ m. Compute the element conductance $kA/L$ in W/K.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o1"
+   ],
+   "correctValue": 100.0,
+   "tolerance": 0.05,
+   "unit": "W/K",
+   "explanation": "$kA/L=50\\times0.020/0.010=100.0$ W/K, so a 1 K difference drives 100 W through the plate. The corresponding resistance is 0.01 K/W.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A wall of concrete ($k=1.4$ W/(m K), 0.20 m) and foam ($k=0.03$ W/(m K), 0.050 m) separates an inside surface held at 20 degrees Celsius from an outside surface held at -10 degrees Celsius. Using two linear conduction elements, find the interface temperature in degrees Celsius.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o3"
+   ],
+   "correctValue": 17.63157894736842,
+   "tolerance": 0.05,
+   "unit": "degrees Celsius",
+   "explanation": "The resistances per square metre are $R_c=0.20/1.4=0.1429$ and $R_f=0.050/0.03=1.6667$ m$^2$K/W, so the flux is $30/1.8095=16.58$ W/m$^2$. The interface temperature is $20-16.58\\times0.1429=17.63$ degrees Celsius; the FE solution of the single free node gives the same value.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel plate ($k=50$ W/(m K), thickness 0.020 m) has its left face fixed at 100 degrees Celsius. Its right face is cooled by air at 40 degrees Celsius with $h=200$ W/(m$^2$ K). Using one conduction element plus a convective boundary, find the right-face temperature in degrees Celsius.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o2"
+   ],
+   "correctValue": 95.55555555555556,
+   "tolerance": 0.1,
+   "unit": "degrees Celsius",
+   "explanation": "With unit area the conductance is $kA/L=2500$ W/K and the convective term is $hA=200$ W/K. The single unknown satisfies $(2500+200)T_2=2500(100)+200(40)$, so $T_2=95.56$ degrees Celsius; this equals $100-qR$ from the resistance method.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the element conductivity matrix of a two-node conduction element from Fourier's law and linear interpolation, and give the physical meaning of $kA/L$.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o1"
+   ],
+   "markingGuide": [
+    "Linear interpolation $T=N_1T_1+N_2T_2$ with constant gradient $(T_2-T_1)/L$",
+    "Fourier's law gives heat flow $Q=-kA\\,\\mathrm{d}T/\\mathrm{d}x=kA(T_1-T_2)/L$",
+    "Steady balance: heat in at node 1 equals heat out at node 2, $Q_1=-Q_2$",
+    "Assembles into $(kA/L)[1,-1;-1,1]\\{T\\}=\\{Q\\}$",
+    "$kA/L$ is the conductance (W/K), the reciprocal of the thermal resistance $L/(kA)$"
+   ],
+   "explanation": "The element is a linear thermal conductor: the heat flow is proportional to the difference in its end temperatures with proportionality constant $kA/L$. Writing the nodal flows for both ends gives the symmetric, singular matrix analogous to the bar stiffness matrix.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A two-layer wall is modelled with two linear elements, a fixed temperature on one face and a convective condition on the other. Describe how you assemble and solve the system, how you obtain the heat flow, and how you would check the answer against the resistance method.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o2",
+    "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.o3"
+   ],
+   "markingGuide": [
+    "Compute element conductances $k_iA/L_i$ and assemble the $3\\times3$ matrix, adding at the shared node",
+    "Add $hA$ to the last diagonal and $hAT_\\infty$ to the last load entry",
+    "Apply the fixed temperature by deleting the row and column and moving the known term to the right-hand side",
+    "Solve for the unknown nodal temperatures; heat flow is the reaction at the fixed node or $c_i\\Delta T$ through an element",
+    "Resistance check: $R_{tot}=\\sum L_i/(k_iA)+1/(hA)$, $Q=\\Delta T/R_{tot}$, and compare the interface and surface temperatures"
+   ],
+   "explanation": "The FE system encodes continuity of temperature and heat flow, the same conditions as a series resistance network, so both methods must give identical nodal temperatures for a steady one-dimensional layered wall. Agreement is a verification of the assembly and boundary conditions.",
+   "board": "internal"
+  }
+ ]
+}

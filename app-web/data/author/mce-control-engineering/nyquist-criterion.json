@@ -1,0 +1,416 @@
+{
+ "lessonTitle": "The Nyquist Criterion",
+ "estimatedMinutes": 34,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A pitch-control loop for a small aircraft model is stable on the bench but oscillates on the first flight when the amplifier gain is raised by a factor of three. No one wants to solve a sixth-order characteristic polynomial in the hangar. The Nyquist criterion tells you whether the closed loop is stable just by looking at a plot of the open-loop frequency response, and it keeps working when the open loop itself is unstable."
+  },
+  {
+   "type": "text",
+   "markdown": "Consider a unity-feedback loop with open-loop transfer function $L(s)=G(s)C(s)$. The closed-loop poles are the roots of $1+L(s)=0$. The idea of the Nyquist criterion is to count how many times the image of the right-half-plane boundary under $L(s)$ winds around the **critical point** $-1+j0$, because that count tells us how many roots of $1+L$ lie in the right half-plane."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "The Nyquist contour and plot",
+   "text": "The Nyquist contour runs up the imaginary axis from $s=-j\\infty$ to $+j\\infty$ and closes with a large semicircle through the right half-plane, travelled clockwise. Indentations of small radius go around any poles of $L(s)$ on the imaginary axis (for example at the origin for an integrator). The **Nyquist plot** is the image $L(s)$ of that contour in the complex plane. The part for $\\omega<0$ is the mirror image (complex conjugate) of the part for $\\omega>0$."
+  },
+  {
+   "type": "math",
+   "latex": "Z=N+P",
+   "caption": "Nyquist criterion. $P$: number of open-loop poles of $L(s)$ in the right half-plane. $N$: net number of clockwise encirclements of $-1$ by the Nyquist plot (counter-clockwise counts as negative). $Z$: number of closed-loop poles in the right half-plane."
+  },
+  {
+   "type": "text",
+   "markdown": "The closed loop is stable if and only if $Z=0$, that is, $N=-P$: the plot must encircle $-1$ counter-clockwise exactly $P$ times. For an open-loop stable system ($P=0$) the rule is simply *no encirclement of $-1$*. Since $L(j\\omega)$ is scaled by the loop gain $K$, raising $K$ expands the plot radially and the crossing of the negative real axis moves toward and eventually past $-1$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Sketch and test a third-order loop",
+   "prompt": "Sketch the Nyquist plot of $L(s)=\\dfrac{K}{(s+1)(s+2)(s+3)}$ and find the range of $K>0$ for which the closed loop is stable.",
+   "steps": [
+    {
+     "text": "All open-loop poles are at $-1,-2,-3$, so $P=0$. At $\\omega=0$ the plot starts on the positive real axis at $L(0)=K/6$. As $\\omega\\to\\infty$ the magnitude falls like $K/\\omega^3$ and the phase tends to $-270^\\circ$, so the plot ends at the origin from the direction of $+j$.",
+     "latex": "L(j0)=K/6,\\quad \\angle L(j\\infty)=-270^\\circ"
+    },
+    {
+     "text": "Expand the denominator: $(j\\omega+1)(j\\omega+2)(j\\omega+3)=(6-6\\omega^2)+j(11\\omega-\\omega^3)$. The plot crosses the negative real axis where the imaginary part is zero.",
+     "latex": "11\\omega-\\omega^3=0\\Rightarrow\\omega_{pc}=\\sqrt{11}\\approx3.32\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "At that frequency the real part of the denominator is $6-66=-60$, so the crossing point is",
+     "latex": "L(j\\omega_{pc})=-\\frac{K}{60}"
+    },
+    {
+     "text": "The curve moves clockwise through the lower half-plane from $K/6$ to $-K/60$ and then returns to the origin. It encircles $-1$ only if the crossing lies to the left of $-1$, i.e. $K/60>1$. For $K<60$ there is no encirclement ($N=0$, $Z=0$); for $K>60$, $N=2$ so $Z=2$.",
+     "latex": "\\text{stable for }0<K<60"
+    }
+   ],
+   "answer": "Stable for $0<K<60$. At $K=90$ the crossing is at $-1.5$, giving two clockwise encirclements and two right-half-plane closed-loop poles."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$P$ (open-loop RHP poles)",
+    "$N$ (net clockwise encirclements)",
+    "$Z=N+P$",
+    "Closed loop"
+   ],
+   "rows": [
+    [
+     "0",
+     "0",
+     "0",
+     "Stable"
+    ],
+    [
+     "0",
+     "2",
+     "2",
+     "Unstable (two RHP poles)"
+    ],
+    [
+     "1",
+     "-1 (one counter-clockwise)",
+     "0",
+     "Stable"
+    ],
+    [
+     "1",
+     "0",
+     "1",
+     "Unstable"
+    ],
+    [
+     "2",
+     "-1",
+     "1",
+     "Unstable"
+    ]
+   ],
+   "caption": "Reading stability from the encirclement count."
+  },
+  {
+   "type": "worked_example",
+   "title": "An open-loop unstable plant",
+   "prompt": "Apply the Nyquist criterion to $L(s)=\\dfrac{K}{s-1}$ for $K>0$, and verify with the closed-loop characteristic equation.",
+   "steps": [
+    {
+     "text": "The only pole is at $s=+1$, in the right half-plane, so $P=1$.",
+     "latex": "P=1"
+    },
+    {
+     "text": "Substitute $s=j\\omega$ and rationalise. For $\\omega\\ge0$ the imaginary part is negative, $L(j0)=-K$ and $L\\to0$ as $\\omega\\to\\infty$.",
+     "latex": "L(j\\omega)=\\frac{K}{j\\omega-1}=\\frac{-K}{1+\\omega^2}-j\\frac{K\\omega}{1+\\omega^2}"
+    },
+    {
+     "text": "These points lie on a circle with centre $-K/2$ and radius $K/2$. Traced for all $\\omega$ from $-\\infty$ to $\\infty$, the circle is travelled once counter-clockwise (lower half-plane for $\\omega>0$, going right, then upper half-plane for $\\omega<0$, going left).",
+     "latex": "\\text{circle through }-K\\text{ and }0"
+    },
+    {
+     "text": "The circle encloses $-1$ if its leftmost point $-K$ lies beyond $-1$, i.e. $K>1$. Then there is one counter-clockwise encirclement, $N=-1$, so $Z=N+P=0$. For $K<1$, $N=0$ and $Z=1$.",
+     "latex": "K>1:\\ Z=-1+1=0\\ (\\text{stable});\\quad K<1:\\ Z=1"
+    },
+    {
+     "text": "Check: $1+L=0$ gives $s-1+K=0$, i.e. $s=1-K$, which is negative exactly when $K>1$.",
+     "latex": "s=1-K"
+    }
+   ],
+   "answer": "Stable only for $K>1$; the counter-clockwise encirclement of $-1$ is what cancels the single unstable open-loop pole."
+  },
+  {
+   "type": "text",
+   "markdown": "**Poles at the origin.** If $L(s)$ has an integrator, the contour indents around $s=0$ with a small right-half-plane semicircle. The image of that indentation is a large arc of infinite radius that sweeps clockwise through $180^\\circ$ for each integrator. Do not forget to close the plot with that arc before counting encirclements."
+  },
+  {
+   "type": "worked_example",
+   "title": "Sketching a type-1 plot",
+   "prompt": "Sketch $L(s)=\\dfrac{K}{s(s+2)}$ and decide stability for $K>0$.",
+   "steps": [
+    {
+     "text": "Write $L(j\\omega)=\\dfrac{K}{-\\omega^2+2j\\omega}=\\dfrac{-K\\omega^2-2jK\\omega}{\\omega^4+4\\omega^2}$, so the real part is $-K/(\\omega^2+4)$ and the imaginary part is $-2K/(\\omega(\\omega^2+4))$.",
+     "latex": "\\mathrm{Re}\\,L=\\frac{-K}{\\omega^2+4},\\quad\\mathrm{Im}\\,L=\\frac{-2K}{\\omega(\\omega^2+4)}"
+    },
+    {
+     "text": "As $\\omega\\to0^+$ the imaginary part goes to $-\\infty$ while the real part tends to $-K/4$, so the plot starts with a vertical asymptote at $\\mathrm{Re}=-K/4$, phase $-90^\\circ$.",
+     "latex": "\\mathrm{Re}\\,L\\to-K/4,\\quad \\mathrm{Im}\\,L\\to-\\infty"
+    },
+    {
+     "text": "As $\\omega\\to\\infty$ the plot tends to the origin with phase $-180^\\circ$, approaching along the negative real axis from below. The phase never reaches $-180^\\circ$ at a finite frequency, so the plot never crosses the negative real axis.",
+     "latex": "\\angle L\\in(-180^\\circ,-90^\\circ)"
+    },
+    {
+     "text": "Adding the mirror image and the infinite arc through the right half-plane, the closed curve does not enclose $-1$ for any $K>0$, so $N=0$. With $P=0$ the closed loop is stable.",
+     "latex": "Z=0+0=0\\quad\\forall K>0"
+    }
+   ],
+   "answer": "Stable for every $K>0$; the closed-loop polynomial $s^2+2s+K$ confirms this."
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Counting encirclements",
+   "text": "Draw a ray from $-1$ in any direction (for example straight left along the negative real axis) and count signed crossings of the plot, clockwise as $+1$ and counter-clockwise as $-1$. With the plot for $\\omega>0$ in hand, the full plot is its mirror image, so you can also count crossings of the negative real axis of the half plot and double them."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Gain and encirclements",
+   "text": "The criterion tests the point $-1$, so the plot of $L$ must include all the loop gain. A feedback sign error (positive feedback) moves the critical point to $+1$. Always check the sign convention before counting."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The closed loop has $Z=N+P$ right-half-plane poles, where $N$ counts clockwise encirclements of $-1$ by the Nyquist plot of $L(s)$ and $P$ counts open-loop unstable poles.",
+    "Sketch the plot from the low-frequency value and phase, the high-frequency end point and the crossing of the negative real axis; add the mirror image and close the contour around integrators.",
+    "With an unstable open-loop plant ($P>0$) stability needs $P$ counter-clockwise encirclements of $-1$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the Nyquist criterion $Z=N+P$, what does $P$ represent?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The number of open-loop poles in the right half-plane"
+    },
+    {
+     "id": "b",
+     "text": "The number of closed-loop poles in the right half-plane"
+    },
+    {
+     "id": "c",
+     "text": "The number of encirclements of the origin"
+    },
+    {
+     "id": "d",
+     "text": "The number of zeros of $L(s)$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The number of open-loop poles in the right half-plane",
+   "distractorRationale": {
+    "a": "$P$ is counted from $L(s)=G(s)C(s)$ itself, before closing the loop.",
+    "b": "This is $Z$, the quantity we want to find.",
+    "c": "The critical point is $-1$, not the origin.",
+    "d": "Zeros do not enter the criterion directly."
+   },
+   "explanation": "$P$ counts unstable open-loop poles of $L(s)$, and $N$ counts clockwise encirclements of $-1$. The sum is the number of unstable closed-loop poles $Z$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a unity-feedback loop with open-loop transfer function $L(s)$, which point is the critical point of the Nyquist plot?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$0+j0$"
+    },
+    {
+     "id": "b",
+     "text": "$-1+j0$"
+    },
+    {
+     "id": "c",
+     "text": "$+1+j0$"
+    },
+    {
+     "id": "d",
+     "text": "$-1+j1$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$-1+j0$",
+   "distractorRationale": {
+    "a": "The origin is not special for the closed-loop poles.",
+    "b": "Closed-loop poles satisfy $1+L(s)=0$, i.e. $L(s)=-1$.",
+    "c": "This would be the critical point for positive feedback, not negative.",
+    "d": "There is no reason for an imaginary part; real poles on the real axis correspond to $L=-1$."
+   },
+   "explanation": "A closed-loop pole at $s$ requires $1+L(s)=0$, i.e. $L(s)=-1$. The Nyquist plot therefore measures how $L$ winds around $-1+j0$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A loop has $L(s)=\\dfrac{K}{(s+1)(s+2)(s+4)}$, whose Nyquist plot crosses the negative real axis at $-K/90$. With $K=135$ and $P=0$, how many closed-loop poles are in the right half-plane?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero"
+    },
+    {
+     "id": "b",
+     "text": "One"
+    },
+    {
+     "id": "c",
+     "text": "Three"
+    },
+    {
+     "id": "d",
+     "text": "Two"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Two",
+   "distractorRationale": {
+    "a": "This would need the crossing to lie between $-1$ and $0$, i.e. $K<90$.",
+    "b": "Complex poles come in conjugate pairs, so a single RHP pole cannot arise from this crossing.",
+    "c": "The loop is third order but only the pair of poles crossing the axis becomes unstable.",
+    "d": "The crossing is at $-1.5$, left of $-1$, giving two clockwise encirclements, so $Z=2$."
+   },
+   "explanation": "With $K=135$ the plot crosses the negative real axis at $-135/90=-1.5$, enclosing $-1$ twice in the clockwise sense. Then $Z=N+P=2+0=2$, a complex pair in the right half-plane; the loop is stable only for $K<90$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For $L(s)=\\dfrac{9}{s-3}$ (so $K=9$), whose Nyquist plot is a circle through $-3$ and $0$ traversed counter-clockwise, what is the stability verdict?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Unstable: the plot encloses $-1$, so $Z=1$"
+    },
+    {
+     "id": "b",
+     "text": "Unstable: the open-loop pole is in the right half-plane"
+    },
+    {
+     "id": "c",
+     "text": "Stable: $P=1$ and $N=-1$ give $Z=0$"
+    },
+    {
+     "id": "d",
+     "text": "Marginal: the circle passes through the origin"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Stable: $P=1$ and $N=-1$ give $Z=0$",
+   "distractorRationale": {
+    "a": "A counter-clockwise encirclement counts as $-1$, not $+1$.",
+    "b": "An unstable open loop can be stabilised by feedback, as here.",
+    "c": "The circle encloses $-1$ once counter-clockwise.",
+    "d": "Passing through the origin is not the critical point; $-1$ is."
+   },
+   "explanation": "The circle runs from $-3$ to $0$, so it contains $-1$ and is traced counter-clockwise: $N=-1$. With $P=1$ this gives $Z=0$, which agrees with the closed-loop pole at $s=3-9=-6$.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: multiplying the loop gain by 2 moves every point of the Nyquist plot to twice its distance from the origin, in the same direction.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Scaling $L$ by a real constant scales both its magnitude at every frequency and leaves its phase unchanged, so each point moves radially outward from the origin. That is why raising the gain can push the negative-real-axis crossing past $-1$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A loop has $L(s)=12/(s+3)$. Find the magnitude $|L(j\\omega)|$ at $\\omega=4$ rad/s (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o1"
+   ],
+   "correctValue": 2.4,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "At $s=j4$ the denominator has magnitude $\\sqrt{3^2+4^2}=5$, so $|L|=12/5=2.4$. This is the distance of that point on the Nyquist plot from the origin.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A loop has $L(s)=\\dfrac{K}{s(s+1)(s+3)}$. Its Nyquist plot crosses the negative real axis at $-K/12$. Find the value of $K$ (dimensionless) at which the plot passes through $-1$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o2"
+   ],
+   "correctValue": 12.0,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "The denominator is $s^3+4s^2+3s$, which at $s=j\\omega$ has imaginary part $3\\omega-\\omega^3=0$ at $\\omega^2=3$ and real part $-4\\omega^2=-12$. So the crossing is $-K/12$, equal to $-1$ at $K=12$, the stability limit.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A loop has $L(s)=\\dfrac{K}{(s-2)(s+3)}$ with $P=1$. Its Nyquist plot meets the negative real axis only at $\\omega=0$, where $L(0)=-K/6$. Find the smallest gain $K$ (dimensionless) for which the closed loop is stable.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o3"
+   ],
+   "correctValue": 6.0,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "Stability needs one counter-clockwise encirclement of $-1$, which occurs when the plot's leftmost real-axis point $-K/6$ lies beyond $-1$, i.e. $K>6$. This agrees with the characteristic equation $s^2+s-6+K=0$, which is stable only when $K>6$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain, in your own words, why the Nyquist criterion looks at encirclements of the point $-1$ rather than of the origin, and state what a counter-clockwise encirclement means for an open-loop unstable plant.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o2",
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o3"
+   ],
+   "markingGuide": [
+    "Closed-loop poles are roots of $1+L(s)=0$, i.e. points where $L(s)=-1$.",
+    "The argument principle: encirclements of the origin by $1+L$ equal encirclements of $-1$ by $L$.",
+    "$N$ clockwise encirclements correspond to $Z-P$ so $Z=N+P$.",
+    "Counter-clockwise encirclement ($N<0$) offsets open-loop RHP poles; stability needs $N=-P$."
+   ],
+   "explanation": "Closed-loop poles satisfy $1+L(s)=0$, so by the argument principle the encirclements of the origin by $1+L$ are the encirclements of $-1$ by $L$, giving $Z=N+P$. For an unstable open loop, stability requires exactly $P$ counter-clockwise encirclements ($N=-P$) to cancel the unstable open-loop poles.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe the Nyquist plot of $L(s)=\\dfrac{K}{s(s+5)}$ for $K>0$: starting asymptote, end point, whether it crosses the negative real axis, and the closed-loop stability. Explain how the pole at the origin is handled.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o1",
+    "ug.mce-control-engineering.nyquist-margins.nyquist-criterion.o2"
+   ],
+   "markingGuide": [
+    "For $\\omega\\to0^+$, $L\\to-j\\infty$ with real part tending to $-K/25$ (vertical asymptote).",
+    "Phase runs from $-90^\\circ$ to $-180^\\circ$ and the plot ends at the origin tangent to the negative real axis; it never crosses it at finite $\\omega$.",
+    "The small indentation around $s=0$ maps to an infinite arc, clockwise through $180^\\circ$ through the positive real direction, closing the contour.",
+    "With $P=0$ and no encirclement of $-1$, $Z=0$: stable for all $K>0$, consistent with $s^2+5s+K$ having positive coefficients."
+   ],
+   "explanation": "The real part is $-K/(\\omega^2+25)\\to-K/25$ as $\\omega\\to0$ and the phase stays between $-90^\\circ$ and $-180^\\circ$, so the plot never crosses the negative real axis. The indentation at the origin maps to an infinite clockwise arc, after which $-1$ is not encircled, so $Z=0$ and the loop is stable for every $K>0$.",
+   "board": "internal"
+  }
+ ]
+}

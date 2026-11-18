@@ -1,0 +1,391 @@
+{
+ "lessonTitle": "Capacitors and Inductors",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "When a solenoid valve in a hydraulic manifold is switched off, a spark can jump across the opening contacts even though the supply is only 24 V. The coil stored energy in its magnetic field and has no way to give it up instantly. Capacitors and inductors are the two elements that store energy, and their behaviour is the root of every transient in a circuit."
+  },
+  {
+   "type": "text",
+   "markdown": "A resistor obeys an algebraic law, $v=iR$: the voltage right now depends on the current right now. Capacitors and inductors obey **differential** laws, so their present voltage or current depends on history. A **capacitor** stores energy in an electric field between two plates; an **inductor** stores energy in the magnetic field around a coil. Both are idealised here: no resistance, no leakage, no stray capacitance."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Element laws (passive sign convention)",
+   "text": "For a capacitor of capacitance $C$ (farads) the current is proportional to the rate of change of voltage. For an inductor of inductance $L$ (henries) the voltage is proportional to the rate of change of current. Current is taken to flow into the positive terminal."
+  },
+  {
+   "type": "math",
+   "latex": "i_C(t)=C\\,\\frac{dv_C}{dt},\\qquad v_L(t)=L\\,\\frac{di_L}{dt}",
+   "caption": "Capacitor and inductor element laws"
+  },
+  {
+   "type": "text",
+   "markdown": "Read these in words. If the capacitor voltage is constant, $dv/dt=0$ and the capacitor carries no current: at DC steady state a capacitor is an **open circuit**. If the inductor current is constant, $di/dt=0$ and the inductor has no voltage across it: at DC steady state an inductor is a **short circuit**. A steep change in voltage or current demands a large current or voltage respectively."
+  },
+  {
+   "type": "worked_example",
+   "title": "Current needed to ramp a capacitor",
+   "prompt": "A 100 uF capacitor is charged so that its voltage rises linearly from 0 to 5.0 V in 2.0 ms. What current must the source supply?",
+   "steps": [
+    {
+     "text": "The ramp rate is constant.",
+     "latex": "\\frac{dv}{dt}=\\frac{5.0}{2.0\\times10^{-3}}=2500\\ \\mathrm{V/s}"
+    },
+    {
+     "text": "Apply the capacitor law.",
+     "latex": "i=C\\frac{dv}{dt}=100\\times10^{-6}\\times2500=0.25\\ \\mathrm{A}"
+    }
+   ],
+   "answer": "The source must supply a constant 0.25 A (250 mA) during the ramp; the current is zero once the voltage stops changing."
+  },
+  {
+   "type": "math",
+   "latex": "E_C=\\tfrac{1}{2}\\,C\\,V^{2},\\qquad E_L=\\tfrac{1}{2}\\,L\\,I^{2}",
+   "caption": "Energy stored in a capacitor at voltage V and in an inductor carrying current I, in joules"
+  },
+  {
+   "type": "worked_example",
+   "title": "Energy stored",
+   "prompt": "Find the energy stored in a 470 uF capacitor charged to 12 V, and in a 10 mH inductor carrying 2.0 A.",
+   "steps": [
+    {
+     "text": "Capacitor: substitute into $\\tfrac12CV^2$.",
+     "latex": "E_C=\\tfrac12(470\\times10^{-6})(12)^2=33.8\\ \\mathrm{mJ}"
+    },
+    {
+     "text": "Inductor: substitute into $\\tfrac12LI^2$.",
+     "latex": "E_L=\\tfrac12(10\\times10^{-3})(2.0)^2=20\\ \\mathrm{mJ}"
+    }
+   ],
+   "answer": "The capacitor holds 33.8 mJ and the inductor holds 20 mJ. Both formulas are quadratic, so doubling V or I quadruples the stored energy."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Capacitor",
+    "Inductor"
+   ],
+   "rows": [
+    [
+     "Element law",
+     "$i=C\\,dv/dt$",
+     "$v=L\\,di/dt$"
+    ],
+    [
+     "Stored energy",
+     "$\\tfrac12 CV^2$",
+     "$\\tfrac12 LI^2$"
+    ],
+    [
+     "Continuous quantity",
+     "Voltage $v_C$",
+     "Current $i_L$"
+    ],
+    [
+     "DC steady state",
+     "Open circuit",
+     "Short circuit"
+    ],
+    [
+     "Sudden change requires",
+     "Infinite current",
+     "Infinite voltage"
+    ]
+   ],
+   "caption": "The two storage elements are duals: swap v and i, C and L"
+  },
+  {
+   "type": "text",
+   "markdown": "**Why the state variable cannot jump.** Suppose $v_C$ changed by a finite amount in zero time. Then $dv/dt$ would be infinite and the capacitor law would demand infinite current. Equivalently, $E=\\tfrac12CV^2$ would change in zero time, requiring infinite power $p=dE/dt$, which no real source can provide. The same argument applies to $i_L$ in an inductor. So **just after a switch operates, $v_C(0^+)=v_C(0^-)$ and $i_L(0^+)=i_L(0^-)$**. Other voltages and currents (for example the current in a resistor) can jump freely."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Capacitor voltage is continuous; capacitor current may jump.",
+    "Inductor current is continuous; inductor voltage may jump.",
+    "When two capacitors are joined, charge $Q=CV$ is conserved even though voltage and energy redistribute.",
+    "Opening a switch in series with an inductor forces a large $L\\,di/dt$ voltage, hence sparks and the need for protection."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Use continuity to find initial conditions",
+   "text": "To solve a transient, first find $v_C$ and $i_L$ just before the switching instant, carry them across the switch unchanged, and then analyse the new circuit with those values as sources."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Capacitor: $i=C\\,dv/dt$; inductor: $v=L\\,di/dt$. At DC a capacitor is open and an inductor is a short.",
+    "Stored energy is $\\tfrac12CV^2$ and $\\tfrac12LI^2$, in joules.",
+    "Capacitor voltage and inductor current cannot change instantaneously because that would need infinite current, voltage or power."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 22 uF capacitor in a DC circuit has held a constant 5 V for several minutes. What is the current through it?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero"
+    },
+    {
+     "id": "b",
+     "text": "110 uA"
+    },
+    {
+     "id": "c",
+     "text": "0.23 A"
+    },
+    {
+     "id": "d",
+     "text": "Infinite"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Zero",
+   "distractorRationale": {
+    "a": "Correct: dv/dt = 0 so i = C dv/dt = 0.",
+    "b": "Wrong: 110 uA is C x V in microamp units, which mixes charge and current.",
+    "c": "Wrong: this divides V by C, which is dimensionally meaningless.",
+    "d": "Wrong: infinite current applies only to an ideal instantaneous voltage jump."
+   },
+   "explanation": "With constant voltage, $dv/dt=0$, so $i=C\\,dv/dt=0$. A capacitor at DC steady state behaves as an open circuit regardless of its capacitance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How much energy is stored in a 1000 uF capacitor charged to 25 V?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.3125 J"
+    },
+    {
+     "id": "b",
+     "text": "0.625 J"
+    },
+    {
+     "id": "c",
+     "text": "12.5 mJ"
+    },
+    {
+     "id": "d",
+     "text": "25 mJ"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.3125 J",
+   "distractorRationale": {
+    "a": "Correct: 0.5 x 1000e-6 x 625 = 0.3125 J.",
+    "b": "Wrong: this omits the factor of one half.",
+    "c": "Wrong: this uses 0.5CV instead of 0.5CV^2.",
+    "d": "Wrong: this is C x V, the charge in millicoulombs, not an energy."
+   },
+   "explanation": "$E=\\tfrac12CV^2=0.5\\times1000\\times10^{-6}\\times25^2=0.3125$ J. The voltage is squared, so the omitted half or square gives distractors.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 6 V charged capacitor is disconnected from its source, then at $t=0$ a switch connects it across a 2 k$\\Omega$ resistor. What is the resistor current at $t=0^+$?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3 mA"
+    },
+    {
+     "id": "b",
+     "text": "0"
+    },
+    {
+     "id": "c",
+     "text": "6 mA"
+    },
+    {
+     "id": "d",
+     "text": "Infinite"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "3 mA",
+   "distractorRationale": {
+    "a": "Correct: v_C(0+) = 6 V so i = 6/2000 = 3 mA.",
+    "b": "Wrong: this assumes the capacitor voltage drops to zero instantly.",
+    "c": "Wrong: this uses 2 k for 1 k, an arithmetic slip.",
+    "d": "Wrong: a resistor limits current, and the capacitor voltage does not jump."
+   },
+   "explanation": "Capacitor voltage cannot change instantly, so $v_C(0^+)=6$ V appears across the resistor. Ohm's law gives $i=6/2000=3$ mA, which then decays as the capacitor discharges.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why can the current in an ideal inductor not change instantaneously?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It would require infinite voltage since v = L di/dt"
+    },
+    {
+     "id": "b",
+     "text": "Because inductors have high resistance"
+    },
+    {
+     "id": "c",
+     "text": "Because inductors store charge rather than flux"
+    },
+    {
+     "id": "d",
+     "text": "Because the current is always zero at switching"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It would require infinite voltage since v = L di/dt",
+   "distractorRationale": {
+    "a": "Correct: a finite step in current gives di/dt infinite, so v = L di/dt would be infinite.",
+    "b": "Wrong: the ideal inductor has no resistance.",
+    "c": "Wrong: inductors store energy in a magnetic field, not as charge.",
+    "d": "Wrong: the current has a value before and after switching; it just cannot jump."
+   },
+   "explanation": "The element law $v=L\\,di/dt$ ties voltage to the slope of the current. A jump means an infinite slope and hence infinite voltage (or infinite power), which is physically impossible.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The current in a 2.0 mH inductor rises linearly from 0 to 3.0 A in 150 us. What is the constant voltage across it?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "40 V"
+    },
+    {
+     "id": "b",
+     "text": "0.04 V"
+    },
+    {
+     "id": "c",
+     "text": "9 V"
+    },
+    {
+     "id": "d",
+     "text": "0.9 V"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "40 V",
+   "distractorRationale": {
+    "a": "Correct: v = L di/dt = 2e-3 x 3/150e-6 = 40 V.",
+    "b": "Wrong: this mis-scales the 150 us as 150 ms.",
+    "c": "Wrong: this multiplies L (in mH) by I and ignores the time.",
+    "d": "Wrong: this uses 150 us as 150 ms and 2 mH as 0.2 mH."
+   },
+   "explanation": "The slope is $di/dt=3.0/150\\times10^{-6}=20{,}000$ A/s. Then $v=L\\,di/dt=2.0\\times10^{-3}\\times20{,}000=40$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The voltage across a 4.7 uF capacitor rises linearly from 2.0 V to 14.0 V in 3.0 ms. What constant current (in mA) flows through it?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o1"
+   ],
+   "correctValue": 18.8,
+   "tolerance": 0.2,
+   "unit": "mA",
+   "explanation": "The rate is $\\Delta v/\\Delta t=12.0/3.0\\times10^{-3}=4000$ V/s. Then $i=C\\,dv/dt=4.7\\times10^{-6}\\times4000=18.8$ mA.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 47 mH inductor carries 1.5 A. How much energy is stored, in millijoules?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o2"
+   ],
+   "correctValue": 52.9,
+   "tolerance": 0.2,
+   "unit": "mJ",
+   "explanation": "$E=\\tfrac12LI^2=0.5\\times0.047\\times1.5^2=0.0529$ J, which is 52.9 mJ. The current is squared before multiplying.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 100 uF capacitor charged to 50 V is connected through a resistor to an identical, initially uncharged 100 uF capacitor. Charge is conserved. After the transient the two capacitors share the same voltage. How much energy (in mJ) is dissipated in the resistor?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o2",
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o3"
+   ],
+   "correctValue": 62.5,
+   "tolerance": 0.5,
+   "unit": "mJ",
+   "explanation": "The initial charge is $Q=100\\times10^{-6}\\times50=5.0$ mC. Shared over 200 uF, the final voltage is 25 V. Initial energy is $\\tfrac12(100\\mu)(50)^2=125$ mJ and final energy is $\\tfrac12(200\\mu)(25)^2=62.5$ mJ, so 62.5 mJ is dissipated. Voltage must redistribute through the resistor, which is where the energy goes.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A 12 V relay coil of inductance 0.5 H carries 0.2 A when a transistor switch in series with it is suddenly opened. Explain, using the inductor law, why a large voltage appears across the switch, and what is meant by saying the inductor current is continuous.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o3"
+   ],
+   "markingGuide": [
+    "States v = L di/dt",
+    "Explains that opening the switch tries to force the current to zero very quickly, so di/dt is very large",
+    "Concludes the induced voltage is very large and may exceed the switch rating or cause arcing",
+    "States current continuity: i_L(0+) = i_L(0-), the current cannot jump",
+    "Relates it to stored energy 0.5 L I^2 needing somewhere to go"
+   ],
+   "explanation": "Opening the switch tries to drop the current from 0.2 A to zero in a very short time, so $di/dt$ is very large and $v=L\\,di/dt$ is large; the inductor produces whatever voltage is needed to keep the current going. This stored energy $\\tfrac12LI^2=10$ mJ has nowhere to go but the switch, causing arcing or damage unless a path is provided.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Using only the element laws, justify the statement that in a DC circuit at steady state a capacitor behaves as an open circuit and an inductor as a short circuit, and use it to state the steady-state current in a series loop of a 12 V source, a 100 ohm resistor and a capacitor.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o1",
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.capacitor-and-inductor.o3"
+   ],
+   "markingGuide": [
+    "For steady DC, voltage across a capacitor is constant so dv/dt = 0",
+    "Hence i = C dv/dt = 0: open circuit",
+    "For steady DC, inductor current is constant so di/dt = 0",
+    "Hence v = L di/dt = 0: short circuit",
+    "Series loop current is zero at steady state; the full 12 V appears across the capacitor and none across the resistor"
+   ],
+   "explanation": "In steady state nothing varies with time, so $dv_C/dt=0$ and the capacitor current $i=C\\,dv/dt$ is zero, i.e. an open circuit. Likewise $di_L/dt=0$ gives $v_L=0$ for an inductor, a short circuit. In the series loop the current must be zero, so the resistor drops $0\\times100=0$ V and the capacitor settles at 12 V.",
+   "board": "internal"
+  }
+ ]
+}

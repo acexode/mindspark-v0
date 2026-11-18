@@ -1,0 +1,388 @@
+{
+ "lessonTitle": "The Strain-Life Approach and Low-Cycle Fatigue",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The turbine casing of a jet engine is heated and cooled on every flight. It never carries a large mechanical load, but the constrained thermal expansion forces the metal at its hottest spot past yield, cycle after cycle. The life is a few thousand flights, and no stress-life curve built from elastic stress can describe it."
+  },
+  {
+   "type": "text",
+   "markdown": "When cyclic loading is high enough to cause significant **plastic** deformation each cycle, stress is a poor measure because it changes little while strain changes a lot. The **strain-life approach** therefore uses the strain amplitude $\\Delta\\varepsilon/2$ as the controlling variable. In the stable cyclic response, a stress-strain hysteresis loop forms, and its total strain width splits into an elastic part, recovered on unloading, and a plastic part, the loop's width at zero stress."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\Delta\\varepsilon}{2} = \\frac{\\Delta\\varepsilon_e}{2} + \\frac{\\Delta\\varepsilon_p}{2}, \\qquad \\frac{\\Delta\\varepsilon_e}{2} = \\frac{\\sigma_a}{E}",
+   "caption": "Total strain amplitude is the sum of elastic and plastic amplitudes; the elastic part follows from the stress amplitude $\\sigma_a$ and Young's modulus $E$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Reversals and cycles",
+   "text": "One cycle contains two reversals. Strain-life equations are written in $2N$, the number of reversals to failure, so $N$ is cycles to failure."
+  },
+  {
+   "type": "text",
+   "markdown": "Each component has its own power-law life relation. The elastic part is Basquin's relation in strain form, and the plastic part is the **Coffin-Manson** relation. Adding them gives the strain-life equation."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\Delta\\varepsilon}{2} = \\frac{\\sigma_f'}{E}(2N)^{b} + \\varepsilon_f'(2N)^{c}",
+   "caption": "Strain-life equation. $\\sigma_f'$ = fatigue strength coefficient (MPa), $b$ = fatigue strength exponent (about $-0.05$ to $-0.12$), $\\varepsilon_f'$ = fatigue ductility coefficient, $c$ = fatigue ductility exponent (about $-0.5$ to $-0.7$)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Splitting the strain amplitude at a given life",
+   "prompt": "A steel (assumed typical constants) has $\\sigma_f'=1000$ MPa, $E=200$ GPa, $b=-0.09$, $\\varepsilon_f'=0.5$, $c=-0.6$. Find the elastic, plastic and total strain amplitude at $N=10^{4}$ cycles.",
+   "steps": [
+    {
+     "text": "Reversals: $2N = 2\\times10^{4}$.",
+     "latex": "2N = 2\\times10^{4}"
+    },
+    {
+     "text": "Elastic amplitude.",
+     "latex": "\\frac{\\Delta\\varepsilon_e}{2} = \\frac{1000}{200000}(2\\times10^{4})^{-0.09} = 0.005\\times0.4101 = 0.00205"
+    },
+    {
+     "text": "Plastic amplitude.",
+     "latex": "\\frac{\\Delta\\varepsilon_p}{2} = 0.5\\times(2\\times10^{4})^{-0.6} = 0.5\\times0.002627 = 0.00131"
+    },
+    {
+     "text": "Total.",
+     "latex": "\\frac{\\Delta\\varepsilon}{2} = 0.00205 + 0.00131 = 0.00336"
+    }
+   ],
+   "answer": "Elastic 0.00205, plastic 0.00131, total 0.00336 (about 39 percent of the total is plastic)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Life range",
+    "Dominant term",
+    "Slope on log-log plot",
+    "Controlled by"
+   ],
+   "rows": [
+    [
+     "Short (low-cycle), below transition",
+     "Plastic, $\\varepsilon_f'(2N)^c$",
+     "Steeper, $c\\approx-0.6$",
+     "Ductility $\\varepsilon_f'$"
+    ],
+    [
+     "Long (high-cycle), above transition",
+     "Elastic, $(\\sigma_f'/E)(2N)^b$",
+     "Shallow, $b\\approx-0.1$",
+     "Strength $\\sigma_f'$"
+    ]
+   ],
+   "caption": "The plastic and elastic lines cross at the transition life."
+  },
+  {
+   "type": "worked_example",
+   "title": "Life at a given strain amplitude",
+   "prompt": "For the same steel, find the number of cycles at which the total strain amplitude is $\\Delta\\varepsilon/2 = 0.005$.",
+   "steps": [
+    {
+     "text": "The equation cannot be solved algebraically for $N$, so iterate: try $2N=2000$.",
+     "latex": "0.005\\times2000^{-0.09}+0.5\\times2000^{-0.6} = 0.00775"
+    },
+    {
+     "text": "That is greater than 0.005, so the life is longer. Refine with a numerical search (bisection) until the sum equals 0.005.",
+     "latex": "2N \\approx 5966"
+    },
+    {
+     "text": "Convert reversals to cycles and check by substitution (total amplitude $=0.005$).",
+     "latex": "N = \\frac{5966}{2} = 2983\\ \\text{cycles}"
+    }
+   ],
+   "answer": "About 2983 cycles; this lies in the low-cycle regime, and the plastic term is dominant."
+  },
+  {
+   "type": "text",
+   "markdown": "The two lines cross at the **transition life**, where elastic and plastic amplitudes are equal. Setting $\\frac{\\sigma_f'}{E}(2N_t)^b=\\varepsilon_f'(2N_t)^c$ gives $2N_t=(\\varepsilon_f'E/\\sigma_f')^{1/(b-c)}$. For the steel above, $2N_t\\approx8348$ reversals, or about 4174 cycles. Below it the plastic strain controls; above it the elastic strain does."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "**Prefer strain-life** for low-cycle fatigue (lives below about $10^{4}$ cycles), thermal fatigue, and cases with notches where the root yields locally while the bulk is elastic.",
+    "**Prefer strain-life** when load sequence or plasticity matters, because strain-life tracks local strain history and mean-stress relaxation.",
+    "**Stress-life is adequate** for high-cycle fatigue, where strains are almost fully elastic and stress is a good measure of damage."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Choose by the plastic strain",
+   "text": "If the plastic strain amplitude is small compared with the elastic part, the S-N approach is simpler and accurate. If the plastic part is significant (life near or below the transition life), use strain-life."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Total strain amplitude is the sum of elastic ($\\sigma_a/E$) and plastic parts.",
+    "$\\Delta\\varepsilon/2=(\\sigma_f'/E)(2N)^b+\\varepsilon_f'(2N)^c$ - Basquin elastic term plus Coffin-Manson plastic term; solve for life by iteration.",
+    "Strain-life is preferred for low-cycle, thermal and notch-root fatigue; stress-life suits high-cycle elastic loading."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In strain-life analysis, how is the total strain amplitude related to its components?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It equals the plastic amplitude only"
+    },
+    {
+     "id": "b",
+     "text": "It equals the elastic amplitude only"
+    },
+    {
+     "id": "c",
+     "text": "It is the product of the elastic and plastic amplitudes"
+    },
+    {
+     "id": "d",
+     "text": "It is the sum of the elastic and plastic strain amplitudes"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It is the sum of the elastic and plastic strain amplitudes",
+   "distractorRationale": {
+    "a": "That ignores the elastic part.",
+    "b": "That ignores the plastic part.",
+    "c": "Strains add; they are not multiplied.",
+    "d": "Correct: total = elastic + plastic."
+   },
+   "explanation": "A hysteresis loop has a recoverable elastic width $\\sigma_a/E$ and a plastic width. Adding the two gives the total strain amplitude that enters the strain-life equation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For which situation is a strain-life method most appropriate?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A shaft with a purely elastic stress and a life of $10^{8}$ cycles"
+    },
+    {
+     "id": "b",
+     "text": "A static tensile loading"
+    },
+    {
+     "id": "c",
+     "text": "A creep test at constant stress"
+    },
+    {
+     "id": "d",
+     "text": "A component with significant plasticity each cycle and a life of a few thousand cycles"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "A component with significant plasticity each cycle and a life of a few thousand cycles",
+   "distractorRationale": {
+    "a": "That is a high-cycle elastic case suited to S-N.",
+    "b": "There is no cycling in static loading.",
+    "c": "Creep is a different mechanism.",
+    "d": "Correct: low-cycle fatigue."
+   },
+   "explanation": "When plastic strain accumulates each cycle, strain amplitude is the controlling variable and stress is nearly constant. This is the regime of low-cycle fatigue, where strain-life is the appropriate method.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the strain-life equation, which term dominates at very long lives?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The elastic (Basquin) term, because its exponent $b$ is much shallower than $c$"
+    },
+    {
+     "id": "b",
+     "text": "The plastic term, because its exponent is shallower"
+    },
+    {
+     "id": "c",
+     "text": "Neither, both are zero"
+    },
+    {
+     "id": "d",
+     "text": "The plastic term, because plastic strains are always larger"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The elastic (Basquin) term, because its exponent $b$ is much shallower than $c$",
+   "distractorRationale": {
+    "a": "Correct: with the shallower slope $b$ the elastic term decays slowly and exceeds the plastic term.",
+    "b": "The plastic term decays faster, since $|c|>|b|$.",
+    "c": "Both are finite.",
+    "d": "Plastic strain falls off quickly with life."
+   },
+   "explanation": "Because $|c|>|b|$, the plastic term falls more quickly with increasing $N$ than the elastic term. Beyond the transition life the elastic term is the larger and the response is nearly elastic.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A notched component is loaded by a nominal stress that is elastic, but the notch root yields locally. Why is strain-life a better choice than a nominal stress-life approach?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Nominal stress is always larger than local stress"
+    },
+    {
+     "id": "b",
+     "text": "The notch has no effect on fatigue"
+    },
+    {
+     "id": "c",
+     "text": "Local strain at the root, not nominal stress, controls the damage and is captured by the strain-life method"
+    },
+    {
+     "id": "d",
+     "text": "Strain-life ignores plasticity"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Local strain at the root, not nominal stress, controls the damage and is captured by the strain-life method",
+   "distractorRationale": {
+    "a": "The local stress is higher than nominal at a notch.",
+    "b": "Notches typically shorten life.",
+    "c": "Correct: it uses the local strain.",
+    "d": "Strain-life includes the plastic term."
+   },
+   "explanation": "The local strain at the notch root includes plastic deformation even though the bulk is elastic. The strain-life method uses this local strain amplitude, whereas the nominal stress is a misleading measure.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two steels have the same strength coefficient $\\sigma_f'$ but steel B has a higher ductility coefficient $\\varepsilon_f'$. How do their strain-life curves differ?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Steel B has a shorter life everywhere"
+    },
+    {
+     "id": "b",
+     "text": "Steel B has a longer life only at very long lives"
+    },
+    {
+     "id": "c",
+     "text": "There is no difference"
+    },
+    {
+     "id": "d",
+     "text": "Steel B has a longer low-cycle life, with little difference at very long lives"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Steel B has a longer low-cycle life, with little difference at very long lives",
+   "distractorRationale": {
+    "a": "A higher ductility coefficient raises the plastic term and the life.",
+    "b": "The elastic term (long life) depends on $\\sigma_f'$ which is unchanged.",
+    "c": "The plastic term differs.",
+    "d": "Correct: $\\varepsilon_f'$ scales the plastic term."
+   },
+   "explanation": "The ductility coefficient scales the plastic term, which dominates short lives, so B performs better in low-cycle fatigue. The elastic term, which controls long lives, is unchanged because $\\sigma_f'$ is the same.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A fatigue specimen has stress amplitude $\\sigma_a=300$ MPa and $E=205$ GPa. Find the elastic strain amplitude in microstrain ($10^{-6}$).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o1"
+   ],
+   "correctValue": 1463.41,
+   "tolerance": 15.0,
+   "unit": "microstrain",
+   "explanation": "$\\varepsilon_{ea}=\\sigma_a/E=300/205000=0.001463$, which is 1463 microstrain. Stress and modulus must be in the same unit (MPa).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a strain-controlled test the total strain amplitude is 0.0040 and the stress amplitude is 500 MPa; $E=200$ GPa. Find the plastic strain amplitude in microstrain.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o1"
+   ],
+   "correctValue": 1500.0,
+   "tolerance": 20.0,
+   "unit": "microstrain",
+   "explanation": "The elastic amplitude is $500/200000=0.0025$, so the plastic amplitude is $0.0040-0.0025=0.0015$, i.e. 1500 microstrain. The plastic part is about 37 percent of the total.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a low-cycle test the plastic strain amplitude is 0.010. For a material with $\\varepsilon_f'=0.35$ and $c=-0.58$ (assumed), use the Coffin-Manson relation $\\Delta\\varepsilon_p/2=\\varepsilon_f'(2N)^c$ to estimate the number of cycles $N$ to failure.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o2"
+   ],
+   "correctValue": 229.698,
+   "tolerance": 10.0,
+   "unit": "cycles",
+   "explanation": "Solving, $2N=(0.010/0.35)^{1/(-0.58)}=(0.02857)^{-1.724}=459.4$ reversals, so $N=230$ cycles. Converting reversals to cycles requires dividing by two.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Give three situations in which a strain-life approach is preferable to a stress-life approach, and explain the physical reason in each case.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o3"
+   ],
+   "markingGuide": [
+    "Low-cycle fatigue, where plastic strain is significant and stress hardly changes with life",
+    "Notch roots that yield locally, so local strain, not nominal stress, drives damage",
+    "Thermal fatigue or constrained expansion, where strain is imposed",
+    "Mentions that strain-life can include plastic strain and mean-stress relaxation, while stress-life is adequate for elastic high-cycle loading"
+   ],
+   "explanation": "The strain-life method captures plastic damage and local yielding, which stress-life cannot. For purely elastic high-cycle loading the two methods agree and the simpler stress-life approach is adequate.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A steel has $\\sigma_f'=900$ MPa, $E=200$ GPa, $b=-0.1$, $\\varepsilon_f'=0.4$, $c=-0.55$ (assumed). (a) Compute the elastic and plastic strain amplitudes at $N=10^{4}$ cycles. (b) A component is cycled at a total strain amplitude of 0.0030. Decide whether it will survive $10^{4}$ cycles, and state the predicted life.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o1",
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.strain-life.o2"
+   ],
+   "markingGuide": [
+    "Uses $2N=2\\times10^{4}$",
+    "Elastic amplitude 0.00167 and plastic amplitude 0.00172",
+    "Total at $N=10^{4}$ is 0.0034, above 0.0030, so the life at 0.0030 exceeds $10^{4}$ cycles",
+    "Gives life from iteration of about 1.47\\times10^{4} cycles",
+    "Direction check: a smaller strain amplitude gives a longer life"
+   ],
+   "explanation": "At $N=10^{4}$ the strain-life equation gives a total amplitude of 0.0034. Since 0.0030 is lower than this, the component lasts longer than $10^{4}$ cycles. Iterating gives about 1.47\\times10^{4} cycles.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,395 @@
+{
+ "lessonTitle": "Base Excitation and Transmissibility",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A camera gimbal bolted to a vehicle roof must hold a steady picture while the roof bounces over uneven road. The roof is the base, the camera is the mass, and the question is how much of the roof motion reaches the lens."
+  },
+  {
+   "type": "text",
+   "markdown": "In **base excitation** the support (base) moves, $y(t)=Y\\sin\\omega t$ (m), and the mass $m$ (kg) rides on a spring $k$ (N/m) and damper $c$ (N s/m) attached to it. Let $x(t)$ be the absolute displacement of the mass and $z=x-y$ the relative displacement, i.e. the stretch of the spring. The spring and damper forces depend on $z$ and $\\dot{z}$, so Newton's law gives $m\\ddot{x}+c(\\dot{x}-\\dot{y})+k(x-y)=0$. Writing this in terms of $z$ gives $m\\ddot{z}+c\\dot{z}+kz=-m\\ddot{y}=m\\omega^2Y\\sin\\omega t$: the base motion acts like an applied force of amplitude $m\\omega^2Y$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Displacement transmissibility",
+   "text": "The displacement transmissibility $T=X/Y$ is the ratio of the steady-state amplitude of the absolute motion of the mass to the amplitude of the base motion (dimensionless). With frequency ratio $r=\\omega/\\omega_n$, $\\omega_n=\\sqrt{k/m}$ in rad/s, and damping ratio $\\zeta=c/(2\\sqrt{km})$, it depends only on $r$ and $\\zeta$."
+  },
+  {
+   "type": "math",
+   "latex": "T=\\frac{X}{Y}=\\sqrt{\\frac{1+(2\\zeta r)^2}{(1-r^2)^2+(2\\zeta r)^2}},\\qquad \\frac{Z}{Y}=\\frac{r^2}{\\sqrt{(1-r^2)^2+(2\\zeta r)^2}}",
+   "caption": "Absolute transmissibility X/Y and relative-motion ratio Z/Y"
+  },
+  {
+   "type": "text",
+   "markdown": "**Where isolation begins.** Set $T=1$: the numerator and denominator inside the root are equal only if $(1-r^2)^2=1$, i.e. $r=\\sqrt2$ (the root $r=0$ is the static case). So for $r>\\sqrt2$ the mass moves less than the base and the support is doing its job; for $r<\\sqrt2$ the motion is amplified, with a peak near $r=1$. The crossover $r=\\sqrt2\\approx1.414$ does not depend on $\\zeta$. Above it, **more** damping makes $T$ **larger**, because the damper force $c\\dot{z}$ transmits motion directly from base to mass."
+  },
+  {
+   "type": "worked_example",
+   "title": "Transmitted and relative motion",
+   "prompt": "A 25 kg instrument rests on mounts of total stiffness 1 x 10^5 N/m with damping ratio 0.15. The base vibrates at 100 rad/s with amplitude 4 mm. Find the absolute amplitude of the instrument and the relative displacement across the mount.",
+   "steps": [
+    {
+     "text": "Natural frequency and frequency ratio.",
+     "latex": "\\omega_n=\\sqrt{100000/25}=63.25\\ \\text{rad/s},\\quad r=100/63.25=1.581"
+    },
+    {
+     "text": "Compute the numerator and denominator inside the transmissibility root.",
+     "latex": "2\\zeta r=0.474,\\ 1+(2\\zeta r)^2=1.225,\\ (1-r^2)^2+(2\\zeta r)^2=2.475"
+    },
+    {
+     "text": "Transmissibility and absolute amplitude.",
+     "latex": "T=0.704,\\quad X=TY=0.704\\times4=2.81\\ \\text{mm}"
+    },
+    {
+     "text": "Relative amplitude uses the second formula.",
+     "latex": "Z=\\frac{r^2}{\\sqrt{(1-r^2)^2+(2\\zeta r)^2}}Y=1.589\\times4=6.36\\ \\text{mm}"
+    }
+   ],
+   "answer": "X = 2.81 mm (T = 0.704, so the instrument moves less than the base); relative motion Z = 6.36 mm."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Frequency ratio $r$",
+    "$T$ for $\\zeta=0.05$",
+    "$T$ for $\\zeta=0.2$",
+    "Comment"
+   ],
+   "rows": [
+    [
+     "0.5",
+     "1.33",
+     "1.31",
+     "Amplified slightly"
+    ],
+    [
+     "1.0",
+     "10.05",
+     "2.69",
+     "Resonance: peak"
+    ],
+    [
+     "1.414",
+     "1.00",
+     "1.00",
+     "Crossover: T = 1 for any damping"
+    ],
+    [
+     "2.0",
+     "0.34",
+     "0.41",
+     "Isolating"
+    ],
+    [
+     "3.0",
+     "0.13",
+     "0.19",
+     "Isolating; light damping better"
+    ]
+   ],
+   "caption": "Displacement transmissibility (computed from the formula)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Relative motion well above resonance",
+   "prompt": "A sensitive sensor is mounted with a damping ratio of 0.05 on a base moving at amplitude 3 mm. The excitation frequency is 3 times the mount natural frequency. Find the absolute amplitude and relative amplitude.",
+   "steps": [
+    {
+     "text": "Transmissibility at r = 3.",
+     "latex": "T=\\sqrt{\\frac{1+(2\\times0.05\\times3)^2}{(1-9)^2+(2\\times0.05\\times3)^2}}=0.1304"
+    },
+    {
+     "text": "Absolute amplitude.",
+     "latex": "X=TY=0.1304\\times3=0.391\\ \\text{mm}"
+    },
+    {
+     "text": "Relative ratio Z/Y at r = 3; the mass is nearly stationary, so the spring takes up almost the whole base motion.",
+     "latex": "Z/Y=\\frac{9}{\\sqrt{64+0.09}}=1.1242,\\quad Z=3.373\\ \\text{mm}"
+    }
+   ],
+   "answer": "X = 0.391 mm and Z = 3.373 mm: the sensor is almost still and the mount stretches by almost the base amplitude."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Compute $\\omega_n=\\sqrt{k/m}$ in rad/s; convert any Hz value with $\\omega=2\\pi f$.",
+    "Form $r=\\omega/\\omega_n$; if $r<\\sqrt2$ the mount amplifies, if $r>\\sqrt2$ it isolates.",
+    "Evaluate $T$ and take $X=TY$ for absolute motion.",
+    "Evaluate $Z/Y=r^2/\\sqrt{(1-r^2)^2+(2\\zeta r)^2}$ for the mount stroke; for $r\\gg1$ it tends to 1."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Relative versus absolute motion",
+   "text": "If you need to know how well the mass is protected, use the absolute amplitude $X=TY$. If you need to know whether the mount will bottom out, or what stroke an instrument pickup sees, use the relative amplitude $Z$. At high frequency $T\\to0$ while $Z\\to Y$."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not confuse with force transmissibility",
+   "text": "The transmissibility above is for ground motion entering the mass. The force transmitted to the ground from a force acting on the mass has the same numerical form but is a different physical quantity, with a different derivation."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Base motion acts like an applied force $m\\omega^2Y$ on the relative coordinate $z=x-y$.",
+    "Displacement transmissibility $T=\\sqrt{[1+(2\\zeta r)^2]/[(1-r^2)^2+(2\\zeta r)^2]}$; isolation ($T<1$) begins at $r=\\sqrt2$ for every damping ratio.",
+    "Above $r=\\sqrt2$ more damping increases transmission; at resonance it limits the peak.",
+    "Relative motion $Z/Y=r^2/\\sqrt{(1-r^2)^2+(2\\zeta r)^2}$ tends to 1 well above resonance."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A package of instruments has mounts giving a damping ratio of 0.1. The ground vibrates at twice the natural frequency of the mounted system (frequency ratio 2.0). Find the displacement transmissibility (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o1"
+   ],
+   "correctValue": 0.355862,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "With r = 2 and zeta = 0.1: 2 zeta r = 0.4, so the numerator is 1 + 0.16 = 1.16. The denominator is (1 - 4)^2 + 0.16 = 9.16, giving T = sqrt(1.16/9.16) = 0.356.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Ground motion drives a mounted mass. At what frequency ratio, to three significant figures, does the mount first begin to reduce the transmitted motion?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.00, the natural frequency"
+    },
+    {
+     "id": "b",
+     "text": "1.41, independent of the damping ratio"
+    },
+    {
+     "id": "c",
+     "text": "2.00, twice the natural frequency"
+    },
+    {
+     "id": "d",
+     "text": "0.707, and it moves with the damping ratio"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "1.41, independent of the damping ratio",
+   "distractorRationale": {
+    "a": "At r = 1 the transmissibility peaks; it does not fall below 1.",
+    "b": "Correct: Setting T = 1 gives (1 - r^2)^2 = 1, so r^2 = 2 and r = 1.414, for every damping ratio.",
+    "c": "Isolation is already present before r = 2.",
+    "d": "0.707 is 1 over root two; the crossover is root two and does not depend on damping."
+   },
+   "explanation": "Setting T = 1 gives (1 - r^2)^2 = 1, so r^2 = 2 and r = 1.414, for every damping ratio. Above this ratio the mass moves less than the base.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A mounted instrument is excited at a frequency ratio of 3. The mount damping is increased from a low value to a high value. What happens to the displacement transmissibility?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o2",
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases, because the damper force transmits more of the base motion to the mass"
+    },
+    {
+     "id": "b",
+     "text": "It decreases, because more damping always reduces vibration"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged, because transmissibility is a function of frequency ratio only"
+    },
+    {
+     "id": "d",
+     "text": "It falls to zero when the damping ratio reaches 1"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It increases, because the damper force transmits more of the base motion to the mass",
+   "distractorRationale": {
+    "a": "Correct: For r above sqrt(2), T rises with zeta: at r = 3, T = 0.130 for zeta = 0.05 but 0.370 for zeta = 0.5.",
+    "b": "Damping helps near resonance but hurts at r above root two.",
+    "c": "T depends on both r and zeta.",
+    "d": "T does not vanish for any finite damping; at high damping it tends to a larger value."
+   },
+   "explanation": "For r above sqrt(2), T rises with zeta: at r = 3, T = 0.130 for zeta = 0.05 but 0.370 for zeta = 0.5. The damper connects the mass directly to the moving base, so the heavier it is, the more high-frequency motion it passes on.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A platform on resilient mounts has a natural frequency of 2.5 Hz and a damping ratio of 0.05. The floor vibrates at 5 Hz with amplitude 6 mm. Find the steady-state absolute amplitude of the platform in millimetres.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o1"
+   ],
+   "correctValue": 2.03509,
+   "tolerance": 0.0407018,
+   "unit": "mm",
+   "explanation": "The frequency ratio is 5/2.5 = 2.0. Then T = sqrt((1 + (0.2)^2)/((1 - 4)^2 + (0.2)^2)) = sqrt(1.04/9.04) = 0.3392, so X = T Y = 2.035 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A wheel-suspension test rig has a damping ratio of 0.1 and is excited at a frequency ratio of 2.5 by a base amplitude of 2 mm. Find the relative amplitude between mass and base (the stroke of the spring) in millimetres.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o3"
+   ],
+   "correctValue": 2.37023,
+   "tolerance": 0.0474045,
+   "unit": "mm",
+   "explanation": "The relative ratio is r^2 / sqrt((1 - r^2)^2 + (2 zeta r)^2) = 6.25 / sqrt(27.5625 + 0.25) = 1.1851. Multiplying by the base amplitude of 2 mm gives Z = 2.370 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Show that displacement transmissibility equals 1 at a frequency ratio of root two for any value of the damping ratio, and explain what this means for isolator design.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o2"
+   ],
+   "markingGuide": [
+    "Set T = 1: numerator 1 + (2 zeta r)^2 equals denominator (1 - r^2)^2 + (2 zeta r)^2",
+    "The damping terms cancel, leaving (1 - r^2)^2 = 1",
+    "So r^2 = 2 (r = 0 is the trivial static case), r = sqrt(2) = 1.414",
+    "Result is independent of zeta",
+    "Design consequence: isolator natural frequency must be below the excitation frequency divided by sqrt(2), and in practice well below",
+    "Damping affects only how much is gained above r = sqrt(2) and how large the resonant peak is"
+   ],
+   "explanation": "The damping terms appear identically in numerator and denominator, so they cancel at the crossover. The isolator must therefore place the natural frequency below 1/sqrt(2) of the lowest excitation frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A mounted mass with damping ratio 0.1 is excited by ground motion at exactly its natural frequency. The displacement transmissibility is approximately",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "5.0 divided by the square root of 1.04, about 4.9"
+    },
+    {
+     "id": "b",
+     "text": "5.0, which is exactly 1/(2 zeta)"
+    },
+    {
+     "id": "c",
+     "text": "5.1"
+    },
+    {
+     "id": "d",
+     "text": "1.0, since the base and mass move together"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "5.1",
+   "distractorRationale": {
+    "a": "That divides rather than multiplying through the numerator; it does not follow from the formula.",
+    "b": "1/(2 zeta) is the magnification for force excitation. The base-motion version has an extra numerator factor.",
+    "c": "Correct: At r = 1 the transmissibility is sqrt(1 + 4 zeta^2)/(2 zeta) = sqrt(1.04)/0.2 = 5.10.",
+    "d": "T equals 1 only at root two or in the static limit."
+   },
+   "explanation": "At r = 1 the transmissibility is sqrt(1 + 4 zeta^2)/(2 zeta) = sqrt(1.04)/0.2 = 5.10. This is slightly larger than 1/(2 zeta) = 5, because the damper transmits some base motion directly.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A delicate sensor sits on isolating mounts and the ground vibrates at a frequency far above the mount natural frequency. Compared with the ground amplitude, the relative displacement across the mounts is approximately",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "zero, because the isolator removes the motion"
+    },
+    {
+     "id": "b",
+     "text": "much larger than the ground amplitude, as at resonance"
+    },
+    {
+     "id": "c",
+     "text": "equal to the force amplitude divided by stiffness"
+    },
+    {
+     "id": "d",
+     "text": "equal to the ground amplitude, because the sensor stays almost stationary"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "equal to the ground amplitude, because the sensor stays almost stationary",
+   "distractorRationale": {
+    "a": "The isolator makes the sensor stationary, so the spring takes up the whole ground motion and does not stay unstretched.",
+    "b": "Large relative motion occurs near r = 1, not at high frequency.",
+    "c": "That is the force-excited static deflection, not the base-excited relative stroke.",
+    "d": "Correct: For r much greater than 1, Z/Y = r^2 / sqrt((1 - r^2)^2 + (2 zeta r)^2) tends to 1."
+   },
+   "explanation": "For r much greater than 1, Z/Y = r^2 / sqrt((1 - r^2)^2 + (2 zeta r)^2) tends to 1. The mass stays almost still in space, so the whole base motion appears as stretch of the spring and damper.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A road vehicle carries an electronics box on isolating mounts. Road excitation covers 3 Hz to 40 Hz and the mount natural frequency is 8 Hz. Describe the box response in the bands below and above the crossover, and name one effect that the mount damping has on each band.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o2",
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o3"
+   ],
+   "markingGuide": [
+    "Crossover at r = sqrt(2), i.e. about 11.3 Hz for fn = 8 Hz",
+    "Below 11.3 Hz motion is amplified, with a peak near 8 Hz",
+    "Above 11.3 Hz the box moves less than the road, with transmissibility falling as frequency rises",
+    "Damping reduces the peak amplitude near 8 Hz",
+    "Damping raises transmissibility above the crossover",
+    "Relative motion near resonance is large and must fit within the mount stroke; at high frequency relative motion tends to the road amplitude"
+   ],
+   "explanation": "The crossover is 8 x sqrt(2) = 11.3 Hz. Damping is therefore a compromise: it helps the resonance peak and hurts the high-frequency isolation.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "For any positive damping ratio, a mass on a spring-damper support moves with larger amplitude than its moving base at every frequency ratio below the square root of two.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.base-excitation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "For 0 < r < sqrt(2) the transmissibility is above 1 for every positive damping ratio, so the mass amplitude exceeds the base amplitude. Isolation only starts at r = sqrt(2).",
+   "board": "internal"
+  }
+ ]
+}

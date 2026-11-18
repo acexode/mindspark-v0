@@ -1,0 +1,86 @@
+{
+  "subjectId": "ug.mce-machine-dynamics-vibrations",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "All 16 units were read in full and every numeric key, worked example and table value was recomputed independently with Python (standard library); no wrong keys, no wrong worked-example results and no sign or convention errors were found. The author-flagged conventions were each re-derived and are stated consistently: rotor whirl phase (deflection lags the heavy spot, 0 to 180 degrees, G self-centres above critical), single-plane trial-weight formula and two-plane moment/force equations (all angles in one sense, moments about plane A), geared reference-shaft factors (n = omega_shaft/omega_ref, J' = n^2 J, k' = n^2 k, T' = nT), modal orthogonality, modal forces and absorber frequencies. Frequencies are clearly labelled rad/s or Hz throughout. The remaining problems are presentation and a few overstated rules of thumb: unbraced exponent 10^11 and plain-text ' x ' multiplication inside LaTeX (one ambiguous/misleading grouping), a wrong threshold in a damping warning, and minor consistency points on half-power definition and accelerometer bandwidth. No tab/control characters, literal \\uXXXX, e+06 formatting, placeholder steps, stale option-letter references, [object Object] or garbled non-Latin characters were found. This is an AI review only: the course still needs a subject-matter expert (mechanical/vibration engineer) before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.continuous-systems.strings-bars",
+      "severity": "major",
+      "category": "clarity",
+      "problem": "Worked example 'Fixed-free steel bar' has LaTeX 'c=\\sqrt{E/\\rho}=\\sqrt{2.0 x 10^11/7850}'. The unbraced exponent 10^11 renders as 10 with superscript 1 followed by a normal '1' (10^1 1), so the modulus reads as about 2.0 x 10^1. The wire example also writes '\\sqrt{80/6.1654 x 10^{-3}}', which reads as (80/6.1654) x 10^-3 rather than 80/(6.1654 x 10^-3).",
+      "suggestedFix": "Write 2.0\\times10^{11} with braces, and group the divisor: \\sqrt{80/(6.1654\\times10^{-3})}. Use \\times instead of a plain letter x."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Worked example 'Resonant amplitude from Q' step: '\\delta_{st}=F_0/k=80/2 x 10^5=0.40 mm'. As typeset this reads (80/2) x 10^5, which is not 0.40 mm.",
+      "suggestedFix": "Write \\delta_{st}=80/(2\\times10^{5})=4.0\\times10^{-4}\\ \\text{m}=0.40\\ \\text{mm}."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q",
+      "questionId": "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.q009",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The lesson defines the half-power points as where the response is 0.707 of the peak, but the quoted 'exact' points (r = 0.440 and 1.203) come from r^2 = 1 - 2zeta^2 +/- 2 zeta sqrt(1+zeta^2), which is 0.707 of 1/(2 zeta), not of the true peak 1/(2 zeta sqrt(1-zeta^2)) = 1.747 at zeta = 0.3. Measured at 0.707 of the actual peak the points are about 0.498 and 1.180 (width 0.682, zeta estimate about 0.34, an overestimate of about 14 per cent, not 27 per cent). The 27 per cent figure is therefore right only for the stated formula.",
+      "suggestedFix": "State in the question that the points are defined by M = 1/(2 sqrt2 zeta) (0.707 of Q), or note that the error depends on whether 0.707 of the true peak or of 1/(2 zeta) is used. The conclusion that the method degrades at heavy damping is unaffected."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Warning callout: 'zeta ~ delta/2pi ... overestimates zeta noticeably once delta exceeds about 0.5'. The exact ratio is sqrt(1+(delta/2pi)^2), which is 1.003 (0.3 per cent) at delta = 0.5 and only reaches 5 per cent near delta = 2.",
+      "suggestedFix": "Change the threshold to about delta = 1 (1.3 per cent) or about 2 (5 per cent), or say the shortcut is good to within 1 per cent for delta below about 0.9."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Table row '0 < zeta < 1 Underdamped ... Steel frame, car body (zeta approx 0.3)' groups a steel frame (typically about 0.01 to 0.05) with a car body (about 0.3), contradicting the preceding text 'most machine structures have zeta between 0.01 and 0.1'.",
+      "suggestedFix": "Split into two examples with separate typical values, for example 'Steel frame (zeta about 0.01 to 0.05)' and 'Car suspension (zeta about 0.2 to 0.4)'."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "LaTeX uses a plain letter x for multiplication in powers of ten ('k=M\\omega_n^2=400\\times3230=1.292 x 10^6', '\\sqrt{2 x 10^6/500}'). The letter x renders as a variable, and 'sqrt{2 x 10^6/500}' is ambiguously grouped. The numbers themselves (k = 1.292e6 N/m, static deflection 3.04 mm, TR 0.3402 and 0.3618, F_T 537 N and 571 N) were recomputed and are correct.",
+      "suggestedFix": "Use \\times and braces: 1.292\\times10^{6}, \\sqrt{(2\\times10^{6})/500}."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Absorber worked example LaTeX writes '2.4674 x 10^5' and 'X_2=F_0/k_a=400/2.4674 x 10^5=1.621 mm', which reads as (400/2.4674) x 10^5. The values (k_a = 2.467e5 N/m, X2 = 1.621 mm, new frequencies 140.5 and 175.6 rad/s = 22.36 and 27.95 Hz) are correct.",
+      "suggestedFix": "Use 2.4674\\times10^{5} and 400/(2.4674\\times10^{5}) with \\times."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.rotating-balancing.rotor-unbalance",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Worked example 'Critical speed of a shaft with one disc' uses a plain-letter x in '7.854 x 10^{-9}' inside LaTeX (I and k lines). Results (k = 147262 N/m, omega_c = 156.7 rad/s = 1496 rpm, A = 0.133 mm) are correct.",
+      "suggestedFix": "Replace ' x ' with \\times in all LaTeX strings of this unit."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.torsional-vibration.torsional-single",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Same plain-letter x in powers of ten in LaTeX ('7.952 x 10^{-8}', '2.513 x 10^{-7}'); the same pattern appears in the geared-systems unit ('2.4 x 10^5', '5.585 x 10^{-4}'). Results are correct (k_t = 10603 N m/rad, omega_n = 162.8 rad/s; two-disc 231.6 rad/s).",
+      "suggestedFix": "Replace ' x ' with \\times throughout the LaTeX strings of this module."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "After a 5 per cent bandwidth calculation (r = 0.22, error 4.2 per cent at r = 0.2) the answer and summary quote the rule 'one fifth to one third of the mounted resonance' without noting that at r = 1/3 the undamped amplitude error is about 12.5 per cent (1/(1-1/9) = 1.125), not 5 per cent.",
+      "suggestedFix": "State that one fifth gives about 4 per cent error and one third about 12 per cent (a 10 per cent tolerance is usually quoted at about 0.3), so the choice depends on the accuracy required."
+    },
+    {
+      "subtopicId": "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Worked example concludes that T = 1 s (resolution 1 Hz) is 'enough to separate 100 and 101.5 Hz', while step 1 says a window widens peaks and the warning says a Hanning window may need more than 1/delta f. With a Hanning window the main lobe is about 4 bins wide, so two tones only 1.5 bins apart would be marginal or merged.",
+      "suggestedFix": "Either say the 1 s record separates them only with a rectangular (or near-rectangular) window, or choose T of about 2 to 3 s (resolution 0.33 to 0.5 Hz, for example N = 4096 at 2048 Hz)."
+    }
+  ]
+}

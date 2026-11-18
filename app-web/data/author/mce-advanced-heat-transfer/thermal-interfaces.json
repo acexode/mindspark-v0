@@ -1,0 +1,409 @@
+{
+ "lessonTitle": "Interfaces and Spreading: Contact Resistance and Heat Spreading",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "An LED floodlight module dissipates 60 W from a 25 mm by 25 mm board, and its engineers spend three weeks choosing a thermal paste that costs more per gram than silver. A 0.05 mm layer sounds trivial, but at that heat flux a poorly chosen layer can add several kelvin, and the interface is often the cheapest place to find them."
+  },
+  {
+   "type": "text",
+   "markdown": "Real surfaces are rough at the micrometre scale. When two solids are pressed together they touch only at the tips of surface asperities, so the actual contact area is a small fraction of the apparent area. Heat must squeeze through these contact spots (constriction) and cross the gaps between them, which are filled with air or whatever fluid is present. Air conducts about 0.026 W/m K, far below metals, so the gaps are strong insulators. This produces a **contact resistance** at every dry joint."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Thermal interface material (TIM)",
+   "text": "A thermal interface material is a compliant layer (grease, pad, phase-change film, gel, or solder) placed between two surfaces to fill the microscopic gaps and replace air with a better conductor. Its performance is described by its bulk conductivity $k$ (W/m K), its bond-line thickness $t$ (m), and the contact resistances at its two faces."
+  },
+  {
+   "type": "text",
+   "markdown": "Treat the TIM as a one-dimensional conduction layer. For a heat rate $P$ (W) through an area $A$ (m$^2$) the temperature drop is given by Fourier's law. The resistance of the layer in K/W is $t/(kA)$, and its temperature drop is $P$ times that, so thinner layers and higher conductivity reduce the drop; a larger contact area spreads the same power over more area."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta T_{TIM}=\\frac{P\\,t}{kA}=\\frac{q''\\,t}{k},\\qquad R_{TIM}=\\frac{t}{kA}",
+   "caption": "$q''=P/A$ heat flux (W/m$^2$); in practice add the face contact resistances to the bulk term"
+  },
+  {
+   "type": "worked_example",
+   "title": "Temperature drop across a thermal interface",
+   "prompt": "The LED module dissipates $P=60$ W through a 25 mm by 25 mm interface. Compare a paste with $k=4$ W/m K and a bond line of 0.05 mm with a pad of $k=1$ W/m K at the same thickness (typical values).",
+   "steps": [
+    {
+     "text": "Contact area.",
+     "latex": "A=0.025\\times0.025=6.25\\times10^{-4}\\ \\mathrm{m^2}"
+    },
+    {
+     "text": "Paste ($k=4$).",
+     "latex": "\\Delta T=\\frac{60\\times5.0\\times10^{-5}}{4\\times6.25\\times10^{-4}}=1.2\\ \\mathrm{K}"
+    },
+    {
+     "text": "Pad ($k=1$): conductivity is four times lower, so the drop is four times larger.",
+     "latex": "\\Delta T=\\frac{60\\times5.0\\times10^{-5}}{1\\times6.25\\times10^{-4}}=4.8\\ \\mathrm{K}"
+    }
+   ],
+   "answer": "The paste costs 1.2 K and the pad 4.8 K. The 3.6 K difference is a direct reduction in allowable heat sink temperature, or a gain in power."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Directions of the effects",
+   "text": "$\\Delta T_{TIM}$ rises in proportion to $t$ and to $P$, and falls in proportion to $k$ and to $A$. Halving the bond line halves the drop; doubling the conductivity halves it; there is no benefit in a high-$k$ filler that forces a thick layer, because the product $t/k$ is what matters."
+  },
+  {
+   "type": "text",
+   "markdown": "**Heat spreading** is the opposite problem. A small die produces a high heat flux in a small footprint, but the heat sink is much larger. If the heat must cross a thin base before it reaches the fins, the path through the base is crowded near the source. A metal spreader of high conductivity and adequate thickness lets heat fan out sideways, so the heat reaches the sink over a larger area. The extra resistance associated with the small source on a larger body is the **spreading (constriction) resistance**. For a circular source of radius $a$ on a very large half-space of conductivity $k$ with an isothermal source, $R_s=1/(4ka)$."
+  },
+  {
+   "type": "math",
+   "latex": "R_s=\\frac{1}{4ka},\\qquad a=\\sqrt{A_s/\\pi}",
+   "caption": "$R_s$ in K/W; $k$ conductivity of the spreading medium; $a$ equivalent source radius from the source area $A_s$"
+  },
+  {
+   "type": "worked_example",
+   "title": "Spreading resistance under a small source",
+   "prompt": "A chip with a square footprint 8 mm by 8 mm dissipates 50 W into a large aluminium block ($k=200$ W/m K). Treat it as a circular source of equal area on a half-space. Find $R_s$ and the corresponding temperature rise, and compare the source heat flux with the flux after spreading to 40 mm by 40 mm.",
+   "steps": [
+    {
+     "text": "Equivalent radius.",
+     "latex": "A_s=64\\ \\mathrm{mm^2},\\quad a=\\sqrt{64\\times10^{-6}/\\pi}=4.51\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Spreading resistance.",
+     "latex": "R_s=\\frac{1}{4\\times200\\times0.00451}=0.277\\ \\mathrm{K/W}"
+    },
+    {
+     "text": "Temperature rise at 50 W.",
+     "latex": "\\Delta T_s=50\\times0.277=13.8\\ \\mathrm{K}"
+    },
+    {
+     "text": "Heat flux at the source and after spreading over 40 mm by 40 mm.",
+     "latex": "q''_{source}=\\frac{50}{64\\times10^{-6}}=0.78\\ \\mathrm{MW/m^2},\\quad q''_{spread}=\\frac{50}{1.6\\times10^{-3}}=31.2\\ \\mathrm{kW/m^2}"
+    }
+   ],
+   "answer": "Spreading adds about 13.8 K to the peak temperature, but it reduces the heat flux entering the sink by a factor of 25, from 0.78 MW/m$^2$ to 31.2 kW/m$^2$, so the fins can use the whole base."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "What it does",
+    "Direction of effect",
+    "Limitation"
+   ],
+   "rows": [
+    [
+     "Higher bulk $k$ TIM",
+     "Lowers $t/(kA)$",
+     "Reduces temperature drop",
+     "Filler limits bond-line thinness"
+    ],
+    [
+     "Thinner bond line",
+     "Shorter conduction path",
+     "Reduces drop in proportion to $t$",
+     "Limited by filler size and surface flatness"
+    ],
+    [
+     "Higher contact pressure",
+     "Increases true contact area",
+     "Reduces contact resistance, with diminishing returns",
+     "Risk of damage and creep"
+    ],
+    [
+     "Thicker, higher-$k$ spreader",
+     "Lets heat fan out",
+     "Lowers peak temperature under small source",
+     "Adds mass, cost and an extra interface"
+    ]
+   ],
+   "caption": "Ways to reduce temperature rise across interfaces and near small sources."
+  },
+  {
+   "type": "text",
+   "markdown": "**Contact pressure** matters for dry joints. Higher pressure deforms the asperities, so true contact area grows and the contact conductance rises roughly in proportion to pressure to a power near 0.95 for many metals in the elastic-plastic range. In the figures of the lesson we use the qualitative result: doubling the contact pressure reduces the contact resistance by almost half, but gains tail off at high pressure as the surfaces flatten and approach full contact. A TIM fills voids and therefore lowers the sensitivity to pressure."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Surfaces that are smoother and flatter give lower contact resistance.",
+    "A softer metal or a compliant TIM gives better contact at a given pressure.",
+    "Grease and phase-change materials can pump out or dry out in service, raising resistance with time.",
+    "The total interface resistance is the bulk term plus two face contact resistances, so a very thin bulk layer can still have a significant total."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not overpredict spreading",
+   "text": "The $1/(4ka)$ formula assumes a half-space; a thin base spreads less. A thin plate placed on a convective sink has a finite spreading effect that saturates with thickness, so quote the formula only for a thick, large spreader."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Interface temperature drop is $\\Delta T=Pt/(kA)$: proportional to thickness and power, inversely proportional to conductivity and area.",
+    "Heat spreading lowers the peak temperature under a small source by reducing the local heat flux entering the sink, at the cost of a spreading resistance such as $R_s=1/(4ka)$ for a half-space.",
+    "Raising the contact pressure reduces contact resistance, but the benefit diminishes.",
+    "A TIM fills air gaps and is often the cheapest way to cut temperature rise."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A power module dissipates 90 W through a thermal interface pad of area 30 mm by 30 mm, thickness 0.12 mm and conductivity 5 W/m K. Neglect contact resistances at the faces. Find the temperature drop across the pad in K.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o1"
+   ],
+   "correctValue": 2.4,
+   "tolerance": 0.05,
+   "unit": "K",
+   "explanation": "The area is 9.0e-4 m^2 and the drop is P t/(kA) = 90 x 1.2e-4/(5 x 9.0e-4) = 2.40 K. Halving the thickness would halve this to 1.2 K.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A processor dissipates 45 W through an interface of area 4.0e-4 m^2 and thickness 0.10 mm. The temperature drop across the interface must not exceed 1.5 K. What minimum bulk conductivity in W/m K does the interface material need?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o1"
+   ],
+   "correctValue": 7.5,
+   "tolerance": 0.1,
+   "unit": "W/m K",
+   "explanation": "Rearranging dT = P t/(kA) gives k = P t/(A dT) = 45 x 1.0e-4/(4.0e-4 x 1.5) = 7.5 W/m K. A thinner bond line would permit a cheaper, lower-conductivity material.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A small source of equivalent radius 3.0 mm sits on a very large copper spreader (conductivity 390 W/m K). Using the isothermal half-space result R = 1/(4 k a), find the spreading resistance in K/W.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o2"
+   ],
+   "correctValue": 0.213675,
+   "tolerance": 0.01,
+   "unit": "K/W",
+   "explanation": "Substituting gives R = 1/(4 x 390 x 0.003) = 0.214 K/W. At 40 W this adds about 8.5 K to the source temperature, a price paid for the spreading that protects the sink from a concentrated heat flux.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does placing a thick, high-conductivity spreader between a small die and a large heat sink reduce the peak temperature of the die?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The heat fans out laterally, so the sink receives it over a larger area and the heat flux at the sink face is lower"
+    },
+    {
+     "id": "b",
+     "text": "The spreader generates less heat than the die"
+    },
+    {
+     "id": "c",
+     "text": "The spreader increases the temperature of the heat sink so that more heat is lost"
+    },
+    {
+     "id": "d",
+     "text": "The spreader increases the heat flux so that the fins work harder"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The heat fans out laterally, so the sink receives it over a larger area and the heat flux at the sink face is lower",
+   "distractorRationale": {
+    "b": "A spreader is passive; it neither generates nor removes heat.",
+    "c": "A hotter sink would raise the die temperature, not lower it.",
+    "d": "Spreading reduces heat flux; a concentrated flux wastes fin area."
+   },
+   "explanation": "A good spreader lets heat move sideways with little temperature drop, so the sink face is used more uniformly. This reduces the temperature drop between die and fins even though the spreader itself adds a small resistance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a small source on a large half-space, the spreading resistance varies as $R_s=1/(4ka)$. If the spreader material is changed from aluminium ($k=200$) to copper ($k=400$), $R_s$ becomes",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Half its previous value, because it is inversely proportional to $k$"
+    },
+    {
+     "id": "b",
+     "text": "Twice its previous value, because copper is denser"
+    },
+    {
+     "id": "c",
+     "text": "Unchanged, because the geometry is the same"
+    },
+    {
+     "id": "d",
+     "text": "Four times lower, because it depends on $k^2$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Half its previous value, because it is inversely proportional to $k$",
+   "distractorRationale": {
+    "b": "Conductivity, not density, enters the formula, and higher $k$ reduces resistance.",
+    "c": "The resistance depends on both geometry and conductivity.",
+    "d": "The dependence is linear in $1/k$, so doubling $k$ halves $R_s$."
+   },
+   "explanation": "The formula is inversely proportional to $k$ at fixed source radius, so doubling the conductivity halves the spreading resistance. The cost is mass and price, which is why aluminium is common for large spreaders.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a dry bolted joint between two metal surfaces, what is the effect of increasing the contact pressure?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The contact resistance decreases because the real contact area increases, with diminishing returns at high pressure"
+    },
+    {
+     "id": "b",
+     "text": "The contact resistance increases because the asperities are compressed"
+    },
+    {
+     "id": "c",
+     "text": "The contact resistance is unaffected because it is set by the bulk conductivity"
+    },
+    {
+     "id": "d",
+     "text": "The contact resistance falls to zero once the joint is bolted"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The contact resistance decreases because the real contact area increases, with diminishing returns at high pressure",
+   "distractorRationale": {
+    "b": "Compression flattens asperities and enlarges contact spots, which reduces resistance.",
+    "c": "Contact resistance arises at the interface and depends on pressure and roughness.",
+    "d": "Even highly loaded joints have a residual resistance because surfaces never touch completely."
+   },
+   "explanation": "Pressure deforms the asperity tips and enlarges the true contact area, so more heat crosses the solid contact spots. The gain saturates as the surfaces flatten, which is why very high clamping loads give little further improvement.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A technician replaces dry contact between a chip lid and heat sink with a thin layer of thermal grease. Which explanation of the improvement is correct?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o3",
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The grease replaces air in the microscopic gaps with a material of higher conductivity, reducing the contact resistance"
+    },
+    {
+     "id": "b",
+     "text": "The grease increases the contact pressure between the surfaces"
+    },
+    {
+     "id": "c",
+     "text": "The grease raises the heat sink temperature and so improves convection"
+    },
+    {
+     "id": "d",
+     "text": "The grease reduces the heat produced by the chip"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The grease replaces air in the microscopic gaps with a material of higher conductivity, reducing the contact resistance",
+   "distractorRationale": {
+    "b": "Grease is a fluid and does not by itself add pressure; clamping force is a separate effect.",
+    "c": "A hotter sink would hurt; the benefit is the lower interface temperature drop.",
+    "d": "The chip dissipates the same power; only the path resistance changes."
+   },
+   "explanation": "Gaps between rough surfaces are filled with air, with conductivity of about 0.026 W/m K. Grease with conductivity of several W/m K fills these gaps, giving a far lower contact resistance than a dry joint.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For the same power and area, two interface layers are compared: layer X has $t=0.08$ mm and $k=2$ W/m K, and layer Y has $t=0.20$ mm and $k=6$ W/m K. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Layer Y gives the smaller temperature drop, because $t/k$ is 0.033 mm per W/m K against 0.040 for X"
+    },
+    {
+     "id": "b",
+     "text": "Layer X gives the smaller drop, because it is thinner"
+    },
+    {
+     "id": "c",
+     "text": "Both give the same drop because the area and power are the same"
+    },
+    {
+     "id": "d",
+     "text": "Layer Y gives a larger drop because it is thicker"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Layer Y gives the smaller temperature drop, because $t/k$ is 0.033 mm per W/m K against 0.040 for X",
+   "distractorRationale": {
+    "b": "Thinness alone does not decide; the ratio $t/k$ does. X has $t/k=0.040$, larger than Y's 0.033.",
+    "c": "The drop is $Pt/(kA)$, which depends on $t/k$, and the two ratios differ.",
+    "d": "A thicker layer can have a smaller drop if its conductivity is high enough."
+   },
+   "explanation": "The drop is proportional to $t/k$. For X this is 0.08/2 = 0.040 and for Y 0.20/6 = 0.033, so Y gives about 17 percent less temperature drop even though it is 2.5 times thicker.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A small chip is mounted directly on a thin aluminium plate that is bolted to a large heat sink. Explain why replacing the thin plate with a thicker copper plate can reduce the chip temperature, and state two disadvantages.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o2"
+   ],
+   "markingGuide": [
+    "Heat flows sideways as well as downward; a thicker, higher-conductivity plate lets heat spread over a larger area",
+    "This reduces the heat flux entering the heat sink and the constriction temperature rise under the chip",
+    "Spreading resistance for a half-space scales as $1/(4ka)$; higher $k$ reduces it",
+    "Disadvantage: cost and mass of copper, or the extra interface needed (more contact resistance)",
+    "Disadvantage: diminishing returns once the plate is thick relative to the source and sink dimensions"
+   ],
+   "explanation": "A thick high-conductivity plate lets heat fan out before it reaches the sink, reducing the local flux and the temperature drop under the source. It does cost weight and money, and the benefit saturates when the plate is already thick enough.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain the physical origin of thermal contact resistance between two dry metal surfaces, describe how contact pressure and a thermal interface material change it, and explain why a TIM with very high bulk conductivity can still be a poor choice.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o3",
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-interfaces.o1"
+   ],
+   "markingGuide": [
+    "Surfaces touch only at asperity tips, so heat constricts through small spots and crosses gaps filled with air of very low conductivity",
+    "Higher pressure deforms asperities and increases real contact area, reducing resistance with diminishing returns",
+    "A TIM fills the gaps with a higher conductivity material, reducing resistance and lowering sensitivity to pressure",
+    "Resistance $t/(kA)$ depends on the bond-line thickness as well as $k$; a high-$k$ filler that forces a thick layer may give a larger overall resistance",
+    "Mentions that face contact resistance and long-term reliability (pump-out, dry-out) also matter"
+   ],
+   "explanation": "Contact resistance comes from the small real contact area and the air-filled gaps, so both pressure and a gap-filling TIM help. The final resistance is set by $t/k$ and the face resistances together, not by conductivity alone.",
+   "board": "internal"
+  }
+ ]
+}

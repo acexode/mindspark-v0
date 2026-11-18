@@ -1,0 +1,61 @@
+{
+  "subjectId": "ug.mce-computing-for-engineers",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "Overall quality is high. I independently recomputed every numeric key and worked example (Colebrook Newton iterates and q001, bisection brackets, trapezoid/Simpson errors and ratios, Euler and RK4 steps, RK4 stability limit 2.785/lambda, observed order and Richardson values, least-squares sums, R^2, divided differences, IQR fences, standard deviations, truss forces). All MCQ and numeric keys are correct with one correct option each, and SciPy/NumPy semantics (quad tuple, arctan2 y-then-x, polyfit highest power first, linspace, view versus copy, nanmean, genfromtxt) are stated correctly. No literal \\uXXXX escapes, '[object Object]' text or garbled characters were found. The only problems are small numerical overstatements, one ambiguous MCQ stem and a few threshold inconsistencies between units, all minor. Confidence is good, but this is an AI review only: the course still needs a subject-matter expert (numerical methods and engineering) before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-computing-for-engineers.curve-fitting.interpolation",
+      "questionId": "ug.mce-computing-for-engineers.curve-fitting.interpolation.q007",
+      "severity": "minor",
+      "category": "answer-key",
+      "problem": "The stem says 'a smooth bell-shaped function' and the key is 'Growing oscillations near the ends'. Runge divergence depends on the function: a Gaussian such as exp(-x^2) on [-1,1] interpolated at equally spaced nodes converges, so option c ('Steadily smaller error everywhere') is defensible for a generic bell shape.",
+      "suggestedFix": "Name the function, for example f(x)=1/(1+25x^2) on [-1,1], as the lesson and q009 do, so that the key is unambiguous."
+    },
+    {
+      "subtopicId": "ug.mce-computing-for-engineers.integration-and-odes.ode-solvers",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "RK4 worked example: 'the RK4 error is about 3x10^-4 C'. The computed T1 is 77.31133 and the exact value is 77.31115, so the error is about 1.8x10^-4 C.",
+      "suggestedFix": "State the RK4 error as about 2x10^-4 C (still roughly 7000 times smaller than the Euler error of 1.31 C)."
+    },
+    {
+      "subtopicId": "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Precedence worked example: 'The answer is wrong by a factor of 10^8'. The correct stress is 1.2223e8 and the wrong code gives 1.91, a ratio of 1/d^6 = 6.4e7, not 1e8.",
+      "suggestedFix": "Say 'wrong by a factor of about 6x10^7 (1/d^6)', or 'by roughly eight orders of magnitude'."
+    },
+    {
+      "subtopicId": "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The Richardson formula in the lesson is written y_exact ~ y_{h/2} + (y_{h/2}-y_h)/(2^p-1), but the three-level worked example applies it to the finest pair (5.630 + (5.630-5.600)/3). With the labels h, h/2, h/4 the formula as printed uses the middle level. It gives 5.640 here only because the ratio is exactly 4.",
+      "suggestedFix": "Write the extrapolation for the finest pair, y_{h/4} + (y_{h/4}-y_{h/2})/(2^p-1), or state that the formula applies to any two consecutive levels with the finer one first."
+    },
+    {
+      "subtopicId": "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops",
+      "questionId": "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.q003",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The lesson and q010 use 'elif Re <= 4000' for the transitional branch, but q003 uses 'elif Re < 4000'. q004 also asks for laminar by 'Re <= 2300' whereas the lesson says laminar is Re < 2300. Boundary handling differs between lesson and questions.",
+      "suggestedFix": "Use one convention throughout (for example laminar Re < 2300, transitional 2300 <= Re <= 4000, turbulent Re > 4000), or phrase q004 as 'below 2300'."
+    },
+    {
+      "subtopicId": "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations",
+      "questionId": "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.q009",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The stem and marking guide classify flow as 'turbulent' if Re > 4000 else 'laminar', which puts 2300-4000 in 'laminar' and contradicts the three-way classification taught in the Branching and Loops unit.",
+      "suggestedFix": "Use a three-way classification (np.select or nested np.where with a 'transitional' class), or state that the two-class rule is a deliberate simplification."
+    },
+    {
+      "subtopicId": "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots",
+      "questionId": "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.q003",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "'theta falling over three orders of magnitude': theta=5e^(-0.2t) over 0-30 s falls from 5 to about 0.012, a factor of about 400 (2.6 decades). The key (semi-log) is still correct.",
+      "suggestedFix": "Say 'falling by a factor of several hundred' or 'over more than two orders of magnitude'."
+    }
+  ]
+}

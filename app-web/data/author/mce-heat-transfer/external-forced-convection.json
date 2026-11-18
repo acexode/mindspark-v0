@@ -1,0 +1,382 @@
+{
+ "lessonTitle": "External Forced Convection: Plates and Cylinders",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A cooling fan blows over a hot 20 mm diameter bus bar, and a weather station anemometer wire cools faster in a gale than in a breeze: in both cases the heat loss depends on how the moving fluid thins the layer of fluid next to the surface. Engineers capture that with two dimensionless numbers and one correlation."
+  },
+  {
+   "type": "text",
+   "markdown": "In **forced convection** an external agent (a fan, pump or the motion of the body itself) drives the flow. Heat leaves a surface into the thin boundary layer of fluid next to it. The heat transfer coefficient $h$ defined by $q=hA(T_s-T_\\infty)$ is not a material property; it depends on the flow, the fluid and the geometry, so we correlate it using dimensionless groups."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "The key dimensionless numbers",
+   "text": "Reynolds number $Re=VL/\\nu$ (inertial to viscous forces; $\\nu$ is the kinematic viscosity in m$^2$/s). Prandtl number $Pr=\\nu/\\alpha=\\mu c_p/k$ (momentum to thermal diffusivity). Nusselt number $Nu=hL/k_f$ (convection to conduction in the fluid of conductivity $k_f$). Correlations take the form $Nu=f(Re,Pr)$."
+  },
+  {
+   "type": "text",
+   "markdown": "Reynolds number decides whether the boundary layer is laminar or turbulent. On a flat plate the transition occurs at about $Re_x\\approx5\\times10^5$, measured with distance $x$ from the leading edge. Prandtl number decides the relative thickness of the velocity and thermal boundary layers: gases have $Pr\\approx0.7$, so the layers are of similar thickness; oils have $Pr\\gg1$ and a thin thermal layer inside a thick velocity layer; liquid metals have $Pr\\ll1$ and the opposite."
+  },
+  {
+   "type": "math",
+   "latex": "\\overline{Nu}_L=\\frac{\\bar hL}{k}=0.664\\,Re_L^{1/2}\\,Pr^{1/3}\\qquad(Re_L<5\\times10^5,\\;Pr\\ge0.6)",
+   "caption": "Average Nusselt number for laminar flow over an isothermal flat plate, properties at the film temperature (T_s + T_inf)/2"
+  },
+  {
+   "type": "worked_example",
+   "title": "Heat loss from a heated flat plate in laminar air flow",
+   "prompt": "Air at 20 $^\\circ$C flows at 2.0 m/s parallel to a flat plate 0.5 m long (flow direction) and 0.3 m wide, held at 60 $^\\circ$C. Use air properties at the film temperature (typical): $k=0.026$ W/m K, $\\nu=1.6\\times10^{-5}$ m$^2$/s, $Pr=0.71$. Find the average heat transfer coefficient and the heat transfer from one face.",
+   "steps": [
+    {
+     "text": "Reynolds number at the plate end: $Re_L=VL/\\nu=2.0\\times0.5/(1.6\\times10^{-5})=62500$. This is below the transition value of about $5\\times10^5$, so the boundary layer is laminar over the whole plate.",
+     "latex": "Re_L=\\frac{VL}{\\nu}"
+    },
+    {
+     "text": "Average Nusselt number (laminar, isothermal plate, $Pr\\ge0.6$): $\\overline{Nu}_L=0.664\\,Re_L^{1/2}Pr^{1/3}=0.664\\times250.0\\times0.8921=148.1$.",
+     "latex": "\\overline{Nu}_L=0.664\\,Re_L^{1/2}Pr^{1/3}"
+    },
+    {
+     "text": "Coefficient: $\\bar h=\\overline{Nu}_Lk/L=148.1\\times0.026/0.5=7.70$ W/m$^2$K.",
+     "latex": "\\bar h=\\frac{\\overline{Nu}_L\\,k}{L}"
+    },
+    {
+     "text": "Heat transfer: $q=\\bar hA(T_s-T_\\infty)=7.70\\times0.15\\times40=46.2$ W.",
+     "latex": "q=\\bar hA\\,(T_s-T_\\infty)"
+    }
+   ],
+   "answer": "$\\overline{Nu}_L\\approx148$, $\\bar h\\approx7.7$ W/m$^2$K and $q\\approx46$ W from one face."
+  },
+  {
+   "type": "text",
+   "markdown": "For flow across a cylinder the boundary layer separates behind the cylinder, so the correlation is empirical. The **Hilpert** form $\\overline{Nu}_D=C\\,Re_D^mPr^{1/3}$ with the constants below is valid for $Pr\\ge0.7$, with $Re_D=VD/\\nu$ based on the diameter and properties at the film temperature."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$Re_D$ range",
+    "$C$",
+    "$m$"
+   ],
+   "rows": [
+    [
+     "0.4 to 4",
+     "0.989",
+     "0.330"
+    ],
+    [
+     "4 to 40",
+     "0.911",
+     "0.385"
+    ],
+    [
+     "40 to 4000",
+     "0.683",
+     "0.466"
+    ],
+    [
+     "4000 to 40000",
+     "0.193",
+     "0.618"
+    ],
+    [
+     "40000 to 400000",
+     "0.027",
+     "0.805"
+    ]
+   ],
+   "caption": "Hilpert constants for a circular cylinder in cross-flow (gases, $Pr\\ge0.7$)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Heat loss from a hot rod in cross-flow",
+   "prompt": "Air at 20 $^\\circ$C blows at 5.0 m/s across a long horizontal rod of diameter 20 mm whose surface is at 80 $^\\circ$C. Use the same typical air properties as before ($k=0.026$ W/m K, $\\nu=1.6\\times10^{-5}$ m$^2$/s, $Pr=0.71$) and the Hilpert correlation $\\overline{Nu}_D=C\\,Re_D^m Pr^{1/3}$. Find the heat loss per metre.",
+   "steps": [
+    {
+     "text": "$Re_D=VD/\\nu=5.0\\times0.020/(1.6\\times10^{-5})=6250$. The length scale for a cylinder is its diameter.",
+     "latex": "Re_D=\\frac{VD}{\\nu}"
+    },
+    {
+     "text": "This lies in the range $4000<Re_D<40000$, where the table gives $C=0.193$ and $m=0.618$."
+    },
+    {
+     "text": "$\\overline{Nu}_D=0.193\\times6250^{0.618}\\times0.8921=38.2$.",
+     "latex": "\\overline{Nu}_D=C\\,Re_D^{m}Pr^{1/3}"
+    },
+    {
+     "text": "$\\bar h=\\overline{Nu}_Dk/D=38.2\\times0.026/0.020=49.6$ W/m$^2$K."
+    },
+    {
+     "text": "Per metre length the area is $\\pi D=0.0628$ m$^2$/m, so $q'=\\bar h\\pi D(T_s-T_\\infty)=49.6\\times0.0628\\times60=187$ W/m.",
+     "latex": "q'=\\bar h\\,\\pi D\\,(T_s-T_\\infty)"
+    }
+   ],
+   "answer": "$Re_D\\approx6250$, $\\overline{Nu}_D\\approx38$, $\\bar h\\approx50$ W/m$^2$K and $q'\\approx187$ W/m."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Identify the geometry and pick the length scale: plate length $L$ (flow direction) or cylinder diameter $D$.",
+    "Compute $Re$ with fluid properties at the film temperature; decide laminar or turbulent, or the Hilpert range.",
+    "Compute $Nu$ from the correlation and check that $Pr$ is within its validity range.",
+    "Calculate $h=Nu\\,k/L$ and then $q=hA(T_s-T_\\infty)$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Use the right length and properties",
+   "text": "Use $x$ or $L$ in the flow direction for plates and the diameter for cylinders. Take $\\nu$, $k$ and $Pr$ at the film temperature, not at $T_\\infty$ or $T_s$. The laminar plate formula is invalid if $Re_L>5\\times10^5$, since the boundary layer becomes turbulent."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why dimensionless groups",
+   "text": "$Nu$ is the dimensionless heat transfer coefficient. Laminar flow gives $Nu\\propto Re^{1/2}$, so $h\\propto V^{1/2}$: doubling the speed increases $h$ by 41%, not 100%. $Pr$ enters as $Pr^{1/3}$ because it controls the ratio of boundary layer thicknesses."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$Re=VL/\\nu$ governs laminar versus turbulent flow (transition near $5\\times10^5$ on a flat plate); $Pr=\\nu/\\alpha$ governs the thermal versus velocity boundary layer thickness.",
+    "Laminar flat plate: $\\overline{Nu}_L=0.664\\,Re_L^{1/2}Pr^{1/3}$ and $\\bar h=\\overline{Nu}_Lk/L$.",
+    "Cylinder in cross-flow: $\\overline{Nu}_D=C\\,Re_D^mPr^{1/3}$ with $C,m$ from the $Re_D$ range.",
+    "Always state the correlation's validity range and evaluate properties at the film temperature."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The Reynolds number in a convection problem is the ratio of",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "viscous forces to inertial forces"
+    },
+    {
+     "id": "b",
+     "text": "convective to conductive heat transfer at the surface"
+    },
+    {
+     "id": "c",
+     "text": "inertial forces to viscous forces in the fluid"
+    },
+    {
+     "id": "d",
+     "text": "momentum diffusivity to thermal diffusivity"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "inertial forces to viscous forces in the fluid",
+   "distractorRationale": {
+    "a": "This is the inverse of the Reynolds number.",
+    "b": "This is the Nusselt number.",
+    "d": "This is the Prandtl number, a fluid property."
+   },
+   "explanation": "$Re=\\rho VL/\\mu=VL/\\nu$ measures how strongly inertia dominates viscous damping. A large $Re$ means disturbances grow and the boundary layer becomes turbulent.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Liquid metals have $Pr\\ll1$. Compared with the velocity boundary layer, the thermal boundary layer in a liquid metal flowing over a plate is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "thicker, because thermal diffusivity is much larger than momentum diffusivity"
+    },
+    {
+     "id": "b",
+     "text": "thinner, because $\\nu\\gg\\alpha$"
+    },
+    {
+     "id": "c",
+     "text": "the same thickness, because $Pr$ only matters for gases"
+    },
+    {
+     "id": "d",
+     "text": "absent, because liquid metals do not conduct heat"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "thicker, because thermal diffusivity is much larger than momentum diffusivity",
+   "distractorRationale": {
+    "b": "That describes oils ($Pr\\gg1$), not liquid metals.",
+    "c": "$Pr$ always sets the relative thickness of the two layers.",
+    "d": "Liquid metals conduct heat extremely well, which is why $Pr$ is small."
+   },
+   "explanation": "$Pr=\\nu/\\alpha$ compares how quickly momentum and heat diffuse. If $\\alpha\\gg\\nu$, heat spreads far beyond the region where velocity has been modified, so the thermal layer is the thicker one.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Air at 20 $^\\circ$C flows at 0.8 m/s along a flat plate 1.2 m long in the flow direction. Use $\\nu=1.6\\times10^{-5}$ m$^2$/s, $k=0.026$ W/m K and $Pr=0.71$ (typical film properties). Assuming laminar flow, find the average heat transfer coefficient in W/m$^2$K.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o1"
+   ],
+   "correctValue": 3.14,
+   "tolerance": 0.05,
+   "unit": "W/m^2K",
+   "explanation": "$Re_L=0.8\\times1.2/(1.6\\times10^{-5})=60000<5\\times10^5$, so the laminar formula applies. $\\overline{Nu}_L=0.664\\times244.9\\times0.8921=145.1$, and $\\bar h=\\overline{Nu}_Lk/L=145.1\\times0.026/1.2=3.14$ W/m$^2$K.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A fine heated wire of diameter 5 mm is held at 70 $^\\circ$C in a cross-flow of air at 20 $^\\circ$C and 4.0 m/s. Use $\\nu=1.6\\times10^{-5}$ m$^2$/s, $k=0.026$ W/m K and $Pr=0.71$ and the Hilpert correlation. Find the heat loss per metre of wire in W/m.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o2"
+   ],
+   "correctValue": 69.0,
+   "tolerance": 0.5,
+   "unit": "W/m",
+   "explanation": "$Re_D=4.0\\times0.005/(1.6\\times10^{-5})=1250$, which falls in the range 40 to 4000 with $C=0.683$, $m=0.466$. So $\\overline{Nu}_D=0.683\\times1250^{0.466}\\times0.8921=16.90$, $\\bar h=16.90\\times0.026/0.005=87.9$ W/m$^2$K, and $q'=\\bar h\\pi D\\Delta T=69.0$ W/m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "For air with $\\nu=1.6\\times10^{-5}$ m$^2$/s flowing at 3.0 m/s over a flat plate, find the distance from the leading edge, in metres, at which the boundary layer would reach the transition value $Re_x=5\\times10^5$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o1",
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o3"
+   ],
+   "correctValue": 2.667,
+   "tolerance": 0.02,
+   "unit": "m",
+   "explanation": "$Re_x=Vx/\\nu$ gives $x_{cr}=5\\times10^5\\times1.6\\times10^{-5}/3.0=2.667$ m. Plates shorter than this are laminar over their whole length, so the laminar average formula can be used.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A plate is in laminar, isothermal parallel flow and the air speed is doubled with everything else unchanged. The average heat transfer coefficient is multiplied by",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2"
+    },
+    {
+     "id": "b",
+     "text": "$\\sqrt2\\approx1.41$"
+    },
+    {
+     "id": "c",
+     "text": "4"
+    },
+    {
+     "id": "d",
+     "text": "$2^{1/3}\\approx1.26$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$\\sqrt2\\approx1.41$",
+   "distractorRationale": {
+    "a": "This would be a linear dependence; laminar plate flow has $Nu\\propto Re^{1/2}$.",
+    "c": "This assumes $h\\propto V^2$, which has no basis.",
+    "d": "The exponent 1/3 belongs to $Pr$, not to $Re$."
+   },
+   "explanation": "With $\\overline{Nu}_L\\propto Re_L^{1/2}$ and $Re_L\\propto V$, $\\bar h\\propto V^{1/2}$. Doubling $V$ gives a 41% increase, so the heat loss rises less than the speed.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cylinder in cross-flow has $Re_D=25000$. In the Hilpert correlation table of this lesson, which constants apply?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$C=0.683$, $m=0.466$"
+    },
+    {
+     "id": "b",
+     "text": "$C=0.027$, $m=0.805$"
+    },
+    {
+     "id": "c",
+     "text": "$C=0.911$, $m=0.385$"
+    },
+    {
+     "id": "d",
+     "text": "$C=0.193$, $m=0.618$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$C=0.193$, $m=0.618$",
+   "distractorRationale": {
+    "a": "These are for $40<Re_D<4000$, which is too low.",
+    "b": "These are for $40000<Re_D<400000$, which is too high.",
+    "c": "These are for $4<Re_D<40$, very low flow."
+   },
+   "explanation": "$Re_D=25000$ lies between 4000 and 40000, so $C=0.193$ and $m=0.618$ apply. The exponent increases with $Re$ as the flow separates and the wake grows turbulent.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the heat transfer coefficient correlation for forced convection is written as $Nu=f(Re,Pr)$ and not in terms of velocity, viscosity and conductivity separately. Describe the physical role of each of $Re$ and $Pr$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o3"
+   ],
+   "markingGuide": [
+    "Dimensional analysis reduces the many variables ($V$, $L$, $\\rho$, $\\mu$, $c_p$, $k$) to a few groups, so experiments on one fluid and size apply to others.",
+    "$Re=VL/\\nu$ measures inertia over viscosity and sets laminar or turbulent boundary layer behaviour and the boundary layer thickness.",
+    "$Pr=\\nu/\\alpha$ compares momentum and thermal diffusion and sets the ratio of velocity to thermal boundary layer thickness.",
+    "$Nu=hL/k$ is the dimensionless wall temperature gradient and the output quantity."
+   ],
+   "explanation": "The point of $Nu=f(Re,Pr)$ is similarity: two systems with equal $Re$ and $Pr$ have the same $Nu$. $Re$ controls the flow regime while $Pr$ controls the temperature layer relative to the velocity layer.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "For laminar flow over an isothermal flat plate the local Nusselt number is $Nu_x=0.332\\,Re_x^{1/2}Pr^{1/3}$. Show that the plate-averaged value is $\\overline{Nu}_L=0.664\\,Re_L^{1/2}Pr^{1/3}$, and explain physically why $\\bar h$ is twice the local value at $x=L$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o1"
+   ],
+   "markingGuide": [
+    "Local $h_x=Nu_xk/x\\propto x^{-1/2}$ because the boundary layer thickens with $x$.",
+    "Average $\\bar h=(1/L)\\int_0^Lh_x\\,dx$, and $\\int_0^Lx^{-1/2}dx=2L^{1/2}$, giving $\\bar h=2h_{x=L}$.",
+    "So $\\overline{Nu}_L=2\\times0.332\\,Re_L^{1/2}Pr^{1/3}=0.664\\,Re_L^{1/2}Pr^{1/3}$.",
+    "Physically the leading edge has a very thin boundary layer and large $h$; this raises the average above the local value at the trailing edge."
+   ],
+   "explanation": "Integrating a function that falls as $x^{-1/2}$ gives twice the end value, because the large coefficients near the leading edge are weighted into the average. The result is exact for the laminar similarity solution.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A heated cylinder in cross-flow has diameter $D$. All else (air speed, properties, surface and air temperatures) is the same, but the diameter is doubled, while $Re_D$ stays in the range where $m=0.618$. Find the factor by which the heat loss per metre of cylinder changes, as a dimensionless ratio.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o2",
+    "ug.mce-heat-transfer.forced-convection.external-forced-convection.o3"
+   ],
+   "correctValue": 1.535,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "With $\\overline{Nu}_D\\propto Re_D^m\\propto D^m$ and $\\bar h=\\overline{Nu}_Dk/D\\propto D^{m-1}$, the heat loss per metre is $q'=\\bar h\\pi D\\Delta T\\propto D^{m}$. So the ratio is $2^{0.618}=1.535$. The heat loss rises by about 53%, although $\\bar h$ falls by a factor of $2^{-0.382}$.",
+   "board": "internal"
+  }
+ ]
+}

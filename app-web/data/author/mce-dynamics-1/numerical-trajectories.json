@@ -1,0 +1,389 @@
+{
+ "lessonTitle": "Numerical Trajectories: Stepping the Equations of Motion",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A golfer hits a drive at 60 m/s and 15 degrees. The drag-free formula predicts a range of 183 m, yet the ball lands at about 121 m. With air resistance that depends on speed, the equations of motion have no neat closed-form solution, so engineers step them forward in time on a computer and then check that the answer does not depend on the step they chose."
+  },
+  {
+   "type": "text",
+   "markdown": "When forces depend on velocity in a nonlinear way, we cannot integrate the equations of motion in closed form. Instead we **march in time**: from the current state (position and velocity) we use the equations of motion to estimate the state a short time $h$ later, and repeat. This is **numerical integration**. To use a standard algorithm, we first rewrite the motion as a **first-order system** $\\dot{\\mathbf s}=\\mathbf f(\\mathbf s)$ for a state vector $\\mathbf s$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Projectile with quadratic drag",
+   "text": "A particle of mass $m$ in a plane moves under gravity and a drag force of magnitude $\\tfrac12\\rho C_dAv^2$ opposite to its velocity, where $\\rho$ is air density (kg/m$^3$), $C_d$ the drag coefficient, $A$ the frontal area (m$^2$) and $v$ the speed. Define $k=\\rho C_dA/(2m)$ (1/m); then the drag deceleration is $kv^2$ directed against the velocity."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf s=\\begin{bmatrix}x\\\\y\\\\v_x\\\\v_y\\end{bmatrix},\\qquad \\dot x=v_x,\\quad \\dot y=v_y,\\quad \\dot v_x=-k\\,v\\,v_x,\\quad \\dot v_y=-g-k\\,v\\,v_y,\\quad v=\\sqrt{v_x^2+v_y^2}",
+   "caption": "Four first-order equations; $g=9.81$ m/s$^2$ and the drag components are $-kvv_x$ and $-kvv_y$ because drag points opposite the velocity vector."
+  },
+  {
+   "type": "text",
+   "markdown": "The simplest scheme is the **explicit Euler method**: $\\mathbf s_{n+1}=\\mathbf s_n+h\\,\\mathbf f(\\mathbf s_n)$, where $h$ is the time step (s). Each step uses the slope at the start of the interval. It is easy to program but only **first-order accurate**: the global error is roughly proportional to $h$. A fourth-order Runge-Kutta scheme reduces the error as $h^4$ but needs four evaluations of $\\mathbf f$ per step. The landing point is found by detecting the step in which $y$ becomes negative and interpolating linearly."
+  },
+  {
+   "type": "worked_example",
+   "title": "Setting up the system and one Euler step",
+   "prompt": "A golf ball (mass 0.0459 kg, frontal area $1.43\\times10^{-3}$ m$^2$, $C_d=0.25$, air density 1.2 kg/m$^3$) is launched at 60 m/s at $15^\\circ$ from the ground. Find $k$ and take one Euler step with $h=0.1$ s.",
+   "steps": [
+    {
+     "text": "Drag parameter.",
+     "latex": "k=\\frac{\\rho C_dA}{2m}=\\frac{1.2(0.25)(1.43\\times10^{-3})}{2(0.0459)}=4.67\\times10^{-3}\\ \\text{m}^{-1}"
+    },
+    {
+     "text": "Initial state: $v_x=60\\cos15^\\circ=57.96$ m/s, $v_y=60\\sin15^\\circ=15.53$ m/s, $v=60$ m/s. Initial accelerations.",
+     "latex": "\\dot v_x=-(4.67\\times10^{-3})(60)(57.96)=-16.25,\\quad \\dot v_y=-9.81-(4.67\\times10^{-3})(60)(15.53)=-14.16\\ \\text{m/s}^2"
+    },
+    {
+     "text": "Euler update with $h=0.1$ s.",
+     "latex": "x_1=5.80\\ \\text{m},\\ y_1=1.55\\ \\text{m},\\ v_{x1}=57.96-1.625=56.33\\ \\text{m/s},\\ v_{y1}=15.53-1.416=14.11\\ \\text{m/s}"
+    }
+   ],
+   "answer": "$k=4.67\\times10^{-3}$ m$^{-1}$ and after one step the state is $(5.80\\ \\text{m},1.55\\ \\text{m},56.33\\ \\text{m/s},14.11\\ \\text{m/s})$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "Running this scheme to landing gives a **numerical range**. For the golf ball, the drag-free analytical range is $R_0=v_0^2\\sin2\\theta/g=60^2\\sin30^\\circ/9.81=183.5$ m. With drag, the ball loses speed continuously, so it travels a shorter distance and spends less time in the air. Drag also makes the descent steeper than the ascent, and the optimum launch angle drops below $45^\\circ$. The comparison with $R_0$ is a useful sanity check: the numerical range must be smaller, and must approach $R_0$ as $k\\to0$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Time step $h$ (s)",
+    "Euler range (m)",
+    "Change from previous (m)"
+   ],
+   "rows": [
+    [
+     "0.4",
+     "132.1",
+     "-"
+    ],
+    [
+     "0.2",
+     "126.5",
+     "-5.6"
+    ],
+    [
+     "0.1",
+     "123.6",
+     "-2.9"
+    ],
+    [
+     "0.05",
+     "122.1",
+     "-1.5"
+    ]
+   ],
+   "caption": "Computed Euler ranges for the golf ball example (landing found by linear interpolation)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Checking convergence by halving the step",
+   "prompt": "Use the Euler results in the table to judge convergence and estimate the true range.",
+   "steps": [
+    {
+     "text": "The changes between successive halvings are $-5.6,\\ -2.9,\\ -1.5$ m: each is about half the previous one.",
+     "latex": "\\frac{2.9}{5.6}\\approx0.52,\\qquad \\frac{1.5}{2.9}\\approx0.52"
+    },
+    {
+     "text": "A ratio near $1/2$ shows a first-order method converging toward a limit. Richardson extrapolation for a first-order scheme: $R\\approx2R(h/2)-R(h)$.",
+     "latex": "R\\approx2(122.1)-123.6=120.6\\ \\text{m}"
+    },
+    {
+     "text": "Compare with the drag-free range.",
+     "latex": "\\frac{183.5-120.6}{183.5}=34\\%\\ \\text{shorter}"
+    }
+   ],
+   "answer": "The extrapolated range is about 120.6 m, roughly 34% less than the drag-free 183.5 m; a fourth-order scheme at $h=0.1$ s gives 120.6 m, confirming the result."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Write the equations of motion as a first-order system for $(x,y,v_x,v_y)$.",
+    "Choose $h$ small compared with the time scale of the motion (flight time about 3 s here).",
+    "Step until $y<0$, then interpolate to the landing point.",
+    "Repeat with $h/2$; if the answer changes little and the changes shrink as expected, accept it.",
+    "Check limiting cases, e.g. set $k=0$ and recover $R_0$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Numerical answers are not automatically right",
+   "text": "A small step does not guarantee accuracy if the algorithm or the model is wrong. A result that looks reasonable may be unconverged: always repeat with a smaller step. Also, never mix units (degrees in trigonometric functions, kilometres with metres), and remember that the drag force vector has both components proportional to $v$ times each component."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Motion with speed-dependent drag is written as a first-order system for $(x,y,v_x,v_y)$ with $\\dot v_x=-kvv_x$ and $\\dot v_y=-g-kvv_y$.",
+    "The numerical range with drag is shorter than the drag-free range $v_0^2\\sin2\\theta/g$ because drag removes energy continuously; the difference should vanish as $k\\to0$.",
+    "Halve the step: for first-order Euler the change should roughly halve each time, and $2R(h/2)-R(h)$ estimates the converged value."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How many first-order differential equations are needed to describe a two-dimensional projectile with drag in the state-vector form used for numerical integration?",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Three"
+    },
+    {
+     "id": "b",
+     "text": "Six"
+    },
+    {
+     "id": "c",
+     "text": "Four"
+    },
+    {
+     "id": "d",
+     "text": "Two"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Four",
+   "distractorRationale": {
+    "a": "No natural variable choice gives three.",
+    "b": "Six would include accelerations, which are expressed through the other variables.",
+    "c": "Correct: $\\dot x,\\ \\dot y,\\ \\dot v_x,\\ \\dot v_y$.",
+    "d": "This counts only the two coordinates or only the two velocity components."
+   },
+   "explanation": "Each second-order equation for $x$ and $y$ becomes two first-order equations, so the state is $(x,y,v_x,v_y)$ and there are four equations. A second-order equation always doubles the number of first-order equations needed.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For quadratic air drag, which expression is the correct horizontal equation of motion per unit mass, with $v=\\sqrt{v_x^2+v_y^2}$ and $k=\\rho C_dA/(2m)$?",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dot v_x=-k\\,v_x^2$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dot v_x=-k\\,v$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dot v_x=+k\\,v\\,v_x$"
+    },
+    {
+     "id": "d",
+     "text": "$\\dot v_x=-k\\,v\\,v_x$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$\\dot v_x=-k\\,v\\,v_x$",
+   "distractorRationale": {
+    "a": "Ignores the vertical velocity's contribution to the speed.",
+    "b": "Drops the direction factor and gives the wrong units.",
+    "c": "Wrong sign: this would accelerate the ball.",
+    "d": "Correct: drag has magnitude $kv^2$ along $-\\hat{\\mathbf v}$, so its $x$ component is $-kv^2(v_x/v)$."
+   },
+   "explanation": "The drag deceleration has magnitude $kv^2$ and acts opposite to the velocity, so its components are $-kv^2(v_x/v)=-kvv_x$ and $-kvv_y$. Note that the vertical velocity affects the horizontal drag through $v$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Compared with the drag-free analytical range, the numerical range of a projectile with air drag launched at the same speed and angle from level ground is",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Shorter, because drag continually removes kinetic energy"
+    },
+    {
+     "id": "b",
+     "text": "Longer, because drag adds lift"
+    },
+    {
+     "id": "c",
+     "text": "The same, because drag only affects the vertical motion"
+    },
+    {
+     "id": "d",
+     "text": "Shorter only if the launch angle exceeds 45 degrees"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Shorter, because drag continually removes kinetic energy",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Quadratic drag has no lift component here.",
+    "c": "Drag acts on both components, so range falls.",
+    "d": "Drag reduces range at all angles."
+   },
+   "explanation": "Drag does negative work on the projectile throughout the flight, so both horizontal speed and flight time are reduced. The numerical range should therefore be less than $v_0^2\\sin2\\theta/g$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An explicit Euler solution is first-order accurate. If you halve the time step, you should expect the global error to",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Stay the same"
+    },
+    {
+     "id": "b",
+     "text": "Roughly halve"
+    },
+    {
+     "id": "c",
+     "text": "Reduce to one quarter"
+    },
+    {
+     "id": "d",
+     "text": "Reduce to one sixteenth"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Roughly halve",
+   "distractorRationale": {
+    "a": "Stays constant only if the scheme does not converge.",
+    "b": "Correct: error $\\propto h$.",
+    "c": "That is the behaviour of a second-order scheme.",
+    "d": "That is the behaviour of a fourth-order scheme such as RK4."
+   },
+   "explanation": "For a first-order method the global error scales with $h$, so halving $h$ roughly halves the error. This is why successive changes in the results form a sequence of halvings.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A projectile with quadratic drag is launched from level ground at a fixed speed. The launch angle giving the maximum range is",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Greater than $45^\\circ$"
+    },
+    {
+     "id": "b",
+     "text": "$90^\\circ$"
+    },
+    {
+     "id": "c",
+     "text": "Less than $45^\\circ$"
+    },
+    {
+     "id": "d",
+     "text": "Exactly $45^\\circ$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Less than $45^\\circ$",
+   "distractorRationale": {
+    "a": "This is not found for drag in typical situations.",
+    "b": "This gives zero range.",
+    "c": "Correct: with drag the optimum shifts below $45^\\circ$.",
+    "d": "This is the drag-free optimum."
+   },
+   "explanation": "With drag the descent is steeper than the ascent, so a lower launch angle than the drag-free $45^\\circ$ compensates for the loss of horizontal speed on the way up. Numerical solutions confirm that the optimum angle is below $45^\\circ$, by an amount that grows with the drag.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A projectile has state $v_x=30$ m/s and $v_y=40$ m/s at $t=0$. Quadratic drag with $k=0.002$ m$^{-1}$ acts and $g=9.81$ m/s$^2$. Using one explicit Euler step of $h=0.10$ s, find $v_y$ after the step in m/s.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o1"
+   ],
+   "correctValue": 38.619,
+   "tolerance": 0.02,
+   "unit": "m/s",
+   "explanation": "The speed is $\\sqrt{30^2+40^2}=50$ m/s, so $\\dot v_y=-9.81-0.002(50)(40)=-13.81$ m/s$^2$. Then $v_y=40+0.10(-13.81)=38.619$ m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A drag-free calculation gives a range of 150 m for a launch, while a converged numerical solution including air drag gives 112.5 m. By what percentage is the range reduced by drag?",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o2"
+   ],
+   "correctValue": 25,
+   "tolerance": 0.2,
+   "unit": "%",
+   "explanation": "The reduction is $(150-112.5)/150=0.25$, i.e. 25%. Expressing the difference relative to the drag-free range is the usual comparison.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A first-order Euler calculation of a landing distance gives 70.0 m with $h=0.04$ s and 69.2 m with $h=0.02$ s. Use Richardson extrapolation for a first-order method, $R\\approx2R(h/2)-R(h)$, to estimate the converged range in metres.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o3"
+   ],
+   "correctValue": 68.4,
+   "tolerance": 0.1,
+   "unit": "m",
+   "explanation": "Applying the formula: $2(69.2)-70.0=68.4$ m. This assumes the error is proportional to $h$, as for Euler's method, and removes the leading error term.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Write the equations of motion of a projectile with quadratic drag as a first-order system suitable for numerical integration, defining every symbol and stating the assumptions.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o1"
+   ],
+   "markingGuide": [
+    "State vector $(x,y,v_x,v_y)$ with four first-order equations.",
+    "$\\dot x=v_x$ and $\\dot y=v_y$.",
+    "$\\dot v_x=-k\\,v\\,v_x$ and $\\dot v_y=-g-k\\,v\\,v_y$ with $v=\\sqrt{v_x^2+v_y^2}$.",
+    "Define $k=\\rho C_dA/(2m)$ and state units (1/m) and $g=9.81$ m/s$^2$.",
+    "Assumptions: constant $\\rho$, $C_d$ and $A$; drag opposes velocity; no wind or spin; flat Earth with constant $g$."
+   ],
+   "explanation": "Drag is modelled as proportional to $v^2$ and directed against the velocity. Splitting it into components turns the second-order motion into four coupled first-order equations.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A student's numerical range for a projectile with drag is 125 m, but the drag-free analytical range is 118 m. Discuss what this tells you, which checks you would perform, and how you would use step-size halving to decide whether the numerical result can be trusted.",
+   "objectiveIds": [
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o2",
+    "ug.mce-dynamics-1.drag-and-numerical-dynamics.numerical-trajectories.o3"
+   ],
+   "markingGuide": [
+    "Drag should shorten the range, so a numerical range greater than the drag-free value signals an error (model, units, sign, or an unconverged step).",
+    "Check the sign of the drag terms, the use of radians or degrees, and landing-point detection.",
+    "Limiting check: set $k=0$ and confirm the program reproduces $v_0^2\\sin2\\theta/g$.",
+    "Halve the step repeatedly and watch the successive changes; for a first-order scheme they should halve each time.",
+    "Use Richardson extrapolation or a higher-order scheme to estimate the converged range and compare."
+   ],
+   "explanation": "The physics gives a firm expectation: drag reduces the range, so the result is wrong or unconverged. Systematic checks, including the $k\\to0$ limit and step-halving, locate the error and show when the answer has stopped changing.",
+   "board": "internal"
+  }
+ ]
+}

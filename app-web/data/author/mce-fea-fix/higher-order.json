@@ -1,0 +1,379 @@
+{
+ "lessonTitle": "Higher-Order and Triangular Elements",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A cast bracket with a curved fillet is meshed automatically with thousands of tiny triangles, while a straight machined beam next to it is meshed by hand with a few large quadrilaterals. Both choices are defensible. The shape functions of the element, not the number of nodes alone, decide how well it follows a bending stress field, and that is what you must learn to judge."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why element order matters.** Within an element the displacement is a polynomial built from the shape functions, and strain is its derivative. A **linear** element (three-node triangle or four-node quadrilateral) has a strain field that is constant or only partly linear. A **quadratic** element has a strain field that contains a complete linear variation: for the six-node triangle the strain varies linearly, and for the eight-node (serendipity) quadrilateral it varies quadratically in general (a complete linear part plus some quadratic terms). In a bending-dominated member the axial strain varies linearly through the depth, so linear elements have to approximate it with steps."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Order of convergence",
+   "text": "For smooth solutions with polynomial order $p$ the displacement error falls like $h^{p+1}$ and the stress (strain) error like $h^{p}$, where $h$ is the element size (m). Halving $h$ cuts the displacement error by a factor $2^{p+1}$: 4 for linear and 8 for quadratic elements. These rates are asymptotic and assume the solution is smooth."
+  },
+  {
+   "type": "text",
+   "markdown": "**Area coordinates.** For a triangle with nodes $(x_i,y_i)$, $i=1,2,3$ numbered counter-clockwise, the shape functions are the **area coordinates** $L_i$: $L_i$ is the ratio of the area of the sub-triangle formed by the point and the side opposite node $i$ to the total area $A$ (m$^2$). They satisfy $L_i=1$ at node $i$, $L_i=0$ on the opposite side and $L_1+L_2+L_3=1$. For the linear triangle $N_i=L_i$."
+  },
+  {
+   "type": "math",
+   "latex": "L_i=\\frac{a_i+b_ix+c_iy}{2A},\\quad a_1=x_2y_3-x_3y_2,\\; b_1=y_2-y_3,\\; c_1=x_3-x_2\\;\\;(\\text{cyclic: }1\\to2\\to3\\to1),\\quad 2A=\\det\\begin{bmatrix}1&x_1&y_1\\\\1&x_2&y_2\\\\1&x_3&y_3\\end{bmatrix}",
+   "caption": "Linear triangle shape functions (area coordinates)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Area coordinates at an interior point",
+   "prompt": "A linear triangle has nodes (in mm) 1: (1,1), 2: (7,2), 3: (3,5). Find its area and the shape functions at the point $(3,\\,2.5)$.",
+   "steps": [
+    {
+     "text": "Area: $2A=(x_2-x_1)(y_3-y_1)-(x_3-x_1)(y_2-y_1)=(6)(4)-(2)(1)=22$, so $A=11$ mm$^2$ (positive, so the numbering is counter-clockwise).",
+     "latex": "2A=24-2=22\\ \\text{mm}^2,\\quad A=11\\ \\text{mm}^2"
+    },
+    {
+     "text": "Coefficients (cyclic): $a=(x_2y_3-x_3y_2,\\;x_3y_1-x_1y_3,\\;x_1y_2-x_2y_1)=(29,\\,-2,\\,-5)$, $b=(y_2-y_3,\\;y_3-y_1,\\;y_1-y_2)=(-3,\\,4,\\,-1)$, $c=(x_3-x_2,\\;x_1-x_3,\\;x_2-x_1)=(-4,\\,-2,\\,6)$."
+    },
+    {
+     "text": "Evaluate $L_i=(a_i+b_ix+c_iy)/22$ at $(3,2.5)$: $L_1=0.45455$, $L_2=0.22727$, $L_3=0.31818$."
+    },
+    {
+     "text": "Check: $L_1+L_2+L_3=1$ and $\\sum L_ix_i=3$, $\\sum L_iy_i=2.5$, so the point is reproduced exactly and lies inside because all three values are positive."
+    }
+   ],
+   "answer": "A = 11 mm^2; L1 = 0.4545, L2 = 0.2273, L3 = 0.3182."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Element",
+    "Nodes",
+    "Strain variation",
+    "Typical use"
+   ],
+   "rows": [
+    [
+     "Linear triangle (T3, CST)",
+     "3",
+     "Constant",
+     "Transitions, automatic meshing of complex shapes; needs fine meshes"
+    ],
+    [
+     "Quadratic triangle (T6)",
+     "6",
+     "Linear",
+     "Free-meshed curved geometry with good accuracy"
+    ],
+    [
+     "Bilinear quadrilateral (Q4)",
+     "4",
+     "Bilinear, incomplete (spurious shear in bending)",
+     "Regular regions where fine meshes are cheap"
+    ],
+    [
+     "Quadratic quadrilateral (Q8)",
+     "8",
+     "Quadratic, includes pure bending exactly",
+     "Bending-dominated members, curved edges"
+    ]
+   ],
+   "caption": "Choosing an element family"
+  },
+  {
+   "type": "worked_example",
+   "title": "Constant strain in a linear triangle",
+   "prompt": "A linear triangle has nodes (in mm) 1: (0,0), 2: (5,0), 3: (1,4). Nodal displacements (mm): $u=(0,\\,0.010,\\,0.004)$ and $v=(0,\\,0,\\,0.002)$. Find $\\varepsilon_x$, $\\varepsilon_y$ and $\\gamma_{xy}$.",
+   "steps": [
+    {
+     "text": "The area is $2A=5\\times4=20$ mm$^2$, so $A=10$ mm$^2$. Coefficients: $b=(y_2-y_3,\\,y_3-y_1,\\,y_1-y_2)=(-4,\\,4,\\,0)$ and $c=(x_3-x_2,\\,x_1-x_3,\\,x_2-x_1)=(-4,\\,-1,\\,5)$."
+    },
+    {
+     "text": "Since $u=\\sum L_iu_i$ and $L_{i,x}=b_i/2A$, we get $\\varepsilon_x=\\sum b_iu_i/(2A)=(4)(0.010)/20=0.002$.",
+     "latex": "\\varepsilon_x=\\frac{(-4)(0)+(4)(0.010)+(0)(0.004)}{20}=2.0\\times10^{-3}"
+    },
+    {
+     "text": "$\\varepsilon_y=\\sum c_iv_i/(2A)=(5)(0.002)/20=5.0\\times10^{-4}$ and $\\gamma_{xy}=\\sum(c_iu_i+b_iv_i)/(2A)=[(-1)(0.010)+(5)(0.004)+(0)]/20=5.0\\times10^{-4}$.",
+     "latex": "\\varepsilon_y=5.0\\times10^{-4},\\quad\\gamma_{xy}=5.0\\times10^{-4}"
+    },
+    {
+     "text": "None of these depend on position, so the strain is uniform over the whole triangle. A linear bending strain through the depth can therefore only be approximated by a step for each layer of triangles."
+    }
+   ],
+   "answer": "Strains are uniform over the element: $\\varepsilon_x=2.0\\times10^{-3}$, $\\varepsilon_y=5.0\\times10^{-4}$, $\\gamma_{xy}=5.0\\times10^{-4}$ (dimensionless)."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Identify the dominant behaviour (bending, membrane or local stress concentration).",
+    "If the strain varies strongly through a thickness, use quadratic elements or several linear elements through the depth.",
+    "Use triangles or tetrahedra where geometry is too complex to map into quadrilaterals or bricks, preferably quadratic.",
+    "Use mapped quadrilateral meshes in regular regions and check convergence by refinement."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Triangles are not automatically bad",
+   "text": "The constant-strain triangle is stiff and needs a fine mesh, but the quadratic triangle is accurate and is the standard choice for automatically meshed curved parts. Do not mix element orders across a shared edge without compatible nodes or constraints."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Linear elements have constant or incomplete linear strain; quadratic elements contain a complete linear strain variation, so they represent a linearly varying strain such as bending exactly (the six-node triangle varies linearly, the eight-node quadrilateral quadratically in general).",
+    "Displacement error scales as $h^{p+1}$ and stress error as $h^{p}$ for smooth problems.",
+    "The linear triangle has shape functions equal to area coordinates, $L_i=(a_i+b_ix+c_iy)/(2A)$, summing to 1.",
+    "Use triangles for free meshing of complex shapes and quadrilaterals for regular, bending-dominated regions, with quadratic order preferred when accuracy matters."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a linear triangle with area coordinates $L_1,L_2,L_3$, what is the value of $L_1$ at the centroid of the triangle?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$1/3$"
+    },
+    {
+     "id": "b",
+     "text": "$1/2$"
+    },
+    {
+     "id": "c",
+     "text": "$0$"
+    },
+    {
+     "id": "d",
+     "text": "$1$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$1/3$",
+   "distractorRationale": {
+    "a": "Correct: the centroid is equidistant from all three sides, so each area coordinate equals one third.",
+    "b": "This is the value at the midpoint of an edge adjacent to node 1, not at the centroid.",
+    "c": "$L_1=0$ holds along the side opposite node 1 only.",
+    "d": "$L_1=1$ holds only at node 1 itself."
+   },
+   "explanation": "The three sub-triangles formed with the centroid have equal areas, each one third of the total. Hence $L_1=L_2=L_3=1/3$, and the sum is 1 as required.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A linear triangle has nodes (in mm) 1: (0,0), 2: (6,0), 3: (2,4), numbered counter-clockwise. Find the value of the shape function $N_2=L_2$ at the point $(3,\\,1)$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o2"
+   ],
+   "correctValue": 0.4167,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "The area is $A=12$ mm$^2$ so $2A=24$. For node 2 the coefficients are $a_2=x_3y_1-x_1y_3=0$, $b_2=y_3-y_1=4$ and $c_2=x_1-x_3=-2$. Then $L_2=(0+4(3)-2(1))/24=10/24=0.4167$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A linear triangle has nodes (in mm) 1: (0,0), 2: (4,0), 3: (0,3). The axial displacements of the nodes are $u_1=0$, $u_2=0.004$ mm and $u_3=0.001$ mm. Find the uniform strain $\\varepsilon_x$ in microstrain ($10^{-6}$).",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o2"
+   ],
+   "correctValue": 1000.0,
+   "tolerance": 5.0,
+   "unit": "microstrain",
+   "explanation": "Here $2A=12$ mm$^2$ and $b=(y_2-y_3,\\,y_3-y_1,\\,y_1-y_2)=(-3,\\,3,\\,0)$. Then $\\varepsilon_x=\\sum b_iu_i/(2A)=(3)(0.004)/12=1.0\\times10^{-3}$, which is 1000 microstrain. The value is the same at every point of the element.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why do linear (Q4 or T3) elements perform poorly in a bending-dominated member compared with quadratic elements of similar size?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Their strain fields cannot follow the linear variation of bending strain through the depth, so the element is too stiff"
+    },
+    {
+     "id": "b",
+     "text": "Quadratic elements have fewer degrees of freedom"
+    },
+    {
+     "id": "c",
+     "text": "Linear elements cannot represent rigid-body motion"
+    },
+    {
+     "id": "d",
+     "text": "Linear elements always give negative strain energy"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Their strain fields cannot follow the linear variation of bending strain through the depth, so the element is too stiff",
+   "distractorRationale": {
+    "a": "Correct: bending strain varies linearly with distance from the neutral axis, which a constant (or incompletely linear) strain field cannot match.",
+    "b": "Quadratic elements have more nodes and therefore more degrees of freedom, not fewer.",
+    "c": "Linear elements represent rigid-body motion perfectly, which is a basic requirement.",
+    "d": "Strain energy is positive for any valid element; the problem is stiffness, not sign."
+   },
+   "explanation": "The element has to follow a linearly varying strain with constant or partly linear strain, so it either steps or develops spurious shear, and the model is too stiff. Quadratic elements carry a linearly varying strain and capture bending much better.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A single layer of eight-node quadratic quadrilaterals through the depth of a straight beam can represent pure bending exactly, whereas a single layer of four-node linear quadrilaterals cannot.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. The quadratic displacement field contains the terms needed for the linear bending strain variation through depth. The bilinear field produces a spurious shear strain, so one layer of linear elements locks.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A quadratic-element model of a bracket gives a tip displacement error of 2.4% relative to the converged value. Assuming the asymptotic rate $h^{p+1}$ for smooth solutions, what displacement error in percent would you expect after halving the element size everywhere?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o1"
+   ],
+   "correctValue": 0.3,
+   "tolerance": 0.02,
+   "unit": "%",
+   "explanation": "For quadratic elements $p=2$, so the displacement error scales as $h^{3}$. Halving $h$ reduces it by $2^3=8$, giving $2.4/8=0.3\\%$. This holds only in the asymptotic range of a smooth problem, not near singularities.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cast component with curved fillets and varying thickness is to be meshed automatically in two dimensions. Which element choice is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Quadratic (six-node) triangles, because they follow curved boundaries and fill arbitrary shapes while capturing linear strain"
+    },
+    {
+     "id": "b",
+     "text": "Linear three-node triangles only, because they are cheapest and equally accurate"
+    },
+    {
+     "id": "c",
+     "text": "Single large four-node quadrilaterals with one point integration"
+    },
+    {
+     "id": "d",
+     "text": "Eight-node quadrilaterals only, because triangles are not allowed in two dimensions"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Quadratic (six-node) triangles, because they follow curved boundaries and fill arbitrary shapes while capturing linear strain",
+   "distractorRationale": {
+    "a": "Correct: automatic free meshing relies on triangles, and quadratic ones remove the stiffness of the constant-strain triangle.",
+    "b": "Linear triangles are not equally accurate; their constant strain requires a much finer mesh.",
+    "c": "A few large linear quadrilaterals cannot fit complicated curved geometry or resolve fillet stresses.",
+    "d": "Triangles are permitted and standard for free meshing; quadrilateral-only meshing is difficult for complex shapes."
+   },
+   "explanation": "Triangles fill arbitrary two-dimensional regions automatically, and using quadratic order gives accuracy without needing an extremely fine mesh. This is why six-node triangles or ten-node tetrahedra are the usual choice for complex castings.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A long, thin, straight cantilever strip loaded in bending is to be modelled with a mapped mesh. Which choice gives the most accurate result for a coarse mesh?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Quadratic quadrilaterals with at least one layer through the depth, with elements stretched along the length"
+    },
+    {
+     "id": "b",
+     "text": "Linear three-node triangles with one layer through the depth"
+    },
+    {
+     "id": "c",
+     "text": "Linear four-node quadrilaterals with one layer through the depth and full integration"
+    },
+    {
+     "id": "d",
+     "text": "Mixed random orientation of linear triangles"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Quadratic quadrilaterals with at least one layer through the depth, with elements stretched along the length",
+   "distractorRationale": {
+    "a": "Correct: regular geometry suits mapped quadrilaterals, and the quadratic field represents bending strain.",
+    "b": "One layer of constant-strain triangles badly underestimates bending deflection.",
+    "c": "One layer of bilinear elements with full integration locks in bending.",
+    "d": "Random orientation adds mesh-direction bias without improving the strain field."
+   },
+   "explanation": "Geometry is regular, so a mapped quadrilateral mesh is feasible, and quadratic order supplies the linearly varying strain needed for bending. This beats linear triangles or locked linear quadrilaterals on the same mesh.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A colleague models a slender cantilever loaded at its tip with one layer of four-node quadrilaterals and finds the tip deflection is 70% of the beam-theory value. Explain the likely cause and give two ways of improving the model, justifying your choice of element type.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o1",
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o3"
+   ],
+   "markingGuide": [
+    "Cause: bilinear element cannot bend without a spurious shear strain, so shear locking makes it too stiff",
+    "Slender members make the effect worse, since the shear energy dominates",
+    "Fix 1: use quadratic (eight-node) elements, which represent the linear bending strain",
+    "Fix 2: use several linear elements through the depth, or reduced integration/incompatible modes, with a convergence check",
+    "Compare the refined result with the beam-theory value to verify"
+   ],
+   "explanation": "A coarse mesh of linear elements overestimates stiffness in bending because the element cannot follow the linear strain gradient. Raising element order or refining through the depth reduces the error.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the three area coordinates of a linear triangle in terms of position, and show that they have the properties needed of shape functions: unit value at their own node, zero on the opposite side, and sum equal to one. Why does this make the element able to represent a uniform strain?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.isoparametric-elements.higher-order.o2"
+   ],
+   "markingGuide": [
+    "Area coordinate $L_i=$ area of sub-triangle opposite node $i$ divided by $A$, giving $L_i=(a_i+b_ix+c_iy)/2A$",
+    "At node $i$ the sub-triangle becomes the whole triangle so $L_i=1$; on the opposite side its area is zero so $L_i=0$",
+    "Sum of the three sub-triangle areas equals $A$, so $\\sum L_i=1$",
+    "Positions are reproduced: $x=\\sum L_ix_i$, $y=\\sum L_iy_i$, so the field is a complete linear polynomial",
+    "A linear displacement field gives constant derivatives, hence a uniform strain is represented exactly"
+   ],
+   "explanation": "Area coordinates are geometric ratios, so their nodal and sum properties follow directly. Because they span a complete linear polynomial the element can reproduce rigid motion and uniform strain.",
+   "board": "internal"
+  }
+ ]
+}

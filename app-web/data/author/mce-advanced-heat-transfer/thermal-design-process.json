@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Thermal Design Process: Heat Budgets, Margins and Cooling Trade-offs",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A roadside 5G radio cabinet passed every bench test, then failed in its first summer: the combined heat of the amplifier, the power converter and the baseband boards pushed internal air past the rating of a capacitor that nobody had budgeted for. A heat-flow budget, written before the first drawing, would have shown the shortfall in ten minutes."
+  },
+  {
+   "type": "text",
+   "markdown": "Thermal design for a system rather than a single chip begins with accounting. Energy is conserved, so in steady state every watt of electrical power that is not exported as useful output (light, radio waves, mechanical work) becomes heat inside the enclosure. A **heat-flow budget** lists every source, assigns it a dissipation in watts, sums them, and then allocates paths and resistances to carry the total to the environment."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Heat-flow budget",
+   "text": "A heat-flow budget is a table of all heat sources in a system, the power each dissipates (W), where it dissipates it, and the thermal path by which it leaves. At steady state the total heat leaving the system equals the sum of the source dissipations. Efficiencies convert electrical input to heat: a converter delivering output $P_{out}$ at efficiency $\\eta$ dissipates $P_{in}-P_{out}=P_{out}(1/\\eta-1)$."
+  },
+  {
+   "type": "math",
+   "latex": "P_{loss}=P_{out}\\left(\\frac1\\eta-1\\right),\\qquad Q_{total}=\\sum_iP_i,\\qquad \\Delta T_{encl}=Q_{total}\\,R_{encl}",
+   "caption": "$R_{encl}=1/(h_{eff}A)$ is the combined convection and radiation resistance of the enclosure surface (K/W)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Heat budget of a sealed controller",
+   "prompt": "A sealed controller contains a processor (28 W), memory (6 W), a DC converter delivering 120 W at 92 % efficiency, a radio amplifier dissipating 18 W, and LEDs drawing 24 W electrical of which 30 % leaves the box as light. The enclosure surface of area 0.40 m$^2$ has an effective coefficient $h_{eff}=10$ W/m$^2$K (typical, convection plus radiation) to 25 $^\\circ$C air. Find the total heat load and the enclosure surface temperature.",
+   "steps": [
+    {
+     "text": "Converter loss.",
+     "latex": "P_{loss}=120\\left(\\frac1{0.92}-1\\right)=10.43\\ \\mathrm{W}"
+    },
+    {
+     "text": "LED heat: 70 % of the 24 W is not emitted as light.",
+     "latex": "0.70\\times24=16.8\\ \\mathrm{W}"
+    },
+    {
+     "text": "Sum all sources.",
+     "latex": "Q=28+6+10.43+18+16.8=79.2\\ \\mathrm{W}"
+    },
+    {
+     "text": "Enclosure resistance and surface temperature rise.",
+     "latex": "R_{encl}=\\frac1{10\\times0.40}=0.25\\ \\mathrm{K/W},\\quad \\Delta T=79.2\\times0.25=19.8\\ \\mathrm{K}"
+    },
+    {
+     "text": "Surface temperature.",
+     "latex": "T_{surf}=25+19.8=44.8\\ ^\\circ\\mathrm{C}"
+    }
+   ],
+   "answer": "The budget totals 79.2 W and the enclosure surface settles at 44.8 $^\\circ$C. The internal air will be hotter again, which is where component limits apply."
+  },
+  {
+   "type": "text",
+   "markdown": "Every component has a maximum rated temperature (junction, case or ambient) given by its datasheet. Designing exactly to the rating leaves no room for tolerances in ambient temperature, manufacturing spread in interface resistance, dust, ageing and modelling error. A **design margin** is a deliberate reduction of the allowable temperature below the maximum rating. It is expressed either as an offset (for example 15 K below the limit) or as a fraction of the allowable rise. Reliability also improves: failure rates of many electronic parts roughly double for each 10 K rise (Arrhenius-type behaviour, typical)."
+  },
+  {
+   "type": "math",
+   "latex": "T_{design}=T_{max}-\\Delta T_{margin},\\qquad \\theta_{ca,allow}=\\frac{T_{design}-T_{local}}{P}",
+   "caption": "$T_{local}$ is the local air or reference temperature; $\\theta_{ca,allow}$ is the allowable case-to-air resistance (K/W)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Applying a margin",
+   "prompt": "The processor in the controller has a maximum case temperature of 105 $^\\circ$C. The team adopts a 15 K margin. The air around the processor is expected to reach 55 $^\\circ$C. What case-to-air resistance may the cooling path have at 28 W?",
+   "steps": [
+    {
+     "text": "Design limit.",
+     "latex": "T_{design}=105-15=90\\ ^\\circ\\mathrm{C}"
+    },
+    {
+     "text": "Available temperature difference.",
+     "latex": "90-55=35\\ \\mathrm{K}"
+    },
+    {
+     "text": "Allowable resistance.",
+     "latex": "\\theta_{ca,allow}=\\frac{35}{28}=1.25\\ \\mathrm{K/W}"
+    }
+   ],
+   "answer": "The cooling path must achieve no more than 1.25 K/W; a heat sink with 1.6 K/W would break the margin."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Criterion",
+    "Passive cooling (fins, conduction, natural convection)",
+    "Active cooling (fans, pumps, heat pipes with fans)"
+   ],
+   "rows": [
+    [
+     "Cost",
+     "Low recurring cost, larger heat sink",
+     "Added cost of fan, drive and control"
+    ],
+    [
+     "Noise",
+     "None",
+     "Acoustic noise rising steeply with speed"
+    ],
+    [
+     "Reliability",
+     "No moving parts, long life",
+     "Fan bearings and dust are common failure points"
+    ],
+    [
+     "Heat capability",
+     "Limited by natural convection (typical $h$ of 5 to 15 W/m$^2$K)",
+     "High: forced convection gives $h$ of 30 to 200 W/m$^2$K"
+    ],
+    [
+     "Size and weight",
+     "Larger, heavier for the same duty",
+     "Compact"
+    ],
+    [
+     "Power use",
+     "Zero",
+     "Fan power, typically a few watts"
+    ]
+   ],
+   "caption": "Typical trade-offs; the best choice depends on duty, environment and noise limits."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Start with the budget: every source, every efficiency, every operating mode (peak and idle).",
+    "Convert datasheet limits to design limits by subtracting a margin.",
+    "Allocate allowable resistance to each element and check the largest term first.",
+    "Use passive cooling when the power, ambient and noise constraints allow it; add active cooling only where needed, with fail-safe behaviour."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Margin is not waste",
+   "text": "Margin accounts for ageing, tolerance, dust, ambient extremes, and model uncertainty. Too small and the system fails early in the field; too large and the design is heavy, costly and noisy. The choice should be explicit and justified in the design record."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not double-count margin",
+   "text": "If the ambient temperature you use is already a worst-case extreme, and you also add a large margin on the component, you may over-design. Record where each margin is applied."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A heat-flow budget sums all source dissipations, using $P_{loss}=P_{out}(1/\\eta-1)$ for converters, and checks that the enclosure can reject the total.",
+    "A design margin lowers the allowable component temperature below its rated maximum, giving $T_{design}=T_{max}-\\Delta T_{margin}$.",
+    "The allowable thermal resistance follows from $(T_{design}-T_{local})/P$.",
+    "Passive cooling is cheap, silent and reliable but limited; active cooling is powerful but adds noise, cost and failure modes."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A motor drive delivers 3000 W of output at an efficiency of 96 percent. Its control board dissipates 15 W and a braking resistor dissipates 40 W when the drive is run in the worst-case duty cycle. Find the total heat load in W that the cabinet must reject.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o1"
+   ],
+   "correctValue": 180.0,
+   "tolerance": 1.0,
+   "unit": "W",
+   "explanation": "The drive converter loss is 3000 x (1/0.96 - 1) = 125.0 W. Adding the control board and resistor gives 125 + 15 + 40 = 180 W of heat to reject. Mechanical output of 3000 W leaves the cabinet as shaft power and does not heat it.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A component has a rated maximum case temperature of 125 degrees Celsius and the design team applies a 20 K margin. The local air temperature is 45 degrees Celsius and the case-to-air resistance of the cooling path is 1.5 K/W. Find the maximum power in W the component may dissipate.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o2"
+   ],
+   "correctValue": 40.0,
+   "tolerance": 0.5,
+   "unit": "W",
+   "explanation": "The design limit is 125 - 20 = 105 degrees Celsius, so the available temperature difference is 105 - 45 = 60 K. The maximum power is 60/1.5 = 40 W. Without the margin the limit would have been 53 W.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A battery charger delivers 60 W to a battery and has an efficiency of 85 percent. How much heat in W does the charger dissipate inside its enclosure?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o1"
+   ],
+   "correctValue": 10.5882,
+   "tolerance": 0.1,
+   "unit": "W",
+   "explanation": "Input power is 60/0.85 = 70.6 W, so the loss is 70.6 - 60 = 10.59 W. Equivalent form: P_out (1/eta - 1) = 60 x 0.1765 = 10.59 W.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why do designers apply a thermal design margin below the maximum rated component temperature?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "To cover tolerances, ageing, dust, ambient extremes and modelling error, and to improve long-term reliability"
+    },
+    {
+     "id": "b",
+     "text": "Because datasheet maximum temperatures are always set too high by manufacturers"
+    },
+    {
+     "id": "c",
+     "text": "Because heat transfer coefficients cannot be predicted at all"
+    },
+    {
+     "id": "d",
+     "text": "Because lower temperatures reduce the power dissipated by the component to zero"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "To cover tolerances, ageing, dust, ambient extremes and modelling error, and to improve long-term reliability",
+   "distractorRationale": {
+    "b": "The ratings are limits for survival, not for good reliability; margin is applied for uncertainty and life.",
+    "c": "Predictions have uncertainty but are useful; margin covers this uncertainty rather than ignoring it.",
+    "d": "Power dissipation is set by the electrical operating point; temperature affects reliability, not the dissipation directly."
+   },
+   "explanation": "A margin turns a limit that would only just be met in the nominal case into one that is still met when tolerances, ageing and operating extremes stack up. Failure rate also falls with temperature, so margin buys life as well as safety.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer must choose between a passive finned heat sink and an active fan-cooled one for a quiet medical monitor that must run for years with minimal maintenance. Which choice is generally preferred if the heat load can be met passively?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The fan-cooled heat sink, because forced convection always has a lower cost"
+    },
+    {
+     "id": "b",
+     "text": "The passive heat sink, because it has no moving parts, no acoustic noise and no fan to fail"
+    },
+    {
+     "id": "c",
+     "text": "The fan-cooled heat sink, because it is quieter than natural convection"
+    },
+    {
+     "id": "d",
+     "text": "Either, because noise and reliability do not depend on the cooling method"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The passive heat sink, because it has no moving parts, no acoustic noise and no fan to fail",
+   "distractorRationale": {
+    "a": "Fans add cost and a failure mode; they are chosen for capability, not for lower cost.",
+    "c": "A fan adds noise; natural convection is silent.",
+    "d": "Both noise and reliability differ strongly between fans and passive solutions."
+   },
+   "explanation": "If natural convection and radiation can carry the load within the temperature margin, the passive option removes noise and moving-part failures. Only when the load exceeds passive capability should a fan be added.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A sealed cabinet houses electronics drawing 500 W of electrical power. All of it is dissipated as heat within the cabinet, but a separate 100 W lamp inside radiates 40 W as visible light that escapes through a window. What is the heat load that the cabinet walls must reject?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "560 W, because 500 W of electronics plus 60 W of lamp heat remain after 40 W leaves as light"
+    },
+    {
+     "id": "b",
+     "text": "600 W, because all electrical power ends up as heat"
+    },
+    {
+     "id": "c",
+     "text": "500 W, because the lamp's power is separate from the electronics"
+    },
+    {
+     "id": "d",
+     "text": "460 W, because the light power is subtracted from the electronics"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "560 W, because 500 W of electronics plus 60 W of lamp heat remain after 40 W leaves as light",
+   "distractorRationale": {
+    "b": "Light escaping through the window is energy leaving the cabinet without heating it.",
+    "c": "The lamp also adds heat to the cabinet except for the light that leaves.",
+    "d": "The escaped light is subtracted from the lamp's 100 W, not from the electronics."
+   },
+   "explanation": "Energy balance: electrical input to the lamp is 100 W, of which 40 W leaves as light and 60 W becomes heat. The cabinet must reject 500 + 60 = 560 W. Only the energy that physically leaves the cabinet as light may be subtracted, and only from the lamp's own input.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A system's failure rate approximately doubles for every 10 K increase in component temperature. If a design margin lowers the operating temperature by 20 K, the expected failure rate changes by roughly",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A factor of four reduction"
+    },
+    {
+     "id": "b",
+     "text": "A factor of two reduction"
+    },
+    {
+     "id": "c",
+     "text": "A factor of 20 reduction"
+    },
+    {
+     "id": "d",
+     "text": "No change, because failure rate depends on power only"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A factor of four reduction",
+   "distractorRationale": {
+    "b": "Two 10 K steps each halve the failure rate, giving four, not two.",
+    "c": "The rule is exponential in 10 K steps; 20 K gives $2^2=4$.",
+    "d": "Failure rate depends strongly on temperature for most electronic components."
+   },
+   "explanation": "With a doubling per 10 K, a 20 K reduction corresponds to two halvings, so the rate falls by $2^2=4$. This empirical rule explains why a modest margin can be justified by reliability alone.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "In steady state, electrical power consumed by a sealed electronics enclosure that is not exported as light, radio or mechanical output ends up as heat that the enclosure must reject.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Energy conservation requires that input power equal output power plus heat generated, and the remaining energy leaves as heat to the environment. This is the basis of a heat budget: only the non-heat outputs may be subtracted.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe the steps in constructing a heat-flow budget for a new electronic product, and say how the budget is used to select cooling.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o1"
+   ],
+   "markingGuide": [
+    "List all sources and give a dissipation in watts for each, using efficiencies for converters ($P_{out}(1/\\eta-1)$)",
+    "Include all operating modes, particularly peak load",
+    "Subtract non-heat outputs (light, radio, mechanical) and sum to a total heat load",
+    "Estimate the allowable temperature rise and thermal resistance to the environment from the ambient and the limits",
+    "Use the total and allowable resistance to select passive or active cooling and to allocate resistance among elements"
+   ],
+   "explanation": "The budget converts a product specification into a single heat load that cooling must handle. Once the allowable resistance is known, the choice between a passive and an active solution follows from the thermal capability of each.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A designer proposes to remove a fan from a sealed 120 W system to eliminate noise and a failure mode. Discuss the factors you would examine to decide whether passive cooling is feasible, and what margin you would apply.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o3",
+    "ug.mce-advanced-heat-transfer.thermal-management.thermal-design-process.o2"
+   ],
+   "markingGuide": [
+    "Calculates heat load and the allowable temperature rise using ambient and component limit minus margin",
+    "Estimates the passive resistance (natural convection $h$ of 5 to 15 W/m$^2$K) and compares it with the required resistance",
+    "Considers size and weight of the passive heat sink and ability to fit within the enclosure",
+    "Notes that a lower margin means higher failure rate and that fan failure is a trade-off against heat sink size",
+    "Concludes with a decision rule, e.g. passive if allowable $R$ is met with margin; otherwise a fan with a redundancy or fail-safe"
+   ],
+   "explanation": "Feasibility depends on whether natural convection and radiation can meet the allowable resistance at the chosen margin. A fan removes the size constraint but adds noise, power and a moving-part failure mode, so the decision is a trade-off.",
+   "board": "internal"
+  }
+ ]
+}

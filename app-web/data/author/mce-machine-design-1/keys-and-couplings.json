@@ -1,0 +1,432 @@
+{
+ "lessonTitle": "Keys, Splines and Couplings",
+ "estimatedMinutes": 55,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 22 kW gearbox output shaft turns a conveyor drum through a hub that is held on by a small rectangular piece of steel a few centimetres long. If that key is mis-sized it shears or crushes, and the plant stops at once; if it is oversized the shaft is weakened by a deep keyway. Transmitting torque from a shaft to a hub is a basic job of machine design."
+  },
+  {
+   "type": "text",
+   "markdown": "To transmit torque between a shaft and a hub (gear, pulley, coupling) we need a positive connection or a friction connection. The most common positive connection is the **parallel key**, a rectangular bar of width $w$, height $h$ and length $l$ that sits partly in a keyway in the shaft and partly in a keyway in the hub. Torque $T$ on a shaft of diameter $d$ produces a tangential force at the shaft surface, shown below, which the key transmits."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Key loading",
+   "text": "A parallel key is loaded in two ways. The tangential force $F=2T/d$ tries to **shear** the key across the plane at the shaft/hub interface, of area $w\\,l$, and also **crushes** (bearing stress) the key and keyway side faces, over the half of the key height that lies in each keyway, of area $(h/2)\\,l$. The shear stress and the bearing stress are therefore different, and either can govern."
+  },
+  {
+   "type": "math",
+   "latex": "F=\\frac{2T}{d},\\qquad \\tau=\\frac{F}{w\\,l},\\qquad \\sigma_b=\\frac{F}{(h/2)\\,l}=\\frac{2F}{h\\,l}",
+   "caption": "Parallel key: tangential force, shear stress and bearing stress (T in N mm, dimensions in mm give MPa)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Sizing.** The width and height come from standards for the shaft diameter (a typical key for a 40 mm shaft is about 12 mm wide and 8 mm high), so design means finding the **length**. The key is checked against the allowable shear stress, which by the von Mises criterion is $0.577S_y/n$, and against the allowable bearing stress, $S_y/n$, where $S_y$ is the yield strength of the weakest of the key, shaft and hub material and $n$ is the design factor. The length is the larger of the two lengths required, which usually turns out to be controlled by bearing for a square or nearly square key. The key is made of a relatively ductile steel and deliberately sized so that it fails before the shaft does."
+  },
+  {
+   "type": "worked_example",
+   "title": "Key length for a 40 mm shaft",
+   "prompt": "A shaft of diameter 40 mm transmits a torque of 320 N m through a 12 mm wide, 8 mm high parallel key of steel with typical yield strength $S_y=300$ MPa. Use a design factor $n=2$. Find the minimum key length.",
+   "steps": [
+    {
+     "text": "Tangential force at the shaft surface.",
+     "latex": "F=\\frac{2T}{d}=\\frac{2\\times320\\times10^3}{40}=16000\\ \\text{N}"
+    },
+    {
+     "text": "Allowable stresses with $n=2$.",
+     "latex": "\\tau_{all}=\\frac{0.577\\times300}{2}=86.5\\ \\text{MPa},\\qquad \\sigma_{b,all}=\\frac{300}{2}=150\\ \\text{MPa}"
+    },
+    {
+     "text": "Length from shear, $l=F/(w\\tau_{all})$.",
+     "latex": "l_s=\\frac{16000}{12\\times86.5}=15.4\\ \\text{mm}"
+    },
+    {
+     "text": "Length from bearing, $l=2F/(h\\sigma_{b,all})$. This is larger, so bearing governs.",
+     "latex": "l_b=\\frac{2\\times16000}{8\\times150}=26.7\\ \\text{mm}"
+    }
+   ],
+   "answer": "The shear criterion needs 15.4 mm and the bearing criterion 26.7 mm, so bearing governs and a key of at least 27 mm, rounded up to a practical length such as 28 mm, is required."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Connection",
+    "Torque capacity",
+    "Advantages",
+    "Drawbacks"
+   ],
+   "rows": [
+    [
+     "Parallel key",
+     "Moderate; limited by key shear and bearing",
+     "Cheap, simple, easy to assemble and remove",
+     "Keyway stress concentration; backlash; one key locates the hub only loosely in rotation under reversing loads"
+    ],
+    [
+     "Spline (straight-sided or involute)",
+     "High; load shared by many teeth",
+     "Large torque in small space, hub can slide axially, good centring",
+     "Costly to machine, stress concentration at the root"
+    ],
+    [
+     "Interference (press or shrink) fit",
+     "High; friction on the whole interface",
+     "No keyway, balanced, concentric, handles reversing and shock",
+     "Hard to disassemble; needs close tolerances; torque set by friction and may slip"
+    ]
+   ],
+   "caption": "Comparison of shaft-hub torque connections"
+  },
+  {
+   "type": "text",
+   "markdown": "**Interference fits.** A hub pressed or shrunk onto a shaft with a diametral interference develops a contact pressure $p$ at the interface. Friction with coefficient $\\mu$ gives a tangential force $\\mu p\\,(\\pi d\\,l)$ at radius $d/2$, so the torque that can be transmitted before slip is below. The value of $\\mu$ is typically 0.1 to 0.15 for steel on steel (typical, depends on surface finish and lubricant) and the pressure follows from the interference and elastic properties (thick-cylinder theory, covered with stress analysis). A design factor is applied against slip."
+  },
+  {
+   "type": "math",
+   "latex": "T=\\mu\\,p\\,(\\pi d\\,l)\\,\\frac{d}{2}=\\frac{\\pi}{2}\\,\\mu\\,p\\,d^2\\,l",
+   "caption": "Slip torque of an interference fit (p in MPa, d and l in mm give N mm)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Slip torque of a shrink fit compared with a key",
+   "prompt": "A hub is shrunk onto a 50 mm shaft with an interface length of 60 mm and a contact pressure of 40 MPa. Take $\\mu=0.12$. Find the slip torque and compare it with the key of the previous example (320 N m, 40 mm shaft).",
+   "steps": [
+    {
+     "text": "Friction force at the interface: $\\mu p\\,\\pi dl$.",
+     "latex": "F_t=0.12\\times40\\times\\pi\\times50\\times60=45239\\ \\text{N}"
+    },
+    {
+     "text": "Torque at radius $d/2=25$ mm.",
+     "latex": "T=45239\\times25\\times10^{-3}=1131\\ \\text{N m}"
+    },
+    {
+     "text": "Comparison. The fit slips at about 1131 N m, about 3.5 times the torque the 12 x 8 key was sized for, and with no keyway to weaken the shaft.",
+     "latex": "\\frac{1131}{320}=3.5"
+    }
+   ],
+   "answer": "The slip torque is about 1131 N m. With a design factor of 2 the fit could be rated for about 565 N m."
+  },
+  {
+   "type": "text",
+   "markdown": "**Couplings.** A coupling joins two shafts end to end. **Rigid couplings** (sleeve, clamp or flange types) bind two shafts into one, require precise alignment and transmit all moments and misalignment forces into the shafts and bearings. They suit accurately aligned shafts or when torsional stiffness and precise phasing are essential. **Flexible couplings** accommodate some parallel (offset), angular and axial misalignment, and many also damp shock and vibration. Unavoidable misalignment from installation tolerance, thermal growth and foundation settlement means flexible couplings are used for most machine drives. The coupling is selected on the design torque, the rated torque multiplied by a service factor $K_s$ for the type of drive (typical $K_s$ from about 1.0 for a smooth electric drive to 2 or more for heavy shock, from manufacturers' tables)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Coupling type",
+    "Misalignment tolerated",
+    "Features"
+   ],
+   "rows": [
+    [
+     "Rigid flange or sleeve",
+     "None (aligned shafts)",
+     "Stiff, no backlash, cheap, transmits bending"
+    ],
+    [
+     "Elastomer jaw or pin",
+     "Small angular, parallel and axial",
+     "Damps vibration and shock, limited temperature, wears"
+    ],
+    [
+     "Gear (toothed) coupling",
+     "Angular, and some parallel in a double-engagement unit",
+     "High torque, compact, needs lubrication"
+    ],
+    [
+     "Disc or bellows",
+     "Small angular, parallel and axial",
+     "Torsionally stiff, no backlash, no lubrication, precise drives"
+    ],
+    [
+     "Oldham",
+     "Parallel offset",
+     "Moderate speed, simple, wear on sliding surfaces"
+    ],
+    [
+     "Universal (Hooke) joint",
+     "Large angular",
+     "Non-uniform speed unless used in pairs"
+    ]
+   ],
+   "caption": "Selecting a coupling by misalignment (qualitative)"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Match the connection to the duty",
+   "text": "Keys are the default for modest loads; splines for large, sliding or repeatedly reversing torque; shrink fits where a keyway would be too weak or backlash is intolerable. For couplings, choose rigid only where alignment can be guaranteed; otherwise use a flexible type chosen for the type of misalignment, torque including service factor, and the need to damp vibration."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A parallel key sees $F=2T/d$, shear stress $F/(wl)$ and bearing stress $2F/(hl)$; allowable shear is $0.577S_y/n$ and bearing $S_y/n$, and the longer of the two lengths governs.",
+    "Splines share the load between many teeth and allow axial sliding; interference fits transmit torque by friction, $T=\\tfrac{\\pi}{2}\\mu pd^2l$, without a keyway.",
+    "Rigid couplings need accurate alignment; flexible couplings tolerate parallel, angular or axial misalignment and may damp shock.",
+    "Select a coupling using design torque $=K_s\\times$ rated torque."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A parallel key is loaded by a tangential force $F$. Over which area does the bearing (crushing) stress on the key act?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Half of the key height times the key length, $(h/2)l$"
+    },
+    {
+     "id": "b",
+     "text": "The full side face of the key, $h\\,l$"
+    },
+    {
+     "id": "c",
+     "text": "The key width times its length, $w\\,l$"
+    },
+    {
+     "id": "d",
+     "text": "The area of the shaft cross-section"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Half of the key height times the key length, $(h/2)l$",
+   "distractorRationale": {
+    "a": "Correct: only the half of the key standing in each keyway bears on the face.",
+    "b": "The full height is not in contact with either keyway face.",
+    "c": "w l is the shear area of the key.",
+    "d": "The shaft cross-section is not the contact area."
+   },
+   "explanation": "The key sits half in the shaft and half in the hub, so each side face bears over a height of about $h/2$. The bearing stress is therefore $2F/(hl)$, which is twice the stress that would act on the full face.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A key is checked in shear and in bearing and the bearing check requires a longer key than the shear check. What is the correct design decision?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Use the longer length from the bearing check"
+    },
+    {
+     "id": "b",
+     "text": "Use the shorter length from the shear check"
+    },
+    {
+     "id": "c",
+     "text": "Use the average of the two lengths"
+    },
+    {
+     "id": "d",
+     "text": "Ignore the bearing check because the key fails in shear"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Use the longer length from the bearing check",
+   "distractorRationale": {
+    "a": "Correct: the key must satisfy both criteria.",
+    "b": "The shorter length would overstress the key in bearing.",
+    "c": "An average would violate one of the criteria.",
+    "d": "Both modes can cause failure, so both must pass."
+   },
+   "explanation": "The key length must satisfy every criterion, so the larger length governs. For nearly square keys the bearing length is usually larger, as the example showed.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Compared with a single parallel key, what is the principal advantage of a spline connection?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The torque is shared among many teeth, giving a high torque capacity in a small space with axial sliding possible"
+    },
+    {
+     "id": "b",
+     "text": "It requires no machining of the shaft"
+    },
+    {
+     "id": "c",
+     "text": "It is cheaper to manufacture"
+    },
+    {
+     "id": "d",
+     "text": "It eliminates stress concentration entirely"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The torque is shared among many teeth, giving a high torque capacity in a small space with axial sliding possible",
+   "distractorRationale": {
+    "a": "Correct: many teeth share the load.",
+    "b": "Splines require precise machining of both shaft and hub.",
+    "c": "Splines cost more than keys.",
+    "d": "Spline roots also concentrate stress."
+   },
+   "explanation": "A spline is a series of keys cut into the shaft, so the load is spread over many teeth, and the hub may slide axially along the shaft. The cost is more expensive machining and a stress concentration at the teeth roots.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two machines on a common base will be coupled, but thermal growth and settlement mean the shafts will end up slightly misaligned and the drive is subject to torque pulsations. Which coupling is most suitable?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A flexible elastomeric coupling"
+    },
+    {
+     "id": "b",
+     "text": "A rigid flange coupling"
+    },
+    {
+     "id": "c",
+     "text": "A rigid sleeve coupling"
+    },
+    {
+     "id": "d",
+     "text": "A clamp coupling"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A flexible elastomeric coupling",
+   "distractorRationale": {
+    "a": "Correct: it accommodates misalignment and damps pulsations.",
+    "b": "A rigid flange puts misalignment forces into the bearings.",
+    "c": "A rigid sleeve forces the shafts into line and passes bending to the bearings.",
+    "d": "A clamp coupling is another rigid design with the same limitation."
+   },
+   "explanation": "Rigid couplings force the shafts to be collinear, which overloads bearings when there is misalignment. A flexible element absorbs the offsets and softens the torque pulsations.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An interference fit transmits torque by friction. If the diameter is doubled with the same contact pressure, coefficient of friction and length, how does the slip torque change?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases by a factor of four"
+    },
+    {
+     "id": "b",
+     "text": "It doubles"
+    },
+    {
+     "id": "c",
+     "text": "It increases by a factor of eight"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It increases by a factor of four",
+   "distractorRationale": {
+    "a": "Correct: T = (pi/2) mu p d^2 l goes as d squared.",
+    "b": "A factor of two would need T proportional to d.",
+    "c": "Eight would need d cubed, which applies if length also doubled in proportion.",
+    "d": "T clearly depends on diameter."
+   },
+   "explanation": "The friction force grows with the area $\\pi dl$ (proportional to $d$) and acts at a radius proportional to $d$, so the torque scales with $d^2$. Doubling the diameter therefore gives four times the slip torque.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A parallel key 8 mm wide, 7 mm high and 40 mm long transmits a torque of 150 N m from a 30 mm diameter shaft. Find the shear stress in the key in MPa.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o1"
+   ],
+   "correctValue": 31.25,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "The tangential force is $F=2T/d=2\\times150\\times10^3/30=10000$ N. The shear area is $wl=8\\times40=320$ mm$^2$, so $\\tau=10000/320=31.25$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 50 mm shaft transmits 500 N m through a parallel key 14 mm wide and 9 mm high. The allowable bearing stress is 140 MPa. Find the minimum key length in mm required by the bearing criterion.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o1"
+   ],
+   "correctValue": 31.746032,
+   "tolerance": 0.5,
+   "unit": "mm",
+   "explanation": "The force is $F=2T/d=2\\times500\\times10^3/50=20000$ N. From $\\sigma_b=2F/(hl)$ the length is $l=2F/(h\\sigma_b)=2\\times20000/(9\\times140)=31.7$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A hub is pressed onto a 40 mm diameter shaft with a contact length of 50 mm and an interface pressure of 25 MPa. The coefficient of friction is 0.10. Find the torque in N m at which the joint slips.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o2"
+   ],
+   "correctValue": 314.159265,
+   "tolerance": 5,
+   "unit": "N m",
+   "explanation": "The torque is $T=\\tfrac{\\pi}{2}\\mu pd^2l=\\tfrac{\\pi}{2}\\times0.10\\times25\\times40^2\\times50=314159$ N mm, which is 314.2 N m. The friction force acts over the whole interface at a radius of 20 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A 45 mm shaft transmits a torque $T$ through a rectangular parallel key of width $w$, height $h$ and length $l$. Describe how you would check the key for failure, giving expressions for the stresses and the allowable values, and state which check usually governs and what the designer can change if the key is too weak.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o1"
+   ],
+   "markingGuide": [
+    "Tangential force at the shaft surface $F=2T/d$.",
+    "Shear stress $\\tau=F/(wl)$ compared with allowable $0.577S_y/n$ (distortion energy).",
+    "Bearing stress $\\sigma_b=2F/(hl)$ compared with allowable $S_y/n$, where $S_y$ is that of the weakest of the key, shaft and hub.",
+    "The bearing criterion usually governs for a near-square key; required length is the larger from the two checks.",
+    "Remedies: increase the length (hub width permitting), use a stronger key material, use two keys at 90 or 120 degrees, or change to a spline or shrink fit; keep the key weaker than the shaft so it is the sacrificial element."
+   ],
+   "explanation": "Both modes must pass, and the larger required length governs. The key is usually made the weakest member so that overload damage is limited to the key.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A variable-speed drive must connect an electric motor shaft to a gearbox input shaft. Alignment during commissioning is expected to be within a fraction of a millimetre, but thermal growth and shaft misalignment during operation are likely. The motor start-up torque is high and there are torque pulsations. Compare keys, splines and interference fits for attaching the coupling hubs to the shafts and explain your choice of coupling.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o2",
+    "ug.mce-machine-design-1.shafts-and-keys.keys-and-couplings.o3"
+   ],
+   "markingGuide": [
+    "Hub attachment: key is simple but has keyway stress concentration and backlash; spline gives high torque capacity and is good where the hub must slide; interference fit has no keyway, is concentric and tolerates reversals but is hard to dismantle and torque depends on friction.",
+    "Rank them by torque capacity and the shock expected: interference or spline for high reversing torque, key for modest duty.",
+    "Coupling choice: rigid couplings are unsuitable because misalignment causes bending loads in shafts and bearings.",
+    "A flexible coupling (elastomer jaw, gear or disc type) accommodates parallel and angular misalignment and the elastomer or flexible elements damp pulsations.",
+    "Size the coupling on design torque, rated torque multiplied by a service factor for the motor start and pulsation, and check the hub bore and key size."
+   ],
+   "explanation": "The hub attachment and the coupling type are separate decisions: the first relates to torque and assembly, the second to misalignment and dynamics. A good answer treats them in turn and justifies each from the duty.",
+   "board": "internal"
+  }
+ ]
+}

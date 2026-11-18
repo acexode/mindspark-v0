@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "Interrupts and Real-Time Behaviour",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A quadcopter flight controller must read its gyroscope and update four motor outputs every millisecond, yet it also parses radio packets, writes logs and flashes LEDs. If the code does all of this in one loop, a slow log write can make the aircraft miss a control update and tumble. Interrupts and a disciplined main loop keep every deadline."
+  },
+  {
+   "type": "text",
+   "markdown": "A microcontroller normally runs the **main loop**. An **interrupt** is a hardware signal that pauses the main loop, runs a short function called an **interrupt service routine (ISR)**, and then resumes. Interrupts let the processor react to an event, such as a timer tick or a received byte, within microseconds without constantly polling. The cost is that every ISR steals time from everything else."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Interrupt latency",
+   "text": "**Interrupt latency** is the time from the hardware event to the first instruction of its ISR. In the worst case it is the sum of (i) the longest stretch for which interrupts are disabled or a higher-priority ISR runs, (ii) the instruction in progress and (iii) the hardware entry sequence that saves registers. Convert cycles to time with $t=N_{cycles}/f_{clk}$."
+  },
+  {
+   "type": "math",
+   "latex": "t_{lat,\\max}=\\frac{N_{block}+N_{entry}}{f_{clk}}",
+   "caption": "Worst-case latency; N counts clock cycles, f in hertz"
+  },
+  {
+   "type": "text",
+   "markdown": "**Rule for ISRs: keep them short.** An ISR should do only what must be done now: read the hardware register that cleared the event, store the data or set a **flag**, and return. Long work (calculation, printing, waiting in a delay loop) belongs in the main loop, which tests the flag. A long ISR blocks other interrupts of equal or lower priority and increases their latency. Variables shared between an ISR and the main loop must be declared `volatile` so the compiler re-reads them each time."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "ISR: clear the interrupt source, set `tick_flag = 1` (or store the received byte), return.",
+    "Main loop: `if (tick_flag) { tick_flag = 0; run_control(); }`.",
+    "Never use blocking waits, long loops or slow functions inside an ISR.",
+    "Multi-byte values shared with an ISR should be read inside a short interrupt-disabled section so they cannot change halfway."
+   ]
+  },
+  {
+   "type": "worked_example",
+   "title": "Worst-case latency",
+   "prompt": "A 72 MHz microcontroller takes 12 cycles to enter an ISR. The longest code section with interrupts disabled is 40 cycles, and the worst-case higher-priority ISR that may be running is 150 cycles. Find the worst-case latency of a lower-priority interrupt.",
+   "steps": [
+    {
+     "text": "Add the blocking time: the longest disabled section plus the higher-priority ISR.",
+     "latex": "N_{block}=40+150=190\\ \\text{cycles}"
+    },
+    {
+     "text": "Add the hardware entry cycles.",
+     "latex": "N_{total}=190+12=202\\ \\text{cycles}"
+    },
+    {
+     "text": "Convert to time: one cycle at 72 MHz lasts 13.89 ns.",
+     "latex": "t=\\frac{202}{72\\times10^{6}}=2.81\\ \\mu\\text{s}"
+    }
+   ],
+   "answer": "Worst-case latency is 2.81 microseconds (202 cycles at 72 MHz)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Meeting a periodic deadline.** A periodic control task with period $T$ must finish before the next release. A safe structure is: a timer ISR sets a flag every $T$; the main loop runs the control task when the flag is set, and all other main-loop work is split into short pieces so none holds the processor too long. The task's **response time** is roughly the longest non-interruptible piece $C_{b}$ plus the task's own execution time $C$, stretched by interrupt load $U_{isr}$ (fraction of CPU time spent in ISRs)."
+  },
+  {
+   "type": "math",
+   "latex": "R\\approx\\frac{C_b+C}{1-U_{isr}}\\ \\le\\ T",
+   "caption": "Approximate worst-case response time; C_b blocking piece, C execution time (seconds)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Checking a 1 kHz control loop",
+   "prompt": "A control task runs every $T=1$ ms and needs $C=250\\ \\mu$s. The longest other main-loop piece is $C_b=600\\ \\mu$s and ISRs use 5 percent of the processor. Does the task meet its deadline?",
+   "steps": [
+    {
+     "text": "Add blocking and execution time.",
+     "latex": "C_b+C=600+250=850\\ \\mu\\text{s}"
+    },
+    {
+     "text": "Allow for ISR load by dividing by $1-U_{isr}$.",
+     "latex": "R\\approx\\frac{850}{0.95}=895\\ \\mu\\text{s}"
+    },
+    {
+     "text": "Compare with the period.",
+     "latex": "895\\ \\mu\\text{s}<1000\\ \\mu\\text{s}\\Rightarrow\\text{margin}\\approx105\\ \\mu\\text{s}"
+    }
+   ],
+   "answer": "The deadline is met with about 105 microseconds (roughly 10 percent) of margin; a main-loop piece longer than about 700 microseconds would break it."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Design choice",
+    "Effect on latency",
+    "Effect on CPU load",
+    "Comment"
+   ],
+   "rows": [
+    [
+     "Short ISR (flag only)",
+     "Low for other interrupts",
+     "Small",
+     "Preferred pattern"
+    ],
+    [
+     "Long ISR (full processing)",
+     "High for other interrupts",
+     "Same total work",
+     "Risks missed events"
+    ],
+    [
+     "Polling in main loop",
+     "Up to one loop time",
+     "Wastes time when idle",
+     "Simple but slow to react"
+    ],
+    [
+     "Interrupts disabled for long sections",
+     "Adds directly to worst-case latency",
+     "None",
+     "Keep critical sections to a few cycles"
+    ]
+   ],
+   "caption": "Comparing interrupt and polling designs"
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Worst case, not average case",
+   "text": "Real-time means meeting the deadline every time. Always size the budget from the worst-case latency and execution time, never the average."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Lost events",
+   "text": "If the main loop is still busy when the next tick arrives, a single flag cannot count both ticks, so one deadline is missed silently. Detect overruns by testing whether the flag is already set when the ISR runs."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "An ISR should clear its source, set a flag or store data, and return quickly; heavy work belongs in the main loop.",
+    "Worst-case latency is (longest blocking cycles + entry cycles) divided by the clock frequency.",
+    "A periodic task meets its deadline when $(C_b+C)/(1-U_{isr})\\le T$ (approximate).",
+    "Shared variables use `volatile`, and multi-byte shared data are read with interrupts briefly disabled."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A UART receive interrupt arrives for each incoming byte of a sensor message. What should the ISR do?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Copy the byte into a buffer, set a flag if the message is complete, and return"
+    },
+    {
+     "id": "b",
+     "text": "Parse the full message and update the control algorithm"
+    },
+    {
+     "id": "c",
+     "text": "Wait in a loop until the next byte arrives"
+    },
+    {
+     "id": "d",
+     "text": "Print the byte to the console for debugging"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Copy the byte into a buffer, set a flag if the message is complete, and return",
+   "distractorRationale": {
+    "a": "Correct: minimal work and signalling through a flag.",
+    "b": "Parsing is long work that blocks other interrupts.",
+    "c": "A waiting loop inside an ISR would block everything else.",
+    "d": "Slow console output would hold the processor for a long time."
+   },
+   "explanation": "An ISR must finish quickly so it does not delay other interrupts, so it stores the byte and signals the main loop. Parsing and control calculations belong in the main loop, where they can be scheduled.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of these operations is the most unsuitable inside an ISR?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Setting a volatile flag"
+    },
+    {
+     "id": "b",
+     "text": "Clearing the interrupt status bit"
+    },
+    {
+     "id": "c",
+     "text": "A blocking delay loop that waits 5 ms"
+    },
+    {
+     "id": "d",
+     "text": "Incrementing a counter"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "A blocking delay loop that waits 5 ms",
+   "distractorRationale": {
+    "a": "Setting a flag takes a couple of cycles.",
+    "b": "Clearing the status bit is required and short.",
+    "c": "Correct: a delay loop stalls the system.",
+    "d": "Incrementing a counter takes a few cycles."
+   },
+   "explanation": "A 5 ms wait keeps the processor in the ISR for thousands of microseconds, so other interrupts equal or lower in priority are blocked and the control deadline is missed. The other operations take a few cycles.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What does the worst-case interrupt latency of a system depend on?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Only the average length of the ISR"
+    },
+    {
+     "id": "b",
+     "text": "The longest time interrupts stay blocked plus the hardware entry time before the first ISR instruction"
+    },
+    {
+     "id": "c",
+     "text": "The speed of the main loop only"
+    },
+    {
+     "id": "d",
+     "text": "The number of global variables"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The longest time interrupts stay blocked plus the hardware entry time before the first ISR instruction",
+   "distractorRationale": {
+    "a": "The ISR's own execution comes after the latency window.",
+    "b": "Correct: maximum blocking time plus hardware entry time.",
+    "c": "The main loop is paused by the interrupt, so its speed is irrelevant unless interrupts are disabled.",
+    "d": "Global variables do not set interrupt timing."
+   },
+   "explanation": "Latency counts from the event to the first ISR instruction, so it depends on the maximum blocking time (disabled sections, higher-priority ISRs) plus the entry sequence. The ISR's own length affects other interrupts, not its own latency.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 1 kHz tick flag is set by a timer ISR. The control task in the main loop sometimes takes 1.3 ms. What is the most likely result?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The task simply speeds up for the next period"
+    },
+    {
+     "id": "b",
+     "text": "The ISR will stop the control task to catch up"
+    },
+    {
+     "id": "c",
+     "text": "Nothing, because flags queue every tick"
+    },
+    {
+     "id": "d",
+     "text": "Some ticks are missed and the control deadline is violated"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Some ticks are missed and the control deadline is violated",
+   "distractorRationale": {
+    "a": "Tasks do not speed themselves up.",
+    "b": "The ISR only sets a flag; it does not pre-empt the main loop's task.",
+    "c": "A single flag does not count pending ticks.",
+    "d": "Correct: overrun leads to missed deadlines."
+   },
+   "explanation": "A task that takes longer than the 1 ms period cannot finish before the next release, and a simple flag records only that at least one tick occurred. Ticks are therefore lost and the effective loop rate falls.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A timer ISR runs at 20 kHz and takes 8 microseconds each time. What fraction of the processor does it use?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o2",
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "16 percent"
+    },
+    {
+     "id": "b",
+     "text": "0.16 percent"
+    },
+    {
+     "id": "c",
+     "text": "1.6 percent"
+    },
+    {
+     "id": "d",
+     "text": "160 percent"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "16 percent",
+   "distractorRationale": {
+    "a": "Correct: 20 000 x 8 microseconds = 0.16 s per second.",
+    "b": "This divides by 100 an extra time.",
+    "c": "This divides by 10 an extra time.",
+    "d": "This multiplies by 10 and would exceed the total capacity."
+   },
+   "explanation": "The ISR runs 20 000 times per second for 8 microseconds, so it uses $20\\,000\\times8\\times10^{-6}=0.16$ of every second, or 16 percent. Frequent short ISRs can still consume a large share of the CPU.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A 48 MHz processor needs 24 clock cycles to enter an ISR when no other interrupt is active. Calculate the entry latency in microseconds.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o2"
+   ],
+   "correctValue": 0.5,
+   "tolerance": 0.01,
+   "unit": "microseconds",
+   "explanation": "One cycle lasts $1/48\\,\\text{MHz}=20.8$ ns, so 24 cycles take $24/(48\\times10^6)=0.5\\ \\mu$s. This is only the hardware entry portion of latency.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "At 80 MHz, interrupts are disabled for at most 64 cycles, entry takes 15 cycles, and a higher-priority ISR of up to 120 cycles may be executing. Find the worst-case latency of a lower-priority interrupt in microseconds.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o2"
+   ],
+   "correctValue": 2.49,
+   "tolerance": 0.03,
+   "unit": "microseconds",
+   "explanation": "The worst case adds the blocking cycles from the disabled section and the higher-priority ISR (64 + 120) and the entry (15), giving 199 cycles. At 80 MHz this is $199/(80\\times10^6)=2.49\\ \\mu$s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A control task has period 2.0 ms and needs 0.60 ms. The longest uninterruptible main-loop piece is 0.80 ms and ISRs use 4 percent of the processor. Using $R\\approx(C_b+C)/(1-U_{isr})$, find the worst-case response time in milliseconds.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o3"
+   ],
+   "correctValue": 1.46,
+   "tolerance": 0.02,
+   "unit": "ms",
+   "explanation": "The blocking and execution times add to 1.40 ms and ISR load stretches this to $1.40/0.96=1.458$ ms. This is below 2.0 ms, so the deadline is met with about 0.54 ms of margin.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how you would count pulses from a flow-meter on an external-interrupt pin and use the count in a main-loop calculation. Explain the ISR design, the shared-variable declaration and one hazard of reading the count in the main loop.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o1"
+   ],
+   "markingGuide": [
+    "ISR only increments a counter (or sets a flag) and returns, kept very short (2 marks)",
+    "Counter shared with the ISR is declared `volatile` so the compiler re-reads it (2 marks)",
+    "Main loop copies and processes the count at a fixed interval, away from the ISR (2 marks)",
+    "Hazard: a multi-byte counter can change during the read, so read it with interrupts briefly disabled or repeat the read until two copies agree (2 marks)",
+    "Mentions overflow or missed pulses if the ISR is delayed too long (1 mark)"
+   ],
+   "explanation": "The ISR only increments the count. Because the main loop reads a shared multi-byte variable, the read must be atomic, otherwise a pulse may arrive halfway through the read.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A 5 kHz control loop (period 200 microseconds) has a timer ISR of 4 microseconds and an ADC-complete ISR of 6 microseconds each period, a control computation of 90 microseconds and main-loop background pieces of up to 70 microseconds. Show that the deadline is met, then show what happens if a 150 microsecond logging function is added to the main loop and suggest a fix.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o2",
+    "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.o3"
+   ],
+   "markingGuide": [
+    "ISR utilisation $=10/200=5\\%$ (1 mark)",
+    "Response time $(70+90)/0.95=168.4$ microseconds which is below 200, margin about 32 microseconds (2 marks)",
+    "With the 150 microsecond piece: $(150+90)/0.95=252.6$ microseconds, exceeding the 200 microsecond period (2 marks)",
+    "Fix: split logging into pieces of at most about 70 microseconds, or move it to a lower-priority context or DMA (2 marks)",
+    "Notes the budget uses worst-case, not average, execution times (1 mark)"
+   ],
+   "explanation": "The original design needs 168 microseconds of a 200 microsecond period, which is met. A 150 microsecond logging piece pushes the response to 253 microseconds, so the work must be split into short pieces.",
+   "board": "internal"
+  }
+ ]
+}

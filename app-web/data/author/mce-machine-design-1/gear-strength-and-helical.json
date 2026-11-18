@@ -1,0 +1,410 @@
+{
+ "lessonTitle": "Gear Strength and Helical Gears",
+ "estimatedMinutes": 60,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The forward gears of a car gearbox are helical and nearly silent, while the straight-cut reverse gear on many cars whines loudly. The same teeth transmit the same torque, so the noise difference tells us that tooth shape matters as much as tooth strength."
+  },
+  {
+   "type": "text",
+   "markdown": "A spur gear tooth is loaded along the line of action and, in the simplest model due to Wilfred Lewis (1892), behaves like a short cantilever beam fixed at its root. If the failure we fear is a fatigue crack at the root fillet, a bending stress computed on this beam is a natural first estimate of tooth strength. Contact (Hertzian) stress at the flank, which causes pitting, is checked separately and is outside the Lewis model."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Lewis assumptions",
+   "text": "The full tangential load $W_t$ is applied at the tip of a single tooth, the tooth acts as a cantilever of rectangular section of face width $F$ and thickness $t$ at the critical section, and the root fillet stress concentration is ignored (or absorbed into the form factor). The critical section is where a parabola inscribed in the tooth outline touches the root fillet."
+  },
+  {
+   "type": "text",
+   "markdown": "With the load's tangential component producing bending (the radial component gives a small compressive stress that the Lewis model neglects), the bending moment at the root is $W_tl$, where $l$ is the cantilever length from the root section to the load point. The section modulus of a rectangle $F\\times t$ is $Ft^2/6$, so the bending stress is $6W_tl/(Ft^2)$. Writing $t^2/(6l)=mY$ lumps the tooth shape into the dimensionless **Lewis form factor** $Y$, which depends only on the number of teeth (and pressure angle), not on the module."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma=\\frac{6W_tl}{Ft^2}=\\frac{W_t}{F\\,m\\,Y},\\qquad Y=\\frac{t^2}{6\\,l\\,m}",
+   "caption": "Lewis bending stress (SI: W_t in N, F and m in mm, result in MPa)"
+  },
+  {
+   "type": "text",
+   "markdown": "Y rises with the number of teeth because bigger gears have thicker, stronger roots relative to their module. Representative values for $20^\\circ$ full-depth teeth (typical, from Shigley's tabulation): $Y\\approx0.303$ for 17 teeth, 0.322 for 20, 0.340 for 25, 0.358 for 30, 0.389 for 40 and 0.409 for 50. The stress is also magnified by dynamic effects. For teeth of cut or milled profile a simple correction is the dynamic factor below, where $V$ is the pitch-line speed in m/s."
+  },
+  {
+   "type": "math",
+   "latex": "K_v=\\frac{6.1+V}{6.1},\\qquad \\sigma=\\frac{K_vW_t}{F\\,m\\,Y}",
+   "caption": "Velocity (dynamic) factor for cut or milled teeth (V in m/s), used with the Lewis equation"
+  },
+  {
+   "type": "worked_example",
+   "title": "Lewis stress in a 25-tooth spur gear",
+   "prompt": "A $20^\\circ$ spur gear has $N=25$ teeth, module $m=5$ mm and face width $F=50$ mm. It transmits a tangential load $W_t=3500$ N at 600 rev/min. Use $Y=0.340$ and $K_v=(6.1+V)/6.1$. Find the root bending stress.",
+   "steps": [
+    {
+     "text": "Pitch diameter and pitch-line speed.",
+     "latex": "d=mN=5\\times25=125\\ \\text{mm},\\qquad V=\\frac{\\pi\\times0.125\\times600}{60}=3.927\\ \\text{m/s}"
+    },
+    {
+     "text": "Dynamic factor.",
+     "latex": "K_v=\\frac{6.1+3.927}{6.1}=1.644"
+    },
+    {
+     "text": "Static Lewis stress with $F=50$ mm, $m=5$ mm and $Y=0.340$: the denominator is $50\\times5\\times0.340=85$ mm$^2$.",
+     "latex": "\\sigma_{static}=\\frac{3500}{85}=41.2\\ \\text{MPa}"
+    },
+    {
+     "text": "Apply the dynamic factor.",
+     "latex": "\\sigma=1.644\\times41.2=67.7\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The root bending stress is about 68 MPa (41.2 MPa without the dynamic factor). It would be compared with an allowable bending stress for the gear material divided by a design factor."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Helical gears.** In a helical gear the teeth are cut along a helix of angle $\\psi$ to the axis. Two helical gears on parallel shafts must have equal helix angles of opposite hand and equal normal module. Because the teeth are inclined, the tooth force has three components. It is easiest to use the **transverse plane** (perpendicular to the axis), where the pitch diameter is $d=N\\,m_n/\\cos\\psi$ with $m_n$ the normal module, and the transverse pressure angle $\\phi_t$ is linked to the normal pressure angle $\\phi_n$."
+  },
+  {
+   "type": "math",
+   "latex": "\\tan\\phi_t=\\frac{\\tan\\phi_n}{\\cos\\psi},\\quad W_r=W_t\\tan\\phi_t,\\quad W_a=W_t\\tan\\psi,\\quad W=\\frac{W_t}{\\cos\\phi_n\\cos\\psi}",
+   "caption": "Helical gear force components: tangential W_t, radial W_r, axial W_a and total normal force W"
+  },
+  {
+   "type": "worked_example",
+   "title": "Forces on a helical pinion",
+   "prompt": "A helical pinion has $N=24$ teeth, normal module $m_n=3$ mm, helix angle $\\psi=25^\\circ$ and normal pressure angle $\\phi_n=20^\\circ$. It transmits 18 kW at 1200 rev/min. Find $W_t$, $W_r$, $W_a$ and $W$.",
+   "steps": [
+    {
+     "text": "Pitch diameter in the transverse plane.",
+     "latex": "d=\\frac{24\\times3}{\\cos25^\\circ}=\\frac{72}{0.9063}=79.44\\ \\text{mm}"
+    },
+    {
+     "text": "Torque, then tangential force.",
+     "latex": "T=\\frac{18000}{2\\pi\\times1200/60}=143.2\\ \\text{N m},\\qquad W_t=\\frac{2T}{d}=\\frac{2\\times143.2}{0.0794}=3606\\ \\text{N}"
+    },
+    {
+     "text": "Transverse pressure angle and radial force.",
+     "latex": "\\phi_t=\\tan^{-1}\\frac{0.3640}{0.9063}=21.88^\\circ,\\qquad W_r=3606\\tan21.88^\\circ=1448\\ \\text{N}"
+    },
+    {
+     "text": "Axial thrust and total force.",
+     "latex": "W_a=W_t\\tan\\psi=3606\\times0.4663=1682\\ \\text{N},\\qquad W=\\frac{3606}{0.9397\\times0.9063}=4234\\ \\text{N}"
+    }
+   ],
+   "answer": "$W_t=3606$ N, $W_r=1448$ N, $W_a=1682$ N and $W=4234$ N. The axial force is a sizeable 47 per cent of the tangential force."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Spur gear",
+    "Helical gear"
+   ],
+   "rows": [
+    [
+     "Tooth contact",
+     "Line parallel to axis, engages suddenly",
+     "Inclined line, engages gradually"
+    ],
+    [
+     "Noise and vibration",
+     "Higher, whine at tooth-passing frequency",
+     "Lower, smoother torque transmission"
+    ],
+    [
+     "Teeth in contact",
+     "Contact ratio about 1.5 to 1.9",
+     "Higher; load shared by more teeth, so greater capacity for the same size"
+    ],
+    [
+     "Bearing loads",
+     "Radial only",
+     "Radial and axial, needing thrust-capable bearings"
+    ],
+    [
+     "Cost and efficiency",
+     "Cheaper, a little more efficient",
+     "More expensive; extra sliding along the tooth"
+    ]
+   ],
+   "caption": "Spur against helical gears"
+  },
+  {
+   "type": "text",
+   "markdown": "**Why helical gears run smoothly.** A helical tooth meets its partner at one end of the face and the contact line sweeps diagonally across the face, so load is taken up and released gradually, and at any instant several teeth share the load. The cost is an **axial thrust** $W_a=W_t\\tan\\psi$, whose direction depends on the hand of the helix and the direction of rotation, and which must be taken by the bearings. Double-helical (herringbone) gears use two opposite helices to cancel the thrust."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not forget the thrust bearing",
+   "text": "A shaft carrying a helical gear needs a bearing able to carry axial load, and the sizing of the bearing and the shaft shoulder must include $W_a$ in addition to $W_r$. Increasing the helix angle to quieten a gear increases the thrust in proportion to $\\tan\\psi$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Lewis treats a tooth as a cantilever loaded at the tip: $\\sigma=W_t/(FmY)$, with form factor $Y$ rising with tooth number; the velocity factor $K_v$ accounts for dynamic load.",
+    "For helical gears, $d=Nm_n/\\cos\\psi$, $W_r=W_t\\tan\\phi_t$ with $\\tan\\phi_t=\\tan\\phi_n/\\cos\\psi$, $W_a=W_t\\tan\\psi$ and $W=W_t/(\\cos\\phi_n\\cos\\psi)$.",
+    "Helical gears engage gradually and share load between more teeth, so they are smoother and stronger, but the axial thrust must be carried by the bearings.",
+    "Herringbone gears cancel the net axial thrust."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the Lewis equation for gear tooth bending, how is the tooth idealised?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "As a cantilever beam loaded at its tip by the full tangential force"
+    },
+    {
+     "id": "b",
+     "text": "As a simply supported beam loaded at its centre"
+    },
+    {
+     "id": "c",
+     "text": "As a thin-walled cylinder in torsion"
+    },
+    {
+     "id": "d",
+     "text": "As a short column loaded in compression"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "As a cantilever beam loaded at its tip by the full tangential force",
+   "distractorRationale": {
+    "a": "Correct: the tooth is a cantilever fixed at its root.",
+    "b": "Teeth are fixed at the rim, not simply supported.",
+    "c": "Torsion does not govern the tooth root stress.",
+    "d": "The compressive part from the radial component is neglected."
+   },
+   "explanation": "Lewis modelled the tooth as a cantilever with the load at the tip, which gives the maximum bending moment at the root. The stress then follows from $\\sigma=Mc/I$ for the rectangular section at the critical parabola.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why do helical gears usually run more quietly than spur gears of the same size?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The teeth come into and out of contact gradually along an inclined line, and more teeth share the load at once"
+    },
+    {
+     "id": "b",
+     "text": "The helical teeth have no sliding friction"
+    },
+    {
+     "id": "c",
+     "text": "The teeth are thicker, so they never deflect"
+    },
+    {
+     "id": "d",
+     "text": "The helical teeth are not subject to tooth-passing vibration at all"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The teeth come into and out of contact gradually along an inclined line, and more teeth share the load at once",
+   "distractorRationale": {
+    "a": "Correct: gradual engagement and a higher contact ratio smooth the load transfer.",
+    "b": "Helical teeth have additional sliding along the tooth length.",
+    "c": "Stiffness does not remove deflection; the benefit is from the contact pattern.",
+    "d": "Tooth passing still occurs, only with a smoother fluctuation."
+   },
+   "explanation": "A spur tooth engages across its entire face at once, creating an impact-like load, whereas a helical tooth picks up load progressively. A higher contact ratio also means the load fluctuation between one and two tooth pairs is reduced.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A helical gear transmits a tangential force of 2.4 kN with a helix angle of $30^\\circ$. What is the axial thrust?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.39 kN"
+    },
+    {
+     "id": "b",
+     "text": "2.77 kN"
+    },
+    {
+     "id": "c",
+     "text": "1.20 kN"
+    },
+    {
+     "id": "d",
+     "text": "2.08 kN"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "1.39 kN",
+   "distractorRationale": {
+    "a": "Correct: W_a = 2.4 tan 30 = 1.386 kN.",
+    "b": "2.77 kN is W_t/cos 30, the force in the plane of the helix, not the axial component.",
+    "c": "1.20 kN uses sin 30 rather than tan 30.",
+    "d": "2.08 kN uses W_t cos 30."
+   },
+   "explanation": "The axial component is $W_a=W_t\\tan\\psi=2.4\\times0.5774=1.386$ kN. Because $\\tan\\psi$ grows quickly at larger helix angles, the thrust at $30^\\circ$ is more than twice that at $15^\\circ$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a spur gear of fixed tooth number and face width carrying a given tangential force, the module is doubled. By the Lewis equation, what happens to the root bending stress (with the form factor unchanged)?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It halves"
+    },
+    {
+     "id": "b",
+     "text": "It doubles"
+    },
+    {
+     "id": "c",
+     "text": "It falls to one quarter"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It halves",
+   "distractorRationale": {
+    "a": "Correct: sigma = W_t/(F m Y), so it is inversely proportional to m.",
+    "b": "That would be the case if stress were proportional to m.",
+    "c": "A quarter would require stress to vary as 1/m^2, which it does not at constant W_t and F.",
+    "d": "Y depends on tooth number only, so the stress does change with m."
+   },
+   "explanation": "With $F$, $Y$ and $W_t$ fixed, $\\sigma\\propto1/m$, so doubling the module halves the stress. In practice the gear also becomes twice as large in diameter, so a given torque gives a lower $W_t$ as well.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which arrangement is used to cancel the net axial thrust of helical gearing on a shaft?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Double-helical (herringbone) gears with opposite hands side by side"
+    },
+    {
+     "id": "b",
+     "text": "A single helical gear with a larger helix angle"
+    },
+    {
+     "id": "c",
+     "text": "A spur gear in place of the helical pair"
+    },
+    {
+     "id": "d",
+     "text": "A helical pinion and gear of the same hand"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Double-helical (herringbone) gears with opposite hands side by side",
+   "distractorRationale": {
+    "a": "Correct: the two thrusts are equal and opposite.",
+    "b": "A larger helix angle increases the thrust.",
+    "c": "A spur gear has no thrust, but it also loses the smoothness benefit; it does not 'cancel' thrust.",
+    "d": "Parallel-shaft helical gears must have opposite hands in order to mesh."
+   },
+   "explanation": "A herringbone gear is two helical gears of opposite hand on one hub, so the axial forces cancel inside the gear while the smooth meshing is retained. A single helical gear always produces a thrust $W_t\\tan\\psi$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A spur gear with 18 teeth ($Y=0.309$), module 4 mm and face width 40 mm carries a tangential load of 4200 N. Using the Lewis equation without a velocity factor, find the root bending stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o1"
+   ],
+   "correctValue": 84.951456,
+   "tolerance": 1.0,
+   "unit": "MPa",
+   "explanation": "The Lewis equation gives $\\sigma=W_t/(FmY)=4200/(40\\times4\\times0.309)=85.0$ MPa. The denominator $FmY=49.4$ mm$^2$ plays the role of an effective root section area.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A helical gear of pitch diameter 96 mm transmits 11 kW at 900 rev/min. Its helix angle is $20^\\circ$. Find the axial thrust in N.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o2"
+   ],
+   "correctValue": 885.005946,
+   "tolerance": 12,
+   "unit": "N",
+   "explanation": "The torque is $T=11000/(2\\pi\\times900/60)=116.7$ N m, so $W_t=2T/d=2\\times116.7/0.096=2432$ N. The axial thrust is $W_a=W_t\\tan20^\\circ=2432\\times0.3640=885$ N.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A $20^\\circ$ spur gear of module 8 mm, 25 teeth ($Y=0.340$) and face width 60 mm transmits 22 kW at 500 rev/min. Using $K_v=(6.1+V)/6.1$ with $V$ in m/s, find the root bending stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o1"
+   ],
+   "correctValue": 47.844656,
+   "tolerance": 1.5,
+   "unit": "MPa",
+   "explanation": "The pitch diameter is $8\\times25=200$ mm, so $V=\\pi\\times0.2\\times500/60=5.236$ m/s and $W_t=P/V=22000/5.236=4202$ N. Then $K_v=1.858$ and $\\sigma=K_vW_t/(FmY)=1.858\\times4202/(60\\times8\\times0.340)=47.8$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the Lewis equation for the bending stress at the root of a spur gear tooth, stating the assumptions, and explain what the form factor $Y$ depends on.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o1"
+   ],
+   "markingGuide": [
+    "Assumptions: tooth is a cantilever; full tangential load $W_t$ applied at the tip of one tooth; rectangular critical section $F\\times t$; stress concentration and radial component neglected.",
+    "Moment at root $M=W_tl$; section modulus $Z=Ft^2/6$.",
+    "$\\sigma=M/Z=6W_tl/(Ft^2)$.",
+    "Writing $t^2/(6l)=mY$ gives $\\sigma=W_t/(FmY)$ with $Y=t^2/(6lm)$.",
+    "$Y$ is dimensionless and depends on tooth number and pressure angle (tooth shape), not on module; it increases with tooth number."
+   ],
+   "explanation": "The Lewis form factor packages all of the tooth geometry into one number tabulated against tooth number. A designer then needs only $W_t$, $F$ and $m$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A designer replaces a straight-cut spur pair by a helical pair of the same normal module to reduce noise. Explain why the helical pair is quieter, and describe the new loads that must be provided for in the shaft and bearing design, including how the thrust can be eliminated.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o2",
+    "ug.mce-machine-design-1.gears.gear-strength-and-helical.o3"
+   ],
+   "markingGuide": [
+    "Gradual engagement along inclined contact lines, with a higher contact ratio so more teeth share the load.",
+    "Lower fluctuation in tooth stiffness and load transfer, therefore less vibration and noise.",
+    "New axial force $W_a=W_t\\tan\\psi$ and a transverse pressure angle given by $\\tan\\phi_t=\\tan\\phi_n/\\cos\\psi$ for the radial force.",
+    "Bearings must be capable of carrying thrust (angular contact, taper roller or a locating bearing) and the shaft must have a shoulder; an axial load also creates a bending moment on the shaft equal to $W_ad/2$.",
+    "Thrust may be cancelled with a double helical gear, or the thrust of one stage may be balanced with another on an intermediate shaft."
+   ],
+   "explanation": "The smoothness is gained at the expense of an axial load that must be reacted by a thrust bearing. Its size grows with $\\tan\\psi$.",
+   "board": "internal"
+  }
+ ]
+}

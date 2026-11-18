@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "Strong and Weak Forms of the Axial Bar",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A crane hook, a bridge cable and a drive shaft in tension all reduce to the same question: how far does each point of a loaded bar move? The finite element method never solves the differential equation for that movement directly. It first rewrites it in an integral form, the weak form, and that rewriting is what makes element-by-element assembly possible."
+  },
+  {
+   "type": "text",
+   "markdown": "**Strong form.** Consider a straight bar along $x\\in[0,L]$ with axial displacement $u(x)$ (m), Young's modulus $E$ (Pa), cross-section area $A$ (m$^2$) and distributed axial load per unit length $b(x)$ (N/m). Assuming small strains, linear elasticity and a one-dimensional stress state, equilibrium of a slice of length $dx$ gives a differential equation that must hold at **every** point of the bar. That point-by-point statement is called the **strong form**."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{d}{dx}\\left(EA\\,\\frac{du}{dx}\\right)+b(x)=0,\\qquad 0<x<L",
+   "caption": "Strong form of the axial bar (equilibrium of a slice)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Weak form (weighted residual)",
+   "text": "Instead of demanding that the residual $R(x)=\\frac{d}{dx}(EA\\,u')+b$ vanish at every point, demand that its weighted average vanishes for every admissible weight (test) function $w(x)$: $\\int_0^L w\\,R\\,dx=0$. After integration by parts the statement contains only first derivatives of $u$ and $w$. Physically it is the principle of virtual work: internal virtual work equals external virtual work."
+  },
+  {
+   "type": "text",
+   "markdown": "**Derivation.** Multiply the equilibrium equation by $w(x)$ and integrate over the bar. The term containing $(EA\\,u')'$ is integrated by parts once: the derivative moves from the axial force $N=EA\\,u'$ onto the weight function, and a boundary term appears. Suppose the bar is fixed at $x=0$ and carries a prescribed axial force $P$ (N) at $x=L$, so that $u(0)=0$ and $EA\\,u'(L)=P$. We choose the weight function with $w(0)=0$, so the unknown reaction at $x=0$ drops out of the boundary term."
+  },
+  {
+   "type": "math",
+   "latex": "\\int_0^L w\\left[\\frac{d}{dx}\\left(EA\\,u'\\right)+b\\right]dx=0\\;\\Longrightarrow\\;\\Big[w\\,EA\\,u'\\Big]_0^L-\\int_0^L w'\\,EA\\,u'\\,dx+\\int_0^L w\\,b\\,dx=0",
+   "caption": "Multiply by w and integrate by parts once"
+  },
+  {
+   "type": "math",
+   "latex": "\\int_0^L \\frac{dw}{dx}\\,EA\\,\\frac{du}{dx}\\,dx=\\int_0^L w\\,b\\,dx+w(L)\\,P\\qquad\\text{for all } w \\text{ with } w(0)=0",
+   "caption": "Weak form: internal virtual work (left) = external virtual work (right), in N m"
+  },
+  {
+   "type": "worked_example",
+   "title": "Check that the exact solution satisfies the weak form",
+   "prompt": "A steel bar ($E=200$ GPa, $A=400$ mm$^2$, so $EA=8\\times10^{7}$ N) of length $L=1$ m is fixed at $x=0$, carries a uniform load $b=10$ kN/m and an end force $P=20$ kN at $x=L$. The exact displacement is $u=\\left[(P+bL)x-bx^2/2\\right]/EA$. Verify the weak form for the weight function $w=x$ (which satisfies $w(0)=0$).",
+   "steps": [
+    {
+     "text": "Differentiate the exact solution to get the strain: $u'=\\left[P+b(L-x)\\right]/EA$, so the axial force is $EA\\,u'=P+b(L-x)$. At $x=L$ it equals $P$, so the force condition holds.",
+     "latex": "EA\\,u'=P+b(L-x)"
+    },
+    {
+     "text": "For $w=x$ we have $w'=1$. Left side (internal virtual work): $\\int_0^L EA\\,u'\\,dx=\\int_0^L [P+b(L-x)]dx=PL+bL^2/2$, which is $20000(1)+10000(1)/2=25000$ N m.",
+     "latex": "\\int_0^1\\left[20000+10000(1-x)\\right]dx=25000\\ \\text{N m}"
+    },
+    {
+     "text": "Right side (external virtual work): $\\int_0^L x\\,b\\,dx+w(L)P=bL^2/2+LP=5000+20000=25000$ N m.",
+     "latex": "\\int_0^1 10000\\,x\\,dx+(1)(20000)=25000\\ \\text{N m}"
+    },
+    {
+     "text": "Both sides agree, so the exact solution satisfies the weak form. Only first derivatives of $u$ were needed to evaluate the left side."
+    }
+   ],
+   "answer": "Both sides equal 25000 N m, so the exact displacement satisfies the weak form for w = x."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Strong form",
+    "Weak form"
+   ],
+   "rows": [
+    [
+     "Equation holds",
+     "At every point $x$",
+     "On average, for every admissible $w$"
+    ],
+    [
+     "Highest derivative of $u$",
+     "Second, $u''$",
+     "First, $u'$"
+    ],
+    [
+     "Continuity needed of $u$",
+     "$C^1$ (continuous slope)",
+     "$C^0$ (continuous value, finite $\\int u'^2dx$)"
+    ],
+    [
+     "Force (natural) condition",
+     "Imposed separately",
+     "Built into the right-hand side"
+    ],
+    [
+     "Displacement (essential) condition",
+     "Imposed separately",
+     "Imposed on both $u$ and $w$"
+    ]
+   ],
+   "caption": "Strong versus weak form of the bar problem"
+  },
+  {
+   "type": "text",
+   "markdown": "**Why continuity drops.** In the strong form $u''$ must exist, so the slope of $u$ must itself be differentiable: $u$ must be $C^1$. A piecewise-linear function has a kink at each node, so its second derivative is a Dirac spike and not an ordinary function. In the weak form only $u'$ and $w'$ appear inside an integral, and a piecewise-constant $u'$ has a perfectly finite integral. So trial and weight functions need only be continuous ($C^0$) with square-integrable first derivatives, which is exactly what simple finite element shape functions provide."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Essential and natural boundary conditions",
+   "text": "An **essential** (Dirichlet) condition prescribes the primary variable, here $u=\\bar u$. The weak form does not produce it, so it is imposed on the trial space, and weight functions must vanish there. A **natural** (Neumann) condition prescribes the secondary variable, here the force $EA\\,u'=P$. It appears automatically as the boundary term from integration by parts and is satisfied only in the weighted-average sense by an approximate solution."
+  },
+  {
+   "type": "worked_example",
+   "title": "Two-element use of the weak form",
+   "prompt": "Use the same bar ($EA=8\\times10^{7}$ N, $L=1$ m, $b=10$ kN/m, $P=20$ kN at $x=L$) but split it into two elements of length $h=0.5$ m with nodes at $x=0, 0.5, 1$ m. Take $u$ piecewise linear with $u(0)=0$ and nodal values $u_1, u_2$. Use the hat functions of nodes 1 and 2 as weights.",
+   "steps": [
+    {
+     "text": "A piecewise-linear $u$ has a kink at each node, so the strong form cannot be evaluated there, but the weak form can. On each element $u'$ is constant: $u_1/h$ on element 1 and $(u_2-u_1)/h$ on element 2.",
+     "latex": "u'_{(1)}=\\frac{u_1}{h},\\quad u'_{(2)}=\\frac{u_2-u_1}{h}"
+    },
+    {
+     "text": "Weight = hat function of node 1 ($w'=+1/h$ on element 1 and $-1/h$ on element 2, area under $w$ equal to $h$). Internal work $=EA\\left[\\frac{u_1}{h^2}h-\\frac{u_2-u_1}{h^2}h\\right]=\\frac{EA}{h}(2u_1-u_2)$. External work $=bh$.",
+     "latex": "\\frac{EA}{h}(2u_1-u_2)=bh"
+    },
+    {
+     "text": "Weight = hat function of node 2 (nonzero on element 2 only, $w(L)=1$). Internal work $=\\frac{EA}{h}(u_2-u_1)$. External work $=bh/2+P$. The end force $P$ enters here through the natural condition.",
+     "latex": "\\frac{EA}{h}(u_2-u_1)=\\frac{bh}{2}+P"
+    },
+    {
+     "text": "With $EA/h=1.6\\times10^{8}$ N/m: $2u_1-u_2=bh\\cdot h/EA=3.125\\times10^{-5}$ m and $u_2-u_1=(bh/2+P)h/EA=1.406\\times10^{-4}$ m. Adding the two equations gives $u_1=1.719\\times10^{-4}$ m, and then $u_2=3.125\\times10^{-4}$ m."
+    }
+   ],
+   "answer": "$u_1=1.719\\times10^{-4}$ m and $u_2=3.125\\times10^{-4}$ m. These equal the exact values $u(0.5)$ and $u(1)$."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Multiply the governing equation by a weight function $w$ and integrate over the domain.",
+    "Integrate by parts once to move one derivative from $u$ to $w$.",
+    "Impose essential conditions on $u$ and require $w=0$ there.",
+    "Let natural conditions appear as boundary terms on the right-hand side.",
+    "Require the integral statement for every admissible $w$."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common mistakes",
+   "text": "Do not impose a natural condition such as $EA\\,u'=P$ on the trial functions: it is not required of them, and forcing it makes the trial space needlessly restrictive. Do not forget that the weight function must vanish wherever $u$ is prescribed, otherwise an unknown reaction force appears in the equation."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The strong form requires equilibrium at every point and a $C^1$ displacement; the weak form requires only a weighted average and a $C^0$ displacement.",
+    "The bar weak form is $\\int w' EA\\,u'\\,dx=\\int w\\,b\\,dx+w(L)P$: internal virtual work equals external virtual work.",
+    "Essential conditions prescribe $u$ and restrict the trial and weight spaces; natural conditions prescribe $EA\\,u'$ and emerge from the integration by parts.",
+    "Because the weak form needs only first derivatives, simple piecewise-linear shape functions are admissible."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A bar is governed by $\\frac{d}{dx}(EA\\,u')+b=0$. After multiplying by a weight function $w$ and integrating by parts once over $0<x<L$, which expression replaces $\\int_0^L w\\,(EA\\,u')'\\,dx$?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\left[w\\,EA\\,u'\\right]_0^L-\\int_0^L w'\\,EA\\,u'\\,dx$"
+    },
+    {
+     "id": "b",
+     "text": "$\\left[w'\\,EA\\,u\\right]_0^L-\\int_0^L w\\,EA\\,u''\\,dx$"
+    },
+    {
+     "id": "c",
+     "text": "$\\left[w\\,EA\\,u'\\right]_0^L+\\int_0^L w'\\,EA\\,u'\\,dx$"
+    },
+    {
+     "id": "d",
+     "text": "$\\int_0^L w'\\,EA\\,u'\\,dx$ with no boundary term"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\left[w\\,EA\\,u'\\right]_0^L-\\int_0^L w'\\,EA\\,u'\\,dx$",
+   "distractorRationale": {
+    "a": "Correct: integration by parts moves the derivative onto $w$, with a minus sign and a boundary term in the force $EA\\,u'$.",
+    "b": "This moves derivatives the wrong way: it would require $u''$, which is exactly what the weak form is meant to avoid.",
+    "c": "The sign of the integral term is wrong: integration by parts of a product gives a minus sign.",
+    "d": "Dropping the boundary term loses the natural boundary condition, which is where the end force enters."
+   },
+   "explanation": "Integration by parts gives $\\int w\\,f'\\,dx=[w f]-\\int w' f\\,dx$ with $f=EA\\,u'$. The boundary term contains the force $EA\\,u'$, which is why force conditions appear naturally, while the remaining integral contains only first derivatives.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A student proposes a displacement field for a bar made of two bonded segments with different areas. The field is continuous everywhere but its slope jumps at the junction. For which formulation is it an admissible trial function?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The weak form only, because it needs a continuous $u$ with a finite integral of $u'^2$"
+    },
+    {
+     "id": "b",
+     "text": "The strong form only, because it needs a continuous slope"
+    },
+    {
+     "id": "c",
+     "text": "Both forms, because the displacement itself is continuous"
+    },
+    {
+     "id": "d",
+     "text": "Neither form, because the slope is discontinuous"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The weak form only, because it needs a continuous $u$ with a finite integral of $u'^2$",
+   "distractorRationale": {
+    "a": "Correct: a kink gives a finite, piecewise-constant $u'$ whose integral exists, which is all the weak form requires.",
+    "b": "The strong form needs $u''$ to exist at every point, so a slope jump disqualifies the function there, the opposite of this claim.",
+    "c": "Continuity of $u$ alone is not enough for the strong form, which also needs a differentiable slope.",
+    "d": "The slope jump matters only to the strong form; the weak form tolerates it."
+   },
+   "explanation": "The weak form contains only $u'$ inside integrals, so a continuous function with a jump in slope has finite energy and is admissible. The strong form needs $u''$ at every point, which does not exist at the kink.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A bar is held at one end so that its displacement equals a measured value, and pulled at the other end by a known force. Which statement about the boundary conditions is correct?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The prescribed displacement is essential and the prescribed force is natural"
+    },
+    {
+     "id": "b",
+     "text": "The prescribed displacement is natural and the prescribed force is essential"
+    },
+    {
+     "id": "c",
+     "text": "Both are essential because both are given numbers"
+    },
+    {
+     "id": "d",
+     "text": "Both are natural because both appear in the weak form"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The prescribed displacement is essential and the prescribed force is natural",
+   "distractorRationale": {
+    "a": "Correct: displacement is the primary variable (essential), while force $EA\\,u'$ is the secondary variable (natural).",
+    "b": "The classification is reversed: displacement is the primary unknown and must be built into the trial space.",
+    "c": "Being a given number does not decide the type; what matters is whether the condition is on $u$ or on $EA\\,u'$.",
+    "d": "Only the force condition enters the weak form as a boundary term; the displacement condition restricts the function spaces."
+   },
+   "explanation": "Essential conditions are on the primary variable $u$ and are imposed on the trial and weight spaces. Natural conditions are on the secondary variable $EA\\,u'$ and appear as a boundary term in the weak form.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "When an approximate solution is built from trial functions, the natural (force) boundary condition must be enforced explicitly on every trial function.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "False. The natural condition appears as a boundary term in the weak form and is satisfied in the weighted-average sense, improving as the mesh is refined. Only essential conditions must be built into the trial functions.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the weak form of a bar fixed at $x=0$, why is the weight function chosen so that $w(0)=0$?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o1",
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Because $u(0)$ is prescribed, so the term $w(0)\\,EA\\,u'(0)$ would otherwise bring in the unknown reaction force"
+    },
+    {
+     "id": "b",
+     "text": "Because the weight function must be zero at every point of the bar"
+    },
+    {
+     "id": "c",
+     "text": "Because the force at $x=L$ must be zero"
+    },
+    {
+     "id": "d",
+     "text": "Because $w$ must have the same value as $u$ everywhere"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Because $u(0)$ is prescribed, so the term $w(0)\\,EA\\,u'(0)$ would otherwise bring in the unknown reaction force",
+   "distractorRationale": {
+    "a": "Correct: the boundary term at the fixed end contains the unknown reaction, so $w$ vanishing there removes it.",
+    "b": "The weight function is arbitrary in the interior; only its value at the essential boundary is restricted.",
+    "c": "The force at $x=L$ is a known natural condition and is retained, not eliminated.",
+    "d": "Only in the Galerkin choice are $w$ and $u$ drawn from the same family; they are not equal, and $w(0)=0$ is a separate requirement."
+   },
+   "explanation": "At an essential boundary the boundary term $w\\,EA\\,u'$ contains the unknown reaction force. Choosing $w=0$ there makes the term vanish, so the weak form contains only known quantities.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A bar has $EA=3.0\\times10^{6}$ N. Take the displacement field $u(x)=2\\times10^{-3}x^{2}$ and the weight function $w(x)=x$ (both in metres) on $0\\le x\\le 2$ m. Evaluate the internal virtual work $\\int_0^L EA\\,w'\\,u'\\,dx$ in N m.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o1"
+   ],
+   "correctValue": 24000.0,
+   "tolerance": 100.0,
+   "unit": "N m",
+   "explanation": "With $w'=1$ and $u'=4\\times10^{-3}x$, the integral is $EA\\int_0^2 4\\times10^{-3}x\\,dx=3.0\\times10^{6}\\times4\\times10^{-3}\\times\\frac{2^2}{2}=3.0\\times10^{6}\\times8\\times10^{-3}=24000$ N m. Only first derivatives were needed, which is the point of the weak form.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A bar of length $L=3$ m fixed at $x=0$ carries a triangular axial load $b(x)=q_0x/L$ with $q_0=6$ kN/m and an end force $P=4$ kN at $x=L$. Using the weight function $w=x$, compute the external virtual work $\\int_0^L w\\,b\\,dx+w(L)P$ in N m.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o1",
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o3"
+   ],
+   "correctValue": 30000.0,
+   "tolerance": 200.0,
+   "unit": "N m",
+   "explanation": "The distributed part is $\\int_0^3 x\\,(6000x/3)\\,dx=2000\\,\\frac{3^3}{3}=18000$ N m. The end force contributes $w(L)P=3\\times4000=12000$ N m, so the total is $30000$ N m. The weight function evaluated at the loaded end multiplies the natural-condition force.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A bar with $E=70$ GPa and $A=250$ mm$^2$ has a prescribed axial end force $P=50$ kN at the free end. Using the natural boundary condition $EA\\,u'(L)=P$, find the strain $u'(L)$ at the free end in microstrain ($10^{-6}$).",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o3"
+   ],
+   "correctValue": 2857.14,
+   "tolerance": 30.0,
+   "unit": "microstrain",
+   "explanation": "The natural condition gives $u'(L)=P/(EA)$ with $EA=70\\times10^{9}\\times250\\times10^{-6}=1.75\\times10^{7}$ N. Then $u'(L)=50000/(1.75\\times10^{7})=2.857\\times10^{-3}$, which is 2857 microstrain. The condition fixes the slope of the solution, not its value.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the weak form of the axial bar problem lowers the continuity required of the trial functions, and say what this allows in practice. Use a piecewise-linear displacement field as your example.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o2"
+   ],
+   "markingGuide": [
+    "Strong form contains $u''$, so $u$ must be $C^1$ (slope continuous and differentiable)",
+    "Integration by parts moves one derivative onto the weight function $w$",
+    "Weak form contains only $u'$ and $w'$ inside integrals, so $C^0$ continuity with square-integrable $u'$ is enough",
+    "Piecewise-linear $u$ has a slope jump (kink) at nodes, so $u''$ is a Dirac spike and the strong form fails there, but $u'$ is piecewise constant and integrable",
+    "Consequence: simple low-order element shape functions are admissible, and the burden is shared between $u$ and $w$"
+   ],
+   "explanation": "The strong form needs $u''$ at every point. Integration by parts shares the derivative between $u$ and $w$, so only first derivatives remain, and kinked piecewise-linear fields have finite energy and are admissible.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A tapered bar occupies $0\\le x\\le L$ with area $A(x)$, load $b(x)$ per unit length, displacement prescribed as $u(0)=\\bar u$ and force $F$ applied at $x=L$. Derive the weak form and state which boundary condition is essential and which natural, saying where each appears in your derivation.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o1",
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o2",
+    "ug.mce-finite-element-analysis.variational-formulation.weak-form.o3"
+   ],
+   "markingGuide": [
+    "Strong form $\\frac{d}{dx}(EA\\,u')+b=0$ multiplied by $w$ and integrated over $[0,L]$",
+    "Integration by parts: $[w\\,EA\\,u']_0^L-\\int w'EA\\,u'dx+\\int w\\,b\\,dx=0$",
+    "Essential condition $u(0)=\\bar u$ imposed on trial space; $w(0)=0$ so the reaction term at $x=0$ vanishes",
+    "Natural condition $EA\\,u'(L)=F$ substituted into the boundary term at $x=L$",
+    "Final weak form $\\int w'EA\\,u'dx=\\int w\\,b\\,dx+w(L)F$ for all admissible $w$ with $w(0)=0$"
+   ],
+   "explanation": "The derivation follows the steps: weight, integrate, integrate by parts once. The displacement condition constrains the function spaces, while the force condition is absorbed into the right-hand side.",
+   "board": "internal"
+  }
+ ]
+}

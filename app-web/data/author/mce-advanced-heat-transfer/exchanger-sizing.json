@@ -1,0 +1,373 @@
+{
+ "lessonTitle": "Sizing, Fouling and Pressure Drop in Heat Exchangers",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A refinery crude pre-heat exchanger is delivered with a clean overall coefficient of 450 W/m$^2$K, but twelve months later its duty has fallen by a third and the furnace is burning more fuel. Nothing broke: a thin layer of scale and coke on the tube walls added a resistance in series. Sizing an exchanger means designing for the dirty condition, and paying the pumping bill for it."
+  },
+  {
+   "type": "text",
+   "markdown": "Heat passes from the hot fluid to the cold fluid through a series of resistances: a convection film on the hot side, a fouling layer, the wall, a second fouling layer, and the cold-side film. Resistances in series add. For a thin-walled plane or large-diameter tube, referenced to one area, the overall coefficient $U$ (W/m$^2$ K) satisfies the relation below."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Fouling resistance",
+   "text": "A fouling factor $R_f$ (m$^2$K/W) is the thermal resistance per unit area of the deposit layer (scale, corrosion product, biological film, coke) that forms on a heat transfer surface in service. Values are tabulated for fluid types and are typical, not exact; the actual layer grows with time."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac1U=\\frac1{h_i}+R_{f,i}+\\frac{t_w}{k_w}+R_{f,o}+\\frac1{h_o}",
+   "caption": "Thin-wall form; $h_i,h_o$ film coefficients (W/m$^2$K), $R_{f,i},R_{f,o}$ fouling resistances (m$^2$K/W), $t_w$ wall thickness (m), $k_w$ wall conductivity (W/m K)"
+  },
+  {
+   "type": "text",
+   "markdown": "For tubes the inner and outer areas differ, and each term is divided by its own area: $1/(UA)$ is the total resistance, built from $1/(h_iA_i)$, $R_{f,i}/A_i$, $\\ln(r_o/r_i)/(2\\pi k L)$, $R_{f,o}/A_o$ and $1/(h_oA_o)$. The thin-wall form is a good approximation when the wall is thin and its resistance is small."
+  },
+  {
+   "type": "worked_example",
+   "title": "Clean and fouled overall coefficient",
+   "prompt": "Water inside a tube has $h_i=3000$ W/m$^2$K and a fouling resistance 0.0002 m$^2$K/W. The outer side has $h_o=800$ W/m$^2$K with fouling resistance 0.0004 m$^2$K/W. The steel wall (typical $k=16$ W/m K) is 2 mm thick. Find $U$ clean and fouled.",
+   "steps": [
+    {
+     "text": "Wall resistance per unit area.",
+     "latex": "R_w=t_w/k_w=0.002/16=0.000125\\ \\mathrm{m^2K/W}"
+    },
+    {
+     "text": "Clean total resistance: films and wall only.",
+     "latex": "\\frac1{U_c}=\\frac1{3000}+0.000125+\\frac1{800}=0.001708\\ \\Rightarrow\\ U_c=585\\ \\mathrm{W/m^2K}"
+    },
+    {
+     "text": "Fouled total resistance: add both fouling layers.",
+     "latex": "\\frac1{U_f}=0.001708+0.0002+0.0004=0.002308\\ \\Rightarrow\\ U_f=433\\ \\mathrm{W/m^2K}"
+    }
+   ],
+   "answer": "$U_c\\approx585$ W/m$^2$K and $U_f\\approx433$ W/m$^2$K: fouling lowers $U$ by 26 %. The weaker outer film (1/800) and the fouling terms dominate."
+  },
+  {
+   "type": "text",
+   "markdown": "Once $U$ is known, the required area follows from the rate equation $Q=UA\\,F\\,\\Delta T_{lm}$, with $\\Delta T_{lm}$ the counterflow log mean difference and $F\\le1$ a correction for shell-and-tube or cross-flow arrangements. Because $U_f<U_c$, the dirty area is larger than the clean area by the factor $U_c/U_f$, so a design must install this extra area in advance."
+  },
+  {
+   "type": "worked_example",
+   "title": "Required area, clean and fouled",
+   "prompt": "A counterflow exchanger must transfer $Q=250$ kW with $\\Delta T_{lm}=30$ K ($F=1$). Compare the clean area using $U_c=585$ W/m$^2$K with the fouled area using $U_f=433$ W/m$^2$K.",
+   "steps": [
+    {
+     "text": "Clean area.",
+     "latex": "A_c=\\frac{Q}{U_c\\Delta T_{lm}}=\\frac{250000}{585\\times30}=14.25\\ \\mathrm{m^2}"
+    },
+    {
+     "text": "Fouled area (the design area).",
+     "latex": "A_f=\\frac{250000}{433\\times30}=19.25\\ \\mathrm{m^2}"
+    },
+    {
+     "text": "Over-surface due to fouling.",
+     "latex": "\\frac{A_f}{A_c}=\\frac{585}{433}=1.35"
+    }
+   ],
+   "answer": "The fouled design needs 19.2 m$^2$ against 14.2 m$^2$ clean: about 35 % extra surface."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Parameter",
+    "Effect of raising the tube-side velocity",
+    "Consequence"
+   ],
+   "rows": [
+    [
+     "Film coefficient $h$ (turbulent)",
+     "Rises roughly as $V^{0.8}$",
+     "Smaller area for the same duty"
+    ],
+    [
+     "Pressure drop $\\Delta p$",
+     "Rises roughly as $V^{2}$",
+     "More pumping effort"
+    ],
+    [
+     "Pumping power $\\dot V\\Delta p/\\eta$",
+     "Rises roughly as $V^{3}$",
+     "Running cost grows much faster than $h$"
+    ],
+    [
+     "Fouling rate",
+     "Often falls (higher shear)",
+     "Longer cleaning intervals"
+    ]
+   ],
+   "caption": "Velocity trade-offs for turbulent tube flow, constant geometry."
+  },
+  {
+   "type": "text",
+   "markdown": "Pumping power is the hidden price of a high coefficient. The hydraulic power needed to push a flow $\\dot V$ (m$^3$/s) through a pressure drop $\\Delta p$ (Pa) with a pump efficiency $\\eta$ is $\\dot W=\\dot V\\Delta p/\\eta$. In fully developed turbulent flow through a fixed tube bundle, $\\dot V\\propto V$ and $\\Delta p\\propto V^2$ (with an almost constant friction factor), so $\\dot W\\propto V^3$, while the film coefficient grows only as $V^{0.8}$. A modest increase in $h$ therefore costs a large rise in pumping power."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\dot W_2}{\\dot W_1}=\\left(\\frac{V_2}{V_1}\\right)^3,\\qquad \\frac{h_2}{h_1}=\\left(\\frac{V_2}{V_1}\\right)^{0.8}\\ \\Rightarrow\\ \\frac{\\dot W_2}{\\dot W_1}=\\left(\\frac{h_2}{h_1}\\right)^{3.75}"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Add fouling resistances to the clean-film resistances before computing area.",
+    "Use the thin-wall form only when the wall resistance is small; otherwise use area-referenced tube resistances.",
+    "Check that the added area from fouling does not change the stream outlet temperatures when the exchanger is clean (over-surfaced units over-perform at start-up).",
+    "Compare designs on total cost: capital for area plus running cost for pumping."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Fouling is a design input",
+   "text": "Specifying $R_f$ is a prediction about service. Too small and the exchanger underperforms; too large and you buy surface and pumping power you do not need. Fouling resistance is the same magnitude as a film resistance in many liquid services, so it can dominate the design."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Overall coefficient is found by adding series resistances: films, fouling layers and the wall, $1/U=\\sum R$.",
+    "Required area follows from $A=Q/(UF\\Delta T_{lm})$, using the fouled $U$ so that performance holds in service.",
+    "Fouling raises the required area by $U_c/U_f$.",
+    "Raising $h$ by increasing velocity in turbulent flow raises pumping power roughly as $V^3$, versus $h\\propto V^{0.8}$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A deposit forms on the inside of the tubes of a water-cooled exchanger. At the same inlet conditions and flow rates, what happens to the overall coefficient and to the heat duty?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$U$ increases because the deposit roughens the surface and increases turbulence"
+    },
+    {
+     "id": "b",
+     "text": "$U$ is unchanged because the deposit is thin compared with the tube diameter"
+    },
+    {
+     "id": "c",
+     "text": "$U$ decreases but the duty is unchanged because the temperatures adjust"
+    },
+    {
+     "id": "d",
+     "text": "$U$ decreases because the deposit adds a series resistance, so the duty falls"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$U$ decreases because the deposit adds a series resistance, so the duty falls",
+   "distractorRationale": {
+    "a": "Roughness might increase film coefficient slightly, but the insulating deposit's resistance dominates.",
+    "b": "A thin layer of low-conductivity deposit can still be a resistance comparable to the film resistances.",
+    "c": "With fixed inlets and flows, a lower UA reduces the heat transferred."
+   },
+   "explanation": "Fouling resistances add to the others in the sum $1/U=\\sum R$, so $U$ falls. With $Q=UA\\Delta T_{lm}$ and the same area, the lower $U$ reduces the duty unless the driving temperature difference rises.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A tube-side film coefficient is 1500 W/m^2 K and the shell-side coefficient is 5000 W/m^2 K. The tube-side fouling resistance is 0.0003 m^2K/W and the shell-side fouling resistance is 0.00015 m^2K/W. Neglect the wall resistance and use the thin-wall form. Find the overall coefficient in W/m^2 K.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o1"
+   ],
+   "correctValue": 759.494,
+   "tolerance": 8.0,
+   "unit": "W/m^2 K",
+   "explanation": "Sum the resistances: 1/1500 + 0.0003 + 0.00015 + 1/5000 = 0.000667 + 0.0003 + 0.00015 + 0.0002 = 0.001317 m^2K/W, so U = 759 W/m^2 K. The tube-side film (0.000667) and the two fouling layers (0.00045 together) make up most of the resistance.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A heat exchanger must transfer 420 kW with a log mean temperature difference (including any correction factor) of 28 K. The fouled overall coefficient is 650 W/m^2 K. Find the required heat transfer area in m^2.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o2"
+   ],
+   "correctValue": 23.0769,
+   "tolerance": 0.3,
+   "unit": "m^2",
+   "explanation": "The rate equation gives A = Q/(U dTlm) = 420000/(650 x 28) = 23.08 m^2. This is the area required in the fouled state, so the unit will also meet the duty when new, at a slightly higher outlet performance.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Oil is cooled from 120 degrees Celsius to 70 degrees Celsius in a counterflow exchanger by water heated from 30 to 60 degrees Celsius. The duty is 200 kW and the fouled overall coefficient is 480 W/m^2 K. Find the required area in m^2.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o2",
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o1"
+   ],
+   "correctValue": 8.44719,
+   "tolerance": 0.15,
+   "unit": "m^2",
+   "explanation": "Counterflow end differences are 120-60 = 60 K and 70-30 = 40 K, so the LMTD is (60-40)/ln(60/40) = 49.3 K. The area is 200000/(480 x 49.3) = 8.45 m^2.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A turbulent-flow tube bundle needs its tube-side film coefficient raised by 20 percent by increasing the flow rate. Take h proportional to V^0.8 and pressure drop proportional to V^2, with the same geometry and pump efficiency. By what factor does the pumping power increase? Give a dimensionless ratio.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o3"
+   ],
+   "correctValue": 1.98121,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "A 20 percent rise in h needs V2/V1 = 1.2^(1/0.8) = 1.256. Pumping power scales as V x dp = V^3, so the ratio is 1.256^3 = 1.98. A 20 percent gain in h therefore costs almost double the pumping power.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In turbulent flow through a fixed tube bundle the velocity is doubled. Using $h\\propto V^{0.8}$ and $\\Delta p\\propto V^2$, which pair of changes occurs?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Film coefficient doubles and pumping power doubles"
+    },
+    {
+     "id": "b",
+     "text": "Film coefficient rises by about 74 % while pumping power rises by about four times"
+    },
+    {
+     "id": "c",
+     "text": "Film coefficient rises by about 74 % while pumping power rises by about eight times"
+    },
+    {
+     "id": "d",
+     "text": "Film coefficient rises by about 41 % while pumping power rises by about eight times"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Film coefficient rises by about 74 % while pumping power rises by about eight times",
+   "distractorRationale": {
+    "a": "Neither scale linearly: $h$ goes as $V^{0.8}$ and power as $V^3$.",
+    "b": "Four times is the pressure-drop ratio; power is flow times pressure drop, giving eight.",
+    "d": "The 41 % corresponds to $V^{0.5}$, not $V^{0.8}$."
+   },
+   "explanation": "Doubling $V$ gives $h$ ratio $2^{0.8}=1.74$ and pressure drop ratio 4. Flow rate also doubles, so pumping power increases by $2\\times4=8$ times. The cost rises far faster than the benefit.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A water-cooled condenser has $h_i=4000$ W/m$^2$K on the water side, a fouling resistance of 0.0003 m$^2$K/W, and an air-side film of $h_o=60$ W/m$^2$K. Which change gives the biggest improvement in $U$?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Increasing the air-side coefficient, for example with extended surface, because it is the largest resistance"
+    },
+    {
+     "id": "b",
+     "text": "Doubling the water velocity to raise $h_i$, because water is the working fluid"
+    },
+    {
+     "id": "c",
+     "text": "Cleaning the fouling layer completely"
+    },
+    {
+     "id": "d",
+     "text": "Thickening the tube wall to increase the surface area"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Increasing the air-side coefficient, for example with extended surface, because it is the largest resistance",
+   "distractorRationale": {
+    "b": "The water-side film is only 0.00025 m$^2$K/W, small compared with 0.0167 on the air side.",
+    "c": "Removing 0.0003 m$^2$K/W improves the total by under 2 % because the air side dominates.",
+    "d": "A thicker wall adds resistance and does not address the dominant air-side term."
+   },
+   "explanation": "The air-side resistance is 1/60 = 0.0167 m$^2$K/W, against 0.00025 for the water film and 0.0003 for fouling. The overall resistance is dominated by air, so improving it (fins) is the only change that matters noticeably.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A design has fixed duty and log mean difference. Fouling is expected to reduce $U$ to 80 % of its clean value. By what factor must the installed area exceed the clean area to meet the duty in service?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o2",
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.25, because $A=Q/(U\\Delta T_{lm})$ and $1/0.8=1.25$"
+    },
+    {
+     "id": "b",
+     "text": "1.20, because 20 % of the area is lost to fouling"
+    },
+    {
+     "id": "c",
+     "text": "0.80, because the area is multiplied by the same fraction as $U$"
+    },
+    {
+     "id": "d",
+     "text": "1.00, because the area does not depend on $U$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "1.25, because $A=Q/(U\\Delta T_{lm})$ and $1/0.8=1.25$",
+   "distractorRationale": {
+    "b": "Area scales inversely with $U$, so a 20 % drop in $U$ needs a 25 % increase, not 20 %.",
+    "c": "That would reduce the area, the wrong direction.",
+    "d": "Area is inversely proportional to $U$ at fixed duty and LMTD."
+   },
+   "explanation": "With $Q$ and $\\Delta T_{lm}$ fixed, $A\\propto1/U$. If the fouled $U$ is 0.8 of the clean value the area must be 1/0.8 = 1.25 times larger, i.e. 25 % extra surface.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how fouling affects the overall heat transfer coefficient and the required heat transfer area of an exchanger, and describe two practical measures to manage it.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o1",
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o2"
+   ],
+   "markingGuide": [
+    "Fouling adds a thermal resistance in series, $R_f$, to the sum $1/U$",
+    "Therefore $U$ is lower and the required area $A=Q/(UF\\Delta T_{lm})$ is larger",
+    "Quantifies the effect as area scaling by $U_c/U_f$ or similar",
+    "Mitigation 1: allow a fouling resistance in design and install extra area",
+    "Mitigation 2: keep velocities high, filter or treat the fluid, use designs that are easy to clean, schedule cleaning"
+   ],
+   "explanation": "Fouling is an extra insulating layer that behaves like a series resistance. It lowers the overall coefficient, so the design area must be increased. Operating and maintenance measures reduce how fast it forms.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A designer raises the tube-side film coefficient of a turbulent-flow exchanger by increasing the pump flow. Discuss the trade-off between area saving and pumping cost, and say how you would decide whether the change is worthwhile.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o3",
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.exchanger-sizing.o1"
+   ],
+   "markingGuide": [
+    "States $h\\propto V^{0.8}$ and $\\Delta p\\propto V^2$ so pumping power $\\propto V^3$",
+    "Notes that area falls only as $U$ rises, and that $U$ rises less than $h$ because other resistances remain",
+    "Mentions diminishing returns: the film is only one of the series resistances",
+    "Describes comparing total annual cost: capital cost of area saved against running cost of added pumping power",
+    "Mentions constraints: erosion limits, pressure-drop limits, noise, vibration"
+   ],
+   "explanation": "Because power rises as the cube of velocity but $h$ only as the 0.8 power, extra flow quickly becomes expensive. The decision therefore needs the overall coefficient and a cost comparison, not just the film coefficient.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,410 @@
+{
+ "lessonTitle": "Geared Systems and Engine-Order Excitation",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A marine diesel drives a propeller through a reduction gearbox. At one particular engine speed the shaft between the engine and gearbox twists back and forth hard enough to crack a coupling, even though the engine's mean torque is modest. The gearbox changes how the system's inertia and stiffness look from the engine side, and the engine's firing pattern decides which speeds are dangerous."
+  },
+  {
+   "type": "text",
+   "markdown": "A gearbox joins two shafts that turn at different speeds. To analyse torsional vibration with the one-shaft formulas, we **refer** every inertia, stiffness and torque to a single reference shaft, such as the engine shaft (shaft 1). Let $n=\\omega_2/\\omega_1$ be the speed of shaft 2 relative to shaft 1 (for a 4:1 reduction, $n=1/4$). If the angle of shaft 2 is $\\theta_2$, the angle of the gear tooth contact forces the constraint $\\theta_2=n\\theta_1$. Neglect gear inertia and backlash for this unit."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Equivalent system",
+   "text": "An equivalent system has the same kinetic energy, the same strain energy and the same work done by torques as the real one, but all expressed in terms of the reference-shaft angle $\\theta_1$. It has one shaft and no gears, and therefore the same natural frequencies as the geared system."
+  },
+  {
+   "type": "math",
+   "latex": "J_2'=n^2J_2,\\qquad k_2'=n^2k_2,\\qquad T_2'=nT_2,\\qquad n=\\frac{\\omega_2}{\\omega_1}",
+   "caption": "Referring shaft-2 properties to shaft 1 (J in kg m^2, k in N m/rad, T in N m)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Where $n^2$ comes from.** Kinetic energy of shaft 2's inertia: $\\tfrac12J_2\\omega_2^2=\\tfrac12J_2(n\\omega_1)^2=\\tfrac12(n^2J_2)\\omega_1^2$, so the equivalent inertia is $n^2J_2$. Strain energy in a shaft-2 spring: $\\tfrac12k_2(\\Delta\\theta_2)^2$ where the twist referred to shaft 1 is $\\Delta\\theta_2/n$; equating $\\tfrac12k_2'(\\Delta\\theta_2/n)^2=\\tfrac12k_2(\\Delta\\theta_2)^2$ gives $k_2'=n^2k_2$. Torque follows from power balance, $T_1\\omega_1=T_2\\omega_2$, so $T_1=nT_2$. A heavy load on a slow shaft therefore looks much smaller from the fast shaft."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reducing a geared drive to one shaft",
+   "prompt": "An engine inertia J1 = 0.4 kg m^2 is connected by a shaft of torsional stiffness k1 = 2 x 10^4 N m/rad to a gearbox with a 4:1 speed reduction. The output shaft has stiffness k2 = 2.4 x 10^5 N m/rad and drives a load of inertia J2 = 9.6 kg m^2. Reduce the system to the engine shaft and find the natural frequency.",
+   "steps": [
+    {
+     "text": "Speed ratio of the output shaft to the engine shaft.",
+     "latex": "n=\\omega_2/\\omega_1=1/4=0.25"
+    },
+    {
+     "text": "Refer the load inertia and the output-shaft stiffness to the engine shaft.",
+     "latex": "J_2'=n^2J_2=0.0625\\times9.6=0.600\\ \\text{kg m}^2,\\quad k_2'=n^2k_2=0.0625\\times2.4 x 10^5=15000\\ \\text{N m/rad}"
+    },
+    {
+     "text": "The two shafts are in series, so the stiffnesses combine like springs in series.",
+     "latex": "k_{eq}=\\frac{k_1k_2'}{k_1+k_2'}=\\frac{20000\\times15000}{35000}=8571\\ \\text{N m/rad}"
+    },
+    {
+     "text": "Two-inertia natural frequency: for inertias J1 and J2' joined by a shaft k_eq, the angular frequency squared is k_eq(J1+J2')/(J1 J2'), with a node in the shaft.",
+     "latex": "\\omega_n^2=\\frac{8571(0.4+0.600)}{0.4\\times0.600}=35714,\\ \\omega_n=189.0\\ \\text{rad/s}\\ (30.08\\ \\text{Hz})"
+    }
+   ],
+   "answer": "J2' = 0.60 kg m^2, k2' = 15000 N m/rad, k_eq = 8571 N m/rad. The natural frequency is 189.0 rad/s = 30.08 Hz (the same whether measured on either shaft)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Engine-order excitation.** An engine produces a torque that repeats every cycle. Its Fourier series contains harmonics at integer or half-integer multiples of the rotation frequency, called **orders** $e$. If the engine turns at $N$ rpm, the rotation frequency is $N/60$ Hz and the order-$e$ torque has frequency $f=eN/60$ Hz. Resonance (a torsional critical speed) occurs when this equals a torsional natural frequency $f_n$. A four-stroke engine fires each cylinder once per two revolutions, so half-orders appear, and for an $m$-cylinder engine with even firing the major orders are multiples of $m/2$."
+  },
+  {
+   "type": "math",
+   "latex": "N_c=\\frac{60\\,f_n}{e}\\ \\text{rpm},\\qquad f_n\\ \\text{in Hz},\\ e\\ \\text{the order}",
+   "caption": "Critical engine speed for order e"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Order $e$",
+    "Critical speed for $f_n=95$ Hz (rpm)",
+    "Typical importance"
+   ],
+   "rows": [
+    [
+     "2",
+     "2850",
+     "Major order, 4-cylinder four-stroke"
+    ],
+    [
+     "4",
+     "1425",
+     "Major order, 4-cylinder four-stroke"
+    ],
+    [
+     "6",
+     "950",
+     "Major order, 4-cylinder four-stroke (weaker)"
+    ],
+    [
+     "0.5",
+     "11400",
+     "Half-order, four-stroke, rarely in the speed range"
+    ]
+   ],
+   "caption": "Critical speeds from one torsional mode (typical orders)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Finding the dangerous speeds",
+   "prompt": "A four-cylinder four-stroke engine drive has a first torsional natural frequency of 95 Hz. The major excitation orders are 2, 4 and 6. At what engine speeds does each order excite the mode? Which lie in a normal running range of 800 to 3000 rpm?",
+   "steps": [
+    {
+     "text": "An order e at N rpm has frequency e N/60 Hz. Equate it to the natural frequency and solve for N.",
+     "latex": "N=\\frac{60f_n}{e}=\\frac{60\\times95}{e}=\\frac{5700}{e}\\ \\text{rpm}"
+    },
+    {
+     "text": "Evaluate for each order.",
+     "latex": "e=2:\\ 2850\\ \\text{rpm};\\quad e=4:\\ 1425\\ \\text{rpm};\\quad e=6:\\ 950\\ \\text{rpm}"
+    },
+    {
+     "text": "Compare with 800 to 3000 rpm: all three fall in the running range, so each is a candidate for a barred speed range or a damper.",
+     "latex": null
+    }
+   ],
+   "answer": "Critical speeds 2850, 1425 and 950 rpm for orders 2, 4 and 6; all lie inside the 800-3000 rpm range, and the lowest order is usually the strongest."
+  },
+  {
+   "type": "text",
+   "markdown": "**Stress at resonance.** At resonance the twist amplitude across a shaft, $\\phi$ (rad), is the quantity measured or predicted. In a solid circular shaft of length $L$ (m), radius $r$ (m) and shear modulus $G$ (Pa), the shear strain at the surface is $\\gamma=r\\phi/L$, so the peak shear stress is $\\tau=G\\gamma=Gr\\phi/L$ (equivalently $Tr/J_p$ with $T=k\\phi$ and $J_p=\\pi d^4/32$). The stress is cyclic and must be compared with the fatigue strength, not the static yield strength."
+  },
+  {
+   "type": "worked_example",
+   "title": "Stress from twist amplitude",
+   "prompt": "A shaft of diameter 40 mm and length 0.5 m is made of steel with G = 80 GPa. At resonance the angle of twist across the full length oscillates with amplitude 0.8 deg. Estimate the peak shear stress.",
+   "steps": [
+    {
+     "text": "Convert the twist amplitude to radians.",
+     "latex": "\\phi=0.8\\times\\pi/180=0.01396\\ \\text{rad}"
+    },
+    {
+     "text": "Surface shear strain: radius times twist divided by length.",
+     "latex": "\\gamma=\\frac{r\\phi}{L}=\\frac{0.02\\times0.01396}{0.5}=5.585 x 10^{-4}"
+    },
+    {
+     "text": "Shear stress from Hooke's law in shear.",
+     "latex": "\\tau=G\\gamma=80\\times10^{9}\\times5.585 x 10^{-4}=44.7\\ \\text{MPa}"
+    }
+   ],
+   "answer": "Peak shear stress about 44.7 MPa, alternating each cycle; this must be compared with the shaft fatigue strength with a suitable safety factor."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Choose a reference shaft and compute $n=\\omega_i/\\omega_{ref}$ for each other shaft.",
+    "Refer inertias and stiffnesses by $n^2$; combine series stiffnesses and solve the one-shaft problem.",
+    "List the excitation orders from the engine's cylinder count and cycle; compute $N_c=60f_n/e$ for each.",
+    "Estimate the cyclic shear stress with $\\tau=Gr\\phi/L$ at the predicted or measured twist amplitude."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Which way does the factor go?",
+   "text": "Multiply by $n^2$ with $n=\\omega_{shaft}/\\omega_{reference}$. A heavy load on the slow shaft looks lighter, not heavier, from the fast shaft. Always check the direction with a quick estimate: the referred inertia should be smaller if the shaft is slower than the reference."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Refer inertia and stiffness to a reference shaft by $J'=n^2J$ and $k'=n^2k$ with $n=\\omega/\\omega_{ref}$; series shafts then combine as springs in series.",
+    "The natural frequency of the equivalent single-shaft model equals that of the geared system.",
+    "An order-$e$ torque excites a torsional mode of frequency $f_n$ at engine speed $N=60f_n/e$ rpm.",
+    "Peak torsional shear stress at resonance is $\\tau=Gr\\phi/L$ for twist amplitude $\\phi$ across length $L$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A flywheel on a shaft that turns at half the speed of the reference shaft has inertia J. Referred to the reference shaft, its equivalent inertia is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "J/4"
+    },
+    {
+     "id": "b",
+     "text": "J/2"
+    },
+    {
+     "id": "c",
+     "text": "2J"
+    },
+    {
+     "id": "d",
+     "text": "4J"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "J/4",
+   "distractorRationale": {
+    "a": "Correct: The equivalent inertia is n^2 J with n = omega_shaft/omega_reference = 1/2, so it is J/4.",
+    "b": "The factor is n squared, not n.",
+    "c": "That multiplies by the inverse of the speed ratio, which is a single power and the wrong direction.",
+    "d": "That would apply if the shaft were running at twice the reference speed (n = 2)."
+   },
+   "explanation": "The equivalent inertia is n^2 J with n = omega_shaft/omega_reference = 1/2, so it is J/4. This comes from equating kinetic energy: 1/2 J omega^2 with omega = omega_reference/2.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A load of inertia 12 kg m^2 is driven through a 3:1 reduction gearbox (the output shaft turns at one third of the input speed). Its equivalent inertia referred to the input shaft is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4.00 kg m^2"
+    },
+    {
+     "id": "b",
+     "text": "1.33 kg m^2"
+    },
+    {
+     "id": "c",
+     "text": "36 kg m^2"
+    },
+    {
+     "id": "d",
+     "text": "108 kg m^2"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "1.33 kg m^2",
+   "distractorRationale": {
+    "a": "That divides by the ratio instead of its square.",
+    "b": "Correct: The output shaft runs at n = 1/3 of the input speed, so J' = n^2 J = 12/9 = 1.33 kg m^2.",
+    "c": "That multiplies by the ratio, which is the wrong direction and only a single power.",
+    "d": "That refers the inertia in the wrong direction."
+   },
+   "explanation": "The output shaft runs at n = 1/3 of the input speed, so J' = n^2 J = 12/9 = 1.33 kg m^2. Equating kinetic energy shows the factor is the square of the speed ratio.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A motor inertia of 0.8 kg m^2 drives, through a shaft of stiffness 2 x 10^4 N m/rad and a 3:1 reduction gearbox, an output shaft of stiffness 1.8 x 10^5 N m/rad carrying a load of inertia 12 kg m^2. Neglecting gear inertia, find the torsional natural frequency in Hz using the equivalent single-shaft, two-inertia model (angular frequency squared = k_eq (J1 + J2')/(J1 J2')).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o1"
+   ],
+   "correctValue": 22.5079,
+   "tolerance": 0.450158,
+   "unit": "Hz",
+   "explanation": "With n = 1/3, J2' = 1.3333 kg m^2 and k2' = 20000 N m/rad. The shafts are in series so k_eq = 20000 x 20000/(40000) = 10000 N m/rad. Then omega_n^2 = 10000(0.8 + 1.3333)/(0.8 x 1.3333) = 20000, giving omega_n = 141.4 rad/s = 22.51 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An engine runs at 1500 rpm. The torque component of order 2 has a frequency of",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "25 Hz"
+    },
+    {
+     "id": "b",
+     "text": "3000 Hz"
+    },
+    {
+     "id": "c",
+     "text": "50 Hz"
+    },
+    {
+     "id": "d",
+     "text": "12.5 Hz"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "50 Hz",
+   "distractorRationale": {
+    "a": "That is the rotation frequency, which is order 1.",
+    "b": "That is the order 2 frequency in cycles per minute, not Hz.",
+    "c": "Correct: The rotation frequency is 1500/60 = 25 Hz, and order 2 is twice that, 50 Hz.",
+    "d": "That is the frequency of order 0.5."
+   },
+   "explanation": "The rotation frequency is 1500/60 = 25 Hz, and order 2 is twice that, 50 Hz. An order-e component always has frequency e N/60 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A six-cylinder four-stroke engine drive has a torsional natural frequency of 48 Hz. Find the engine speed in rpm at which the third-order torque component excites this mode.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o2"
+   ],
+   "correctValue": 960.0,
+   "tolerance": 9.6,
+   "unit": "rpm",
+   "explanation": "Resonance requires e N/60 = f_n, so N = 60 f_n/e = 60 x 48/3 = 960 rpm. At this speed the third-order torque has a frequency of 48 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A four-cylinder four-stroke engine has major orders 2 and 4. A torsional mode has a natural frequency of 60 Hz. At what two engine speeds do these orders excite the mode?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3600 rpm (order 2) and 1800 rpm (order 4)"
+    },
+    {
+     "id": "b",
+     "text": "1800 rpm (order 2) and 450 rpm (order 4)"
+    },
+    {
+     "id": "c",
+     "text": "900 rpm (order 2) and 1800 rpm (order 4)"
+    },
+    {
+     "id": "d",
+     "text": "1800 rpm (order 2) and 900 rpm (order 4)"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "1800 rpm (order 2) and 900 rpm (order 4)",
+   "distractorRationale": {
+    "a": "Those are the speeds for orders 1 and 2, not for orders 2 and 4.",
+    "b": "The order 4 speed is 60 x 60/4 = 900 rpm, not 450 rpm.",
+    "c": "The orders have been swapped: higher orders resonate at lower speeds.",
+    "d": "Correct: Critical speeds follow N = 60 f_n/e."
+   },
+   "explanation": "Critical speeds follow N = 60 f_n/e. For e = 2, N = 3600/2 = 1800 rpm and for e = 4, N = 3600/4 = 900 rpm. Higher orders reach the same frequency at lower engine speeds.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A solid steel shaft of diameter 50 mm and length 0.8 m (G = 79 GPa) has a twist amplitude of 0.5 degrees across its full length at resonance. Estimate the peak shear stress at the surface in MPa.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o3"
+   ],
+   "correctValue": 21.5439,
+   "tolerance": 0.430878,
+   "unit": "MPa",
+   "explanation": "The twist is 0.5 x pi/180 = 0.00873 rad. The surface shear strain is r phi/L = 0.025 x 0.00873/0.8 = 2.727 x 10^{-4}, and the stress is G times this: 21.54 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why an inertia on a shaft that rotates more slowly than the reference shaft appears smaller by the square of the speed ratio when the system is reduced to an equivalent single-shaft model. State the corresponding rule for stiffness and what is unchanged by the reduction.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o1"
+   ],
+   "markingGuide": [
+    "Equivalence is by kinetic and strain energy: the equivalent system must store the same energies",
+    "Kinetic energy 1/2 J2 omega2^2 with omega2 = n omega1 equals 1/2 (n^2 J2) omega1^2, so J2' = n^2 J2",
+    "n = omega2/omega1; slower shaft has n < 1, so the referred inertia is smaller",
+    "Strain energy: twist referred to shaft 1 is Delta theta2/n; so k2' = n^2 k2",
+    "Torque follows from power balance T1 omega1 = T2 omega2, so T' = n T2",
+    "Natural frequencies are unchanged by the reduction, and series shafts combine like series springs"
+   ],
+   "explanation": "The n squared factor appears because both kinetic and strain energies are quadratic in the shaft angle. The natural frequencies of the equivalent system equal those of the geared system.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A four-cylinder four-stroke engine drives a propeller through a reduction gearbox. Calculations on the equivalent single-shaft model give a first torsional natural frequency of 36 Hz. Outline how you would find the engine speeds at which torsional resonance can occur, how you would judge which one is dangerous, and how you would estimate the stress it causes.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o2",
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o3"
+   ],
+   "markingGuide": [
+    "Major orders for this engine are 2, 4, 6 (multiples of 2); half-orders and the 1st order may also have lower-amplitude content",
+    "Critical speed N = 60 f_n/e: 1080 rpm (order 2), 540 rpm (order 4), 360 rpm (order 6)",
+    "Compare with the engine operating range; those in the continuous running range are the dangerous ones",
+    "Lower orders carry more torque harmonic energy so the lowest order inside the range is usually the strongest",
+    "Dangerous speeds can be avoided (barred range), shifted by changing stiffness or inertia, or limited by a torsional damper",
+    "Estimate stress from the twist amplitude: tau = G r phi/L, compared against fatigue strength with a safety factor"
+   ],
+   "explanation": "Each order excites the mode at N = 60 f_n/e, so the critical speeds are 1080, 540 and 360 rpm. The danger depends on whether the speed is in the running range and how strong the order is.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "When a load on a slower output shaft is referred to the faster input shaft, its equivalent inertia is larger than its actual inertia.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.torsional-vibration.geared-systems.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The equivalent inertia is n^2 J with n = omega_output/omega_input, which is less than one for a speed reduction. The referred inertia is therefore smaller than the real inertia.",
+   "board": "internal"
+  }
+ ]
+}

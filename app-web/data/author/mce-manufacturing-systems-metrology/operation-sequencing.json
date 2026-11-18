@@ -1,0 +1,418 @@
+{
+ "lessonTitle": "Operation Sequencing, 3-2-1 Locating and Set-up Minimisation",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A machinist drills the bearing bores of a gearbox housing in the first set-up, then flips the casting to face the mounting surface. The bores are now 0.15 mm off their intended position relative to the mounting face, because the second set-up located on a rough casting surface instead of the face the bores should have been measured from. The part is scrap, though every individual operation was done correctly. Order, datums and work-holding decide whether the part comes out right."
+  },
+  {
+   "type": "text",
+   "markdown": "**Process planning** turns a drawing into a route: which operations, in what order, on which machine, held how. The planner's three recurring questions are: *What is the datum for each feature?* *How is the part located and clamped for each set-up?* and *How few set-ups can the part be made in?* A **set-up** is one clamping of the workpiece; every re-clamp costs time and adds positioning error."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Datum and locating",
+   "text": "A **datum** is the surface, axis or point from which a feature is positioned in the drawing. **Locating** is the act of fixing the workpiece in a known position in the fixture so that every part is held identically; **clamping** is the application of force to keep it there. Locators define position; clamps only maintain it."
+  },
+  {
+   "type": "text",
+   "markdown": "**Operation sequencing rules** (representative heuristics used in industry):"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Machine the datum surfaces first, in the first set-up, so later operations can be located on them (an accurate datum is created before it is relied upon).",
+    "Features related by a tight tolerance (for example two bores with position tolerance relative to each other) are machined in the same set-up, so no re-clamping error enters between them.",
+    "Rough before finish: removing most material first lets residual stress relax and heat dissipate before the final cut.",
+    "Machine large features before small or delicate ones, and keep weak features (thin walls) to the end.",
+    "Follow the process logic for each feature: spot or centre drill, then drill, then ream or bore, then tap; face before drilling so the drill starts on flat surface."
+   ]
+  },
+  {
+   "type": "worked_example",
+   "title": "Sequencing a prismatic bracket",
+   "prompt": "A block-type bracket $100\\times60\\times30$ mm has a top face to be milled to 1.6 micrometres Ra (datum A), a side face (datum B), an end face (datum C), two reamed bores of 16 mm with a position tolerance of 0.02 mm relative to each other, one side hole of 8 mm positioned from datums A and C, and four M8 tapped holes in the base. Propose a sequence.",
+   "steps": [
+    {
+     "text": "Set-up 1: hold on the rough bottom. Mill the top face (datum A) and two adjacent sides (B and C) square. These create the datum surfaces that later set-ups will locate on."
+    },
+    {
+     "text": "Set-up 1 (continued): Also machine the two 16 mm bores here, after centre drilling, drilling and reaming, so both are cut from the same datum scheme with no re-clamping between them; this protects the 0.02 mm relative position."
+    },
+    {
+     "text": "Set-up 2: turn the part over and locate it on the finished top face A and sides B and C. Mill the base and drill and tap the four M8 holes."
+    },
+    {
+     "text": "Set-up 3 (if needed): rotate to the side face and drill the 8 mm hole, locating from A and C. If a rotary table is available, the side hole can be done with set-up 1 or 2 instead, reducing the set-ups."
+    }
+   ],
+   "answer": "The sequence is: datums first, tightly related bores in a single set-up, then secondary operations located from the finished datums. This yields 2 to 3 set-ups while preserving every datum relationship."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "The 3-2-1 locating principle",
+   "text": "A rigid body has six degrees of freedom (DOF): three translations and three rotations. In the 3-2-1 principle a prismatic part is located by **three** supports under the primary datum face (removing 3 DOF: one translation and two rotations), **two** supports against the secondary face (removing 2 DOF: one translation and one rotation), and **one** support against the tertiary face (removing the last translation). Six locators remove six DOF; clamps then hold the part against them."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Datum",
+    "Locators",
+    "DOF removed",
+    "Placement advice"
+   ],
+   "rows": [
+    [
+     "Primary (A, bottom)",
+     "3 (non-collinear)",
+     "3",
+     "Spread as widely as possible to resist rocking and reduce angular error"
+    ],
+    [
+     "Secondary (B, long side)",
+     "2",
+     "2",
+     "As far apart as possible along the face"
+    ],
+    [
+     "Tertiary (C, end)",
+     "1",
+     "1",
+     "Anywhere on the face, preferably near the middle"
+    ],
+    [
+     "Total",
+     "6",
+     "6",
+     "Clamp towards the locators, directly over or opposite them"
+    ]
+   ],
+   "caption": "The 3-2-1 locating scheme for a prismatic part."
+  },
+  {
+   "type": "worked_example",
+   "title": "Effect of locator spacing on angular error",
+   "prompt": "Two secondary locators have a position error of $\\pm0.01$ mm each. Compare the worst-case angular error and the resulting error at a feature 120 mm away when the spacing is 40 mm and when it is 100 mm.",
+   "steps": [
+    {
+     "text": "The worst relative error between the two pins is $0.01+0.01=0.02$ mm. The angular error is that divided by the pin spacing.",
+     "latex": "\\theta_{40}=\\frac{0.02}{40}=5.0\\times10^{-4}\\ \\text{rad},\\qquad \\theta_{100}=\\frac{0.02}{100}=2.0\\times10^{-4}\\ \\text{rad}"
+    },
+    {
+     "text": "The error at 120 mm is $\\theta\\times120$ mm.",
+     "latex": "e_{40}=0.060\\ \\text{mm},\\qquad e_{100}=0.024\\ \\text{mm}"
+    }
+   ],
+   "answer": "Widening the spacing from 40 mm to 100 mm reduces the error at the far feature from 0.060 mm to 0.024 mm. Locators should be as far apart as the part allows."
+  },
+  {
+   "type": "text",
+   "markdown": "**Minimising set-ups.** Every feature is cut from a particular direction, the tool approach direction. On a three-axis machine with a vertical spindle, one set-up reaches only the faces whose normals point upward, so features on different faces need different set-ups. Group features by orientation so that all features on a face are made in one set-up, and by tolerance relation so that related features share a set-up. Fixtures that expose more faces, such as a tombstone or a rotary (fourth-axis) table, cut the count further."
+  },
+  {
+   "type": "math",
+   "latex": "T_{\\text{part}}=n_s\\,t_s+t_m",
+   "caption": "n_s: number of set-ups; t_s: time per set-up (min), covering clamping, locating and inspection; t_m: total machining time (min)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Time saved by grouping features",
+   "prompt": "A part has features on three faces, but they are currently machined in seven separate set-ups of 18 min each, with a total machining time of 41 min. Regrouping by orientation needs three set-ups. Compare the times.",
+   "steps": [
+    {
+     "text": "Total time per part with seven set-ups.",
+     "latex": "T=7\\times18+41=167\\ \\text{min}"
+    },
+    {
+     "text": "Time with three set-ups, the same machining.",
+     "latex": "T=3\\times18+41=95\\ \\text{min}"
+    },
+    {
+     "text": "Subtract to find the time saved per part.",
+     "latex": "167-95=72\\ \\text{min saved per part}"
+    }
+   ],
+   "answer": "Grouping by orientation saves 72 min per part, 43%, with no change in machining time, and it removes four re-clamping errors."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Datum consistency",
+   "text": "Locate every critical feature from the same datums the drawing uses. A feature positioned from a different datum than the one drawn introduces tolerance stack-up and can reject conforming parts."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Sequence operations to create datum surfaces first, keep tightly related features in the same set-up, rough before finish, and follow drill-ream-tap logic for holes.",
+    "Locate a prismatic part by 3-2-1: three supports on the primary face, two on the secondary and one on the tertiary, removing 6 degrees of freedom; wide spacing of locators reduces angular error.",
+    "Minimise set-ups by grouping features by orientation, since each set-up adds time and positioning error: $T=n_st_s+t_m$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A part has a milled top face that is the datum for three later operations. Which sequencing decision best preserves the datum?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Machine the top face first, in the first set-up, and locate on it in later set-ups"
+    },
+    {
+     "id": "b",
+     "text": "Machine the top face last, so that it is free of tool marks"
+    },
+    {
+     "id": "c",
+     "text": "Machine the top face between two bore operations, using whichever set-up is convenient"
+    },
+    {
+     "id": "d",
+     "text": "Machine all other features first because the datum face is only for inspection"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Machine the top face first, in the first set-up, and locate on it in later set-ups",
+   "distractorRationale": {
+    "a": "A datum surface must exist, accurately, before the operations that locate on it.",
+    "b": "Later operations that need to be located from the face would have to be located on a rough surface.",
+    "c": "Changing set-ups arbitrarily introduces errors relative to the datum.",
+    "d": "A datum is a working reference; if it is not machined first nothing can be located from it."
+   },
+   "explanation": "Machining the datum first gives a finished reference for later set-ups, so each feature is positioned from the datum the drawing specifies. Leaving it to the end forces earlier operations to rely on rough surfaces.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two bores must keep a position tolerance of 0.02 mm relative to each other. How should they be machined?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "In the same set-up, with no re-clamping between them"
+    },
+    {
+     "id": "b",
+     "text": "In separate set-ups, so that each can be inspected independently"
+    },
+    {
+     "id": "c",
+     "text": "On two different machines, to use the best tool for each"
+    },
+    {
+     "id": "d",
+     "text": "In either order, because the position tolerance applies only to the drawing"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "In the same set-up, with no re-clamping between them",
+   "distractorRationale": {
+    "a": "A tight relation between features is best protected by machining them from a single clamping.",
+    "b": "Each re-clamp adds positioning error that can exceed 0.02 mm.",
+    "c": "Machine-to-machine transfer introduces locating errors.",
+    "d": "The tolerance is a manufacturing requirement that the sequence must meet."
+   },
+   "explanation": "Within a set-up the relative position of two features depends only on the machine's accuracy. Re-clamping introduces new locating error that is typically larger than a 0.02 mm tolerance can accept.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the 3-2-1 locating principle, what do the three locators on the primary datum face accomplish?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "They remove one translation and two rotations, defining the plane of the part"
+    },
+    {
+     "id": "b",
+     "text": "They remove three translations, defining the part position in the fixture"
+    },
+    {
+     "id": "c",
+     "text": "They remove all six degrees of freedom"
+    },
+    {
+     "id": "d",
+     "text": "They remove two translations and one rotation"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "They remove one translation and two rotations, defining the plane of the part",
+   "distractorRationale": {
+    "a": "A plane locates normal translation and two tilts, 3 degrees of freedom.",
+    "b": "Three points in a plane cannot fix motion along that plane.",
+    "c": "The remaining three are removed by the secondary and tertiary locators.",
+    "d": "Sliding in the plane is not constrained by supports under the face."
+   },
+   "explanation": "Three supports fix the height and tilt of the part in two directions. Sliding in the plane and turning about the plane normal remain free for the secondary and tertiary locators to remove.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why should the two secondary locators be placed as far apart as the part allows?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases clamping force on the part"
+    },
+    {
+     "id": "b",
+     "text": "A wider spacing reduces the angular error caused by locator position errors"
+    },
+    {
+     "id": "c",
+     "text": "It adds more degrees of freedom that are constrained"
+    },
+    {
+     "id": "d",
+     "text": "It reduces the number of set-ups required"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "A wider spacing reduces the angular error caused by locator position errors",
+   "distractorRationale": {
+    "a": "Spacing locators does not alter clamping force; clamps provide force.",
+    "b": "Angular error equals the pin position error divided by the pin spacing, so larger spacing means smaller angle.",
+    "c": "The count of constrained degrees of freedom does not depend on spacing.",
+    "d": "Locator spacing does not affect the number of set-ups."
+   },
+   "explanation": "With a relative pin error of 0.02 mm, spacing of 100 mm gives 0.2 milliradians and spacing of 40 mm gives 0.5 milliradians. The error at a distant feature is that angle multiplied by the distance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A part has features on the top face (6 features), the bottom face (3), the front (2) and the right side (1). The machine is a three-axis vertical mill, and no rotary table is available. Which grouping minimises set-ups?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Four set-ups, one per face, with all features of a face made in the same set-up"
+    },
+    {
+     "id": "b",
+     "text": "One set-up per feature, twelve set-ups, to keep each operation simple"
+    },
+    {
+     "id": "c",
+     "text": "One set-up in total, as all features are on the same part"
+    },
+    {
+     "id": "d",
+     "text": "Two set-ups, grouping top and bottom together"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Four set-ups, one per face, with all features of a face made in the same set-up",
+   "distractorRationale": {
+    "a": "Each face needs its own approach direction, so grouping by face gives four set-ups.",
+    "b": "This maximises re-clamping and positioning error.",
+    "c": "A fixed vertical spindle cannot reach the front and side faces without re-clamping.",
+    "d": "Top and bottom faces face opposite directions and cannot be cut in the same clamping."
+   },
+   "explanation": "Features reachable from the same direction share a set-up. Without a rotary table the four faces each need a distinct clamping, so four is the minimum.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two secondary locating pins have a combined worst-case position error of 0.02 mm and are 50 mm apart. Calculate the resulting positional error, in mm, at a feature 150 mm from the pivot, using the small-angle approximation.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o2"
+   ],
+   "correctValue": 0.06,
+   "tolerance": 0.002,
+   "unit": "mm",
+   "explanation": "The angular error is $0.02/50=4.0\\times10^{-4}$ rad. At 150 mm this produces $4.0\\times10^{-4}\\times150=0.060$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A rigid prismatic part is located by three supports on its primary face and two supports on its secondary face, with no tertiary locator yet. How many degrees of freedom remain unconstrained?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o2"
+   ],
+   "correctValue": 1,
+   "tolerance": 0.1,
+   "unit": "degrees of freedom",
+   "explanation": "Three plus two locators remove $3+2=5$ degrees of freedom. Of the six, one remains: the translation along the secondary face, which the tertiary locator would remove.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A part is made in 3 set-ups of 18 minutes each, and the total machining time is 41 minutes. Calculate the total time per part in minutes.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o3"
+   ],
+   "correctValue": 95,
+   "tolerance": 0.5,
+   "unit": "min",
+   "explanation": "Total time is $T=n_st_s+t_m=3\\times18+41=54+41=95$ min. Cutting the set-ups to two would save 18 min per part.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A housing has these requirements: mounting face (datum A, flatness 0.02 mm), side face (datum B), two bores of 25 mm H7 with position tolerance 0.03 mm relative to each other and to datum A, a groove on the bore, four tapped holes in the mounting face. Propose an operation sequence and justify it with reference to datum preservation and the process logic for holes.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o1"
+   ],
+   "markingGuide": [
+    "Datum faces A and B machined first so later set-ups can locate on them",
+    "Bores machined in the same set-up, locating from A and B, so their relative position tolerance is met",
+    "Rough bores before finish (semi-finish, then finish bore/ream); tool order drill, bore, ream",
+    "Groove after the bore finish, since it depends on bore size",
+    "Tapped holes in the mounting face by spot drill, drill, then tap, and the face must be flat before",
+    "Justifies each decision by datum consistency, tolerance relation, or process logic"
+   ],
+   "explanation": "A defensible sequence cuts datums A and B first, then rough and finish bores from those datums in one set-up, then the groove and the tapped holes. Each step either preserves a datum, protects a tight tolerance between features, or follows normal drilling and finishing order.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "For a prismatic block (150 mm long, 100 mm wide, 50 mm high) with features on the top, bottom and one end face, describe a 3-2-1 fixture layout for set-up 1 (top machining), specifying which faces carry the three, two and one locators and where clamps should act, and explain how you would reduce the total number of set-ups.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o2",
+    "ug.mce-manufacturing-systems-metrology.process-planning.operation-sequencing.o3"
+   ],
+   "markingGuide": [
+    "Bottom face is primary: three non-collinear locators spread widely",
+    "Long side face is secondary: two locators spaced widely",
+    "End face is tertiary: one locator",
+    "Six locators remove six degrees of freedom",
+    "Clamps push toward the locators, opposite or over them, not away from the supports",
+    "Reduce set-ups by grouping features by face and tolerance relation, or using a rotary table or tombstone so more faces are accessible in a single clamping"
+   ],
+   "explanation": "The block rests on three spread supports on the bottom, is pushed against two on the long side and one on the end, and clamps act toward the locators. Grouping features by orientation, or using a fixture that exposes more faces, cuts the number of re-clamps.",
+   "board": "internal"
+  }
+ ]
+}

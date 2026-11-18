@@ -1,0 +1,394 @@
+{
+ "lessonTitle": "Plane Strain Toughness and Constraint",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Two plates of the same aluminium alloy are cracked in the same way and pulled to failure. The 2 mm sheet tears at a toughness of about 70 MPa$\\sqrt{\\text{m}}$, the 25 mm plate fractures at barely 30. Same alloy, same crack, very different resistance: the thickness of the part changes how hard the crack tip is constrained."
+  },
+  {
+   "type": "text",
+   "markdown": "Ahead of every crack tip the metal yields in a small plastic zone. In a thin sheet the material can contract freely through the thickness, so the stress state is **plane stress**: the zone is large and absorbs a lot of energy, and the fracture surface shows slanting shear lips. In a thick plate the interior cannot contract, because the surrounding elastic material holds it back. The result is **plane strain**: a triaxial tensile stress state that suppresses yielding, leaves a small plastic zone and gives the lowest, flat fracture, i.e. the lowest toughness."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Thin (plane stress)",
+    "Thick (plane strain)"
+   ],
+   "rows": [
+    [
+     "Through-thickness stress",
+     "About zero",
+     "Large tensile, triaxial"
+    ],
+    [
+     "Plastic zone",
+     "Large",
+     "Small (about one third as large)"
+    ],
+    [
+     "Fracture surface",
+     "Slant, shear lips",
+     "Flat, square"
+    ],
+    [
+     "Toughness",
+     "High, depends on thickness",
+     "Lowest plateau value, $K_{Ic}$"
+    ]
+   ],
+   "caption": "Qualitative comparison; the numerical factor of 3 is from Irwin's estimates below."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Plane strain fracture toughness K_Ic",
+   "text": "$K_{Ic}$ is the critical Mode I stress intensity factor measured when the specimen is thick enough for plane strain at the tip. It is a material property, essentially independent of thickness, and is the conservative value used in design. In thinner sections the measured $K_c$ is higher and depends on thickness."
+  },
+  {
+   "type": "text",
+   "markdown": "As thickness $B$ increases from thin sheet, the toughness first rises slightly (as the shear lips grow in proportion), then **falls** and approaches the plateau $K_{Ic}$ once the plane strain region dominates. To make a valid $K_{Ic}$ measurement, we need a specimen thick enough that this plateau is reached."
+  },
+  {
+   "type": "math",
+   "latex": "B,\\ a,\\ (W-a) \\ \\ge\\ 2.5\\left(\\frac{K_{Ic}}{\\sigma_{ys}}\\right)^2",
+   "caption": "Standard plane strain size requirement for a $K_{Ic}$ test: thickness $B$, crack length $a$ and uncracked ligament $(W-a)$ must all exceed this value; $\\sigma_{ys}$ is the yield strength."
+  },
+  {
+   "type": "worked_example",
+   "title": "Minimum specimen thickness",
+   "prompt": "A new alloy has an expected toughness near $K_{Ic} = 50$ MPa$\\sqrt{\\text{m}}$ and a typical yield strength $\\sigma_{ys} = 800$ MPa. What minimum thickness is needed for a valid test?",
+   "steps": [
+    {
+     "text": "Compute the ratio $K_{Ic}/\\sigma_{ys}$ in units of $\\sqrt{\\text{m}}$.",
+     "latex": "\\frac{K_{Ic}}{\\sigma_{ys}} = \\frac{50}{800} = 0.0625\\ \\sqrt{\\text{m}}"
+    },
+    {
+     "text": "Square it.",
+     "latex": "(0.0625)^2 = 0.003906\\ \\text{m}"
+    },
+    {
+     "text": "Multiply by 2.5.",
+     "latex": "B_{min} = 2.5\\times0.003906 = 0.009766\\ \\text{m} = 9.77\\ \\text{mm}"
+    }
+   ],
+   "answer": "Minimum thickness (and crack length, and ligament) is about 9.77 mm."
+  },
+  {
+   "type": "text",
+   "markdown": "**The plastic zone and Irwin's correction.** Linear elastic theory predicts infinite stress at the tip; in reality the stress cannot exceed about the yield strength. Irwin estimated the plastic zone radius by finding the distance $r_y$ at which the elastic stress $K/\\sqrt{2\\pi r}$ falls to $\\sigma_{ys}$, and then accounting for stress redistribution. The result is the plane stress zone radius below. Plane strain has about one third of this size."
+  },
+  {
+   "type": "math",
+   "latex": "r_y = \\frac{1}{2\\pi}\\left(\\frac{K}{\\sigma_{ys}}\\right)^2 \\ (\\text{plane stress}), \\qquad r_y \\approx \\frac{1}{6\\pi}\\left(\\frac{K}{\\sigma_{ys}}\\right)^2 \\ (\\text{plane strain})",
+   "caption": "Irwin plastic zone radius ahead of the crack tip."
+  },
+  {
+   "type": "text",
+   "markdown": "Irwin's idea also gives an **effective crack length**: the crack behaves as if it were longer by $r_y$, so $a_{eff} = a + r_y$. The corrected stress intensity factor is $K_{eff} = Y\\sigma\\sqrt{\\pi a_{eff}}$, slightly larger than the uncorrected value. This correction is small when $r_y \\ll a$ and is the reason LEFM is valid only for small-scale yielding."
+  },
+  {
+   "type": "worked_example",
+   "title": "Plastic zone size",
+   "prompt": "A crack in a steel plate has $K = 40$ MPa$\\sqrt{\\text{m}}$; the yield strength is 400 MPa (typical). Estimate $r_y$ in plane stress and plane strain.",
+   "steps": [
+    {
+     "text": "Compute $(K/\\sigma_{ys})^2 = (40/400)^2 = 0.01$ m.",
+     "latex": "(0.1)^2 = 0.01\\ \\text{m}"
+    },
+    {
+     "text": "Plane stress: divide by $2\\pi$.",
+     "latex": "r_y = \\frac{0.01}{2\\pi} = 0.00159\\ \\text{m} = 1.59\\ \\text{mm}"
+    },
+    {
+     "text": "Plane strain: divide by $6\\pi$.",
+     "latex": "r_y = \\frac{0.01}{6\\pi} = 5.31\\times10^{-4}\\ \\text{m} = 0.531\\ \\text{mm}"
+    }
+   ],
+   "answer": "About 1.59 mm in plane stress and 0.531 mm in plane strain."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Higher yield strength with the same $K$ gives a smaller plastic zone ($r_y\\propto \\sigma_{ys}^{-2}$).",
+    "A tougher material needs a thicker specimen to stay in plane strain ($B_{min}\\propto K_{Ic}^2$).",
+    "A sheet below the size requirement gives only an apparent $K_c$, not a valid $K_{Ic}$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "A valid K_Ic is not a thickness-specific number",
+   "text": "A toughness measured on a thin specimen should never be used as the design $K_{Ic}$ for a thick section. It overestimates the resistance of the thick part, and the error is not conservative."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Toughness falls with thickness as the stress state changes from plane stress to plane strain, approaching the plateau $K_{Ic}$.",
+    "A valid $K_{Ic}$ test needs $B$, $a$ and $(W-a)$ all at least $2.5(K_{Ic}/\\sigma_{ys})^2$.",
+    "Irwin's plastic zone is $r_y=(1/2\\pi)(K/\\sigma_{ys})^2$ in plane stress, about one third of that in plane strain, and the crack acts longer by $r_y$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "As the thickness of a cracked metal plate is increased from a thin sheet to a thick plate, how does its measured fracture toughness behave?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It rises without limit"
+    },
+    {
+     "id": "b",
+     "text": "It stays constant at all thicknesses"
+    },
+    {
+     "id": "c",
+     "text": "It falls and levels off at the plane strain value $K_{Ic}$"
+    },
+    {
+     "id": "d",
+     "text": "It falls to zero"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It falls and levels off at the plane strain value $K_{Ic}$",
+   "distractorRationale": {
+    "a": "That is the opposite of the thickness trend.",
+    "b": "Toughness is thickness dependent below the plane strain limit.",
+    "c": "Correct: toughness decreases then plateaus.",
+    "d": "It plateaus at $K_{Ic}$, which is finite and positive."
+   },
+   "explanation": "In thin sections plane stress allows a large plastic zone that absorbs energy, so the toughness is high. As the thickness grows, constraint rises and the toughness falls until the plane strain plateau, the material property $K_{Ic}$, is reached.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a plane strain $K_{Ic}$ test, which of the specimen dimensions must satisfy the minimum size criterion?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Thickness only"
+    },
+    {
+     "id": "b",
+     "text": "Width only"
+    },
+    {
+     "id": "c",
+     "text": "Loading pin diameter only"
+    },
+    {
+     "id": "d",
+     "text": "Thickness, crack length and uncracked ligament"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Thickness, crack length and uncracked ligament",
+   "distractorRationale": {
+    "a": "Thickness alone is not sufficient.",
+    "b": "Width is not what is limited.",
+    "c": "Pin size is not the criterion.",
+    "d": "Correct: all three must exceed $2.5(K_{Ic}/\\sigma_{ys})^2$."
+   },
+   "explanation": "The requirement is applied to the thickness, the crack length and the remaining ligament so that the plastic zone is small compared with all of them. Thickness alone would not ensure small-scale yielding if the crack or ligament were short.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two steels are loaded to the same $K$ at a crack tip, one with yield strength 600 MPa and the other 1200 MPa. How do their plane stress plastic zone sizes compare?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The stronger steel's zone is half that of the weaker one"
+    },
+    {
+     "id": "b",
+     "text": "The stronger steel's zone is one quarter of the weaker one's"
+    },
+    {
+     "id": "c",
+     "text": "They are equal"
+    },
+    {
+     "id": "d",
+     "text": "The stronger steel's zone is four times larger"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The stronger steel's zone is one quarter of the weaker one's",
+   "distractorRationale": {
+    "a": "That treats $r_y$ as inversely proportional to $\\sigma_{ys}$.",
+    "b": "Correct: $r_y\\propto \\sigma_{ys}^{-2}$ and $(1/2)^2=1/4$.",
+    "c": "$r_y$ depends on yield strength.",
+    "d": "The direction is reversed."
+   },
+   "explanation": "The Irwin estimate varies as $(K/\\sigma_{ys})^2$. Doubling the yield strength divides $r_y$ by four, so higher-strength materials have smaller plastic zones at the same $K$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why is the toughness of a thin sheet usually higher than that of a thick plate of the same alloy?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Plane stress gives a larger plastic zone that absorbs more energy"
+    },
+    {
+     "id": "b",
+     "text": "Thin sheets contain fewer atoms"
+    },
+    {
+     "id": "c",
+     "text": "Thick plates always contain more defects"
+    },
+    {
+     "id": "d",
+     "text": "Thin sheets have higher elastic modulus"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Plane stress gives a larger plastic zone that absorbs more energy",
+   "distractorRationale": {
+    "a": "Correct: plane stress allows large-scale yielding at the tip.",
+    "b": "Atom count is not the mechanism.",
+    "c": "The effect is not a matter of defect count.",
+    "d": "Modulus is a property of the alloy, not the thickness."
+   },
+   "explanation": "In a thin sheet the through-thickness stress is nearly zero, so yielding is easy and a large plastic zone develops that dissipates energy. In a thick plate the interior is held in triaxial tension, which suppresses yielding and lowers toughness.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A technician machines a specimen with thickness 8 mm for an alloy expected to have $K_{Ic}\\approx 60$ MPa$\\sqrt{\\text{m}}$ and $\\sigma_{ys}\\approx 1000$ MPa. What is the correct conclusion?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The thickness is valid because 8 mm is more than 5 mm"
+    },
+    {
+     "id": "b",
+     "text": "Thickness does not matter for $K_{Ic}$ tests"
+    },
+    {
+     "id": "c",
+     "text": "The test is valid if the load is applied slowly"
+    },
+    {
+     "id": "d",
+     "text": "The thickness is below the 9 mm minimum, so the result would not be a valid $K_{Ic}$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The thickness is below the 9 mm minimum, so the result would not be a valid $K_{Ic}$",
+   "distractorRationale": {
+    "a": "The 5 mm figure has no basis in this calculation.",
+    "b": "Thickness matters for plane strain.",
+    "c": "Loading rate does not fix the size requirement.",
+    "d": "Correct: $2.5(60/1000)^2 = 9.0$ mm exceeds 8 mm."
+   },
+   "explanation": "The minimum is $2.5\\times(0.06)^2 = 0.009$ m, i.e. 9 mm. A specimen of 8 mm is thinner than this, so the stress state may not be fully plane strain and the number measured would not be a valid $K_{Ic}$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A crack tip has $K = 25$ MPa$\\sqrt{\\text{m}}$ in a sheet of yield strength 600 MPa. Estimate the plane stress plastic zone radius $r_y$ in mm.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o3"
+   ],
+   "correctValue": 0.276311,
+   "tolerance": 0.02,
+   "unit": "mm",
+   "explanation": "$r_y = (1/2\\pi)(25/600)^2 = 2.763\\times10^{-4}$ m, which is $0.276$ mm. The result is much smaller than typical crack lengths, so small-scale yielding holds.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A toughness test is planned for an aluminium alloy with expected $K_{Ic} = 29$ MPa$\\sqrt{\\text{m}}$ and yield strength 500 MPa (both typical). Find the minimum specimen thickness in mm for plane strain validity, using $B \\ge 2.5(K_{Ic}/\\sigma_{ys})^2$.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o2"
+   ],
+   "correctValue": 8.41,
+   "tolerance": 0.1,
+   "unit": "mm",
+   "explanation": "$K_{Ic}/\\sigma_{ys} = 29/500 = 0.058$ $\\sqrt{\\text{m}}$, squared $=0.003364$ m, times 2.5 gives $0.00841$ m or $8.41$ mm. The crack length and ligament must also exceed this value.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A wide plate with a central crack of half-length 10 mm carries 300 MPa; yield strength is 600 MPa and $Y = 1$. Compute the uncorrected $K$, then the Irwin plane stress plastic zone $r_y$ using it, and finally the corrected $K_{eff} = \\sigma\\sqrt{\\pi(a + r_y)}$. Give $K_{eff}$ in MPa$\\sqrt{\\text{m}}$.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o3"
+   ],
+   "correctValue": 56.3991,
+   "tolerance": 0.4,
+   "unit": "MPa sqrt(m)",
+   "explanation": "Uncorrected $K = 300\\sqrt{\\pi\\times0.010} = 53.17$ MPa$\\sqrt{\\text{m}}$. Then $r_y = (1/2\\pi)(53.17/600)^2 = 1.25$ mm, so $a_{eff} = 11.25$ mm and $K_{eff} = 56.4$ MPa$\\sqrt{\\text{m}}$. The correction raises $K$ by about 6 percent.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain physically why measured fracture toughness decreases with specimen thickness and then reaches a plateau, and say why $K_{Ic}$ is the appropriate value for design of thick sections.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o1"
+   ],
+   "markingGuide": [
+    "Thin sections: plane stress, through-thickness stress near zero, large plastic zone and shear lips giving high toughness",
+    "Thick sections: constraint gives triaxial tension (plane strain), small plastic zone and flat fracture",
+    "Toughness decreases with thickness until the plane strain plateau $K_{Ic}$ is reached, independent of further thickness",
+    "$K_{Ic}$ is the lowest, conservative, geometry-independent value so safe for thick components"
+   ],
+   "explanation": "Constraint, not the alloy, changes with thickness. Plane stress allows large yielding and high energy absorption, while plane strain restricts yielding and gives a lower, thickness-independent toughness that protects thick components.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A $K_{Ic}$ test on a steel with yield strength 700 MPa uses a specimen with thickness, crack length and ligament all equal to 15 mm. The measured conditional toughness is 45 MPa$\\sqrt{\\text{m}}$. Check whether the size requirement is met, and explain what would be needed if it were not.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o2",
+    "ug.mce-fracture-fatigue-failure.toughness.plane-strain-toughness.o1"
+   ],
+   "markingGuide": [
+    "Computes $2.5(45/700)^2$",
+    "Gets about 10.3 mm",
+    "Compares with 15 mm for $B$, $a$ and $(W-a)$ and concludes the size requirement is met",
+    "States that if not met, a thicker specimen is needed (about $B\\propto K_{Ic}^2$), because the plastic zone must be small compared with all dimensions"
+   ],
+   "explanation": "The requirement evaluates to $2.5(45/700)^2 = 0.0103$ m, i.e. 10.3 mm. Since 15 mm exceeds this for thickness, crack length and ligament, the size criterion is satisfied. Had it failed, a thicker specimen would be required because the criterion grows with the square of the toughness.",
+   "board": "internal"
+  }
+ ]
+}

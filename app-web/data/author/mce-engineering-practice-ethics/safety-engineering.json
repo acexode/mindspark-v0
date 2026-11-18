@@ -1,0 +1,447 @@
+{
+ "lessonTitle": "Safety Engineering Methods: HAZOP, Fault Trees and Duty of Care",
+ "estimatedMinutes": 25,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A solvent transfer line at a chemical plant has a pump, a flow-control valve and a reactor. Nobody asks what happens if the pump runs but the valve is shut, or if the flow reverses when the reactor pressure rises. The explosion that follows is described in the accident report as 'unforeseen'. A hazard and operability study (HAZOP) is a method designed to make such events foreseen by forcing a team to ask the question systematically."
+  },
+  {
+   "type": "text",
+   "markdown": "Safety engineering uses structured methods to find how things can go wrong and how likely that is. This unit covers three tools: **HAZOP** to identify hazards in a process line, **fault tree analysis** to quantify how failures combine into a serious event, and the **legal duty of care** that makes designers responsible for foreseeable harm in use and maintenance."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "HAZOP",
+   "text": "A hazard and operability study is a structured, team-based examination of a process design. The team takes each section (node) of the line, applies **guide words** to each process parameter to create deviations from the design intent, and records the causes, consequences, existing safeguards and any actions needed."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Guide word",
+    "Meaning",
+    "Example with the parameter 'flow'"
+   ],
+   "rows": [
+    [
+     "No / None",
+     "Complete negation of the intent",
+     "No flow"
+    ],
+    [
+     "More",
+     "Quantitative increase",
+     "More flow (or more pressure, more temperature)"
+    ],
+    [
+     "Less",
+     "Quantitative decrease",
+     "Less flow"
+    ],
+    [
+     "As well as",
+     "Extra activity or substance",
+     "Flow of solvent as well as water (contamination)"
+    ],
+    [
+     "Part of",
+     "Only part of the intent achieved",
+     "Part of the composition missing"
+    ],
+    [
+     "Reverse",
+     "Opposite of the intent",
+     "Reverse flow"
+    ],
+    [
+     "Other than",
+     "Complete substitution",
+     "Other material than the intended solvent"
+    ]
+   ],
+   "caption": "Standard HAZOP guide words with examples."
+  },
+  {
+   "type": "worked_example",
+   "title": "HAZOP of a transfer line",
+   "prompt": "Node: a pump transfers a flammable solvent from a storage tank through a flow-control valve to a reactor. The design intent is 0.5 kg/s at 3 bar. Examine the deviation 'No flow'.",
+   "steps": [
+    {
+     "text": "Form the deviation: guide word 'No' applied to the parameter 'flow' gives 'No flow' in the transfer line."
+    },
+    {
+     "text": "Causes: pump trip or failure; valve closed or failed shut; line blocked; empty tank."
+    },
+    {
+     "text": "Consequences: the reactor is starved of solvent, which for an exothermic reaction may cause temperature rise; the pump may overheat or run dry and damage its seal."
+    },
+    {
+     "text": "Safeguards present: none beyond operator observation of the flow meter."
+    },
+    {
+     "text": "Action: install a low-flow alarm with an interlock that stops the reactor feed and a pump protection trip on low flow. Assign an owner and a due date."
+    }
+   ],
+   "answer": "The deviation 'No flow' leads to an action to add a low-flow alarm and interlock, recorded with an owner and date."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Process and discipline",
+   "text": "Apply every guide word to every parameter at every node, and record the result even when the answer is 'no hazard'. The value of HAZOP lies in its completeness and in the diverse experience of the team, not in any one clever guess."
+  },
+  {
+   "type": "text",
+   "markdown": "**Fault tree analysis** works backwards from an undesired **top event** (for example vessel overpressure) and breaks it down into the combinations of basic events that could cause it. An **AND gate** means all inputs must occur; an **OR gate** means any one input is enough. For independent events with probabilities (over the same period), the gate probabilities are:"
+  },
+  {
+   "type": "math",
+   "latex": "P_{\\text{AND}} = \\prod_i p_i,\\qquad P_{\\text{OR}} = 1 - \\prod_i (1-p_i)",
+   "caption": "Gate probabilities for independent events with probabilities p_i. For small p_i an OR gate is approximately the sum of the p_i."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Gate",
+    "Meaning",
+    "Effect on probability",
+    "Example"
+   ],
+   "rows": [
+    [
+     "AND",
+     "All inputs must occur",
+     "Reduces probability (product)",
+     "Relief valve fails AND control fails"
+    ],
+    [
+     "OR",
+     "Any input is enough",
+     "Increases probability",
+     "Sensor fails OR controller fails"
+    ]
+   ],
+   "caption": "Fault tree gates for independent events."
+  },
+  {
+   "type": "worked_example",
+   "title": "Top-event probability for an overpressure fault tree",
+   "prompt": "A vessel overpressures only if the pressure control system fails AND the relief valve fails on demand. The control system fails if the sensor fails (annual probability 0.02) OR the controller fails (0.01). The relief valve fails on demand with probability 0.005. Find the annual probability of overpressure, assuming independence.",
+   "steps": [
+    {
+     "text": "Control system failure (OR gate):",
+     "latex": "P_A = 1 - (1-0.02)(1-0.01) = 1 - 0.98\\times 0.99 = 0.0298"
+    },
+    {
+     "text": "Relief valve failure:",
+     "latex": "P_B = 0.005"
+    },
+    {
+     "text": "Top event (AND gate):",
+     "latex": "P_{top} = P_A \\times P_B = 0.0298\\times 0.005 = 1.49\\times 10^{-4}\\ \\text{per year}"
+    },
+    {
+     "text": "Interpretation: about 1 in 6700 per year. The relief valve is the dominant protection: halving its failure probability halves the top-event probability."
+    }
+   ],
+   "answer": "The top-event probability is about 1.5 x 10^-4 per year."
+  },
+  {
+   "type": "text",
+   "markdown": "The **duty of care** is the legal obligation to take reasonable care to avoid harm to others who could foreseeably be affected by your acts or omissions. In design, it extends over the whole life: **safe use**, including reasonably foreseeable misuse, and **safe maintenance**, cleaning, transport and disposal. In the UK, section 6 of the Health and Safety at Work etc. Act 1974 requires designers, manufacturers and suppliers of articles for use at work to ensure, so far as is reasonably practicable, that they are safe and without risks to health, and to provide the necessary information. The civil law of negligence and consumer protection legislation add further liability. Other jurisdictions have comparable principles."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Design phase",
+    "What the duty requires",
+    "Example"
+   ],
+   "rows": [
+    [
+     "Use",
+     "Eliminate or guard hazards; consider foreseeable misuse",
+     "Interlocked guards that cannot be easily defeated"
+    ],
+    [
+     "Maintenance",
+     "Provide safe access, isolation and lock-out points",
+     "Isolation valve and lock-out point before an actuator is serviced"
+    ],
+    [
+     "Information",
+     "Warn of residual risks and give instructions",
+     "Manual with safe-use and maintenance procedures"
+    ],
+    [
+     "Verification",
+     "Assess and document the risk and the tests done",
+     "Records of hazard analysis and test results"
+    ]
+   ],
+   "caption": "What a duty of care means in design."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Complying with the minimum is not always enough",
+   "text": "Meeting a standard is strong evidence of reasonable care but does not remove the duty to consider hazards the standard does not address, such as foreseeable misuse or unusual maintenance tasks."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "HAZOP applies guide words to process parameters at each node, to find causes, consequences, safeguards and actions systematically.",
+    "In a fault tree, an AND gate multiplies independent probabilities and an OR gate gives 1 minus the product of the complements.",
+    "The designer's duty of care covers safe use and maintenance, including foreseeable misuse, and the provision of information; in the UK it is reflected in HSWA 1974 section 6 and the law of negligence."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a HAZOP of a cooling-water line, the team considers 'Reverse flow'. How was this deviation formed?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "By applying the guide word 'Reverse' to the parameter 'flow'"
+    },
+    {
+     "id": "b",
+     "text": "By applying the guide word 'More' to the parameter 'temperature'"
+    },
+    {
+     "id": "c",
+     "text": "By applying the parameter 'reverse' to the guide word 'flow'"
+    },
+    {
+     "id": "d",
+     "text": "By scoring the hazard with a risk matrix"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "By applying the guide word 'Reverse' to the parameter 'flow'",
+   "distractorRationale": {
+    "a": "Correct: a deviation is a guide word applied to a parameter.",
+    "b": "That produces 'More temperature'.",
+    "c": "Guide words are applied to parameters, not the other way around.",
+    "d": "Risk matrices are a separate tool."
+   },
+   "explanation": "A HAZOP deviation always combines a guide word with a process parameter. 'Reverse' plus 'flow' gives 'reverse flow', which the team then investigates for causes and consequences.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a HAZOP, after a deviation such as 'More pressure' has been identified at a node, what does the team do next?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Move to the next node without recording anything"
+    },
+    {
+     "id": "b",
+     "text": "Identify the causes and consequences, note existing safeguards and decide whether actions are needed"
+    },
+    {
+     "id": "c",
+     "text": "Calculate the top-event probability"
+    },
+    {
+     "id": "d",
+     "text": "Assign blame to the designer"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Identify the causes and consequences, note existing safeguards and decide whether actions are needed",
+   "distractorRationale": {
+    "a": "Every deviation should be recorded and analysed.",
+    "b": "Correct: this is the core HAZOP sequence.",
+    "c": "Probability calculations belong to fault tree analysis.",
+    "d": "HAZOP is not about blame."
+   },
+   "explanation": "For each credible deviation the team records causes, consequences, safeguards and actions. This ensures that findings are traceable and that responsibilities are assigned.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "On a boiler-feed line, the HAZOP team considers 'Reverse flow' from the boiler back towards the feed pump. Which consequence is most credible?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The feed water becomes colder"
+    },
+    {
+     "id": "b",
+     "text": "Hot water or steam flows back through the pump and pipework, damaging the pump and endangering personnel"
+    },
+    {
+     "id": "c",
+     "text": "No consequence, because the line is pressurised"
+    },
+    {
+     "id": "d",
+     "text": "The boiler's efficiency rises"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Hot water or steam flows back through the pump and pipework, damaging the pump and endangering personnel",
+   "distractorRationale": {
+    "a": "Not the credible hazard.",
+    "b": "Correct: backflow of hot fluid can overpressurise and damage upstream equipment; non-return valves are typical safeguards.",
+    "c": "Pressure from the boiler is exactly why back flow could occur.",
+    "d": "Not a hazard consideration."
+   },
+   "explanation": "Reverse flow from a high-pressure, high-temperature vessel can damage upstream equipment and harm people. A typical safeguard is a non-return valve, which the HAZOP would check for adequacy and maintenance.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A fault tree has an AND gate with three independent inputs: an interlock failure (probability 0.1 per year), an operator error (0.05 per year) and an alarm failure (0.2 per year). What is the annual probability of the top event?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o2"
+   ],
+   "correctValue": 0.001,
+   "tolerance": 0.0001,
+   "unit": "probability per year",
+   "explanation": "For an AND gate the probabilities multiply: 0.1 x 0.05 x 0.2 = 0.001 per year. The result is much smaller than any single input, which shows why independent layers of protection are so effective.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A fault tree has an OR gate with two independent inputs: a seal failure with annual probability 0.03 and a coupling failure with annual probability 0.04. What is the annual probability of the output event?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o2"
+   ],
+   "correctValue": 0.0688,
+   "tolerance": 0.001,
+   "unit": "probability per year",
+   "explanation": "For an OR gate with independent inputs the probability is 1 - (1 - 0.03)(1 - 0.04) = 1 - 0.97 x 0.96 = 1 - 0.9312 = 0.0688. This is slightly below the simple sum of 0.07 because the events can occur together.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "In a fault tree the top event occurs if (event A OR event B) occurs AND event C occurs. The independent annual probabilities are A = 0.1, B = 0.2 and C = 0.05. What is the annual probability of the top event?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o2"
+   ],
+   "correctValue": 0.014,
+   "tolerance": 0.0005,
+   "unit": "probability per year",
+   "explanation": "The OR gate gives 1 - (0.9)(0.8) = 1 - 0.72 = 0.28. The AND gate then gives 0.28 x 0.05 = 0.014 per year. Evaluate gates from the bottom of the tree upwards.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement best describes a designer's duty of care for a machine?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It ends once the machine passes the factory acceptance test"
+    },
+    {
+     "id": "b",
+     "text": "It requires reasonable steps so that the machine is safe in use and for maintenance, including foreseeable misuse, with adequate information"
+    },
+    {
+     "id": "c",
+     "text": "It applies only to the operators' employer"
+    },
+    {
+     "id": "d",
+     "text": "It is satisfied by a warning label alone"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It requires reasonable steps so that the machine is safe in use and for maintenance, including foreseeable misuse, with adequate information",
+   "distractorRationale": {
+    "a": "The duty continues over the machine's life, including maintenance.",
+    "b": "Correct: designers must consider safe use, foreseeable misuse and maintenance, and provide information.",
+    "c": "Designers and suppliers have duties too, for example under HSWA 1974 section 6 in the UK.",
+    "d": "A label is the weakest safeguard and does not replace design measures."
+   },
+   "explanation": "The duty of care in design extends over the machine's life. It covers use, foreseeable misuse and maintenance, and combines design measures with proper information.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A designer who complies with the minimum requirements of a relevant standard has no further duty to consider reasonably foreseeable misuse of the product.",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Complying with a standard is strong evidence of reasonable care, but the standard may not address every hazard. The duty of care requires the designer to consider foreseeable misuse and maintenance beyond the minimum text.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A compressed-air receiver is filled by a compressor through a non-return valve and discharges through a regulator to a workshop. Choose two parameters and apply at least four guide words, giving a credible cause, consequence and safeguard or action for each deviation you create.",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o1"
+   ],
+   "markingGuide": [
+    "Chooses parameters such as pressure, flow or temperature",
+    "Forms deviations correctly from guide words (for example More pressure, No flow, Reverse flow, Less pressure)",
+    "Gives a credible cause for each (for example regulator failure, valve stuck closed, compressor controller failure)",
+    "Gives a credible consequence (for example vessel overpressure and rupture, loss of supply, back flow into compressor)",
+    "Identifies a safeguard or action (for example pressure relief valve, pressure switch, non-return valve, maintenance and inspection)",
+    "Shows systematic recording"
+   ],
+   "explanation": "A good answer uses the method systematically. Each deviation must have a logical link from cause to consequence and a safeguard or recommended action.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A company designs a conveyor with a rotating drum that must be cleaned weekly by maintenance staff. Describe how the designer's duty of care applies to safe use and maintenance, and list design and information measures that would discharge it.",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.risk-safety.safety-engineering.o3"
+   ],
+   "markingGuide": [
+    "Duty of care is to take reasonable steps to avoid foreseeable harm to users and maintainers",
+    "Safe use: guards and interlocks; consider foreseeable misuse such as defeating a guard",
+    "Maintenance: safe access, isolation and lock-out points, stored-energy release, design so that cleaning does not need the drum to be running",
+    "Information: manual with safe-use and maintenance instructions, warnings of residual risks",
+    "Verification: documented risk assessment and test",
+    "Mentions legal basis, such as HSWA 1974 section 6 or negligence, and the so far as reasonably practicable standard"
+   ],
+   "explanation": "The answer must tie the legal concept to concrete design features. Marks reward recognition that maintenance and foreseeable misuse are part of the duty, not afterthoughts.",
+   "board": "internal"
+  }
+ ]
+}

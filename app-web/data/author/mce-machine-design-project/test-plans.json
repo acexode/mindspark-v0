@@ -1,0 +1,400 @@
+{
+ "lessonTitle": "Test Planning: Procedures, Verification Methods and Instruments",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A team tests a prototype clamp by hanging weights until 'it looks fine', using a bathroom scale for the load and a ruler for the deflection. The requirement is a deflection within plus or minus 0.05 mm at 12 kN. The ruler resolves 1 mm, so the test could never have shown the requirement was met or failed. A test plan decides, before any hardware is loaded, what will be measured, with what, and what result means pass."
+  },
+  {
+   "type": "text",
+   "markdown": "A **test plan** links the requirements to evidence. It answers four questions for every requirement: *how* will it be verified (test, analysis, inspection), *by what procedure*, *with what instruments*, and *what result counts as a pass*. Writing the plan during design exposes requirements that cannot be verified and stops the team from discovering, at the end, that the only suitable instrument was never ordered."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Test procedure",
+   "text": "A test procedure is a written, step-by-step instruction that another competent person can follow to obtain the same result. It contains: purpose and the requirement(s) addressed; **setup** (specimen, fixtures, instruments with identifiers, environment); the **sequence of steps**; the **measurements** to be recorded, with units and sampling; the **pass criteria**, stated in numbers; **safety checks** (hazards, guards, limits, abort conditions, personal protective equipment); and the record form to be completed."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "Use when",
+    "Example requirement",
+    "Example evidence"
+   ],
+   "rows": [
+    [
+     "Test",
+     "Performance must be observed on real hardware",
+     "Lift 200 kg without permanent deformation",
+     "Proof-load test, measured deflection and permanent set"
+    ],
+    [
+     "Analysis",
+     "Hardware does not yet exist or test is impractical",
+     "Natural frequency above 50 Hz (design stage)",
+     "Finite element or hand calculation report"
+    ],
+    [
+     "Inspection",
+     "A feature can be examined or measured without operating",
+     "Rated load marked in letters at least 10 mm high",
+     "Inspection record against drawing"
+    ],
+    [
+     "Demonstration",
+     "A qualitative function is shown",
+     "Guard closes and interlock stops machine",
+     "Observed and witnessed demonstration"
+    ]
+   ],
+   "caption": "Mapping requirements to verification methods."
+  },
+  {
+   "type": "text",
+   "markdown": "**Mapping requirements to methods.** Build a table with one row per requirement: ID, requirement text, verification method, procedure reference, instrument, pass criterion and status. Every requirement must appear at least once, and every test should serve at least one requirement; a test without a requirement wastes effort and a requirement without a test is unverified. Where several methods are used (analysis at design stage, test on the prototype) both appear."
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing instruments.** The instrument must be good enough to resolve the tolerance being verified. A common rule of thumb is that the instrument's total uncertainty should be no more than one quarter of the tolerance, that is a **test accuracy ratio** (TAR) of at least 4:1. In addition the **range** should be matched to the expected value: readings in the middle part of the range (roughly 20% to 80% of full scale) are the most accurate, because accuracy is often quoted as a percentage of *full scale*, so a small reading on a large range has a large relative uncertainty, and a reading beyond the range damages or saturates the instrument."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathrm{TAR}=\\frac{t}{u_{\\mathrm{inst}}}\\ge4",
+   "caption": "t is the half-width of the tolerance (the plus-or-minus value) and u_inst the instrument's uncertainty in the same unit. TAR of 4 or more is a typical rule of thumb, not a law."
+  },
+  {
+   "type": "worked_example",
+   "title": "Instrument for a dimensional tolerance",
+   "prompt": "A critical dimension has a tolerance of $\\pm0.05$ mm. A vernier caliper has an uncertainty of $\\pm0.03$ mm and a micrometer $\\pm0.005$ mm. Which is suitable under a 4:1 rule?",
+   "steps": [
+    {
+     "text": "Maximum permitted instrument uncertainty.",
+     "latex": "u_{\\max}=\\frac{0.05}{4}=0.0125\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Caliper: $\\mathrm{TAR}=0.05/0.03=1.7<4$. Not suitable."
+    },
+    {
+     "text": "Micrometer: $\\mathrm{TAR}=0.05/0.005=10\\ge4$. Suitable."
+    }
+   ],
+   "answer": "The micrometer is suitable; the caliper cannot resolve the tolerance."
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a load cell range",
+   "prompt": "A proof test applies about 12 kN and must verify a load within $\\pm120$ N. Load cell A has a 20 kN range and an accuracy of $\\pm0.1\\%$ of full scale; load cell B has a 100 kN range with the same percentage accuracy. Which should be used?",
+   "steps": [
+    {
+     "text": "Maximum permitted uncertainty for 4:1.",
+     "latex": "u_{\\max}=\\frac{120}{4}=30\\ \\mathrm{N}"
+    },
+    {
+     "text": "Cell A: $0.001\\times20\\,000=20$ N and the reading uses $12/20=60\\%$ of range, so $\\mathrm{TAR}=120/20=6$.",
+     "latex": "u_A=20\\ \\mathrm{N}"
+    },
+    {
+     "text": "Cell B: $0.001\\times100\\,000=100$ N, $\\mathrm{TAR}=1.2$, and the reading is only 12% of range.",
+     "latex": "u_B=100\\ \\mathrm{N}"
+    }
+   ],
+   "answer": "Use load cell A: 20 N uncertainty (TAR 6) and 60% of range; cell B fails the 4:1 rule."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "State the requirement and the pass criterion in numbers.",
+    "List the setup, with instrument IDs and calibration status.",
+    "Write numbered steps including loading rate, hold time and number of repeats.",
+    "Specify what is recorded and in what units.",
+    "Add safety checks and an abort condition before loading begins."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Decide pass criteria before testing",
+   "text": "A pass criterion written after seeing the data will unconsciously follow the data. Write it, with its uncertainty allowance, in the plan."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Range is not the same as accuracy",
+   "text": "A large-range instrument may read small values with poor relative accuracy, and a small-range instrument may be destroyed by overload. Check both the range for the expected value and the margin to overload."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A test procedure contains setup, measurements, numerical pass criteria and safety checks so that anyone can repeat it.",
+    "Every requirement is mapped to test, analysis, inspection or demonstration, with a procedure and instrument.",
+    "Choose instruments so that TAR $\\ge4$ and the expected value falls in the useful part of the range."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A written test procedure lists the specimen, instruments, loading steps and the readings to record, but gives no pass or fail limits. What is missing?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Numerical pass criteria stated in advance"
+    },
+    {
+     "id": "b",
+     "text": "The name of the specimen"
+    },
+    {
+     "id": "c",
+     "text": "A summary of the results"
+    },
+    {
+     "id": "d",
+     "text": "A list of suppliers"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Numerical pass criteria stated in advance",
+   "distractorRationale": {
+    "a": "Correct: without limits the outcome cannot be judged objectively.",
+    "b": "The specimen is already listed.",
+    "c": "Results do not exist until the test is run.",
+    "d": "Suppliers are not part of a test procedure."
+   },
+   "explanation": "A procedure needs pass criteria in numbers so that the result is decided by the data. Otherwise the interpretation can drift toward what the team hopes to see.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Before a hydraulic proof test of a prototype cylinder, which safety check belongs in the procedure?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Confirm that a relief valve is set below the test limit, guards are in place, and an abort condition is defined"
+    },
+    {
+     "id": "b",
+     "text": "Increase pressure quickly to save time"
+    },
+    {
+     "id": "c",
+     "text": "Remove the guard to watch the test closely"
+    },
+    {
+     "id": "d",
+     "text": "Skip the check if the cylinder has been tested before"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Confirm that a relief valve is set below the test limit, guards are in place, and an abort condition is defined",
+   "distractorRationale": {
+    "a": "Correct: it limits the consequence of a failure and defines when to stop.",
+    "b": "Rapid pressurising increases the hazard.",
+    "c": "Removing a guard exposes people to the hazard.",
+    "d": "Each test needs its own safety check."
+   },
+   "explanation": "Safety checks are part of the procedure. They keep the test within the safe limits of the rig and allow it to be stopped if something unexpected happens.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which verification method suits the requirement 'the nameplate shall show the rated load in characters at least 10 mm high'?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Inspection"
+    },
+    {
+     "id": "b",
+     "text": "Fatigue analysis"
+    },
+    {
+     "id": "c",
+     "text": "Load test"
+    },
+    {
+     "id": "d",
+     "text": "Thermal test"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Inspection",
+   "distractorRationale": {
+    "a": "Correct: the feature can be checked by examining or measuring it.",
+    "b": "Fatigue is unrelated to lettering.",
+    "c": "No loading is needed.",
+    "d": "Temperature is irrelevant."
+   },
+   "explanation": "Inspection verifies features by looking at or measuring them. A printed character height does not need operation of the product.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a verification matrix one requirement has no method listed, and one planned test does not link to any requirement. What should be done?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Add a method for the requirement and either link or remove the unlinked test"
+    },
+    {
+     "id": "b",
+     "text": "Leave both as they are"
+    },
+    {
+     "id": "c",
+     "text": "Delete the requirement"
+    },
+    {
+     "id": "d",
+     "text": "Run the unlinked test twice"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Add a method for the requirement and either link or remove the unlinked test",
+   "distractorRationale": {
+    "a": "Correct: each requirement needs verification and each test must serve a purpose.",
+    "b": "The requirement would stay unverified and the test would waste effort.",
+    "c": "Deleting hides a gap.",
+    "d": "Repeating a pointless test does not help."
+   },
+   "explanation": "Two-way mapping avoids unverified requirements and redundant tests. Every requirement is assigned a method and every test traced back to a requirement.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A tolerance of $\\pm0.5$ N m must be verified with a torque wrench of total uncertainty $\\pm0.4$ N m. Under a 4:1 rule, what is the conclusion?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The wrench is not suitable, since TAR is only 1.25"
+    },
+    {
+     "id": "b",
+     "text": "The wrench is suitable because its uncertainty is below the tolerance"
+    },
+    {
+     "id": "c",
+     "text": "The wrench is suitable because torque wrenches are always accurate"
+    },
+    {
+     "id": "d",
+     "text": "The test accuracy ratio is 12.5"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The wrench is not suitable, since TAR is only 1.25",
+   "distractorRationale": {
+    "a": "Correct: $0.5/0.4=1.25<4$.",
+    "b": "Being just below the tolerance is not enough for a 4:1 rule.",
+    "c": "Accuracy depends on the instrument and calibration.",
+    "d": "This inverts the ratio."
+   },
+   "explanation": "The test accuracy ratio compares the tolerance half-width with the instrument uncertainty. A ratio of 1.25 means the instrument's own uncertainty consumes most of the tolerance.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A dimension has a tolerance of $\\pm0.08$ mm and a measuring instrument has an uncertainty of $\\pm0.02$ mm. Compute the test accuracy ratio (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o3"
+   ],
+   "correctValue": 4.0,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "The ratio is $0.08/0.02=4$, which just meets the 4:1 rule of thumb. Any larger instrument uncertainty would fail it.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A torque requirement has a tolerance of $\\pm0.6$ N m. Using a 4:1 test accuracy ratio, what is the largest instrument uncertainty, in N m, that is acceptable?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o3"
+   ],
+   "correctValue": 0.15,
+   "tolerance": 0.005,
+   "unit": "N m",
+   "explanation": "The maximum uncertainty is $0.6/4=0.15$ N m. An instrument with a larger uncertainty cannot resolve the tolerance reliably.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A pressure must be verified to $\\pm0.4$ MPa. A gauge has an accuracy of $\\pm0.5\\%$ of full scale. For a 4:1 test accuracy ratio, what is the largest full-scale range, in MPa, that can be used?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o3"
+   ],
+   "correctValue": 20.0,
+   "tolerance": 0.1,
+   "unit": "MPa",
+   "explanation": "The allowed uncertainty is $0.4/4=0.1$ MPa and $0.005\\times FS=0.1$ gives $FS=20$ MPa. A larger range would have too large an uncertainty.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Write a test procedure for verifying that a hand-operated jack lifts a 500 kg load through 0.2 m with no permanent deformation. Include the setup, the measurements, a numerical pass criterion and the safety checks.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o1"
+   ],
+   "markingGuide": [
+    "Setup: jack, test mass or load cell, rigid stable base, dial gauge or ruler for lift height, instrument IDs and calibration status",
+    "Steps in order: inspect, place load, lift 0.2 m, hold, lower, repeat for stated number of trials",
+    "Measurements: load, lift height, permanent deformation, with units and resolution",
+    "Pass criterion in numbers (for example lifted 0.2 m, permanent set below a stated limit)",
+    "Safety checks: stable support, load restraint, personnel clear, abort condition",
+    "Records and operator signature"
+   ],
+   "explanation": "A good procedure can be followed by someone else. It has defined limits and safety measures established before anything is loaded.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A requirements list contains: (R1) the frame deflects no more than 1.5 mm at 8 kN, (R2) the mass is at most 14 kg, (R3) the frame has a natural frequency above 40 Hz and (R4) the rated load is labelled. Produce a verification matrix choosing methods and say how you would select the instrument for R1 so that the tolerance can be resolved.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o2",
+    "ug.mce-machine-design-project.prototype-testing.test-plans.o3"
+   ],
+   "markingGuide": [
+    "R1 test (deflection under load); R2 inspection by weighing; R3 analysis at the design stage with test later; R4 inspection",
+    "Pass criteria with numbers for each requirement",
+    "Instrument for R1: load cell with expected 8 kN placed in middle of range, uncertainty small relative to tolerance",
+    "Test accuracy ratio of 4:1 or better for deflection gauge relative to the tolerance",
+    "Notes resolution and calibration status",
+    "Each requirement mapped and each test traced"
+   ],
+   "explanation": "Each requirement is assigned a suitable method and a numerical pass criterion. For R1 the instrument must resolve the deflection tolerance with a margin and have a range that matches the expected load.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,397 @@
+{
+ "lessonTitle": "Practical Columns: Johnson, Secant and Section Choice",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A scissor-lift leg and a forklift mast are strong, stocky steel columns that never quite fail where Euler's ideal formula says they should. Real columns are short enough to yield before they buckle, and are never perfectly straight or perfectly centred. This unit gives the two practical corrections used in design."
+  },
+  {
+   "type": "text",
+   "markdown": "Euler's formula $\\sigma_{cr}=\\pi^2E/\\lambda^2$ (with slenderness ratio $\\lambda=L_e/r$, effective length $L_e$ in mm, radius of gyration $r=\\sqrt{I/A}$ in mm) is accurate only for long columns. For short and intermediate columns the Euler stress would exceed the yield strength $S_y$, which is physically impossible, and test data fall well below the Euler curve. **Johnson's parabola** is an empirical-but-standard curve that joins the Euler hyperbola smoothly at a transition slenderness $\\lambda_c$ and approaches $S_y$ as $\\lambda\\to0$. Assumptions: centrally loaded, elastic-plastic steel-like behaviour, representative (not code) values."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Johnson parabola and transition slenderness",
+   "text": "For $\\lambda<\\lambda_c$ (short and intermediate columns) the critical stress is $\\sigma_{cr}=S_y\\left[1-\\dfrac{S_y\\lambda^2}{4\\pi^2E}\\right]$. For $\\lambda\\ge\\lambda_c$, use Euler. The two curves meet, with equal slope, at $\\lambda_c=\\pi\\sqrt{2E/S_y}$, where $\\sigma_{cr}=S_y/2$."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_{cr}=S_y\\left[1-\\frac{S_y\\lambda^2}{4\\pi^2E}\\right]\\ (\\lambda<\\lambda_c),\\qquad \\lambda_c=\\pi\\sqrt{\\frac{2E}{S_y}}",
+   "caption": "Johnson parabola and its transition with Euler's curve"
+  },
+  {
+   "type": "worked_example",
+   "title": "Johnson column of structural steel",
+   "prompt": "A solid round steel column, $d=40$ mm, length $L=0.9$ m, is pinned at both ends. Typical steel: $E=200$ GPa, $S_y=250$ MPa. Find the critical load.",
+   "steps": [
+    {
+     "text": "Slenderness ratio: $r=d/4=10$ mm and $K=1$.",
+     "latex": "\\lambda=\\frac{L_e}{r}=\\frac{900}{10}=90"
+    },
+    {
+     "text": "Transition slenderness.",
+     "latex": "\\lambda_c=\\pi\\sqrt{\\frac{2(200000)}{250}}=125.7"
+    },
+    {
+     "text": "Since $90<125.7$ the column is intermediate: use Johnson.",
+     "latex": "\\sigma_{cr}=250\\left[1-\\frac{250(90)^2}{4\\pi^2(200000)}\\right]=185.9\\ \\text{MPa}"
+    },
+    {
+     "text": "Multiply by the area $A=\\pi d^2/4=1256.6$ mm$^2$.",
+     "latex": "P_{cr}=\\sigma_{cr}A=233.6\\ \\text{kN}"
+    },
+    {
+     "text": "Euler would have given $\\pi^2E/\\lambda^2=244$ MPa, an over-estimate of 31%."
+    }
+   ],
+   "answer": "$\\sigma_{cr}\\approx186$ MPa and $P_{cr}\\approx234$ kN (Johnson); Euler overestimates."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Slenderness range",
+    "Column type",
+    "Formula",
+    "Governing behaviour"
+   ],
+   "rows": [
+    [
+     "$\\lambda<\\lambda_c$",
+     "Short and intermediate",
+     "Johnson parabola (or squash for very short)",
+     "Inelastic buckling and yielding"
+    ],
+    [
+     "$\\lambda\\ge\\lambda_c$",
+     "Long",
+     "Euler, $\\pi^2E/\\lambda^2$",
+     "Elastic instability"
+    ],
+    [
+     "Any, with eccentric load",
+     "Practical",
+     "Secant formula",
+     "Bending plus compression, non-linear in $P$"
+    ]
+   ],
+   "caption": "Which column formula to use"
+  },
+  {
+   "type": "text",
+   "markdown": "**Eccentric loads.** If the load $P$ acts at an eccentricity $e$ (mm) from the centroid, the column bends from the start and the lateral deflection adds to the moment arm ($M=P(e+v)$). The maximum compressive stress at the extreme fibre, a distance $c$ from the neutral axis, is given by the **secant formula** for a pinned-pinned column:"
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_{max}=\\frac{P}{A}\\left[1+\\frac{ec}{r^2}\\sec\\!\\left(\\frac{L_e}{2r}\\sqrt{\\frac{P}{EA}}\\right)\\right]",
+   "caption": "Secant formula; the argument of the secant is in radians. \\sigma_{max} is not proportional to P"
+  },
+  {
+   "type": "worked_example",
+   "title": "Maximum stress in an eccentrically loaded column",
+   "prompt": "A solid round pinned-pinned steel column of diameter 50 mm and length 1.0 m carries $P=50$ kN at an eccentricity $e=5$ mm. Take $E=200$ GPa and $S_y=250$ MPa. Find $\\sigma_{max}$ and the factor of safety against yield.",
+   "steps": [
+    {
+     "text": "Section properties: $A=1963.5$ mm$^2$, $r=d/4=12.50$ mm, $c=25$ mm.",
+     "latex": "\\frac{ec}{r^2}=\\frac{5(25)}{12.50^2}=0.800"
+    },
+    {
+     "text": "Secant argument (radians).",
+     "latex": "\\frac{L_e}{2r}\\sqrt{\\frac{P}{EA}}=\\frac{1000}{2(12.50)}\\sqrt{\\frac{50000}{200000\\times1963.5}}=0.4514"
+    },
+    {
+     "text": "Secant and bracket.",
+     "latex": "\\sec(0.4514)=1.1113,\\quad 1+0.800(1.1113)=1.8890"
+    },
+    {
+     "text": "Maximum stress, with $P/A=25.46$ MPa.",
+     "latex": "\\sigma_{max}=25.46\\times1.8890=48.1\\ \\text{MPa}"
+    },
+    {
+     "text": "Factor of safety against first yield.",
+     "latex": "n=\\frac{250}{48.1}=5.20"
+    }
+   ],
+   "answer": "$\\sigma_{max}\\approx48.1$ MPa, $n\\approx5.20$ (the eccentricity nearly doubles the stress)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a section for a given load and factor of safety",
+   "prompt": "A pinned-pinned steel strut, length 1.8 m, must carry $P=60$ kN with a factor of safety $n=3.0$ against Euler buckling ($E=200$ GPa). Choose a solid round bar diameter from 40, 45, 50, 55 mm.",
+   "steps": [
+    {
+     "text": "Required critical load.",
+     "latex": "P_{cr}=nP=3.0\\times60=180\\ \\text{kN}"
+    },
+    {
+     "text": "Required second moment of area from Euler.",
+     "latex": "I_{req}=\\frac{P_{cr}L^2}{\\pi^2E}=\\frac{180000\\times1800^2}{\\pi^2(200000)}=295453\\ \\text{mm}^4"
+    },
+    {
+     "text": "Solve for the diameter: $d=\\left(64I/\\pi\\right)^{1/4}=49.5$ mm, so the next standard size up is 50 mm.",
+     "latex": "I_{50}=\\frac{\\pi(50)^4}{64}=306796\\ \\text{mm}^4"
+    },
+    {
+     "text": "Check with the 50 mm bar: $P_{cr}=\\pi^2EI/L^2=186.9$ kN, so the achieved $n=3.12$. Slenderness $\\lambda=1800/12.5=144$ exceeds the Euler limit of 125.7 (for $S_y=250$ MPa), so Euler was the right formula."
+    }
+   ],
+   "answer": "Use the 50 mm bar: $P_{cr}\\approx187$ kN, $n\\approx3.12$."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Compute $\\lambda=L_e/r$ and compare with $\\lambda_c=\\pi\\sqrt{2E/S_y}$.",
+    "Use Euler above $\\lambda_c$ and Johnson below it.",
+    "For eccentric loads use the secant formula and compare $\\sigma_{max}$ with $S_y$.",
+    "For design, apply $P_{cr}=nP$, then size the section and re-check the slenderness regime."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Check the regime after sizing",
+   "text": "If you size a column with Euler and the resulting $\\lambda$ is below $\\lambda_c$, the Euler answer is wrong. Re-size with Johnson instead."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Non-linearity of the secant formula",
+   "text": "Because the deflection grows faster than $P$, $\\sigma_{max}$ rises more than proportionally with load. You cannot find the stress at $2P$ by doubling the stress at $P$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Johnson's parabola $\\sigma_{cr}=S_y[1-S_y\\lambda^2/(4\\pi^2E)]$ applies for $\\lambda<\\lambda_c=\\pi\\sqrt{2E/S_y}$; Euler applies above.",
+    "The secant formula gives $\\sigma_{max}$ for an eccentric load and is non-linear in $P$.",
+    "Design by choosing a section so that $P_{cr}\\ge nP$, then checking the slenderness regime used.",
+    "All values used here are typical representative properties, not code data."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A steel column ($E=200$ GPa, $S_y=350$ MPa, typical) has $\\lambda=70$. The transition slenderness $\\lambda_c=\\pi\\sqrt{2E/S_y}$ is about 106. Which formula gives its critical stress?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Johnson's parabola, because $\\lambda<\\lambda_c$"
+    },
+    {
+     "id": "b",
+     "text": "Euler's formula, because $\\lambda<\\lambda_c$"
+    },
+    {
+     "id": "c",
+     "text": "Johnson's parabola, because $\\lambda>\\lambda_c$"
+    },
+    {
+     "id": "d",
+     "text": "Euler's formula, because steel is elastic"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Johnson's parabola, because $\\lambda<\\lambda_c$",
+   "distractorRationale": {
+    "a": "Correct: $70<106$ so the column is intermediate and Johnson applies.",
+    "b": "Euler is for $\\lambda\\ge\\lambda_c$; below it Euler overestimates the capacity.",
+    "c": "$\\lambda$ is below, not above, $\\lambda_c$.",
+    "d": "Steel is elastic only below yield; Euler's stress here would exceed $S_y$."
+   },
+   "explanation": "The transition slenderness separates elastic from inelastic buckling. At $\\lambda=70$, Euler would give $\\pi^2E/\\lambda^2=403$ MPa, above the yield strength of 350 MPa, which is impossible, so Johnson is correct.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel column has $E=200$ GPa and $S_y=350$ MPa (typical) and slenderness ratio $\\lambda=80$. Use the Johnson parabola to find the critical stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o1"
+   ],
+   "correctValue": 250.70524,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "$\\sigma_{cr}=350[1-350(80)^2/(4\\pi^2\\times200000)]=350[1-0.2837]=250.7$ MPa. Since $80<\\lambda_c=106.2$, Johnson is the valid choice.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Calculate the transition slenderness ratio $\\lambda_c=\\pi\\sqrt{2E/S_y}$ for a steel with $E=200$ GPa and $S_y=350$ MPa (typical). Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o1"
+   ],
+   "correctValue": 106.205216,
+   "tolerance": 0.3,
+   "unit": "dimensionless",
+   "explanation": "$\\lambda_c=\\pi\\sqrt{2\\times200000/350}=\\pi\\sqrt{1142.9}=106.2$. Here Euler and Johnson both give $\\sigma_{cr}=S_y/2=175$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A pinned-pinned square steel column, 60 mm by 60 mm, length 2.0 m, carries $P=120$ kN at an eccentricity $e=8$ mm from the centroid, in the plane of one face. Take $E=200$ GPa. Use the secant formula (with $c=30$ mm and $r=17.32$ mm) to find the maximum compressive stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o2"
+   ],
+   "correctValue": 69.622091,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "$P/A=120000/3600=33.33$ MPa, $ec/r^2=8(30)/300=0.8$ and the secant argument is $\\frac{2000}{2(17.32)}\\sqrt{120000/(200000\\times3600)}=0.7454$ rad, so $\\sec=1.3608$. Then $\\sigma_{max}=33.33[1+0.8(1.3608)]=69.6$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why can the maximum stress in an eccentrically loaded column not be found by simple superposition of axial stress $P/A$ and bending stress $Pec/I$?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Axial and bending stresses are always at right angles to each other"
+    },
+    {
+     "id": "b",
+     "text": "The bending deflection adds to the eccentricity, so the moment grows faster than linearly with $P$"
+    },
+    {
+     "id": "c",
+     "text": "The eccentric load produces no bending in a pinned column"
+    },
+    {
+     "id": "d",
+     "text": "The secant formula applies only to tensile loads"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The bending deflection adds to the eccentricity, so the moment grows faster than linearly with $P$",
+   "distractorRationale": {
+    "a": "Both are normal stresses along the axis and do add; the issue is the amplified moment.",
+    "b": "Correct: $M=P(e+v)$ and $v$ itself increases with $P$, giving non-linear behaviour.",
+    "c": "An eccentric load produces a moment $Pe$ at once.",
+    "d": "The secant formula is derived for compression."
+   },
+   "explanation": "A simple superposition uses only the initial moment $Pe$. The column deflects laterally by $v$, adding a further moment $Pv$, and $v$ itself depends on $P$, so the true $\\sigma_{max}$ is larger and grows faster than proportionally.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A pinned-pinned steel strut ($E=200$ GPa) of length 1.6 m must carry 45 kN with a factor of safety of 3.0 against Euler buckling. What minimum second moment of area, in mm$^4$, is required?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o3"
+   ],
+   "correctValue": 175083.005334,
+   "tolerance": 2000,
+   "unit": "mm^4",
+   "explanation": "The critical load must be $3\\times45=135$ kN. From $P_{cr}=\\pi^2EI/L^2$: $I=135000(1600)^2/(\\pi^2\\times200000)=175083$ mm$^4$, which corresponds to a round bar of diameter 43.5 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why Euler's formula over-predicts the strength of short and intermediate columns, and describe how the Johnson parabola corrects it. State the transition slenderness ratio and the critical stress at the transition.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o1"
+   ],
+   "markingGuide": [
+    "Euler assumes elastic behaviour; the formula $\\pi^2E/\\lambda^2$ rises without limit as $\\lambda\\to0$ and exceeds $S_y$ for small $\\lambda$, which is impossible.",
+    "Real short columns fail by yielding or inelastic buckling and, with imperfections, below the Euler curve.",
+    "Johnson parabola $\\sigma_{cr}=S_y[1-S_y\\lambda^2/(4\\pi^2E)]$ tends to $S_y$ at $\\lambda=0$.",
+    "It meets the Euler hyperbola tangentially at $\\lambda_c=\\pi\\sqrt{2E/S_y}$ where $\\sigma_{cr}=S_y/2$.",
+    "Below $\\lambda_c$ use Johnson; above it use Euler."
+   ],
+   "explanation": "The Johnson curve bridges the region where the elastic Euler theory fails. Choosing the transition at $S_y/2$ makes the two curves meet with the same slope, so the design curve has no kink.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A pinned-pinned steel strut ($E=200$ GPa, $S_y=350$ MPa, typical) of length 1.6 m must support 45 kN with a factor of safety of 3.0 against Euler buckling. Which is the smallest solid round bar diameter from 40, 45, 50 and 55 mm that suffices? (Required $I\\approx1.75\\times10^5$ mm$^4$; the Euler limit $\\lambda_c$ is about 106.)",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "40 mm"
+    },
+    {
+     "id": "b",
+     "text": "45 mm"
+    },
+    {
+     "id": "c",
+     "text": "50 mm"
+    },
+    {
+     "id": "d",
+     "text": "55 mm"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "45 mm",
+   "distractorRationale": {
+    "a": "$I(40)=1.26\\times10^5$ mm$^4$ is below the requirement.",
+    "b": "Correct: $I(45)=\\pi45^4/64=2.01\\times10^5$ mm$^4$ exceeds the requirement, and $\\lambda=1600/11.25=142>106$ confirms Euler applies.",
+    "c": "Adequate but not the smallest that works.",
+    "d": "Adequate but heavier than necessary."
+   },
+   "explanation": "The required $I$ is $1.75\\times10^5$ mm$^4$; the 40 mm bar has $1.26e+05$ mm$^4$ and fails, while the 45 mm bar has $2.01e+05$ mm$^4$ and passes. The slenderness of 142 for the 45 mm bar is above 106, so the Euler-based sizing is consistent.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A pinned-pinned solid round steel column of diameter 40 mm and length 1.2 m carries 40 kN at an eccentricity of 4 mm. Take $E=200$ GPa and $S_y=350$ MPa. Using the secant formula, find the maximum stress and the factor of safety against yield, and state whether the column also needs a buckling check.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o2",
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o3"
+   ],
+   "markingGuide": [
+    "$A=1256.6$ mm$^2$, $r=10$ mm, $c=20$ mm, $P/A=31.83$ MPa.",
+    "$ec/r^2=4(20)/100=0.8$.",
+    "Secant argument $=\\frac{1200}{20}\\sqrt{40000/(200000\\times1256.6)}=0.7569$ rad, $\\sec=1.3756$.",
+    "$\\sigma_{max}=31.83[1+0.8(1.3756)]=66.9$ MPa.",
+    "Factor of safety against yield $=350/66.9=5.23$.",
+    "The secant formula already includes buckling amplification; the concentric Euler load is far larger, $\\pi^2EI/L^2=172$ kN, but a separate check of the concentric load against Johnson/Euler is still good practice."
+   ],
+   "explanation": "The eccentricity of 4 mm adds a bending stress comparable to the axial stress, so the maximum stress is roughly twice P/A. The secant formula includes the second-order effect, so no further amplification is applied.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: in the secant formula for an eccentrically loaded column, doubling the load $P$ more than doubles the maximum stress $\\sigma_{max}$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.column-buckling.practical-columns.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Both the leading factor $P/A$ and the secant term increase with $P$, because the deflection grows as the load approaches the Euler load. The product therefore grows faster than linearly.",
+   "board": "internal"
+  }
+ ]
+}

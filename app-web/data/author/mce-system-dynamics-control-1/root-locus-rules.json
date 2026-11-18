@@ -1,0 +1,407 @@
+{
+ "lessonTitle": "Root Locus Construction: Rules for Sketching the Locus",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A control engineer handed a new three-stage actuator model does not run a simulation sweep for every gain value. With about a minute of pencil work she can mark where each closed-loop pole starts, which way it heads, where two real poles collide and leave the axis, and where the locus is heading at high gain. The rules for the root locus turn the pole-zero map into a sketch of how the closed-loop poles move with gain."
+  },
+  {
+   "type": "text",
+   "markdown": "Recall that for a unity-feedback loop with open-loop transfer function $KL(s)=K\\dfrac{N(s)}{D(s)}$, with $n$ open-loop poles and $m$ open-loop zeros ($m\\le n$), the closed-loop poles satisfy $1+KL(s)=0$, which can be written as the **angle condition** $\\angle L(s)=\\pm180^\\circ(2k+1)$ and the **magnitude condition** $K=1/|L(s)|$. The locus of the closed-loop poles for $K\\ge0$ has the properties below."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Rule",
+    "Statement",
+    "Use"
+   ],
+   "rows": [
+    [
+     "1. Branches",
+     "$n$ branches start ($K=0$) at the open-loop poles and end ($K\\to\\infty$) at the $m$ open-loop zeros or at infinity",
+     "Count the branches"
+    ],
+    [
+     "2. Real axis",
+     "A point on the real axis is on the locus if the total number of real poles and zeros to its right is odd",
+     "Mark real segments"
+    ],
+    [
+     "3. Symmetry",
+     "The locus is symmetric about the real axis",
+     "Draw only the upper half"
+    ],
+    [
+     "4. Asymptotes",
+     "$n-m$ branches go to infinity along asymptotes at $\\phi_k=\\dfrac{180^\\circ(2k+1)}{n-m}$",
+     "Direction at high gain"
+    ],
+    [
+     "5. Centroid",
+     "The asymptotes meet on the real axis at $\\sigma_a=\\dfrac{\\sum p_i-\\sum z_j}{n-m}$",
+     "Position of asymptotes"
+    ],
+    [
+     "6. Breakaway",
+     "Real-axis points where branches leave or arrive satisfy $\\dfrac{dK}{ds}=0$, with $K=-1/L(s)$",
+     "Where poles leave the axis"
+    ],
+    [
+     "7. Imaginary-axis crossing",
+     "Found from the Routh array or by setting $s=j\\omega$",
+     "Maximum stable gain"
+    ]
+   ],
+   "caption": "Root locus construction rules"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Pole excess",
+   "text": "The number $n-m$ (poles minus zeros) is the **pole excess**. A locus has exactly $n-m$ asymptotes, and for $n-m\\ge2$ the sum of the closed-loop poles stays equal to the sum of the open-loop poles, which is why some branches go left while others go right."
+  },
+  {
+   "type": "math",
+   "latex": "\\phi_k=\\frac{(2k+1)\\,180^\\circ}{n-m},\\quad k=0,1,\\dots,n-m-1,\\qquad \\sigma_a=\\frac{\\sum p_i-\\sum z_j}{n-m}",
+   "caption": "Asymptote angles and centroid (poles $p_i$ and zeros $z_j$ are real numbers or conjugate pairs)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Sketching a three-pole locus",
+   "prompt": "Sketch the root locus of $L(s)=\\dfrac{K}{s(s+2)(s+6)}$ for $K\\ge0$ by finding its real-axis segments, asymptotes, breakaway point and imaginary-axis crossing.",
+   "steps": [
+    {
+     "text": "Poles at $0,-2,-6$ and no zeros, so $n=3$, $m=0$ and three branches start at the poles and go to infinity.",
+     "latex": "n=3,\\quad m=0"
+    },
+    {
+     "text": "Real-axis segments (odd count to the right): between $-2$ and $0$ (one pole to the right) and to the left of $-6$ (three poles to the right).",
+     "latex": "[-2,0]\\ \\text{and}\\ (-\\infty,-6]"
+    },
+    {
+     "text": "Asymptotes: $\\phi=180^\\circ(2k+1)/3=60^\\circ,180^\\circ,300^\\circ$ with centroid $\\sigma_a=(0-2-6)/3=-2.667$.",
+     "latex": "\\phi=\\pm60^\\circ,180^\\circ,\\quad\\sigma_a=-2.667"
+    },
+    {
+     "text": "Breakaway: $K=-s(s+2)(s+6)=-(s^3+8s^2+12s)$, so $dK/ds=-(3s^2+16s+12)=0$ gives $s=(-16\\pm\\sqrt{112})/6=-0.903$ or $-4.430$. Only $-0.903$ lies on the locus (segment $[-2,0]$).",
+     "latex": "s_b=-0.903,\\quad K=|s||s+2||s+6|=5.05"
+    },
+    {
+     "text": "Imaginary-axis crossing: characteristic polynomial $s^3+8s^2+12s+K$; Routh: $8\\times12>K$ so $K<96$, and the auxiliary equation $8s^2+96=0$ gives $\\omega=\\sqrt{12}=3.46$ rad/s.",
+     "latex": "K_{max}=96,\\quad \\omega=3.46\\ \\text{rad/s}"
+    }
+   ],
+   "answer": "Branches from $0$ and $-2$ meet and break away at $-0.903$ ($K=5.05$), then bend up and right along the $\\pm60^\\circ$ asymptotes through $-2.667$, crossing the imaginary axis at $\\pm3.46j$ when $K=96$; the third branch runs left from $-6$ along $180^\\circ$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Zeros change the picture.** Each zero captures one branch and reduces the pole excess by one. A zero on the real axis also changes which real-axis segments are on the locus and moves the centroid to the left (for a left-half-plane zero)."
+  },
+  {
+   "type": "worked_example",
+   "title": "A loop with a zero",
+   "prompt": "Find the asymptotes, real-axis segments and breakaway point for $L(s)=\\dfrac{K(s+1)}{s(s+4)(s+6)}$.",
+   "steps": [
+    {
+     "text": "Here $n=3$, $m=1$, so $n-m=2$ and there are two asymptotes at $\\phi=180^\\circ(2k+1)/2=\\pm90^\\circ$.",
+     "latex": "\\phi=\\pm90^\\circ"
+    },
+    {
+     "text": "Centroid: $\\sigma_a=\\dfrac{(0-4-6)-(-1)}{2}=-4.5$.",
+     "latex": "\\sigma_a=\\frac{-10+1}{2}=-4.5"
+    },
+    {
+     "text": "Real-axis segments: $[-1,0]$ (one pole to the right), $[-6,-4]$ (three poles and zero to the right, an odd count), and nothing in $[-4,-1]$ or left of $-6$ (even counts).",
+     "latex": "[-1,0]\\ \\text{and}\\ [-6,-4]"
+    },
+    {
+     "text": "Breakaway between $-6$ and $-4$: $K=-s(s+4)(s+6)/(s+1)$ and $dK/ds=0$ gives $2s^3+13s^2+20s+24=0$, whose real root is $s=-4.975$, with $K=1.25$.",
+     "latex": "s_b=-4.975,\\quad K=1.25"
+    }
+   ],
+   "answer": "Locus: the branch from $0$ goes to the zero at $-1$; the branches from $-4$ and $-6$ meet and break away at $-4.975$ ($K=1.25$), then follow the vertical asymptotes through $\\sigma=-4.5$."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Mark the open-loop poles ($\\times$) and zeros ($\\circ$) and count $n$ and $m$.",
+    "Shade the real-axis segments with an odd number of poles and zeros to the right.",
+    "Compute the $n-m$ asymptote angles and the centroid.",
+    "Find breakaway and break-in points from $dK/ds=0$ and keep only the roots that lie on the locus.",
+    "Find the imaginary-axis crossing with the Routh array; add the departure angles from complex poles if present.",
+    "Join the pieces smoothly, respecting symmetry about the real axis."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Count poles and zeros to the right of the test point, not to the left, and include only real ones. A root of $dK/ds=0$ that lies on a segment not belonging to the locus (where $K$ would be negative) is not a breakaway point. The asymptote angles depend on $n-m$, not on $n$ alone. Using the wrong sign in the centroid formula (zeros subtract) moves the asymptotes to the wrong place."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "A sketch is enough for design",
+   "text": "The rules give the qualitative shape quickly: where poles go for small and large gain, whether the loop can become unstable, and what compensation would help."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The locus starts at the open-loop poles, ends at the zeros or at infinity along $n-m$ asymptotes, and is symmetric about the real axis.",
+    "Real-axis points are on the locus if an odd number of real poles and zeros lie to their right.",
+    "Asymptote angles are $180^\\circ(2k+1)/(n-m)$ and meet at the centroid $(\\sum p-\\sum z)/(n-m)$.",
+    "Breakaway points satisfy $dK/ds=0$ and must lie on the locus; the imaginary-axis crossing comes from the Routh array."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "An open-loop transfer function is $L(s)=\\dfrac{K}{s(s+3)(s+7)}$. Find the centroid of the asymptotes of the root locus (the real-axis intersection) in 1/s.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o2"
+   ],
+   "correctValue": -3.33,
+   "tolerance": 0.02,
+   "unit": "1/s",
+   "explanation": "With no zeros, $\\sigma_a=(\\sum p_i-\\sum z_j)/(n-m)=(0-3-7)/3=-3.33$. The three asymptotes at $\\pm60^\\circ$ and $180^\\circ$ therefore radiate from $s=-3.33$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A loop has open-loop transfer function $L(s)=\\dfrac{K}{s(s+1)(s+2)(s+5)}$. What are the angles of its asymptotes?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\pm45^\\circ$ and $\\pm135^\\circ$"
+    },
+    {
+     "id": "b",
+     "text": "$\\pm60^\\circ$ and $180^\\circ$"
+    },
+    {
+     "id": "c",
+     "text": "$\\pm90^\\circ$"
+    },
+    {
+     "id": "d",
+     "text": "$0^\\circ$, $90^\\circ$, $180^\\circ$, $270^\\circ$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\pm45^\\circ$ and $\\pm135^\\circ$",
+   "distractorRationale": {
+    "a": "Correct: $n-m=4$, so $\\phi_k=180^\\circ(2k+1)/4=45^\\circ,135^\\circ,225^\\circ,315^\\circ$.",
+    "b": "These are the angles for $n-m=3$, which would apply with only three poles.",
+    "c": "These are the angles for $n-m=2$.",
+    "d": "Asymptote angles are odd multiples of $180^\\circ/(n-m)$, not multiples of $90^\\circ$ starting at zero."
+   },
+   "explanation": "There are four poles and no zeros, so four asymptotes at $\\phi_k=(2k+1)\\,180^\\circ/4$. The centroid is $(0-1-2-5)/4=-2$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Find the breakaway point (the root of $dK/ds=0$ that lies on the locus) for $L(s)=\\dfrac{K}{s(s+2)(s+4)}$. Give $s$ in 1/s.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o3"
+   ],
+   "correctValue": -0.845,
+   "tolerance": 0.01,
+   "unit": "1/s",
+   "explanation": "Setting $K=-s(s+2)(s+4)=-(s^3+6s^2+8s)$ and $dK/ds=0$ gives $3s^2+12s+8=0$, so $s=(-12\\pm\\sqrt{48})/6=-0.845$ or $-3.155$. Only $-0.845$ lies on the locus segment $[-2,0]$; $-3.155$ is in $[-4,-2]$ which has an even count of poles to its right and is not part of the locus.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An open-loop transfer function has poles at $0,-2,-5$ and a zero at $-3$. On which real-axis intervals does the root locus lie?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$[-2,0]$ and $[-5,-3]$"
+    },
+    {
+     "id": "b",
+     "text": "$[-3,-2]$ and $(-\\infty,-5]$"
+    },
+    {
+     "id": "c",
+     "text": "$[-2,0]$ and $(-\\infty,-5]$"
+    },
+    {
+     "id": "d",
+     "text": "$[-5,-3]$ only"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$[-2,0]$ and $[-5,-3]$",
+   "distractorRationale": {
+    "a": "Correct: counting poles and zeros to the right gives odd counts (1 and 3) on $[-2,0]$ and $[-5,-3]$.",
+    "b": "These intervals have even counts (2 and 4), so they are not on the locus.",
+    "c": "Left of $-5$ the count is 4, which is even.",
+    "d": "The interval $[-2,0]$ also has an odd count (one pole at 0 to its right) and belongs to the locus."
+   },
+   "explanation": "The count to the right of a test point is: in $(-2,0)$ one pole (odd); in $(-3,-2)$ two poles (even); in $(-5,-3)$ two poles and one zero, three in total (odd); left of $-5$ four (even). The locus therefore occupies $[-2,0]$ and $[-5,-3]$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An open-loop transfer function is $L(s)=\\dfrac{K(s+2)}{s(s+5)(s+9)}$. Find the centroid of the asymptotes in 1/s.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o2"
+   ],
+   "correctValue": -6.0,
+   "tolerance": 0.05,
+   "unit": "1/s",
+   "explanation": "There are $n=3$ poles and $m=1$ zero, so $n-m=2$ and the asymptote angles are $\\pm90^\\circ$. The centroid is $\\sigma_a=(0-5-9-(-2))/2=-12/2=-6$. Note that the zero is subtracted.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "For $L(s)=\\dfrac{K}{s(s+1)(s+3)}$ the equation $dK/ds=0$ has roots $s=-0.451$ and $s=-2.215$. Which statement about the breakaway point is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Only $-0.451$ is a breakaway point because it lies on the segment $[-1,0]$ of the locus"
+    },
+    {
+     "id": "b",
+     "text": "Only $-2.215$ is a breakaway point because it is the larger magnitude"
+    },
+    {
+     "id": "c",
+     "text": "Both are breakaway points since both are roots"
+    },
+    {
+     "id": "d",
+     "text": "Neither is a breakaway point because breakaway points occur only on the imaginary axis"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Only $-0.451$ is a breakaway point because it lies on the segment $[-1,0]$ of the locus",
+   "distractorRationale": {
+    "a": "Correct: the locus on the real axis occupies $[-1,0]$ and $(-\\infty,-3]$; $-2.215$ lies in $[-3,-1]$, which is not on the locus.",
+    "b": "The root at $-2.215$ falls where an even number of poles lie to its right, so $K$ would be negative there.",
+    "c": "A root of $dK/ds=0$ is a candidate only; it must be on the locus (with $K>0$).",
+    "d": "Breakaway points are on the real axis, where branches leave it."
+   },
+   "explanation": "Roots of $dK/ds=0$ must be checked against the real-axis rule. For poles at $0,-1,-3$ the locus lies on $[-1,0]$ and left of $-3$, so only $-0.451$ qualifies, and branches from $0$ and $-1$ leave the real axis there.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A point on the real axis lies on the root locus (for $K>0$) if the number of real open-loop poles and zeros to its right is even.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The angle condition requires an odd number of real poles and zeros to the right, because each contributes $180^\\circ$ and the total must be an odd multiple of $180^\\circ$. An even count would give $0^\\circ$ or $360^\\circ$, which belongs to negative gain.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A loop has three open-loop poles and no zeros. How many root-locus branches are there, and where do they end as $K\\to\\infty$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Three branches, all going to infinity along asymptotes"
+    },
+    {
+     "id": "b",
+     "text": "One branch going to infinity and two ending at zeros"
+    },
+    {
+     "id": "c",
+     "text": "Three branches, ending at the three poles"
+    },
+    {
+     "id": "d",
+     "text": "Six branches, with half ending at the origin"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Three branches, all going to infinity along asymptotes",
+   "distractorRationale": {
+    "a": "Correct: $n=3$ branches start at the poles and, with $m=0$ finite zeros, all three go to infinity.",
+    "b": "With no zeros there is nothing for a branch to end on.",
+    "c": "The poles are where the branches start ($K=0$), not where they end.",
+    "d": "The number of branches equals the number of poles, $n=3$."
+   },
+   "explanation": "The locus has $n$ branches. A branch ends at a finite zero or goes to infinity; with $m=0$ zeros all three branches go to infinity along $n-m=3$ asymptotes at $\\pm60^\\circ$ and $180^\\circ$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Sketch the root locus of $L(s)=\\dfrac{K}{s(s+1)(s+4)}$ by stating the real-axis segments, the asymptote angles and centroid, the breakaway point and the imaginary-axis crossing, and give the maximum stable gain.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o1",
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o2",
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o3"
+   ],
+   "markingGuide": [
+    "Real-axis segments $[-1,0]$ and $(-\\infty,-4]$",
+    "Asymptotes at $60^\\circ$, $180^\\circ$, $300^\\circ$ with centroid $-5/3=-1.667$",
+    "Breakaway from $3s^2+10s+4=0$, giving $s=-0.465$ (on the locus) and rejecting $-2.869$",
+    "Routh on $s^3+5s^2+4s+K$ gives $K<20$ and crossing at $\\omega=2$ rad/s",
+    "Describes the shape: branches leave at $-0.465$, bend into the right half-plane and cross at $\\pm2j$"
+   ],
+   "explanation": "The three poles give three branches. The branches from $0$ and $-1$ meet at the breakaway point, leave the axis, and head to the $\\pm60^\\circ$ asymptotes, crossing $\\pm2j$ at $K=20$ because $5\\times4=20$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how adding a zero at $s=-2$ to $L(s)=\\dfrac{K}{s(s+1)(s+4)}$ changes the number and direction of the asymptotes and the centroid, and what this implies for stability at high gain.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules.o2"
+   ],
+   "markingGuide": [
+    "$n-m$ changes from 3 to 2, so two asymptotes",
+    "Angles change from $60^\\circ,180^\\circ,300^\\circ$ to $\\pm90^\\circ$",
+    "Centroid moves from $-1.667$ to $(-5+2)/2=-1.5$",
+    "With $\\pm90^\\circ$ asymptotes the branches go parallel to the imaginary axis in the left half-plane for large $K$ (centroid $-1.5<0$), so the loop is stable at high gain",
+    "One branch ends at the zero at $-2$"
+   ],
+   "explanation": "The pole excess falls to 2, so the high-gain branches run vertically at $\\sigma=-1.5$ rather than bending into the right half-plane. This is why a left-half-plane zero stabilises the loop: stable for all $K$ here, as $s^3+5s^2+(4+K)s+2K$ satisfies $5(4+K)>2K$.",
+   "board": "internal"
+  }
+ ]
+}

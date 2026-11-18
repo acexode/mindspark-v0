@@ -1,0 +1,409 @@
+{
+ "lessonTitle": "Forward Kinematics: End-Effector Position from Joint Values",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A pick-and-place arm on a packaging line must drop a sachet onto a moving belt within a millimetre, yet the controller only knows the angles read from its joint encoders. Forward kinematics is the calculation that turns those joint angles into the position of the gripper in the room."
+  },
+  {
+   "type": "text",
+   "markdown": "**Forward kinematics (FK)** maps joint variables (angles of revolute joints in radians or degrees, extensions of prismatic joints in metres) to the position and orientation of the end effector in the base frame. FK is always a unique, direct calculation; the reverse problem, inverse kinematics, may have zero, one or several solutions and is treated in the next unit."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Planar two-link arm",
+   "text": "Two rigid links of lengths $l_1$ and $l_2$ (metres) connect by revolute joints. Joint angle $\\theta_1$ is measured from the base x-axis, and $\\theta_2$ is the relative angle of link 2 with respect to link 1. All motion lies in one plane."
+  },
+  {
+   "type": "math",
+   "latex": "x=l_1\\cos\\theta_1+l_2\\cos(\\theta_1+\\theta_2),\\qquad y=l_1\\sin\\theta_1+l_2\\sin(\\theta_1+\\theta_2)",
+   "caption": "Forward kinematics of the two-link planar arm"
+  },
+  {
+   "type": "text",
+   "markdown": "Link 2 points at absolute angle $\\theta_1+\\theta_2$ because its angle is relative to link 1; the tip is the vector sum of the two link vectors. Two checks help: with $\\theta_2=0$ the arm is straight and the reach is $l_1+l_2$; with $\\theta_2=180^\\circ$ it folds back to $|l_1-l_2|$. The reachable region is therefore an annulus."
+  },
+  {
+   "type": "worked_example",
+   "title": "Position of a two-link arm",
+   "prompt": "A planar arm has $l_1=0.50$ m, $l_2=0.30$ m, $\\theta_1=30^\\circ$ and $\\theta_2=45^\\circ$. Find the tip position.",
+   "steps": [
+    {
+     "text": "The absolute angle of link 2 is $\\theta_1+\\theta_2=75^\\circ$.",
+     "latex": "\\theta_1+\\theta_2=75^\\circ"
+    },
+    {
+     "text": "Compute the x coordinate.",
+     "latex": "x=0.50\\cos30^\\circ+0.30\\cos75^\\circ=0.4330+0.0776=0.5107\\ \\text{m}"
+    },
+    {
+     "text": "Compute the y coordinate.",
+     "latex": "y=0.50\\sin30^\\circ+0.30\\sin75^\\circ=0.2500+0.2898=0.5398\\ \\text{m}"
+    },
+    {
+     "text": "Check: the distance from the base is $\\sqrt{x^2+y^2}$, which must lie between 0.20 m and 0.80 m.",
+     "latex": "\\sqrt{0.5107^2+0.5398^2}=0.743\\ \\text{m}"
+    }
+   ],
+   "answer": "The tip is at (x, y) = (0.511, 0.540) m, a distance of 0.743 m from the base, inside the reachable annulus."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Homogeneous transformation",
+   "text": "A $4\\times4$ matrix combines a rotation $R$ ($3\\times3$) and a translation $\\mathbf{p}$ (metres), so a point is moved by one matrix multiplication using coordinates $(x,y,z,1)$. The bottom row is $[0\\ 0\\ 0\\ 1]$."
+  },
+  {
+   "type": "math",
+   "latex": "T=\\begin{bmatrix}R&\\mathbf{p}\\\\ \\mathbf{0}^{T}&1\\end{bmatrix},\\qquad R_z(\\theta)=\\begin{bmatrix}\\cos\\theta&-\\sin\\theta&0\\\\ \\sin\\theta&\\cos\\theta&0\\\\ 0&0&1\\end{bmatrix}",
+   "caption": "Homogeneous transform and rotation about the z-axis"
+  },
+  {
+   "type": "text",
+   "markdown": "Transforms chain by multiplication: if $T_{01}$ gives frame 1 in frame 0 and $T_{12}$ gives frame 2 in frame 1, then $T_{02}=T_{01}T_{12}$. The order matters because rotations and translations do not commute. The two-link arm is $T=R_z(\\theta_1)\\,\\text{Trans}(l_1,0,0)\\,R_z(\\theta_2)\\,\\text{Trans}(l_2,0,0)$, and its last column reproduces the FK equations."
+  },
+  {
+   "type": "worked_example",
+   "title": "Moving a point with a homogeneous transform",
+   "prompt": "Frame B is rotated $90^\\circ$ about the z-axis and its origin sits at $(2,1,0)$ m in the base frame. Find the base-frame coordinates of the point $(1,0,0)$ m given in frame B.",
+   "steps": [
+    {
+     "text": "Write the transform: $\\cos90^\\circ=0$, $\\sin90^\\circ=1$.",
+     "latex": "T=\\begin{bmatrix}0&-1&0&2\\\\1&0&0&1\\\\0&0&1&0\\\\0&0&0&1\\end{bmatrix}"
+    },
+    {
+     "text": "Multiply by the homogeneous point $(1,0,0,1)$.",
+     "latex": "T\\begin{bmatrix}1\\\\0\\\\0\\\\1\\end{bmatrix}=\\begin{bmatrix}0+0+0+2\\\\1+0+0+1\\\\0\\\\1\\end{bmatrix}"
+    },
+    {
+     "text": "Read off the first three entries.",
+     "latex": "(x,y,z)=(2,2,0)\\ \\text{m}"
+    }
+   ],
+   "answer": "The point lies at (2, 2, 0) m in the base frame: rotation turns (1,0,0) into (0,1,0) and the translation adds (2,1,0)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Arm type",
+    "Joint sequence",
+    "Workspace shape",
+    "Typical use"
+   ],
+   "rows": [
+    [
+     "Cartesian (gantry)",
+     "P P P",
+     "Cuboid",
+     "Pick and place, 3D printers"
+    ],
+    [
+     "Cylindrical",
+     "R P P",
+     "Cylindrical shell",
+     "Machine loading"
+    ],
+    [
+     "Spherical",
+     "R R P",
+     "Spherical shell",
+     "Older general-purpose arms"
+    ],
+    [
+     "SCARA",
+     "R R P (vertical axes)",
+     "Flat annular region plus height",
+     "Assembly in a plane"
+    ],
+    [
+     "Articulated",
+     "R R R (and wrist)",
+     "Roughly spherical volume",
+     "Welding, painting, general use"
+    ]
+   ],
+   "caption": "Common serial manipulator types (R revolute, P prismatic)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Degrees of freedom (DOF).** A serial manipulator has as many DOF as joints, if every joint has one DOF and there are no redundant constraints. A free rigid body in space has 6 DOF (3 translations and 3 rotations), so a general arm needs at least 6 joints to place the tool at any position and orientation. Planar motion needs only 3."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Order and reference",
+   "text": "Always state which frame a coordinate is expressed in, and check the order of multiplication. Reversing the order of two transforms usually gives a different pose."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Forward kinematics gives the tool pose directly from joint values: $x=l_1\\cos\\theta_1+l_2\\cos(\\theta_1+\\theta_2)$ for a planar two-link arm.",
+    "A homogeneous transform combines rotation and translation in one $4\\times4$ matrix, and transforms chain by multiplication in order.",
+    "Serial arm DOF equals the number of single-DOF joints; 6 are needed for arbitrary pose in space.",
+    "Joint types (R or P) determine the workspace shape, such as cuboid, cylinder or sphere."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A serial manipulator has six revolute joints. How many degrees of freedom does it have?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "12"
+    },
+    {
+     "id": "b",
+     "text": "3"
+    },
+    {
+     "id": "c",
+     "text": "5"
+    },
+    {
+     "id": "d",
+     "text": "6"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "6",
+   "distractorRationale": {
+    "a": "This counts both the angle and its velocity, which are not separate DOF.",
+    "b": "This is the DOF of planar motion, not of six joints.",
+    "c": "One joint has been dropped from the count.",
+    "d": "Correct: one DOF per joint."
+   },
+   "explanation": "In a serial chain every single-DOF joint contributes one DOF, so six revolute joints give six DOF. That is the minimum needed for arbitrary position and orientation of the tool in space.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which arm type has a cuboid (box-shaped) workspace?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Articulated arm with three revolute joints"
+    },
+    {
+     "id": "b",
+     "text": "Cartesian arm with three prismatic joints"
+    },
+    {
+     "id": "c",
+     "text": "Cylindrical arm with one revolute and two prismatic joints"
+    },
+    {
+     "id": "d",
+     "text": "SCARA arm with two vertical revolute joints"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Cartesian arm with three prismatic joints",
+   "distractorRationale": {
+    "a": "Revolute joints give curved, roughly spherical boundaries.",
+    "b": "Correct: three orthogonal sliding axes give a box.",
+    "c": "One revolute joint sweeps a cylinder.",
+    "d": "Its reach region is a flat annulus swept in height."
+   },
+   "explanation": "Three orthogonal prismatic joints sweep a rectangular volume, so the workspace is a cuboid. Revolute joints give curved boundaries.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A two-link arm has $l_1=0.60$ m and $l_2=0.40$ m. Which target point (relative to the base, in metres) can the tip not reach?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "(0.50, 0.30)"
+    },
+    {
+     "id": "b",
+     "text": "(0.10, 0.05)"
+    },
+    {
+     "id": "c",
+     "text": "(0.90, 0.10)"
+    },
+    {
+     "id": "d",
+     "text": "(-0.30, 0.60)"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "(0.10, 0.05)",
+   "distractorRationale": {
+    "a": "Distance 0.583 m is inside the annulus.",
+    "b": "Correct: distance 0.112 m is below the minimum reach of 0.20 m.",
+    "c": "Distance 0.906 m is inside the annulus.",
+    "d": "Distance 0.671 m is inside the annulus."
+   },
+   "explanation": "The reachable distances lie between $|l_1-l_2|=0.20$ m and $l_1+l_2=1.00$ m. The point (0.10, 0.05) is only 0.112 m from the base, inside the unreachable inner hole.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Frame 1 is described relative to frame 0 by $T_{01}$, and frame 2 relative to frame 1 by $T_{12}$. How is frame 2 described relative to frame 0?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$T_{12}T_{01}$"
+    },
+    {
+     "id": "b",
+     "text": "$T_{01}+T_{12}$"
+    },
+    {
+     "id": "c",
+     "text": "$T_{01}^{-1}T_{12}$"
+    },
+    {
+     "id": "d",
+     "text": "$T_{01}T_{12}$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$T_{01}T_{12}$",
+   "distractorRationale": {
+    "a": "This reverses the order and would apply the transforms in the wrong frame.",
+    "b": "Homogeneous matrices are combined by multiplication, not addition.",
+    "c": "The inverse would describe frame 0 relative to frame 1 and is not wanted.",
+    "d": "Correct: multiply in sequence from base to tool."
+   },
+   "explanation": "Chained transforms multiply from the base outwards, so $T_{02}=T_{01}T_{12}$. Matrix multiplication is not commutative, so the reverse order would describe a different pose.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a homogeneous transformation matrix, what does the top-right $3\\times1$ column represent?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The rotation angles of the new frame"
+    },
+    {
+     "id": "b",
+     "text": "The scale factors of each axis"
+    },
+    {
+     "id": "c",
+     "text": "The position of the new frame's origin expressed in the old frame"
+    },
+    {
+     "id": "d",
+     "text": "The velocity of the new frame"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The position of the new frame's origin expressed in the old frame",
+   "distractorRationale": {
+    "a": "Rotations are in the 3x3 block, not the last column.",
+    "b": "Rigid transforms contain no scaling.",
+    "c": "Correct: it is the translation, the new origin in the old frame.",
+    "d": "Velocities are not part of a pose matrix."
+   },
+   "explanation": "The upper-left $3\\times3$ block is the rotation and the right-hand column $\\mathbf{p}$ is the origin of the new frame written in the old frame's coordinates. The bottom row is fixed at $[0\\ 0\\ 0\\ 1]$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A planar two-link arm has $l_1=0.40$ m, $l_2=0.25$ m, $\\theta_1=60^\\circ$ and $\\theta_2=-30^\\circ$. Compute the x coordinate of the tip in metres.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o1"
+   ],
+   "correctValue": 0.417,
+   "tolerance": 0.005,
+   "unit": "m",
+   "explanation": "The absolute angle of link 2 is $60-30=30^\\circ$, so $x=0.40\\cos60^\\circ+0.25\\cos30^\\circ=0.2000+0.2165=0.417$ m. The y coordinate is 0.471 m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A frame B is rotated $30^\\circ$ about the z-axis and its origin is at (1.0, 0.5, 0.3) m in the base frame. A point has coordinates (0.2, 0.1, 0) m in frame B. Find its x coordinate in the base frame in metres.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o2"
+   ],
+   "correctValue": 1.123,
+   "tolerance": 0.005,
+   "unit": "m",
+   "explanation": "The x row of the transform gives $x=0.2\\cos30^\\circ-0.1\\sin30^\\circ+1.0=0.1732-0.0500+1.0=1.123$ m. The y coordinate is 0.687 m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A planar three-link arm has $l_1=0.40$ m, $l_2=0.30$ m, $l_3=0.10$ m and joint angles $20^\\circ$, $40^\\circ$ and $-10^\\circ$ (each relative to the previous link). Compute the y coordinate of the tip in metres.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o1"
+   ],
+   "correctValue": 0.473,
+   "tolerance": 0.005,
+   "unit": "m",
+   "explanation": "The absolute link angles are $20^\\circ$, $60^\\circ$ and $50^\\circ$. Then $y=0.40\\sin20^\\circ+0.30\\sin60^\\circ+0.10\\sin50^\\circ=0.1368+0.2598+0.0766=0.473$ m.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A cylindrical robot has a revolute base joint, a prismatic vertical axis and a prismatic radial axis (R P P). State its degrees of freedom, describe its workspace shape, and compare it with a three-revolute articulated arm for loading parts into a machine tool.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o3"
+   ],
+   "markingGuide": [
+    "States 3 DOF, one per joint (1 mark)",
+    "Describes the workspace as a cylindrical shell bounded by the minimum and maximum radial extension and the vertical stroke (2 marks)",
+    "Notes prismatic axes give simple, stiff, easily calculated linear motion (1 mark)",
+    "Notes the articulated arm has a larger, more flexible reachable volume, with more complicated kinematics (2 marks)",
+    "Gives a reasoned recommendation for the machine-loading task (1 mark)"
+   ],
+   "explanation": "An R P P robot has 3 DOF and a cylindrical shell workspace. Its straight axes suit repeatable loading, while an articulated arm reaches around obstacles at the cost of more complex kinematics.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the tip position of the planar two-link arm by composing the transforms $R_z(\\theta_1)$, translation $l_1$, $R_z(\\theta_2)$ and translation $l_2$ along the local x-axis. Then evaluate it for $l_1=l_2=0.50$ m, $\\theta_1=90^\\circ$ and $\\theta_2=-90^\\circ$, and explain how you would sanity-check the result.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o1",
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.forward-kinematics.o2"
+   ],
+   "markingGuide": [
+    "Writes the product in the correct order from the base outwards (2 marks)",
+    "Obtains $x=l_1\\cos\\theta_1+l_2\\cos(\\theta_1+\\theta_2)$ and $y=l_1\\sin\\theta_1+l_2\\sin(\\theta_1+\\theta_2)$ (2 marks)",
+    "Evaluates the tip at (0.50, 0.50) m: link 1 points up, link 2 points along +x (2 marks)",
+    "Sanity check: distance from base $0.707$ m lies between $|l_1-l_2|=0$ and $l_1+l_2=1.0$ (1 mark)",
+    "Checks a limiting case such as $\\theta_2=0$ giving reach $l_1+l_2$ (1 mark)"
+   ],
+   "explanation": "Link 1 points straight up for 0.50 m, then link 2 turns clockwise by 90 degrees to point along +x, so the tip is at (0.50, 0.50) m.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,388 @@
+{
+ "lessonTitle": "PID Tuning: Ziegler-Nichols and Model-Based Design",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A new pump-speed loop arrives at commissioning with no model, only a controller with three knobs. The commissioning engineer cannot afford a week of system identification. She raises the proportional gain until the pressure oscillates steadily, notes two numbers, and sets all three gains from them. That is the Ziegler-Nichols ultimate-gain method, and it works on almost any stable process."
+  },
+  {
+   "type": "text",
+   "markdown": "**Tuning** means choosing $K_p$, $K_i$ (or the integral time $T_i=K_p/K_i$) and $K_d$ (or the derivative time $T_d=K_d/K_p$) so that the closed loop meets speed and robustness goals. The PID controller is written $C(s)=K_p\\left(1+\\dfrac{1}{T_is}+T_ds\\right)$, with $T_i$ and $T_d$ in seconds. Two practical approaches are shown here: a rule from experiment (Ziegler-Nichols) and a model-based design for a first-order plant."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Ultimate gain and period",
+   "text": "With integral and derivative action off, raise $K_p$ in small steps until the output oscillates with constant amplitude (the loop is on the edge of stability). That gain is the **ultimate gain** $K_u$ and the oscillation period is the **ultimate period** $P_u$ (s). In frequency terms, $K_u$ is the gain at which $|L(j\\omega_{pc})|=1$ and $P_u=2\\pi/\\omega_{pc}$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Controller",
+    "$K_p$",
+    "$T_i$",
+    "$T_d$"
+   ],
+   "rows": [
+    [
+     "P",
+     "$0.5K_u$",
+     "-",
+     "-"
+    ],
+    [
+     "PI",
+     "$0.45K_u$",
+     "$P_u/1.2$",
+     "-"
+    ],
+    [
+     "PID",
+     "$0.6K_u$",
+     "$P_u/2$",
+     "$P_u/8$"
+    ]
+   ],
+   "caption": "Ziegler-Nichols ultimate-gain rules (a classical starting point, typically giving about 25% overshoot)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Ziegler-Nichols PID settings",
+   "prompt": "A speed loop with $K_p$ alone oscillates steadily at $K_p=8$, with period 2.4 s. Find PID settings $K_p$, $T_i$, $T_d$ and the gains $K_i$ and $K_d$ for the PID form above, and the PI settings.",
+   "steps": [
+    {
+     "text": "Read off $K_u=8$ and $P_u=2.4$ s.",
+     "latex": "K_u=8,\\quad P_u=2.4\\ \\text{s}"
+    },
+    {
+     "text": "PID: $K_p=0.6\\times8=4.8$, $T_i=2.4/2=1.2$ s, $T_d=2.4/8=0.3$ s.",
+     "latex": "K_p=4.8,\\quad T_i=1.2\\ \\text{s},\\quad T_d=0.3\\ \\text{s}"
+    },
+    {
+     "text": "Convert: $K_i=K_p/T_i=4.8/1.2=4.0$ s$^{-1}$ and $K_d=K_pT_d=4.8\\times0.3=1.44$ s.",
+     "latex": "K_i=4.0,\\quad K_d=1.44"
+    },
+    {
+     "text": "PI alternative: $K_p=0.45\\times8=3.6$, $T_i=2.4/1.2=2.0$ s, so $K_i=3.6/2.0=1.8$ s$^{-1}$.",
+     "latex": "K_p=3.6,\\quad T_i=2.0\\ \\text{s}"
+    }
+   ],
+   "answer": "PID: $K_p=4.8$, $T_i=1.2$ s, $T_d=0.3$ s ($K_i=4.0$, $K_d=1.44$). PI: $K_p=3.6$, $T_i=2.0$ s. Both are starting values to be refined, since they can give 25% overshoot."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Model-based PI tuning for a first-order plant.** If the plant is $G(s)=\\dfrac{K}{\\tau s+1}$, choose the integral time equal to the plant time constant, $T_i=\\tau$. The PI zero at $-1/T_i$ then cancels the plant pole, and the loop transfer function reduces to a pure integrator, $L(s)=K_pK/(\\tau s)$. Closing the loop gives a first-order response with time constant $\\tau_c=\\tau/(K_pK)$, so for a desired closed-loop time constant $\\tau_c$ we select $K_p=\\tau/(K\\tau_c)$. This is a design choice that assumes the plant model is accurate; the cancellation is exact only on paper, and a poorly known $\\tau$ weakens it."
+  },
+  {
+   "type": "math",
+   "latex": "T_i=\\tau,\\qquad K_p=\\frac{\\tau}{K\\tau_c},\\qquad \\frac{Y}{R}=\\frac{1}{\\tau_cs+1}",
+   "caption": "PI tuning of $K/(\\tau s+1)$ for closed-loop time constant $\\tau_c$ (no overshoot in the ideal case)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Tuning a heater loop for a target time constant",
+   "prompt": "A heater has $G(s)=\\dfrac{2.5}{30s+1}$ (degC per % power, $s$ in 1/s). Design a PI controller that gives a closed-loop time constant of 10 s and give $K_i$.",
+   "steps": [
+    {
+     "text": "Plant parameters: $K=2.5$ degC/% and $\\tau=30$ s. Choose $T_i=\\tau=30$ s to cancel the plant pole.",
+     "latex": "T_i=30\\ \\text{s}"
+    },
+    {
+     "text": "Proportional gain: $K_p=\\tau/(K\\tau_c)=30/(2.5\\times10)=1.2$ % per degC.",
+     "latex": "K_p=\\frac{30}{2.5\\times10}=1.2"
+    },
+    {
+     "text": "Integral gain: $K_i=K_p/T_i=1.2/30=0.04$ s$^{-1}$.",
+     "latex": "K_i=0.04"
+    },
+    {
+     "text": "Check: $L=K_pK/(\\tau s)=1.2\\times2.5/(30s)=0.1/s$, so $T=0.1/(s+0.1)=1/(10s+1)$, a time constant of 10 s as required.",
+     "latex": "T(s)=\\frac{0.1}{s+0.1}"
+    }
+   ],
+   "answer": "$K_p=1.2$, $T_i=30$ s ($K_i=0.04$ per s) gives $\\tau_c=10$ s, three times faster than the open-loop plant, with no overshoot in the ideal model."
+  },
+  {
+   "type": "text",
+   "markdown": "**Speed versus robustness.** Raising the loop gain (for example $K_p$ in the design above, to reduce $\\tau_c$) moves the gain crossover frequency higher. Real plants have unmodelled lags and delays that add phase lag at higher frequency, so the phase margin and gain margin shrink as the gain rises. The result is a faster response but more overshoot, more sensitivity to model error, larger actuator effort and more noise passed to the output. Tuning is therefore a compromise, and typical targets are phase margin of $45^\\circ$ to $60^\\circ$ and gain margin above 6 dB."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Ziegler-Nichols: find $K_u$ and $P_u$ experimentally (with caution, since the plant is driven to the edge of instability) and apply the table.",
+    "PI for a first-order plant: choose $T_i=\\tau$ and $K_p=\\tau/(K\\tau_c)$.",
+    "Check the result in simulation or on the plant, then reduce the gains if overshoot, noise or actuator saturation is excessive.",
+    "Prefer a modest closed-loop speed-up (for example 2 to 4 times) rather than a very small $\\tau_c$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Ziegler-Nichols rules give a quarter-decay response with considerable overshoot, so they are a starting point, not a final design. Do not mix $K_i$ (units 1/s times the gain) with $T_i$ (s): $K_i=K_p/T_i$. Cancelling a plant pole with a controller zero hides that mode but does not remove it from the system, so a load disturbance still excites the slow mode. Beware of tuning a loop that cannot safely be driven to sustained oscillation."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Faster is not free",
+   "text": "Every increase in gain that shortens the response also reduces the phase margin and raises the sensitivity to noise and model error. The design target is the lowest bandwidth that meets the specification."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The Ziegler-Nichols ultimate-gain method sets PID gains from $K_u$ and $P_u$: $K_p=0.6K_u$, $T_i=P_u/2$, $T_d=P_u/8$.",
+    "$K_i=K_p/T_i$ and $K_d=K_pT_d$ convert between time constants and gains.",
+    "For a first-order plant a PI controller with $T_i=\\tau$ and $K_p=\\tau/(K\\tau_c)$ gives a closed-loop time constant $\\tau_c$.",
+    "Increasing gain speeds the response but erodes phase margin, increasing overshoot and noise sensitivity."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A pressure loop with proportional control alone oscillates steadily when $K_p=15$, with a period of 0.8 s. Using the Ziegler-Nichols ultimate-gain rules, find the proportional gain $K_p$ (dimensionless) for a full PID controller.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o1"
+   ],
+   "correctValue": 9.0,
+   "tolerance": 0.1,
+   "unit": "dimensionless",
+   "explanation": "The PID rule is $K_p=0.6K_u=0.6\\times15=9.0$. The other settings would be $T_i=P_u/2=0.4$ s and $T_d=P_u/8=0.1$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A thermal loop with P control alone reaches sustained oscillation at $K_u=22$ with period $P_u=1.6$ s. Which pair gives the Ziegler-Nichols PI settings $K_p$ and $T_i$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$K_p=9.9$, $T_i=1.33$ s"
+    },
+    {
+     "id": "b",
+     "text": "$K_p=13.2$, $T_i=0.8$ s"
+    },
+    {
+     "id": "c",
+     "text": "$K_p=11$, $T_i=1.6$ s"
+    },
+    {
+     "id": "d",
+     "text": "$K_p=9.9$, $T_i=0.2$ s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$K_p=9.9$, $T_i=1.33$ s",
+   "distractorRationale": {
+    "a": "Correct: $K_p=0.45\\times22=9.9$ and $T_i=P_u/1.2=1.33$ s.",
+    "b": "These are the PID settings ($0.6K_u$ and $P_u/2$), not the PI settings.",
+    "c": "The proportional-only gain $0.5K_u$ was used, with $T_i=P_u$ which is not a ZN rule.",
+    "d": "The gain is right but $T_i$ was taken as $P_u/8$, which is the derivative time of a PID controller."
+   },
+   "explanation": "The ZN table for PI gives $K_p=0.45K_u$ and $T_i=P_u/1.2$. With $K_u=22$ and $P_u=1.6$ s these are 9.9 and 1.33 s. Using PID values for a PI controller is a common slip.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A Ziegler-Nichols test gives an ultimate period $P_u=3$ s. What derivative time $T_d$ does the PID rule recommend?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$0.375$ s"
+    },
+    {
+     "id": "b",
+     "text": "$1.5$ s"
+    },
+    {
+     "id": "c",
+     "text": "$2.5$ s"
+    },
+    {
+     "id": "d",
+     "text": "$0.25$ s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$0.375$ s",
+   "distractorRationale": {
+    "a": "Correct: $T_d=P_u/8=3/8=0.375$ s.",
+    "b": "This is $T_i=P_u/2$, the integral time.",
+    "c": "This is $P_u/1.2$, the PI integral time.",
+    "d": "This is $P_u/12$, not a Ziegler-Nichols rule."
+   },
+   "explanation": "The ZN PID rule sets the derivative time to one eighth of the ultimate period, $T_d=P_u/8$. The integral time is $P_u/2$, four times longer, so derivative action acts only on faster dynamics.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A speed plant is $G(s)=\\dfrac{4}{5s+1}$ (rpm per V, $s$ in 1/s). A PI controller with $T_i=\\tau$ is to give a closed-loop time constant of 1 s. Find the proportional gain $K_p$ (V per rpm).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o2"
+   ],
+   "correctValue": 1.25,
+   "tolerance": 0.02,
+   "unit": "V/rpm",
+   "explanation": "With $T_i=\\tau=5$ s the pole is cancelled and $L=K_pK/(\\tau s)$, so $\\tau_c=\\tau/(K_pK)$. Hence $K_p=\\tau/(K\\tau_c)=5/(4\\times1)=1.25$. The integral gain is $K_i=K_p/T_i=0.25$ per second.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A first-order plant has $K=3$ and $\\tau=12$ s and is controlled by a PI controller with $T_i=\\tau$ and $K_p=2$. What is the closed-loop time constant?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2 s"
+    },
+    {
+     "id": "b",
+     "text": "12 s"
+    },
+    {
+     "id": "c",
+     "text": "6 s"
+    },
+    {
+     "id": "d",
+     "text": "0.5 s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "2 s",
+   "distractorRationale": {
+    "a": "Correct: $\\tau_c=\\tau/(K_pK)=12/(2\\times3)=2$ s.",
+    "b": "This is the open-loop time constant, which would apply with no feedback gain.",
+    "c": "This divides by $K_p$ only, ignoring the plant gain.",
+    "d": "This is $K_pK/\\tau$ in 1/s, the loop gain in the integrator form, not the time constant."
+   },
+   "explanation": "With $T_i=\\tau$ the loop is $L=K_pK/(\\tau s)=0.5/s$, and closing it gives $T=0.5/(s+0.5)$ with a time constant of $1/0.5=2$ s. The loop is six times faster than the plant alone.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A PID loop with a good design has phase margin $55^\\circ$. The engineer doubles the loop gain to speed up the response. Which outcome is the most likely?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Faster response and larger bandwidth, but lower phase margin, more overshoot and more noise sensitivity"
+    },
+    {
+     "id": "b",
+     "text": "Faster response and higher phase margin"
+    },
+    {
+     "id": "c",
+     "text": "Slower response because the gain crossover frequency decreases"
+    },
+    {
+     "id": "d",
+     "text": "No change in overshoot because the phase plot is unchanged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Faster response and larger bandwidth, but lower phase margin, more overshoot and more noise sensitivity",
+   "distractorRationale": {
+    "a": "Correct: doubling the gain raises the gain crossover frequency and moves it towards the region of more phase lag.",
+    "b": "Higher gain normally lowers the margin because the phase lag grows with frequency.",
+    "c": "Gain crossover frequency rises with gain, so the loop gets faster.",
+    "d": "Overshoot depends on the margin, and the margin changes because the crossover moves."
+   },
+   "explanation": "Raising the loop gain lifts the magnitude plot. The 0 dB crossing moves to a higher frequency, where the unmodelled lags have accumulated more phase lag, so the margin falls. That gives a quicker but less damped response and greater noise amplification.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A servo loop $L(s)=K/[s(s+4)]$ is closed with unity feedback. When $K$ is raised from 16 to 64 to make the response faster, the closed-loop damping ratio falls. Find the percent overshoot of the step response for $K=64$ (answer in percent).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o3"
+   ],
+   "correctValue": 44.4,
+   "tolerance": 0.5,
+   "unit": "%",
+   "explanation": "The closed-loop characteristic equation is $s^2+4s+K=0$, so $\\omega_n=\\sqrt K=8$ rad/s and $\\zeta=4/(2\\times8)=0.25$. The overshoot is $e^{-\\pi\\zeta/\\sqrt{1-\\zeta^2}}=e^{-0.811}=0.444$, so 44.4%. At $K=16$ the overshoot was only 16.3% ($\\zeta=0.5$), showing the speed-versus-robustness trade-off.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Increasing the loop gain of a feedback loop always improves both the speed of response and the robustness to model error.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Higher gain generally increases bandwidth and speed, but it moves the gain crossover into a region of more phase lag, which reduces the phase and gain margins. Robustness to model error therefore usually gets worse, not better.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe the Ziegler-Nichols ultimate-gain tuning procedure for a PID controller, including how $K_u$ and $P_u$ are found, how the gains are calculated, and two limitations of the method.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o1"
+   ],
+   "markingGuide": [
+    "Turn off integral and derivative action and raise $K_p$ gradually",
+    "Stop at sustained oscillation of constant amplitude: that gain is $K_u$ and the oscillation period is $P_u$",
+    "Computes $K_p=0.6K_u$, $T_i=P_u/2$, $T_d=P_u/8$ and $K_i=K_p/T_i$, $K_d=K_pT_d$",
+    "Limitation: it drives the plant to the edge of instability, which may be unsafe or impractical",
+    "Limitation: it gives aggressive tuning with considerable overshoot (about 25%), so manual refinement is needed"
+   ],
+   "explanation": "A strong answer connects $K_u$ to the stability limit (the gain at the phase crossover frequency) and acknowledges that the rules are empirical. The marker should look for the two limitations, safety of the experiment and aggressive tuning, as well as the correct conversion of $T_i$ and $T_d$ into gains.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A first-order plant has gain $K$ and time constant $\\tau$. Derive the PI tuning that gives a closed-loop first-order response with time constant $\\tau_c$, and discuss why one would not choose $\\tau_c$ extremely small, in terms of robustness and actuator effort.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o2",
+    "ug.mce-system-dynamics-control-1.pid-control.pid-tuning.o3"
+   ],
+   "markingGuide": [
+    "Chooses $T_i=\\tau$ so the controller zero cancels the plant pole",
+    "Obtains $L=K_pK/(\\tau s)$ and closed loop $1/(\\tau_cs+1)$ with $\\tau_c=\\tau/(K_pK)$",
+    "Gives $K_p=\\tau/(K\\tau_c)$ and $K_i=K_p/\\tau$",
+    "A very small $\\tau_c$ needs a very large $K_p$, causing large actuator moves and saturation",
+    "Unmodelled lags or delays reduce phase margin at high crossover frequency, so robustness suffers and noise is amplified"
+   ],
+   "explanation": "The design is exact only for the nominal model, so one chooses $\\tau_c$ as a compromise. A common guideline is to keep the closed-loop bandwidth well below the frequency where unmodelled dynamics become important.",
+   "board": "internal"
+  }
+ ]
+}

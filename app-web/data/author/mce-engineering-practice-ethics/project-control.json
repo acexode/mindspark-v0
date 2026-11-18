@@ -1,0 +1,442 @@
+{
+ "lessonTitle": "Project Planning and Control: Critical Path, Earned Value and Risk",
+ "estimatedMinutes": 25,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A team building a hydraulic test rig has six weeks to deliver. The welding takes two weeks, but the steel for the frame takes four weeks to arrive and nothing else can start until it does. Whether the project finishes on time depends on a handful of linked tasks, not on how hard everyone works on the rest. Project control is the discipline of finding those tasks, measuring progress honestly, and tracking the things that could go wrong."
+  },
+  {
+   "type": "text",
+   "markdown": "Control has three strands. **Schedule control** finds the sequence of tasks that fixes the project duration. **Cost and progress control** compares what was planned with what has been done and spent. **Risk control** keeps a living list of uncertain events and what will be done about them. Each uses simple, standard calculations that you can do by hand."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Critical path",
+   "text": "The longest path of dependent tasks through a project network. Its total duration is the shortest possible project duration, and any delay to a task on it delays the whole project. **Float** (slack) is the time a task can slip without delaying the project; critical tasks have zero float."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Task",
+    "Description",
+    "Duration (days)",
+    "Predecessors"
+   ],
+   "rows": [
+    [
+     "A",
+     "Design frame",
+     "3",
+     "none"
+    ],
+    [
+     "B",
+     "Order and receive steel",
+     "4",
+     "A"
+    ],
+    [
+     "C",
+     "Order hydraulic components",
+     "2",
+     "A"
+    ],
+    [
+     "D",
+     "Fabricate frame",
+     "5",
+     "B"
+    ],
+    [
+     "E",
+     "Assemble hydraulics",
+     "3",
+     "C"
+    ],
+    [
+     "F",
+     "Final assembly and test",
+     "2",
+     "D, E"
+    ]
+   ],
+   "caption": "Task list for a rig build (durations in working days)."
+  },
+  {
+   "type": "text",
+   "markdown": "To find the critical path, do a **forward pass** (earliest start ES and earliest finish EF = ES + duration; a task with several predecessors starts at the largest EF among them) and a **backward pass** (latest finish LF and latest start LS = LF minus duration, starting from the project end date). Float is LS minus ES."
+  },
+  {
+   "type": "worked_example",
+   "title": "Critical path and float",
+   "prompt": "Find the project duration, the critical path and the float on task E for the task list above.",
+   "steps": [
+    {
+     "text": "Forward pass: A runs 0 to 3; B 3 to 7; C 3 to 5; D 7 to 12; E 5 to 8. Task F starts at the larger of D's finish (12) and E's finish (8), so it runs 12 to 14."
+    },
+    {
+     "text": "Project duration is the finish of F, 14 days. Check by listing paths:",
+     "latex": "A\\!-\\!B\\!-\\!D\\!-\\!F = 3+4+5+2 = 14,\\quad A\\!-\\!C\\!-\\!E\\!-\\!F = 3+2+3+2 = 10"
+    },
+    {
+     "text": "Critical path is A-B-D-F (14 days). Backward pass: F has LF = 14; so E has LF = 12 and LS = 12 - 3 = 9."
+    },
+    {
+     "text": "Float on E:",
+     "latex": "\\text{Float}_E = LS - ES = 9 - 5 = 4\\ \\text{days}"
+    }
+   ],
+   "answer": "Duration 14 days; critical path A-B-D-F; task E (and C) have 4 days of float."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Where to put effort",
+   "text": "Delays on the critical path delay the project day for day, so these tasks get the best resources and closest monitoring. Non-critical tasks can absorb delay up to their float, but a long enough delay turns them critical."
+  },
+  {
+   "type": "text",
+   "markdown": "**Earned value management (EVM)** compares planned and actual progress and cost at a given date. **Planned value (PV)** is the budgeted cost of the work scheduled to date; **earned value (EV)** is the budgeted cost of the work actually completed; **actual cost (AC)** is what has been spent. The budget at completion is **BAC**."
+  },
+  {
+   "type": "math",
+   "latex": "SV = EV - PV,\\quad CV = EV - AC,\\quad SPI = \\frac{EV}{PV},\\quad CPI = \\frac{EV}{AC},\\quad EAC = \\frac{BAC}{CPI}",
+   "caption": "Schedule and cost variances, performance indices and the estimate at completion, assuming current cost efficiency continues."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading progress from earned value",
+   "prompt": "A project with BAC = 400 000 GBP is reviewed at a date when PV = 180 000, EV = 150 000 and AC = 170 000 GBP. Find the variances, indices and forecast cost.",
+   "steps": [
+    {
+     "text": "Variances:",
+     "latex": "SV = 150 - 180 = -30\\ \\text{kGBP},\\quad CV = 150 - 170 = -20\\ \\text{kGBP}"
+    },
+    {
+     "text": "Indices:",
+     "latex": "SPI = \\frac{150}{180} = 0.83,\\quad CPI = \\frac{150}{170} = 0.88"
+    },
+    {
+     "text": "Interpretation: SPI below 1 means behind schedule; CPI below 1 means over cost, getting 0.88 GBP of work for each 1 GBP spent."
+    },
+    {
+     "text": "Forecast:",
+     "latex": "EAC = \\frac{400\\,000}{0.882} = 453\\,000\\ \\text{GBP}"
+    }
+   ],
+   "answer": "The project is 17% behind schedule and 12% over cost, and is forecast to finish near 453 000 GBP if the current efficiency continues."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Measure",
+    "Value above 1 (or positive)",
+    "Value below 1 (or negative)"
+   ],
+   "rows": [
+    [
+     "SPI, SV",
+     "Ahead of schedule",
+     "Behind schedule"
+    ],
+    [
+     "CPI, CV",
+     "Under budget for work done",
+     "Over budget for work done"
+    ]
+   ],
+   "caption": "How to read the indices and variances."
+  },
+  {
+   "type": "text",
+   "markdown": "A **risk register** records, for each identified risk, its description, **likelihood** (L), **impact** (I), the score (commonly L times I on a 1 to 5 scale), an owner, the planned mitigation, and the status. It is reviewed at every progress meeting, because risks change: new ones appear, probabilities shift, and mitigations succeed or fail."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "ID",
+    "Risk",
+    "L (1-5)",
+    "I (1-5)",
+    "Score",
+    "Mitigation",
+    "Owner"
+   ],
+   "rows": [
+    [
+     "R1",
+     "Steel delivery is late",
+     "4",
+     "3",
+     "12",
+     "Order early; identify second supplier",
+     "Procurement lead"
+    ],
+    [
+     "R2",
+     "Hydraulic pump fails acceptance test",
+     "2",
+     "5",
+     "10",
+     "Test on supplier rig; hold a spare",
+     "Test engineer"
+    ],
+    [
+     "R3",
+     "Key welder unavailable",
+     "2",
+     "2",
+     "4",
+     "Cross-train a second welder",
+     "Workshop manager"
+    ]
+   ],
+   "caption": "Extract from a risk register (scores are likelihood times impact)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "A register that is never reviewed is not control",
+   "text": "Listing risks at the start and filing them away provides no protection. Each risk needs an owner, an action with a date, and regular review."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The critical path is the longest dependent path; its length is the project duration, and non-critical tasks have float.",
+    "Earned value compares PV, EV and AC to give SV, CV, SPI and CPI, and a forecast of cost at completion.",
+    "A risk register lists risks with likelihood, impact, score, owner and mitigation, and is reviewed throughout the project."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A small project has tasks P (2 weeks, no predecessor), Q (5 weeks, after P), R (3 weeks, after P), S (4 weeks, after Q and R) and T (2 weeks, after S). What is the minimum project duration in weeks?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o1"
+   ],
+   "correctValue": 13,
+   "tolerance": 0.1,
+   "unit": "weeks",
+   "explanation": "The paths are P-Q-S-T = 2 + 5 + 4 + 2 = 13 weeks and P-R-S-T = 2 + 3 + 4 + 2 = 11 weeks. The project duration is set by the longest path, so it is 13 weeks.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a different network, U (4 days) is followed by V (6 days) and W (3 days), and both V and W precede X (2 days). What is the float of task W?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0 days"
+    },
+    {
+     "id": "b",
+     "text": "3 days"
+    },
+    {
+     "id": "c",
+     "text": "6 days"
+    },
+    {
+     "id": "d",
+     "text": "9 days"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "3 days",
+   "distractorRationale": {
+    "a": "Zero float applies to V, which is on the critical path U-V-X (12 days).",
+    "b": "Correct: the path U-W-X is 9 days against 12, so W can slip 12 - 9 = 3 days without delaying the project.",
+    "c": "6 days is the duration of V, not the float of W.",
+    "d": "9 days is the length of the non-critical path, not a float."
+   },
+   "explanation": "Float equals the difference between the critical path length and the length of the longest path through the task. Here it is 12 - 9 = 3 days.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "At the end of month 4, a gearbox test project had a planned value of 60 000 GBP and an earned value of 51 000 GBP. Calculate the schedule performance index (SPI), as a ratio.",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o2"
+   ],
+   "correctValue": 0.85,
+   "tolerance": 0.01,
+   "unit": "ratio (dimensionless)",
+   "explanation": "SPI = EV/PV = 51 000/60 000 = 0.85. A value below 1 means the project has completed less work than planned, so it is behind schedule.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "On a pump installation, EV = 92 000 GBP and AC = 80 000 GBP at the review date. What does the cost performance index tell you?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "CPI = 0.87, over budget"
+    },
+    {
+     "id": "b",
+     "text": "CPI = 1.15, the work completed is worth more than the money spent, so the project is under budget"
+    },
+    {
+     "id": "c",
+     "text": "CPI = 1.15, the project is ahead of schedule"
+    },
+    {
+     "id": "d",
+     "text": "CPI = 0.87, behind schedule"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "CPI = 1.15, the work completed is worth more than the money spent, so the project is under budget",
+   "distractorRationale": {
+    "a": "This inverts the ratio.",
+    "b": "Correct: CPI = EV/AC = 92/80 = 1.15, meaning 1.15 GBP of value earned for each 1 GBP spent.",
+    "c": "CPI measures cost efficiency, not schedule; schedule needs PV.",
+    "d": "This inverts the ratio and uses the wrong measure."
+   },
+   "explanation": "CPI is earned value divided by actual cost. A value above 1 means each pound spent has produced more than a pound of planned value, so costs are below budget for the work done.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A project has a budget at completion of 250 000 GBP and a cost performance index of 0.80. Assuming current cost efficiency continues, what is the estimate at completion in GBP?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o2"
+   ],
+   "correctValue": 312500,
+   "tolerance": 500,
+   "unit": "GBP",
+   "explanation": "EAC = BAC/CPI = 250 000/0.80 = 312 500 GBP. A CPI of 0.80 means that each pound of budgeted work is costing 1.25 GBP, so the forecast is 25% above budget.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A risk register has three entries: R1 likelihood 2, impact 5; R2 likelihood 4, impact 3; R3 likelihood 3, impact 3, all on a 1 to 5 scale and scored as likelihood times impact. Which risk should be given the highest priority?",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "R1 with a score of 10"
+    },
+    {
+     "id": "b",
+     "text": "R2 with a score of 12"
+    },
+    {
+     "id": "c",
+     "text": "R3 with a score of 9"
+    },
+    {
+     "id": "d",
+     "text": "All are equal"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "R2 with a score of 12",
+   "distractorRationale": {
+    "a": "R1 scores 10, below R2.",
+    "b": "Correct: R2 scores 4 x 3 = 12, the highest.",
+    "c": "R3 scores 9, the lowest.",
+    "d": "The scores differ."
+   },
+   "explanation": "The score is likelihood multiplied by impact: R1 = 10, R2 = 12, R3 = 9. R2 is the highest, although the single highest impact belongs to R1, which may still need a specific contingency.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Once all risks have been identified and entered in the risk register at project start, no further updates are needed.",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "A risk register is a living document. Risks change in likelihood and impact, new risks emerge and mitigations are completed, so the register must be reviewed regularly with owners and actions updated.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A test-fixture project has tasks A design (4 days, no predecessor), B procure materials (6 days, after A), C build jig (3 days, after A), D fabricate (5 days, after B and C), E inspect (2 days, after D), F write documentation (3 days, after C) and G final review (1 day, after E and F). Find the project duration, the critical path and the float of C and of F.",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o1"
+   ],
+   "markingGuide": [
+    "Path A-B-D-E-G = 4 + 6 + 5 + 2 + 1 = 18 days",
+    "Path A-C-D-E-G = 15 days and A-C-F-G = 11 days",
+    "Project duration 18 days and critical path A-B-D-E-G",
+    "C: earliest finish 7, D starts at 10, so float of C is 3 days",
+    "F: earliest finish 10, G starts at 17, so float of F is 7 days",
+    "Shows the forward and backward pass or a path comparison"
+   ],
+   "explanation": "The calculation may be done by path lengths or by forward and backward passes, as long as it is clear. Floats follow from the difference between the critical path length and the path through the task.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "At the half-way review of a 12-month project, the budget at completion is 600 000 GBP. The planned value is 300 000 GBP, the earned value is 240 000 GBP and the actual cost is 270 000 GBP. Calculate SV, CV, SPI, CPI and the estimate at completion, interpret them and propose two management actions.",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o2"
+   ],
+   "markingGuide": [
+    "SV = 240 - 300 = -60 kGBP; CV = 240 - 270 = -30 kGBP",
+    "SPI = 0.80; CPI = 0.89",
+    "EAC = 600 000/0.889 = 675 000 GBP",
+    "Interpretation: behind schedule and over budget",
+    "Actions such as adding resources to critical tasks, re-planning, scope review, tackling the causes of overrun, and informing the sponsor",
+    "States the assumption that present cost efficiency continues"
+   ],
+   "explanation": "Full marks need correct values and an interpretation in plain words. The actions should be linked to the schedule and cost problems the numbers reveal.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Write three entries for the risk register of a project to commission a new wind-tunnel fan drive. Each entry must have a description, likelihood, impact, score, mitigation action and owner. Explain how the register should be used during the project.",
+   "objectiveIds": [
+    "ug.mce-engineering-practice-ethics.teamwork-management.project-control.o3"
+   ],
+   "markingGuide": [
+    "Three distinct, plausible risks for the project (for example late delivery, vibration problems at commissioning, key person absence)",
+    "Each with likelihood and impact on a stated scale and a correct product as the score",
+    "A specific mitigation action for each, not just 'monitor'",
+    "A named owner for each",
+    "Used by reviewing at regular meetings, updating scores and closing or adding risks",
+    "Highest scores prioritised, with contingency for severe low-probability items"
+   ],
+   "explanation": "The marker checks that each entry is complete and that the scores are consistent. The register must be described as a living tool reviewed at every meeting.",
+   "board": "internal"
+  }
+ ]
+}

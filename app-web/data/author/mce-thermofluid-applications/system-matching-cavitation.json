@@ -1,0 +1,400 @@
+{
+ "lessonTitle": "System Matching and Cavitation",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A circulating pump in a district-heating plant starts to rattle as if it were pumping gravel, and its impeller later shows pitted metal near the eye. No stones were involved: the liquid at the impeller inlet boiled locally. Whether a pump delivers the flow you expect, and whether it survives doing so, depends on two matching questions: where the pump and pipework agree on a flow, and whether the inlet pressure stays safely above the vapour pressure."
+  },
+  {
+   "type": "text",
+   "markdown": "A pump never operates in isolation. The pipework, valves and static lift it feeds impose a **system curve**: the head $H_{sys}$ needed to push flow $Q$ through. The pump supplies a **pump curve** $H_{pump}(Q)$, the head it can give at its speed. The pump can only run where the two heads are equal."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Operating point",
+   "text": "The operating point is the intersection of the pump curve and the system curve. At that flow the head the pump produces equals the head the system requires. It is stable for the usual falling pump curve and rising system curve: if the flow rises above it, the system needs more head than the pump gives, so the flow slows back; if it falls below, the pump gives surplus head and the flow accelerates back."
+  },
+  {
+   "type": "math",
+   "latex": "H_{sys}=H_{static}+kQ^{2},\\qquad H_{pump}=H_0-aQ^{2}\\ \\Rightarrow\\ Q_{op}=\\sqrt{\\frac{H_0-H_{static}}{a+k}}",
+   "caption": "System curve (static head plus friction and minor losses, with constant k in s^2/m^5) and a quadratic pump curve"
+  },
+  {
+   "type": "worked_example",
+   "title": "Finding the operating point",
+   "prompt": "A pump has the curve $H=40-2000\\,Q^2$ (H in m, Q in m$^3$/s). It feeds a system with static head 12 m and friction coefficient $k=6000$ s$^2$/m$^5$. Find the flow and head at the operating point.",
+   "steps": [
+    {
+     "text": "Set pump head equal to system head.",
+     "latex": "40-2000\\,Q^2=12+6000\\,Q^2"
+    },
+    {
+     "text": "Collect the Q squared terms.",
+     "latex": "(2000+6000)\\,Q^2=40-12\\Rightarrow Q^2=\\frac{28}{8000}=0.0035"
+    },
+    {
+     "text": "Take the square root for the flow.",
+     "latex": "Q=\\sqrt{0.0035}=0.0592\\ \\text{m}^3/\\text{s}"
+    },
+    {
+     "text": "Substitute into the system curve for the head, and check with the pump curve.",
+     "latex": "H=12+6000\\times0.0035=33\\ \\text{m}\\quad(\\text{pump: }40-2000\\times0.0035=33\\ \\text{m})"
+    }
+   ],
+   "answer": "$Q\\approx0.0592$ m$^3$/s and $H\\approx33$ m."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Change to the system",
+    "System curve",
+    "Operating flow",
+    "Operating head"
+   ],
+   "rows": [
+    [
+     "Throttle valve partly closed",
+     "Steeper (larger k)",
+     "Falls",
+     "Rises"
+    ],
+    [
+     "Valve opened or pipe cleaned",
+     "Flatter (smaller k)",
+     "Rises",
+     "Falls"
+    ],
+    [
+     "Static head increased (tank level rises)",
+     "Shifted up",
+     "Falls",
+     "Rises"
+    ],
+    [
+     "Pump speed increased",
+     "Pump curve shifts up",
+     "Rises",
+     "Rises"
+    ]
+   ],
+   "caption": "How the operating point moves on a falling pump curve"
+  },
+  {
+   "type": "text",
+   "markdown": "**Cavitation.** Liquid at the impeller eye is at its lowest pressure. If the local pressure falls to the liquid's vapour pressure $p_v$, vapour bubbles form and then collapse violently as they move into higher pressure, causing noise, vibration, loss of head and pitting. The margin against this is the **net positive suction head**. The **available** value, $NPSH_A$, is a property of the suction system; the **required** value, $NPSH_R$, is a property of the pump, supplied by the manufacturer from tests at the head-drop of 3 per cent."
+  },
+  {
+   "type": "math",
+   "latex": "NPSH_A=\\frac{p_s-p_v}{\\rho g}+z_s-h_f",
+   "caption": "Open or closed supply vessel: p_s is the absolute pressure on the free surface, z_s the height of the liquid surface above the pump inlet (negative for a suction lift), h_f the suction-line head loss"
+  },
+  {
+   "type": "worked_example",
+   "title": "Available NPSH on a suction lift",
+   "prompt": "A pump draws water at 60 °C from an open tank. Typical properties: $p_v=19.9$ kPa, $\\rho=983$ kg/m$^3$. The atmospheric pressure is 101 kPa. The tank surface is 3 m below the pump inlet and the suction-line loss is 0.8 m. The pump needs $NPSH_R=5.5$ m. Will it cavitate?",
+   "steps": [
+    {
+     "text": "Pressure head available above vapour pressure.",
+     "latex": "\\frac{p_s-p_v}{\\rho g}=\\frac{(101-19.9)\\times10^{3}}{983\\times9.81}=8.441\\ \\text{m}"
+    },
+    {
+     "text": "Subtract the lift and the friction loss.",
+     "latex": "NPSH_A=8.441-3-0.8=4.64\\ \\text{m}"
+    },
+    {
+     "text": "Compare with the requirement.",
+     "latex": "NPSH_A=4.64\\ \\text{m}<NPSH_R=5.5\\ \\text{m}"
+    }
+   ],
+   "answer": "The available NPSH of about 4.64 m is below the 5.5 m required, so the pump will cavitate; reduce the lift or the loss, or cool the water."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Raise the supply vessel or lower the pump to increase $z_s$.",
+    "Use larger-diameter, shorter suction piping with fewer fittings to cut $h_f$.",
+    "Pressurise the supply vessel or cool the liquid to reduce $p_v$.",
+    "Choose a pump with a lower $NPSH_R$ (larger eye, slower speed, inducer)."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Never throttle the suction side",
+   "text": "Closing a valve on the suction line adds to $h_f$, lowers $NPSH_A$ and can start cavitation. Control flow with a discharge valve or speed instead. Also note that $NPSH_R$ rises with flow, so a pump that is safe at design flow can cavitate when it runs out to a high flow on a low-resistance system."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The operating point is where the pump curve and the system curve intersect; a steeper system curve lowers the flow and raises the head.",
+    "$NPSH_A=(p_s-p_v)/(\\rho g)+z_s-h_f$ depends on the suction system and the liquid temperature.",
+    "A pump is expected to cavitate when $NPSH_A$ is less than $NPSH_R$; a design margin above $NPSH_R$ is normally kept."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "On a plot of head against flow, what defines the operating point of a pump in a pipeline?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The intersection of the pump curve and the system curve, where the head the pump gives equals the head the system needs"
+    },
+    {
+     "id": "b",
+     "text": "The point of maximum pump head on the pump curve"
+    },
+    {
+     "id": "c",
+     "text": "The point on the pump curve where the efficiency is lowest"
+    },
+    {
+     "id": "d",
+     "text": "The point where the system curve crosses the head axis"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The intersection of the pump curve and the system curve, where the head the pump gives equals the head the system needs",
+   "distractorRationale": {
+    "a": "Correct: it is the intersection where supply and demand heads match.",
+    "b": "The maximum head usually occurs at or near zero flow and has no relation to the pipework.",
+    "c": "Efficiency is not what fixes the flow; the system resistance does.",
+    "d": "That is the static head, the intercept at zero flow, not the operating flow."
+   },
+   "explanation": "The flow settles where the head supplied by the pump equals the head demanded by the system, which is the curves' intersection. The static head is only the zero-flow intercept of the system curve and the shutoff head is only the zero-flow end of the pump curve.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A discharge valve on a pump delivering through a long pipeline is partly closed. What happens to the operating point (same pump speed, falling pump curve)?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The pump curve shifts downward, so both flow and head fall"
+    },
+    {
+     "id": "b",
+     "text": "The system curve becomes steeper, so the flow falls and the operating head rises"
+    },
+    {
+     "id": "c",
+     "text": "The system curve becomes flatter, so the flow rises"
+    },
+    {
+     "id": "d",
+     "text": "The flow stays the same and only the head rises"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The system curve becomes steeper, so the flow falls and the operating head rises",
+   "distractorRationale": {
+    "a": "Closing a valve does not change the pump curve; it changes the system curve.",
+    "b": "Correct: higher k steepens the system curve, moving the intersection to lower flow and higher head.",
+    "c": "A flatter curve would mean lower resistance, the opposite of closing a valve.",
+    "d": "The flow must change because the intersection point moves along the pump curve."
+   },
+   "explanation": "A partly closed valve adds resistance, so the coefficient $k$ in $H_{sys}=H_{static}+kQ^2$ rises and the curve steepens. Its intersection with the unchanged falling pump curve then moves to lower flow and higher head.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A pump draws water from an open tank. If the water temperature in the tank is raised from 20 °C to 80 °C, with everything else unchanged, the available NPSH:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "increases, because hotter water is less dense and easier to lift"
+    },
+    {
+     "id": "b",
+     "text": "is unchanged, because it depends only on atmospheric pressure and the lift"
+    },
+    {
+     "id": "c",
+     "text": "decreases, because the vapour pressure of the water rises"
+    },
+    {
+     "id": "d",
+     "text": "increases, because hotter water has lower viscosity and so lower friction loss"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "decreases, because the vapour pressure of the water rises",
+   "distractorRationale": {
+    "a": "Density changes are small and do not outweigh the large rise in vapour pressure.",
+    "b": "It also depends on the vapour pressure, which is strongly temperature dependent.",
+    "c": "Correct: the rising vapour pressure reduces the pressure margin.",
+    "d": "The friction-loss change is minor compared with the vapour-pressure effect, and it would not make the available head greater than the pressure head."
+   },
+   "explanation": "The term $(p_s-p_v)/(\\rho g)$ shrinks as $p_v$ rises with temperature. At 80 °C water's vapour pressure is a large fraction of atmospheric pressure, so little pressure margin remains for the lift and losses.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A pump has $NPSH_R=4.1$ m at its duty flow. In a particular installation, the available NPSH is calculated as 6.2 m. What is the conclusion?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Cavitation is expected, because the available value exceeds the required value"
+    },
+    {
+     "id": "b",
+     "text": "Cavitation is expected, with a deficit of about 2.1 m"
+    },
+    {
+     "id": "c",
+     "text": "No conclusion can be drawn, because the vapour pressure was not given"
+    },
+    {
+     "id": "d",
+     "text": "Cavitation is not expected, with a margin of about 2.1 m"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Cavitation is not expected, with a margin of about 2.1 m",
+   "distractorRationale": {
+    "a": "Reverses the criterion; cavitation occurs when the available value is below the required value.",
+    "b": "Gets the sign of the margin wrong.",
+    "c": "The vapour pressure is already included in the available NPSH value.",
+    "d": "Correct: the available head exceeds the required head by 2.1 m."
+   },
+   "explanation": "The criterion is $NPSH_A>NPSH_R$ for safe operation. Here $6.2-4.1=2.1$ m of margin remains, so cavitation should not occur at the duty point, though a margin is still advisable because $NPSH_R$ rises with flow.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A pump is flooded: the free surface of a vented tank of water at 20 °C is 2.5 m above the pump inlet, the suction line loses 1.1 m of head, the atmospheric pressure is 101.3 kPa and the typical vapour pressure is 2.34 kPa ($\\rho=998$ kg/m$^3$). The available NPSH is closest to:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "11.5 m"
+    },
+    {
+     "id": "b",
+     "text": "6.51 m"
+    },
+    {
+     "id": "c",
+     "text": "12.6 m"
+    },
+    {
+     "id": "d",
+     "text": "11.7 m"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "11.5 m",
+   "distractorRationale": {
+    "a": "Correct: it adds the liquid height and subtracts the loss and the vapour-pressure head.",
+    "b": "Subtracts the static head as if it were a suction lift, instead of adding it for a flooded suction.",
+    "c": "Omits the friction loss in the suction line.",
+    "d": "Forgets to subtract the vapour pressure from the surface pressure."
+   },
+   "explanation": "Pressure head above vapour is $(101\\,300-2340)/(998\\times9.81)=10.11$ m. A flooded suction adds the 2.5 m of liquid height, and the 1.1 m loss is subtracted: $NPSH_A=11.51$ m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A pump has the curve $H=55-1500\\,Q^2$ (H in m, Q in m$^3$/s). It serves a system with static head 15 m and loss coefficient $k=3500$ s$^2$/m$^5$ (so $H_{sys}=15+3500\\,Q^2$). Find the operating flow in m$^3$/s.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o1"
+   ],
+   "correctValue": 0.08944,
+   "tolerance": 0.002,
+   "unit": "m^3/s",
+   "explanation": "At the intersection $55-1500Q^2=15+3500Q^2$, so $Q^2=40/5000=0.008$ and $Q=0.08944$ m$^3$/s. The corresponding head is $43$ m on either curve.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water at 20 °C ($\\rho=998$ kg/m$^3$, typical $p_v=2.34$ kPa) is drawn from a closed vessel whose surface is held at an absolute pressure of 120 kPa. The surface is 1.5 m above the pump inlet and the suction-line loss is 0.60 m. Find the available NPSH in m.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o2"
+   ],
+   "correctValue": 12.918,
+   "tolerance": 0.05,
+   "unit": "m",
+   "explanation": "$(p_s-p_v)/(\\rho g)=(120\\,000-2340)/(998\\times9.81)=12.02$ m. Adding the 1.5 m static head and subtracting the 0.60 m loss gives $NPSH_A=12.92$ m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A pump takes 20 °C water from an open sump (atmospheric pressure 101.3 kPa, typical $p_v=2.34$ kPa, $\\rho=998$ kg/m$^3$). Its $NPSH_R$ is 3.5 m and the design rule requires $NPSH_A\\ge NPSH_R+0.5$ m. The suction-line loss is 0.40 m. Find the maximum height in m of the pump inlet above the sump surface that satisfies the rule.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o2",
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o3"
+   ],
+   "correctValue": 5.708,
+   "tolerance": 0.05,
+   "unit": "m",
+   "explanation": "Pressure head above vapour is 10.11 m. Setting $NPSH_A=10.11-0.40-z=4.0$ m gives the allowable lift $z=5.71$ m; a greater lift would put the pump in the cavitating regime for this rule.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A pump serves a fixed pipeline from a reservoir. Over some months deposits build up on the pipe wall (higher friction) and the downstream tank is also raised so that the static head increases. Describe, with reference to the pump and system curves, what happens to the operating point and to the power the pump needs. State any assumption.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o1"
+   ],
+   "markingGuide": [
+    "System curve H = Hstatic + kQ^2 is shifted up (static head) and steepened (larger k from fouling)",
+    "The pump curve is unchanged because the speed and impeller are unchanged",
+    "New intersection lies at a lower flow and a higher head than before",
+    "Flow falls, so the pump moves left on its curve, possibly away from best efficiency",
+    "Notes that hydraulic power rho g Q H changes because flow falls while head rises, and that the net effect on shaft power depends on the pump power curve (states the assumption)",
+    "Suggests cleaning, speed increase or a trimmed/larger impeller as remedies"
+   ],
+   "explanation": "Both effects raise the head the system demands at every flow, so the new system curve lies above the old one. The falling pump curve then intersects it at a lower flow, with the pump pushed toward shutoff and typically away from its best efficiency point.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain what cavitation is and why it damages a pump. Using the expression for available NPSH, give three practical ways to prevent it in an installation that currently has $NPSH_A$ smaller than $NPSH_R$.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o2",
+    "ug.mce-thermofluid-applications.pumps-fans.system-matching-cavitation.o3"
+   ],
+   "markingGuide": [
+    "Local pressure at the impeller eye falls to the vapour pressure so bubbles form",
+    "Bubbles collapse when carried into higher pressure, creating micro-jets and shock that pit the metal, with noise, vibration and head loss",
+    "States NPSH_A = (p_s - p_v)/(rho g) + z_s - h_f",
+    "Raise supply level or lower pump (increase z_s); reduce suction pipe losses; reduce liquid temperature (lower p_v); pressurise the vessel",
+    "Alternatively choose a pump with lower NPSH_R (larger eye, lower speed, inducer)"
+   ],
+   "explanation": "Cavitation is local boiling and violent bubble collapse, which damages surfaces by repeated impact. Each remedy increases $NPSH_A$ or reduces $NPSH_R$ so the margin is restored.",
+   "board": "internal"
+  }
+ ]
+}

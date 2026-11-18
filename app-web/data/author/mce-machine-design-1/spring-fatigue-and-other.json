@@ -1,0 +1,431 @@
+{
+ "lessonTitle": "Spring Fatigue and Other Types",
+ "estimatedMinutes": 60,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The return spring in a motorcycle clutch lever is squeezed and released millions of times between two fixed forces, and it almost never fails by yielding. It fails by fatigue, where a crack starts at the inner surface of the wire. Designing such a spring means treating the load as a cycle with a mean and an alternating part, not as a single maximum."
+  },
+  {
+   "type": "text",
+   "markdown": "A spring that works between a minimum force $F_{min}$ and a maximum force $F_{max}$ is loaded cyclically. Its alternating and mean forces are $F_a=(F_{max}-F_{min})/2$ and $F_m=(F_{max}+F_{min})/2$. The wire is loaded in torsion, so the stresses are shear stresses $\\tau_a$ and $\\tau_m$, and the strengths are shear strengths. In Shigley's treatment the alternating shear stress is multiplied by the Bergstrasser factor $K_B$ (which includes curvature and direct-shear effects as for fatigue), and the mean shear stress by the simple direct-shear factor $K_s$, with $C=D/d$."
+  },
+  {
+   "type": "math",
+   "latex": "\\tau_a=K_B\\frac{8F_aD}{\\pi d^3},\\quad \\tau_m=K_s\\frac{8F_mD}{\\pi d^3},\\quad K_B=\\frac{4C+2}{4C-3},\\quad K_s=1+\\frac{0.5}{C}",
+   "caption": "Alternating and mean shear stress in a helical spring (MPa when F in N, D and d in mm)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Fatigue strength of spring wire.** Springs are made of small-diameter drawn wire that is highly resistant to fatigue. Zimmerli's tests on steel wire (up to about 10 mm) show that for unpeened springs the torsional fatigue strength corresponds to a stress pair $S_{sa}\\approx241$ MPa and $S_{sm}\\approx379$ MPa (the amplitude and the mean of a cycle from zero stress to the fatigue limit), almost regardless of wire material and tensile strength. Shot peening raises these values substantially (to about 398 and 534 MPa, typical). The ultimate shear strength is taken as $S_{su}\\approx0.67S_{ut}$. Placing the Goodman line (in shear) through the Zimmerli point gives the effective fully reversed endurance strength $S_{se}$, and with a constant load ratio $r=\\tau_a/\\tau_m$ the factor of safety $n_f=S_{sa}/\\tau_a$ follows from the intersection of the load line with the Goodman line."
+  },
+  {
+   "type": "math",
+   "latex": "S_{se}=\\frac{S_{sa}^{Z}}{1-S_{sm}^{Z}/S_{su}},\\qquad r=\\frac{\\tau_a}{\\tau_m},\\qquad S_{sa}=\\frac{r\\,S_{se}\\,S_{su}}{r\\,S_{su}+S_{se}},\\qquad n_f=\\frac{S_{sa}}{\\tau_a}",
+   "caption": "Goodman fatigue factor of safety for a spring with load line of constant slope r (S_sa^Z = 241 MPa and S_sm^Z = 379 MPa are the Zimmerli values, unpeened)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Fatigue factor of safety of a music-wire spring",
+   "prompt": "A helical compression spring is wound from 2.5 mm music wire (typical $S_{ut}=1900$ MPa) with a mean coil diameter of 20 mm. It cycles between $F_{min}=20$ N and $F_{max}=60$ N. Find the fatigue factor of safety (unpeened, Goodman in shear). Also find the static factor against yielding at $F_{max}$ using $S_{sy}=0.45S_{ut}$.",
+   "steps": [
+    {
+     "text": "Index, correction factors and forces.",
+     "latex": "C=\\frac{20}{2.5}=8,\\quad K_B=\\frac{34}{29}=1.1724,\\quad K_s=1+\\frac{0.5}{8}=1.0625,\\quad F_a=20\\ \\text{N},\\ F_m=40\\ \\text{N}"
+    },
+    {
+     "text": "Stresses with $d^3=15.625$ mm$^3$.",
+     "latex": "\\tau_a=1.1724\\frac{8\\times20\\times20}{\\pi\\times15.625}=76.4\\ \\text{MPa},\\qquad \\tau_m=1.0625\\frac{8\\times40\\times20}{\\pi\\times15.625}=138.5\\ \\text{MPa}"
+    },
+    {
+     "text": "Strengths: $S_{su}=0.67\\times1900=1273$ MPa and the endurance strength from the Zimmerli point.",
+     "latex": "S_{se}=\\frac{241}{1-379/1273}=343.2\\ \\text{MPa}"
+    },
+    {
+     "text": "Load-line slope, intersection with the Goodman line, and factor of safety.",
+     "latex": "r=\\frac{76.4}{138.5}=0.552,\\quad S_{sa}=\\frac{0.552\\times343.2\\times1273}{0.552\\times1273+343.2}=230.5\\ \\text{MPa},\\quad n_f=\\frac{230.5}{76.4}=3.02"
+    },
+    {
+     "text": "Static check at $F_{max}$, $\\tau_{max}=K_s\\times8F_{max}D/(\\pi d^3)=208$ MPa against $S_{sy}=855$ MPa.",
+     "latex": "n_s=\\frac{855}{208}=4.11"
+    }
+   ],
+   "answer": "The fatigue factor of safety is 3.02 and the static factor 4.11, so fatigue is the governing mode."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Spring type",
+    "Loaded in",
+    "Main use",
+    "Notes"
+   ],
+   "rows": [
+    [
+     "Helical compression",
+     "Wire in torsion",
+     "Axial push; return and suspension",
+     "Check solid height and buckling"
+    ],
+    [
+     "Helical extension",
+     "Wire in torsion, hooks in bending",
+     "Axial pull",
+     "Hooks are the usual fatigue site; initial tension"
+    ],
+    [
+     "Helical torsion",
+     "Wire in bending",
+     "Torque or rotation, e.g. hinges, clips",
+     "Deflection in the direction that winds the coil tighter; guide with a rod"
+    ],
+    [
+     "Leaf (cantilever or semi-elliptic)",
+     "Bending",
+     "Vehicle suspensions, switches",
+     "Friction between leaves gives damping"
+    ],
+    [
+     "Disc (Belleville)",
+     "Combined",
+     "High load in small deflection",
+     "Stacked in series or parallel to tune stiffness"
+    ]
+   ],
+   "caption": "Common spring types and how the material is stressed"
+  },
+  {
+   "type": "text",
+   "markdown": "**Torsion springs.** A helical torsion spring exerts a moment $M$ and its wire is loaded in **bending**, not torsion. Treating the wire as a long curved beam of length $\\pi DN_a$ and second moment of area $I=\\pi d^4/64$, the angular deflection under moment $M$ follows from $\\theta=ML/(EI)$. The bending stress at the inside of the coil is increased by the curvature factor $K_i$ (for round wire). The deflection formula below is the ideal result; practical design formulas add a small correction for end effects and friction."
+  },
+  {
+   "type": "math",
+   "latex": "\\theta=\\frac{64\\,M\\,D\\,N_a}{E\\,d^4}\\ (\\text{rad}),\\qquad k'=\\frac{M}{\\theta}=\\frac{E\\,d^4}{64\\,D\\,N_a},\\qquad \\sigma=K_i\\frac{32M}{\\pi d^3},\\quad K_i=\\frac{4C^2-C-1}{4C(C-1)}",
+   "caption": "Torsion spring: angular deflection, spring rate (per radian) and inner-fibre bending stress (E = 207 GPa for steel)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Deflection of a torsion spring",
+   "prompt": "A steel torsion spring of wire diameter 2.5 mm and mean coil diameter 20 mm has 8 active coils and carries a moment of 1200 N mm (1.2 N m). Find the angular deflection and the maximum bending stress.",
+   "steps": [
+    {
+     "text": "Angular deflection with $E=207000$ MPa and $d^4=39.0625$ mm$^4$.",
+     "latex": "\\theta=\\frac{64\\times1200\\times20\\times8}{207000\\times39.0625}=1.520\\ \\text{rad}=87.1^\\circ"
+    },
+    {
+     "text": "Spring rate per radian.",
+     "latex": "k'=\\frac{1200}{1.520}=790\\ \\text{N mm/rad}"
+    },
+    {
+     "text": "Curvature factor with $C=8$, then inner-fibre bending stress.",
+     "latex": "K_i=\\frac{4\\times64-8-1}{4\\times8\\times7}=1.1027,\\qquad \\sigma=1.1027\\times\\frac{32\\times1200}{\\pi\\times15.625}=863\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The spring turns through about 87 degrees (1.52 rad) under 1.2 N m, with a bending stress of about 863 MPa at the inside of the coils."
+  },
+  {
+   "type": "text",
+   "markdown": "**Springs in series and parallel.** Springs are combined to obtain a stiffness or a travel that a single spring cannot provide. In **parallel** the springs share the same deflection and the loads add, so the stiffnesses add. In **series** they share the same force and the deflections add, so the compliances $1/k$ add, and the combination is softer than the softest spring. Parallel arrangements give stiffer assemblies with more load capacity, series arrangements give more travel and lower stiffness."
+  },
+  {
+   "type": "math",
+   "latex": "k_{parallel}=k_1+k_2+\\cdots,\\qquad \\frac{1}{k_{series}}=\\frac{1}{k_1}+\\frac{1}{k_2}+\\cdots",
+   "caption": "Equivalent stiffness of springs in parallel and in series"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing the arrangement for a target stiffness",
+   "prompt": "Two springs of stiffness $k_1=24$ N/mm and $k_2=36$ N/mm are available. A mechanism needs an assembly of about 14 N/mm and also one of about 60 N/mm. Decide how to arrange the springs and find the deflection of each when the assembly carries 100 N in the soft arrangement.",
+   "steps": [
+    {
+     "text": "Parallel stiffness is the sum and so is too stiff for 14 N/mm but matches 60 N/mm.",
+     "latex": "k_{par}=24+36=60\\ \\text{N/mm}"
+    },
+    {
+     "text": "Series stiffness from the reciprocals, which is close to 14 N/mm.",
+     "latex": "k_{ser}=\\frac{24\\times36}{24+36}=14.4\\ \\text{N/mm}"
+    },
+    {
+     "text": "In series each spring carries the full 100 N, so the deflections are found separately and added.",
+     "latex": "\\delta_1=\\frac{100}{24}=4.17\\ \\text{mm},\\quad \\delta_2=\\frac{100}{36}=2.78\\ \\text{mm},\\quad \\delta=6.94\\ \\text{mm}"
+    }
+   ],
+   "answer": "Use series for the 14 N/mm assembly (14.4 N/mm; total deflection 6.94 mm under 100 N, check: $100/14.4$) and parallel for the 60 N/mm assembly."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Fatigue governs cyclic springs",
+   "text": "For a cyclically loaded spring check fatigue with $\\tau_a$ and $\\tau_m$ against the Goodman line (using Zimmerli's fatigue data), then check yield at the maximum load, solid height and surge. Shot peening and a low spring index (but not too low) improve fatigue life. Remember that torsion springs are stressed in bending, and combine springs in series for travel and in parallel for stiffness."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A cyclically loaded spring has $F_a=(F_{max}-F_{min})/2$ and $F_m=(F_{max}+F_{min})/2$; $\\tau_a$ uses $K_B$ and $\\tau_m$ uses $K_s$.",
+    "Fatigue factor of safety uses the Goodman line in shear through the Zimmerli point: $S_{se}=S_{sa}^Z/(1-S_{sm}^Z/S_{su})$ and $n_f=S_{sa}/\\tau_a$ at constant load ratio.",
+    "A torsion spring is loaded in bending: $\\theta=64MDN_a/(Ed^4)$ with the inner-fibre stress raised by $K_i$.",
+    "Parallel springs add stiffness; series springs add compliance, so the assembly is softer than any one spring."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A spring cycles between a minimum force of 30 N and a maximum force of 90 N. What are the alternating and mean forces?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$F_a=30$ N and $F_m=60$ N"
+    },
+    {
+     "id": "b",
+     "text": "$F_a=60$ N and $F_m=30$ N"
+    },
+    {
+     "id": "c",
+     "text": "$F_a=60$ N and $F_m=60$ N"
+    },
+    {
+     "id": "d",
+     "text": "$F_a=30$ N and $F_m=30$ N"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$F_a=30$ N and $F_m=60$ N",
+   "distractorRationale": {
+    "a": "Correct: F_a = (90 - 30)/2 = 30 N and F_m = (90 + 30)/2 = 60 N.",
+    "b": "The two have been swapped.",
+    "c": "60 N is the force range, not the amplitude.",
+    "d": "30 N is F_min, not the mean."
+   },
+   "explanation": "The alternating force is half the range, $(90-30)/2=30$ N, and the mean is the average, $(90+30)/2=60$ N. These are the loads used to compute $\\tau_a$ and $\\tau_m$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the effect of shot peening a helical spring on its fatigue life?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It raises the fatigue strength by creating compressive residual stress in the surface layer where cracks start"
+    },
+    {
+     "id": "b",
+     "text": "It lowers the spring rate"
+    },
+    {
+     "id": "c",
+     "text": "It increases the number of active coils"
+    },
+    {
+     "id": "d",
+     "text": "It makes the wire softer and more ductile"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It raises the fatigue strength by creating compressive residual stress in the surface layer where cracks start",
+   "distractorRationale": {
+    "a": "Correct: compressive surface stresses delay crack initiation.",
+    "b": "Peening does not change the rate.",
+    "c": "The coil count is a geometric property.",
+    "d": "Peening hardens the surface, not softens it."
+   },
+   "explanation": "Fatigue cracks in springs start at the surface, where the stress is highest. Compressive residual stress from peening must be overcome before the surface carries tension, so the fatigue limit rises considerably.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a helical torsion spring, which stress mainly acts in the wire?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Bending stress, increased on the inside of the coil by curvature"
+    },
+    {
+     "id": "b",
+     "text": "Torsional shear stress, as in a compression spring"
+    },
+    {
+     "id": "c",
+     "text": "Axial tensile stress"
+    },
+    {
+     "id": "d",
+     "text": "Compressive contact stress"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Bending stress, increased on the inside of the coil by curvature",
+   "distractorRationale": {
+    "a": "Correct: the moment applied to the spring bends the wire.",
+    "b": "Torsion governs in compression and extension springs, not in torsion springs.",
+    "c": "The wire is not loaded axially.",
+    "d": "Contact stress is not significant."
+   },
+   "explanation": "A moment applied to the arms of a torsion spring bends the coil turns, so the wire is stressed like a curved beam. The inside of the coil carries a higher stress, hence the curvature factor $K_i$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two identical springs of stiffness 40 N/mm each are connected in series. What is the stiffness of the combination?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "20 N/mm"
+    },
+    {
+     "id": "b",
+     "text": "80 N/mm"
+    },
+    {
+     "id": "c",
+     "text": "40 N/mm"
+    },
+    {
+     "id": "d",
+     "text": "10 N/mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "20 N/mm",
+   "distractorRationale": {
+    "a": "Correct: 1/k = 1/40 + 1/40 gives k = 20 N/mm.",
+    "b": "80 N/mm is the parallel stiffness.",
+    "c": "40 N/mm ignores the second spring.",
+    "d": "10 N/mm would need four such springs in series."
+   },
+   "explanation": "In series the compliances add, $1/k=1/40+1/40=1/20$, so the stiffness is 20 N/mm, half that of one spring. The combination deflects twice as far under the same force.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A torsion spring of fixed wire diameter and coil diameter has its number of active coils increased from 6 to 12. What happens to the angular deflection under the same moment?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It doubles"
+    },
+    {
+     "id": "b",
+     "text": "It halves"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "It quadruples"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It doubles",
+   "distractorRationale": {
+    "a": "Correct: theta is proportional to N_a, since a longer wire bends more.",
+    "b": "It would halve only if the coils were halved.",
+    "c": "N_a appears in the numerator of the deflection formula.",
+    "d": "A factor of four would need N_a squared."
+   },
+   "explanation": "Since $\\theta=64MDN_a/(Ed^4)$ is proportional to the length of wire $\\pi DN_a$, doubling the active coils doubles the deflection. The bending stress is unaffected, because it depends on $M$ and $d$ only.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A spring has wire shear stresses of $\\tau_a=100$ MPa and $\\tau_m=180$ MPa at a constant load ratio. The wire has $S_{su}=1200$ MPa, and the Zimmerli fatigue values are $S_{sa}^Z=241$ MPa and $S_{sm}^Z=379$ MPa. Using the Goodman line in shear, find the fatigue factor of safety (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o1"
+   ],
+   "correctValue": 2.30475,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "The endurance strength is $S_{se}=241/(1-379/1200)=352.3$ MPa and the load ratio is $r=100/180=0.5556$. The intersection amplitude is $S_{sa}=rS_{se}S_{su}/(rS_{su}+S_{se})=230.5$ MPa, so $n_f=230.5/100=2.30$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel torsion spring ($E=207$ GPa) has wire diameter 2 mm, mean coil diameter 16 mm and 7 active coils. Find the angular deflection in degrees under a moment of 800 N mm.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o2"
+   ],
+   "correctValue": 99.201968,
+   "tolerance": 1.0,
+   "unit": "degrees",
+   "explanation": "The deflection in radians is $\\theta=64MDN_a/(Ed^4)=64\\times800\\times16\\times7/(207000\\times16)=1.731$ rad. In degrees this is $1.731\\times180/\\pi=99.2$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Three springs are arranged as follows: springs of 20 N/mm and 30 N/mm are connected in parallel, and this pair is then connected in series with a 50 N/mm spring. Find the equivalent stiffness of the assembly in N/mm.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o3"
+   ],
+   "correctValue": 25.0,
+   "tolerance": 0.3,
+   "unit": "N/mm",
+   "explanation": "The parallel pair has $k=20+30=50$ N/mm. In series with a 50 N/mm spring, $1/k=1/50+1/50$ so $k=25$ N/mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how you would assess the fatigue life of a helical compression spring that cycles between two forces. Include the stress calculation, the strength data used, how the factor of safety is obtained, and two ways to improve fatigue performance.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o1"
+   ],
+   "markingGuide": [
+    "Alternating and mean force $F_a=(F_{max}-F_{min})/2$, $F_m=(F_{max}+F_{min})/2$.",
+    "Shear stresses $\\tau_a=K_B8F_aD/(\\pi d^3)$ and $\\tau_m=K_s8F_mD/(\\pi d^3)$ with $K_B$ (curvature and direct shear) and $K_s=1+0.5/C$.",
+    "Strength data: $S_{su}\\approx0.67S_{ut}$ and Zimmerli's fatigue point ($S_{sa}\\approx241$ MPa, $S_{sm}\\approx379$ MPa unpeened) giving $S_{se}$.",
+    "Goodman line in shear: $n_f=S_{sa}/\\tau_a$ at the load ratio $r$; also check static yield at $F_{max}$ and solid height.",
+    "Improvements: shot peening, a better surface finish, lower stress amplitude (larger wire or more coils), a larger spring index within limits, and avoiding surge by keeping the natural frequency high."
+   ],
+   "explanation": "The cycle is described by its alternating and mean components and compared with fatigue data on a Goodman diagram. Design changes target either the stress or the strength.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A torsion spring and a pair of compression springs are being considered for a hinged flap return mechanism that needs a stiffness of about 15 N/mm at the point of load application. Explain how the torsion spring is stressed, how series and parallel combinations of compression springs change stiffness and travel, and which combination you would use to obtain a softer, longer-travel assembly.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o2",
+    "ug.mce-machine-design-1.springs.spring-fatigue-and-other.o3"
+   ],
+   "markingGuide": [
+    "Torsion spring wire is loaded in bending by the moment, with deflection $\\theta=64MDN_a/(Ed^4)$ and an inside curvature factor $K_i$ on the stress.",
+    "Parallel: same deflection, loads add, stiffness $k=k_1+k_2$ (stiffer, more load capacity).",
+    "Series: same force, deflections add, $1/k=1/k_1+1/k_2$ so the assembly is softer than the softest spring and has more travel.",
+    "For a softer, longer-travel assembly use series, remembering each spring carries the full force, so each must be rated for it and must not go solid.",
+    "Check the arrangement: stiffness equivalent, total travel, and that neither spring reaches solid height or yields."
+   ],
+   "explanation": "Combining springs changes stiffness and travel in predictable ways. A torsion spring provides moment directly but its wire is stressed in bending.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,387 @@
+{
+ "lessonTitle": "The Paris Law and Fatigue Crack Growth Life",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A pressurised aircraft fuselage is cycled once per flight. A 2 mm crack at a rivet hole grows by perhaps a few nanometres each flight at first, then micrometres, then millimetres, accelerating all the way. Engineers need to predict when it reaches the size at which the skin can no longer carry the load, and for that they use the Paris law."
+  },
+  {
+   "type": "text",
+   "markdown": "A crack under cyclic load does not need to reach $K_{Ic}$ to grow. Each cycle advances it by a tiny amount $\\mathrm{d}a$. The growth rate per cycle, $\\mathrm{d}a/\\mathrm{d}N$ (m/cycle), depends mostly on how big the swing in stress intensity is in each cycle. Plotted on log-log axes against $\\Delta K$, the curve has three characteristic regimes."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Regime",
+    "Behaviour",
+    "Cause"
+   ],
+   "rows": [
+    [
+     "I: near threshold",
+     "Growth rate falls steeply and vanishes below $\\Delta K_{th}$",
+     "Crack closure, microstructure sensitivity; very sensitive to R and environment"
+    ],
+    [
+     "II: Paris (stable)",
+     "Straight line on log-log axes, $\\mathrm{d}a/\\mathrm{d}N = C\\,\\Delta K^m$",
+     "Steady cyclic damage ahead of the tip; most of the life"
+    ],
+    [
+     "III: rapid growth",
+     "Rate accelerates as $K_{max}\\to K_c$",
+     "Static fracture modes (cleavage, tearing) add to fatigue; ends in fracture"
+    ]
+   ],
+   "caption": "Typical structure of the fatigue crack growth curve."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Stress intensity range ΔK",
+   "text": "$\\Delta K = K_{max} - K_{min}$ is the range of the stress intensity factor in one cycle. For a stress range $\\Delta\\sigma = \\sigma_{max}-\\sigma_{min}$ (tensile part only) and geometry factor $Y$: $\\Delta K = Y\\Delta\\sigma\\sqrt{\\pi a}$, in MPa$\\sqrt{\\text{m}}$."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta K = Y\\,\\Delta\\sigma\\,\\sqrt{\\pi a}",
+   "caption": "$\\Delta\\sigma$ is the stress range (MPa), $a$ the instantaneous crack length (m)."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\mathrm{d}a}{\\mathrm{d}N} = C\\,(\\Delta K)^m",
+   "caption": "Paris law for regime II. $C$ and $m$ are empirical constants; with $\\Delta K$ in MPa$\\sqrt{\\text{m}}$ and $\\mathrm{d}a/\\mathrm{d}N$ in m/cycle, typical steels have $C\\sim10^{-11}$ to $10^{-12}$ and $m\\approx 3$ (typical, check material data)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Growth rate at a given crack length",
+   "prompt": "A plate carries a constant stress range $\\Delta\\sigma = 100$ MPa (tension-tension). A central crack has half-length $a=10$ mm, $Y=1$. Using typical steel constants $C = 10^{-11}$, $m=3$ (units as above), find $\\Delta K$ and $\\mathrm{d}a/\\mathrm{d}N$.",
+   "steps": [
+    {
+     "text": "Compute $\\Delta K = 100\\sqrt{\\pi\\times0.010}$.",
+     "latex": "\\Delta K = 100\\times0.1772 = 17.72\\ \\text{MPa}\\sqrt{\\text{m}}"
+    },
+    {
+     "text": "Cube it: $17.72^3 = 5568$.",
+     "latex": "\\Delta K^3 = 5568"
+    },
+    {
+     "text": "Apply Paris.",
+     "latex": "\\frac{\\mathrm{d}a}{\\mathrm{d}N} = 10^{-11}\\times5568 = 5.57\\times10^{-8}\\ \\text{m/cycle}"
+    }
+   ],
+   "answer": "$\\Delta K\\approx17.7$ MPa sqrt(m); da/dN is about 55.7 nm per cycle."
+  },
+  {
+   "type": "text",
+   "markdown": "**Integrating for life.** Because $\\Delta K$ itself depends on $a$, the growth rate changes as the crack grows, so the life is the integral of $\\mathrm{d}N = \\mathrm{d}a/(C\\Delta K^m)$ from the initial size $a_i$ to the final size $a_f$. With $Y$ and $\\Delta\\sigma$ constant and $m\\neq2$, the integral is analytic."
+  },
+  {
+   "type": "math",
+   "latex": "N_f = \\int_{a_i}^{a_f}\\frac{\\mathrm{d}a}{C\\,(Y\\Delta\\sigma\\sqrt{\\pi a})^m} = \\frac{a_f^{\\,1-m/2}-a_i^{\\,1-m/2}}{C\\,(Y\\Delta\\sigma\\sqrt{\\pi})^m\\,(1-m/2)}",
+   "caption": "Cycles to grow from $a_i$ to $a_f$ ($m\\neq 2$, constant $Y$). For $m=2$ the result is a logarithm."
+  },
+  {
+   "type": "worked_example",
+   "title": "Cycles to grow a crack",
+   "prompt": "Using $C=10^{-11}$, $m=3$, $\\Delta\\sigma=100$ MPa, $Y=1$, find the number of cycles to grow a central crack from $a_i=2$ mm to $a_f=20$ mm.",
+   "steps": [
+    {
+     "text": "For $m=3$: $1-m/2 = -0.5$, so the numerator is $a_f^{-0.5}-a_i^{-0.5}$ (negative, divided by a negative denominator).",
+     "latex": "a_f^{-0.5}-a_i^{-0.5} = 7.071 - 22.36 = -15.29"
+    },
+    {
+     "text": "Compute $C(Y\\Delta\\sigma\\sqrt\\pi)^3 = 10^{-11}\\times(100\\sqrt\\pi)^3$.",
+     "latex": "(100\\times1.7725)^3 = 5.568\\times10^{6} \\Rightarrow C(\\cdots)^3 = 5.568\\times10^{-5}"
+    },
+    {
+     "text": "Divide: $N = \\dfrac{-15.29}{5.568\\times10^{-5}\\times(-0.5)}$.",
+     "latex": "N_f = 5.492\\times10^{5}\\ \\text{cycles}"
+    }
+   ],
+   "answer": "About 5.49\\times10^{5} cycles (the integral was also checked numerically)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Bigger stress range shortens life: $N_f\\propto\\Delta\\sigma^{-m}$ (doubling $\\Delta\\sigma$ with $m=3$ cuts life by 8).",
+    "A larger initial crack shortens life, and the life is dominated by the small-crack stage because growth is slow when $a$ is small.",
+    "A tougher material extends life only through a larger $a_f$, which has a weak effect because most of the time is spent at small sizes."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Keep the units consistent",
+   "text": "The constants $C$ and $m$ are valid only for the unit system in which they were measured. Mixing mm with m, or $\\Delta K$ in MPa$\\sqrt{\\text{m}}$ with $C$ in mm units, gives errors by many orders of magnitude. Always convert crack length to metres first, and use $\\Delta\\sigma$ (not the maximum stress)."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The $\\mathrm{d}a/\\mathrm{d}N$ versus $\\Delta K$ curve has three regimes: near-threshold, Paris power law, and rapid growth to fracture.",
+    "$\\Delta K = Y\\Delta\\sigma\\sqrt{\\pi a}$ and $\\mathrm{d}a/\\mathrm{d}N=C\\Delta K^m$; $m$ is the slope on a log-log plot.",
+    "Life follows from integrating $\\mathrm{d}a/(C\\Delta K^m)$ between $a_i$ and $a_f$; it falls as $\\Delta\\sigma^{-m}$ and as the initial crack grows."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which description matches regime II of the fatigue crack growth curve?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A region where growth stops below a limiting $\\Delta K$"
+    },
+    {
+     "id": "b",
+     "text": "A straight line on log-log axes where $\\mathrm{d}a/\\mathrm{d}N = C\\Delta K^m$"
+    },
+    {
+     "id": "c",
+     "text": "A region where growth accelerates as $K_{max}$ approaches $K_c$"
+    },
+    {
+     "id": "d",
+     "text": "A region in which growth rate is independent of $\\Delta K$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "A straight line on log-log axes where $\\mathrm{d}a/\\mathrm{d}N = C\\Delta K^m$",
+   "distractorRationale": {
+    "a": "That is the threshold behaviour of regime I.",
+    "b": "Correct: this is the Paris power-law region.",
+    "c": "That describes regime III.",
+    "d": "Regime II depends strongly on $\\Delta K$."
+   },
+   "explanation": "In the middle of the curve the growth rate follows a power law of $\\Delta K$, giving a straight line of slope $m$ on log-log axes. This stable regime accounts for most of the fatigue life.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the Paris law, which stress quantity is used to compute $\\Delta K$?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The maximum stress only"
+    },
+    {
+     "id": "b",
+     "text": "The mean stress"
+    },
+    {
+     "id": "c",
+     "text": "The stress range $\\sigma_{max}-\\sigma_{min}$ (tensile part)"
+    },
+    {
+     "id": "d",
+     "text": "The yield strength"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The stress range $\\sigma_{max}-\\sigma_{min}$ (tensile part)",
+   "distractorRationale": {
+    "a": "That gives $K_{max}$, not $\\Delta K$.",
+    "b": "The mean stress does not give the swing.",
+    "c": "Correct: $\\Delta K = Y\\Delta\\sigma\\sqrt{\\pi a}$.",
+    "d": "Yield strength is not the cyclic load."
+   },
+   "explanation": "$\\Delta K$ is the range of stress intensity, so it uses the range of stress in the cycle. The maximum stress would give $K_{max}$ instead, which is a different quantity.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "With $m=3$ and everything else fixed, the stress range is doubled. By what factor does the number of cycles to grow the crack between the same two sizes change?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It falls to one half"
+    },
+    {
+     "id": "b",
+     "text": "It falls to one eighth"
+    },
+    {
+     "id": "c",
+     "text": "It falls to one quarter"
+    },
+    {
+     "id": "d",
+     "text": "It increases by a factor of 8"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It falls to one eighth",
+   "distractorRationale": {
+    "a": "That would need $m=1$.",
+    "b": "Correct: $N_f\\propto\\Delta\\sigma^{-3}$.",
+    "c": "That would need $m=2$.",
+    "d": "More stress shortens life."
+   },
+   "explanation": "Since $N_f\\propto(\\Delta\\sigma)^{-m}$, doubling $\\Delta\\sigma$ with $m=3$ divides the life by $2^3=8$. The result is verified by the integral because $\\Delta\\sigma$ appears only through the factor $(Y\\Delta\\sigma\\sqrt{\\pi})^m$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why is the fatigue life from a Paris integration so sensitive to the initial crack size $a_i$ and so insensitive to the final size $a_f$?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Growth is slow while the crack is small, so most cycles are spent there, and the rate grows quickly near $a_f$ so little time is spent at large sizes"
+    },
+    {
+     "id": "b",
+     "text": "Because the Paris law is only valid for small cracks"
+    },
+    {
+     "id": "c",
+     "text": "Because $a_f$ is always equal to the plate width"
+    },
+    {
+     "id": "d",
+     "text": "Because $\\Delta K$ does not depend on crack size"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Growth is slow while the crack is small, so most cycles are spent there, and the rate grows quickly near $a_f$ so little time is spent at large sizes",
+   "distractorRationale": {
+    "a": "Correct: da/dN increases with $a$, so most of the time is at small $a$.",
+    "b": "The law holds across regime II.",
+    "c": "$a_f$ is set by toughness and stress.",
+    "d": "$\\Delta K$ increases with $a$."
+   },
+   "explanation": "$\\mathrm{d}N=\\mathrm{d}a/(C\\Delta K^m)$ has a large integrand when $a$ is small. The term $a^{1-m/2}$ is dominated by $a_i$, so the life depends mainly on the starting size.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "On log-log axes, what does the slope of the straight-line regime of the growth-rate curve represent?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The constant $C$"
+    },
+    {
+     "id": "b",
+     "text": "The threshold $\\Delta K_{th}$"
+    },
+    {
+     "id": "c",
+     "text": "The exponent $m$ of the Paris law"
+    },
+    {
+     "id": "d",
+     "text": "The fracture toughness $K_c$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The exponent $m$ of the Paris law",
+   "distractorRationale": {
+    "a": "$C$ is the intercept, not the slope.",
+    "b": "The threshold is a position, not a slope.",
+    "c": "Correct: log(da/dN) = log C + m log ΔK.",
+    "d": "$K_c$ is the end of regime III."
+   },
+   "explanation": "Taking logs of $\\mathrm{d}a/\\mathrm{d}N=C\\Delta K^m$ gives $\\log(\\mathrm{d}a/\\mathrm{d}N)=\\log C+m\\log\\Delta K$, a straight line with slope $m$ and intercept $\\log C$. The exponent can therefore be read directly from the slope of measured data plotted this way.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A plate with a single edge crack of depth 5 mm sees a stress range of 80 MPa. Taking $Y=1.12$, compute $\\Delta K$ in MPa$\\sqrt{\\text{m}}$.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o3"
+   ],
+   "correctValue": 11.2297,
+   "tolerance": 0.1,
+   "unit": "MPa sqrt(m)",
+   "explanation": "$\\Delta K = 1.12\\times80\\times\\sqrt{\\pi\\times0.005} = 1.12\\times80\\times0.1253 = 11.23$ MPa$\\sqrt{\\text{m}}$. The crack depth must be in metres.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "For a steel in the Paris regime, $C = 5\\times10^{-12}$ and $m=3$ (units: m/cycle with $\\Delta K$ in MPa$\\sqrt{\\text{m}}$). Find the growth rate at $\\Delta K = 22$ MPa$\\sqrt{\\text{m}}$, in nm per cycle.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o1"
+   ],
+   "correctValue": 53.24,
+   "tolerance": 0.5,
+   "unit": "nm/cycle",
+   "explanation": "$\\mathrm{d}a/\\mathrm{d}N = 5\\times10^{-12}\\times22^3 = 5\\times10^{-12}\\times10648 = 5.324\\times10^{-8}$ m/cycle, which is 53.24 nm/cycle. Multiplying by $10^9$ converts metres to nanometres.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A plate has stress range 150 MPa, $Y=1.1$ (constant), $C=3\\times10^{-12}$ and $m=3$ (m/cycle, MPa$\\sqrt{\\text{m}}$). How many cycles are needed to grow a crack from 1 mm to 12 mm? Give your answer in cycles.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o2"
+   ],
+   "correctValue": 599515.0,
+   "tolerance": 5995.15,
+   "unit": "cycles",
+   "explanation": "With $m=3$, $N_f=2(a_i^{-0.5}-a_f^{-0.5})/[C(Y\\Delta\\sigma\\sqrt{\\pi})^3]$. The bracket is $3\\times10^{-12}\\times(1.1\\times150\\times1.7725)^3=7.504\\times10^{-5}$ and $a_i^{-0.5}-a_f^{-0.5}=22.49$, giving $N_f=5.995\\times10^{5}$ cycles. A numerical integration agrees with this value.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe the three regimes of the $\\mathrm{d}a/\\mathrm{d}N$ versus $\\Delta K$ curve, stating the physical reason for each and which regime is most useful for life prediction.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o1"
+   ],
+   "markingGuide": [
+    "Regime I: near threshold, growth vanishes below $\\Delta K_{th}$; sensitive to microstructure, R and environment",
+    "Regime II: Paris power law, straight on log-log axes, stable growth",
+    "Regime III: rate accelerates as $K_{max}$ approaches $K_c$ because static fracture modes contribute",
+    "Regime II is used for life prediction since it covers most of the life and has simple form"
+   ],
+   "explanation": "At low $\\Delta K$ crack closure and microstructure control growth; in the middle a steady cyclic damage mechanism gives a power law; at high $\\Delta K$ the maximum stress intensity nears the toughness and growth accelerates to fracture. Life estimates use the middle regime because it dominates the total life.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A thin plate (central crack, $Y=1$) carries cycles from 0 to 200 MPa. The toughness is 60 MPa$\\sqrt{\\text{m}}$, the initial half-length is 2 mm, and $C=10^{-11}$, $m=3$ (m/cycle, MPa$\\sqrt{\\text{m}}$). (a) Find the final half-length at which fracture occurs on the peak load. (b) Outline and carry out the Paris integration to estimate the life.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o2",
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.paris-law.o3"
+   ],
+   "markingGuide": [
+    "Takes $\\Delta\\sigma = 200$ MPa since the minimum is zero",
+    "Finds $a_f=(1/\\pi)(K_c/\\sigma_{max})^2$ with $\\sigma_{max}=200$, giving about 28.6 mm",
+    "Writes $N_f$ as the integral of $\\mathrm{d}a/(C\\Delta K^m)$ and evaluates it in closed form for $m=3$",
+    "Obtains about 7.39\\times10^{4} cycles",
+    "Notes the answer is dominated by the initial crack size"
+   ],
+   "explanation": "At peak load the fracture condition gives $a_f=(1/\\pi)(60/200)^2 = 0.02865$ m. The integral then gives $N_f = 2(a_i^{-0.5}-a_f^{-0.5})/[C(200\\sqrt{\\pi})^3] \\approx 7.39\\times10^{4}$ cycles. Most of these cycles are used while the crack is still small.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,399 @@
+{
+ "lessonTitle": "Semi-Infinite Solids and Heisler Charts",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Why does a steel handrail feel colder than a wooden one on a winter morning, though both are at exactly the same temperature? And how long must a steel slab stay in a reheat furnace before its core is hot enough to roll? Both answers come from solving transient conduction when temperature varies in space."
+  },
+  {
+   "type": "text",
+   "markdown": "The lumped model fails when $Bi>0.1$: the interior then lags the surface. Two limiting situations are solved analytically. In the first the body is so thick that it behaves as if it extended to infinity, a **semi-infinite solid**. In the second, a finite plane wall with convection on its faces, the solution is a series whose first term suffices after a short time. The Heisler charts are the graphical form of that first term."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Semi-infinite solid",
+   "text": "A solid occupying $x\\ge0$ with uniform initial temperature $T_i$ whose surface is suddenly changed. The temperature depends on $x$ and $t$ only through $\\eta=x/(2\\sqrt{\\alpha t})$, where $\\alpha=k/(\\rho c)$ (m$^2$/s) is the thermal diffusivity. It is a good model while the thermal disturbance has not yet reached the far side."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{T(x,t)-T_s}{T_i-T_s}=\\operatorname{erf}\\!\\left(\\frac{x}{2\\sqrt{\\alpha t}}\\right),\\qquad q_s''(t)=\\frac{k(T_s-T_i)}{\\sqrt{\\pi\\alpha t}}",
+   "caption": "Semi-infinite solid, constant surface temperature T_s; the penetration depth is about delta = 4 sqrt(alpha t)"
+  },
+  {
+   "type": "text",
+   "markdown": "The error function $\\operatorname{erf}(\\eta)$ rises from 0 to 1; it reaches 0.9 at $\\eta\\approx1.16$ and 0.99 at $\\eta\\approx1.82$. The temperature at depth $x$ has therefore changed by 99% when $x=3.6\\sqrt{\\alpha t}$, so the depth the disturbance has reached is about $\\delta\\approx4\\sqrt{\\alpha t}$. The model holds while $\\delta$ is less than the true thickness. When two semi-infinite bodies touch, each sees a constant interface temperature set by their effusivities."
+  },
+  {
+   "type": "worked_example",
+   "title": "Contact temperature of fingertip on steel",
+   "prompt": "A fingertip (treat as a semi-infinite solid with $k=0.37$ W/m K, $\\rho=1000$ kg/m$^3$, $c=3400$ J/kg K, typical) at 34 $^\\circ$C touches a steel bar ($k=45$ W/m K, $\\rho=7800$ kg/m$^3$, $c=480$ J/kg K, typical) at 20 $^\\circ$C. Find the interface temperature. Compare with the same finger on wood ($k=0.15$, $\\rho=700$, $c=2400$).",
+   "steps": [
+    {
+     "text": "Two semi-infinite solids brought into perfect contact reach a constant interface temperature given by their thermal effusivities $b=\\sqrt{k\\rho c}$ (units W s$^{1/2}$/m$^2$K).",
+     "latex": "T_s=\\frac{b_AT_A+b_BT_B}{b_A+b_B}"
+    },
+    {
+     "text": "Skin: $b=\\sqrt{0.37\\times1000\\times3400}=1122$. Steel: $b=\\sqrt{45\\times7800\\times480}=12980$. Wood: $b=\\sqrt{0.15\\times700\\times2400}=502$."
+    },
+    {
+     "text": "Steel: $T_s=(1122\\times34+12980\\times20)/(1122+12980)=21.1$ $^\\circ$C."
+    },
+    {
+     "text": "Wood: $T_s=(1122\\times34+502\\times20)/(1122+502)=29.7$ $^\\circ$C."
+    }
+   ],
+   "answer": "Steel contact temperature about 21.1 $^\\circ$C and wood about 29.7 $^\\circ$C. The finger surface drops much more against steel, which is why steel feels colder than wood at the same initial temperature."
+  },
+  {
+   "type": "text",
+   "markdown": "For a plane wall of half-thickness $L$ with convection on both faces, define the Biot number $Bi=hL/k$ and the Fourier number $Fo=\\alpha t/L^2$ (dimensionless time). For $Fo>0.2$ only the first term of the exact series is needed. The Heisler chart for the centre plots exactly this relationship."
+  },
+  {
+   "type": "math",
+   "latex": "\\theta_0^*=\\frac{T_0-T_\\infty}{T_i-T_\\infty}=C_1\\exp(-\\zeta_1^2Fo),\\qquad \\zeta_1\\tan\\zeta_1=Bi,\\qquad C_1=\\frac{4\\sin\\zeta_1}{2\\zeta_1+\\sin2\\zeta_1}",
+   "caption": "One-term solution for the centre of a plane wall of half-thickness L (valid for Fo > 0.2)"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$Bi=hL/k$",
+    "$\\zeta_1$ (rad)",
+    "$C_1$"
+   ],
+   "rows": [
+    [
+     "0.1",
+     "0.3111",
+     "1.0161"
+    ],
+    [
+     "0.2",
+     "0.4328",
+     "1.0311"
+    ],
+    [
+     "0.5",
+     "0.6533",
+     "1.0701"
+    ],
+    [
+     "1",
+     "0.8603",
+     "1.1191"
+    ],
+    [
+     "2",
+     "1.0769",
+     "1.1785"
+    ],
+    [
+     "5",
+     "1.3138",
+     "1.2402"
+    ],
+    [
+     "10",
+     "1.4289",
+     "1.2620"
+    ]
+   ],
+   "caption": "One-term coefficients for a plane wall (computed from the equations above)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Time to heat the centre of a steel slab",
+   "prompt": "A steel slab 100 mm thick (so half-thickness $L=50$ mm; $k=45$ W/m K, $\\rho=7800$ kg/m$^3$, $c=480$ J/kg K, typical), initially at 20 $^\\circ$C, is placed in a furnace at 800 $^\\circ$C with an effective $h=450$ W/m$^2$K on both faces. Find the time for the centre to reach 600 $^\\circ$C. Treat the slab as a plane wall of infinite extent and use the one-term solution.",
+   "steps": [
+    {
+     "text": "Thermal diffusivity $\\alpha=k/(\\rho c)=45/(7800\\times480)=1.202e-05$ m$^2$/s and $Bi=hL/k=450\\times0.05/45=0.50$. This exceeds 0.1, so lumped capacitance is not valid.",
+     "latex": "\\alpha=\\frac{k}{\\rho c},\\quad Bi=\\frac{hL}{k}"
+    },
+    {
+     "text": "For $Bi=0.5$ the first root of $\\zeta_1\\tan\\zeta_1=Bi$ is $\\zeta_1=0.6533$ and $C_1=4\\sin\\zeta_1/(2\\zeta_1+\\sin2\\zeta_1)=1.0701$.",
+     "latex": "\\zeta_1\\tan\\zeta_1=Bi"
+    },
+    {
+     "text": "Required dimensionless centre temperature: $\\theta_0^*=(T_0-T_\\infty)/(T_i-T_\\infty)=(600-800)/(20-800)=0.2564$.",
+     "latex": "\\theta_0^*=\\frac{T_0-T_\\infty}{T_i-T_\\infty}"
+    },
+    {
+     "text": "Solve $\\theta_0^*=C_1e^{-\\zeta_1^2Fo}$ for $Fo$: $Fo=-\\ln(0.2564/1.0701)/0.4268=3.348$, which exceeds 0.2, so the one-term solution is valid.",
+     "latex": "Fo=-\\frac{1}{\\zeta_1^2}\\ln\\frac{\\theta_0^*}{C_1}"
+    },
+    {
+     "text": "Time: $t=FoL^2/\\alpha=3.348\\times0.05^2/1.202e-05=696$ s, about 11.6 minutes.",
+     "latex": "t=\\frac{Fo\\,L^2}{\\alpha}"
+    }
+   ],
+   "answer": "Centre reaches 600 $^\\circ$C after about 696 s (11.6 min), with $Fo\\approx3.35$."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Compute $\\alpha=k/(\\rho c)$ and $Bi=hL/k$; if $Bi<0.1$ use the lumped model.",
+    "If the body is thick compared with $\\delta=4\\sqrt{\\alpha t}$, use the semi-infinite solution instead.",
+    "Otherwise find $\\zeta_1$ and $C_1$ for the plane wall from the table or the equation.",
+    "Solve $\\theta_0^*=C_1e^{-\\zeta_1^2Fo}$ for $Fo$ or $T_0$, and convert with $t=FoL^2/\\alpha$.",
+    "Check $Fo>0.2$ for the one-term approximation."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Half-thickness, not thickness",
+   "text": "In the Fourier and Biot numbers $L$ is half of the thickness of a plate heated from both sides (the distance from the centre to a surface). Using the full thickness $2L$ in place of $L$ makes the computed $Fo$ four times too small for a given time, and a time found from a target $Fo$ four times too long. For a plate insulated on one face, the thickness is $L$."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Which model",
+   "text": "$Bi<0.1$: lumped capacitance. $Bi>0.1$ and $\\delta<$ thickness: semi-infinite solid. Otherwise: one-term (or chart) solution with $Fo>0.2$. Contact temperatures between two bodies are weighted by their effusivity $b=\\sqrt{k\\rho c}$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Semi-infinite solid: $(T-T_s)/(T_i-T_s)=\\operatorname{erf}(x/2\\sqrt{\\alpha t})$; penetration depth about $4\\sqrt{\\alpha t}$.",
+    "Contact temperature of two semi-infinite solids is $T_s=(b_AT_A+b_BT_B)/(b_A+b_B)$ with $b=\\sqrt{k\\rho c}$.",
+    "Plane wall centre: $\\theta_0^*=C_1e^{-\\zeta_1^2Fo}$ with $\\zeta_1\\tan\\zeta_1=Bi$, for $Fo>0.2$.",
+    "Time to reach a target: $t=FoL^2/\\alpha$ with $L$ the half-thickness."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A thick concrete wall is suddenly heated on one face. The semi-infinite solid solution is a good model for the wall during the period when",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "the Biot number is below 0.1"
+    },
+    {
+     "id": "b",
+     "text": "the Fourier number is above 1 so that the profile is steady"
+    },
+    {
+     "id": "c",
+     "text": "the surface temperature equals the initial temperature"
+    },
+    {
+     "id": "d",
+     "text": "the thermal disturbance has not yet reached the far face, i.e. $4\\sqrt{\\alpha t}$ is less than the wall thickness"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "the thermal disturbance has not yet reached the far face, i.e. $4\\sqrt{\\alpha t}$ is less than the wall thickness",
+   "distractorRationale": {
+    "a": "That is the lumped capacitance criterion, which assumes no gradient in the wall at all.",
+    "b": "A semi-infinite solution describes the early, unsteady stage; it fails once the far face responds.",
+    "c": "Then nothing would change; the model requires a changed surface condition."
+   },
+   "explanation": "The semi-infinite model assumes the far boundary is unaffected, which is true only while the penetration depth $\\delta\\approx4\\sqrt{\\alpha t}$ is smaller than the thickness. After that the finite-wall solution is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a plane wall of total thickness $2L$ heated by convection on both faces, the Fourier number is defined as",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$Fo=\\alpha t/(2L)^2$"
+    },
+    {
+     "id": "b",
+     "text": "$Fo=\\alpha t/L^2$ with $L$ the half-thickness"
+    },
+    {
+     "id": "c",
+     "text": "$Fo=hL/k$"
+    },
+    {
+     "id": "d",
+     "text": "$Fo=\\alpha/(tL^2)$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$Fo=\\alpha t/L^2$ with $L$ the half-thickness",
+   "distractorRationale": {
+    "a": "This uses the full thickness; the charts and one-term series use the half-thickness.",
+    "c": "This is the Biot number.",
+    "d": "The dimensions are wrong: it does not give a dimensionless ratio of time scales."
+   },
+   "explanation": "$Fo=\\alpha t/L^2$ is the ratio of elapsed time to the diffusion time across the half-thickness. Using the full thickness is a common error that changes the time by a factor of four.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A red-hot steel casting at 500 $^\\circ$C ($k=45$ W/m K, $\\rho=7800$ kg/m$^3$, $c=480$ J/kg K, typical) is pressed flat against a cold concrete slab at 20 $^\\circ$C ($k=1.4$ W/m K, $\\rho=2300$ kg/m$^3$, $c=880$ J/kg K, typical). Treating both as semi-infinite and in perfect contact, find the contact temperature in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o1"
+   ],
+   "correctValue": 444.9,
+   "tolerance": 1.0,
+   "unit": "degC",
+   "explanation": "The effusivities are $b_{steel}=\\sqrt{45\\times7800\\times480}=12980$ and $b_{conc}=\\sqrt{1.4\\times2300\\times880}=1683$. The weighted mean is $(12980\\times500+1683\\times20)/(12980+1683)=444.9$ $^\\circ$C. The interface stays close to the steel's temperature because steel has the much larger effusivity.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Wet soil ($\\alpha=6.0\\times10^{-7}$ m$^2$/s, typical) is initially at 8 $^\\circ$C. Its surface is held at $-10$ $^\\circ$C by a cold spell lasting 10 days. Treating the soil as semi-infinite, find the temperature at a depth of 0.50 m after 10 days in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o1"
+   ],
+   "correctValue": -3.22,
+   "tolerance": 0.2,
+   "unit": "degC",
+   "explanation": "$t=864000$ s, so $2\\sqrt{\\alpha t}=2\\sqrt{6\\times10^{-7}\\times864000}=1.4400$ m and $\\eta=0.50/1.4400=0.347$. Then $\\operatorname{erf}(\\eta)=0.3766$ and $T=-10+18\\times0.3766=-3.22$ $^\\circ$C. The soil at 0.5 m has already cooled by about 11.2 K.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A glass slab of half-thickness $L$ at $T_i=20$ $^\\circ$C is placed in an oven at 500 $^\\circ$C. For its Biot number the one-term constants are $\\zeta_1=0.8603$ and $C_1=1.1191$. At a Fourier number $Fo=0.60$, find the centre temperature in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o2"
+   ],
+   "correctValue": 155.4,
+   "tolerance": 1.0,
+   "unit": "degC",
+   "explanation": "$\\theta_0^*=C_1e^{-\\zeta_1^2Fo}=1.1191\\exp(-0.7401\\times0.6)=0.7178$. Then $T_0=500-480\\times0.7178=155.4$ $^\\circ$C. The $Fo>0.2$ condition for the one-term approximation is satisfied.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two plates of the same material and the same initial temperature are heated with the same $h$ and fluid temperature. Plate B is twice as thick as plate A and the lumped model is not valid for either. For both centres to reach the same Fourier number, plate B needs",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o2",
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "four times the time of plate A"
+    },
+    {
+     "id": "b",
+     "text": "twice the time of plate A"
+    },
+    {
+     "id": "c",
+     "text": "the same time as plate A"
+    },
+    {
+     "id": "d",
+     "text": "eight times the time of plate A"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "four times the time of plate A",
+   "distractorRationale": {
+    "b": "$t=FoL^2/\\alpha$, so doubling $L$ quadruples $t$ at equal $Fo$.",
+    "c": "Thicker bodies take longer because the diffusion distance is larger.",
+    "d": "This would follow a cubic dependence; the time scales as $L^2$."
+   },
+   "explanation": "At fixed $Fo=\\alpha t/L^2$ the time is $t=FoL^2/\\alpha$, so doubling the half-thickness multiplies the time by 4. Physically, the diffusion distance doubles, so the diffusion time is four times longer.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Block A has effusivity $b_A=4b_B$. A at 100 $^\\circ$C is brought into perfect contact with block B at 20 $^\\circ$C. Treating both as semi-infinite, the contact temperature is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "60 $^\\circ$C"
+    },
+    {
+     "id": "b",
+     "text": "36 $^\\circ$C"
+    },
+    {
+     "id": "c",
+     "text": "84 $^\\circ$C"
+    },
+    {
+     "id": "d",
+     "text": "100 $^\\circ$C"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "84 $^\\circ$C",
+   "distractorRationale": {
+    "a": "This is the simple average of the two temperatures, which ignores the effusivities.",
+    "b": "This weights toward B instead of A; the larger effusivity pulls the interface toward its own temperature.",
+    "d": "This would need $b_B=0$; a finite $b_B$ pulls the interface down."
+   },
+   "explanation": "$T_s=(4\\times100+1\\times20)/5=84$ $^\\circ$C. The body with the larger effusivity holds the interface close to its own temperature.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A metal door handle and a wooden door at the same room temperature of 20 $^\\circ$C feel different to a hand at 34 $^\\circ$C. Explain, using the semi-infinite solid contact temperature, why the metal feels colder.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o1"
+   ],
+   "markingGuide": [
+    "On contact the interface settles to $T_s=(b_AT_A+b_BT_B)/(b_A+b_B)$ with effusivity $b=\\sqrt{k\\rho c}$.",
+    "Metal has a much greater $b$ than wood, so the interface is pulled close to the metal temperature (about 20 $^\\circ$C).",
+    "Wood has a small $b$ like skin, so the interface stays near skin temperature.",
+    "Heat flux $q''=k\\Delta T/\\sqrt{\\pi\\alpha t}$ is also much larger on metal, so heat is drained from the skin faster."
+   ],
+   "explanation": "Perceived coldness depends on how fast heat leaves the skin, which depends on effusivity, not on the temperature of the object. Metal therefore feels colder though the temperature is the same.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A steel plate 50 mm thick (so $L=25$ mm; $k=50$ W/m K, $\\rho=7800$ kg/m$^3$, $c=480$ J/kg K, typical) is at 800 $^\\circ$C and is quenched on both faces in a water bath at 25 $^\\circ$C with an effective $h=4000$ W/m$^2$K. Use the one-term solution (for $Bi=2.0$, $\\zeta_1=1.0769$ and $C_1=1.1785$). Find the time in seconds for the centre to reach 300 $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o2",
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o3"
+   ],
+   "correctValue": 48.4,
+   "tolerance": 3.0,
+   "unit": "s",
+   "explanation": "$\\alpha=1.335e-05$ m$^2$/s and $Bi=2.0$. The dimensionless target is $\\theta_0^*=(300-25)/(800-25)=0.3548$. Then $Fo=-\\ln(0.3548/1.1785)/1.0769^2=1.035$ (above 0.2, so the one-term form is valid) and $t=FoL^2/\\alpha=48.4$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe how you would decide between the lumped capacitance model, the semi-infinite solid solution and the one-term plane wall solution for a given heating problem, giving the criterion for each. Then explain why the one-term solution is not accurate at very small times.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o1",
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o2",
+    "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts.o3"
+   ],
+   "markingGuide": [
+    "Lumped capacitance: $Bi=hL_c/k<0.1$, uniform temperature.",
+    "Semi-infinite: early times when $\\delta\\approx4\\sqrt{\\alpha t}$ is smaller than the body thickness, or any thick body.",
+    "One-term plane wall: finite thickness and $Bi>0.1$, valid for $Fo>0.2$.",
+    "At small $Fo$, higher-order terms of the series (which decay faster with $e^{-\\zeta_n^2Fo}$) are not negligible, so truncating at one term is inaccurate."
+   ],
+   "explanation": "A complete answer ranks models by their assumptions. The truncation error comes from higher series terms that decay quickly but matter at small $Fo$.",
+   "board": "internal"
+  }
+ ]
+}

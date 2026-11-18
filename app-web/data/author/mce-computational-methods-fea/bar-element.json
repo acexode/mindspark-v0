@@ -1,0 +1,417 @@
+{
+ "lessonTitle": "The Two-Node Bar Element: Stiffness, Assembly and Solution",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hydraulic actuator rod that steps down in diameter twice along its length is loaded at its tip by 12 kN. Hand calculation of the tip movement means chaining three different axial springs in series, and an FE code does exactly that sum behind the scenes. In this unit you build that calculation from one small matrix: the two-node bar element."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** An axial bar loaded only at its ends behaves like a linear spring. The finite element method represents a long, possibly stepped bar as a chain of such springs joined at **nodes**. Each node moves along the bar axis only, so it has one degree of freedom (DOF): the axial displacement $u_i$ (mm). The loads are axial nodal forces $F_i$ (N) acting in the same direction. A positive displacement or force points along the global $+x$ axis."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Axial stiffness of a uniform bar",
+   "text": "For a uniform bar of cross-sectional area $A$ (mm$^2$), length $L$ (mm) and Young's modulus $E$ (N/mm$^2$ = MPa), an axial force $F$ produces an elongation $\\delta=FL/(AE)$. The stiffness $k=F/\\delta=AE/L$ (N/mm) is the force needed per unit elongation. Assumptions: linear elastic material, small displacements, uniform stress over the section (no bending), constant $A$ and $E$ within one element."
+  },
+  {
+   "type": "text",
+   "markdown": "**Deriving the element matrix.** Take an element with node 1 at the left and node 2 at the right, with nodal displacements $u_1,u_2$. The elongation is $\\delta=u_2-u_1$, so the internal tension is $N=k(u_2-u_1)$. Equilibrium of the element requires the force applied at node 2 to be $+N$ (pulling right) and the force applied at node 1 to be $-N$ (pulling left). Written for both nodes: $f_1=k(u_1-u_2)$ and $f_2=k(u_2-u_1)$, which is the matrix equation below."
+  },
+  {
+   "type": "math",
+   "latex": "\\begin{Bmatrix}f_1\\\\f_2\\end{Bmatrix}=\\frac{AE}{L}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}\\begin{Bmatrix}u_1\\\\u_2\\end{Bmatrix}",
+   "caption": "Two-node bar element: $\\mathbf{f}=\\mathbf{k}\\mathbf{u}$"
+  },
+  {
+   "type": "text",
+   "markdown": "Two properties are worth checking every time. The matrix is **symmetric**: the force at node 1 due to a unit displacement of node 2 equals the force at node 2 due to a unit displacement of node 1. It is also **singular** ($\\det=0$): each row sums to zero because a rigid translation ($u_1=u_2$) stretches nothing and so creates no force. The singularity is removed only by supporting the structure."
+  },
+  {
+   "type": "worked_example",
+   "title": "Stiffness matrix of one steel element",
+   "prompt": "A steel bar element has $A=200$ mm$^2$, $L=500$ mm and $E=200$ GPa. Find its element stiffness matrix in N/mm and the force needed to elongate it by 0.10 mm.",
+   "steps": [
+    {
+     "text": "Convert the modulus to N/mm$^2$: 200 GPa is the same as $2.0\\times10^{5}$ N/mm$^2$.",
+     "latex": "E=2.0\\times10^{5}\\ \\text{N/mm}^2"
+    },
+    {
+     "text": "Axial stiffness $k=AE/L$.",
+     "latex": "k=\\frac{(200)(2.0\\times10^{5})}{500}=8.0\\times10^{4}\\ \\text{N/mm}"
+    },
+    {
+     "text": "Insert into the element template.",
+     "latex": "\\mathbf{k}=8.0\\times10^{4}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}\\ \\text{N/mm}"
+    },
+    {
+     "text": "Force for an elongation of 0.10 mm: fix node 1 ($u_1=0$), set $u_2=0.10$ mm, so $f_2=ku_2$.",
+     "latex": "f_2=(8.0\\times10^{4})(0.10)=8000\\ \\text{N}"
+    }
+   ],
+   "answer": "$\\mathbf{k}=8.0\\times10^{4}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}$ N/mm; the force is 8000 N (8 kN)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Assembly.** For a chain of elements, element $e$ joins nodes $e$ and $e+1$. The global displacement vector holds one entry per node. Force equilibrium at a shared node says the applied nodal force equals the sum of the forces transmitted by every element meeting there, so entries of the element matrices that refer to the same global DOF are **added** into the global matrix $\\mathbf{K}$. Three elements with stiffnesses $k_1,k_2,k_3$ give a $4\\times4$ tridiagonal matrix:"
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{K}=\\begin{bmatrix}k_1&-k_1&0&0\\\\-k_1&k_1+k_2&-k_2&0\\\\0&-k_2&k_2+k_3&-k_3\\\\0&0&-k_3&k_3\\end{bmatrix}",
+   "caption": "Global stiffness matrix of a three-element bar; $\\mathbf{K}\\mathbf{u}=\\mathbf{F}$"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Boundary conditions make the system solvable",
+   "text": "Before any support is applied $\\mathbf{K}$ is singular. Prescribing $u_1=0$ at a fixed end lets you remove row and column 1 (elimination) and solve the reduced system for the free displacements. The reaction at the support is then recovered from the deleted row: $R_1=\\sum_j K_{1j}u_j-F_1$, where $F_1$ is any applied load at that node (here zero)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Stepped bar fixed at one end",
+   "prompt": "An aluminium bar ($E=70$ GPa) has three segments: $A_1=400$ mm$^2$, $L_1=300$ mm; $A_2=250$ mm$^2$, $L_2=200$ mm; $A_3=100$ mm$^2$, $L_3=250$ mm. Node 1 is fixed and a 12 kN tensile load acts at node 4. Find the nodal displacements, the reaction and the stress in each element.",
+   "steps": [
+    {
+     "text": "Element stiffnesses $k_e=A_eE/L_e$ in N/mm with $E=7.0\\times10^{4}$ N/mm$^2$.",
+     "latex": "k_1=93333,\\ k_2=87500,\\ k_3=28000\\ \\text{N/mm}"
+    },
+    {
+     "text": "Assemble $\\mathbf{K}$ by adding element terms at shared nodes; the interior diagonal entries are $K_{22}=k_1+k_2$ and $K_{33}=k_2+k_3$.",
+     "latex": "K_{22}=180833,\\ K_{33}=115500\\ \\text{N/mm}"
+    },
+    {
+     "text": "Apply $u_1=0$ and delete row and column 1. Loads: $F_2=F_3=0$, $F_4=12000$ N. Solving the $3\\times3$ system by Gauss elimination gives the same result as accumulating $\\delta_e=F/k_e$ along the chain, because the 12 kN passes through every element.",
+     "latex": "u_2=\\frac{12000}{93333}=0.1286,\\ u_3=u_2+\\frac{12000}{87500}=0.2657,\\ u_4=u_3+\\frac{12000}{28000}=0.6943\\ \\text{mm}"
+    },
+    {
+     "text": "Reaction from the deleted row: $R_1=K_{11}u_1+K_{12}u_2$.",
+     "latex": "R_1=-k_1u_2=-(93333)(0.1286)=-12000\\ \\text{N}"
+    },
+    {
+     "text": "Element stress $\\sigma_e=E(u_{e+1}-u_e)/L_e$ in MPa. The force is the same in every element, so stress rises as the area falls.",
+     "latex": "\\sigma_1=30.0,\\ \\sigma_2=48.0,\\ \\sigma_3=120.0\\ \\text{MPa}"
+    }
+   ],
+   "answer": "$u_2=0.1286$ mm, $u_3=0.2657$ mm, $u_4=0.6943$ mm; $R_1=-12000$ N (a 12 kN reaction acting towards $-x$, balancing the load); element stresses 30.0, 48.0 and 120.0 MPa."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Step",
+    "Operation",
+    "Result in this unit"
+   ],
+   "rows": [
+    [
+     "1",
+     "Element stiffness",
+     "$k_e=A_eE_e/L_e$ for each segment"
+    ],
+    [
+     "2",
+     "Assembly",
+     "Add element entries into shared global DOFs"
+    ],
+    [
+     "3",
+     "Boundary conditions",
+     "Remove fixed DOFs so $\\mathbf{K}$ is non-singular"
+    ],
+    [
+     "4",
+     "Solve",
+     "Gauss elimination on $\\mathbf{K}_{ff}\\mathbf{u}_f=\\mathbf{F}_f$"
+    ],
+    [
+     "5",
+     "Post-process",
+     "Reactions from deleted rows; stress $E\\,\\Delta u/L$"
+    ]
+   ],
+   "caption": "Workflow for a bar model"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Always state the unit set (here N, mm, MPa = N/mm$^2$) and keep it consistent through $E$, $A$, $L$ and $F$.",
+    "The global matrix is symmetric, banded and singular until supports are added.",
+    "Each node has one DOF, so $n$ nodes give an $n\\times n$ matrix.",
+    "Reactions are found from the rows deleted by the constraints, not from the reduced system.",
+    "Check physically: for a statically determinate stepped bar the tip movement is $\\sum_e FL_e/(A_eE)$ and the reaction equals the applied load in magnitude."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Do not add stiffnesses of elements that do not share a node, and do not drop the minus sign on the off-diagonal entries. Mixing GPa with mm (instead of N/mm$^2$) gives a stiffness wrong by a factor of 1000."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The two-node bar element has stiffness matrix $(AE/L)\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}$, derived from $F=k\\delta$ and nodal equilibrium.",
+    "Global $\\mathbf{K}$ is assembled by adding element contributions at shared nodes; a three-element bar gives a $4\\times4$ tridiagonal matrix.",
+    "Applying a fixed support removes the rigid-body singularity; solve the reduced system, then recover reactions from the deleted rows and check equilibrium."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A copper bar element has $E=110$ GPa, $A=150$ mm$^2$ and length $L=0.75$ m. Which value is its axial stiffness $k$ in the element matrix?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "22.0 kN/mm"
+    },
+    {
+     "id": "b",
+     "text": "22000 kN/mm"
+    },
+    {
+     "id": "c",
+     "text": "12 375 kN/mm"
+    },
+    {
+     "id": "d",
+     "text": "0.022 kN/mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "22.0 kN/mm",
+   "distractorRationale": {
+    "b": "Quotes the stiffness in N/mm but labels it kN/mm, so the value is a thousand times too large.",
+    "c": "Multiplies by $L$ instead of dividing, which is not an axial stiffness.",
+    "d": "Divides by 1000 twice when converting units, so the result is a thousand times too small."
+   },
+   "explanation": "The stiffness is $AE/L$ with $E=1.1\\times10^{5}$ N/mm$^2$ and $L=750$ mm. This gives 22 000 N/mm, i.e. 22.0 kN/mm; keeping one consistent unit set is the main source of error.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why does every row of the unconstrained two-node bar stiffness matrix sum to zero?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A rigid translation of the element ($u_1=u_2$) produces no elongation and therefore no nodal forces"
+    },
+    {
+     "id": "b",
+     "text": "The element is always in static equilibrium under any applied nodal forces"
+    },
+    {
+     "id": "c",
+     "text": "The elastic modulus cancels out between the two nodes"
+    },
+    {
+     "id": "d",
+     "text": "The matrix is symmetric, and symmetric matrices have zero row sums"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A rigid translation of the element ($u_1=u_2$) produces no elongation and therefore no nodal forces",
+   "distractorRationale": {
+    "b": "Equilibrium of the nodal forces ($f_1=-f_2$) is a related statement, but it does not explain why a rigid displacement gives no force.",
+    "c": "$E$ appears as a common factor in every entry; it does not cancel between nodes.",
+    "d": "Symmetry does not imply zero row sums; many symmetric matrices have non-zero row sums."
+   },
+   "explanation": "The nodal forces depend only on the elongation $u_2-u_1$. With a rigid translation the elongation is zero, so the vector of equal displacements is mapped to zero force, which is exactly what zero row sums and a zero determinant mean.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A three-element bar has element stiffnesses $k_1=5000$, $k_2=8000$ and $k_3=2000$ N/mm in order from node 1 to node 4. What are the entries $K_{33}$ and $K_{13}$ of the assembled global matrix?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$K_{33}=10\\,000$ N/mm and $K_{13}=0$"
+    },
+    {
+     "id": "b",
+     "text": "$K_{33}=2000$ N/mm and $K_{13}=-8000$ N/mm"
+    },
+    {
+     "id": "c",
+     "text": "$K_{33}=15\\,000$ N/mm and $K_{13}=-8000$ N/mm"
+    },
+    {
+     "id": "d",
+     "text": "$K_{33}=10\\,000$ N/mm and $K_{13}=-5000$ N/mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$K_{33}=10\\,000$ N/mm and $K_{13}=0$",
+   "distractorRationale": {
+    "b": "Takes only the third element at node 3 and treats the second element's coupling term as joining nodes 1 and 3.",
+    "c": "Adds all three stiffnesses at node 3 although the first element does not touch node 3.",
+    "d": "Gets the diagonal right but puts the first element's coupling term between nodes 1 and 3; that element joins nodes 1 and 2."
+   },
+   "explanation": "Node 3 belongs to elements 2 and 3, so $K_{33}=k_2+k_3=10\\,000$ N/mm. Nodes 1 and 3 do not belong to a common element, so no stiffness couples them and $K_{13}=0$, which is why the matrix is tridiagonal.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a bar fixed at node 1 and loaded axially only at its free end, which statement about solving the system is correct?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Delete the row and column of the fixed node, solve the reduced system, then find the support reaction from the deleted row"
+    },
+    {
+     "id": "b",
+     "text": "Solve the full unconstrained matrix directly, because it becomes non-singular once a load is applied"
+    },
+    {
+     "id": "c",
+     "text": "Set the fixed node's diagonal term to zero and solve the full matrix for every displacement"
+    },
+    {
+     "id": "d",
+     "text": "Delete the row and column of the loaded node, because that is where the force is applied"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Delete the row and column of the fixed node, solve the reduced system, then find the support reaction from the deleted row",
+   "distractorRationale": {
+    "b": "The unconstrained matrix stays singular regardless of the loads; loads do not remove rigid-body motion.",
+    "c": "Setting a diagonal term to zero makes the matrix more singular, not less.",
+    "d": "The loaded DOF is a free unknown; only constrained DOFs are removed."
+   },
+   "explanation": "Singularity comes from the rigid-body mode, so it is removed only by constraints, never by loads. Eliminating the constrained row and column leaves a non-singular system for the free DOFs, and the reaction is recovered afterwards from the deleted row.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A bar is fixed at node 1 and free elsewhere. After solving, node 2 has moved $u_2=0.050$ mm in the $+x$ direction and the element stiffness between nodes 1 and 2 is 10 000 N/mm; no external load acts at node 1 itself. What is the support reaction $R_1$ along $+x$?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$-500$ N"
+    },
+    {
+     "id": "b",
+     "text": "$+500$ N"
+    },
+    {
+     "id": "c",
+     "text": "$-0.050$ N"
+    },
+    {
+     "id": "d",
+     "text": "$+200\\,000$ N"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$-500$ N",
+   "distractorRationale": {
+    "b": "Sign error: the off-diagonal entry is $-k$, so the reaction acts towards $-x$ when node 2 moves towards $+x$.",
+    "c": "Forgets to multiply by the stiffness and quotes a number built from the displacement alone.",
+    "d": "Divides by the displacement instead of multiplying."
+   },
+   "explanation": "The deleted first row gives $R_1=K_{11}u_1+K_{12}u_2$. With $u_1=0$ and $K_{12}=-k=-10\\,000$ N/mm the reaction is $-500$ N: the support pulls the bar back against the tensile load.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel ($E=200$ GPa) bar of three equal-length segments of 400 mm has areas 500, 300 and 150 mm$^2$ from the fixed end to the free end. A 30 kN axial load acts at the free end. Assemble and solve the three-element model and give the free-end displacement in mm.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o2",
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o3"
+   ],
+   "correctValue": 0.72,
+   "tolerance": 0.005,
+   "unit": "mm",
+   "explanation": "The element stiffnesses $AE/L$ are 250000, 150000 and 75000 N/mm. After eliminating the fixed node, the 30 000 N force passes through every element, so the tip displacement is the sum of $30\\,000/k_e$ = 0.7200 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A uniform aluminium bar ($A=300$ mm$^2$, $E=70$ GPa) is built in at both ends and modelled with two bar elements of lengths 200 mm (left) and 300 mm (right) meeting at node 2. A 10 kN axial load acts on node 2 towards the right. Find the magnitude of the reaction at the left wall in kN.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o3"
+   ],
+   "correctValue": 6.0,
+   "tolerance": 0.02,
+   "unit": "kN",
+   "explanation": "Only $u_2$ is free: $(k_1+k_2)u_2=10\\,000$ with $k_1=105000$ and $k_2=70000$ N/mm, so $u_2=0.05714$ mm. The left reaction magnitude is $k_1u_2=6000$ N = 6.00 kN; the shorter element is stiffer and carries the larger share.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "After solving a bar model of aluminium ($E=70$ GPa), the displacements at the ends of a 300 mm element are $u_a=0.050$ mm and $u_b=0.140$ mm. Compute the axial stress in that element in MPa (tension positive).",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o3"
+   ],
+   "correctValue": 21.0,
+   "tolerance": 0.2,
+   "unit": "MPa",
+   "explanation": "The strain is $(u_b-u_a)/L=0.090/300=3.0\\times10^{-4}$, so the stress is $E\\varepsilon=7.0\\times10^{4}\\times3.0\\times10^{-4}=21$ MPa. The sign is positive because the element is stretched.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the stiffness matrix of a two-node bar element of area $A$, length $L$ and modulus $E$ starting from the elongation of a bar under axial force, and state two properties of the resulting matrix.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o1"
+   ],
+   "markingGuide": [
+    "Elongation $\\delta=u_2-u_1$ and axial force-elongation relation $N=(AE/L)\\delta$",
+    "Equilibrium: applied force at node 2 is $+N$, at node 1 is $-N$",
+    "Writes $f_1=k(u_1-u_2)$, $f_2=k(u_2-u_1)$ with $k=AE/L$ and assembles into the $2\\times2$ matrix",
+    "Symmetric",
+    "Singular (zero determinant, rows sum to zero) because a rigid translation causes no force"
+   ],
+   "explanation": "A bar loaded at its ends is a linear spring of stiffness $AE/L$. Applying nodal equilibrium to the spring's two ends gives the matrix $(AE/L)[[1,-1],[-1,1]]$, whose symmetry reflects reciprocity and whose singularity reflects the free rigid-body translation.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain, for a stepped bar of three elements built in at one end, why the unconstrained global stiffness matrix is singular, how the support is applied by elimination, and how the support reaction is then obtained. Why must the reaction equal the applied load for an end-loaded bar?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o2",
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.bar-element.o3"
+   ],
+   "markingGuide": [
+    "Unconstrained bar can translate as a rigid body, so $\\mathbf{K}\\mathbf{u}=\\mathbf{0}$ has non-trivial solutions and $\\det\\mathbf{K}=0$",
+    "Prescribed $u_1=0$: delete row and column 1 to get a reduced non-singular system for the free DOFs",
+    "Solve the reduced system (e.g. Gauss elimination) for the free displacements",
+    "Reaction from the deleted row: $R_1=\\sum_jK_{1j}u_j-F_1$",
+    "Global equilibrium: external forces including the reaction sum to zero, so the reaction is minus the applied load"
+   ],
+   "explanation": "The rigid-body mode must be removed by a constraint; elimination does this while keeping the reduced matrix symmetric. The deleted row is the equilibrium equation at the support and contains the reaction as the unknown, and the zero column sums of K show that the reaction equals minus the applied load.",
+   "board": "internal"
+  }
+ ]
+}

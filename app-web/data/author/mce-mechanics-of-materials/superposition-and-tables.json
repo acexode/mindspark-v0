@@ -1,0 +1,383 @@
+{
+ "lessonTitle": "Superposition and Standard Cases",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A steel floor beam under an office corridor has passed its strength check, but the plaster ceiling below it cracks if the beam sags by more than about one part in 360 of its span. Designers do not integrate the elastic curve for every beam; they look up standard cases and add them. That shortcut is called superposition."
+  },
+  {
+   "type": "text",
+   "markdown": "The deflection of a beam depends **linearly** on the load as long as the material stays linear elastic and the deflections are small (so that the geometry of the beam is effectively unchanged by loading). Under those conditions the **principle of superposition** applies: the deflection caused by several loads acting together equals the sum of the deflections that each load would cause acting alone. This lets us build the answer for a complicated load case from a table of simple, standard cases."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Principle of superposition",
+   "text": "If the response is linear in the loads, then for loads $P_1, P_2,\\ldots$ the total deflection at any point is $v=v_1+v_2+\\cdots$, where $v_i$ is the deflection due to load $i$ alone with the same supports. It requires linear elastic material (Hooke's law) and small slopes."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Case",
+    "Maximum deflection",
+    "Location"
+   ],
+   "rows": [
+    [
+     "Cantilever, end load $P$",
+     "$PL^3/(3EI)$",
+     "free end"
+    ],
+    [
+     "Cantilever, UDL $w$ (force per length)",
+     "$wL^4/(8EI)$",
+     "free end"
+    ],
+    [
+     "Simply supported, central load $P$",
+     "$PL^3/(48EI)$",
+     "mid-span"
+    ],
+    [
+     "Simply supported, UDL $w$",
+     "$5wL^4/(384EI)$",
+     "mid-span"
+    ]
+   ],
+   "caption": "Standard cases (deflection magnitude; $E$ = modulus, $I$ = second moment of area, $L$ = span)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Superposing two simply supported cases",
+   "prompt": "A simply supported steel beam (E = 200 GPa) has span 4 m and I = 8.0e7 mm^4 (8.0e-5 m^4). It carries a UDL of 10 kN/m over the whole span and a central point load of 20 kN. Find the mid-span deflection and compare it with span/360.",
+   "steps": [
+    {
+     "text": "Flexural rigidity.",
+     "latex": "EI=200\\times10^{9}\\times8.0\\times10^{-5}=1.6\\times10^{7}\\ \\text{N m}^2"
+    },
+    {
+     "text": "UDL case, from the table.",
+     "latex": "\\delta_1=\\frac{5wL^4}{384EI}=\\frac{5(10\\,000)(4)^4}{384(1.6\\times10^{7})}=2.08\\times10^{-3}\\ \\text{m}"
+    },
+    {
+     "text": "Point load case.",
+     "latex": "\\delta_2=\\frac{PL^3}{48EI}=\\frac{20\\,000(4)^3}{48(1.6\\times10^{7})}=1.67\\times10^{-3}\\ \\text{m}"
+    },
+    {
+     "text": "Add them (both act downward at mid-span) and compare with L/360 = 4000/360 = 11.1 mm.",
+     "latex": "\\delta=2.08+1.67=3.75\\ \\text{mm}\\ \\ll\\ 11.1\\ \\text{mm}"
+    }
+   ],
+   "answer": "The mid-span deflection is 3.75 mm, about span/1067, which satisfies a span/360 limit comfortably."
+  },
+  {
+   "type": "text",
+   "markdown": "**Statically indeterminate beams by superposition.** A cantilever propped at its free end has one more support reaction than statics can determine. Treat the prop reaction $R_B$ as a **redundant**: remove the prop to get a determinate cantilever, find the free-end deflection due to the actual load, then apply $R_B$ alone as an upward load and demand that the net deflection at the prop is zero."
+  },
+  {
+   "type": "worked_example",
+   "title": "Propped cantilever",
+   "prompt": "A cantilever fixed at A and propped at its free end B has length 5 m and carries a UDL of 12 kN/m. The prop is rigid and level with A. Find the prop reaction and the fixed-end reactions.",
+   "steps": [
+    {
+     "text": "Remove the prop: free-end deflection due to the UDL (downward).",
+     "latex": "\\delta_{B,w}=\\frac{wL^4}{8EI}"
+    },
+    {
+     "text": "Apply R_B upward alone: free-end deflection (upward).",
+     "latex": "\\delta_{B,R}=\\frac{R_BL^3}{3EI}"
+    },
+    {
+     "text": "Compatibility: net deflection zero.",
+     "latex": "\\frac{wL^4}{8EI}=\\frac{R_BL^3}{3EI}\\ \\Rightarrow\\ R_B=\\frac{3wL}{8}=\\frac{3(12)(5)}{8}=22.5\\ \\text{kN}"
+    },
+    {
+     "text": "Equilibrium at the wall: vertical force and moment.",
+     "latex": "R_A=wL-R_B=37.5\\ \\text{kN},\\quad M_A=\\frac{wL^2}{2}-R_BL=150-112.5=37.5\\ \\text{kN m}"
+    }
+   ],
+   "answer": "The prop carries 22.5 kN (three eighths of the load); the wall carries 37.5 kN and a hogging moment of 37.5 kN m."
+  },
+  {
+   "type": "text",
+   "markdown": "**Deflection limits.** Strength is not the only requirement. Beams must also satisfy **serviceability** limits so that finishes do not crack and the structure feels stiff. A common limit is deflection $\\le L/360$ for floors with brittle finishes (other values such as $L/250$ or $L/180$ apply to other uses, and the value is stated by the applicable code or by the problem). The check is made under service (unfactored) loads."
+  },
+  {
+   "type": "worked_example",
+   "title": "Required stiffness for a limit",
+   "prompt": "A simply supported steel floor beam (E = 200 GPa) of span 6 m carries a service UDL of 8 kN/m. The deflection must not exceed span/360. Find the minimum I.",
+   "steps": [
+    {
+     "text": "Allowable deflection.",
+     "latex": "\\delta_{\\text{allow}}=\\frac{6000}{360}=16.7\\ \\text{mm}"
+    },
+    {
+     "text": "Set 5wL^4/(384EI) equal to the allowable and solve for I, in metres and newtons.",
+     "latex": "I_{\\min}=\\frac{5wL^4}{384E\\delta_{\\text{allow}}}=\\frac{5(8000)(6)^4}{384(200\\times10^{9})(0.01667)}=4.05\\times10^{-5}\\ \\text{m}^4"
+    }
+   ],
+   "answer": "I must be at least 4.05e-5 m^4 = 4.05e7 mm^4 (about 4050 cm^4); the chosen section must also pass the strength check."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "When superposition fails",
+   "text": "Superposition does not apply if deflections are large, or if the material is non-linear. It also needs care with supports: the cases combined must have the same supports and the same beam. Keep the sign convention consistent when adding, and remember that the prop reaction acts upward."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Superposition: for linear elastic response and small deflections, total deflection is the sum of deflections from each load alone, taken from standard-case tables.",
+    "A propped cantilever is solved by treating the prop reaction as a redundant and requiring zero net deflection at the prop; for a UDL, R = 3wL/8.",
+    "Serviceability checks compare the calculated service-load deflection with a limit such as span/360, giving a required minimum stiffness EI."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A beam carries two separate loads. Using the principle of superposition, the deflection at a point under both loads together is:",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The larger of the two individual deflections"
+    },
+    {
+     "id": "b",
+     "text": "The product of the two individual deflections"
+    },
+    {
+     "id": "c",
+     "text": "The average of the two individual deflections"
+    },
+    {
+     "id": "d",
+     "text": "The sum of the deflections each load would produce acting alone"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The sum of the deflections each load would produce acting alone",
+   "distractorRationale": {
+    "a": "Taking the larger ignores the contribution of the other load.",
+    "b": "Products have no physical meaning here.",
+    "c": "Averaging would underestimate the total.",
+    "d": "Correct: linearity means effects add."
+   },
+   "explanation": "For linear elastic response with small deflections, the effect of each load is independent, so deflections add algebraically (with signs).",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cantilever fixed at one end is propped at its free end and carries a UDL w over length L. The prop reaction is:",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "wL/2"
+    },
+    {
+     "id": "b",
+     "text": "3wL/8"
+    },
+    {
+     "id": "c",
+     "text": "wL/8"
+    },
+    {
+     "id": "d",
+     "text": "5wL/8"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "3wL/8",
+   "distractorRationale": {
+    "a": "This would be the value if the load were shared equally by wall and prop.",
+    "b": "Correct: equate wL^4/(8EI) to R L^3/(3EI).",
+    "c": "Reversed: this is a wall-moment type fraction (M = wL^2/8).",
+    "d": "This is the vertical reaction at the fixed wall, not the prop reaction."
+   },
+   "explanation": "Compatibility at the prop requires the downward UDL deflection wL^4/(8EI) to be cancelled by the upward prop deflection R L^3/(3EI). This gives R = 3wL/8, leaving 5wL/8 at the wall.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A floor beam spans 5 m and must satisfy a deflection limit of span/360. What is the maximum allowable deflection?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "13.9 mm"
+    },
+    {
+     "id": "b",
+     "text": "18.0 mm"
+    },
+    {
+     "id": "c",
+     "text": "72 mm"
+    },
+    {
+     "id": "d",
+     "text": "1.39 mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "13.9 mm",
+   "distractorRationale": {
+    "a": "Correct: 5000/360 = 13.9 mm.",
+    "b": "Uses span/278, not span/360.",
+    "c": "Multiplies by 360/25, which has no basis; unit slip.",
+    "d": "Off by a factor of ten from a decimal slip."
+   },
+   "explanation": "The allowable deflection is span divided by the ratio: 5000 mm/360 = 13.9 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A cantilever of length L carries a UDL w over its whole length and a point load P at its free end. The tip deflection by superposition is:",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "wL^4/(8EI) x PL^3/(3EI)"
+    },
+    {
+     "id": "b",
+     "text": "5wL^4/(384EI) + PL^3/(48EI)"
+    },
+    {
+     "id": "c",
+     "text": "wL^4/(8EI) + PL^3/(3EI)"
+    },
+    {
+     "id": "d",
+     "text": "wL^4/(3EI) + PL^3/(8EI)"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "wL^4/(8EI) + PL^3/(3EI)",
+   "distractorRationale": {
+    "a": "Superposition adds, it does not multiply.",
+    "b": "These are the simply supported mid-span cases, not cantilever.",
+    "c": "Correct: add the tabulated cantilever cases.",
+    "d": "Swaps the coefficients of the two cantilever cases."
+   },
+   "explanation": "The tabulated cantilever cases are wL^4/(8EI) for a UDL and PL^3/(3EI) for a tip load. Both deflect the tip downwards, so they add.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: serviceability deflection limits such as span/360 are checked under the unfactored service loads rather than ultimate loads.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Serviceability concerns normal use, so service loads are used. Strength checks use factored or ultimate loads instead.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cantilever of length 2 m has E = 70 GPa and I = 2.0 x 10^6 mm^4. It carries a point load of 1.5 kN at the free end and a UDL of 1.0 kN/m over its whole length. Find the tip deflection in mm.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o1"
+   ],
+   "correctValue": 42.86,
+   "tolerance": 0.3,
+   "unit": "mm",
+   "explanation": "EI = 70e9 x 2.0e-6 = 1.4e5 N m^2. Tip load: 1500(2^3)/(3 x 1.4e5) = 28.57 mm. UDL: 1000(2^4)/(8 x 1.4e5) = 14.29 mm. Total 42.86 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cantilever fixed at A and propped at its free end B, with the prop level with A, has length 6 m and carries a UDL of 15 kN/m. Find the prop reaction in kN.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o2"
+   ],
+   "correctValue": 33.75,
+   "tolerance": 0.2,
+   "unit": "kN",
+   "explanation": "Treating the prop as redundant: R = 3wL/8 = 3 x 15 x 6/8 = 33.75 kN. The wall carries the remaining 56.25 kN.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A simply supported aluminium beam (E = 70 GPa) of span 5 m carries a service UDL of 12 kN/m. The deflection limit is span/250. Find the minimum second moment of area in units of 10^6 mm^4.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o3"
+   ],
+   "correctValue": 69.75,
+   "tolerance": 0.7,
+   "unit": "10^6 mm^4",
+   "explanation": "Allowable deflection = 5000/250 = 20 mm. I = 5wL^4/(384E delta) = 5(12 000)(625)/(384 x 70e9 x 0.02) = 6.97e-5 m^4 = 69.8 x 10^6 mm^4.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe the method for solving a propped cantilever by superposition, naming the redundant and the compatibility condition.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o2"
+   ],
+   "markingGuide": [
+    "Chooses the prop reaction as the redundant",
+    "Removes the prop to leave a statically determinate cantilever",
+    "Finds the deflection at the prop due to the applied load from tables",
+    "Finds the deflection at the prop due to the unit or unknown prop force acting alone",
+    "Sets the net deflection at the prop to zero and solves, then finds the other reactions by equilibrium"
+   ],
+   "explanation": "Releasing a redundant gives a determinate problem that can be solved with standard cases. The geometric requirement that the prop does not move provides the missing equation.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "State the conditions required for the principle of superposition to be valid for beam deflections, and explain one practical situation in which it would fail. Also explain why deflection checks use service loads.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o1",
+    "ug.mce-mechanics-of-materials.beam-deflection.superposition-and-tables.o3"
+   ],
+   "markingGuide": [
+    "Material is linearly elastic (Hooke's law)",
+    "Deflections and slopes are small so geometry is unchanged by loading",
+    "Loads must act on the same beam with the same supports",
+    "Failure example: yielding or non-linear material, or very large deflections (for example a slender cable or a beam that changes its load path)",
+    "Service loads are used because serviceability concerns everyday behaviour, not collapse"
+   ],
+   "explanation": "Superposition rests on the equations being linear in the loads. When the stiffness depends on the deformed shape or on the stress level, effects no longer add.",
+   "board": "internal"
+  }
+ ]
+}

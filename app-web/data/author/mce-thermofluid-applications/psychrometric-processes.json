@@ -1,0 +1,432 @@
+{
+ "lessonTitle": "Psychrometric Processes",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "In a hospital operating theatre, supply air must be held near 20 °C with controlled humidity, so the cooling coil in the air-handling unit does two jobs at once: it removes heat and it condenses water out of the air. A coil rated at 60 kW of cooling that was sized only on temperature would leave the room clammy. Psychrometrics, the thermodynamics of air and water vapour mixtures, tells us how much of the load goes to each job."
+  },
+  {
+   "type": "text",
+   "markdown": "Moist air is a mixture of dry air and water vapour. At atmospheric pressure $p$ (101.325 kPa at sea level) the amount of vapour is described by the **humidity ratio** $\\omega$, the mass of water vapour per kilogram of dry air. All process calculations are done per kilogram of **dry air**, because the dry-air mass flow $\\dot m_a$ is constant through coils, humidifiers and mixers, while the water content changes."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Humidity ratio and moist-air enthalpy",
+   "text": "The humidity ratio is $\\omega=0.622\\,p_v/(p-p_v)$, where $p_v$ is the partial pressure of water vapour. The specific enthalpy per kg of dry air, with temperature $T$ in °C, is $h=1.005T+\\omega(2501+1.86T)$ kJ/kg dry air, where 1.005 kJ/(kg K) is the specific heat of dry air, 2501 kJ/kg the latent heat of vapourisation at 0 °C and 1.86 kJ/(kg K) the specific heat of vapour (typical values)."
+  },
+  {
+   "type": "math",
+   "latex": "\\omega=0.622\\,\\frac{p_v}{p-p_v},\\qquad h=1.005\\,T+\\omega\\,(2501+1.86\\,T)",
+   "caption": "Humidity ratio and enthalpy of moist air (per kg dry air; T in degrees Celsius)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Wet-bulb temperature.** A thermometer wrapped in wet wick, ventilated by the air, cools below the dry-bulb temperature because water evaporates from it; it settles at the **wet-bulb temperature** $T_{wb}$. The drier the air, the larger the difference $T-T_{wb}$. An accepted formula gives the humidity ratio from the two readings, using the saturation humidity ratio $\\omega_s^*$ at $T_{wb}$."
+  },
+  {
+   "type": "math",
+   "latex": "\\omega=\\frac{(2501-2.326\\,T_{wb})\\,\\omega_s^{*}-1.006\\,(T-T_{wb})}{2501+1.86\\,T-4.186\\,T_{wb}},\\qquad \\omega_s^{*}=0.622\\,\\frac{p_{g}(T_{wb})}{p-p_{g}(T_{wb})}",
+   "caption": "Humidity ratio from dry- and wet-bulb temperatures (T in degrees Celsius)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Moist-air state from dry- and wet-bulb readings",
+   "prompt": "A sling psychrometer reads 30 °C dry-bulb and 20 °C wet-bulb at 101.325 kPa. Typical saturation pressure of water at 20 °C is 2.339 kPa. Find the humidity ratio, the enthalpy and the relative humidity (saturation pressure at 30 °C is 4.246 kPa).",
+   "steps": [
+    {
+     "text": "Saturation humidity ratio at the wet-bulb temperature.",
+     "latex": "\\omega_s^*=0.622\\times\\frac{2.339}{101.325-2.339}=0.0147"
+    },
+    {
+     "text": "Humidity ratio from the wet-bulb formula.",
+     "latex": "\\omega=\\frac{(2501-2.326\\times20)\\times0.0147-1.006\\times(30-20)}{2501+1.86\\times30-4.186\\times20}=0.01052"
+    },
+    {
+     "text": "Enthalpy.",
+     "latex": "h=1.005\\times30+0.01052\\times(2501+1.86\\times30)=57.05\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Vapour pressure and relative humidity.",
+     "latex": "p_v=\\frac{\\omega p}{0.622+\\omega}=1.685\\ \\text{kPa},\\quad \\phi=\\frac{p_v}{p_g(30)}=\\frac{1.685}{4.246}=0.397"
+    }
+   ],
+   "answer": "$\\omega\\approx0.0105$ kg/kg, $h\\approx57$ kJ/kg dry air and relative humidity about 40%."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Process",
+    "Path on the chart",
+    "Effect on $\\omega$",
+    "Effect on $T$",
+    "Energy or water transfer"
+   ],
+   "rows": [
+    [
+     "Sensible heating",
+     "Horizontal, to the right",
+     "Constant",
+     "Rises",
+     "$\\dot Q=\\dot m_a\\Delta h$, no water"
+    ],
+    [
+     "Sensible cooling (above dew point)",
+     "Horizontal, to the left",
+     "Constant",
+     "Falls",
+     "$\\dot Q=\\dot m_a\\Delta h$, no water"
+    ],
+    [
+     "Cooling and dehumidifying",
+     "Down and to the left, to near saturation",
+     "Falls",
+     "Falls",
+     "Heat plus condensate $\\dot m_a(\\omega_1-\\omega_2)$"
+    ],
+    [
+     "Steam humidification",
+     "Almost vertical, up",
+     "Rises",
+     "Almost constant",
+     "Water $\\dot m_a(\\omega_2-\\omega_1)$ as steam"
+    ],
+    [
+     "Adiabatic (spray) humidification",
+     "Along constant wet-bulb, up and left",
+     "Rises",
+     "Falls",
+     "Water $\\dot m_a\\Delta\\omega$ from supply"
+    ]
+   ],
+   "caption": "Main air-conditioning processes on the psychrometric chart"
+  },
+  {
+   "type": "worked_example",
+   "title": "Cooling and dehumidifying coil",
+   "prompt": "Air at 2 kg/s of dry air enters a cooling coil at 28 °C with $\\omega_1=0.012$ and leaves saturated at 10 °C. Take $c_{p,w}=4.186$ kJ/(kg K) for condensate leaving at the coil temperature. Find the condensate flow and the cooling load.",
+   "steps": [
+    {
+     "text": "Enthalpy at the inlet.",
+     "latex": "h_1=1.005\\times28+0.012\\times(2501+1.86\\times28)=58.78\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Outlet: saturated at 10 °C, $p_g=1.2281$ kPa, so humidity ratio and enthalpy are:",
+     "latex": "\\omega_2=0.622\\times\\frac{1.2281}{101.325-1.2281}=0.007631,\\quad h_2=29.28\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Condensate formed.",
+     "latex": "\\dot m_w=\\dot m_a(\\omega_1-\\omega_2)=2\\times(0.012-0.007631)=0.008737\\ \\text{kg/s}"
+    },
+    {
+     "text": "Energy balance on the coil, including the enthalpy of the condensate $h_f=4.186\\times10=41.9$ kJ/kg.",
+     "latex": "\\dot Q=\\dot m_a(h_1-h_2)-\\dot m_w h_f=2\\times(58.78-29.28)-0.008737\\times41.9=58.63\\ \\text{kW}"
+    }
+   ],
+   "answer": "About 8.74 g/s of water condense and the cooling load is about 58.6 kW."
+  },
+  {
+   "type": "worked_example",
+   "title": "Humidifying to a target state",
+   "prompt": "3 kg/s of dry air must be humidified from $\\omega=0.004$ to $\\omega=0.008$ kg/kg by steam injection. Find the water required.",
+   "steps": [
+    {
+     "text": "Water balance on the humidifier: mass of vapour in minus mass in at inlet.",
+     "latex": "\\dot m_w=\\dot m_a(\\omega_o-\\omega_i)"
+    },
+    {
+     "text": "Substitute.",
+     "latex": "\\dot m_w=3\\times(0.008-0.004)=0.012\\ \\text{kg/s}=43.2\\ \\text{kg/h}"
+    }
+   ],
+   "answer": "The humidifier must supply about 43.2 kg/h of water as steam."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Fix the state of the inlet air from two properties (for example dry-bulb and wet-bulb temperatures) and calculate $\\omega$ and $h$.",
+    "Decide the process type (sensible, cooling-dehumidifying, humidifying) and the exit state.",
+    "Perform a water balance $\\dot m_w=\\dot m_a\\Delta\\omega$ and an energy balance $\\dot Q=\\dot m_a\\Delta h$ (plus condensate enthalpy if significant).",
+    "Always work per kg of dry air and convert to total flow at the end."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Do not mix up mass of moist air with mass of dry air; use dry-air flow in all balances. The latent part of the load is $\\dot m_a(\\omega_1-\\omega_2)h_{fg}$ roughly, so a coil that dehumidifies carries a latent load even if the dry-bulb temperature falls only a little. The condensate term is small, usually a percent or two of the load, but it is not zero."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$\\omega=0.622p_v/(p-p_v)$ and $h=1.005T+\\omega(2501+1.86T)$; two properties such as dry- and wet-bulb temperatures fix the state.",
+    "Cooling load of a dehumidifying coil: $\\dot Q=\\dot m_a(h_1-h_2)-\\dot m_w h_f$, with condensate $\\dot m_a(\\omega_1-\\omega_2)$.",
+    "Humidification water: $\\dot m_w=\\dot m_a(\\omega_2-\\omega_1)$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Two air streams are both at 28 °C dry-bulb. Stream A has a wet-bulb temperature of 18 °C and stream B has 24 °C. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Stream A is drier and has the lower humidity ratio, because more evaporation cools the wet bulb further below the dry-bulb temperature"
+    },
+    {
+     "id": "b",
+     "text": "Stream A is more humid, because its wet bulb is further below the dry bulb"
+    },
+    {
+     "id": "c",
+     "text": "Both have the same humidity ratio, because the dry-bulb temperatures are equal"
+    },
+    {
+     "id": "d",
+     "text": "Stream B is drier, because its wet-bulb temperature is higher"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Stream A is drier and has the lower humidity ratio, because more evaporation cools the wet bulb further below the dry-bulb temperature",
+   "distractorRationale": {
+    "a": "Correct: a larger wet-bulb depression means drier air.",
+    "b": "Reverses the relationship: a larger wet-bulb depression means drier air.",
+    "c": "Humidity ratio depends on a second property such as the wet-bulb temperature.",
+    "d": "A higher wet bulb at the same dry bulb means moister air."
+   },
+   "explanation": "The wet-bulb temperature is lowered by evaporation, which is faster into drier air. At the same dry bulb, the stream with the bigger depression ($28-18=10$ K against $28-24=4$ K) has the lower humidity ratio.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Air is cooled by a coil whose surface is below the dew point of the entering air. Which describes what happens to the humidity ratio and why?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The humidity ratio is unchanged, because the water stays in the air as droplets"
+    },
+    {
+     "id": "b",
+     "text": "The humidity ratio falls, because water vapour condenses on the cold coil surface and leaves as liquid"
+    },
+    {
+     "id": "c",
+     "text": "The humidity ratio rises, because cold air holds more vapour"
+    },
+    {
+     "id": "d",
+     "text": "The humidity ratio is unchanged, because cooling is a sensible process"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The humidity ratio falls, because water vapour condenses on the cold coil surface and leaves as liquid",
+   "distractorRationale": {
+    "a": "Condensate drains from the coil; the air leaves with less vapour.",
+    "b": "Correct: vapour condenses and drains away.",
+    "c": "Cold air can hold less vapour, which is why condensation occurs.",
+    "d": "This holds only if the coil surface stays above the dew point."
+   },
+   "explanation": "When the surface is below the dew point, vapour condenses and is removed, so $\\omega_2<\\omega_1$. The cooling load then has a latent part (removing the heat of vapourisation) in addition to the sensible part.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An air-handling unit has a dry-air flow of 5.0 kg/s and must raise the humidity ratio by 0.003 kg/kg using steam. The required steam flow is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.0006 kg/s"
+    },
+    {
+     "id": "b",
+     "text": "1.67 kg/s"
+    },
+    {
+     "id": "c",
+     "text": "0.015 kg/s"
+    },
+    {
+     "id": "d",
+     "text": "5.003 kg/s"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "0.015 kg/s",
+   "distractorRationale": {
+    "a": "Divides the flow by the humidity change instead of multiplying them.",
+    "b": "Divides the dry-air flow by the humidity ratio change, a unit slip.",
+    "c": "Correct: the product of the dry-air flow and the rise in humidity ratio.",
+    "d": "Adds the two numbers without regard to units."
+   },
+   "explanation": "The water balance gives $\\dot m_w=\\dot m_a\\Delta\\omega=5.0\\times0.003=0.015$ kg/s, which is 54 kg/h. Humidity ratios are per kg of dry air, so multiply by the dry-air flow.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Moist air at 101.325 kPa has a water-vapour partial pressure of 1.60 kPa. Its humidity ratio is closest to:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.00982 kg/kg"
+    },
+    {
+     "id": "b",
+     "text": "0.016 kg/kg"
+    },
+    {
+     "id": "c",
+     "text": "38.8 kg/kg"
+    },
+    {
+     "id": "d",
+     "text": "0.00998 kg/kg"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "0.00998 kg/kg",
+   "distractorRationale": {
+    "a": "Divides by the total pressure instead of the dry-air partial pressure; the error is small here but the formula is wrong.",
+    "b": "Omits the ratio of molar masses 0.622.",
+    "c": "Inverts the pressure ratio.",
+    "d": "Correct: the vapour pressure over the dry-air partial pressure, times 0.622."
+   },
+   "explanation": "$\\omega=0.622\\,p_v/(p-p_v)=0.622\\times1.60/(101.325-1.60)=0.009979$. The factor 0.622 is the ratio of the molar mass of water (18) to that of air (29).",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cooling coil handles 1.5 kg/s of dry air, with inlet enthalpy 72.0 kJ/kg and outlet enthalpy 38.0 kJ/kg of dry air. Neglecting the enthalpy of the condensate, the cooling load is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "51 kW"
+    },
+    {
+     "id": "b",
+     "text": "165 kW"
+    },
+    {
+     "id": "c",
+     "text": "22.7 kW"
+    },
+    {
+     "id": "d",
+     "text": "108 kW"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "51 kW",
+   "distractorRationale": {
+    "a": "Correct: dry-air flow times the enthalpy drop.",
+    "b": "Adds the enthalpies instead of taking the difference.",
+    "c": "Divides by the flow, the wrong dimension.",
+    "d": "Uses only the inlet enthalpy, ignoring that cooling removes the difference."
+   },
+   "explanation": "$\\dot Q=\\dot m_a(h_1-h_2)=1.5\\times(72.0-38.0)=51.0$ kW. The enthalpy change per kg of dry air already includes both sensible and latent parts.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Moist air at 24 °C has humidity ratio 0.0092 kg per kg of dry air. Using $h=1.005T+\\omega(2501+1.86T)$, find the enthalpy in kJ per kg of dry air.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o1"
+   ],
+   "correctValue": 47.54,
+   "tolerance": 0.2,
+   "unit": "kJ/kg dry air",
+   "explanation": "Dry-air part $1.005\\times24=24.12$ kJ/kg. Vapour part $0.0092\\times(2501+1.86\\times24)=23.42$ kJ/kg. The total is 47.54 kJ/kg dry air.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A humidifier must raise 4.0 kg/s of dry air from $\\omega=0.0045$ to $\\omega=0.0085$ kg/kg. Find the water to be added in kg/h.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o3"
+   ],
+   "correctValue": 57.6,
+   "tolerance": 1.0,
+   "unit": "kg/h",
+   "explanation": "$\\dot m_w=\\dot m_a\\Delta\\omega=4.0\\times(0.0085-0.0045)=0.016$ kg/s. Multiplying by 3600 s/h gives 57.6 kg/h.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A coil cools 3.0 kg/s of dry air from 30 °C and $\\omega=0.0140$ to saturated air at 15 °C ($p_g=1.7057$ kPa at 15 °C; total pressure 101.325 kPa). Take $h_f=4.186\\times15$ kJ/kg for the condensate. Find the cooling load in kW.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o2"
+   ],
+   "correctValue": 71.18,
+   "tolerance": 1.0,
+   "unit": "kW",
+   "explanation": "Outlet $\\omega_2=0.622\\times1.7057/(101.325-1.7057)=0.01065$. Enthalpies: $h_1=65.95$ and $h_2=42.01$ kJ/kg. Condensate is $3.0\\times(0.0140-0.01065)=0.0101$ kg/s, carrying 0.631 kW. Load $=3.0\\times(65.95-42.01)-0.631=71.18$ kW.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "An air-handling unit cools and dehumidifies outside air, then reheats it to the supply state. Explain, with the aid of balance equations, why such a unit needs both a cooling coil load that exceeds the sensible load alone and a means of adding or removing water. State the energy and water balances for each stage.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o2",
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o3"
+   ],
+   "markingGuide": [
+    "Cooling coil: dry-air mass balance constant, water balance m_w = m_a (w1 - w2) removes condensate",
+    "Energy balance on the coil: Q = m_a (h1 - h2) - m_w h_f",
+    "Total coil load = sensible part (temperature change) + latent part (condensation, about m_w x latent heat)",
+    "Reheater: sensible heating at constant humidity ratio, Q = m_a (h3 - h2) = m_a cp,ma (T3 - T2)",
+    "If dehumidified air is too dry for the target, humidification with water balance m_w = m_a (w_target - w2)",
+    "Concludes that load calculated from dry-bulb temperature alone would be too low and humidity would be uncontrolled"
+   ],
+   "explanation": "The cooling coil must remove both sensible and latent heat. Condensation takes the heat of vapourisation of the water removed, so the load exceeds the sensible-only value. Reheating is a sensible process at constant humidity ratio, and a humidifier adds water according to the water balance when the target humidity is higher.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain what a wet-bulb temperature measures, why it is lower than the dry-bulb temperature in unsaturated air, and how a dry-bulb and wet-bulb pair fixes the humidity ratio and enthalpy of moist air at a given pressure.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.psychrometric-processes.o1"
+   ],
+   "markingGuide": [
+    "Wet bulb: thermometer with wetted wick in an air stream; evaporation cools it until heat from air equals latent heat for evaporation",
+    "Equilibrium wet-bulb temperature is below dry bulb unless air is saturated (no net evaporation)",
+    "Larger depression indicates drier air",
+    "Two independent properties plus pressure fix the state (Gibbs phase rule for the mixture)",
+    "Humidity ratio from the wet-bulb formula using saturation humidity ratio at T_wb",
+    "Enthalpy then from h = 1.005 T + w (2501 + 1.86 T); also relative humidity from p_v/p_g"
+   ],
+   "explanation": "The wick loses heat by evaporation, which proceeds faster into drier air, so the equilibrium temperature falls further below the dry bulb. Because $\\omega$ at the wet-bulb condition is known from saturation, the heat and mass balance on the wick gives $\\omega$ at the air state, from which $h$ follows.",
+   "board": "internal"
+  }
+ ]
+}

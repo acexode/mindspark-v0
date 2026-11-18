@@ -1,0 +1,382 @@
+{
+ "lessonTitle": "Data Types and Expressions",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "In 1999 NASA's Mars Climate Orbiter was lost in part because thruster data was supplied in pound-force seconds where newton seconds were expected. The arithmetic in the code was flawless; the units were wrong. Every engineering formula you code carries the same risk, along with the quieter risks of operator precedence and rounding."
+  },
+  {
+   "type": "text",
+   "markdown": "A program stores values with a **data type**. The four you will meet first are `int` (whole numbers), `float` (real numbers with a fractional part), `str` (text) and `bool` (`True` or `False`). An **expression** combines values and operators, and the language fixes the order in which operators act. Getting that order, the numerical type and the units right is what turns a formula on paper into a correct line of code."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Operator precedence",
+   "text": "Python evaluates `**` first, then unary minus, then `*`, `/`, `//`, `%` (left to right), then `+` and `-` (left to right). Parentheses override this order. Because `**` binds tighter than unary minus, `-3**2` is $-(3^2)=-9$, not $9$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Operator",
+    "Meaning",
+    "Example",
+    "Result"
+   ],
+   "rows": [
+    [
+     "`/`",
+     "True division (always float)",
+     "`7 / 2`",
+     "3.5"
+    ],
+    [
+     "`//`",
+     "Floor division",
+     "`7 // 2`",
+     "3"
+    ],
+    [
+     "`%`",
+     "Remainder",
+     "`7 % 2`",
+     "1"
+    ],
+    [
+     "`**`",
+     "Power",
+     "`2 ** 3`",
+     "8"
+    ],
+    [
+     "`==`",
+     "Equality test (returns bool)",
+     "`3 == 3.0`",
+     "True"
+    ]
+   ],
+   "caption": "Arithmetic operators in Python 3."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma=\\frac{32\\,M}{\\pi\\,d^{3}}",
+   "caption": "Maximum bending stress in a solid round shaft of diameter d (m) under bending moment M (N m), giving sigma in Pa."
+  },
+  {
+   "type": "worked_example",
+   "title": "Coding a formula with correct precedence",
+   "prompt": "A solid shaft of diameter $d=0.050$ m carries a bending moment $M=1500$ N m. Write the stress formula in code and evaluate it, then show what happens with a precedence error.",
+   "steps": [
+    {
+     "text": "Correct code: `sigma = 32 * M / (math.pi * d ** 3)`. The parentheses make the whole $\\pi d^3$ the denominator.",
+     "latex": "\\sigma=\\frac{32\\times1500}{\\pi\\,(0.05)^3}"
+    },
+    {
+     "text": "Evaluate: $d^3=1.25\\times10^{-4}$ m^3, so $\\pi d^3=3.927\\times10^{-4}$. The numerator is $32\\times1500=48\\,000$.",
+     "latex": "\\sigma=\\frac{48\\,000}{3.927\\times10^{-4}}=1.2223\\times10^{8}\\ \\text{Pa}"
+    },
+    {
+     "text": "Convert for reporting: $1.2223\\times10^8$ Pa $=122.2$ MPa, a plausible shaft stress."
+    },
+    {
+     "text": "Wrong code: `32 * M / math.pi * d ** 3` is evaluated left to right as $(32M/\\pi)\\times d^3=15\\,279\\times1.25\\times10^{-4}=1.91$. The answer is wrong by a factor of $10^8$, yet Python raises no error."
+    }
+   ],
+   "answer": "sigma = 1.222e8 Pa = 122.2 MPa; omitting the parentheses gives 1.91, which is wrong."
+  },
+  {
+   "type": "text",
+   "markdown": "Integer and floating-point values behave differently. Python integers are exact and unlimited in size, so `7 // 2` is exactly 3. A `float` is stored in binary as a 64-bit number with about 15 to 16 significant decimal digits. Many decimals, including 0.1, have no exact binary form, so the stored value carries a **rounding error** of about $10^{-16}$ relative. In languages with fixed-width integers (such as C), `7 / 2` of two integers truncates to 3, which can silently destroy a result; Python 3 avoids this because `/` always returns a float."
+  },
+  {
+   "type": "worked_example",
+   "title": "A rounding surprise",
+   "prompt": "Add 0.1 to a variable `x` (initially 0.0) ten times in a loop. Is `x == 1.0`? What should a program test instead?",
+   "steps": [
+    {
+     "text": "Mathematically $10\\times0.1=1$, but each addition of the stored value of 0.1 carries a tiny error, and the errors accumulate."
+    },
+    {
+     "text": "Running the loop gives `x = 0.9999999999999999`, so `x == 1.0` is False. The difference is about $1.1\\times10^{-16}$.",
+     "latex": "|x-1|\\approx1.1\\times10^{-16}"
+    },
+    {
+     "text": "A robust test compares with a tolerance: `abs(x - 1.0) < 1e-9` or `math.isclose(x, 1.0)`. Never use `==` to compare computed floats, and never use `while x != 1.0` as a loop condition."
+    }
+   ],
+   "answer": "x == 1.0 is False; compare with a tolerance instead."
+  },
+  {
+   "type": "text",
+   "markdown": "**Units** are not stored by the program, so you must manage them yourself. A reliable habit is to convert every input to SI as soon as it is read, do all calculations in SI, and convert only for display. Write conversion factors as named constants, for example `PSI_TO_PA = 6894.757` and `IN_TO_M = 0.0254` (exact)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Explicit unit conversion",
+   "prompt": "A vehicle of mass $m=1200$ kg travels at 90 km/h. Find its kinetic energy $E=\\tfrac12mv^2$ in joules.",
+   "steps": [
+    {
+     "text": "Convert the speed first: $v=90\\ \\text{km/h}\\times\\frac{1000\\ \\text{m}}{1\\ \\text{km}}\\times\\frac{1\\ \\text{h}}{3600\\ \\text{s}}=25$ m/s.",
+     "latex": "v=\\frac{90\\times1000}{3600}=25\\ \\text{m/s}"
+    },
+    {
+     "text": "Substitute into the formula: $E=0.5\\times1200\\times25^2=0.5\\times1200\\times625$.",
+     "latex": "E=0.5\\times1200\\times625=375\\,000\\ \\text{J}"
+    },
+    {
+     "text": "Dimension check: kg m^2/s^2 is a joule. If 90 had been used directly the result would be $4.86\\times10^6$, which is wrong by a factor $(3.6)^2=12.96$."
+    }
+   ],
+   "answer": "E = 375 000 J = 375 kJ."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Use parentheses whenever a formula has a denominator or a power of a product.",
+    "Remember `/` returns a float, `//` floors, and `**` binds tighter than unary minus.",
+    "Never compare computed floats with `==`; use a tolerance.",
+    "Convert to SI on input, calculate in SI, convert on output.",
+    "Name conversion factors as constants with units in the name."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Silent errors",
+   "text": "Neither a precedence slip nor a unit mismatch raises an error. The program runs and prints a plausible-looking wrong number. Check each result against an order-of-magnitude estimate and a dimension check."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Precedence: ** first, then * / // %, then + -; parentheses override, and -3**2 = -9.",
+    "Floats are approximate with about 15-16 significant digits, so compare computed values with a tolerance.",
+    "/ returns a float in Python 3, // floors, and fixed-width integer division elsewhere may truncate.",
+    "Convert units explicitly to SI on input and check dimensions on output."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What value does Python give for `2 + 3 * 4 ** 2 / 8`?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "5.0"
+    },
+    {
+     "id": "b",
+     "text": "10.0"
+    },
+    {
+     "id": "c",
+     "text": "20.0"
+    },
+    {
+     "id": "d",
+     "text": "8.0"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "8.0",
+   "distractorRationale": {
+    "d": "Correct: ** then * and / left to right, then +.",
+    "b": "This adds 2 + 3 before multiplying, ignoring that * binds tighter than +.",
+    "c": "This evaluates (3*4)**2 = 144 first, which is wrong because ** applies only to 4.",
+    "a": "This divides before squaring or misorders operations; it does not follow the precedence rules."
+   },
+   "explanation": "The power is evaluated first: 4**2 = 16. Then 3*16 = 48, 48/8 = 6.0, and finally 2 + 6.0 = 8.0.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Evaluate the Python expression `-3**2 + 10 % 4 * 2` and give the number.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o1"
+   ],
+   "correctValue": -5,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "** binds tighter than unary minus, so -3**2 = -9. Then 10 % 4 = 2 and 2 * 2 = 4, so the total is -9 + 4 = -5.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In Python 3, what are the values of `7 // 2` and `7 / 2`?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3 and 3"
+    },
+    {
+     "id": "b",
+     "text": "3.5 and 3.5"
+    },
+    {
+     "id": "c",
+     "text": "4 and 3.5"
+    },
+    {
+     "id": "d",
+     "text": "3 and 3.5"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "3 and 3.5",
+   "distractorRationale": {
+    "d": "Correct: floor division then true division.",
+    "b": "Floor division does not give 3.5.",
+    "a": "/ does not truncate in Python 3 (it does for integers in some other languages).",
+    "c": "Floor division rounds down, not to the nearest integer."
+   },
+   "explanation": "// is floor division and gives the integer 3, while / is true division and gives the float 3.5. Python 3 never truncates with /.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A program checks `if 0.1 * 3 == 0.3:` and the branch is not executed. What is the best explanation and fix?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.1 has no exact binary representation, so 0.1*3 is 0.30000000000000004; compare with a tolerance such as math.isclose"
+    },
+    {
+     "id": "b",
+     "text": "The multiplication operator is not valid for floats; use addition"
+    },
+    {
+     "id": "c",
+     "text": "Python rounds 0.3 incorrectly; use integers only"
+    },
+    {
+     "id": "d",
+     "text": "Floating-point numbers cannot be compared at all; use strings"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.1 has no exact binary representation, so 0.1*3 is 0.30000000000000004; compare with a tolerance such as math.isclose",
+   "distractorRationale": {
+    "a": "Correct: representation error and a tolerance test.",
+    "c": "Python is not wrong; floats are inexact, and avoiding floats is not a practical fix.",
+    "b": "Multiplication is valid for floats; the issue is representation.",
+    "d": "Floats can be compared; the comparison just must be done with a tolerance."
+   },
+   "explanation": "Decimal 0.1 is stored as the nearest binary fraction, so the product differs from the stored 0.3 by about 5.6e-17. The fix is to test whether the difference is below a tolerance rather than test exact equality.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Double-precision floating-point numbers store most decimal fractions, such as 0.1, only approximately.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Binary floating point can represent only fractions whose denominators are powers of 2 exactly. Most decimal fractions are therefore stored as the nearest representable value, with a relative error of about 1e-16.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A tyre-pressure gauge reads 35 psi. Taking 1 psi = 6.894757 kPa, convert the reading to kilopascals.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o3"
+   ],
+   "correctValue": 241.32,
+   "tolerance": 0.2,
+   "unit": "kPa",
+   "explanation": "Multiply by the conversion factor: 35 x 6.894757 = 241.316 kPa. Working in kPa avoids the large number of digits that Pa would need.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A coolant flow is reported as 12 litres per minute. Taking water density 1000 kg/m^3 and 1 L = 0.001 m^3, calculate the mass flow rate in kg/s.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o3"
+   ],
+   "correctValue": 0.2,
+   "tolerance": 0.002,
+   "unit": "kg/s",
+   "explanation": "Volume flow = 12 L/min x 0.001 m^3/L / 60 s/min = 2.0e-4 m^3/s. Multiplying by 1000 kg/m^3 gives 0.2 kg/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A motor runs at 1500 revolutions per minute and delivers a torque of 40 N m. Using $P=T\\omega$ with $\\omega$ in rad/s, find the power in kilowatts.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o3"
+   ],
+   "correctValue": 6.283,
+   "tolerance": 0.02,
+   "unit": "kW",
+   "explanation": "Convert the speed: omega = 1500 x 2 pi / 60 = 157.08 rad/s. Then P = 40 x 157.08 = 6283 W = 6.283 kW.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A student accumulates a time variable with `t = 0.0` and `while t != 1.0: t += 0.1`. Explain what goes wrong, why it is a consequence of how numbers are stored, and give two corrected versions.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o2"
+   ],
+   "markingGuide": [
+    "The value 0.1 is not exactly representable in binary, so repeated addition accumulates rounding error",
+    "t reaches 0.9999999999999999 and then 1.0999999999999999, never exactly 1.0, so the loop does not terminate",
+    "Correct version 1: use an inequality, e.g. while t < 1.0 - 1e-9, or a tolerance test with math.isclose",
+    "Correct version 2: use an integer counter (for k in range(10): t = k*0.1) or np.linspace",
+    "Recognises that == on computed floats should be avoided"
+   ],
+   "explanation": "The accumulated sum never equals exactly 1.0 because of representation and rounding error, so a test for exact equality is never satisfied. Counting with an integer or testing with a tolerance avoids the problem.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A script receives a beam length in millimetres from one file and a load in kilonewtons from another, and the formulas assume metres and newtons. Describe a coding practice that prevents mixed-unit errors and give a check that would catch a mistake.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.data-types-and-expressions.o3"
+   ],
+   "markingGuide": [
+    "Convert all inputs to SI units immediately on reading (mm to m, kN to N)",
+    "Use named constants for conversion factors (e.g. MM_TO_M = 1e-3), with units in variable names",
+    "Do all calculations in SI and convert only for presentation",
+    "A check: dimensional analysis of the formula or comparison with an order-of-magnitude hand estimate",
+    "A further check: a test with a known hand-calculated case"
+   ],
+   "explanation": "Centralising conversions at the boundaries means the core formulas see only one unit system. An order-of-magnitude check on the output catches factors of 1000 that would otherwise pass silently.",
+   "board": "internal"
+  }
+ ]
+}

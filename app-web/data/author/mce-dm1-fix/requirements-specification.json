@@ -1,0 +1,390 @@
+{
+  "lessonTitle": "Writing Requirements: Measurable, Classified and Testable",
+  "estimatedMinutes": 25,
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A client's brief says the flashlight must be 'waterproof'. The supplier tests it by spraying it with a hose for a minute and declares it compliant. A week later the client drops it in a pond, it fills with water, and both sides are certain they are right. Neither was wrong: the word 'waterproof' had no number and no test."
+    },
+    {
+      "type": "text",
+      "markdown": "A **requirement** is a statement of something the product must do or be. A **specification** is the numbered set of all requirements the final design will be judged against. Requirements are what make design decisions testable: without them, concept selection is opinion and prototype testing has nothing to test against."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Measurable requirement",
+      "text": "A requirement is measurable when it states (1) the thing measured, (2) a **target value** with units and, where appropriate, a tolerance or limit (at least, at most), (3) the conditions, and (4) a **test method** that anyone could repeat. A good template: 'The [product] shall [do or have] [quantity] [under conditions], verified by [test].'"
+    },
+    {
+      "type": "text",
+      "markdown": "Compare 'the flashlight must be waterproof' with 'the flashlight shall show no water ingress after being submerged to 1.0 m depth for 30 minutes, verified by a submersion test and visual inspection of the battery compartment'. The second can be checked by anyone and cannot be argued about."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Type",
+        "What it states",
+        "Example"
+      ],
+      "rows": [
+        [
+          "Functional",
+          "What the product must do (an action or capability)",
+          "The lamp shall switch between low and high output"
+        ],
+        [
+          "Performance",
+          "How well, with a quantity and unit",
+          "The lamp shall give at least 400 lm for 5 h on one charge"
+        ],
+        [
+          "Interface",
+          "How it connects to people, other equipment or its environment",
+          "The lamp shall mount on a 25.4 mm diameter handlebar; charge via a USB-C connector"
+        ],
+        [
+          "Regulatory",
+          "Compliance with laws and mandatory standards",
+          "The charger shall comply with the electrical safety regulations of the sales region"
+        ]
+      ],
+      "caption": "Four classes of requirement used in this unit."
+    },
+    {
+      "type": "text",
+      "markdown": "Sorting requirements by type exposes gaps. A specification with many functional requirements but no performance values cannot be tested; one with no interface requirements may produce a product that does not fit; one with no regulatory requirement may be illegal to sell. Constraints such as cost and size are handled in the same way, each with a limit and a test."
+    },
+    {
+      "type": "worked_example",
+      "title": "Rewriting an ambiguous requirement",
+      "prompt": "A client's brief states: 'The bracket should be strong and light.' Rewrite this testably.",
+      "steps": [
+        {
+          "text": "Identify the vague words: 'strong' and 'light' have no quantity and no test, so two engineers could disagree whether a given bracket passes."
+        },
+        {
+          "text": "Replace 'strong' with a load case and a pass criterion: 'The bracket shall support a static load of 400 N at its tip with a deflection of at most 1.5 mm, verified by loading with a calibrated mass and measuring with a dial gauge.'"
+        },
+        {
+          "text": "Replace 'light' with a limit: 'The bracket shall have a mass of at most 0.25 kg, verified by weighing on a balance with 1 g resolution.'"
+        },
+        {
+          "text": "Classify each: both are performance requirements, one for stiffness and one for mass, and both now have targets and tests."
+        }
+      ],
+      "answer": "Two measurable performance requirements replace one ambiguous sentence."
+    },
+    {
+      "type": "text",
+      "markdown": "Where does a target value come from? It should be derived from the need and the use, not guessed. Basic physics often gives a first estimate: energy for battery life, speed on impact for a drop test, force for a lifting task."
+    },
+    {
+      "type": "worked_example",
+      "title": "Deriving a target from the use",
+      "prompt": "A handheld sensor draws 5 W and must run for 10 h between charges. The battery is 3.7 V and a margin of 20 % is required. State the battery energy and capacity requirement.",
+      "steps": [
+        {
+          "text": "Energy needed is power times time: 5 W x 10 h = 50 Wh.",
+          "latex": "E=P\\,t=5\\times10=50\\ \\mathrm{Wh}"
+        },
+        {
+          "text": "Apply the 20 % margin: multiply by 1.2 to get 60 Wh.",
+          "latex": "E_{req}=1.2\\times50=60\\ \\mathrm{Wh}"
+        },
+        {
+          "text": "Capacity at 3.7 V: energy divided by voltage, 60/3.7 = 16.2 Ah.",
+          "latex": "C=\\frac{60}{3.7}=16.2\\ \\mathrm{Ah}"
+        }
+      ],
+      "answer": "The requirement becomes: battery energy at least 60 Wh (16.2 Ah at 3.7 V), verified by a discharge test at 5 W."
+    },
+    {
+      "type": "math",
+      "latex": "E=P\\,t\\qquad v=\\sqrt{2gh}",
+      "caption": "Energy from power and time; speed of an object dropped from height h at the moment of impact (g = 9.81 m/s^2, air resistance ignored)."
+    },
+    {
+      "type": "list",
+      "style": "bullet",
+      "items": [
+        "Is there a number and a unit, or a clear limit (at least, at most)?",
+        "Is the test method stated and repeatable?",
+        "Does it say what, not how (no solution hidden in the requirement)?",
+        "Can it be classified as functional, performance, interface or regulatory?",
+        "Does it conflict with another requirement?"
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Words that signal ambiguity",
+      "text": "Adjectives like fast, strong, light, robust, easy, user-friendly and durable are not requirements. They are placeholders for a number that someone has to find out. Ask: how fast, under what conditions, tested how?"
+    },
+    {
+      "type": "check",
+      "questionId": "q001"
+    },
+    {
+      "type": "summary",
+      "points": [
+        "A measurable requirement has a quantity, units, conditions and a test method; vague adjectives must be converted to numbers.",
+        "Requirements are classified as functional, performance, interface or regulatory, which helps check that the specification is complete.",
+        "Ambiguous requirements are rewritten by finding the missing target and test, often derived from physical estimates such as energy or impact speed."
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which of the following is a well-formed measurable requirement for a bicycle lock?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o1"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "The lock shall resist a 600 mm bolt cutter for at least 2 minutes, verified by a timed attack test"
+        },
+        {
+          "id": "b",
+          "text": "The lock shall be tough"
+        },
+        {
+          "id": "c",
+          "text": "The lock should be difficult to break"
+        },
+        {
+          "id": "d",
+          "text": "The lock must be of high quality"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "The lock shall resist a 600 mm bolt cutter for at least 2 minutes, verified by a timed attack test",
+      "distractorRationale": {
+        "b": "'Tough' has no number and no test.",
+        "c": "'Difficult' is subjective and untestable.",
+        "d": "'High quality' is not measurable."
+      },
+      "explanation": "A measurable requirement gives a target, a condition and a test. Only the timed attack with a specified tool can be repeated by anyone and judged pass or fail.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A requirement says: 'The controller shall mount on a standard 35 mm DIN rail.' What type of requirement is this?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o2"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Interface"
+        },
+        {
+          "id": "b",
+          "text": "Functional"
+        },
+        {
+          "id": "c",
+          "text": "Regulatory"
+        },
+        {
+          "id": "d",
+          "text": "Performance"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "Interface",
+      "distractorRationale": {
+        "b": "It does not state an action the controller must perform.",
+        "c": "It is not a legal or mandatory standard requirement.",
+        "d": "It does not specify a quantity of performance."
+      },
+      "explanation": "It describes how the product connects to its environment, in this case the mounting rail. Interface requirements ensure that the product fits and connects to the equipment around it.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which statement is a regulatory requirement?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o2"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "The charger shall comply with the electrical safety regulations applicable in the country of sale"
+        },
+        {
+          "id": "b",
+          "text": "The charger shall deliver 5 V at 2 A"
+        },
+        {
+          "id": "c",
+          "text": "The charger shall have a micro-USB socket"
+        },
+        {
+          "id": "d",
+          "text": "The charger shall switch off when the battery is full"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "The charger shall comply with the electrical safety regulations applicable in the country of sale",
+      "distractorRationale": {
+        "b": "This is a performance requirement with values.",
+        "c": "This is an interface requirement for a connector.",
+        "d": "This is a functional requirement describing a behaviour."
+      },
+      "explanation": "Regulatory requirements demand compliance with laws or mandatory standards. The other statements describe performance, connection and behaviour that the designer chose or the client wanted.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Which classification fits: 'The hoist shall lift a 25 kg load through 1.2 m in at most 10 s'?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o2"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Performance"
+        },
+        {
+          "id": "b",
+          "text": "Interface"
+        },
+        {
+          "id": "c",
+          "text": "Regulatory"
+        },
+        {
+          "id": "d",
+          "text": "None, since it contains a number"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "Performance",
+      "distractorRationale": {
+        "b": "The hoist does not interface to a specific connection here.",
+        "c": "No law or standard is cited.",
+        "d": "Numbers are the sign of a measurable requirement, not a reason it cannot be classified."
+      },
+      "explanation": "The statement specifies how well the hoist must work, with load, distance and time. That is a performance requirement; the corresponding functional requirement is simply that it lifts loads.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A client writes: 'The camera mount must be robust.' Which rewrite is the best testable version?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o3"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "The mount shall withstand a 1.0 m drop onto concrete with no cracking or loosening of the camera, verified by 10 drop tests"
+        },
+        {
+          "id": "b",
+          "text": "The mount shall be very strong and durable"
+        },
+        {
+          "id": "c",
+          "text": "The mount should survive normal use"
+        },
+        {
+          "id": "d",
+          "text": "The mount must be tougher than the previous one"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "The mount shall withstand a 1.0 m drop onto concrete with no cracking or loosening of the camera, verified by 10 drop tests",
+      "distractorRationale": {
+        "b": "'Very strong and durable' are still vague.",
+        "c": "'Normal use' is not defined or measurable.",
+        "d": "'Tougher' compares with no number and requires the old design to be tested."
+      },
+      "explanation": "A testable rewrite gives a load case, a pass criterion and a method. The drop test defines both the severity and how pass or fail is decided.",
+      "board": "internal"
+    },
+    {
+      "type": "numeric",
+      "difficulty": 1,
+      "stem": "A handheld sensor draws 6 W and must run for 8 h between charges. A margin of 20 % is required on the battery energy. What battery energy, in Wh, should be specified?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o1"
+      ],
+      "correctValue": 57.6,
+      "tolerance": 0.1,
+      "unit": "Wh",
+      "explanation": "Energy is $6\\times8=48$ Wh. Applying the 20 % margin gives $1.2\\times48=57.6$ Wh as the required battery energy.",
+      "board": "internal"
+    },
+    {
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "A requirement states that a handheld controller must survive a drop from 1.5 m onto concrete. Taking $g=9.81$ m/s$^2$ and ignoring air resistance, what is the speed at impact in m/s?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o1"
+      ],
+      "correctValue": 5.42,
+      "tolerance": 0.02,
+      "unit": "m/s",
+      "explanation": "Using $v=\\sqrt{2gh}$ gives $\\sqrt{2\\times9.81\\times1.5}=5.42$ m/s. This speed sets the severity of the test that the requirement implies.",
+      "board": "internal"
+    },
+    {
+      "type": "numeric",
+      "difficulty": 3,
+      "stem": "The client says a kettle 'must heat quickly'. To make this testable, estimate the heating time for 0.8 kg of water from 15 degrees C to 100 degrees C using a 1800 W element that is 80 % efficient (specific heat of water 4186 J/(kg K)). What time, in seconds, results?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o3"
+      ],
+      "correctValue": 197.7,
+      "tolerance": 1.0,
+      "unit": "s",
+      "explanation": "The heat needed is $0.8\\times4186\\times85=2.846\\times10^{5}$ J. The effective power is $1800\\times0.8=1440$ W, so the time is about 197.7 s, which can be rounded into a requirement such as 'at most 200 s'.",
+      "board": "internal"
+    },
+    {
+      "type": "theory",
+      "difficulty": 3,
+      "stem": "A client brief for a school bag says: (1) it must be comfortable, (2) it must carry heavy books, (3) it should be quick to open, and (4) it must comply with regulations. Identify which statements are ambiguous and rewrite each as a measurable requirement with a target and a test method. State the type of each rewritten requirement.",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o1",
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o2",
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o3"
+      ],
+      "markingGuide": [
+        "Identifies comfort, heavy and quick as vague adjectives without quantities",
+        "Comfort rewritten with a number, for example strap pressure or maximum carried mass with test method",
+        "Heavy rewritten with a load such as 8 kg carried for a stated test, verified by loading",
+        "Quick rewritten with a time such as opening in at most 3 s, verified by timing",
+        "Regulatory item expanded to name the applicable regulation or test and classed as regulatory; others classed as performance"
+      ],
+      "explanation": "Each vague word must be replaced with a quantity, condition and test. Classifying each rewritten statement shows whether the specification has performance, interface and regulatory coverage.",
+      "board": "internal"
+    },
+    {
+      "type": "theory",
+      "difficulty": 2,
+      "stem": "Classify each of the following as functional, performance, interface or regulatory, and give a test method for the one you classify as performance: (a) the unit shall connect to the accessory through a 12 V barrel connector of a specified type; (b) the unit shall run for at least 6 h; (c) the unit shall display battery state; (d) the unit shall comply with the applicable radio-emission rules.",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o1",
+        "ug.mce-design-and-manufacture-1.design-process-and-requirements.requirements-specification.o2"
+      ],
+      "markingGuide": [
+        "(a) interface: the connector type and voltage at the connection to another device",
+        "(b) performance: quantity and duration given",
+        "(c) functional: a capability or behaviour",
+        "(d) regulatory: compliance with mandatory rules",
+        "Test method for (b): discharge test at the specified load until cut-off, recording the time"
+      ],
+      "explanation": "Classification depends on what the statement constrains: an action (functional), a quantity (performance), a connection (interface) or a legal obligation (regulatory). A test method must reproduce the conditions and measure the stated quantity.",
+      "board": "internal"
+    }
+  ]
+}

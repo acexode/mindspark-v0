@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Controllability",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A water-cooled mould has two thermal zones but only one heater, and the heater is wired to feed both zones equally. However the heater is driven, the temperature difference between the zones never responds to it: no input can steer that part of the state. Controllability asks exactly this question before any controller is designed."
+  },
+  {
+   "type": "text",
+   "markdown": "A linear system $\\dot x=Ax+Bu$ with $n$ states is **controllable** if, for any initial state and any target state, some input $u(t)$ moves the state between them in finite time. In practice this says the input can influence every mode of the plant. If some mode cannot be influenced by $u$, no feedback law, however clever, can change its behaviour: its eigenvalue stays in the closed-loop spectrum."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Controllability matrix",
+   "text": "For $\\dot x=Ax+Bu$ with $A\\in\\mathbb{R}^{n\\times n}$ and $B\\in\\mathbb{R}^{n\\times m}$, the controllability matrix is $\\mathcal{C}=[B\\;\\;AB\\;\\;A^2B\\;\\cdots\\;A^{n-1}B]$. The pair $(A,B)$ is controllable if and only if $\\operatorname{rank}\\mathcal{C}=n$. For a single input $\\mathcal{C}$ is square, so the test reduces to $\\det\\mathcal{C}\\neq 0$."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathcal{C}=\\begin{bmatrix}B & AB & A^{2}B & \\cdots & A^{n-1}B\\end{bmatrix},\\qquad \\text{controllable}\\iff\\operatorname{rank}\\mathcal{C}=n",
+   "caption": "Kalman rank test for controllability."
+  },
+  {
+   "type": "text",
+   "markdown": "The idea behind the test: the columns $B, AB, A^2B,\\dots$ are the directions in which the state can be pushed instantly, then after one more application of the dynamics, and so on. If these directions together span all of $\\mathbb{R}^n$ the input reaches every state; if they span only a subspace, the state can never leave that subspace, and the remaining directions are *uncontrollable modes*."
+  },
+  {
+   "type": "worked_example",
+   "title": "Rank test on a two-state plant",
+   "prompt": "Test the controllability of $A=\\begin{bmatrix}1&2\\\\0&-3\\end{bmatrix}$, $B=\\begin{bmatrix}1\\\\0\\end{bmatrix}$, and identify the uncontrollable mode.",
+   "steps": [
+    {
+     "text": "Compute $AB$.",
+     "latex": "AB=\\begin{bmatrix}1\\\\0\\end{bmatrix}"
+    },
+    {
+     "text": "Form $\\mathcal{C}=[B\\;AB]$ and take its determinant.",
+     "latex": "\\mathcal{C}=\\begin{bmatrix}1&1\\\\0&0\\end{bmatrix},\\quad\\det\\mathcal{C}=0"
+    },
+    {
+     "text": "The determinant is zero, so $\\operatorname{rank}\\mathcal{C}=1<2$ and the pair is not controllable. The reachable subspace is spanned by $[1\\;0]^T$, which is an eigenvector of $A$ with eigenvalue $1$ because $A[1\\;0]^T=[1\\;0]^T$.",
+     "latex": "\\operatorname{rank}\\mathcal{C}=1"
+    },
+    {
+     "text": "The matrix is triangular, so its eigenvalues are the diagonal entries $1$ and $-3$. The controllable mode is at $1$, so the uncontrollable mode is the remaining eigenvalue.",
+     "latex": "\\lambda_{unc}=-3"
+    }
+   ],
+   "answer": "Not controllable (rank 1 of 2); the uncontrollable mode is at $s=-3$, which is stable."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Test",
+    "What you compute",
+    "Result for an uncontrollable pair"
+   ],
+   "rows": [
+    [
+     "Kalman rank test",
+     "$\\operatorname{rank}[B\\;AB\\cdots A^{n-1}B]$",
+     "Rank less than $n$"
+    ],
+    [
+     "Pole-zero cancellation",
+     "Reduce $C(sI-A)^{-1}B$ to lowest terms",
+     "A pole cancels with a zero (the mode is hidden from the input-output map)"
+    ],
+    [
+     "PBH test",
+     "Rank of $[\\lambda I-A\\;\\;B]$ at each eigenvalue $\\lambda$",
+     "Rank drops below $n$ at the uncontrollable eigenvalue"
+    ],
+    [
+     "State feedback",
+     "Eigenvalues of $A-BK$ for arbitrary $K$",
+     "The uncontrollable eigenvalue does not move"
+    ]
+   ],
+   "caption": "Four equivalent ways to detect an uncontrollable mode."
+  },
+  {
+   "type": "text",
+   "markdown": "**Pole-zero cancellation.** The transfer function $G(s)=C(sI-A)^{-1}B$ only shows the controllable and observable part of a model. If a factor cancels between numerator and denominator, the corresponding mode is either uncontrollable or unobservable, and the state-space model carries more dynamics than the transfer function reveals. Which of the two it is depends on the $B$ and $C$ matrices, not on the cancelled factor itself."
+  },
+  {
+   "type": "worked_example",
+   "title": "A hidden unstable mode",
+   "prompt": "For $A=\\begin{bmatrix}-1&0\\\\0&2\\end{bmatrix}$, $B=\\begin{bmatrix}1\\\\0\\end{bmatrix}$, $C=\\begin{bmatrix}1&1\\end{bmatrix}$: (a) find the transfer function; (b) test controllability; (c) show that state feedback $u=-Kx$ cannot make the system stable.",
+   "steps": [
+    {
+     "text": "The state equations decouple: $\\dot x_1=-x_1+u$ and $\\dot x_2=2x_2$. Taking the output $y=x_1+x_2$ with $x_2$ unaffected by $u$, the input-output map comes only from $x_1$.",
+     "latex": "G(s)=\\frac{1}{s+1}"
+    },
+    {
+     "text": "Controllability matrix:",
+     "latex": "\\mathcal{C}=\\begin{bmatrix}1&-1\\\\0&0\\end{bmatrix},\\quad\\operatorname{rank}\\mathcal{C}=1<2"
+    },
+    {
+     "text": "With $K=[k_1\\;k_2]$ the closed-loop matrix is triangular, so its eigenvalues are the diagonal entries.",
+     "latex": "A-BK=\\begin{bmatrix}-1-k_1&-k_2\\\\0&2\\end{bmatrix}\\Rightarrow\\lambda=-1-k_1,\\;2"
+    },
+    {
+     "text": "Whatever gains are chosen, one eigenvalue stays at $+2$, so the loop is unstable. The transfer function shows only a stable pole at $-1$, so the instability would be invisible from the input-output model.",
+     "latex": "\\lambda_2=+2\\ \\text{for every }K"
+    }
+   ],
+   "answer": "The unstable mode at $s=+2$ is uncontrollable, so no state-feedback gain can stabilise the system, even though $G(s)$ looks stable."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Controllable, stabilisable and what feedback can do",
+   "text": "State feedback can move every controllable eigenvalue to any chosen location (with real or complex-conjugate pairs), but leaves each uncontrollable eigenvalue exactly where it is. A system is *stabilisable* if all its uncontrollable modes are already stable. An uncontrollable unstable mode makes stabilisation by state feedback impossible."
+  },
+  {
+   "type": "worked_example",
+   "title": "A companion-form plant is controllable",
+   "prompt": "Test $A=\\begin{bmatrix}0&1&0\\\\0&0&1\\\\-6&-11&-6\\end{bmatrix}$, $B=\\begin{bmatrix}0\\\\0\\\\1\\end{bmatrix}$.",
+   "steps": [
+    {
+     "text": "Compute $AB$ and $A^2B$.",
+     "latex": "AB=\\begin{bmatrix}0\\\\1\\\\-6\\end{bmatrix},\\quad A^2B=\\begin{bmatrix}1\\\\-6\\\\25\\end{bmatrix}"
+    },
+    {
+     "text": "Assemble $\\mathcal{C}=[B\\;AB\\;A^2B]$ and evaluate its determinant by cofactor expansion.",
+     "latex": "\\mathcal{C}=\\begin{bmatrix}0&0&1\\\\0&1&-6\\\\1&-6&25\\end{bmatrix},\\quad\\det\\mathcal{C}=-1"
+    },
+    {
+     "text": "The determinant is nonzero, so the rank is 3 and the pair is controllable. This is expected, because a system in controllable canonical form is always controllable.",
+     "latex": "\\operatorname{rank}\\mathcal{C}=3=n"
+    }
+   ],
+   "answer": "Controllable (rank 3, determinant $-1$)."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Exact rank loss is rare; near loss matters",
+   "text": "A model can be controllable on paper yet have a nearly dependent controllability matrix, which means the input needs enormous effort to reach some states. Always look at how close a pole-zero pair is as well as at the rank."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The pair $(A,B)$ is controllable if and only if the controllability matrix $[B\\;AB\\cdots A^{n-1}B]$ has rank $n$.",
+    "A pole-zero cancellation in $G(s)$ means a mode is hidden: it is uncontrollable or unobservable, depending on the realisation.",
+    "State feedback cannot move an uncontrollable eigenvalue, so an uncontrollable unstable mode cannot be stabilised by state feedback."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a single-input system with three states, which matrix must have full rank for the pair $(A,B)$ to be controllable?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$[B\\;\\;AB\\;\\;A^2B]$"
+    },
+    {
+     "id": "b",
+     "text": "$[B\\;\\;AB\\;\\;A^2B\\;\\;A^3B]$ with four columns"
+    },
+    {
+     "id": "c",
+     "text": "$[C\\;\\;CA\\;\\;CA^2]$"
+    },
+    {
+     "id": "d",
+     "text": "$[A\\;\\;A^2\\;\\;A^3]$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$[B\\;\\;AB\\;\\;A^2B]$",
+   "distractorRationale": {
+    "a": "The columns are the input direction and its images under successive applications of the dynamics.",
+    "b": "The powers stop at $A^{n-1}$; higher powers add no new information by the Cayley-Hamilton theorem.",
+    "c": "This stacks the output matrix and tests observability, not controllability.",
+    "d": "This does not involve the input matrix, so it cannot say whether the input reaches the states."
+   },
+   "explanation": "Controllability involves how the input $B$ propagates through the dynamics, giving the columns $B, AB, A^2B$ for $n=3$. The observability test uses $C$ and its products, and powers beyond $A^{n-1}$ add nothing new.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The controllability matrix of a plant has rank 2 although the plant has four states. What does this tell you?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Two independent modes cannot be measured by the sensors"
+    },
+    {
+     "id": "b",
+     "text": "Two independent modes cannot be influenced by the input"
+    },
+    {
+     "id": "c",
+     "text": "The plant is unstable in two of its modes"
+    },
+    {
+     "id": "d",
+     "text": "The input is too small and a larger gain would fix it"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Two independent modes cannot be influenced by the input",
+   "distractorRationale": {
+    "a": "That would be an observability statement, determined by $C$ and not by $B$.",
+    "b": "The rank deficiency, $n-\\operatorname{rank}=2$, counts the uncontrollable directions.",
+    "c": "Controllability says nothing directly about stability of the modes.",
+    "d": "Scaling the input does not change the rank; the directions are structurally unreachable."
+   },
+   "explanation": "A rank of two for $n=4$ means the input can only push the state within a two-dimensional subspace, leaving two directions unreachable. That is a structural property of $(A,B)$ that no scaling of the input can cure.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A transfer function $G(s)=\\dfrac{s+3}{(s+3)(s+7)}$ is obtained from a two-state model. What can you conclude?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The plant is fully controllable and observable with a single pole at $-7$"
+    },
+    {
+     "id": "b",
+     "text": "The plant is unstable because the numerator has a root"
+    },
+    {
+     "id": "c",
+     "text": "The plant has a time delay of 3 seconds"
+    },
+    {
+     "id": "d",
+     "text": "One mode at $s=-3$ is hidden from the input-output map, being either uncontrollable or unobservable"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "One mode at $s=-3$ is hidden from the input-output map, being either uncontrollable or unobservable",
+   "distractorRationale": {
+    "a": "The two-state model has a second mode that the reduced fraction hides.",
+    "b": "The root is at $-3$, in the left half-plane, and it cancels.",
+    "c": "A real delay would appear as an exponential factor, not a cancelling pair.",
+    "d": "A cancellation signals a hidden mode; which kind depends on $B$ and $C$."
+   },
+   "explanation": "Cancelling $(s+3)$ leaves $1/(s+7)$, so the model has an extra dynamic mode that the transfer function does not show. Which of the two properties fails depends on whether the mode is excited by $B$ or seen by $C$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why can state feedback not stabilise a plant that has an unstable uncontrollable mode?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The feedback gain required would be infinite, so it is only impractical"
+    },
+    {
+     "id": "b",
+     "text": "State feedback only works on stable plants"
+    },
+    {
+     "id": "c",
+     "text": "Its eigenvalue is unchanged by $u=-Kx$ for every $K$, so it stays in the right half-plane"
+    },
+    {
+     "id": "d",
+     "text": "The mode can be stabilised only by increasing sensor resolution"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Its eigenvalue is unchanged by $u=-Kx$ for every $K$, so it stays in the right half-plane",
+   "distractorRationale": {
+    "a": "The eigenvalue is not moved at any finite or infinite gain; it is structurally fixed.",
+    "b": "State feedback routinely stabilises unstable plants whose modes are controllable.",
+    "c": "The closed-loop spectrum always contains the uncontrollable eigenvalues of $A$.",
+    "d": "Sensing is not the issue; the input has no path to the mode."
+   },
+   "explanation": "Eigenvalues of $A-BK$ include every uncontrollable eigenvalue of $A$ unchanged, because the input never acts on that mode. If such an eigenvalue has a positive real part, the closed loop cannot be stable whatever $K$ is.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: a plant whose only uncontrollable mode is stable (a stabilisable system) can still be stabilised by state feedback.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "State feedback can move all controllable eigenvalues to the left half-plane, and the uncontrollable one is already stable, so the whole closed loop is stable. The uncontrollable mode just stays at its original location, so its decay rate cannot be improved.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "For $A=\\begin{bmatrix}0&1\\\\-6&-5\\end{bmatrix}$ and $B=\\begin{bmatrix}0\\\\2\\end{bmatrix}$, compute the determinant of the controllability matrix $[B\\;AB]$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o1"
+   ],
+   "correctValue": -4.0,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "Here $AB=[2\\;\\;-10]^T$, so $\\mathcal{C}=\\begin{bmatrix}0&2\\\\2&-10\\end{bmatrix}$. Then $\\det\\mathcal{C}=0\\cdot(-10)-2\\cdot2=-4$, which is nonzero, so the pair is controllable.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A plant has $A=\\begin{bmatrix}-1&2\\\\0&-3\\end{bmatrix}$ and $B=\\begin{bmatrix}1\\\\\\beta\\end{bmatrix}$. Find the nonzero value of $\\beta$ (dimensionless) for which the system is uncontrollable.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o1"
+   ],
+   "correctValue": -1.0,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "Here $AB=[-1+2\\beta\\;\\;-3\\beta]^T$ so $\\det\\mathcal{C}=-3\\beta-\\beta(-1+2\\beta)=-2\\beta(1+\\beta)$. This vanishes at $\\beta=0$ and $\\beta=-1$; the nonzero root is $-1$, where $B=[1\\;\\;-1]^T$ is an eigenvector of $A$ with eigenvalue $-3$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A plant has $A=\\begin{bmatrix}3&1\\\\0&-1\\end{bmatrix}$, $B=\\begin{bmatrix}1\\\\0\\end{bmatrix}$ and uses $u=-Kx$ with $K=[k_1\\;\\;k_2]$. What value of $k_1$ (dimensionless) places the controllable closed-loop pole at $s=-4$?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o3"
+   ],
+   "correctValue": 7.0,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "The closed-loop matrix $A-BK=\\begin{bmatrix}3-k_1&1-k_2\\\\0&-1\\end{bmatrix}$ is triangular, so its eigenvalues are $3-k_1$ and $-1$. Setting $3-k_1=-4$ gives $k_1=7$; the second eigenvalue stays at $-1$ because that mode is uncontrollable, and $k_2$ has no effect on the spectrum.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A model of a servo has transfer function $G(s)=\\dfrac{s-2}{(s-2)(s+5)}=\\dfrac{1}{s+5}$ but is realised with two states. A colleague says the plant is stable, so no extra analysis is needed. Explain why this reasoning is unsafe and how you would check.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o2"
+   ],
+   "markingGuide": [
+    "Identifies that the cancellation hides a mode at $s=+2$ which lies in the right half-plane.",
+    "States that the hidden mode is uncontrollable or unobservable, so the transfer function does not show it.",
+    "Notes the state may still grow without bound internally even if the input-output response looks stable.",
+    "Proposes checking the rank of the controllability and observability matrices of the state-space model."
+   ],
+   "explanation": "Cancelling the factor $(s-2)$ removes an unstable mode from $G(s)$ but not from the physical plant, so internal states can diverge while the output looks bounded. The controllability and observability matrices of the realisation reveal which test fails.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Two identical coupled tanks drain with the same coefficient $a>0$, so $\\dot x_i=-a x_i+u$ for $i=1,2$ with a single shared inflow $u$. (i) Write $A$ and $B$. (ii) Show the pair is uncontrollable. (iii) Interpret the uncontrollable mode physically.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.controllability-observability.controllability.o1",
+    "ug.mce-control-engineering.controllability-observability.controllability.o2"
+   ],
+   "markingGuide": [
+    "Writes $A=-aI_2$ and $B=[1\\;\\;1]^T$.",
+    "Computes $AB=-aB$ so the columns of $[B\\;AB]$ are parallel and the rank is 1 (determinant zero).",
+    "Identifies the uncontrollable mode as the level difference $x_1-x_2$, which obeys $\\dot z=-az$ regardless of $u$, with eigenvalue $-a$.",
+    "Notes the mode is stable (decays at rate $a$) so the system is stabilisable, but its decay cannot be changed by the input."
+   ],
+   "explanation": "With $A=-aI$ and $B=[1\\;1]^T$, $AB=-aB$ so the controllability matrix has rank one. The difference $z=x_1-x_2$ satisfies $\\dot z=-az$ whatever $u$ is, so it decays at the fixed rate $a$: stable but not adjustable by the shared inflow.",
+   "board": "internal"
+  }
+ ]
+}

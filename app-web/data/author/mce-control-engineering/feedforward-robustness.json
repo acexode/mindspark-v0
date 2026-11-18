@@ -1,0 +1,402 @@
+{
+ "lessonTitle": "Feedforward and Robustness",
+ "estimatedMinutes": 34,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A reactor's feed temperature is measured upstream, and every time a cold batch arrives the outlet temperature dips for several minutes before the feedback loop notices and corrects it. The disturbance was visible a minute before it hurt. Feedforward uses that early warning to act in advance; feedback with a model of what the plant does not know keeps the loop honest when the prediction is imperfect."
+  },
+  {
+   "type": "text",
+   "markdown": "Take a plant with a control input $u$ and a measured disturbance $d$. In the Laplace domain the output is $Y=G_p(s)U+G_d(s)D$, where $G_p$ is the plant transfer function from the input and $G_d$ the transfer function from the disturbance. **Feedback** reacts only after $d$ has moved $y$. **Feedforward** adds a term $U_{ff}=G_{ff}(s)D$ computed from the measured $d$ so that the disturbance is cancelled at the output before an error develops."
+  },
+  {
+   "type": "math",
+   "latex": "Y=G_pU+G_dD,\\quad U=U_{fb}+G_{ff}D\\ \\Rightarrow\\ Y=G_pU_{fb}+(G_d+G_pG_{ff})D,\\quad G_{ff}=-\\frac{G_d}{G_p}",
+   "caption": "Ideal feedforward: the combined disturbance path $G_d+G_pG_{ff}$ vanishes."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Conditions for feedforward",
+   "text": "The ideal $G_{ff}=-G_d/G_p$ must be (i) proper (no more zeros than poles), (ii) stable, and (iii) free of right-half-plane zeros in $G_p$ that it would have to invert. It also needs the disturbance to be measured and the models $G_p$ and $G_d$ to be accurate. Residual error is proportional to the model error."
+  },
+  {
+   "type": "worked_example",
+   "title": "Feedforward for a thermal process",
+   "prompt": "A heated process has $G_p(s)=\\dfrac{2}{5s+1}$ (K per kW) and a measured ambient disturbance with $G_d(s)=\\dfrac{0.8}{3s+1}$ (K per K). Find $G_{ff}$, check it is realisable, and find the residual if the true disturbance gain is 0.9 rather than 0.8.",
+   "steps": [
+    {
+     "text": "Form the ratio.",
+     "latex": "G_{ff}=-\\frac{G_d}{G_p}=-\\frac{0.8/(3s+1)}{2/(5s+1)}=-0.4\\,\\frac{5s+1}{3s+1}"
+    },
+    {
+     "text": "Realisability: numerator and denominator have the same degree, so it is proper (a lead term, zero at $0.2$ rad/s and pole at $0.33$ rad/s). The plant has no right-half-plane zero and the poles are stable.",
+     "latex": "\\text{proper, stable}"
+    },
+    {
+     "text": "Static check: at DC the feedforward gives $-0.4$ per unit disturbance, so the disturbance contributes $0.8-2\\times0.4=0$.",
+     "latex": "G_d(0)+G_p(0)G_{ff}(0)=0.8-2\\times0.4=0"
+    },
+    {
+     "text": "If the true disturbance gain is 0.9, the same feedforward leaves a static residual.",
+     "latex": "0.9-2\\times0.4=0.1\\ \\Rightarrow\\ \\text{reduction by a factor of }9"
+    }
+   ],
+   "answer": "$G_{ff}=-0.4\\,(5s+1)/(3s+1)$. A 12.5% error in the disturbance gain still leaves 0.1 of the unit disturbance (about 11% of its uncompensated effect), which feedback must then remove."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Feedback",
+    "Feedforward"
+   ],
+   "rows": [
+    [
+     "Needs measured disturbance",
+     "No",
+     "Yes"
+    ],
+    [
+     "Needs plant model",
+     "Only for design and margins",
+     "Directly: accuracy of cancellation depends on it"
+    ],
+    [
+     "Acts",
+     "After an error appears",
+     "Before the output is affected"
+    ],
+    [
+     "Effect on stability",
+     "Can destabilise the loop",
+     "None (open-loop path), if $G_{ff}$ is stable"
+    ],
+    [
+     "Handles unmeasured disturbances and model error",
+     "Yes",
+     "No"
+    ]
+   ],
+   "caption": "Feedback and feedforward are complementary: use feedforward for speed and feedback for robustness."
+  },
+  {
+   "type": "text",
+   "markdown": "**Feedback rejection and sensitivity.** For an output disturbance with a loop $L=GC$, the output is $Y=S\\,D_o$ with $S=1/(1+L)$. At a frequency $\\omega$, $|S(j\\omega)|$ is the factor by which the closed loop scales the disturbance relative to open loop. Where $|L|\\gg1$ we have $|S|\\approx1/|L|$, so high loop gain at the disturbance frequency means strong rejection."
+  },
+  {
+   "type": "worked_example",
+   "title": "Attenuation at one frequency",
+   "prompt": "A loop has $L(j\\omega)=4\\angle-120^\\circ$ at $\\omega=2$ rad/s. Estimate how much a sinusoidal output disturbance at 2 rad/s is attenuated.",
+   "steps": [
+    {
+     "text": "Rectangular form:",
+     "latex": "L=4(\\cos120^\\circ-j\\sin120^\\circ)=-2.000-3.464j"
+    },
+    {
+     "text": "Compute $|1+L|$ and invert.",
+     "latex": "1+L=-1.000-3.464j,\\quad|1+L|=3.606,\\quad|S|=0.277"
+    },
+    {
+     "text": "In decibels ($20\\log_{10}$) the attenuation is",
+     "latex": "20\\log_{10}0.277=-11.1\\ \\mathrm{dB}"
+    },
+    {
+     "text": "The rough rule $|S|\\approx1/|L|=0.25$ is close because $|L|$ is moderately large, but ignores the phase.",
+     "latex": "1/|L|=0.25"
+    }
+   ],
+   "answer": "$|S|\\approx0.28$: the disturbance at 2 rad/s is reduced to about 28% of its open-loop amplitude (-11.1 dB)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why bandwidth is limited.** The model of the plant is only trustworthy up to some frequency. Beyond it there are unmodelled dynamics: flexible modes, sensor and actuator lags, computation and transport delays. Write the true plant as $G_p(1+\\Delta_m)$, where $\\Delta_m(j\\omega)$ is the multiplicative error. A sufficient condition for robust stability is the small-gain test $|T(j\\omega)|\\,|\\Delta_m(j\\omega)|<1$ at all $\\omega$, with $T=L/(1+L)$ the complementary sensitivity. Since $|T|\\approx1$ up to the bandwidth and falls beyond, the loop bandwidth must lie below the frequency where $|\\Delta_m|$ reaches 1."
+  },
+  {
+   "type": "worked_example",
+   "title": "A delay limits the bandwidth",
+   "prompt": "An unmodelled actuator delay of 20 ms gives $\\Delta_m=e^{-j\\omega\\tau}-1$. Estimate the frequency above which $|\\Delta_m|\\ge1$, and say what this implies for the crossover frequency.",
+   "steps": [
+    {
+     "text": "The magnitude of the error is $|e^{-j\\omega\\tau}-1|=2\\sin(\\omega\\tau/2)$.",
+     "latex": "|\\Delta_m|=2\\sin\\!\\left(\\frac{\\omega\\tau}{2}\\right)"
+    },
+    {
+     "text": "Set it equal to 1: $\\sin(\\omega\\tau/2)=1/2$, so $\\omega\\tau/2=\\pi/6$.",
+     "latex": "\\omega=\\frac{\\pi}{3\\tau}=\\frac{\\pi}{3\\times0.02}=52.4\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "Since $|T|\\approx1$ near crossover, the crossover frequency must stay well below this; a common rule of thumb is half or less.",
+     "latex": "\\omega_c\\lesssim26\\ \\mathrm{rad/s}"
+    }
+   ],
+   "answer": "The error reaches 100% at about 52 rad/s, so the loop bandwidth should be kept to roughly 26 rad/s or lower."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "The trade-off",
+   "text": "Disturbance rejection wants $|L|$ large (hence $|S|$ small) over a wide band, but unmodelled dynamics force $|L|$ to fall below 1 before the uncertainty reaches 100%. Feedforward relieves the trade-off: it cancels a measured disturbance without needing high loop gain, so the bandwidth can stay modest."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not invert what you do not know",
+   "text": "Feedforward inverts the plant. If $G_p$ has a right-half-plane zero or a delay, the exact inverse is unstable or non-causal, and if the model is wrong the cancellation is partial. Use the static part with confidence, the dynamic part with caution, and keep feedback in the loop."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Ideal feedforward from a measured disturbance is $G_{ff}=-G_d/G_p$; it must be proper and stable, and its accuracy depends on model accuracy, so feedback remains necessary.",
+    "For an output disturbance $Y=SD$, where $|L|\\gg1$ the attenuation factor is $|S|\\approx1/|L|$; evaluate $|1/(1+L)|$ exactly at the disturbance frequency.",
+    "Unmodelled dynamics (delays, resonances) grow with frequency and limit the loop bandwidth to well below the frequency at which the uncertainty reaches 100%."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a plant $Y=G_pU+G_dD$ with a measured disturbance $D$, what is the ideal feedforward transfer function $G_{ff}$ (added to the input as $U=U_{fb}+G_{ff}D$)?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$-G_d/G_p$"
+    },
+    {
+     "id": "b",
+     "text": "$G_d\\,G_p$"
+    },
+    {
+     "id": "c",
+     "text": "$G_p/G_d$"
+    },
+    {
+     "id": "d",
+     "text": "$-1$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$-G_d/G_p$",
+   "distractorRationale": {
+    "a": "Then $G_d+G_pG_{ff}=0$ and the disturbance has no effect on the output.",
+    "b": "The product does not cancel the disturbance path.",
+    "c": "This inverts the ratio; it would cancel only if the roles of the paths were reversed.",
+    "d": "A fixed gain cancels the disturbance only when the two paths happen to be identical and equal in size."
+   },
+   "explanation": "The disturbance reaches the output through $G_d+G_pG_{ff}$, which is zero if $G_{ff}=-G_d/G_p$. The plant model must be inverted, so its accuracy limits the cancellation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why is feedback usually kept in the loop even when feedforward from a measured disturbance is applied?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Feedforward always makes the loop unstable"
+    },
+    {
+     "id": "b",
+     "text": "Feedforward is only as accurate as the models and cannot handle unmeasured disturbances"
+    },
+    {
+     "id": "c",
+     "text": "Feedback is cheaper than feedforward"
+    },
+    {
+     "id": "d",
+     "text": "Feedforward needs a measurement of the output"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Feedforward is only as accurate as the models and cannot handle unmeasured disturbances",
+   "distractorRationale": {
+    "a": "Feedforward sits outside the loop and does not change loop stability.",
+    "b": "Feedback corrects residual error from model mismatch and unmeasured effects.",
+    "c": "Cost is not the technical reason.",
+    "d": "It needs a measurement of the disturbance, not the output."
+   },
+   "explanation": "Cancellation depends on knowing $G_p$ and $G_d$, and real plants have errors and other disturbances that no sensor measures. Feedback detects the leftover error and removes it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "At a frequency where $|L(j\\omega)|=20$, which approximate value of $|S|$ applies?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 20"
+    },
+    {
+     "id": "b",
+     "text": "About 1"
+    },
+    {
+     "id": "c",
+     "text": "About 0.5"
+    },
+    {
+     "id": "d",
+     "text": "About 0.05"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "About 0.05",
+   "distractorRationale": {
+    "a": "This would be the loop gain itself, not the sensitivity.",
+    "b": "$|S|\\to1$ where the loop gain is small, not large.",
+    "c": "This would correspond to $|L|\\approx1$ with a particular phase.",
+    "d": "For large $|L|$, $|S|\\approx1/|L|=1/20$."
+   },
+   "explanation": "$S=1/(1+L)$, and for $|L|\\gg1$ the 1 in the denominator is negligible, so $|S|\\approx1/|L|=0.05$, a 26 dB attenuation. A larger loop gain gives stronger rejection at that frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why must the closed-loop bandwidth be limited by unmodelled dynamics such as a flexible mode or a small delay?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The plant always has more gain at high frequency"
+    },
+    {
+     "id": "b",
+     "text": "The controller cannot be implemented above 1 Hz"
+    },
+    {
+     "id": "c",
+     "text": "Model error grows with frequency, and high loop gain where the plant is uncertain can destabilise the loop"
+    },
+    {
+     "id": "d",
+     "text": "High bandwidth reduces the disturbance rejection"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Model error grows with frequency, and high loop gain where the plant is uncertain can destabilise the loop",
+   "distractorRationale": {
+    "a": "Most plants roll off at high frequency, which is why uncertainty is the real issue, not gain.",
+    "b": "There is no such fixed limit; implementation limits depend on the hardware.",
+    "c": "The small-gain condition needs $|T||\\Delta_m|<1$, so $|T|$ must be small where $|\\Delta_m|$ is large.",
+    "d": "Higher bandwidth usually improves rejection; the limit comes from uncertainty."
+   },
+   "explanation": "Above some frequency the model is unreliable, so $|\\Delta_m|$ is not small. To keep $|T||\\Delta_m|<1$ the complementary sensitivity must fall before that frequency, which forces the bandwidth below it.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: with a feedforward controller designed from a model whose disturbance gain is 20% too small, about 20% of the original disturbance effect remains after cancellation.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "If the model underestimates the disturbance path by 20% of its true gain, the cancelling signal removes 80% of the disturbance, so the residual is about 20% of the true effect. Feedback must remove this remainder.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A plant has static gain $G_p(0)=5$ and the disturbance path has static gain $G_d(0)=1.5$. Find the magnitude of the static feedforward gain $|G_{ff}(0)|=|G_d(0)/G_p(0)|$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o1"
+   ],
+   "correctValue": 0.3,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "The ideal static gain is $G_d(0)/G_p(0)=1.5/5=0.3$, with a negative sign in the convention $U=U_{fb}-0.3D$. Then the static effect is $1.5-5\\times0.3=0$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "At a frequency $\\omega$ the open-loop frequency response of a loop is $L(j\\omega)=3\\angle-90^\\circ$ (i.e. $-3j$). Find $|S(j\\omega)|$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o2"
+   ],
+   "correctValue": 0.316228,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "$1+L=1-3j$ has magnitude $\\sqrt{1+9}=3.162$, so $|S|=1/3.162=0.316$ (about $-10$ dB). The estimate $1/|L|=0.33$ is close.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An unmodelled delay of 8 ms gives multiplicative error $|\\Delta_m|=2\\sin(\\omega\\tau/2)$. Using the criterion $|\\Delta_m|<1$, find the largest frequency, in rad/s, at which the error is still below 100%.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o3"
+   ],
+   "correctValue": 130.899694,
+   "tolerance": 1.0,
+   "unit": "rad/s",
+   "explanation": "The error equals 1 when $\\sin(\\omega\\tau/2)=1/2$, i.e. $\\omega\\tau/2=\\pi/6$, so $\\omega=\\pi/(3\\tau)=\\pi/(3\\times0.008)=130.9$ rad/s. The crossover frequency should be kept well below this.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A process has $G_p(s)=\\dfrac{4}{2s+1}$ and a measured disturbance path $G_d(s)=\\dfrac{3}{6s+1}$. Design the ideal feedforward transfer function, state its static value and check realisability, and explain why feedback is still needed.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o1"
+   ],
+   "markingGuide": [
+    "$G_{ff}=-G_d/G_p=-\\dfrac{3}{6s+1}\\cdot\\dfrac{2s+1}{4}=-0.75\\dfrac{2s+1}{6s+1}$.",
+    "Static value $-0.75$ ($G_d(0)/G_p(0)=3/4$).",
+    "Realisable: numerator and denominator are both first order (proper) and the pole at $-1/6$ is stable, with no right-half-plane zero in $G_p$ to invert.",
+    "Feedback is still needed because model errors leave a residual and unmeasured disturbances cannot be cancelled."
+   ],
+   "explanation": "The ratio gives $G_{ff}=-0.75(2s+1)/(6s+1)$, with static value $-0.75$. It is proper and stable, so it can be implemented, but any error in $G_p$ or $G_d$ leaves a residual, and unmeasured disturbances are untouched, so feedback is retained.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A servo must attenuate a disturbance at 5 rad/s by a factor of 10 ($|S|\\le0.1$). Its loop gain falls at $-20$ dB/decade near crossover, and an unmodelled resonance makes the model error reach 100% at 100 rad/s. Discuss the feasibility of the design using the crossover frequency, and suggest how feedforward could help.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o2",
+    "ug.mce-control-engineering.disturbance-rejection.feedforward-robustness.o3"
+   ],
+   "markingGuide": [
+    "$|S|\\le0.1$ at 5 rad/s requires $|L(j5)|\\gtrsim10$ (20 dB).",
+    "With a $-20$ dB/decade slope the loop gain falls to 1 at about $5\\times10=50$ rad/s, so the crossover must be at or above about 50 rad/s.",
+    "The uncertainty limit suggests crossover at about half of 100 rad/s or lower, i.e. $\\lesssim50$ rad/s: the requirements just meet with no safety margin.",
+    "A steeper slope is not possible near crossover without losing phase margin; so the design is marginal.",
+    "Suggests feedforward of the measured disturbance (or reducing the requirement) so that less loop gain is needed."
+   ],
+   "explanation": "$|S|\\le0.1$ at 5 rad/s needs $|L|\\ge10$ there, and with a $-20$ dB/decade slope that puts the crossover at about 50 rad/s. The 100% model error at 100 rad/s only allows crossover at about 50 rad/s or lower, so the design is feasible only with no margin; feedforward from a measured disturbance would reduce the demand on feedback gain.",
+   "board": "internal"
+  }
+ ]
+}

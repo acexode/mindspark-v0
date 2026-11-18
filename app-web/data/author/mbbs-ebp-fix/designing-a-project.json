@@ -1,0 +1,451 @@
+{
+ "lessonTitle": "Designing a Research Project: Question, Design and Ethics",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A final-year student spends nine months collecting questionnaires from 40 patients to test whether a clinic's new pre-operative information leaflet lowers anxiety. The difference is in the right direction but not significant, and the supervisor says gently that the study could never have detected a difference that small. The project failed before the first questionnaire was handed out, at the design stage."
+  },
+  {
+   "type": "text",
+   "markdown": "Good design means fitting the **question** to the **design**, planning enough participants to answer it, and protecting participants and their data. Each choice must be justified in the protocol before data collection, because errors here cannot be repaired by clever analysis later."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Question type",
+    "Typical best design",
+    "Why"
+   ],
+   "rows": [
+    [
+     "Does an intervention work? (therapy)",
+     "Randomised controlled trial",
+     "Randomisation balances confounders; strongest causal inference"
+    ],
+    [
+     "How common is a condition or attitude? (prevalence)",
+     "Cross-sectional survey with a representative sample",
+     "Snapshot of a population at one time; cannot show cause or order in time"
+    ],
+    [
+     "What predicts outcome over time? (prognosis, incidence)",
+     "Prospective cohort study",
+     "Exposure measured before outcome; follows participants forward"
+    ],
+    [
+     "Does an exposure cause a rare disease or harm?",
+     "Case-control study (or cohort if feasible)",
+     "Efficient for rare outcomes; vulnerable to recall and selection bias"
+    ],
+    [
+     "How accurate is a test? (diagnosis)",
+     "Cross-sectional diagnostic accuracy study against a reference standard",
+     "Consecutive patients all receive both tests"
+    ],
+    [
+     "What are patients' experiences and beliefs?",
+     "Qualitative study (interviews, focus groups)",
+     "Explores meaning and process rather than measuring frequency"
+    ]
+   ],
+   "caption": "Match the design to the question; the same exposure may need different designs for different questions."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Hypothesis, power and error",
+   "text": "The **null hypothesis** $H_0$ states that there is no true difference. A **type I error** (probability $\\alpha$, usually 0.05) is rejecting $H_0$ when it is true; a **type II error** (probability $\\beta$) is failing to reject $H_0$ when a real difference exists. **Power** $=1-\\beta$ is the probability of detecting a true difference of a specified size; 80% or 90% is conventional. The **minimum clinically important difference** (the smallest effect worth detecting, chosen on clinical grounds) and the variability of the outcome determine the sample needed."
+  },
+  {
+   "type": "text",
+   "markdown": "**Sample size in principle.** The required number of participants rises when (1) the true effect you want to detect is smaller, (2) the outcome is more variable (larger standard deviation) or, for proportions, closer to 50%, (3) the significance level is stricter, and (4) you want higher power. Halving the target difference roughly *quadruples* the sample. You then inflate the figure for expected dropout. The formulas below assume two equal-sized independent groups, two-sided $\\alpha=0.05$ ($z_{1-\\alpha/2}=1.96$) and 80% power ($z_{1-\\beta}=0.84$); statistical advice should always be sought for the final calculation."
+  },
+  {
+   "type": "math",
+   "latex": "n_{\\text{per group}}=\\frac{\\left(z_{1-\\alpha/2}+z_{1-\\beta}\\right)^{2}\\,\\left[p_{1}(1-p_{1})+p_{2}(1-p_{2})\\right]}{(p_{1}-p_{2})^{2}}",
+   "caption": "Two proportions $p_1$ and $p_2$. Here $(1.96+0.84)^2=7.84$ for 80% power at two-sided $\\alpha=0.05$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Sample size for a binary outcome",
+   "prompt": "A project will compare post-operative delirium after a new anaesthetic protocol with usual care. Usual care is expected to give delirium in 20% of patients, and the smallest worthwhile improvement is 12%. How many patients per group are needed (two-sided $\\alpha=0.05$, power 80%), allowing 10% to be lost to follow-up?",
+   "steps": [
+    {
+     "text": "Identify the inputs: $p_1=0.20$, $p_2=0.12$, difference 0.08, and $(z_{1-\\alpha/2}+z_{1-\\beta})^2=7.84$.",
+     "latex": "p_1(1-p_1)+p_2(1-p_2)=0.16+0.1056=0.2656"
+    },
+    {
+     "text": "Substitute into the formula.",
+     "latex": "n=\\frac{7.84\\times0.2656}{0.08^{2}}=\\frac{2.082}{0.0064}=325.4\\;\\Rightarrow\\;326"
+    },
+    {
+     "text": "Allow for 10% dropout: divide by the retention fraction 0.90 and round up.",
+     "latex": "\\frac{326}{0.90}=362.2\\;\\Rightarrow\\;363\\text{ per group}"
+    },
+    {
+     "text": "So about 726 patients in total are needed. If the project can only recruit 150 patients, it cannot reliably detect a drop from 20% to 12%, and the target effect or design must be reconsidered before starting."
+    }
+   ],
+   "answer": "About 326 evaluable patients per group, or 363 per group recruited after allowing for 10% dropout."
+  },
+  {
+   "type": "math",
+   "latex": "n_{\\text{per group}}=\\frac{2\\sigma^{2}\\left(z_{1-\\alpha/2}+z_{1-\\beta}\\right)^{2}}{\\Delta^{2}}",
+   "caption": "Two means with common standard deviation $\\sigma$ and target difference $\\Delta$ (in the units of the outcome)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Sample size for a continuous outcome and the cost of a smaller effect",
+   "prompt": "A questionnaire score has a standard deviation of 12 points. A project wants 80% power at two-sided $\\alpha=0.05$ to detect a 5-point difference between two independent groups. Calculate n per group, then n if the target difference is halved to 2.5 points.",
+   "steps": [
+    {
+     "text": "Substitute $\\sigma=12$, $\\Delta=5$.",
+     "latex": "n=\\frac{2\\times12^{2}\\times7.84}{5^{2}}=\\frac{2257.9}{25}=90.3\\;\\Rightarrow\\;91"
+    },
+    {
+     "text": "Now halve the difference, $\\Delta=2.5$.",
+     "latex": "n=\\frac{2\\times144\\times7.84}{2.5^{2}}=\\frac{2257.9}{6.25}=361.3\\;\\Rightarrow\\;362"
+    },
+    {
+     "text": "Because $n$ depends on $1/\\Delta^2$, halving the target difference multiplies the sample by four. Choosing a smaller, more precise target difference is therefore a design decision with large practical cost."
+    }
+   ],
+   "answer": "91 per group for a 5-point difference; 362 per group for a 2.5-point difference."
+  },
+  {
+   "type": "text",
+   "markdown": "**Underpowered studies** are a recognised ethical and scientific problem. A trial with low power will often miss a real effect (type II error), giving a falsely reassuring 'no difference'. It also wastes participants' time and risk, and when an underpowered study does find a significant result, the effect is likely to be exaggerated and less reproducible. If a project cannot reach the planned size, options include widening the question, using a continuous rather than binary outcome, a multicentre collaboration, or a pilot or feasibility study that does not claim to test efficacy. Absence of evidence from a small study is not evidence of absence."
+  },
+  {
+   "type": "text",
+   "markdown": "**Ethical approval and governance.** Research follows recognised ethical principles. The Belmont Report sets out respect for persons, beneficence and justice (non-maleficence is often added in the four-principles framework), and the World Medical Association's Declaration of Helsinki states ethical principles for medical research involving human participants, including informed consent and independent ethics committee review. In the UK, research involving NHS patients, staff or data requires review by a Research Ethics Committee and approval by the Health Research Authority (HRA); the research must have a **sponsor** and be conducted under Good Clinical Practice (GCP) standards. Activities that are audit or service evaluation rather than research usually do not need ethical review, although they need local registration and governance; the HRA decision tool helps to classify a project. Student projects must follow their university's ethics process as well."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Valid consent and data protection",
+   "text": "**Informed consent** must be (1) *informed*: a written information sheet describing purpose, procedures, risks, benefits, alternatives and the right to withdraw; (2) *voluntary*: free of coercion or undue influence, including from a clinician with a relationship to the patient; and (3) given by a person with **capacity**. Adults lacking capacity can be included only under specific legal safeguards (in England and Wales the Mental Capacity Act, with approval by a REC and agreement from a consultee). Participation never affects the patient's care. Under UK GDPR and the Data Protection Act 2018, collect only the **minimum** data necessary, have a lawful basis, keep identifiers separate (pseudonymisation) or remove them (anonymisation), store data securely with limited access, and use encrypted, approved routes for transfer."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Requirement",
+    "What it means in a student project"
+   ],
+   "rows": [
+    [
+     "Protocol and ethics review",
+     "Written protocol with question, design, sample size, analysis plan and risks, approved before recruitment"
+    ],
+    [
+     "Sponsor and indemnity",
+     "A responsible organisation (usually the university or NHS trust) for oversight and insurance"
+    ],
+    [
+     "Consent process",
+     "Participant information sheet, time to consider, written consent, right to withdraw without penalty"
+    ],
+    [
+     "Data minimisation",
+     "Collect only variables needed to answer the question; no names in analysis files"
+    ],
+    [
+     "Secure storage and sharing",
+     "Encrypted university or NHS systems, access limited to the team, retention period defined"
+    ],
+    [
+     "Adverse events and incidents",
+     "Plan for reporting harms and data breaches"
+    ]
+   ],
+   "caption": "Core governance elements of a clinical research project in the UK."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Principles to carry away",
+   "text": "Decide the design from the question, calculate the sample size from a clinically meaningful difference, and plan for dropout before recruiting. An underpowered study is both wasteful and potentially misleading. No participant should be recruited, and no patient data used, without appropriate approval, valid consent (or a lawful basis) and secure handling."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Match the question to the design: trial for therapy, cohort for prognosis, case-control for rare outcomes, cross-sectional for prevalence and diagnostic accuracy, qualitative for experiences.",
+    "Sample size depends on the target difference, variability, significance level and power; halving the difference roughly quadruples the sample.",
+    "Underpowered studies risk false negatives and exaggerated positive effects and waste participants' effort.",
+    "UK research requires ethics review and HRA approval, a sponsor, valid informed consent and data protection under UK GDPR with minimisation and secure handling."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A researcher wants to investigate whether prior use of a particular medication is associated with a very rare form of liver disease that occurs in about 1 in 100,000 people per year. Which design is most efficient?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A qualitative interview study"
+    },
+    {
+     "id": "b",
+     "text": "A cross-sectional survey of a random sample of 500 people"
+    },
+    {
+     "id": "c",
+     "text": "A case-control study comparing past exposure in patients with the disease and matched controls"
+    },
+    {
+     "id": "d",
+     "text": "A prospective cohort of 1,000 medication users followed for a year"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "A case-control study comparing past exposure in patients with the disease and matched controls",
+   "distractorRationale": {
+    "a": "This explores experiences and cannot estimate the association between exposure and disease.",
+    "b": "With a rare outcome, such a sample would contain almost no cases.",
+    "c": "Correct: case-control studies start from the outcome, so they efficiently study rare diseases.",
+    "d": "Very few outcomes would occur, so the study would be too small to detect an association."
+   },
+   "explanation": "For rare outcomes, starting with the cases and comparing their previous exposure with that of controls gives enough events with modest sample size. The cost is susceptibility to recall and selection bias and the fact that only odds ratios can be estimated directly.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A student wishes to understand how patients with long-term kidney disease experience dialysis, with no hypothesis to test and no wish to count how many hold a particular view. Which approach is most appropriate?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A randomised controlled trial"
+    },
+    {
+     "id": "b",
+     "text": "A diagnostic accuracy study"
+    },
+    {
+     "id": "c",
+     "text": "A case-control study"
+    },
+    {
+     "id": "d",
+     "text": "A qualitative study using semi-structured interviews"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "A qualitative study using semi-structured interviews",
+   "distractorRationale": {
+    "a": "A trial tests the effect of an intervention on measured outcomes, which is not the aim.",
+    "b": "This compares a test with a reference standard, which is unrelated to the question.",
+    "c": "A case-control study compares exposures between those with and without an outcome, which does not explore experience.",
+    "d": "Correct: qualitative methods explore experiences and meanings in depth."
+   },
+   "explanation": "When the aim is to understand experiences, beliefs or processes, qualitative designs such as interviews or focus groups are appropriate. They produce themes rather than effect sizes, and sample size is guided by information richness (saturation) rather than a power calculation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A trial of a new analgesic enrols 24 patients, finds a mean pain reduction 0.5 points greater than placebo (p = 0.40), and concludes that the drug does not work. Which criticism is most appropriate?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The p-value of 0.40 proves that the drug has no effect"
+    },
+    {
+     "id": "b",
+     "text": "The study was probably underpowered, so a real effect could have been missed (type II error)"
+    },
+    {
+     "id": "c",
+     "text": "The study must be biased because it was small"
+    },
+    {
+     "id": "d",
+     "text": "The study has a high risk of type I error because of the small sample"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The study was probably underpowered, so a real effect could have been missed (type II error)",
+   "distractorRationale": {
+    "a": "A non-significant p-value does not prove absence of effect, especially in a small study.",
+    "b": "Correct: a small sample with a non-significant result cannot exclude a clinically important effect.",
+    "c": "Small size increases random error, not necessarily bias.",
+    "d": "Small samples chiefly raise type II error; type I error is fixed by the chosen alpha."
+   },
+   "explanation": "Low power means a high chance of a false-negative result. The confidence interval would be wide and compatible with both no effect and a clinically meaningful benefit, so the correct conclusion is that the trial is inconclusive, not that the drug is ineffective.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "Increasing the sample size of a study reduces systematic bias as well as random error.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "A larger sample reduces random error and narrows confidence intervals, but it cannot remove bias from flawed design such as poor selection or measurement. A very large biased study simply gives a precise wrong answer.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A student has pseudonymised audit-like research data on 300 patients, with NHS numbers kept in a separate file. To share the dataset with a collaborator at another university, which approach best meets data protection principles?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Share it freely because the participants consented to the study"
+    },
+    {
+     "id": "b",
+     "text": "Upload the data to a personal cloud account so both can access it"
+    },
+    {
+     "id": "c",
+     "text": "Send only the variables needed, without direct identifiers, through an encrypted institutionally approved route under a data-sharing agreement"
+    },
+    {
+     "id": "d",
+     "text": "Email the full file including NHS numbers as an unencrypted attachment for convenience"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Send only the variables needed, without direct identifiers, through an encrypted institutionally approved route under a data-sharing agreement",
+   "distractorRationale": {
+    "a": "Consent to take part does not remove the duty to minimise data and transfer it securely.",
+    "b": "Personal accounts are not approved storage and lack governance controls.",
+    "c": "Correct: minimisation, pseudonymisation or anonymisation, secure transfer and an agreement satisfy the main principles.",
+    "d": "This exposes identifiable data without security safeguards."
+   },
+   "explanation": "UK GDPR requires data minimisation, appropriate security and a lawful basis for sharing. Sharing only needed, de-identified variables through encrypted, approved routes under an agreement protects participants, whereas personal accounts and unencrypted email fail basic safeguards.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A consultant asks a patient in her own clinic to join the consultant's trial and says the patient 'should really take part'. Which element of valid consent is most threatened?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Anonymity, because the consultant knows the patient"
+    },
+    {
+     "id": "b",
+     "text": "Voluntariness, because the patient may feel pressure from a clinician with power over their care"
+    },
+    {
+     "id": "c",
+     "text": "Capacity, because patients cannot consent in clinic"
+    },
+    {
+     "id": "d",
+     "text": "Randomisation, because the consultant chooses the arm"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Voluntariness, because the patient may feel pressure from a clinician with power over their care",
+   "distractorRationale": {
+    "a": "Anonymity concerns data and does not define voluntary consent.",
+    "b": "Correct: undue influence from a treating clinician compromises free choice.",
+    "c": "Being in clinic does not affect capacity.",
+    "d": "Nothing was said about allocation; the problem is the manner of recruitment."
+   },
+   "explanation": "Valid consent must be informed, voluntary and given with capacity. A treating clinician pressing a patient to take part creates an unequal relationship in which refusal may feel risky, so recruitment is often done by an independent member of the research team and patients are told that declining does not affect their care.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A project will compare the proportion of patients with a positive outcome of 30% in usual care against 20% with a new intervention. Use $n=(z_{1-\\alpha/2}+z_{1-\\beta})^2[p_1(1-p_1)+p_2(1-p_2)]/(p_1-p_2)^2$ with two-sided $\\alpha=0.05$ ($z=1.96$) and 80% power ($z=0.84$). How many evaluable patients are needed per group?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o2"
+   ],
+   "correctValue": 290.1,
+   "tolerance": 2.0,
+   "unit": "patients per group",
+   "explanation": "The sum of variances is $0.30\\times0.70+0.20\\times0.80=0.37$ and the squared difference is $0.10^2=0.01$, so $n=7.84\\times0.37/0.01=290.1$, i.e. 291 per group when rounded up. A project able to recruit only 100 per group would have much lower power for this difference.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A trial plans to detect a 6-point difference in a score with standard deviation 15, using $n=2\\sigma^2(z_{1-\\alpha/2}+z_{1-\\beta})^2/\\Delta^2$ with two-sided $\\alpha=0.05$ ($z=1.96$) and 80% power ($z=0.84$). Calculate the number to recruit per group if 20% are expected to be lost to follow-up.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o2"
+   ],
+   "correctValue": 122.5,
+   "tolerance": 1.0,
+   "unit": "patients per group",
+   "explanation": "The evaluable sample is $2\\times15^2\\times7.84/6^2=98$ per group. To obtain 98 evaluable patients when 20% are lost, recruit $98/0.80=122.5$, i.e. 123 per group. Failing to inflate for dropout would leave the study underpowered.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A student wants to know whether a pre-operative education session reduces anxiety scores (0-80 scale) in adults awaiting elective surgery. Recommend a study design, justify it, and list the information needed to calculate a sample size. Explain why recruiting fewer patients than calculated is a problem.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o1",
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o2"
+   ],
+   "markingGuide": [
+    "Randomised controlled trial (or at least a controlled comparison) because the question is about intervention effect",
+    "Randomisation (with concealment) to balance confounders; consider blinding of outcome assessor",
+    "Primary outcome: pre-specified anxiety score at a defined time",
+    "Inputs for sample size: standard deviation of the score, minimum clinically important difference, alpha, power, expected dropout",
+    "Underpowered studies risk missing a real effect, wasting participants' time, and exaggerated significant results",
+    "Alternatives if the sample is infeasible: pilot or feasibility design, multicentre collaboration, or a different outcome"
+   ],
+   "explanation": "The question concerns the effect of an intervention, which is best answered by a randomised comparison. A sample size calculation needs the outcome's standard deviation, a clinically important difference, the error rates and an allowance for dropout; recruiting fewer than calculated lowers power and makes a misleading negative or inflated positive result more likely.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A medical student plans a questionnaire study of NHS outpatients about their experience of waiting times, to be published as research. Outline the approvals, consent and data-protection steps required before starting, using UK terminology.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.research-project-methods.designing-a-project.o3"
+   ],
+   "markingGuide": [
+    "Determine that it is research (not audit or service evaluation), for example using the HRA decision tool",
+    "Ethical review and HRA approval for NHS research, plus a sponsor; follow university ethics procedures and GCP standards",
+    "Participant information sheet and informed voluntary consent with the right to withdraw; capacity considered",
+    "Lawful basis and data minimisation under UK GDPR and the Data Protection Act 2018",
+    "Pseudonymise or anonymise, secure encrypted storage, restricted access and a retention plan",
+    "Plan for data breaches and for reporting concerns"
+   ],
+   "explanation": "A study intended to produce generalisable knowledge counts as research and needs a protocol, a sponsor, ethics and HRA approval, and informed voluntary consent. Data must be handled lawfully and securely, with minimisation and pseudonymisation to protect confidentiality.",
+   "board": "internal"
+  }
+ ]
+}

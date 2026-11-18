@@ -1,0 +1,397 @@
+{
+ "lessonTitle": "State Space and Transfer Functions",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A vibration-isolation table is described in the supplier's data sheet by a transfer function, while the simulation model your colleague built uses matrices $A$, $B$, $C$, $D$. Are they the same system? The answer is a single formula that converts one to the other, and a simple fact: the poles in the data sheet are the eigenvalues of $A$."
+  },
+  {
+   "type": "text",
+   "markdown": "For $\\dot x=Ax+Bu$, $y=Cx+Du$ take Laplace transforms with zero initial state. Then $sX=AX+BU$, so $X=(sI-A)^{-1}BU$, and $Y=CX+DU$. The ratio $Y/U$ is the transfer function."
+  },
+  {
+   "type": "math",
+   "latex": "G(s)=C\\,(sI-A)^{-1}B+D=\\frac{C\\,\\mathrm{adj}(sI-A)\\,B}{\\det(sI-A)}+D",
+   "caption": "Transfer function of a single-input single-output state-space model."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Poles are eigenvalues",
+   "text": "The denominator of $G(s)$ is $\\det(sI-A)$, the characteristic polynomial of $A$. Hence the poles of $G(s)$ are the eigenvalues of $A$ (unless a pole cancels with a zero, in which case a mode is uncontrollable or unobservable). The model is asymptotically stable if and only if every eigenvalue of $A$ has a negative real part."
+  },
+  {
+   "type": "worked_example",
+   "title": "From matrices to a transfer function",
+   "prompt": "Find $G(s)$ for $A=\\begin{bmatrix}0&1\\\\-8&-6\\end{bmatrix}$, $B=\\begin{bmatrix}0\\\\2\\end{bmatrix}$, $C=[1\\;\\;0]$, $D=0$.",
+   "steps": [
+    {
+     "text": "Form $sI-A$ and its determinant (the characteristic polynomial).",
+     "latex": "sI-A=\\begin{bmatrix}s&-1\\\\8&s+6\\end{bmatrix},\\quad\\det(sI-A)=s(s+6)+8=s^2+6s+8"
+    },
+    {
+     "text": "For a $2\\times2$ matrix the inverse is the adjugate divided by the determinant.",
+     "latex": "(sI-A)^{-1}=\\frac{1}{s^2+6s+8}\\begin{bmatrix}s+6&1\\\\-8&s\\end{bmatrix}"
+    },
+    {
+     "text": "Multiply by $B$, then by $C$ (which picks out the first component).",
+     "latex": "(sI-A)^{-1}B=\\frac{1}{s^2+6s+8}\\begin{bmatrix}2\\\\2s\\end{bmatrix},\\quad G(s)=\\frac{2}{s^2+6s+8}"
+    },
+    {
+     "text": "Factor the denominator to read the poles; these agree with the eigenvalues of $A$.",
+     "latex": "G(s)=\\frac{2}{(s+2)(s+4)},\\quad\\lambda=-2,\\,-4"
+    }
+   ],
+   "answer": "$G(s)=2/(s^2+6s+8)$ with poles at $-2$ and $-4$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Eigenvalue of $A$",
+    "Mode in the response",
+    "Behaviour"
+   ],
+   "rows": [
+    [
+     "Real, negative ($-\\sigma$)",
+     "$e^{-\\sigma t}$",
+     "Decays with time constant $1/\\sigma$"
+    ],
+    [
+     "Complex pair $-\\sigma\\pm j\\omega_d$",
+     "$e^{-\\sigma t}\\cos(\\omega_dt+\\phi)$",
+     "Decaying oscillation at $\\omega_d$ rad/s"
+    ],
+    [
+     "Real, positive",
+     "$e^{\\sigma t}$",
+     "Unbounded growth (unstable)"
+    ],
+    [
+     "Zero",
+     "constant",
+     "Integrator-like; does not decay (marginal)"
+    ],
+    [
+     "Pure imaginary $\\pm j\\omega$",
+     "$\\cos(\\omega t+\\phi)$",
+     "Sustained oscillation (marginal)"
+    ]
+   ],
+   "caption": "What each eigenvalue of $A$ contributes to the free response."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading dynamics from eigenvalues",
+   "prompt": "Find the eigenvalues of (a) $A=\\begin{bmatrix}0&1\\\\-13&-4\\end{bmatrix}$ and (b) $A=\\begin{bmatrix}1&2\\\\3&0\\end{bmatrix}$ and say what each implies.",
+   "steps": [
+    {
+     "text": "For a $2\\times2$ matrix, $\\det(\\lambda I-A)=\\lambda^2-(\\mathrm{tr}A)\\lambda+\\det A$. In (a) the trace is $-4$ and the determinant is $0\\cdot(-4)-1\\cdot(-13)=13$.",
+     "latex": "\\lambda^2+4\\lambda+13=0\\Rightarrow\\lambda=-2\\pm j3"
+    },
+    {
+     "text": "Interpretation of (a): both real parts are negative, so it is stable; the response decays as $e^{-2t}$ while oscillating at $\\omega_d=3$ rad/s.",
+     "latex": "\\text{stable, underdamped}"
+    },
+    {
+     "text": "In (b) the trace is $1$ and the determinant is $0\\cdot1-2\\cdot3=-6$.",
+     "latex": "\\lambda^2-\\lambda-6=(\\lambda-3)(\\lambda+2)=0\\Rightarrow\\lambda=3,\\,-2"
+    },
+    {
+     "text": "Interpretation of (b): one eigenvalue at $+3$ gives growth like $e^{3t}$, so the model is unstable even though the other eigenvalue is negative.",
+     "latex": "\\text{unstable}"
+    }
+   ],
+   "answer": "(a) $-2\\pm j3$, stable with decaying oscillation; (b) $3$ and $-2$, unstable."
+  },
+  {
+   "type": "text",
+   "markdown": "**Free response.** With $u=0$ the state obeys $\\dot x=Ax$, whose solution from $x(0)=x_0$ is $x(t)=e^{At}x_0$ with the matrix exponential $e^{At}=\\mathcal{L}^{-1}\\{(sI-A)^{-1}\\}$. It satisfies $e^{A\\cdot0}=I$, and each entry is a combination of the modes $e^{\\lambda_it}$. In practice we find $e^{At}$ by inverse-Laplace-transforming $(sI-A)^{-1}$ using partial fractions."
+  },
+  {
+   "type": "math",
+   "latex": "x(t)=e^{At}x(0),\\qquad e^{At}=\\mathcal{L}^{-1}\\!\\big\\{(sI-A)^{-1}\\big\\}",
+   "caption": "Zero-input state response."
+  },
+  {
+   "type": "worked_example",
+   "title": "Response to an initial condition",
+   "prompt": "For $A=\\begin{bmatrix}0&1\\\\-2&-3\\end{bmatrix}$ find $x(t)$ for $x(0)=[1\\;\\;0]^T$, and evaluate at $t=0.5$ s.",
+   "steps": [
+    {
+     "text": "The characteristic polynomial is $s^2+3s+2=(s+1)(s+2)$, so $(sI-A)^{-1}=\\dfrac{1}{(s+1)(s+2)}\\begin{bmatrix}s+3&1\\\\-2&s\\end{bmatrix}$.",
+     "latex": "\\lambda_1=-1,\\ \\lambda_2=-2"
+    },
+    {
+     "text": "Multiplying by $x(0)=[1\\;0]^T$ selects the first column. Partial fractions: $\\frac{s+3}{(s+1)(s+2)}=\\frac{2}{s+1}-\\frac{1}{s+2}$ and $\\frac{-2}{(s+1)(s+2)}=\\frac{-2}{s+1}+\\frac{2}{s+2}$.",
+     "latex": "x_1(t)=2e^{-t}-e^{-2t},\\quad x_2(t)=-2e^{-t}+2e^{-2t}"
+    },
+    {
+     "text": "Check at $t=0$: $x_1=1$ and $x_2=0$, as required. Evaluate at $t=0.5$ s.",
+     "latex": "x_1(0.5)=0.8452,\\quad x_2(0.5)=-0.4773"
+    }
+   ],
+   "answer": "$x(t)=[2e^{-t}-e^{-2t},\\ -2e^{-t}+2e^{-2t}]^T$; at 0.5 s, $x\\approx[0.845,\\ -0.477]^T$."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Poles can hide",
+   "text": "If the model has a mode that is uncontrollable or unobservable, that eigenvalue of $A$ cancels in $C(sI-A)^{-1}B$ and does not appear in $G(s)$. The transfer function can therefore show fewer poles than $A$ has eigenvalues, and a stable $G(s)$ does not prove that $A$ is stable."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$G(s)=C(sI-A)^{-1}B+D$, and its poles are the eigenvalues of $A$ (barring cancellation); stability needs all eigenvalues in the left half-plane.",
+    "Real negative eigenvalues give exponential decays, complex pairs give decaying oscillations, and a positive real part gives growth.",
+    "The free response is $x(t)=e^{At}x(0)$, found with $e^{At}=\\mathcal{L}^{-1}\\{(sI-A)^{-1}\\}$ by partial fractions."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which expression gives the transfer function of $\\dot x=Ax+Bu$, $y=Cx+Du$?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$C(sI-A)^{-1}B+D$"
+    },
+    {
+     "id": "b",
+     "text": "$C(sI+A)^{-1}B+D$"
+    },
+    {
+     "id": "c",
+     "text": "$(sI-A)^{-1}B+CD$"
+    },
+    {
+     "id": "d",
+     "text": "$B(sI-A)^{-1}C+D$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$C(sI-A)^{-1}B+D$",
+   "distractorRationale": {
+    "a": "Laplace transform with zero initial state gives $X=(sI-A)^{-1}BU$.",
+    "b": "The sign is wrong: the resolvent is $(sI-A)^{-1}$.",
+    "c": "This misplaces $C$ and $D$; $C$ multiplies the state response and $D$ is added.",
+    "d": "The matrix order is wrong and the dimensions do not match for a SISO system."
+   },
+   "explanation": "Transforming the state equation gives $X(s)=(sI-A)^{-1}BU(s)$, then $Y=CX+DU$ gives $G(s)=C(sI-A)^{-1}B+D$. The matrix order matters for the dimensions.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How are the poles of a state-space model related to its matrices?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "They are the eigenvalues of $B$"
+    },
+    {
+     "id": "b",
+     "text": "They are the eigenvalues of $A$, the roots of $\\det(sI-A)=0$"
+    },
+    {
+     "id": "c",
+     "text": "They are the entries of $C$"
+    },
+    {
+     "id": "d",
+     "text": "They are the roots of $\\det(sI-D)$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "They are the eigenvalues of $A$, the roots of $\\det(sI-A)=0$",
+   "distractorRationale": {
+    "a": "$B$ is an input vector and has no eigenvalues in general.",
+    "b": "The denominator of $G(s)$ is $\\det(sI-A)$, up to cancellation.",
+    "c": "$C$ selects outputs and does not determine the dynamics.",
+    "d": "$D$ is a direct feed-through gain and does not affect the poles."
+   },
+   "explanation": "The transfer function is $C\\,\\mathrm{adj}(sI-A)B/\\det(sI-A)$, so the pole locations come from the roots of the characteristic polynomial $\\det(sI-A)$. Only $A$ enters it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For $A=\\begin{bmatrix}-2&5\\\\0&3\\end{bmatrix}$, what can you conclude?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The system is stable because the trace is positive"
+    },
+    {
+     "id": "b",
+     "text": "The system is stable because $-2<0$"
+    },
+    {
+     "id": "c",
+     "text": "The system is unstable because $A$ has an eigenvalue at $+3$"
+    },
+    {
+     "id": "d",
+     "text": "The system is marginally stable with eigenvalues at $\\pm j$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The system is unstable because $A$ has an eigenvalue at $+3$",
+   "distractorRationale": {
+    "a": "The trace is $1>0$ but stability needs every eigenvalue in the left half-plane.",
+    "b": "One negative eigenvalue is insufficient; all must be negative.",
+    "c": "$A$ is triangular, so its eigenvalues are the diagonal entries $-2$ and $3$.",
+    "d": "The eigenvalues are real, $-2$ and $3$."
+   },
+   "explanation": "For a triangular matrix the eigenvalues are the diagonal entries, here $-2$ and $3$. The positive eigenvalue produces a mode $e^{3t}$ that grows without bound.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For $A=\\mathrm{diag}(-1,-5)$ and $x(0)=[2\\;\\;3]^T$, what is $x(t)$ with $u=0$?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$[2e^{-5t},\\ 3e^{-t}]^T$"
+    },
+    {
+     "id": "b",
+     "text": "$[2(1-e^{-t}),\\ 3(1-e^{-5t})]^T$"
+    },
+    {
+     "id": "c",
+     "text": "$[-2e^{-t},\\ -3e^{-5t}]^T$"
+    },
+    {
+     "id": "d",
+     "text": "$[2e^{-t},\\ 3e^{-5t}]^T$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$[2e^{-t},\\ 3e^{-5t}]^T$",
+   "distractorRationale": {
+    "a": "The decay rates are applied to the wrong states.",
+    "b": "These are step responses; the free response decays to zero from the initial value.",
+    "c": "The solution must start at the initial state, so the signs cannot be negative.",
+    "d": "For a diagonal $A$, $e^{At}=\\mathrm{diag}(e^{-t},e^{-5t})$."
+   },
+   "explanation": "A diagonal $A$ decouples the states, so each follows $x_i(t)=x_i(0)e^{\\lambda_it}$. At $t=0$ the solution is $[2\\;3]^T$ as required.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: as $s\\to\\infty$ the transfer function $C(sI-A)^{-1}B+D$ tends to $D$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The term $(sI-A)^{-1}$ tends to zero as $|s|\\to\\infty$, so only the direct feed-through $D$ remains. A strictly proper system therefore has $D=0$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A state matrix is $A=\\begin{bmatrix}0&1\\\\-12&-7\\end{bmatrix}$. Find the eigenvalue with the smaller magnitude (the slowest pole), in s$^{-1}$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o2"
+   ],
+   "correctValue": -3.0,
+   "tolerance": 0.01,
+   "unit": "s^-1",
+   "explanation": "The characteristic polynomial is $\\lambda^2+7\\lambda+12=(\\lambda+3)(\\lambda+4)$, so the eigenvalues are $-3$ and $-4$. The slowest mode is $-3$ s$^{-1}$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A model has $A=\\begin{bmatrix}-2&0\\\\1&-5\\end{bmatrix}$, $B=[1\\;\\;0]^T$, $C=[0\\;\\;1]$, $D=0$. Find the steady-state gain $G(0)=-CA^{-1}B+D$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o1"
+   ],
+   "correctValue": 0.1,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "Here $G(s)=1/((s+2)(s+5))$, since $x_1=u/(s+2)$ and $x_2=x_1/(s+5)$. Therefore $G(0)=1/10=0.1$, which agrees with $-CA^{-1}B=-(-0.1)=0.1$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "For $A=\\begin{bmatrix}0&1\\\\-6&-5\\end{bmatrix}$ and $x(0)=[2\\;\\;0]^T$ with zero input, find $x_1(0.5)$ (units of $x_1$). Use $(sI-A)^{-1}=\\dfrac{1}{(s+2)(s+3)}\\begin{bmatrix}s+5&1\\\\-6&s\\end{bmatrix}$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o3"
+   ],
+   "correctValue": 1.314756,
+   "tolerance": 0.005,
+   "unit": "units of x1",
+   "explanation": "Taking the first column, $(s+5)/((s+2)(s+3))=3/(s+2)-2/(s+3)$ so $e^{At}_{11}=3e^{-2t}-2e^{-3t}$. Multiplying by the initial value 2 gives $x_1(t)=6e^{-2t}-4e^{-3t}$, and at $t=0.5$ this is $6(0.3679)-4(0.2231)=1.315$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the poles of a transfer function obtained from a state-space model are the eigenvalues of $A$, and describe a situation in which an eigenvalue of $A$ does not appear as a pole of $G(s)$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o1",
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o2"
+   ],
+   "markingGuide": [
+    "Derives $G(s)=C(sI-A)^{-1}B+D$ using the Laplace transform.",
+    "Writes $(sI-A)^{-1}=\\mathrm{adj}(sI-A)/\\det(sI-A)$, so the denominator is the characteristic polynomial.",
+    "Concludes the poles are the roots of $\\det(sI-A)=0$, that is the eigenvalues of $A$.",
+    "Explains that a mode that is uncontrollable or unobservable cancels with a zero in $G(s)$, so that eigenvalue is hidden."
+   ],
+   "explanation": "Since $(sI-A)^{-1}=\\mathrm{adj}(sI-A)/\\det(sI-A)$, the denominator of $G(s)$ is the characteristic polynomial of $A$, whose roots are the eigenvalues. If a mode is uncontrollable or unobservable, its factor cancels between numerator and denominator, hiding the eigenvalue from $G(s)$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A model has $A=\\begin{bmatrix}0&1\\\\-25&-6\\end{bmatrix}$, $B=[0\\;\\;25]^T$, $C=[1\\;\\;0]$, $D=0$. Find the eigenvalues, the transfer function and the DC gain, and use them to describe the free response (frequency of oscillation, decay envelope and approximate overshoot of the step response).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o1",
+    "ug.mce-control-engineering.state-space-models.state-and-transfer-function.o2"
+   ],
+   "markingGuide": [
+    "Characteristic polynomial $s^2+6s+25$ with eigenvalues $-3\\pm j4$.",
+    "Transfer function $G(s)=25/(s^2+6s+25)$, DC gain $G(0)=1$.",
+    "Free response oscillates at $\\omega_d=4$ rad/s under an envelope $e^{-3t}$ (time constant 1/3 s).",
+    "$\\omega_n=5$ rad/s, $\\zeta=0.6$, so overshoot $\\approx e^{-\\pi\\zeta/\\sqrt{1-\\zeta^2}}\\approx9.5\\%$."
+   ],
+   "explanation": "The characteristic polynomial $s^2+6s+25$ has roots $-3\\pm j4$, and $C(sI-A)^{-1}B=25/(s^2+6s+25)$ with $G(0)=1$. The free response is a decaying oscillation at 4 rad/s with envelope $e^{-3t}$; since $\\omega_n=5$ and $\\zeta=0.6$ the step overshoot is about 9.5%.",
+   "board": "internal"
+  }
+ ]
+}

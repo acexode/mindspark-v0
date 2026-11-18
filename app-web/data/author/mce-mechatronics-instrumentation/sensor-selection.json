@@ -1,0 +1,407 @@
+{
+ "lessonTitle": "Sensor Characteristics: Range, Sensitivity, Linearity and Bandwidth",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A test engineer calibrates a displacement sensor by moving it in 2 mm steps and writing down the voltage, and the numbers do not fall on a perfectly straight line. Which slope is the sensor's sensitivity, how bad is the deviation, and is this the right sensor for the job at all?"
+  },
+  {
+   "type": "text",
+   "markdown": "A **sensor** converts a physical quantity (displacement, force, temperature) into an electrical signal. Choosing and using one needs a few standard descriptors. **Range** is the span of measurand it can measure. **Sensitivity** $S$ is the change in output per unit change in input (for example V/mm). **Resolution** is the smallest change it can reveal. **Linearity** is how closely the output follows a straight line. **Bandwidth** is the highest frequency of change the sensor follows faithfully."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Sensitivity from calibration data",
+   "text": "Calibration records outputs $y_i$ for known inputs $x_i$. The **least-squares line** $y=a+Sx$ minimises the sum of squared vertical deviations. The slope $S$ is the sensitivity (output units per input unit) and $a$ is the offset."
+  },
+  {
+   "type": "math",
+   "latex": "S=\\frac{\\sum_i (x_i-\\bar{x})(y_i-\\bar{y})}{\\sum_i (x_i-\\bar{x})^2},\\qquad a=\\bar{y}-S\\bar{x}",
+   "caption": "Least-squares slope (sensitivity) and intercept (offset)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Regression on calibration data",
+   "prompt": "A displacement sensor gives these outputs at $x=0,2,4,6,8,10$ mm: $y=0.02,\\,0.41,\\,0.80,\\,1.22,\\,1.58,\\,2.01$ V. Find the sensitivity, offset and non-linearity.",
+   "steps": [
+    {
+     "text": "Means: $\\bar{x}=5$ mm, and $\\bar{y}=6.04/6=1.0067$ V.",
+     "latex": "\\bar{x}=5,\\quad\\bar{y}=1.0067"
+    },
+    {
+     "text": "The denominator is $\\sum(x-\\bar{x})^2=25+9+1+1+9+25=70$.",
+     "latex": "S_{xx}=70"
+    },
+    {
+     "text": "The numerator is $\\sum(x-\\bar{x})\\,y=-0.10-1.23-0.80+1.22+4.74+10.05=13.88$.",
+     "latex": "S=\\frac{13.88}{70}=0.1983\\ \\text{V/mm}"
+    },
+    {
+     "text": "Offset from the means.",
+     "latex": "a=1.0067-0.1983\\times5=0.0152\\ \\text{V}"
+    },
+    {
+     "text": "The largest residual is $-0.0215$ V at 8 mm. Relative to the fitted full-scale span $0.1983\\times10=1.983$ V this is the non-linearity.",
+     "latex": "\\frac{0.0215}{1.983}=1.1\\%\\ \\text{of full scale}"
+    }
+   ],
+   "answer": "Sensitivity 0.198 V/mm, offset 0.015 V and non-linearity about 1.1 percent of full scale."
+  },
+  {
+   "type": "text",
+   "markdown": "**Selecting a position or force sensor.** Start from the requirement and tabulate what each candidate offers. A sensor must cover the full range with the required resolution (so the number of distinguishable steps is range divided by resolution), have a bandwidth above the fastest motion, and suit the environment (contact, wear, dust, temperature). Values below are typical for each class and vary between products."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Sensor",
+    "Typical range",
+    "Typical resolution",
+    "Typical bandwidth",
+    "Notes"
+   ],
+   "rows": [
+    [
+     "Potentiometer",
+     "mm to 1 m (linear) or about one turn",
+     "Limited by wiper and noise, tens of micrometres",
+     "Low, wear limits use",
+     "Cheap, contact, wears"
+    ],
+    [
+     "LVDT (non-contact inductive)",
+     "About 1 mm to 500 mm",
+     "Very fine, limited by electronics",
+     "Hundreds of hertz to kilohertz",
+     "Rugged, needs a demodulator"
+    ],
+    [
+     "Optical encoder (incremental)",
+     "Unlimited travel",
+     "Set by counts per revolution or per mm",
+     "High, depends on counter",
+     "Digital, needs a reference to give absolute position"
+    ],
+    [
+     "Strain-gauge load cell",
+     "Newtons to meganewtons",
+     "About 0.01 to 0.1 percent of capacity",
+     "Hundreds of hertz or more",
+     "Needs a bridge amplifier; small signal"
+    ]
+   ],
+   "caption": "Typical position and force sensor characteristics (typical values only)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Strain-gauge bridge.** A strain gauge changes resistance with strain: $\\Delta R/R=GF\\,\\varepsilon$, where $GF$ is the gauge factor (typically about 2 for metal foil) and $\\varepsilon$ is the strain (dimensionless, often quoted in microstrain, $10^{-6}$). A **Wheatstone bridge** converts the small resistance change into a voltage. In a **quarter bridge** one gauge of resistance $R$ is active and three fixed resistors of the same value complete the bridge, which is excited with voltage $V_{ex}$. The exact output and the small-strain approximation are:"
+  },
+  {
+   "type": "math",
+   "latex": "V_{out}=V_{ex}\\,\\frac{\\Delta R}{4R+2\\Delta R}\\ \\approx\\ \\frac{V_{ex}\\,GF\\,\\varepsilon}{4}",
+   "caption": "Quarter-bridge output; the approximation holds when ΔR/R is much less than 1"
+  },
+  {
+   "type": "worked_example",
+   "title": "Quarter-bridge output",
+   "prompt": "A quarter-bridge uses a $350\\ \\Omega$ gauge with $GF=2.0$ under $500\\ \\mu\\varepsilon$ strain, excited by $V_{ex}=5$ V. Find the output.",
+   "steps": [
+    {
+     "text": "Fractional resistance change.",
+     "latex": "\\frac{\\Delta R}{R}=GF\\,\\varepsilon=2.0\\times500\\times10^{-6}=1.0\\times10^{-3}"
+    },
+    {
+     "text": "Small-strain approximation.",
+     "latex": "V_{out}\\approx\\frac{5\\times1.0\\times10^{-3}}{4}=1.25\\ \\text{mV}"
+    },
+    {
+     "text": "Exact formula as a check: the error from the approximation is tiny here.",
+     "latex": "V_{out}=5\\times\\frac{1.0\\times10^{-3}}{4+2\\times10^{-3}}=1.2494\\ \\text{mV}"
+    }
+   ],
+   "answer": "The quarter bridge gives about 1.25 mV (1.249 mV exactly), a small signal that needs an instrumentation amplifier."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Sensitivity is not the only specification",
+   "text": "A sensor with high sensitivity but low bandwidth, limited range or poor linearity can still be unsuitable. Compare requirement against range, resolution, linearity and bandwidth together."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Larger excitation raises output but also heating",
+   "text": "Output is proportional to $V_{ex}$, but gauge self-heating raises drift. Stay within the gauge's rated power and excitation, and do not use more than the datasheet allows."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Sensitivity is the least-squares slope of output against input; non-linearity is the largest residual as a fraction of full scale.",
+    "Select sensors by comparing range, resolution, bandwidth and environment against the requirement.",
+    "A strain gauge changes resistance by $GF\\,\\varepsilon$; a quarter bridge gives $V_{out}\\approx V_{ex}GF\\varepsilon/4$ for small strain.",
+    "The exact quarter-bridge output is $V_{ex}\\Delta R/(4R+2\\Delta R)$, slightly lower than the approximation at large strain."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A displacement sensor outputs 0.5 V at 2 mm and 1.5 V at 7 mm on a straight-line calibration. What is its sensitivity?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.20 V/mm"
+    },
+    {
+     "id": "b",
+     "text": "0.50 V/mm"
+    },
+    {
+     "id": "c",
+     "text": "5.0 V/mm"
+    },
+    {
+     "id": "d",
+     "text": "0.14 V/mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.20 V/mm",
+   "distractorRationale": {
+    "a": "Correct: 1.0 V divided by 5 mm.",
+    "b": "This divides by the lower position, 2 mm, using the wrong span.",
+    "c": "This inverts the ratio, giving mm per volt.",
+    "d": "This divides the output span by the larger position, 7 mm, rather than by the input change."
+   },
+   "explanation": "Sensitivity is the slope: $(1.5-0.5)/(7-2)=0.20$ V/mm. It is a ratio of output change to input change and carries the units of both.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which arrangement describes a quarter-bridge strain-gauge circuit?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Four active gauges"
+    },
+    {
+     "id": "b",
+     "text": "Two active gauges and two fixed resistors"
+    },
+    {
+     "id": "c",
+     "text": "One gauge directly across the supply"
+    },
+    {
+     "id": "d",
+     "text": "One active gauge and three fixed resistors of equal nominal resistance"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "One active gauge and three fixed resistors of equal nominal resistance",
+   "distractorRationale": {
+    "a": "Four active gauges form a full bridge.",
+    "b": "Two active gauges form a half bridge.",
+    "c": "A single gauge across the supply gives no differential output.",
+    "d": "Correct: one active arm of four."
+   },
+   "explanation": "A quarter bridge has a single strain-sensitive arm, with the other three arms made from fixed resistors of the same value so the bridge is balanced at zero strain. The output is then proportional to the single gauge's change.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 5 mm stroke must be measured contactlessly with micrometre resolution and a 500 Hz bandwidth in a dusty machine. Which sensor class from the typical values is the best first candidate?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "An LVDT"
+    },
+    {
+     "id": "b",
+     "text": "A wirewound potentiometer"
+    },
+    {
+     "id": "c",
+     "text": "An ultrasonic range finder"
+    },
+    {
+     "id": "d",
+     "text": "A load cell"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "An LVDT",
+   "distractorRationale": {
+    "a": "Correct: it meets range, resolution and bandwidth without contact.",
+    "b": "Potentiometer wipers wear and are limited in resolution and speed.",
+    "c": "Ultrasonic sensors have coarse resolution and low update rates.",
+    "d": "A load cell measures force, not displacement."
+   },
+   "explanation": "An LVDT is non-contact, rugged, covers millimetre ranges with very fine resolution and has bandwidth of hundreds of hertz, matching the requirement. A potentiometer is contact and limited in resolution and life.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A quarter bridge is excited with 5 V and the excitation is raised to 10 V while strain stays the same. What happens to the output and what limits further increases?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The output halves; the amplifier saturates"
+    },
+    {
+     "id": "b",
+     "text": "The output is unchanged; only noise increases"
+    },
+    {
+     "id": "c",
+     "text": "The output quadruples; the gauge factor changes"
+    },
+    {
+     "id": "d",
+     "text": "The output doubles; gauge self-heating limits the excitation"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The output doubles; gauge self-heating limits the excitation",
+   "distractorRationale": {
+    "a": "Output increases with excitation, it does not fall.",
+    "b": "The signal changes in proportion to excitation, it is not constant.",
+    "c": "The relation is linear, not quadratic, and the gauge factor is a gauge property.",
+    "d": "Correct: output scales with excitation, heating limits it."
+   },
+   "explanation": "Bridge output is proportional to excitation voltage, so doubling it doubles the signal. The extra power heats the gauge, causing drift, so excitation is limited by the gauge's rated power.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "After fitting a least-squares line to calibration data, how is non-linearity usually quantified?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The slope of the fitted line"
+    },
+    {
+     "id": "b",
+     "text": "The intercept of the fitted line"
+    },
+    {
+     "id": "c",
+     "text": "The largest deviation of any data point from the fitted line, as a percentage of full-scale output"
+    },
+    {
+     "id": "d",
+     "text": "The number of data points"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The largest deviation of any data point from the fitted line, as a percentage of full-scale output",
+   "distractorRationale": {
+    "a": "The slope gives sensitivity.",
+    "b": "The intercept gives offset.",
+    "c": "Correct: the largest residual relative to full scale.",
+    "d": "The number of points does not describe linearity."
+   },
+   "explanation": "Non-linearity is how far the real response departs from the straight line, so the largest residual is divided by the full-scale span. The slope is sensitivity and the intercept is offset.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Calibration data for a sensor are $(x,y)=(0,\\,0.05),\\,(5,\\,1.06),\\,(10,\\,2.04)$ with $x$ in mm and $y$ in volts. Find the least-squares sensitivity in V/mm.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o1"
+   ],
+   "correctValue": 0.199,
+   "tolerance": 0.002,
+   "unit": "V/mm",
+   "explanation": "The means are $\\bar{x}=5$ and $\\bar{y}=1.05$. $S_{xx}=50$ and $\\sum(x-\\bar{x})y=-5(0.05)+5(2.04)=9.95$, so $S=9.95/50=0.199$ V/mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A quarter bridge with a gauge factor of 2.1 is excited with 10 V and the gauge experiences 800 microstrain. Using the small-strain approximation, find the output voltage in millivolts.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o3"
+   ],
+   "correctValue": 4.2,
+   "tolerance": 0.05,
+   "unit": "mV",
+   "explanation": "$V_{out}\\approx V_{ex}GF\\varepsilon/4=10\\times2.1\\times800\\times10^{-6}/4=4.2\\times10^{-3}$ V, which is 4.2 mV. The output is only a few millivolts, so amplification is required.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A quarter bridge with $V_{ex}=5$ V has $\\Delta R/R=0.020$ (large strain). Using the exact formula $V_{out}=V_{ex}\\,\\Delta R/(4R+2\\Delta R)$, calculate the output in millivolts.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o3"
+   ],
+   "correctValue": 24.75,
+   "tolerance": 0.1,
+   "unit": "mV",
+   "explanation": "Dividing through by $R$ gives $V_{out}=5\\times0.020/(4+0.040)=0.1/4.04=24.75$ mV. The small-strain approximation would give 25.0 mV, an error of 1 percent.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A servo axis has a 300 mm stroke and needs 5 micrometre resolution and 100 Hz bandwidth. Explain how you would compare an incremental optical encoder and a potentiometer for this task, calculating the number of distinguishable positions and discussing the other criteria.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o2"
+   ],
+   "markingGuide": [
+    "Number of steps: $300\\,\\text{mm}/0.005\\,\\text{mm}=60\\,000$ (2 marks)",
+    "Encoder: counts per mm or per revolution give the resolution, high bandwidth, and non-contact wear (2 marks)",
+    "Notes an incremental encoder needs a home reference or index for absolute position (1 mark)",
+    "Potentiometer: limited resolution by noise and wiper, wear, low bandwidth for this need (2 marks)",
+    "Concludes the encoder (or a linear scale) suits the task, with justification (1 mark)"
+   ],
+   "explanation": "The requirement implies about 60 000 distinguishable positions, which an encoder can supply with high bandwidth and no wear, whereas a potentiometer's noise and wear limit resolution and life.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A force sensor is calibrated at $x=0,1,2,3,4$ N giving outputs $0.01,\\,0.52,\\,0.99,\\,1.51,\\,2.02$ V. Calculate the least-squares sensitivity and offset, find the largest residual and express it as a percentage of the fitted full-scale span, and comment on whether the sensor is adequately linear for a 1 percent specification.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.sensors-noise.sensor-selection.o1"
+   ],
+   "markingGuide": [
+    "Means $\\bar{x}=2$ and $\\bar{y}=1.01$ with $S_{xx}=10$ (1 mark)",
+    "Sensitivity $S=5.01/10=0.501$ V/N (2 marks)",
+    "Offset $a=1.01-0.501\\times2=0.008$ V (1 mark)",
+    "Largest residual is 0.020 V at 2 N, about 1.0 percent of the 2.004 V span (2 marks)",
+    "Comments it just meets a 1 percent specification with no margin and suggests more points or a correction (1 mark)"
+   ],
+   "explanation": "The fit gives S = 0.501 V/N and a = 0.008 V. The largest residual of 0.020 V is about 1.0 percent of full scale, so the sensor just reaches the specification.",
+   "board": "internal"
+  }
+ ]
+}

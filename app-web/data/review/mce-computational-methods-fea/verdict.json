@@ -1,0 +1,60 @@
+{
+  "subjectId": "ug.mce-computational-methods-fea",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "Re-review of all 16 units. I recomputed every numeric key and worked example in Python (finite-difference errors and ratios, rod/fin tridiagonal solves, Thomas coefficients, Gauss-Seidel sweep count, Jacobi sweep counts, bar/truss assembly and reactions, Hermite beam solves and UDL recovery, heat-wall and thermal-stress examples, CST B and D, plane strain, hole Kt, tapered-bar and fillet convergence, Richardson, gauge statistics, stress measures). All keys are correct and every MCQ has exactly one correct option. The five requested round-1 fixes are verified correct: the residual bound is now ||e||/||u|| <= kappa ||r||/||b|| with the lower bound (1/kappa)||r||/||b|| and q003/q004 are consistent; the Tresca (250.6 vs 236.7 MPa, MS -0.0555) and von Mises cases are both reported; the reaction-balance tolerance (well below 0.1 per cent, investigate above about 0.5 per cent) agrees with q002 (0.99) and q006 (0.89); beam EI/L^3 is in N/m and q005 no longer uses positional wording; every first and second difference formula, the worked example and q009 follow approximation minus exact; and the thermal strain for plane stress, the (1+nu) plane-strain form and sigma_z = nu(sx+sy) - E alpha dT are correct. A scan of the packets found no tab or control characters, python placeholders, e+06 numbers, plain x or stale option references; the only formatting defect is the unbraced 10^-7 in beam q006. No critical or major issues remain; the 7 minor items are mostly round-1 leftovers that were not in the fix list. Confidence is high on the arithmetic. This is an AI review only; the course still needs a subject-matter expert before any engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation",
+      "questionId": "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.q006",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Explanation still contains an unbraced negative exponent: '70\times10^9\times2.0\times10^-7', which typesets as 10^- followed by 7 (carried over from round 1; not fixed). The key 131.25 kN/rad is correct.",
+      "suggestedFix": "Write 10^{-7}."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe",
+      "questionId": "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.q001",
+      "severity": "minor",
+      "category": "explanation",
+      "problem": "Explanation says off-diagonals are negative 'because a hotter neighbour pushes heat out of the node'; a hotter neighbour pushes heat into the node. Key option wording ('flow leaves the first node') has the same ambiguity. Carried over from round 1.",
+      "suggestedFix": "Reword: with Q the heat supplied from outside, a hotter neighbour supplies heat to the node, so less external input is needed for the same T_i, hence the coefficient -kA/L."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Reduced-integration paragraph still says a one-layer strip 'can deform as a mechanism with enormous deflection, as the one-point test gave', but no one-point result appears in the worked example. Also 5.599 mm is called '98 per cent, close to full convergence' against the 5.714 mm Euler-Bernoulli value, whereas the shear-corrected reference is about 5.76 mm (97 per cent). Carried over from round 1.",
+      "suggestedFix": "Give the one-point result or drop the back-reference; compare the 40x8 result with the shear-corrected 5.76 mm (about 97 per cent)."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality",
+      "questionId": "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.q010",
+      "severity": "minor",
+      "category": "level",
+      "problem": "Marking guide requires 'element quality metrics (aspect ratio, skewness, Jacobian)' but the Jacobian check is never defined in the lesson (carried over from round 1).",
+      "suggestedFix": "Add a one-line definition of the Jacobian-determinant check (positive and nearly uniform over the element) to the lesson or remove it from the guide."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Fillet worked example: the extrapolation step gives S_inf = 251.5 MPa, but the answer states 'within about 1.5 MPa of the extrapolated limit 252 MPa'; 252 - 250 is 2 MPa, and 251.5 - 250 is 1.5 MPa.",
+      "suggestedFix": "Quote the limit as 251.5 MPa (about 1.5 MPa above the finest result) in the answer."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Hook says choosing the wrong idealisation can change the stiffness matrix 'by roughly 10 to 20 per cent for metals', while the worked example and warning callout give 22.5 per cent (D11 ratio 1.225) for steel with nu=0.3.",
+      "suggestedFix": "Say 'by 20 per cent or more for metals' or 'about 22 per cent for steel'."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.verification-and-validation.verification-methods",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Bar-on-foundation example: the Richardson step uses unrounded differences (0.000924 and 0.000234, p = 1.982) that cannot be reproduced from the printed 5-digit values (0.28041, 0.28133, 0.28157 give p = 1.94, f_inf = 0.28165). A consistent-spring FE run gives 0.280407, 0.281331, 0.281565 and p = 1.98 (carried over from round 1).",
+      "suggestedFix": "Quote f1, f2, f3 to six significant figures (0.280407, 0.281331, 0.281565) so students can reproduce p = 1.98."
+    }
+  ]
+}

@@ -1,0 +1,429 @@
+{
+ "lessonTitle": "CNC Fundamentals: Axes, Work Offsets and G-code",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A machinist clamps a 100 mm aluminium plate on a vertical machining centre and types a seven-line program. The spindle plunges, then traces a rounded rectangle. A single wrong sign on one arc command would send the cutter into the vice at 6000 mm/min. Reading a CNC program means knowing three things: where the axes point, where the part zero is, and how every number in each block is measured."
+  },
+  {
+   "type": "text",
+   "markdown": "A **computer numerical control (CNC)** machine executes a program of text *blocks*, one motion or setting per line, written in G-code (modal commands in a standard such as ISO 6983 / RS-274, with dialect differences between controllers; the examples here use the common Fanuc-style form). The programmer imagines the **tool moving around a stationary workpiece**, whatever the machine does mechanically."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Axes of a three-axis milling machine",
+   "text": "Axes follow the right-hand Cartesian rule. **Z** is the axis of the spindle; positive $Z$ points *away from the workpiece* (the tool retracts when $Z$ increases). **X** is the axis with the longest travel, normally horizontal. **Y** completes the right-handed set ($X\\times Y=Z$). On a vertical machining centre, looking down at the table, $+X$ is to the right and $+Y$ is away from the operator."
+  },
+  {
+   "type": "text",
+   "markdown": "Two zeros exist. **Machine zero** (home) is fixed by the machine's reference switches. **Work zero** (part zero) is a point the programmer chooses on the part, such as the top-front-left corner. The controller stores the offset of the work zero from machine zero in a *work offset register* called up by a code such as G54. Program coordinates are measured in the work coordinate system, so the same program runs wherever the part is clamped as long as the offset is set correctly."
+  },
+  {
+   "type": "math",
+   "latex": "X_{\\text{machine}}=X_{\\text{work}}+X_{\\text{offset (G54)}}",
+   "caption": "Offset is the machine-coordinate position of work zero, usually negative on the X and Y axes when machine zero is at the far corner of travel. The same relation applies to Y and Z."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Code",
+    "Meaning",
+    "Notes"
+   ],
+   "rows": [
+    [
+     "G00",
+     "Rapid positioning",
+     "Maximum speed, not for cutting; path may not be a straight line"
+    ],
+    [
+     "G01",
+     "Linear interpolation at feed",
+     "Needs F (mm/min)"
+    ],
+    [
+     "G02",
+     "Circular interpolation, clockwise",
+     "Viewed from +Z looking down at the XY plane"
+    ],
+    [
+     "G03",
+     "Circular interpolation, counter-clockwise",
+     "Same view"
+    ],
+    [
+     "G17",
+     "Select XY plane for arcs",
+     "Default for milling"
+    ],
+    [
+     "G21",
+     "Metric units (mm)",
+     "G20 is inches"
+    ],
+    [
+     "G90 / G91",
+     "Absolute / incremental coordinates",
+     "Modal: stays active until changed"
+    ],
+    [
+     "G54",
+     "Work coordinate system 1",
+     "Selects stored offset"
+    ],
+    [
+     "M03 / M05",
+     "Spindle on clockwise / stop",
+     ""
+    ],
+    [
+     "M30",
+     "End of program and rewind",
+     ""
+    ]
+   ],
+   "caption": "Common codes (Fanuc-style; check the controller manual)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Circular interpolation.** An arc block names the end point $(X,Y)$ and the centre. With the usual convention, $I$ and $J$ are the *incremental distances from the arc start point to the arc centre* along X and Y. The radius is $R=\\sqrt{I^2+J^2}$, and the controller alarms if the end point is not that distance from the centre. Direction is read from above: counter-clockwise is G03, clockwise is G02."
+  },
+  {
+   "type": "worked_example",
+   "title": "G-code for a profile with a rounded corner",
+   "prompt": "Cut the outline with corners at $(0,0)$, $(60,0)$, $(60,30)$, $(50,40)$ (a rounded corner of radius 10 mm centred at $(50,30)$), $(0,40)$, back to $(0,0)$. The tool starts above the part at $(0,0)$ and cuts at $F=200$ mm/min. Write the cutting blocks.",
+   "steps": [
+    {
+     "text": "Set up: metric, XY plane, absolute coordinates, work offset 1. Cut along the bottom edge.",
+     "latex": "\\texttt{G21 G17 G90 G54;\\ G01 X60 Y0 F200}"
+    },
+    {
+     "text": "Cut up the right edge to the start of the corner arc at $(60,30)$.",
+     "latex": "\\texttt{G01 X60 Y30}"
+    },
+    {
+     "text": "The arc runs from $(60,30)$ (east of the centre) to $(50,40)$ (north of the centre): the angle increases from $0^\\circ$ to $90^\\circ$, which is counter-clockwise. $I=50-60=-10$, $J=30-30=0$, and $R=10$.",
+     "latex": "\\texttt{G03 X50 Y40 I-10 J0}"
+    },
+    {
+     "text": "Cut along the top edge and down the left edge to close the profile.",
+     "latex": "\\texttt{G01 X0 Y40;\\ G01 X0 Y0}"
+    }
+   ],
+   "answer": "The profile program is: G01 X60 Y0 F200; G01 X60 Y30; G03 X50 Y40 I-10 J0; G01 X0 Y40; G01 X0 Y0. The arc must be G03 because the motion is counter-clockwise; using G02 here would command a three-quarter circle the long way round or raise an alarm."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Absolute and incremental programming",
+   "text": "In **absolute** mode (G90) every coordinate is a position in the work coordinate system. In **incremental** mode (G91) every coordinate is the *distance to move from the current position*, with sign for direction. Both describe the same path; they differ in how errors propagate and how the program is edited. In absolute mode an error in one block affects only that block. In incremental mode a wrong move shifts every later point."
+  },
+  {
+   "type": "worked_example",
+   "title": "The same path in G90 and G91",
+   "prompt": "A tool at $(10,10)$ moves to $(40,10)$, then to $(40,35)$, then to $(15,35)$. Write the three blocks in absolute and in incremental form.",
+   "steps": [
+    {
+     "text": "Absolute: give each end position.",
+     "latex": "\\texttt{G90: X40 Y10;\\ X40 Y35;\\ X15 Y35}"
+    },
+    {
+     "text": "Incremental: each move is the end minus the current position. First: $40-10=30$ in X, $0$ in Y. Second: $0$ in X, $35-10=25$ in Y. Third: $15-40=-25$ in X, $0$ in Y.",
+     "latex": "\\texttt{G91: X30 Y0;\\ X0 Y25;\\ X-25 Y0}"
+    },
+    {
+     "text": "Check: summing the increments from $(10,10)$ gives $(10+30+0-25,\\ 10+0+25+0)=(15,35)$.",
+     "latex": "(15,35)"
+    }
+   ],
+   "answer": "Both programs reach $(15,35)$. Absolute is robust when a program is restarted midway; incremental is convenient for repeated patterns and sub-programs."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Absolute (G90): positions from work zero; restart-friendly; editing one point does not disturb the rest.",
+    "Incremental (G91): moves from the current point; repeated patterns reuse the same block; errors accumulate.",
+    "Arc centre offsets $I,J$ are incremental from the arc start in the common convention, even when the end point is absolute."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Check the modal state",
+   "text": "G90 and G91, G01 and G00, and the feed rate are modal: they stay active until changed. Always state the mode at the start of a program and again after any block that changes it, and check the arc direction viewed from +Z."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Z is the spindle axis (positive away from the part); X is the longest horizontal axis; Y follows the right-hand rule. Work zero is stored as an offset (for example G54) from machine zero.",
+    "G01 cuts straight at the feed rate; G02 (clockwise) and G03 (counter-clockwise) cut arcs from the start point to the end point with centre offsets I and J, so $R=\\sqrt{I^2+J^2}$.",
+    "G90 gives absolute positions; G91 gives incremental moves from the current position, and incremental errors accumulate."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "On a vertical three-axis machining centre, which statement about the Z axis is correct?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Z lies along the spindle axis, and positive Z moves the tool away from the workpiece"
+    },
+    {
+     "id": "b",
+     "text": "Z lies along the longest table travel, and positive Z moves the tool toward the workpiece"
+    },
+    {
+     "id": "c",
+     "text": "Z is horizontal, perpendicular to both X and Y, and positive Z points toward the operator"
+    },
+    {
+     "id": "d",
+     "text": "Z is the axis of rotation of the table, and positive Z is counter-clockwise"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Z lies along the spindle axis, and positive Z moves the tool away from the workpiece",
+   "distractorRationale": {
+    "a": "Z is always the axis of the spindle, and plus Z means retract.",
+    "b": "The longest travel is normally the X axis, and positive Z retracts the tool.",
+    "c": "On a vertical machine the spindle direction is vertical.",
+    "d": "Rotary axes are named A, B, C; Z is a linear axis."
+   },
+   "explanation": "By the standard convention the Z axis lies along the spindle and positive Z moves the tool away from the work. This keeps the sign convention independent of whether the head or the table actually moves.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A part is clamped, and the G54 work offset is set to X $=-350.0$ mm, Y $=-200.0$ mm. What does the G54 offset represent?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The cutting speed at which the program must run"
+    },
+    {
+     "id": "b",
+     "text": "The distance the tool moves each time a G01 block is executed"
+    },
+    {
+     "id": "c",
+     "text": "The machine-coordinate position of the programmer's chosen part zero"
+    },
+    {
+     "id": "d",
+     "text": "The machine zero, which is always at the centre of the table"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The machine-coordinate position of the programmer's chosen part zero",
+   "distractorRationale": {
+    "a": "Offsets are positions, not speeds.",
+    "b": "The offset is not a per-move distance.",
+    "c": "G54 stores where work zero lies in machine coordinates, so that program coordinates can be relative to the part.",
+    "d": "Machine zero is a fixed home position; G54 records where part zero lies relative to it."
+   },
+   "explanation": "The controller adds the stored offset to each program coordinate. This is why a program written for part zero runs correctly wherever the vice is clamped, once the offset is set.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The tool is at $(20,0)$ and must cut a quarter circle to $(0,20)$ around a centre at the origin, counter-clockwise when viewed from +Z. Which block is correct?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "G03 X0 Y20 I-20 J0"
+    },
+    {
+     "id": "b",
+     "text": "G02 X0 Y20 I-20 J0"
+    },
+    {
+     "id": "c",
+     "text": "G03 X0 Y20 I20 J0"
+    },
+    {
+     "id": "d",
+     "text": "G03 X20 Y0 I-20 J0"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "G03 X0 Y20 I-20 J0",
+   "distractorRationale": {
+    "a": "The start is east of the centre, the end is north of it (counter-clockwise), and the centre is $-20$ in X from the start.",
+    "b": "G02 is clockwise; from east of the centre to north of it the motion is counter-clockwise.",
+    "c": "The centre offset has the wrong sign: from the start $(20,0)$ the origin is at $-20$ in X.",
+    "d": "The end point has been swapped with the start; this block ends where it starts."
+   },
+   "explanation": "Counter-clockwise as viewed from +Z calls for G03. The offsets $I,J$ run from the start point to the centre: from $(20,0)$ to the origin that is $I=-20$ and $J=0$, giving a radius of 20 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In an arc block G03 X30 Y10 I-5 J12, what do I and J mean in the standard (Fanuc-style) convention?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The distances from the arc start point to the arc centre in the X and Y directions"
+    },
+    {
+     "id": "b",
+     "text": "The absolute coordinates of the arc centre in the work coordinate system"
+    },
+    {
+     "id": "c",
+     "text": "The distances from the arc end point to the arc centre"
+    },
+    {
+     "id": "d",
+     "text": "The feed rates along X and Y"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The distances from the arc start point to the arc centre in the X and Y directions",
+   "distractorRationale": {
+    "a": "I and J are the X and Y components of the vector from the arc start to the arc centre.",
+    "b": "That is the convention only on some controllers when set by a parameter; in the standard convention I and J are incremental from the start.",
+    "c": "Offsets are measured from the start, not the end.",
+    "d": "Feeds are set with F, not with I and J."
+   },
+   "explanation": "Because they are measured from the start point, $R=\\sqrt{I^2+J^2}=\\sqrt{25+144}=13$ mm here. The controller checks that the end point is also 13 mm from the centre.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The tool is at $X=30$, $Y=20$. The program contains the block G91 G01 X-10 Y15. Where is the tool after the block, and what would the same numbers do in G90?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "At $(20,35)$ in G91; in G90 the tool would go to $(-10,15)$"
+    },
+    {
+     "id": "b",
+     "text": "At $(-10,15)$ in G91; in G90 the tool would go to $(20,35)$"
+    },
+    {
+     "id": "c",
+     "text": "At $(20,5)$ in G91; in G90 the tool would go to $(-10,15)$"
+    },
+    {
+     "id": "d",
+     "text": "At $(40,35)$ in G91; in G90 the tool would go to $(10,35)$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "At $(20,35)$ in G91; in G90 the tool would go to $(-10,15)$",
+   "distractorRationale": {
+    "a": "G91 adds the increment to the current position: $(30-10,\\,20+15)=(20,35)$. In G90 the numbers are the target position itself.",
+    "b": "The modes are swapped: in G91 the numbers are moves from the current position.",
+    "c": "The Y increment of +15 was subtracted instead of added.",
+    "d": "The X increment has the wrong sign, and the G90 position is not the stated coordinates."
+   },
+   "explanation": "Incremental mode measures every move from where the tool already is, so the signs give direction. Absolute mode treats the same numbers as a position in the work coordinate system.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A part's G54 offset places work zero at machine coordinates $X=-352.400$ mm, $Y=-215.750$ mm. A hole is programmed at work coordinates $X=40.000$ mm, $Y=25.000$ mm. Find its machine X coordinate in millimetres.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o1"
+   ],
+   "correctValue": -312.4,
+   "tolerance": 0.01,
+   "unit": "mm",
+   "explanation": "Machine X equals the work coordinate plus the offset: $40.000+(-352.400)=-312.400$ mm. The negative result is normal when machine zero is at the far corner of the travel.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A quarter-circle arc is programmed with $I=-12$ mm and $J=16$ mm. The arc spans $90^\\circ$ at a feed rate of 300 mm/min. Find the time to cut the arc, in seconds.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o2"
+   ],
+   "correctValue": 6.28,
+   "tolerance": 0.05,
+   "unit": "s",
+   "explanation": "The radius is $R=\\sqrt{12^2+16^2}=20$ mm, so a quarter circle has length $\\pi R/2=31.42$ mm. At 300 mm/min (5 mm/s) the time is $31.42/5=6.28$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A tool starts at $X=0$ mm. The following blocks are executed in order: G91 X25; G90 X10; G91 X-4; G91 X30. Find the final X position in millimetres.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o3"
+   ],
+   "correctValue": 36,
+   "tolerance": 0.01,
+   "unit": "mm",
+   "explanation": "G91 X25 gives 25. G90 X10 sets the absolute position to 10, discarding the earlier value. Then 10 minus 4 is 6, and 6 plus 30 is 36 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Write a G-code program in absolute mode, with metric units and XY plane, to cut the following closed outline at 150 mm/min: start at $(0,0)$, move to $(40,0)$, cut a counter-clockwise quarter arc of radius 10 mm centred at $(40,10)$ to $(50,10)$, cut up to $(50,30)$, then along to $(0,30)$ and back to $(0,0)$. State each arc's I and J and justify the arc direction.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o2",
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o3"
+   ],
+   "markingGuide": [
+    "Preamble G21 G17 G90 (and a work offset such as G54)",
+    "G01 X40 Y0 F150",
+    "Arc from $(40,0)$ (south of centre) to $(50,10)$ (east of centre) is counter-clockwise, so G03",
+    "G03 X50 Y10 I0 J10 (centre is 10 mm above the start in Y)",
+    "G01 X50 Y30; G01 X0 Y30; G01 X0 Y0",
+    "Checks that the end point of the arc is 10 mm from the centre"
+   ],
+   "explanation": "The arc starts south of its centre and ends east of it, an angle change from $-90^\\circ$ to $0^\\circ$, so counter-clockwise and G03. The centre lies at $(0,+10)$ from the start, so $I=0$, $J=10$ and the end point $(50,10)$ is 10 mm from the centre as required.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare absolute and incremental programming for (a) a pattern of six identical holes spaced 15 mm apart in a row, and (b) restarting the program from a block in the middle after a tool break. State which mode is better for each and why, and describe one hazard of incremental mode.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cnc-fundamentals.o3"
+   ],
+   "markingGuide": [
+    "Defines absolute as positions from work zero and incremental as moves from the current point",
+    "(a) Incremental is convenient: the same block X15 repeats, or a sub-program with an incremental move",
+    "(b) Absolute is better for restart because each block states its own target position, independent of earlier blocks",
+    "Hazard: an error in one incremental move shifts every later position (errors accumulate)",
+    "Another hazard: forgetting the active mode (modal) so numbers are interpreted wrongly",
+    "Absolute mode is generally safer for single features, incremental for repeated patterns"
+   ],
+   "explanation": "Incremental mode suits repeated spacings because one block can be reused, while absolute mode suits restarts and edits because each block fixes its own position. The weakness of incremental programming is that one wrong move displaces every later position and a forgotten modal state misreads all subsequent numbers.",
+   "board": "internal"
+  }
+ ]
+}

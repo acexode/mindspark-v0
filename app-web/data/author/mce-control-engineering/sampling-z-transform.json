@@ -1,0 +1,423 @@
+{
+ "lessonTitle": "Sampling and the z-Transform",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A vibration monitor on a gearbox samples an accelerometer at 250 Hz, and the plot shows a clean 70 Hz tone, yet the gearbox has no 70 Hz component at all. The real vibration is at 180 Hz. Sampling has folded it down to a frequency that looks perfectly genuine. Digital control inherits the same hazard, and it needs a new mathematics, the z-transform, to describe signals that exist only at the sample instants."
+  },
+  {
+   "type": "text",
+   "markdown": "A computer measures a continuous signal $x(t)$ only at instants $t=kT$, where $T$ is the **sample period** and $f_s=1/T$ the sampling frequency (so the angular sampling frequency is $\\omega_s=2\\pi/T$). The sampled sequence is $x[k]=x(kT)$. Sampling is lossless only if the signal contains nothing above half the sampling frequency."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Sampling theorem and aliasing",
+   "text": "A signal band-limited to $f_{max}$ can be reconstructed exactly from samples if $f_s>2f_{max}$ (the Nyquist condition; $f_s/2$ is the Nyquist frequency). A component at frequency $f>f_s/2$ is *aliased*: after sampling it is indistinguishable from the component at $|f-nf_s|$ for the integer $n$ that brings it into $[0,f_s/2]$. Aliasing cannot be undone afterwards, so an analogue anti-aliasing low-pass filter must remove content above $f_s/2$ before the sampler."
+  },
+  {
+   "type": "worked_example",
+   "title": "Aliasing and choosing a sampling rate",
+   "prompt": "(a) A 180 Hz vibration is sampled at 250 Hz. At what frequency does it appear? (b) A sensor signal has useful content up to 40 Hz. Choose a sampling rate.",
+   "steps": [
+    {
+     "text": "(a) The Nyquist frequency is $f_s/2=125$ Hz, so 180 Hz is above it and is aliased. Subtract the nearest multiple of $f_s$.",
+     "latex": "f_{alias}=|180-250|=70\\ \\mathrm{Hz}"
+    },
+    {
+     "text": "(b) The theoretical minimum is $f_s>2\\times40=80$ Hz. In control practice the sampling rate is chosen much higher (5 to 10 times the signal bandwidth, or 10 to 20 times the closed-loop bandwidth) so that an anti-aliasing filter with a gentle roll-off can be used and the sampling delay stays small.",
+     "latex": "f_s>80\\ \\mathrm{Hz};\\ \\text{practical choice}\\ 200\\text{ to }400\\ \\mathrm{Hz}"
+    }
+   ],
+   "answer": "(a) 70 Hz. (b) Above 80 Hz in theory; about 200 to 400 Hz in practice, with an anti-aliasing filter ahead of the sampler."
+  },
+  {
+   "type": "text",
+   "markdown": "**The z-transform.** A sequence $x[k]$ is described by $X(z)=\\sum_{k=0}^{\\infty}x[k]z^{-k}$. The variable $z^{-1}$ marks one sample of delay: $x[k-1]$ has transform $z^{-1}X(z)$. Systems described by difference equations become rational functions of $z$, just as differential equations give rational functions of $s$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Sequence $x[k]$ (for $k\\ge0$)",
+    "$X(z)$"
+   ],
+   "rows": [
+    [
+     "Unit impulse $\\delta[k]$",
+     "$1$"
+    ],
+    [
+     "Unit step $1$",
+     "$\\dfrac{z}{z-1}$"
+    ],
+    [
+     "Geometric $a^k$",
+     "$\\dfrac{z}{z-a}$"
+    ],
+    [
+     "Sampled exponential $e^{-\\sigma kT}$",
+     "$\\dfrac{z}{z-e^{-\\sigma T}}$"
+    ],
+    [
+     "Ramp $kT$",
+     "$\\dfrac{Tz}{(z-1)^2}$"
+    ],
+    [
+     "Delayed sequence $x[k-1]$",
+     "$z^{-1}X(z)$"
+    ]
+   ],
+   "caption": "Common z-transform pairs (the geometric series sum $\\sum a^kz^{-k}=1/(1-a z^{-1})$ for $|z|>|a|$)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Transform of a sampled sequence",
+   "prompt": "Find the z-transform of $x[k]=3(0.5)^k$ for $k\\ge0$, and check it numerically at $z=2$.",
+   "steps": [
+    {
+     "text": "Use the geometric series with common ratio $0.5/z$.",
+     "latex": "X(z)=\\sum_{k=0}^{\\infty}3(0.5)^kz^{-k}=3\\sum_{k=0}^{\\infty}\\left(\\frac{0.5}{z}\\right)^k"
+    },
+    {
+     "text": "The series converges for $|z|>0.5$ to $1/(1-0.5/z)$.",
+     "latex": "X(z)=\\frac{3}{1-0.5z^{-1}}=\\frac{3z}{z-0.5}"
+    },
+    {
+     "text": "Check at $z=2$: the closed form gives $6/1.5=4$. The series terms are $3(0.25)^k=3,\\ 0.75,\\ 0.1875,\\dots$, whose sum is $3/(1-0.25)=4$.",
+     "latex": "X(2)=\\frac{3\\times2}{2-0.5}=4"
+    }
+   ],
+   "answer": "$X(z)=\\dfrac{3z}{z-0.5}$, with a pole at $z=0.5$ (inside the unit circle) and region of convergence $|z|>0.5$."
+  },
+  {
+   "type": "text",
+   "markdown": "**From the s-plane to the z-plane.** A continuous mode $e^{st}$ sampled at $t=kT$ becomes $(e^{sT})^k$, so a pole at $s$ in the continuous system corresponds to a pole at $z=e^{sT}$ in the sampled description. Writing $s=-\\sigma+j\\omega$ gives $z=e^{-\\sigma T}e^{j\\omega T}$."
+  },
+  {
+   "type": "math",
+   "latex": "z=e^{sT},\\qquad |z|=e^{-\\sigma T},\\qquad \\angle z=\\omega T",
+   "caption": "Mapping of an s-plane pole $s=-\\sigma+j\\omega$ to the z-plane. The angle is in radians and is meaningful modulo $2\\pi$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "s-plane region",
+    "z-plane region",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "Left half-plane ($\\sigma>0$)",
+     "Inside the unit circle",
+     "Stable, decaying"
+    ],
+    [
+     "Imaginary axis ($\\sigma=0$)",
+     "On the unit circle",
+     "Marginally stable"
+    ],
+    [
+     "Right half-plane ($\\sigma<0$)",
+     "Outside the unit circle",
+     "Unstable, growing"
+    ],
+    [
+     "Origin $s=0$",
+     "$z=1$",
+     "Integrator or constant"
+    ],
+    [
+     "Real negative $s=-\\sigma$",
+     "Positive real $z=e^{-\\sigma T}$ in $(0,1)$",
+     "Monotone decay; smaller $T$ moves it toward 1"
+    ],
+    [
+     "$\\omega=\\pi/T=\\omega_s/2$",
+     "$\\angle z=\\pi$ (negative real axis)",
+     "Nyquist frequency: sign alternates each sample"
+    ]
+   ],
+   "caption": "Correspondence between the s-plane and z-plane."
+  },
+  {
+   "type": "worked_example",
+   "title": "Mapping poles for two sampling periods",
+   "prompt": "A continuous pole pair is at $s=-5\\pm j8$ rad/s. Find the corresponding z-plane poles for $T=0.02$ s and for $T=0.2$ s, and comment.",
+   "steps": [
+    {
+     "text": "For $T=0.02$ s (50 Hz sampling): magnitude and angle.",
+     "latex": "|z|=e^{-5\\times0.02}=0.9048,\\quad\\angle z=8\\times0.02=0.16\\ \\mathrm{rad}=9.2^\\circ"
+    },
+    {
+     "text": "For $T=0.2$ s (5 Hz sampling): the Nyquist angular frequency is $\\pi/T=15.7$ rad/s, still above 8 rad/s.",
+     "latex": "|z|=e^{-1}=0.3679,\\quad\\angle z=1.6\\ \\mathrm{rad}=91.7^\\circ"
+    },
+    {
+     "text": "Fast sampling puts the poles very close to $z=1$ with a small angle (the discrete system looks nearly continuous); slow sampling moves them toward the origin and spreads the angle. Both are inside the unit circle, so both are stable. A pole with $\\sigma<0$, such as $s=+2$ with $T=0.02$ s, maps outside the circle.",
+     "latex": "|z|=e^{2(0.02)}=1.0408>1\\ \\Rightarrow\\ \\text{unstable}"
+    }
+   ],
+   "answer": "$T=0.02$ s: $z\\approx0.905\\angle9.2^\\circ$; $T=0.2$ s: $z\\approx0.368\\angle91.7^\\circ$; the unstable pole $s=+2$ maps to $|z|=1.04$."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Poles alias too",
+   "text": "The angle $\\omega T$ only makes sense below $\\pi$. A continuous pole with $\\omega>\\pi/T$ maps to the same z-plane location as a slower pole, so the sampled model cannot tell them apart. This is aliasing of dynamics rather than of signals, and it is another reason to sample much faster than the fastest closed-loop mode."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "To avoid aliasing, $f_s$ must exceed twice the highest signal frequency (practically 5 to 10 times), with an analogue anti-aliasing filter; an alias appears at $|f-nf_s|$.",
+    "The z-transform $X(z)=\\sum x[k]z^{-k}$ gives, for example, $z/(z-1)$ for a unit step and $z/(z-a)$ for $a^k$; $z^{-1}$ is a one-sample delay.",
+    "A continuous pole at $s$ maps to $z=e^{sT}$: the left half-plane maps inside the unit circle, with $|z|=e^{-\\sigma T}$ and angle $\\omega T$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does the Nyquist sampling condition require?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A sampling frequency above twice the highest frequency present in the signal"
+    },
+    {
+     "id": "b",
+     "text": "A sampling frequency equal to the highest frequency present"
+    },
+    {
+     "id": "c",
+     "text": "A sampling frequency below half the signal bandwidth"
+    },
+    {
+     "id": "d",
+     "text": "A sample period that is a whole number of seconds"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A sampling frequency above twice the highest frequency present in the signal",
+   "distractorRationale": {
+    "a": "This ensures the spectrum copies do not overlap.",
+    "b": "At this rate samples may miss the signal peaks and aliasing is severe.",
+    "c": "Sampling that slowly aliases nearly everything.",
+    "d": "The sample period is unrelated to whole seconds."
+   },
+   "explanation": "Spectrum copies repeat at multiples of $f_s$, so they overlap unless $f_s>2f_{max}$. With a single sample per cycle or fewer, the original cannot be recovered.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the z-transform of the unit step sequence $x[k]=1$ for $k\\ge0$?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dfrac{1}{z-1}$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dfrac{z}{z-1}$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dfrac{1}{z}$"
+    },
+    {
+     "id": "d",
+     "text": "$\\dfrac{z}{z+1}$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$\\dfrac{z}{z-1}$",
+   "distractorRationale": {
+    "a": "This is the transform of the step delayed by one sample.",
+    "b": "The geometric series with ratio $z^{-1}$ sums to $1/(1-z^{-1})$.",
+    "c": "This is the transform of a unit impulse delayed by one sample.",
+    "d": "This corresponds to the alternating sequence $(-1)^k$."
+   },
+   "explanation": "$\\sum_{k\\ge0}z^{-k}=1/(1-z^{-1})=z/(z-1)$ for $|z|>1$. The other options are the delayed step, a delayed impulse and an alternating sequence.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 900 Hz signal is sampled at 1000 Hz. At what apparent frequency does it show up in the sampled data?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "900 Hz"
+    },
+    {
+     "id": "b",
+     "text": "450 Hz"
+    },
+    {
+     "id": "c",
+     "text": "100 Hz"
+    },
+    {
+     "id": "d",
+     "text": "1900 Hz"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "100 Hz",
+   "distractorRationale": {
+    "a": "This is only true if the sampling rate were above 1800 Hz.",
+    "b": "This is half the signal frequency and has no basis in the folding rule.",
+    "c": "The alias is $|900-1000|=100$ Hz.",
+    "d": "The alias folds into $[0,f_s/2]=[0,500]$ Hz, and 1900 Hz lies outside it."
+   },
+   "explanation": "The Nyquist frequency is 500 Hz, so 900 Hz is aliased. Subtracting the nearest multiple of $f_s$ gives $|900-1000|=100$ Hz, a frequency that looks entirely genuine in the samples.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which z-plane region corresponds to a stable discrete-time pole?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The left half of the z-plane"
+    },
+    {
+     "id": "b",
+     "text": "The exterior of the unit circle"
+    },
+    {
+     "id": "c",
+     "text": "The imaginary axis"
+    },
+    {
+     "id": "d",
+     "text": "The interior of the unit circle"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The interior of the unit circle",
+   "distractorRationale": {
+    "a": "Stability depends on the distance from the origin, not on the left or right half.",
+    "b": "Poles there have $|z|>1$ and grow.",
+    "c": "The axis has no special role in the z-plane; the unit circle plays the role the imaginary axis plays in the s-plane.",
+    "d": "Since $|z|=e^{-\\sigma T}<1$ exactly when $\\sigma>0$."
+   },
+   "explanation": "A pole at $z=e^{sT}$ has magnitude $e^{-\\sigma T}$, which is below 1 when the real part of $s$ is negative. So stability corresponds to the interior of the unit circle.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: a discrete-time system with a single pole at $z=-0.8$ is stable, but its free response changes sign at every sample.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The pole is inside the unit circle so the response decays, as $(-0.8)^k$. Because $z$ is negative the sequence alternates sign at each sample, corresponding to an angle of $\\pi$, the Nyquist frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A sensor signal contains useful frequencies up to 450 Hz. What is the minimum sampling frequency, in Hz, satisfying the Nyquist condition?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o1"
+   ],
+   "correctValue": 900.0,
+   "tolerance": 1.0,
+   "unit": "Hz",
+   "explanation": "The Nyquist condition requires $f_s>2f_{max}=2\\times450=900$ Hz. In practice a higher rate (for example 2 to 5 kHz) is used to relax the anti-aliasing filter.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A sequence is $x[k]=2(0.8)^k$ for $k\\ge0$, with z-transform $X(z)=2z/(z-0.8)$. Evaluate $X(z)$ at $z=2$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o2"
+   ],
+   "correctValue": 3.333333,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "Using $X(z)=2z/(z-0.8)$ at $z=2$: $X=4/1.2=3.333$. The series $\\sum2(0.8)^k2^{-k}=2/(1-0.4)=3.333$ confirms it.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A discrete pole is at $z=0.6$ with sample period $T=0.1$ s, and it came from a real continuous pole $s=-\\sigma$ via $z=e^{sT}$. Find the time constant $\\tau=1/\\sigma$ of the continuous mode, in seconds.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o3"
+   ],
+   "correctValue": 0.195762,
+   "tolerance": 0.005,
+   "unit": "s",
+   "explanation": "$z=e^{-\\sigma T}$ so $\\sigma=-\\ln(0.6)/0.1=5.108$ s$^{-1}$. The time constant is $\\tau=1/\\sigma=0.1958$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain what aliasing is and how, in a digital control system, an anti-aliasing filter and the choice of sampling frequency are used to prevent it.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o1"
+   ],
+   "markingGuide": [
+    "Defines aliasing: components above $f_s/2$ appear at the lower frequency $|f-nf_s|$ after sampling.",
+    "States that it cannot be corrected after sampling because the original and the alias give identical samples.",
+    "Notes an analogue low-pass filter with cutoff below $f_s/2$ must precede the sampler to remove the unwanted content.",
+    "Describes choosing $f_s$ well above $2f_{max}$ (for control, 10 to 20 times the loop bandwidth), balancing the filter order and the delay it adds."
+   ],
+   "explanation": "Components above half the sampling rate fold down to $|f-nf_s|$ and are then indistinguishable from true low-frequency content, so they must be removed before sampling by an analogue low-pass filter. The rate is also chosen well above the Nyquist limit so that a simple, low-delay filter is sufficient.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A continuous mode has poles $s=-\\sigma\\pm j\\omega_d$. Show that its sampled version has z-plane poles of magnitude $e^{-\\sigma T}$ and angle $\\omega_dT$, then discuss how the poles move as the sampling period $T$ is lengthened, including what goes wrong when $\\omega_dT$ exceeds $\\pi$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o3",
+    "ug.mce-control-engineering.digital-control.sampling-z-transform.o1"
+   ],
+   "markingGuide": [
+    "Starting from $z=e^{sT}$ and $s=-\\sigma+j\\omega_d$, obtains $z=e^{-\\sigma T}e^{j\\omega_dT}$.",
+    "Reads off magnitude $e^{-\\sigma T}$ and angle $\\omega_dT$.",
+    "As $T$ grows the magnitude falls toward 0 and the angle grows, so the poles move toward the origin and around the circle.",
+    "When $\\omega_dT>\\pi$ the angle wraps modulo $2\\pi$, so the pole is indistinguishable from a slower mode: aliasing of dynamics.",
+    "Concludes $T$ must be small enough that $\\omega_dT$ stays well below $\\pi$ for all relevant modes."
+   ],
+   "explanation": "Substituting $s=-\\sigma\\pm j\\omega_d$ into $z=e^{sT}$ gives magnitude $e^{-\\sigma T}$ and angle $\\pm\\omega_dT$. Lengthening $T$ pulls the poles toward the origin and rotates them, and once $\\omega_dT>\\pi$ the angle wraps around and the mode appears slower than it is, so the sampling period must be short enough for the fastest mode.",
+   "board": "internal"
+  }
+ ]
+}

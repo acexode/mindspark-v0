@@ -1,0 +1,392 @@
+{
+ "lessonTitle": "Failure Case Studies: Timelines, Root Cause and Prevention",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Eight years after commissioning, a steel lifting beam snapped while carrying a load well inside its rating. The investigation did not stop at 'the beam was fatigued'. It rebuilt what happened, year by year, and separated the one cause that mattered most from the several that made it worse."
+  },
+  {
+   "type": "text",
+   "markdown": "A failure investigation answers four questions in order: what failed, how it failed (the mechanism), why it failed (the root cause) and what must change. The first step is a **timeline**: an ordered account, with times or cycle counts, built from three sources of evidence: the **loading history** (what the part experienced and when), the **fracture evidence** (beach marks, striations, size of the fatigue and final zones) and the **records** (design, fabrication, inspection, maintenance)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Root cause versus contributing factors",
+   "text": "The **root cause** is the underlying condition that, if it had been absent, would have prevented the failure at the loading actually experienced; it is the thing to fix. **Contributing factors** made the failure happen sooner or more severely, but removing only them would not have prevented it entirely. The test is counterfactual: remove the factor and ask whether the failure would still have occurred."
+  },
+  {
+   "type": "text",
+   "markdown": "Fatigue evidence can be turned into numbers. Where loading is known, the Paris law gives the cycles needed to grow a crack between two sizes, and dividing by the cycle rate converts cycles to calendar time. The final crack depth follows from the fracture criterion $K=K_{Ic}$."
+  },
+  {
+   "type": "math",
+   "latex": "N_{a_1\\to a_2} = \\frac{a_2^{\\,1-m/2}-a_1^{\\,1-m/2}}{C\\,(Y\\Delta\\sigma\\sqrt{\\pi})^m\\,(1-m/2)}, \\qquad a_c = \\frac{1}{\\pi}\\left(\\frac{K_{Ic}}{Y\\sigma_{max}}\\right)^2",
+   "caption": "Cycles to grow from $a_1$ to $a_2$ (constant $Y$, $m\\neq2$) and critical crack depth."
+  },
+  {
+   "type": "worked_example",
+   "title": "Building a timeline from crack growth",
+   "prompt": "A lifting beam has an edge crack growing from a 1 mm weld-toe flaw present since fabrication. Loading: a stress range of 200 MPa, 10 000 cycles per year. Assume $Y=1.12$, $K_{Ic}=60$ MPa$\\sqrt{\\text{m}}$ and Paris constants $C=10^{-11}$, $m=3$ (typical, m/cycle, MPa$\\sqrt{\\text{m}}$). Estimate when the crack reached 10 mm and when the beam failed.",
+   "steps": [
+    {
+     "text": "Critical crack depth at the peak stress of 200 MPa ($R=0$).",
+     "latex": "a_c = \\frac{1}{\\pi}\\left(\\frac{60}{1.12\\times200}\\right)^2 = 0.0228\\ \\text{m} = 22.8\\ \\text{mm}"
+    },
+    {
+     "text": "Cycles from 1 mm to 10 mm.",
+     "latex": "N_{1\\to10} = \\frac{a_2^{-0.5}-a_1^{-0.5}}{-0.5\\,C\\,(Y\\Delta\\sigma\\sqrt{\\pi})^3} = 6.91\\times10^{4}\\ \\text{cycles} = 6.91\\ \\text{years}"
+    },
+    {
+     "text": "Cycles from 10 mm to $a_c$.",
+     "latex": "N_{10\\to a_c} = 1.08\\times10^{4}\\ \\text{cycles} = 1.08\\ \\text{years}"
+    },
+    {
+     "text": "Add them for the whole life and place the events on a timeline.",
+     "latex": "t_f = 7.99\\ \\text{years}"
+    }
+   ],
+   "answer": "Timeline: flaw present at year 0; about 6.9 years to reach 10 mm; failure at about year 8. Only about 1.1 years elapsed between a 10 mm crack and failure."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Time",
+    "Event",
+    "Evidence"
+   ],
+   "rows": [
+    [
+     "Year 0",
+     "Beam fabricated with a 1 mm weld-toe flaw",
+     "Origin at the weld toe; fabrication records"
+    ],
+    [
+     "Years 0 to 6.9",
+     "Slow fatigue growth under service lifts",
+     "Smooth fatigue zone, fine striations"
+    ],
+    [
+     "Around year 6.9",
+     "Crack about 10 mm deep, coarse striations",
+     "Beach marks, increasing striation spacing"
+    ],
+    [
+     "Year 8",
+     "Crack reaches critical depth; sudden fracture",
+     "Small rough final-fracture zone"
+    ]
+   ],
+   "caption": "A timeline ties each event to a piece of evidence. Note that most of the life is spent while the crack is small and invisible."
+  },
+  {
+   "type": "text",
+   "markdown": "**Learning from documented failures.** Real failures usually have a single root cause and several contributing factors. Three standard cases are often used to teach this: (1) **Early jet airliners (Comet)**: fatigue cracks from the corners of window openings and rivet holes, driven by the cabin pressurisation cycle; the root cause was a stress concentration at the corner with no fatigue-tolerant design, and contributing factors included the high local stresses in thin skin and a limited understanding, at the time, of fatigue under repeated pressurisation. (2) **Welded Liberty ships**: brittle fracture of hulls in cold seas; the root cause was steel with a ductile-to-brittle transition above the service temperature, and contributing factors were weld defects, sharp hatch corners and residual stress. (3) **A North Sea platform brace**: a fatigue crack grew from a weld at an attachment, and the lack of crack-tolerant redundancy allowed one failure to become a collapse. Each case produced design changes (rounded openings, crack-stopping features, toughness requirements, inspection)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a preventive inspection",
+   "prompt": "For the lifting beam above, a magnetic particle inspection can reliably find a crack of 5 mm depth. If the inspection interval is set at half of the time the crack takes to grow from 5 mm to the critical depth, what interval (in years) results? Also, what is the life gain if the stress range is cut by 25 percent to 150 MPa?",
+   "steps": [
+    {
+     "text": "Cycles from 5 mm to critical.",
+     "latex": "N_{5\\to a_c} = 2.4\\times10^{4}\\ \\text{cycles}"
+    },
+    {
+     "text": "Time at 10 000 cycles per year, then halve for the interval.",
+     "latex": "\\text{interval} = \\frac{2.4\\times10^{4}}{2\\times10000} = 1.2\\ \\text{years}"
+    },
+    {
+     "text": "Life gain from the stress cut: life varies as $\\Delta\\sigma^{-m}$ (with fixed $a_i$, and ignoring the change in $a_c$).",
+     "latex": "\\left(\\frac{200}{150}\\right)^3 = 2.37"
+    }
+   ],
+   "answer": "Inspect about every 1.2 years; cutting the stress range to 150 MPa lengthens crack growth life by roughly a factor of 2.4 (the real gain is somewhat larger because $a_c$ also increases)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Remove the factor and ask whether the failure still occurs: if yes it is only contributing; if no it is the root cause.",
+    "Prevention options: remove the flaw or stress concentration (design), raise toughness or lower stress (material, loading), find cracks early (inspection), provide redundancy (fail-safe).",
+    "A recommendation must be specific, e.g. a ground weld toe plus an inspection every half-life, not 'be more careful'."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Avoid stopping at the mechanism",
+   "text": "'Fatigue' is a mechanism, not a root cause. A report that stops there leaves the cause in place and the failure will recur. Always go on to ask why the crack formed and why it was not found."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A failure timeline orders events using loading history, fracture evidence (beach marks, striations, zone sizes) and records, and can be quantified with Paris-law crack growth.",
+    "Root cause: absent it, the failure would not have occurred at the actual loading; contributing factors accelerate or worsen it.",
+    "Effective recommendations remove the root cause (design change) and add detection (inspection interval) or redundancy."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a failure investigation, which definition best describes the root cause?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The last event before the part broke"
+    },
+    {
+     "id": "b",
+     "text": "Any factor that made the failure slightly faster"
+    },
+    {
+     "id": "c",
+     "text": "The failure mechanism, for example fatigue"
+    },
+    {
+     "id": "d",
+     "text": "The underlying condition which, had it been absent, would have prevented the failure at the loading experienced"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The underlying condition which, had it been absent, would have prevented the failure at the loading experienced",
+   "distractorRationale": {
+    "a": "The last event is usually just the trigger.",
+    "b": "That describes a contributing factor.",
+    "c": "The mechanism says how, not why.",
+    "d": "Correct: the counterfactual test."
+   },
+   "explanation": "The root cause is the condition whose removal would have prevented the failure. Contributing factors only make it faster or worse, and the mechanism (for example fatigue) is a description of how, not of why.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which ordering is most appropriate for a failure timeline of a part that fractured by fatigue?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Final fracture, then crack initiation, then service loading"
+    },
+    {
+     "id": "b",
+     "text": "Crack initiation, then fabrication, then final fracture"
+    },
+    {
+     "id": "c",
+     "text": "Service loading, then fabrication, then final fracture"
+    },
+    {
+     "id": "d",
+     "text": "Fabrication or flaw, service loading, crack initiation, stable growth, final fracture"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Fabrication or flaw, service loading, crack initiation, stable growth, final fracture",
+   "distractorRationale": {
+    "a": "Reverse order.",
+    "b": "A crack cannot initiate before fabrication.",
+    "c": "A part cannot be loaded before it is made.",
+    "d": "Correct: chronological order."
+   },
+   "explanation": "A timeline is chronological. Fabrication (including any flaws) comes first, then service loading, initiation and stable growth, and finally sudden fracture.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Brittle fractures occurred in welded steel ships in cold seas. Which single change would address the root cause most directly?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Paint the hull more often"
+    },
+    {
+     "id": "b",
+     "text": "Increase the hull speed"
+    },
+    {
+     "id": "c",
+     "text": "Reduce crew size"
+    },
+    {
+     "id": "d",
+     "text": "Specify a steel whose ductile-to-brittle transition temperature is well below the lowest service temperature"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Specify a steel whose ductile-to-brittle transition temperature is well below the lowest service temperature",
+   "distractorRationale": {
+    "a": "Paint does not affect fracture toughness.",
+    "b": "Speed would make it worse.",
+    "c": "Irrelevant to fracture.",
+    "d": "Correct: toughness at the service temperature."
+   },
+   "explanation": "The root cause was steel in its brittle regime at service temperature, so a steel with a lower transition temperature prevents cleavage. Rounded hatch corners and good welds are further helpful changes but do not remove the material cause.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A bracket cracked from a sharp, unground weld toe. Operators had also overloaded it by 20 percent, and no inspection was carried out. Which classification is the most reasonable?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Overloading is the only cause"
+    },
+    {
+     "id": "b",
+     "text": "The sharp weld toe is the root cause; overloading and absence of inspection are contributing factors"
+    },
+    {
+     "id": "c",
+     "text": "Absence of inspection is the root cause because inspection prevents cracks"
+    },
+    {
+     "id": "d",
+     "text": "There was no root cause"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The sharp weld toe is the root cause; overloading and absence of inspection are contributing factors",
+   "distractorRationale": {
+    "a": "Without the weld toe, a 20 percent overload would probably not have caused cracking.",
+    "b": "Correct: removing the weld toe defect would have prevented the crack at normal loads.",
+    "c": "Inspection finds cracks but does not prevent them from starting.",
+    "d": "Every failure has a root cause."
+   },
+   "explanation": "At the rated loading the weld toe still creates the crack, so it is the root cause. The overload shortens the life and the lack of inspection allows the crack to grow undetected, but neither would cause failure by itself.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Fourteen distinct beach marks are found on a fatigue surface. The plant was shut down once per month, and each shutdown leaves one mark. Approximately how long did the crack grow?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 14 days"
+    },
+    {
+     "id": "b",
+     "text": "About 14 years"
+    },
+    {
+     "id": "c",
+     "text": "About 14 months"
+    },
+    {
+     "id": "d",
+     "text": "About 14 cycles"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "About 14 months",
+   "distractorRationale": {
+    "a": "That assumes one mark per day.",
+    "b": "That assumes one mark per year.",
+    "c": "Correct: one mark per month.",
+    "d": "Beach marks are not single cycles; striations are."
+   },
+   "explanation": "Each beach mark corresponds to a pause in loading, here one per month, so 14 marks span about 14 months. Striations, not beach marks, correspond to individual cycles.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Fatigue striation counting suggests the crack grew from initiation to failure in 48 000 load cycles. The machine runs 12 000 cycles per year. How many years of growth does this represent?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o1"
+   ],
+   "correctValue": 4.0,
+   "tolerance": 0.05,
+   "unit": "years",
+   "explanation": "Time equals cycles divided by cycle rate: $48000/12000=4$ years. This gives a timeline anchor for the start of the crack.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A bracket has an edge crack ($Y=1.12$) growing under a stress range of 150 MPa with Paris constants $C=10^{-11}$, $m=3$ (m/cycle, MPa$\\sqrt{\\text{m}}$). The crack grew from 2 mm to 12 mm. The bracket sees 8000 cycles per year. How many years did this take?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o1"
+   ],
+   "correctValue": 12.5289,
+   "tolerance": 0.250577,
+   "unit": "years",
+   "explanation": "$N=2(a_i^{-0.5}-a_f^{-0.5})/[C(Y\\Delta\\sigma\\sqrt{\\pi})^3]=1.002\\times10^{5}$ cycles, using $Y\\Delta\\sigma\\sqrt{\\pi}=297.8$. Dividing by 8000 cycles per year gives 12.5 years.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A bracket carries a stress range of 150 MPa (peak 150 MPa, $R=0$), with $K_{Ic}=50$ MPa$\\sqrt{\\text{m}}$, $Y=1.12$, $C=10^{-11}$, $m=3$ (m/cycle, MPa$\\sqrt{\\text{m}}$). Inspection can detect a crack of depth 4 mm. If the inspection interval is half of the cycles needed to grow from 4 mm to the critical depth, what interval in cycles should be used?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o3"
+   ],
+   "correctValue": 37328.9,
+   "tolerance": 1119.87,
+   "unit": "cycles",
+   "explanation": "The critical depth is $a_c=(1/\\pi)(50/(1.12\\times150))^2=28.2$ mm. The cycles from 4 mm to $a_c$ are 7.466\\times10^{4}, and half of this is 3.73\\times10^{4} cycles. Halving the growth life allows two chances to find the crack.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the difference between a root cause and a contributing factor in failure analysis. Use a fatigue crack at a sharp weld toe in an overloaded bracket to illustrate your answer.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o2"
+   ],
+   "markingGuide": [
+    "Root cause: the underlying condition which if absent would have prevented the failure at the actual loading",
+    "Contributing factors: make failure earlier or more likely but are not sufficient alone",
+    "Illustration: sharp weld toe as root cause (stress concentration and initiation site)",
+    "Illustration: overload and lack of inspection as contributing factors",
+    "Notes that 'fatigue' is the mechanism, not the root cause"
+   ],
+   "explanation": "The counterfactual test separates them: remove the factor and see whether the failure would still occur. In the example the weld toe is the root cause because without it the bracket would have survived its normal loading.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A pressurised aluminium panel failed after 14 months. Evidence: smooth fatigue zone with 14 beach marks (one per monthly pressure test) emanating from a rivet hole edge; a small rough final zone; loading records show two pressure tests at 130 percent of the design pressure in months 3 and 9; the design drawing shows a rivet pitch tighter than the specification. (a) Build the timeline. (b) Decide root cause and contributing factors. (c) Propose one design change and one inspection change that would have prevented the failure.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o1",
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o2",
+    "ug.mce-fracture-fatigue-failure.failure-investigation.case-studies.o3"
+   ],
+   "markingGuide": [
+    "Timeline: fabrication with tight rivet pitch, crack initiation at the rivet hole, monthly growth marked by 14 beach marks, over-pressure tests in months 3 and 9, final fracture at month 14",
+    "Root cause: stress concentration at the rivet hole from the incorrect rivet pitch (design or fabrication non-conformance)",
+    "Contributing factors: the over-pressure tests, which raised the stress and may have accelerated growth, and absence of inspection between tests",
+    "Design change: correct rivet pitch, countersunk or reamed holes, or a doubler to reduce the stress concentration",
+    "Inspection change: eddy-current or visual inspection of the holes at an interval shorter than the growth time from detectable size to critical size"
+   ],
+   "explanation": "The beach marks fix the growth time at 14 months and the loading records place the over-pressure events at months 3 and 9. The tight rivet pitch is the root cause, while over-pressure and the absence of inspection are contributing factors, and both a corrected design and a defined inspection interval would have prevented the failure.",
+   "board": "internal"
+  }
+ ]
+}

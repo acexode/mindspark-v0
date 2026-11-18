@@ -1,0 +1,367 @@
+{
+ "lessonTitle": "Junction-to-Ambient Thermal Resistance Networks",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A laptop processor runs at 45 W for ten seconds and then throttles, though the heat sink fins are still cool to the touch. The temperature drop is not in the fins at all: it sits in the thin layer of thermal paste, the package, and the heat spreader beneath them. Tracing the path from the silicon junction to the room air as a chain of resistances shows where the kelvins go."
+  },
+  {
+   "type": "text",
+   "markdown": "Steady heat flow follows an analogy with electrical circuits: heat rate $Q$ (W) plays the role of current, temperature difference $\\Delta T$ (K) of voltage, and **thermal resistance** $R_\\theta=\\Delta T/Q$ (K/W) of electrical resistance. Resistances in series add, and for parallel paths the conductances $1/R_\\theta$ add. A packaged chip dissipating power $P$ sends heat through several layers to the air, and the network treats each layer as one resistor."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Junction-to-ambient resistance",
+   "text": "The junction-to-ambient thermal resistance $\\theta_{JA}=(T_J-T_A)/P$ (K/W) is the sum of the series resistances between the silicon junction at $T_J$ and the ambient air at $T_A$. It is the single number that links power dissipation to junction temperature for a given mounting."
+  },
+  {
+   "type": "math",
+   "latex": "T_J=T_A+P\\left(\\theta_{JC}+\\theta_{CS}+\\theta_{SA}\\right),\\qquad \\theta_{CS}=\\frac{t}{kA}",
+   "caption": "$\\theta_{JC}$ junction to case, $\\theta_{CS}$ case to heat sink through the thermal interface (thickness $t$, conductivity $k$, contact area $A$), $\\theta_{SA}$ sink to ambient"
+  },
+  {
+   "type": "text",
+   "markdown": "The main series path from junction to air for a chip with a heat sink is therefore three resistors: the package ($\\theta_{JC}$, usually quoted by the manufacturer), the thermal interface material layer ($\\theta_{CS}=t/(kA)$, a conduction resistance), and the heat sink to ambient ($\\theta_{SA}$, which combines fin conduction and air convection). A second path may exist through the circuit board: junction to board ($\\theta_{JB}$) in series with board to ambient, which lies in parallel with the main path."
+  },
+  {
+   "type": "worked_example",
+   "title": "Junction temperature through the main path",
+   "prompt": "A chip dissipates 40 W in ambient air at 35 $^\\circ$C. Package $\\theta_{JC}=0.35$ K/W. A thermal pad 0.10 mm thick of conductivity 3 W/m K (typical) covers a 20 mm by 20 mm area. The heat sink has $\\theta_{SA}=0.90$ K/W. Find $T_J$.",
+   "steps": [
+    {
+     "text": "Interface resistance.",
+     "latex": "\\theta_{CS}=\\frac{t}{kA}=\\frac{1.0\\times10^{-4}}{3\\times4.0\\times10^{-4}}=0.0833\\ \\mathrm{K/W}"
+    },
+    {
+     "text": "Add the series resistances.",
+     "latex": "\\theta_{JA}=0.35+0.0833+0.90=1.3333\\ \\mathrm{K/W}"
+    },
+    {
+     "text": "Junction temperature rise above ambient.",
+     "latex": "T_J=35+40\\times1.3333=88.3\\ ^\\circ\\mathrm{C}"
+    }
+   ],
+   "answer": "$T_J\\approx88.3$ $^\\circ$C. The heat sink contributes 68 % of the total resistance, the package 26 % and the interface only 6 %."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Element",
+    "Resistance",
+    "Typical value (K/W)",
+    "Typical improvement"
+   ],
+   "rows": [
+    [
+     "Package (junction to case)",
+     "$\\theta_{JC}$",
+     "0.2 to 1.5",
+     "Choose a better package; limited by supplier"
+    ],
+    [
+     "Thermal interface",
+     "$t/(kA)$",
+     "0.05 to 0.5",
+     "Thinner bond line, higher $k$"
+    ],
+    [
+     "Heat sink to ambient",
+     "$\\theta_{SA}$",
+     "0.3 to 3",
+     "More fin area, more airflow"
+    ],
+    [
+     "Board path (junction to ambient)",
+     "$\\theta_{JB}+\\theta_{BA}$",
+     "10 to 40",
+     "Copper planes, thermal vias"
+    ]
+   ],
+   "caption": "Typical magnitudes in electronics cooling; actual values depend on the product."
+  },
+  {
+   "type": "text",
+   "markdown": "Where a second path exists, the heat divides in inverse proportion to the path resistances, because both paths have the same temperature difference between junction and ambient. The equivalent resistance is smaller than either path alone, though usually only slightly smaller when one path is far weaker."
+  },
+  {
+   "type": "worked_example",
+   "title": "Parallel board path",
+   "prompt": "In addition to the main path of the previous example ($\\theta=1.3333$ K/W), 40 W of chip power can also flow through the board, with $\\theta_{JB}=12$ K/W and board-to-ambient $\\theta_{BA}=18$ K/W. Find the equivalent resistance, the junction temperature and the heat through the board.",
+   "steps": [
+    {
+     "text": "Board path is two resistors in series.",
+     "latex": "\\theta_{board}=12+18=30\\ \\mathrm{K/W}"
+    },
+    {
+     "text": "Parallel combination with the main path.",
+     "latex": "\\theta_{eq}=\\left(\\frac1{1.3333}+\\frac1{30}\\right)^{-1}=1.2766\\ \\mathrm{K/W}"
+    },
+    {
+     "text": "Junction temperature.",
+     "latex": "T_J=35+40\\times1.2766=86.1\\ ^\\circ\\mathrm{C}"
+    },
+    {
+     "text": "Heat through each path, from the common temperature difference $\\Delta T={dT:.2f}$ K.",
+     "latex": "Q_{board}=\\frac{51.06}{30}=1.70\\ \\mathrm{W},\\quad Q_{main}=38.30\\ \\mathrm{W}"
+    }
+   ],
+   "answer": "$T_J\\approx86.1$ $^\\circ$C, about 2.3 K lower than the main path alone; the board carries only 1.7 W (4 %), so the board path is a minor correction."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Find the dominant resistance",
+   "text": "In a series network, each resistance's share of the total temperature drop equals its share of the total resistance. Effort spent on an element that contributes only a few percent of the total yields almost no improvement. Always rank the resistances first."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Draw the heat path before writing any equation: junction, case, interface, sink, air.",
+    "Add series elements; combine parallel paths by adding conductances.",
+    "Compute each element's temperature drop $\\Delta T_i=P R_i$ to see where the temperature is lost.",
+    "Propose an improvement for the largest term, then recalculate the total."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Assumptions behind the network",
+   "text": "A one-dimensional network assumes steady state, a single dissipating junction, uniform temperature across each layer, and resistances independent of temperature. Heat spreading, transient power bursts and temperature-dependent power are outside this model."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Thermal resistance $R_\\theta=\\Delta T/Q$ in K/W; series elements add and parallel conductances add.",
+    "Junction temperature is $T_J=T_A+P\\theta_{JA}$, with $\\theta_{JA}$ the sum of package, interface and heat-sink resistances for the main path.",
+    "A parallel path through the board lowers the equivalent resistance but usually only slightly.",
+    "The dominant resistance has the largest temperature drop; improvement should target it first."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a chip with a heat sink bonded using a thermal interface material, the main heat path from junction to ambient air is best represented by",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Junction-to-case, interface and heat-sink-to-ambient resistances in series"
+    },
+    {
+     "id": "b",
+     "text": "Junction-to-case, interface and heat-sink-to-ambient resistances in parallel"
+    },
+    {
+     "id": "c",
+     "text": "Only the heat-sink-to-ambient resistance, since the other layers are very thin"
+    },
+    {
+     "id": "d",
+     "text": "Junction-to-case and interface in parallel, followed by the sink in series"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Junction-to-case, interface and heat-sink-to-ambient resistances in series",
+   "distractorRationale": {
+    "b": "The same heat flows through each layer one after the other, so the resistances are in series.",
+    "c": "The package and interface add resistance that can be comparable with the sink.",
+    "d": "The two layers are stacked in the same path, not side by side."
+   },
+   "explanation": "Heat generated at the junction must cross the package, then the interface, then the heat sink and finally the air, so these resistors form a chain. Their values add, so the temperature drop across each is $PR_i$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A processor dissipates 25 W in ambient air at 40 degrees Celsius. The junction-to-case resistance is 0.60 K/W, the interface resistance is 0.15 K/W and the heat sink to ambient resistance is 1.80 K/W. Find the junction temperature in degrees Celsius.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o2",
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o1"
+   ],
+   "correctValue": 103.75,
+   "tolerance": 0.5,
+   "unit": "degrees Celsius",
+   "explanation": "The total series resistance is 0.60 + 0.15 + 1.80 = 2.55 K/W. The junction rise is 25 x 2.55 = 63.75 K, so Tj = 40 + 63.75 = 103.75 degrees Celsius. The heat sink contributes about 71 percent of the rise.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A power amplifier module has a maximum allowed junction temperature of 105 degrees Celsius. The ambient air is at 45 degrees Celsius and the total junction-to-ambient resistance is 1.6 K/W. What is the largest power in W that the module can dissipate without exceeding the limit?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o2"
+   ],
+   "correctValue": 37.5,
+   "tolerance": 0.2,
+   "unit": "W",
+   "explanation": "The allowed rise is 105-45 = 60 K. From Tj - Ta = P x thetaJA, P = 60/1.6 = 37.5 W. Reducing the total resistance, or the ambient temperature, would raise the allowable power in direct proportion.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A thermal interface pad is 0.20 mm thick, has a conductivity of 1.5 W/m K (typical) and covers a square contact area 15 mm by 15 mm. Find the interface thermal resistance in K/W.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o1"
+   ],
+   "correctValue": 0.592593,
+   "tolerance": 0.02,
+   "unit": "K/W",
+   "explanation": "The interface resistance is t/(kA) = 0.20e-3/(1.5 x 2.25e-4) = 0.593 K/W, because 15 mm x 15 mm = 2.25e-4 m^2. Thinning the pad or raising its conductivity reduces the resistance in direct proportion.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A device dissipates 30 W in ambient air at 30 degrees Celsius. Heat can leave by two parallel paths whose junction-to-ambient resistances are 2.0 K/W (top path) and 8.0 K/W (bottom path). Find the junction temperature in degrees Celsius.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o1",
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o2"
+   ],
+   "correctValue": 78.0,
+   "tolerance": 0.4,
+   "unit": "degrees Celsius",
+   "explanation": "Parallel conductances add: 1/2.0 + 1/8.0 = 0.625 W/K, so the equivalent resistance is 1.6 K/W. Then Tj = 30 + 30 x 1.6 = 78 degrees Celsius. The top path carries 80 percent of the power.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The junction-to-sink-to-ambient chain of a processor has $\\theta_{JC}=0.40$, $\\theta_{CS}=0.10$ and $\\theta_{SA}=2.50$ K/W. Which single improvement will lower the junction temperature the most?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Using a better interface material that halves $\\theta_{CS}$"
+    },
+    {
+     "id": "b",
+     "text": "Selecting a package with half the junction-to-case resistance"
+    },
+    {
+     "id": "c",
+     "text": "Reducing the heat-sink-to-ambient resistance, for example with a larger sink or more airflow, because it carries about 83 % of the total"
+    },
+    {
+     "id": "d",
+     "text": "They are all equally effective because the heat flow is the same in each"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Reducing the heat-sink-to-ambient resistance, for example with a larger sink or more airflow, because it carries about 83 % of the total",
+   "distractorRationale": {
+    "a": "That saves 0.05 K/W out of 3.0 K/W, under 2 %.",
+    "b": "That saves 0.20 K/W, about 7 %, far less than a modest change to the sink.",
+    "d": "The temperature drop across each element is $PR_i$, so larger resistances matter more."
+   },
+   "explanation": "The total is 3.0 K/W and the sink contributes 2.5 K/W, or 83 %. A 20 % reduction of the sink resistance would save 0.5 K/W, more than eliminating the interface resistance altogether (0.1 K/W).",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A chip dissipating 50 W has its heat-sink-to-ambient resistance reduced from 1.20 K/W to 0.80 K/W by doubling the airflow. Nothing else changes. By how much does the junction temperature fall?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o2",
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "20 K, because the temperature drop changes by $P\\Delta\\theta$"
+    },
+    {
+     "id": "b",
+     "text": "0.4 K, because the resistance falls by 0.4 K/W"
+    },
+    {
+     "id": "c",
+     "text": "25 K, because the resistance falls by one third"
+    },
+    {
+     "id": "d",
+     "text": "10 K, because the airflow doubled"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "20 K, because the temperature drop changes by $P\\Delta\\theta$",
+   "distractorRationale": {
+    "b": "The change in resistance must be multiplied by the power: 50 x 0.4.",
+    "c": "One third of 1.2 is 0.4 K/W, which gives a 20 K change at 50 W, not 25 K.",
+    "d": "The temperature change depends on the change in resistance, not on the flow ratio."
+   },
+   "explanation": "At fixed power, $\\Delta T_J=P\\Delta\\theta=50\\times0.40=20$ K. The change is independent of the other resistances in the chain, which are unchanged.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "In a series thermal network at steady state, the resistance with the largest value has the largest temperature drop across it.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The same heat flow $P$ passes through every series element, so the drop across element $i$ is $PR_i$ and is proportional to its resistance. Hence the largest resistance is the dominant one and the first place to look when reducing junction temperature.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how you would build a thermal resistance network from junction to ambient for a packaged chip with a heat sink on top, a thermal pad between the chip and sink, and a printed circuit board beneath. State which elements are in series and which in parallel, and what you would check before trusting the result.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o1"
+   ],
+   "markingGuide": [
+    "Top path: junction to case, thermal pad, heat sink to ambient, in series",
+    "Bottom path: junction to board, board to ambient, in series",
+    "The two paths are in parallel between junction and ambient, so conductances add",
+    "Heat divides inversely with path resistance; same $\\Delta T$ across both paths",
+    "Checks: steady state, one-dimensional approximation, resistance values and units, whether the board path is negligible, consistent ambient temperature"
+   ],
+   "explanation": "The network follows the physical heat flow: layers the heat crosses one after another are in series, and alternative routes between the same two temperatures are in parallel. The result is trustworthy only when the one-dimensional and steady-state assumptions hold.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A 60 W device in 30 degrees Celsius air has junction-to-case 0.20 K/W, an interface of 0.15 K/W and heat sink to ambient 0.65 K/W. Calculate the junction temperature and say what you would change to reduce it by at least 10 K, giving a numerical justification.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o2",
+    "ug.mce-advanced-heat-transfer.electronics-cooling.thermal-resistance-networks.o3"
+   ],
+   "markingGuide": [
+    "Series sum $\\theta_{JA}=1.00$ K/W",
+    "$T_J=30+60\\times1.00=90$ degrees Celsius",
+    "Identifies the heat sink to ambient (65 % of total) as the dominant resistance",
+    "A 10 K reduction requires $\\Delta\\theta=10/60=0.167$ K/W, e.g. reducing $\\theta_{SA}$ from 0.65 to below 0.48 K/W by more fins or airflow",
+    "Notes that improving the interface alone (at most 0.15 K/W) cannot be enough, and that fan or cost trade-offs apply"
+   ],
+   "explanation": "Adding the series resistances gives 1.00 K/W and 90 degrees Celsius. To save 10 K at 60 W the total must fall by 0.167 K/W, and only the heat sink resistance is large enough to supply that.",
+   "board": "internal"
+  }
+ ]
+}

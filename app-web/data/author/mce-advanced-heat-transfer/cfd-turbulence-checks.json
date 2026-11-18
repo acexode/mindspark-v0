@@ -1,0 +1,398 @@
+{
+ "lessonTitle": "Turbulence Modelling and Checks in CFD",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A CFD model of a heated water pipe predicts a wall temperature 6 K below what the lab measures. The mesh looks fine and the residuals have dropped six orders, but the first cell next to the wall is 1 mm thick in a flow whose viscous sublayer is a few hundredths of a millimetre. The wall treatment, the turbulence model and a hand-check against a correlation would each have caught this."
+  },
+  {
+   "type": "text",
+   "markdown": "Turbulent flows contain eddies from the size of the duct down to the tiny scales where viscosity dissipates energy. Resolving all of them is called **direct numerical simulation (DNS)**. Its cost grows steeply with Reynolds number: the number of grid points scales roughly as $Re^{9/4}$ and, with the time steps, the total cost as about $Re^{3}$. At the Reynolds numbers of real equipment (tens of thousands and above) DNS is far too expensive, and is restricted to research on simple geometries."
+  },
+  {
+   "type": "text",
+   "markdown": "**Reynolds-averaged Navier-Stokes (RANS)** models solve for the time-averaged flow and represent the effect of all the turbulent eddies through a model (for example $k$-$\\varepsilon$ or $k$-$\\omega$ SST). It costs little and gives the mean velocity, pressure and temperature, which is what most engineering questions ask for, such as pressure drop, mean heat transfer coefficient or peak temperature. **Large eddy simulation (LES)** sits between: it resolves the large eddies and models the small ones, at several orders of magnitude more cost than RANS."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Approach",
+    "What is resolved",
+    "Relative cost",
+    "When appropriate"
+   ],
+   "rows": [
+    [
+     "RANS",
+     "Mean flow only; all turbulence modelled",
+     "Low",
+     "Industrial design, mean pressure drop and heat transfer, high $Re$"
+    ],
+    [
+     "LES",
+     "Large eddies; small scales modelled",
+     "High",
+     "Unsteady mixing, noise, separated flows where RANS fails"
+    ],
+    [
+     "DNS",
+     "All turbulent scales",
+     "Very high ($\\sim Re^3$)",
+     "Research at low $Re$, simple geometry, model development"
+    ]
+   ],
+   "caption": "Turbulence modelling approaches."
+  },
+  {
+   "type": "text",
+   "markdown": "Near a wall the flow is dominated by viscosity, and the mean velocity changes very rapidly over a very thin layer. The wall resolution is measured by the dimensionless distance $y^+=yu_\\tau/\\nu$, where $y$ is the distance from the wall to the centre of the first cell (m), $\\nu$ is the kinematic viscosity (m$^2$/s) and $u_\\tau=\\sqrt{\\tau_w/\\rho}$ is the friction velocity (m/s). The wall shear stress is $\\tau_w=C_f\\tfrac12\\rho U^2$, so $u_\\tau=U\\sqrt{C_f/2}$. There are two strategies. A **wall-resolved** mesh puts the first cell centre at $y^+\\approx1$, so the viscous sublayer is computed directly. A **wall-function** mesh puts it in the log layer, $30\\lesssim y^+\\lesssim300$, and uses an empirical profile to bridge the wall region."
+  },
+  {
+   "type": "math",
+   "latex": "y^+=\\frac{y\\,u_\\tau}{\\nu},\\qquad u_\\tau=U\\sqrt{\\frac{C_f}{2}},\\qquad y=\\frac{y^+\\nu}{U\\sqrt{C_f/2}}",
+   "caption": "For a flat plate, $C_f\\approx0.0592\\,Re_x^{-0.2}$ (turbulent, typical); the first cell height is twice the centre distance $y$"
+  },
+  {
+   "type": "worked_example",
+   "title": "Estimating the first cell height for a target $y^+$",
+   "prompt": "Air ($\\nu=1.5\\times10^{-5}$ m$^2$/s) flows at $U=20$ m/s over a 1.0 m flat plate. Find the first-cell-centre distance for $y^+=1$ and for $y^+=30$ at the plate end, and the first cell height for $y^+=1$.",
+   "steps": [
+    {
+     "text": "Reynolds number and skin friction.",
+     "latex": "Re=\\frac{20\\times1.0}{1.5\\times10^{-5}}=1.333e+06,\\quad C_f=0.0592\\,Re^{-0.2}=0.00353"
+    },
+    {
+     "text": "Friction velocity.",
+     "latex": "u_\\tau=20\\sqrt{0.00353/2}=0.840\\ \\mathrm{m/s}"
+    },
+    {
+     "text": "Centre distance for $y^+=1$.",
+     "latex": "y=\\frac{1\\times1.5\\times10^{-5}}{0.840}=17.9\\ \\mu\\mathrm{m}"
+    },
+    {
+     "text": "Cell height is twice the centre distance; also the distance for $y^+=30$.",
+     "latex": "\\Delta y_{1}=2y=35.7\\ \\mu\\mathrm{m},\\quad y(y^+=30)=30\\times17.9\\ \\mu\\mathrm{m}=0.54\\ \\mathrm{mm}"
+    }
+   ],
+   "answer": "For wall resolution the first cell must be about 36 $\\mu$m high; for wall functions the centre is at 0.54 mm. The $y^+$ value must be checked in the result, because $u_\\tau$ comes from the computed wall shear."
+  },
+  {
+   "type": "text",
+   "markdown": "Verification means asking whether a CFD result is plausible. Two simple hand-checks should be applied to every heat transfer simulation. The first is a global **energy balance**: the heat added at the walls must equal the enthalpy gain of the fluid, $Q=\\dot mc_p(T_{out}-T_{in})$, to within a small percentage. The second is a comparison with an **established correlation** such as Dittus-Boelter for turbulent flow in a smooth tube, $Nu=0.023\\,Re^{0.8}Pr^{0.4}$ (heating), valid for fully developed flow with $Re>10\\,000$ and $0.6<Pr<160$. Correlations have an uncertainty of order $\\pm25$ %, so agreement within that band is acceptable, but a much larger difference signals a problem."
+  },
+  {
+   "type": "worked_example",
+   "title": "Checking a pipe simulation",
+   "prompt": "Water (typical: $\\rho=998$ kg/m$^3$, $c_p=4182$ J/kg K, $\\mu=1.0\\times10^{-3}$ Pa s, $k=0.60$ W/m K, $Pr=7.0$) flows at 1.0 m/s through a 20 mm diameter, 2.0 m long tube with a uniform wall heat flux of 20 kW/m$^2$. Predict the bulk temperature rise and the wall-to-bulk temperature difference to compare with a CFD run.",
+   "steps": [
+    {
+     "text": "Reynolds number and mass flow rate.",
+     "latex": "Re=\\frac{998\\times1.0\\times0.020}{1.0\\times10^{-3}}=19960,\\quad\\dot m=998\\times1.0\\times\\frac{\\pi\\,0.020^2}{4}=0.3135\\ \\mathrm{kg/s}"
+    },
+    {
+     "text": "Heat input and bulk temperature rise (energy balance).",
+     "latex": "Q=q''\\pi DL=20\\,000\\times\\pi\\times0.020\\times2.0=2513\\ \\mathrm{W},\\quad \\Delta T_b=\\frac{2513}{0.3135\\times4182}=1.92\\ \\mathrm{K}"
+    },
+    {
+     "text": "Dittus-Boelter Nusselt number and coefficient.",
+     "latex": "Nu=0.023\\times19960^{0.8}\\times7.0^{0.4}=138,\\quad h=\\frac{Nu\\,k}{D}=4140\\ \\mathrm{W/m^2K}"
+    },
+    {
+     "text": "Wall-to-bulk temperature difference.",
+     "latex": "T_w-T_b=\\frac{q''}{h}=\\frac{20\\,000}{4140}=4.83\\ \\mathrm{K}"
+    }
+   ],
+   "answer": "A good CFD run should give a bulk outlet rise of about 1.92 K and a wall-bulk difference near 4.8 K (within roughly 25 %). A CFD wall-to-bulk difference much smaller than this should be investigated."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Check",
+    "What to compare",
+    "Typical acceptance"
+   ],
+   "rows": [
+    [
+     "Energy balance",
+     "Wall heat input vs $\\dot mc_p\\Delta T$",
+     "Within 1 to 2 %"
+    ],
+    [
+     "Correlation check",
+     "CFD $h$ or $Nu$ vs Dittus-Boelter or similar",
+     "Within the correlation uncertainty (about 25 %)"
+    ],
+    [
+     "Wall $y^+$",
+     "Plot $y^+$ on the wall; compare with model requirement",
+     "Consistent with the wall treatment"
+    ],
+    [
+     "Mesh independence",
+     "Key quantity on 2 or 3 meshes",
+     "Change below agreed tolerance"
+    ]
+   ],
+   "caption": "Simple verification checks for a heat transfer CFD result."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Choose the wall treatment first, then size the first cell from the target $y^+$.",
+    "Use a RANS model for design-level mean quantities in high Reynolds number flow.",
+    "After the run, check $y^+$ in the solution, not just the estimate.",
+    "Never accept a result without an energy balance and a comparison with a correlation or data."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Check $y^+$ after the run",
+   "text": "The first-cell height is chosen from an estimated $C_f$. The actual $u_\\tau$ comes from the computed shear stress, so $y^+$ may differ markedly, especially near separation or in regions of acceleration."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "DNS resolves all turbulent scales at a cost of about $Re^3$; RANS models them and gives mean quantities cheaply; LES is intermediate.",
+    "The first cell height follows from $y^+=yu_\\tau/\\nu$ with $u_\\tau=U\\sqrt{C_f/2}$; $y^+\\approx1$ is wall-resolved, $30$ to $300$ is for wall functions.",
+    "Check results with a global energy balance $Q=\\dot mc_p\\Delta T$.",
+    "Compare with a correlation such as Dittus-Boelter, accepting agreement within its uncertainty."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water (kinematic viscosity 1.0e-6 m^2/s) flows at a free-stream speed of 2.0 m/s over a surface with a skin friction coefficient of 0.0045. For a wall-resolved mesh with target y+ = 1, find the distance from the wall to the centre of the first cell in micrometres.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o1"
+   ],
+   "correctValue": 10.5409,
+   "tolerance": 0.5,
+   "unit": "micrometres",
+   "explanation": "The friction velocity is u_tau = 2.0 x sqrt(0.0045/2) = 0.0949 m/s. Then y = y+ nu/u_tau = 1 x 1.0e-6/0.0949 = 10.5 micrometres, so the first cell is about twice this thick.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "For a wall-function mesh in air (kinematic viscosity 1.5e-5 m^2/s) flowing at 10 m/s over a wall with skin friction coefficient 0.0040, find the distance from the wall to the first cell centre in mm that gives y+ = 30.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o1"
+   ],
+   "correctValue": 1.00623,
+   "tolerance": 0.03,
+   "unit": "mm",
+   "explanation": "The friction velocity is 10 x sqrt(0.0040/2) = 0.447 m/s. Then y = 30 x 1.5e-5/0.447 = 1.006 mm. A y+ of 30 puts the first cell at the start of the log layer.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "In a CFD result the first cell centre is 0.50 mm from the wall, the friction velocity from the solution is 0.80 m/s and the kinematic viscosity is 1.5e-5 m^2/s. Calculate the wall y+ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o1"
+   ],
+   "correctValue": 26.6667,
+   "tolerance": 0.3,
+   "unit": "dimensionless",
+   "explanation": "y+ = y u_tau/nu = 0.00050 x 0.80/1.5e-5 = 26.7. This is slightly below the 30 to 300 range used for wall functions, so the first cell is a little too close to the wall and the near-wall mesh should be coarsened slightly.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A CFD simulation of a water heater reports an integrated wall heat input of 1500 W. The water flows through at 0.050 kg/s and the computed temperature rise from inlet to outlet is 6.8 K (specific heat 4182 J/kg K). Find the energy imbalance as a percentage of the wall heat input.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o3"
+   ],
+   "correctValue": 5.208,
+   "tolerance": 0.3,
+   "unit": "%",
+   "explanation": "The enthalpy gain of the water is 0.050 x 4182 x 6.8 = 1422 W, against 1500 W from the wall. The imbalance is (1500 - 1422)/1500 = 5.2 %, which exceeds the usual 1 to 2 percent and means the case is not fully converged or a boundary is mis-specified.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer needs the mean pressure drop and mean heat transfer coefficient of water flowing at Reynolds number 80 000 through a heat exchanger with a complicated tube bundle. Which approach is appropriate?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "RANS with a suitable turbulence model, because mean quantities at high Reynolds number are needed and DNS or LES would be far too costly"
+    },
+    {
+     "id": "b",
+     "text": "DNS, because it is the most accurate and therefore always preferred"
+    },
+    {
+     "id": "c",
+     "text": "Laminar flow solution, because the geometry is complicated"
+    },
+    {
+     "id": "d",
+     "text": "No turbulence model is needed if the mesh is fine enough"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "RANS with a suitable turbulence model, because mean quantities at high Reynolds number are needed and DNS or LES would be far too costly",
+   "distractorRationale": {
+    "b": "DNS is far too expensive at this Reynolds number and unnecessary for mean quantities.",
+    "c": "The flow is turbulent at $Re=80\\,000$, so a laminar solution would be incorrect.",
+    "d": "The mesh needed to resolve all scales would be impractically large; a model is required."
+   },
+   "explanation": "RANS provides time-averaged solutions at modest cost and is accurate enough for mean pressure drop and heat transfer in most design problems. DNS and LES are research tools or reserved for unsteady phenomena that RANS cannot capture.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The Reynolds number of a simulated flow is doubled with the same geometry and a DNS is required. Using the cost scaling $\\sim Re^3$, the computational cost increases by approximately",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A factor of 8"
+    },
+    {
+     "id": "b",
+     "text": "A factor of 2"
+    },
+    {
+     "id": "c",
+     "text": "A factor of 4.8, which counts only the grid points"
+    },
+    {
+     "id": "d",
+     "text": "A factor of 16"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A factor of 8",
+   "distractorRationale": {
+    "b": "DNS cost rises much faster than linearly with the Reynolds number.",
+    "c": "That is $2^{9/4}$, the growth in the number of cells; the extra time steps add a further factor of about 1.7, giving $2^3$ overall.",
+    "d": "$2^4$ would apply for an exponent of four, not three."
+   },
+   "explanation": "The number of grid points grows as $Re^{9/4}$ and the number of time steps as $Re^{3/4}$, so the total cost is proportional to $Re^3$, and doubling $Re$ gives $2^3=8$. This is why DNS is confined to modest Reynolds numbers.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A CFD calculation of turbulent heated flow in a smooth pipe gives a Nusselt number of 250. The Dittus-Boelter correlation for the same Reynolds and Prandtl numbers gives 167. What is the appropriate response?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The 50 % difference exceeds the correlation's typical uncertainty, so check the mesh and $y^+$, the turbulence and wall treatment, and the boundary conditions"
+    },
+    {
+     "id": "b",
+     "text": "Accept the CFD result because it uses more detailed physics than a correlation"
+    },
+    {
+     "id": "c",
+     "text": "Accept the correlation and discard the CFD without further checks"
+    },
+    {
+     "id": "d",
+     "text": "Multiply the CFD result by 0.67 so that it matches the correlation"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The 50 % difference exceeds the correlation's typical uncertainty, so check the mesh and $y^+$, the turbulence and wall treatment, and the boundary conditions",
+   "distractorRationale": {
+    "b": "Detailed physics does not guarantee accuracy; large disagreement indicates a modelling or set-up problem.",
+    "c": "The correlation is a sanity check but the cause of the discrepancy should be found.",
+    "d": "Scaling results to match is not verification and hides the underlying error."
+   },
+   "explanation": "Correlations have an uncertainty of about 25 %, so a 50 % discrepancy is a red flag. The usual culprits are the first cell $y^+$, the wrong wall treatment or insufficient convergence of the thermal field.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a standard wall-function approach with a $k$-$\\varepsilon$ model, the first cell centre should lie at approximately",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$30\\lesssim y^+\\lesssim300$, in the logarithmic layer of the boundary layer"
+    },
+    {
+     "id": "b",
+     "text": "$y^+\\approx1$, in the viscous sublayer"
+    },
+    {
+     "id": "c",
+     "text": "$y^+\\approx1000$, far into the outer region"
+    },
+    {
+     "id": "d",
+     "text": "$y^+\\approx0$, exactly on the wall"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$30\\lesssim y^+\\lesssim300$, in the logarithmic layer of the boundary layer",
+   "distractorRationale": {
+    "b": "This is the requirement for wall-resolved low-Reynolds models, not wall functions.",
+    "c": "Beyond about 300 the log law no longer holds.",
+    "d": "The first cell centre cannot lie on the wall, and a wall function is not valid there."
+   },
+   "explanation": "Wall functions assume that the first cell lies in the log layer, where an empirical profile applies. If $y^+$ is far below 30, the function is extrapolated into a region where it is not valid.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how you would choose the first cell height for a CFD simulation of turbulent flow over a heated plate, and what you would check after the run.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o1"
+   ],
+   "markingGuide": [
+    "Choose the wall treatment: wall-resolved ($y^+\\approx1$) or wall functions ($y^+$ of 30 to 300)",
+    "Estimate $C_f$ from a correlation, then $u_\\tau=U\\sqrt{C_f/2}$",
+    "Compute $y=y^+\\nu/u_\\tau$ and set the first cell height to twice $y$",
+    "Check $y^+$ in the solution using the computed wall shear",
+    "Adjust the mesh if $y^+$ is outside the range, then re-check energy balance and mesh independence"
+   ],
+   "explanation": "The first cell height follows from the target $y^+$ via the friction velocity. Because $u_\\tau$ is estimated, the actual $y^+$ must be plotted from the solution and the mesh adjusted if needed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A CFD simulation of a heated duct is complete. Describe how you would check the result against a simple energy balance and a correlation, and state what you would do if the two checks disagree with the CFD result.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o3",
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-turbulence-checks.o2"
+   ],
+   "markingGuide": [
+    "Energy balance: compare integrated wall heat input with $\\dot mc_p(T_{out}-T_{in})$, within 1 to 2 %",
+    "Correlation: compute $Re$, $Pr$ and $Nu$ from Dittus-Boelter (or other appropriate relation) and compare $h$ with the CFD average, allowing about 25 % uncertainty",
+    "If energy balance fails, check convergence, boundary conditions, and flux integration",
+    "If correlation disagrees strongly, check $y^+$, turbulence model, mesh independence, developing-flow effects",
+    "Notes that RANS is the appropriate model class, and that documented agreement builds confidence"
+   ],
+   "explanation": "The energy balance tests conservation and convergence, while the correlation tests physical plausibility. When either check fails, the first things to examine are convergence, the wall treatment and the boundary conditions, before any conclusions are drawn.",
+   "board": "internal"
+  }
+ ]
+}

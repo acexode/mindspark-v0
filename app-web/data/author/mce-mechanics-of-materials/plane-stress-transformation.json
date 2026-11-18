@@ -1,0 +1,391 @@
+{
+ "lessonTitle": "Plane Stress Transformation",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A spiral-welded steel pipe has its weld seam wound at an angle to the axis, and the weld is checked not for the stress along the pipe or around it, but for the stress that acts across the seam. To do that you must be able to compute the stress on a plane that is neither horizontal nor vertical."
+  },
+  {
+   "type": "text",
+   "markdown": "At a point in **plane stress** the state is described by the normal stresses $\\sigma_x$ and $\\sigma_y$ and the shear stress $\\tau_{xy}$ on an element aligned with the axes. If we cut the material along a plane whose normal makes an angle $\\theta$ (counterclockwise) with the $x$-axis, the stresses on that plane follow from force equilibrium of a small wedge. The stress state itself does not change; only the plane on which we evaluate it."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_\\theta=\\frac{\\sigma_x+\\sigma_y}{2}+\\frac{\\sigma_x-\\sigma_y}{2}\\cos2\\theta+\\tau_{xy}\\sin2\\theta",
+   "caption": "Normal stress on the plane with normal at angle $\\theta$ from $x$; tension positive."
+  },
+  {
+   "type": "math",
+   "latex": "\\tau_\\theta=-\\frac{\\sigma_x-\\sigma_y}{2}\\sin2\\theta+\\tau_{xy}\\cos2\\theta",
+   "caption": "Shear stress on that plane, positive when it acts in the direction of increasing $\\theta$ on the plane's face (the sign convention is stated in each problem)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Scarf joint under uniaxial tension",
+   "prompt": "Two timber bars are joined by a glued scarf joint. The bar carries a uniform tensile stress of 40 MPa along its axis (take this as sigma_x, with sigma_y = 0 and tau_xy = 0). The glue plane's normal is 30 degrees from the axis. Find the normal and shear stress on the glue.",
+   "steps": [
+    {
+     "text": "Uniaxial state: the formulas reduce to the form below.",
+     "latex": "\\sigma_\\theta=\\frac{\\sigma_x}{2}(1+\\cos2\\theta),\\quad \\tau_\\theta=-\\frac{\\sigma_x}{2}\\sin2\\theta"
+    },
+    {
+     "text": "Substitute with theta = 30 degrees, so 2 theta = 60 degrees.",
+     "latex": "\\sigma_\\theta=20(1+0.5)=30.0\\ \\text{MPa}"
+    },
+    {
+     "text": "Shear stress.",
+     "latex": "\\tau_\\theta=-20\\sin60^\\circ=-17.3\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The glue sees 30.0 MPa normal stress and 17.3 MPa shear stress (the negative sign records its sense)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Principal stresses.** As $\\theta$ varies, $\\sigma_\\theta$ passes through a maximum and a minimum. Differentiating, $d\\sigma_\\theta/d\\theta=2\\tau_\\theta=0$, so the extreme normal stresses occur on planes with **zero shear**: the **principal planes**, which are $90^\\circ$ apart. Their orientation follows from $\\tan2\\theta_p=2\\tau_{xy}/(\\sigma_x-\\sigma_y)$ and the stresses are"
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_{1,2}=\\frac{\\sigma_x+\\sigma_y}{2}\\pm\\sqrt{\\left(\\frac{\\sigma_x-\\sigma_y}{2}\\right)^2+\\tau_{xy}^2}",
+   "caption": "$\\sigma_1\\ge\\sigma_2$ are the principal stresses; $\\sigma_1+\\sigma_2=\\sigma_x+\\sigma_y$ is invariant."
+  },
+  {
+   "type": "worked_example",
+   "title": "Principal stresses and planes",
+   "prompt": "At a point sigma_x = -30 MPa, sigma_y = 50 MPa and tau_xy = 40 MPa. Find the principal stresses and the orientation of the principal planes.",
+   "steps": [
+    {
+     "text": "Average and half-difference.",
+     "latex": "\\frac{\\sigma_x+\\sigma_y}{2}=10\\ \\text{MPa},\\quad \\frac{\\sigma_x-\\sigma_y}{2}=-40\\ \\text{MPa}"
+    },
+    {
+     "text": "Radius of the root.",
+     "latex": "R=\\sqrt{(-40)^2+40^2}=56.6\\ \\text{MPa}"
+    },
+    {
+     "text": "Principal stresses.",
+     "latex": "\\sigma_1=10+56.6=66.6\\ \\text{MPa},\\quad \\sigma_2=10-56.6=-46.6\\ \\text{MPa}"
+    },
+    {
+     "text": "Angle: tan 2 theta_p = 80/(-80) = -1, so 2 theta_p = -45 or 135 degrees. Test theta = -22.5: sigma = 10 - 40cos(-45) + 40 sin(-45) = -46.6, so that plane carries sigma_2; the sigma_1 plane is 90 degrees away.",
+     "latex": "\\theta_{p1}=67.5^\\circ,\\quad \\theta_{p2}=-22.5^\\circ"
+    }
+   ],
+   "answer": "sigma_1 = 66.6 MPa on the plane at 67.5 degrees, and sigma_2 = -46.6 MPa on the plane at -22.5 degrees; the shear stress is zero on both."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Formula",
+    "Where it acts"
+   ],
+   "rows": [
+    [
+     "Principal stresses",
+     "$C\\pm R$",
+     "Planes with $\\tau=0$, at $\\theta_p$"
+    ],
+    [
+     "Maximum in-plane shear",
+     "$\\tau_{\\max}=R=(\\sigma_1-\\sigma_2)/2$",
+     "Planes at $\\theta_p\\pm45^\\circ$"
+    ],
+    [
+     "Normal stress on max-shear planes",
+     "$\\sigma_{\\text{avg}}=(\\sigma_x+\\sigma_y)/2$",
+     "Same planes"
+    ],
+    [
+     "Invariant",
+     "$\\sigma_x+\\sigma_y=\\sigma_1+\\sigma_2$",
+     "Independent of $\\theta$"
+    ]
+   ],
+   "caption": "Key results of plane stress transformation ($C$ = average normal stress, $R$ = radius expression)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Maximum in-plane shear.** The shear stress $\\tau_\\theta$ is largest where $d\\tau_\\theta/d\\theta=0$, on planes at $45^\\circ$ to the principal planes, with magnitude $\\tau_{\\max}=\\sqrt{((\\sigma_x-\\sigma_y)/2)^2+\\tau_{xy}^2}=(\\sigma_1-\\sigma_2)/2$. On those planes the normal stress is not zero: it equals the average normal stress $(\\sigma_x+\\sigma_y)/2$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Maximum shear stress",
+   "prompt": "For the state above (sigma_x = -30, sigma_y = 50, tau_xy = 40 MPa), find the maximum in-plane shear stress, the planes on which it acts, and the associated normal stress.",
+   "steps": [
+    {
+     "text": "Maximum shear equals half the difference of the principal stresses.",
+     "latex": "\\tau_{\\max}=\\frac{66.6-(-46.6)}{2}=56.6\\ \\text{MPa}"
+    },
+    {
+     "text": "Planes at 45 degrees to the principal planes: theta_s = theta_p2 + 45 = 22.5 degrees (and 112.5 degrees).",
+     "latex": "\\theta_s=22.5^\\circ"
+    },
+    {
+     "text": "Check by substitution at 22.5 degrees.",
+     "latex": "\\tau=-(-40)\\sin45^\\circ+40\\cos45^\\circ=56.6\\ \\text{MPa},\\quad \\sigma=10\\ \\text{MPa}"
+    }
+   ],
+   "answer": "tau_max = 56.6 MPa on planes at 22.5 degrees and 112.5 degrees, each also carrying a normal stress of 10 MPa."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Tidy up the angle",
+   "text": "The formula for tan 2 theta_p gives two angles 90 degrees apart, but does not say which carries sigma_1. Always substitute back into sigma_theta to identify which principal plane carries which stress. Keep the sign of tau_xy and the direction of positive theta consistent."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "On a plane at angle theta the normal and shear stresses follow from the transformation equations in sigma_x, sigma_y and tau_xy; the sum of normal stresses on perpendicular planes is invariant.",
+    "Principal planes have zero shear, are 90 degrees apart, satisfy tan 2 theta_p = 2 tau_xy/(sigma_x - sigma_y), and carry sigma_1,2 = C plus or minus R.",
+    "Maximum in-plane shear is (sigma_1 - sigma_2)/2 on planes 45 degrees from the principal planes, with normal stress equal to the average (sigma_x + sigma_y)/2."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For any plane stress state, which quantity is the same on any two perpendicular planes through the point?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The shear stress"
+    },
+    {
+     "id": "b",
+     "text": "The difference of the normal stresses"
+    },
+    {
+     "id": "c",
+     "text": "The product of the normal stresses"
+    },
+    {
+     "id": "d",
+     "text": "The sum of the normal stresses"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The sum of the normal stresses",
+   "distractorRationale": {
+    "a": "The shear stresses are equal in magnitude but opposite in sign, and vary with theta.",
+    "b": "The difference changes with the angle.",
+    "c": "The product is not invariant.",
+    "d": "Correct: sigma_theta + sigma_(theta+90) = sigma_x + sigma_y."
+   },
+   "explanation": "Adding the transformation equation at theta and theta + 90 degrees cancels the cos 2 theta and sin 2 theta terms, leaving sigma_x + sigma_y. This invariance is a useful check.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the angle between the planes of maximum in-plane shear stress and the principal planes?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "90 degrees"
+    },
+    {
+     "id": "b",
+     "text": "45 degrees"
+    },
+    {
+     "id": "c",
+     "text": "30 degrees"
+    },
+    {
+     "id": "d",
+     "text": "0 degrees"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "45 degrees",
+   "distractorRationale": {
+    "a": "Principal planes themselves are 90 degrees apart.",
+    "b": "Correct: tau_theta is maximum where 2 theta is 90 degrees from 2 theta_p.",
+    "c": "No basis for this angle in the equations.",
+    "d": "The shear stress is zero on principal planes."
+   },
+   "explanation": "Differentiating the shear stress equation shows the extremum of tau is at 2 theta_s = 2 theta_p + 90 degrees, so the planes are 45 degrees from the principal planes.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Principal stresses sigma_1 = 100 MPa and sigma_2 = -20 MPa act at a point. What is the maximum in-plane shear stress?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "60 MPa"
+    },
+    {
+     "id": "b",
+     "text": "120 MPa"
+    },
+    {
+     "id": "c",
+     "text": "40 MPa"
+    },
+    {
+     "id": "d",
+     "text": "80 MPa"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "60 MPa",
+   "distractorRationale": {
+    "a": "Correct: (100 - (-20))/2 = 60 MPa.",
+    "b": "This is the difference, forgetting the factor 1/2.",
+    "c": "This is the average of the two, not related to shear.",
+    "d": "Mistakenly uses 100 - 20."
+   },
+   "explanation": "Maximum in-plane shear is half the difference of the principal stresses. Here it is (100 + 20)/2 = 60 MPa, acting on planes at 45 degrees to the principal planes.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A bar is under uniaxial tension sigma_0. At which angle of the cutting plane's normal to the axis is the shear stress largest, and what is its value?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "30 degrees, sigma_0/4"
+    },
+    {
+     "id": "b",
+     "text": "0 degrees, sigma_0"
+    },
+    {
+     "id": "c",
+     "text": "45 degrees, sigma_0/2"
+    },
+    {
+     "id": "d",
+     "text": "90 degrees, sigma_0/2"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "45 degrees, sigma_0/2",
+   "distractorRationale": {
+    "a": "At 30 degrees the shear is only 0.433 sigma_0 in magnitude, and sigma_0/4 is not its value.",
+    "b": "Zero degrees is a principal plane with no shear.",
+    "c": "Correct: tau = -(sigma_0/2) sin 2 theta has magnitude sigma_0/2 at 45 degrees.",
+    "d": "90 degrees is the free lateral surface with zero stress."
+   },
+   "explanation": "For uniaxial stress tau_theta = -(sigma_0/2) sin 2 theta. Its magnitude peaks when sin 2 theta = 1, i.e. theta = 45 degrees, where tau = sigma_0/2. This explains why ductile tensile specimens show slip lines at about 45 degrees.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: if tau_xy = 0, the stresses sigma_x and sigma_y are themselves the principal stresses.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "With no shear on the x and y faces they are principal planes, so sigma_x and sigma_y are the principal stresses. The principal angle is 0 (or 90 degrees).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A bar carries a uniaxial tensile stress of 90 MPa along its axis. Find the normal stress in MPa on a plane whose normal makes 60 degrees with the axis.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o1"
+   ],
+   "correctValue": 22.5,
+   "tolerance": 0.2,
+   "unit": "MPa",
+   "explanation": "sigma = sigma_x cos^2 theta = 90 cos^2 60 = 22.5 MPa. Equivalently (90/2)(1 + cos 120) = 22.5 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "At a point sigma_x = 70 MPa, sigma_y = -30 MPa and tau_xy = 40 MPa. Find the larger principal stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o2"
+   ],
+   "correctValue": 84.03,
+   "tolerance": 0.3,
+   "unit": "MPa",
+   "explanation": "Average = 20 MPa and R = sqrt(50^2 + 40^2) = 64.03 MPa, so sigma_1 = 20 + 64.03 = 84.03 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "At a point sigma_x = -60 MPa, sigma_y = 20 MPa and tau_xy = -35 MPa, with tau_theta = -(sigma_x - sigma_y)/2 sin 2 theta + tau_xy cos 2 theta. Find tau_theta, with its sign, in MPa on the plane whose normal is at theta = -35 degrees (clockwise 35 degrees from x).",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o1"
+   ],
+   "correctValue": -49.56,
+   "tolerance": 0.3,
+   "unit": "MPa",
+   "explanation": "Half-difference = -40 MPa and 2 theta = -70 degrees. tau = -(-40) sin(-70) + (-35) cos(-70) = 40(-0.9397) + (-35)(0.3420) = -37.59 - 11.97 = -49.56 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Show that the principal planes are those on which the shear stress vanishes, and derive the expression for their orientation.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o2"
+   ],
+   "markingGuide": [
+    "States the normal stress transformation equation sigma_theta",
+    "Differentiates with respect to theta",
+    "Notes d sigma_theta/d theta = 2 tau_theta, so the extremum occurs where tau_theta = 0",
+    "Sets tau_theta = 0 to obtain tan 2 theta_p = 2 tau_xy/(sigma_x - sigma_y)",
+    "Notes two solutions 90 degrees apart, carrying sigma_1 and sigma_2, identified by substitution"
+   ],
+   "explanation": "The derivative of the normal stress with respect to angle is proportional to the shear stress, so stationary normal stresses occur on shear-free planes. Setting the shear equation to zero gives the orientation.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "For a state of plane stress, state the maximum in-plane shear stress, the planes on which it acts and the normal stress on those planes. Explain why a ductile bar in uniaxial tension tends to slip along planes at about 45 degrees to its axis.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.stress-transformation-mohr.plane-stress-transformation.o3"
+   ],
+   "markingGuide": [
+    "tau_max = (sigma_1 - sigma_2)/2 = R",
+    "Acts on planes at 45 degrees to the principal planes",
+    "Normal stress on those planes is the average (sigma_x + sigma_y)/2 = (sigma_1 + sigma_2)/2",
+    "In uniaxial tension sigma_1 = sigma_0 and sigma_2 = 0 so tau_max = sigma_0/2 at 45 degrees",
+    "Ductile metals yield by shear, so slip occurs on the planes of maximum shear stress"
+   ],
+   "explanation": "Yield in ductile metals is controlled by shear, and in uniaxial tension the largest shear stress is found on 45-degree planes. This explains the 45-degree slip bands seen in a polished tensile specimen.",
+   "board": "internal"
+  }
+ ]
+}

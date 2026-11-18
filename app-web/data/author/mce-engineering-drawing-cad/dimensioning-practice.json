@@ -1,0 +1,393 @@
+{
+ "lessonTitle": "Dimensioning Practice",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A machinist holds a drawing of a stepped plate and finds four segment dimensions and an overall length that disagree by 0.3 mm. Whichever number she trusts, some part will be scrapped: the dimensioning, not the machining, was at fault."
+  },
+  {
+   "type": "text",
+   "markdown": "Dimensioning tells the manufacturer **how big** each feature is and **where** it sits. Good practice has three aims: every feature is defined **once**; no dimension is **redundant** (derivable from the others); and dimensions are measured from **datums** that match how the part is made and how it works. A dimension is redundant when it can be calculated by adding or subtracting others, so including it gives two instructions for one fact."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Redundant and datum",
+   "text": "A dimension is **redundant** if its value is fixed by other dimensions already given. A **datum** is a feature (a face, an axis or a plane) taken as the origin from which other features are located."
+  },
+  {
+   "type": "text",
+   "markdown": "Choosing datums. A **functional datum** is the surface that matters in use, for example the mounting face of a bracket or the shoulder that locates a bearing. A **manufacturing datum** is the surface the part is clamped against or measured from during production. The best datum is often both, so the part is made and inspected from the same face that the assembly relies on."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "How features are located",
+    "Tolerance accumulation"
+   ],
+   "rows": [
+    [
+     "Chain (series)",
+     "Each feature from the previous one",
+     "Tolerances add: nth feature carries the sum of n tolerances"
+    ],
+    [
+     "Baseline (parallel)",
+     "Every feature from one common datum",
+     "Each position has only its own tolerance; the gap between two features is the sum of two"
+    ],
+    [
+     "Coordinate",
+     "x, y values from an origin, often in a table",
+     "As baseline: each from the origin, no stack-up of position"
+    ]
+   ],
+   "caption": "Three dimensioning methods compared"
+  },
+  {
+   "type": "worked_example",
+   "title": "Chain versus baseline",
+   "prompt": "A plate has three segments of nominal 20, 30 and 25 mm, each toleranced +/-0.1 mm. (a) Chain dimensioned: find the overall length and its tolerance. (b) Baseline dimensioned from the left face with the same +/-0.1 on every dimension, features at 20, 50 and 75 mm: find the tolerance on the position of the last feature and on the gap between the second and third features.",
+   "steps": [
+    {
+     "text": "Chain: nominal overall length is the sum of the segments.",
+     "latex": "20 + 30 + 25 = 75\\ \\text{mm}"
+    },
+    {
+     "text": "Worst-case tolerances add.",
+     "latex": "\\pm(0.1 + 0.1 + 0.1) = \\pm 0.3\\ \\text{mm}"
+    },
+    {
+     "text": "Baseline: the last feature is located directly from the datum, so its position is 75 +/- 0.1 mm."
+    },
+    {
+     "text": "The gap between features 2 and 3 involves two independent dimensions, 50 +/- 0.1 and 75 +/- 0.1.",
+     "latex": "\\pm(0.1 + 0.1) = \\pm 0.2\\ \\text{mm on the nominal gap of } 25\\ \\text{mm}"
+    }
+   ],
+   "answer": "Chain: 75 +/- 0.3 mm overall. Baseline: last feature 75 +/- 0.1 mm, gap 25 +/- 0.2 mm."
+  },
+  {
+   "type": "text",
+   "markdown": "Chain dimensioning is natural for features that must sit a fixed distance from one another, but it accumulates tolerance. Baseline and coordinate dimensioning stop accumulation to the datum and are preferred when a feature's absolute position matters, but then the distance between neighbouring features is less well controlled."
+  },
+  {
+   "type": "worked_example",
+   "title": "Removing a redundant dimension",
+   "prompt": "A shaft shows segments 25, 35 and 30 mm and also an overall length of 90 mm. Is anything redundant, and what should be done?",
+   "steps": [
+    {
+     "text": "Sum the segments.",
+     "latex": "25 + 35 + 30 = 90\\ \\text{mm}"
+    },
+    {
+     "text": "The overall length equals the sum, so any one of the four values follows from the other three: the set is redundant."
+    },
+    {
+     "text": "Remove one dimension, normally the least functionally important, or show the overall length in brackets as a reference dimension with no tolerance."
+    }
+   ],
+   "answer": "One dimension is redundant. Omit it or mark the overall length as a reference, (90)."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Redundancy with tolerances",
+   "text": "If all four values carry tolerances, the segments allow the overall length to vary by +/-0.3 mm but the overall dimension may allow only +/-0.2 mm: the drawing contradicts itself and parts can be both in and out of tolerance."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Define each feature once and give each dimension in one place.",
+    "Do not close a chain: omit one dimension or make it a reference.",
+    "Dimension from functional datums where fit or assembly depends on it.",
+    "Place dimensions outside the view, between views and near the feature they describe."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Choose the method for the function",
+   "text": "Use chain where relative spacing matters, baseline or coordinate where position from a datum matters, and always avoid closed chains."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Dimension each feature once and avoid redundant dimensions that could be derived from others.",
+    "Choose datums that match manufacture and function.",
+    "Chain dimensioning accumulates tolerance; baseline and coordinate methods give each feature its own tolerance from the datum."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A bracket drawing gives segment dimensions of 14, 22 and 16 mm and an overall length of 52 mm, all without brackets. What is wrong?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Nothing is wrong"
+    },
+    {
+     "id": "b",
+     "text": "One dimension is redundant since 14 + 22 + 16 = 52"
+    },
+    {
+     "id": "c",
+     "text": "The overall length should be larger"
+    },
+    {
+     "id": "d",
+     "text": "Segments must not be dimensioned"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "One dimension is redundant since 14 + 22 + 16 = 52",
+   "distractorRationale": {
+    "a": "The set is closed.",
+    "b": "Correct.",
+    "c": "The sum is already consistent.",
+    "d": "Segments may be dimensioned."
+   },
+   "explanation": "The four values are linked by a sum, so one of them is derivable. A reference dimension in brackets or omission resolves it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which dimensioning method accumulates tolerance from one feature to the next?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Chain"
+    },
+    {
+     "id": "b",
+     "text": "Baseline"
+    },
+    {
+     "id": "c",
+     "text": "Coordinate"
+    },
+    {
+     "id": "d",
+     "text": "All of them equally"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Chain",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Each position from datum.",
+    "c": "Each position from origin.",
+    "d": "Only the chain accumulates."
+   },
+   "explanation": "In chain dimensioning each feature is located from the previous one, so errors stack. Baseline and coordinate locate from one datum.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Four chain-dimensioned steps each have a tolerance of +/-0.05 mm. Calculate the worst-case tolerance, in mm, on the position of the last feature relative to the start (give the +/- value).",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o3"
+   ],
+   "correctValue": 0.2,
+   "tolerance": 0.01,
+   "unit": "mm",
+   "explanation": "Worst-case tolerances add: 4 x 0.05 = 0.20 mm. The same features dimensioned from a baseline would have only +/-0.05 mm on position.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two holes are located from a common baseline, each with +/-0.08 mm on its distance from the datum. Calculate the worst-case tolerance on the distance between the two holes, in mm (+/- value).",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o3"
+   ],
+   "correctValue": 0.16,
+   "tolerance": 0.01,
+   "unit": "mm",
+   "explanation": "The distance between the holes depends on two independent dimensions, so the tolerances add: 0.08 + 0.08 = 0.16 mm. Baseline dimensioning controls each hole against the datum, not against its neighbour.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A shaft has a shoulder that locates a bearing. Which datum is best for the shoulder position?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The shoulder itself, dimensioned from the end that sits in the bearing seat"
+    },
+    {
+     "id": "b",
+     "text": "An arbitrary end chosen for drawing neatness"
+    },
+    {
+     "id": "c",
+     "text": "A fillet edge"
+    },
+    {
+     "id": "d",
+     "text": "The centre of the keyway"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The shoulder itself, dimensioned from the end that sits in the bearing seat",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Not driven by function.",
+    "c": "Fillet edges are poor datums.",
+    "d": "Not related to the shoulder."
+   },
+   "explanation": "The datum should be the functionally important surface which also can be machined and inspected from. Convenience for drawing is not a criterion.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A spindle is dimensioned in segments of 15, 45 and 20 mm. Which statement about adding an overall length of 80 mm with no tolerance bracket is correct?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is acceptable"
+    },
+    {
+     "id": "b",
+     "text": "It closes the chain and is redundant"
+    },
+    {
+     "id": "c",
+     "text": "It is the only dimension needed"
+    },
+    {
+     "id": "d",
+     "text": "It reduces the tolerance"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It closes the chain and is redundant",
+   "distractorRationale": {
+    "a": "It duplicates.",
+    "b": "Correct.",
+    "c": "Segments are also required.",
+    "d": "It adds conflict not reduction."
+   },
+   "explanation": "The overall is the sum of the segments and so is already defined. Showing it as a reference, (90), is acceptable.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "Chain segments of 12 +/-0.05, 18 +/-0.05 and 20 +/-0.05 mm are dimensioned and an overall length of 50 +/-0.1 mm is also given. What is the problem?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o1",
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "None, 0.1 is bigger than 0.05"
+    },
+    {
+     "id": "b",
+     "text": "The segments permit +/-0.15 mm overall but the overall allows only +/-0.1, so the tolerances contradict"
+    },
+    {
+     "id": "c",
+     "text": "The overall should have zero tolerance"
+    },
+    {
+     "id": "d",
+     "text": "The segment tolerances should be removed"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The segments permit +/-0.15 mm overall but the overall allows only +/-0.1, so the tolerances contradict",
+   "distractorRationale": {
+    "a": "Misses the accumulation.",
+    "b": "Correct.",
+    "c": "Zero tolerance is impossible.",
+    "d": "Not the fix."
+   },
+   "explanation": "The segments stack to +/-0.15 mm, which exceeds the stated +/-0.1 overall. Parts could pass one tolerance and fail another.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A bracket is machined by clamping its base against a vice and by bolting that same base to a frame. Explain how you would choose the datum for its hole positions and why.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o2"
+   ],
+   "markingGuide": [
+    "Choose the base face as the datum",
+    "It is the manufacturing datum (clamped)",
+    "It is the functional datum (mounting face)",
+    "Same datum for making and inspection reduces error",
+    "Dimension the holes from it"
+   ],
+   "explanation": "The base serves both functionally and in manufacture, so using it as the datum avoids translation errors between the two. Each point in the marking guide earns credit, so state every point explicitly and give its reason.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Compare chain, baseline and coordinate dimensioning for a row of four holes, stating the tolerance accumulation of each when every dimension has +/-t.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o3"
+   ],
+   "markingGuide": [
+    "Chain: last hole carries 4t (sum of dimensions)",
+    "Baseline: each hole has t from the datum; gap between two holes 2t",
+    "Coordinate: as baseline",
+    "When to use: chain for relative spacing, baseline for absolute position"
+   ],
+   "explanation": "A clear answer states the accumulation as a sum of tolerances for chains, and independent datum tolerances for baseline and coordinate. Each point in the marking guide earns credit, so state every point explicitly and give its reason.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Each feature should normally be defined by only one dimension.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.dimensioning-tolerances-fits.dimensioning-practice.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Defining a feature twice either duplicates or contradicts. A reference dimension may be shown in brackets without tolerance.",
+   "board": "internal"
+  }
+ ]
+}

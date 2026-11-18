@@ -1,0 +1,377 @@
+{
+ "lessonTitle": "Composite and Non-Rectangular Sections",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A timber floor beam that sags too much can be stiffened by bolting a steel plate to its underside, and railway sleepers, reinforced-concrete slabs and bimetal strips all rely on two materials working as one. The ordinary flexure formula assumes a single material, so we need a way to turn a two-material beam into an equivalent one-material beam."
+  },
+  {
+   "type": "text",
+   "markdown": "In a **composite beam** two materials are firmly bonded, so plane sections remain plane and the strain at the interface is the same in both. Because the moduli differ, the same strain produces different stresses: $\\sigma=E\\varepsilon$, so the stiffer material carries proportionally more stress. The **transformed-section method** replaces one material by an equivalent amount of the other, so the usual formula $\\sigma = My/I$ can be applied."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Modular ratio",
+   "text": "The **modular ratio** is $n=E_2/E_1$, the ratio of the Young's moduli of the stiffer material 2 to the reference material 1. To convert material 2 into material 1, multiply its **width** (the dimension parallel to the neutral axis) by $n$ while keeping its depth, so that the force carried at a given strain is unchanged."
+  },
+  {
+   "type": "math",
+   "latex": "b_{\\text{tr}}=n\\,b,\\qquad \\sigma_1=-\\frac{M\\,y}{I_{\\text{tr}}},\\qquad \\sigma_2=-n\\,\\frac{M\\,y}{I_{\\text{tr}}}",
+   "caption": "$I_{\\text{tr}}$ is the second moment of area of the transformed section about its own centroid; $y$ is the distance from that centroid; stresses in the original material 2 are $n$ times the transformed-section stress."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Material (typical)",
+    "$E$ (GPa)",
+    "Modular ratio to timber ($E=10$ GPa)"
+   ],
+   "rows": [
+    [
+     "Timber (reference)",
+     "10",
+     "1"
+    ],
+    [
+     "Aluminium",
+     "70",
+     "7"
+    ],
+    [
+     "Concrete (in compression)",
+     "25",
+     "2.5"
+    ],
+    [
+     "Steel",
+     "200",
+     "20"
+    ]
+   ],
+   "caption": "Typical moduli for building a transformed section"
+  },
+  {
+   "type": "worked_example",
+   "title": "Transformed section of a steel-reinforced timber beam",
+   "prompt": "A timber beam, 100 mm wide and 200 mm deep (E = 10 GPa), has a steel plate 100 mm wide and 10 mm thick (E = 200 GPa) securely bonded to its underside. Transform the section into timber and find its centroid and second moment of area.",
+   "steps": [
+    {
+     "text": "Modular ratio and the equivalent timber width of the steel.",
+     "latex": "n=\\frac{200}{10}=20,\\qquad b_{\\text{tr}}=20\\times100=2000\\ \\text{mm}"
+    },
+    {
+     "text": "Areas and heights above the bottom: steel strip 2000 x 10 = 20 000 mm^2 at 5 mm; timber 100 x 200 = 20 000 mm^2 at 110 mm.",
+     "latex": "\\bar y=\\frac{20\\,000(5)+20\\,000(110)}{40\\,000}=57.5\\ \\text{mm}"
+    },
+    {
+     "text": "Parallel-axis theorem for I_tr (steel strip then timber).",
+     "latex": "I_{tr}=\\left[\\frac{2000(10)^3}{12}+20\\,000(52.5)^2\\right]+\\left[\\frac{100(200)^3}{12}+20\\,000(52.5)^2\\right]=1.771\\times10^{8}\\ \\text{mm}^4"
+    }
+   ],
+   "answer": "The equivalent timber section has its neutral axis 57.5 mm above the bottom of the steel and I_tr = 1.771e8 mm^4."
+  },
+  {
+   "type": "worked_example",
+   "title": "Stresses in each material",
+   "prompt": "The beam above carries a sagging moment of 12 kN m. Find the maximum stress in the timber and in the steel.",
+   "steps": [
+    {
+     "text": "Timber top fibre is 210 - 57.5 = 152.5 mm above the neutral axis; stress from the transformed section is directly the timber stress.",
+     "latex": "\\sigma_w=\\frac{12\\times10^{6}\\times152.5}{1.771\\times10^{8}}=10.3\\ \\text{MPa (compression)}"
+    },
+    {
+     "text": "Steel bottom fibre is 57.5 mm below the neutral axis. The transformed stress is multiplied by n = 20.",
+     "latex": "\\sigma_s=20\\times\\frac{12\\times10^{6}\\times57.5}{1.771\\times10^{8}}=77.9\\ \\text{MPa (tension)}"
+    }
+   ],
+   "answer": "Timber carries 10.3 MPa compression at the top and the steel plate 77.9 MPa tension at the bottom; the stress jumps by the factor n across the interface even though the strain is continuous."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why shape matters.** In a rectangle, much of the material lies near the neutral axis where the stress is small. For a fixed amount of material (equal area), moving it away from the axis raises $I$ and $S$ greatly. This is why bending members are made as **I-sections** (flanges carry the bending stress; the web connects them and carries shear)."
+  },
+  {
+   "type": "worked_example",
+   "title": "I-section versus rectangle of equal area",
+   "prompt": "A rectangular section is 60 mm wide and 200 mm deep (area 12 000 mm^2). An I-section of depth 250 mm has flanges 120 mm wide by 25 mm thick and a web 30 mm thick between them (area also 12 000 mm^2). Compare the bending capacity for the same allowable stress.",
+   "steps": [
+    {
+     "text": "Rectangle.",
+     "latex": "I_r=\\frac{60(200)^3}{12}=4.00\\times10^{7}\\ \\text{mm}^4,\\quad S_r=\\frac{I_r}{100}=4.00\\times10^{5}\\ \\text{mm}^3"
+    },
+    {
+     "text": "I-section: outer rectangle minus the two empty side rectangles (width 90 mm, height 200 mm).",
+     "latex": "I_I=\\frac{120(250)^3}{12}-\\frac{90(200)^3}{12}=9.625\\times10^{7}\\ \\text{mm}^4,\\quad S_I=\\frac{9.625\\times10^{7}}{125}=7.70\\times10^{5}\\ \\text{mm}^3"
+    },
+    {
+     "text": "Ratio of moment capacities at equal allowable stress (M = sigma S).",
+     "latex": "\\frac{S_I}{S_r}=1.93"
+    }
+   ],
+   "answer": "For the same area the I-section carries about 1.9 times the bending moment of the rectangle."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Transform the width, not the depth",
+   "text": "Only the dimension parallel to the neutral axis is scaled by n. Remember to multiply the transformed-section stress by n in the material that was replaced; stresses in the reference material are used as they are. Thin webs and wide flanges also need checks for shear and local buckling."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Two bonded materials share the same strain profile; stresses differ by the modular ratio n = E2/E1.",
+    "Construct the transformed section by multiplying the width of one material by n, find its centroid and I_tr, then use sigma = M y/I_tr and multiply by n for the replaced material.",
+    "For equal area, an I-section has a much larger I and S than a rectangle because material is placed far from the neutral axis."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the transformed-section method, a strip of a stiffer material is replaced by an equivalent strip of the reference material. Which dimension is multiplied by the modular ratio n?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The depth, measured perpendicular to the neutral axis"
+    },
+    {
+     "id": "b",
+     "text": "The width, measured parallel to the neutral axis"
+    },
+    {
+     "id": "c",
+     "text": "Both width and depth"
+    },
+    {
+     "id": "d",
+     "text": "The length of the beam"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The width, measured parallel to the neutral axis",
+   "distractorRationale": {
+    "a": "Changing the depth would move fibres to different strain levels.",
+    "b": "Correct: only the width is scaled so that strain compatibility (depth) is preserved.",
+    "c": "Scaling both would give n^2 times the area, which overcorrects.",
+    "d": "Length does not enter the section properties."
+   },
+   "explanation": "The strain at each height is fixed by plane sections. To carry n times the force per unit strain, the replacement material must have n times the area at the same height, which is achieved by widening, not deepening, the strip.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "At the interface of two bonded materials in a composite beam in bending, which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The strains are equal but the stresses differ by the modular ratio"
+    },
+    {
+     "id": "b",
+     "text": "The stresses are equal but the strains differ"
+    },
+    {
+     "id": "c",
+     "text": "Both strains and stresses are equal"
+    },
+    {
+     "id": "d",
+     "text": "Both strains and stresses differ"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The strains are equal but the stresses differ by the modular ratio",
+   "distractorRationale": {
+    "a": "Correct: perfect bond gives equal strain; sigma = E epsilon gives different stresses.",
+    "b": "Stress equality would require equal E.",
+    "c": "Equal stresses and strains are only possible for equal moduli.",
+    "d": "A perfect bond makes the strains compatible."
+   },
+   "explanation": "A perfect bond means the two materials cannot slip, so they strain identically at the interface. Since sigma = E epsilon with different E, the stresses jump by the modular ratio.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why is an I-section more efficient in bending than a solid rectangle of the same cross-sectional area?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It has a smaller second moment of area"
+    },
+    {
+     "id": "b",
+     "text": "The shear stress is zero in the web"
+    },
+    {
+     "id": "c",
+     "text": "More of the material is located far from the neutral axis, giving a larger I"
+    },
+    {
+     "id": "d",
+     "text": "Its neutral axis lies at the flange"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "More of the material is located far from the neutral axis, giving a larger I",
+   "distractorRationale": {
+    "a": "The I-section has a larger, not smaller, second moment of area.",
+    "b": "Shear stress in the web is not zero; it is carried by the web.",
+    "c": "Correct: I is dominated by the y-squared term.",
+    "d": "The neutral axis is at mid-depth for a symmetric I."
+   },
+   "explanation": "The second moment of area weights each element of area by y^2, so area placed in the flanges counts far more than area near the axis. Equal material therefore gives a larger I and a larger section modulus.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A transformed section (all converted to timber) gives a stress of 15 MPa at a point lying in the original steel region. The modular ratio is n = 8 (steel to timber). What is the actual stress in the steel at that point?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "120 MPa"
+    },
+    {
+     "id": "b",
+     "text": "15 MPa"
+    },
+    {
+     "id": "c",
+     "text": "1.9 MPa"
+    },
+    {
+     "id": "d",
+     "text": "240 MPa"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "120 MPa",
+   "distractorRationale": {
+    "a": "Correct: sigma_steel = n x 15 = 120 MPa.",
+    "b": "Forgets to convert back from the transformed section.",
+    "c": "Divides by n, which is the wrong direction.",
+    "d": "Multiplies by n twice."
+   },
+   "explanation": "The transformed-section stress is the stress the replacement timber would carry. The real, stiffer material carries n times that at the same strain, giving 8 x 15 = 120 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: in a bonded composite beam the stress is continuous across the interface even though the materials have different moduli.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Strain is continuous, not stress. The stress changes abruptly by the ratio of the moduli across the interface.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A bonded aluminium strip 40 mm wide (E = 70 GPa) is to be replaced in a transformed section by an equivalent timber strip (E = 10 GPa) of the same thickness. Find the width of the equivalent timber strip in mm.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o1"
+   ],
+   "correctValue": 280,
+   "tolerance": 2,
+   "unit": "mm",
+   "explanation": "n = 70/10 = 7, so the transformed width is 7 x 40 = 280 mm, keeping the thickness unchanged.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A flitch beam has a steel plate 10 mm thick (E = 200 GPa) sandwiched between two timber boards each 80 mm wide (E = 10 GPa), all 240 mm deep, bonded together, with the 240 mm depth vertical. It carries a bending moment of 30 kN m. Find the maximum bending stress in the steel in MPa.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o1",
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o2"
+   ],
+   "correctValue": 173.6,
+   "tolerance": 2.0,
+   "unit": "MPa",
+   "explanation": "n = 20 so the steel transforms to 200 mm of timber. I_tr = (80 + 80 + 200) x 240^3/12 = 4.147e8 mm^4, the timber stress at 120 mm is 8.68 MPa, and the steel stress is 20 x 8.68 = 173.6 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An I-section of depth 200 mm has two flanges, each 100 mm wide by 20 mm thick, joined by a web 20 mm thick between the flanges. A solid rectangular section of the same area and the same 200 mm depth is 36 mm wide. For the same allowable bending stress, find the ratio of the moment capacity of the I-section to that of the rectangle.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o3"
+   ],
+   "correctValue": 1.64,
+   "tolerance": 0.03,
+   "unit": "ratio",
+   "explanation": "I-section: I = 100(200)^3/12 - 80(160)^3/12 = 3.94e7 mm^4 (area 7200 mm^2). Rectangle: I = 36(200)^3/12 = 2.40e7 mm^4. With equal c, capacity ratio = I ratio = 1.64.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe the steps of the transformed-section method for a beam made of two bonded materials, and explain how the stresses in each material are obtained.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o1",
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o2"
+   ],
+   "markingGuide": [
+    "Defines the modular ratio n = E2/E1",
+    "Replaces material 2 by material 1 with width multiplied by n at the same depth",
+    "Finds the centroid (neutral axis) of the transformed section",
+    "Computes I_tr using the parallel-axis theorem",
+    "Stress in material 1 = M y/I_tr; stress in material 2 = n M y/I_tr"
+   ],
+   "explanation": "The method preserves force equilibrium at each strain level by adjusting the area, so one ordinary flexure calculation suffices. Converting back with n restores the correct stress in the stiffer material.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain, with reference to the second moment of area, why an I-section carries more bending moment than a rectangular section of the same area and material. State two limitations of making the web very thin.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.bending-stress.composite-beams.o3"
+   ],
+   "markingGuide": [
+    "I includes y^2 weighting so material far from the neutral axis counts more",
+    "Flanges concentrate area at large y, raising I and S = I/c",
+    "With same allowable stress, M = sigma S, so higher S gives higher capacity",
+    "Limitation: thin web may fail in shear or buckle locally",
+    "Limitation: wide thin flanges or webs may buckle or give lateral instability"
+   ],
+   "explanation": "Equal area but larger I means more moment capacity at the same stress. The saving is limited because the web must still carry the shear and keep the flanges stable.",
+   "board": "internal"
+  }
+ ]
+}

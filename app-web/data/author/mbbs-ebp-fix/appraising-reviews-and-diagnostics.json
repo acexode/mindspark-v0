@@ -1,0 +1,433 @@
+{
+ "lessonTitle": "Appraising Systematic Reviews and Diagnostic Studies",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A systematic review of four discharge-planning trials reports that the pooled diamond sits just left of the line of no effect, yet one trial points the other way. A different paper reports that a rapid bedside test is '90% accurate' - but was tested only on patients already known to be very ill. Reading the plot and judging the test study are two separate appraisal skills."
+  },
+  {
+   "type": "text",
+   "markdown": "A **systematic review** answers a focused question by searching, selecting and appraising all relevant studies by a pre-specified method; a **meta-analysis** statistically pools their results. Appraise it as you would a trial: was the question clear, was the search comprehensive, were studies appraised for bias (for example with the Cochrane risk-of-bias tool), and was it sensible to pool them? The key picture is the **forest plot**."
+  },
+  {
+   "type": "text",
+   "markdown": "**Reading a forest plot.** Each study is a row: a square placed at its effect estimate (here a risk ratio, RR), a horizontal line for its 95% confidence interval, and a square size that reflects its weight (larger, more precise studies weigh more). A vertical line marks no effect (RR = 1; for a difference it would be 0). The pooled estimate is a diamond whose width is its confidence interval. If a study's interval, or the diamond, crosses the line of no effect, that result is not statistically significant at the 5% level. Pooling uses inverse-variance weights, $w_i=1/SE_i^2$, so precise studies count more."
+  },
+  {
+   "type": "math",
+   "latex": "\\hat{\\theta}=\\frac{\\sum w_i\\,\\theta_i}{\\sum w_i},\\qquad SE(\\hat\\theta)=\\frac{1}{\\sqrt{\\sum w_i}},\\qquad \\theta_i=\\ln(RR_i)",
+   "caption": "Fixed-effect inverse-variance pooling. Ratios are pooled on the log scale and the result is back-transformed with exp."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Trial",
+    "RR (95% CI)",
+    "Weight (fixed effect)"
+   ],
+   "rows": [
+    [
+     "A",
+     "0.70 (0.50 to 0.98)",
+     "26.6%"
+    ],
+    [
+     "B",
+     "0.85 (0.60 to 1.20)",
+     "25.1%"
+    ],
+    [
+     "C",
+     "0.60 (0.40 to 0.90)",
+     "18.3%"
+    ],
+    [
+     "D",
+     "1.10 (0.80 to 1.51)",
+     "29.9%"
+    ],
+    [
+     "Pooled",
+     "0.82 (0.69 to 0.97)",
+     "100%"
+    ]
+   ],
+   "caption": "Four trials of a discharge-planning intervention and 90-day readmission (risk ratio below 1 favours the intervention)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Heterogeneity** is variation between studies beyond chance. Look first at the picture: do the confidence intervals overlap? Then use **Cochran's Q**, which sums weighted squared deviations of each study from the pooled value and is compared with $k-1$ degrees of freedom for $k$ studies, and **$I^2$**, the percentage of total variability due to between-study differences rather than chance. Rough Cochrane bands: about 0-40% might not be important, 30-60% moderate, 50-90% substantial, 75-100% considerable. A **fixed-effect** model assumes one true effect; a **random-effects** model allows the true effect to vary and gives wider intervals. Heterogeneity should be explained (population, intervention, outcome, risk of bias), not hidden by switching model."
+  },
+  {
+   "type": "math",
+   "latex": "I^{2}=\\max\\!\\left(0,\\;\\frac{Q-df}{Q}\\right)\\times100\\%,\\qquad df=k-1",
+   "caption": "Higgins' $I^2$. If $Q$ is no larger than its degrees of freedom, $I^2=0$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Quantifying heterogeneity in the discharge-planning review",
+   "prompt": "Using the four trials above, the inverse-variance calculation gives $Q=6.46$ with $k=4$ studies. Compute $I^2$ and say what it implies for pooling. (Definitions: $I^2=(Q-df)/Q$, $df=k-1$.)",
+   "steps": [
+    {
+     "text": "Degrees of freedom are one fewer than the number of studies.",
+     "latex": "df=k-1=4-1=3"
+    },
+    {
+     "text": "Substitute into the formula.",
+     "latex": "I^{2}=\\frac{6.46-3}{6.46}\\times100\\%=53.6\\%"
+    },
+    {
+     "text": "By the bands above this is moderate to substantial heterogeneity. Trials A to C favour the intervention, but D has a point estimate above 1, and the intervals still overlap, so the disagreement is partly chance."
+    },
+    {
+     "text": "A sensible conclusion is that the pooled RR of 0.82 (95% CI 0.69 to 0.97) is statistically significant, but its credibility is tempered by heterogeneity; the reviewers should explore why trial D differs and consider a random-effects analysis, which would give a wider interval."
+    }
+   ],
+   "answer": "$I^2\\approx54\\%$: moderate to substantial heterogeneity; interpret the pooled RR cautiously and investigate trial D."
+  },
+  {
+   "type": "text",
+   "markdown": "**Diagnostic accuracy.** Compare an *index test* with a *reference (gold) standard* in a 2x2 table. Define: sensitivity $=TP/(TP+FN)$, specificity $=TN/(TN+FP)$, positive predictive value $PPV=TP/(TP+FP)$, negative predictive value $NPV=TN/(TN+FN)$. Sensitivity and specificity are properties of the test (given the population spectrum); predictive values depend on prevalence. **Likelihood ratios** convert pre-test to post-test odds: $LR+=\\text{sens}/(1-\\text{spec})$ and $LR-=(1-\\text{sens})/\\text{spec}$. Odds, not probability, are multiplied: $\\text{odds}=p/(1-p)$."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{post-test odds}=\\text{pre-test odds}\\times LR,\\qquad p=\\frac{\\text{odds}}{1+\\text{odds}}",
+   "caption": "Bayes' theorem in odds form. Pre-test probability is the prevalence or the clinician's estimate before the result."
+  },
+  {
+   "type": "worked_example",
+   "title": "Accuracy of a rapid bedside test",
+   "prompt": "A rapid test for a bacterial throat infection is compared with culture in 400 patients: 90 true positives, 10 false negatives, 45 false positives and 255 true negatives. Calculate sensitivity, specificity, LR+, LR- and the post-test probability after a positive result.",
+   "steps": [
+    {
+     "text": "Sensitivity uses patients with disease (90 + 10 = 100); specificity uses those without (45 + 255 = 300).",
+     "latex": "\\text{sens}=\\frac{90}{100}=0.90,\\quad \\text{spec}=\\frac{255}{300}=0.85"
+    },
+    {
+     "text": "Likelihood ratios follow from sensitivity and specificity.",
+     "latex": "LR+=\\frac{0.90}{1-0.85}=6.0,\\quad LR-=\\frac{1-0.90}{0.85}=0.12"
+    },
+    {
+     "text": "Prevalence is 100/400 = 25%, so pre-test odds are 0.25/0.75 = 1/3. Multiply by LR+ and convert back.",
+     "latex": "\\text{post-test odds}=\\frac{1}{3}\\times6=2,\\quad p=\\frac{2}{1+2}=0.667"
+    },
+    {
+     "text": "This equals PPV = 90/135 = 0.667, as it must when the pre-test probability equals the study prevalence. A negative result gives odds $1/3\\times0.12=0.039$, i.e. probability about 3.8% (NPV = 255/265 = 0.962)."
+    }
+   ],
+   "answer": "Sensitivity 90%, specificity 85%, LR+ 6.0, LR- 0.12; a positive result raises the probability from 25% to about 67%."
+  },
+  {
+   "type": "text",
+   "markdown": "**Bias in diagnostic studies** is appraised with QUADAS-2 (patient selection, index test, reference standard, flow and timing) and reported with STARD. Two key biases: **spectrum bias** arises when the study population does not reflect the patients in whom the test will be used (for example confirmed severe cases versus healthy volunteers), which usually inflates apparent accuracy because the test finds extreme cases easy. **Verification bias** arises when the reference standard is applied depending on the index test result; in *partial* verification only some patients (typically index-positive) get the reference standard, which tends to overestimate sensitivity and underestimate specificity. In *differential* verification different reference standards are used for positive and negative results."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Bias",
+    "How it arises",
+    "Usual effect on accuracy"
+   ],
+   "rows": [
+    [
+     "Spectrum bias",
+     "Diseased and non-diseased groups unrepresentative (severe cases, healthy controls)",
+     "Sensitivity and specificity overestimated"
+    ],
+    [
+     "Partial verification bias",
+     "Only index-test-positive patients receive the reference standard",
+     "Sensitivity overestimated, specificity underestimated"
+    ],
+    [
+     "Differential verification bias",
+     "Different reference standards chosen by index result",
+     "Accuracy usually overestimated"
+    ],
+    [
+     "Incorporation bias",
+     "Index test forms part of the reference standard",
+     "Accuracy overestimated"
+    ]
+   ],
+   "caption": "Common distortions in test-accuracy studies and their typical direction."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not confuse the measures",
+   "text": "A confidence interval crossing 1 means a ratio is not statistically significant at the 5% level, and a relative risk is not an odds ratio. Predictive values change with prevalence; sensitivity and specificity do not (although they change with spectrum). A high LR+ is only as useful as the pre-test probability allows."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A forest plot shows each study's estimate and 95% CI against a line of no effect; the diamond is the pooled estimate, and an interval crossing 1 (ratio) is not significant at 5%.",
+    "Heterogeneity is judged by overlap of intervals, Cochran's Q and $I^2=(Q-df)/Q$; explore causes rather than ignoring them.",
+    "Sensitivity, specificity and likelihood ratios describe test performance; post-test odds = pre-test odds x LR.",
+    "Spectrum bias and verification bias typically inflate apparent accuracy; QUADAS-2 and STARD structure appraisal and reporting."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A meta-analysis of five trials of an exercise programme to prevent falls gives a pooled risk ratio of 0.88 (95% CI 0.74 to 1.05) for any fall. Which interpretation is correct?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The risk ratio is an odds ratio, so it cannot be interpreted as a change in risk"
+    },
+    {
+     "id": "b",
+     "text": "The programme reduces falls by 12%, which is statistically significant"
+    },
+    {
+     "id": "c",
+     "text": "The pooled result is not statistically significant at the 5% level; the data are compatible with anything from a 26% reduction to a 5% increase in risk"
+    },
+    {
+     "id": "d",
+     "text": "The programme has been proved to have no effect"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The pooled result is not statistically significant at the 5% level; the data are compatible with anything from a 26% reduction to a 5% increase in risk",
+   "distractorRationale": {
+    "a": "The measure is a risk ratio by definition; it compares risks, which is different from an odds ratio.",
+    "b": "The point estimate suggests a 12% relative reduction, but the interval includes 1 so significance is not shown.",
+    "c": "Correct: the interval includes 1, so there is no significance at 5%, and the interval shows the range of compatible effects.",
+    "d": "A non-significant interval does not prove no effect; a clinically useful benefit remains compatible with the data."
+   },
+   "explanation": "The line of no effect for a ratio is 1. Because the 95% interval 0.74 to 1.05 contains 1, the pooled estimate is not statistically significant at the 5% level, and the interval spans a 26% relative reduction to a 5% relative increase. Absence of significance is not evidence of no effect, and the review is simply too imprecise to be conclusive.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "On a forest plot of six trials, three have confidence intervals entirely to the left of the line of no effect and two have intervals entirely to the right of it; the reported I-squared is 78%. What is the most appropriate response?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Report the fixed-effect pooled estimate as the definitive answer"
+    },
+    {
+     "id": "b",
+     "text": "Conclude that heterogeneity is low because most trials are significant"
+    },
+    {
+     "id": "c",
+     "text": "Remove the trials at either extreme until I-squared falls"
+    },
+    {
+     "id": "d",
+     "text": "Recognise considerable heterogeneity, look for clinical or methodological reasons, and be cautious about a single pooled estimate"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Recognise considerable heterogeneity, look for clinical or methodological reasons, and be cautious about a single pooled estimate",
+   "distractorRationale": {
+    "a": "A fixed-effect model assumes one true effect, which is implausible with this inconsistency.",
+    "b": "Heterogeneity concerns consistency between studies, not how many are significant.",
+    "c": "Post-hoc deletion to reduce heterogeneity is data-driven selection; reasons should be investigated, with sensitivity analyses pre-specified.",
+    "d": "Correct: non-overlapping intervals and a high I-squared indicate real between-study variation that should be explored."
+   },
+   "explanation": "Intervals that do not overlap and an $I^2$ of 78% (considerable on the usual bands) show that the trials disagree by more than chance. The reviewers should look at differences in patients, interventions, outcomes and risk of bias, may use a random-effects model and subgroup or meta-regression analyses, and should be wary of one summary figure.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A test for a serious condition has a sensitivity of 98%. In a patient with a very low suspicion of disease, the test is negative. Which statement is best supported?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A positive result would rule the condition in, because sensitivity is high"
+    },
+    {
+     "id": "b",
+     "text": "A negative result is useful for ruling out the condition, since few diseased patients are missed by a highly sensitive test"
+    },
+    {
+     "id": "c",
+     "text": "The result is uninformative because sensitivity does not affect negative results"
+    },
+    {
+     "id": "d",
+     "text": "The negative predictive value must be 98%"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "A negative result is useful for ruling out the condition, since few diseased patients are missed by a highly sensitive test",
+   "distractorRationale": {
+    "a": "Ruling in depends on specificity or the positive likelihood ratio, not sensitivity alone.",
+    "b": "Correct: high sensitivity means few false negatives, so a negative result is reassuring (SnNout).",
+    "c": "Sensitivity directly determines the false-negative rate, so it matters for negative results.",
+    "d": "NPV depends on prevalence and specificity as well; it is not the same as sensitivity."
+   },
+   "explanation": "Sensitivity is the proportion of diseased patients with a positive test, so a value of 98% means only 2% of diseased patients are missed. A negative result from a highly sensitive test therefore helps exclude disease, particularly when pre-test probability is low, whereas ruling a condition in needs high specificity or a high positive likelihood ratio.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A new blood test for early cancer is evaluated by comparing 60 patients with biopsy-proven advanced disease against 60 healthy volunteers, and reports sensitivity 95% and specificity 97%. Which problem most threatens the validity of these figures for general practice?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Incorporation bias, because the test forms part of the biopsy"
+    },
+    {
+     "id": "b",
+     "text": "Lead-time bias, because disease was detected earlier"
+    },
+    {
+     "id": "c",
+     "text": "Spectrum bias: the groups do not represent the patients, with milder or other conditions, in whom the test will be used"
+    },
+    {
+     "id": "d",
+     "text": "Partial verification bias, because the reference standard was applied only to test-positive patients"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Spectrum bias: the groups do not represent the patients, with milder or other conditions, in whom the test will be used",
+   "distractorRationale": {
+    "a": "Nothing indicates the blood test contributed to the biopsy diagnosis.",
+    "b": "Lead-time bias concerns survival in screening programmes, not test accuracy in a case-control design.",
+    "c": "Correct: extreme cases versus healthy controls make the test look better than it will perform clinically.",
+    "d": "Everyone here had a defined disease status, so verification did not depend on the test result."
+   },
+   "explanation": "Using confirmed advanced cases and healthy volunteers is a case-control design that exaggerates sensitivity and specificity because the diseased are easy to detect and the controls are easy to clear. Accuracy should be estimated in a consecutive series of patients with the clinical suspicion for which the test would actually be used.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "In a study of a bedside heart-murmur screen, echocardiography (the reference standard) is performed only in children whose murmur screen is positive; screen-negative children are discharged without echocardiography. What is the likely effect on the reported accuracy?",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Both sensitivity and specificity are underestimated"
+    },
+    {
+     "id": "b",
+     "text": "Sensitivity is overestimated and specificity underestimated"
+    },
+    {
+     "id": "c",
+     "text": "Sensitivity is underestimated and specificity overestimated"
+    },
+    {
+     "id": "d",
+     "text": "There is no effect because the reference standard is accurate"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Sensitivity is overestimated and specificity underestimated",
+   "distractorRationale": {
+    "a": "Sensitivity rises because few false negatives are found.",
+    "b": "Correct: missed disease among screen-negatives is never counted, so false negatives are undercounted and true negatives are also undercounted.",
+    "c": "The direction is reversed; unverified negatives remove false negatives, which raises sensitivity.",
+    "d": "An accurate reference standard still biases estimates when applied selectively."
+   },
+   "explanation": "This is partial verification bias. Because screen-negative children are not verified, diseased children with a negative screen (false negatives) are largely missed and true negatives are under-represented, so sensitivity looks better and specificity worse than they really are. Verification of all, or a random sample, of negatives is needed to correct for this.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a systematic review of 6 studies, Cochran's Q is 12.6. Using $I^2=(Q-df)/Q$ with $df=k-1$, calculate $I^2$ as a percentage and decide whether heterogeneity would be called low, moderate or substantial.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o1"
+   ],
+   "correctValue": 60.3,
+   "tolerance": 0.5,
+   "unit": "%",
+   "explanation": "With 6 studies $df=5$, so $I^2=(12.6-5)/12.6=0.603$, i.e. 60.3%. This is moderate to substantial heterogeneity, so the sources of inconsistency should be explored before relying on a single pooled estimate.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "The pre-test probability that an inpatient has a pulmonary embolus is 15%, judged from clinical features. A test with positive likelihood ratio 9 is positive. Use likelihood ratios (odds, not probability) to calculate the post-test probability as a percentage.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o2"
+   ],
+   "correctValue": 61.4,
+   "tolerance": 0.5,
+   "unit": "%",
+   "explanation": "Pre-test odds are $0.15/0.85=0.176$; multiplying by 9 gives post-test odds of 1.588, and $p=1.588/2.588=0.614$, i.e. 61.4%. Multiplying the probability 0.15 by 9 would wrongly give 135%, which is why odds must be used.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A screening test has sensitivity 90% and specificity 95%. It is applied to 10,000 people from a population with 2% prevalence. Calculate the positive predictive value as a percentage and comment on what it implies for a positive result.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o2"
+   ],
+   "correctValue": 26.9,
+   "tolerance": 0.5,
+   "unit": "%",
+   "explanation": "There are 200 diseased and 9,800 healthy people. True positives are $0.90\\times200=180$ and false positives $0.05\\times9800=490$, so $PPV=180/670=0.269$, i.e. 26.9%. Despite good sensitivity and specificity, fewer than 3 in 10 positives are true cases at this low prevalence, so a positive screen needs confirmatory testing.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A study of a rapid test for a bone infection recruited patients from a tertiary referral clinic, performed the rapid test on every participant first. Bone culture (the reference standard) was then obtained only from participants whose rapid test was positive; those with a negative rapid test did not have culture and were instead assessed by 3-month clinical follow-up. Discuss the sources of bias in this study and use QUADAS-2 domains in your answer.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o3"
+   ],
+   "markingGuide": [
+    "Patient selection: referral-clinic sample (spectrum bias); sicker patients inflate accuracy",
+    "Reference standard: applied differently depending on the index result (differential verification); follow-up is a weaker standard",
+    "Flow and timing: delay between tests and loss to follow-up",
+    "Index test: interpretation should be blinded to the reference standard",
+    "Direction of effect: accuracy usually overestimated",
+    "Remedies: consecutive recruitment in the intended setting and the same reference standard for all, reporting by STARD"
+   ],
+   "explanation": "Referral-clinic patients have more severe disease, so spectrum bias is likely, and using culture for positives but follow-up for negatives is differential verification, a flow-and-reference-standard problem. Together these tend to overestimate accuracy, so results should not be applied to primary care without a representative study.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how you would judge heterogeneity in a meta-analysis and describe the difference between a fixed-effect and a random-effects model, including how each affects the pooled confidence interval.",
+   "objectiveIds": [
+    "ug.mbbs-evidence-based-practice-research.critical-appraisal.appraising-reviews-and-diagnostics.o1"
+   ],
+   "markingGuide": [
+    "Inspect the forest plot: overlap of confidence intervals and direction of effects",
+    "Cochran's Q compared with k-1 degrees of freedom (low power with few studies)",
+    "I-squared quantifies the proportion of variability beyond chance, with rough bands",
+    "Fixed effect assumes a single true effect; random effects assume true effects vary between studies",
+    "Random effects gives more weight to small studies and wider confidence intervals when heterogeneity is present",
+    "Explore reasons (clinical, methodological) with subgroups or meta-regression rather than relying on model choice"
+   ],
+   "explanation": "Heterogeneity is judged visually and with Q and $I^2$. A fixed-effect model treats all studies as estimating one effect, while a random-effects model allows for between-study variation and therefore widens the confidence interval; neither model removes the need to explain why studies differ.",
+   "board": "internal"
+  }
+ ]
+}

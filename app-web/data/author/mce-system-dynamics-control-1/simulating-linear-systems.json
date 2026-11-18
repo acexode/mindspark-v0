@@ -1,0 +1,414 @@
+{
+ "lessonTitle": "Simulating Linear Systems: Step Size and Verification",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A student simulates a lightly damped robot wrist in a spreadsheet and the curve grows and grows, even though the real wrist settles in a second. Nothing is wrong with the model: the integration step is too coarse, and the numerical method itself is adding negative damping. Simulation is only as trustworthy as the checks that tie it back to hand calculations, and choosing a step size is the first of them."
+  },
+  {
+   "type": "text",
+   "markdown": "To simulate a linear system, convert it to first-order **state equations** and integrate them numerically. For the standard second-order system with input $u$, natural frequency $\\omega_n$ (rad/s) and damping ratio $\\zeta$, take the states $x_1=y$ and $x_2=\\dot y$. The state equations below hold for any input $u(t)$, whether a step, an impulse approximation or an arbitrary recorded signal."
+  },
+  {
+   "type": "math",
+   "latex": "\\dot x_1=x_2,\\qquad \\dot x_2=\\omega_n^2\\,(u-x_1)-2\\zeta\\omega_n\\,x_2",
+   "caption": "State equations for $y''+2\\zeta\\omega_ny'+\\omega_n^2y=\\omega_n^2u$ with unit DC gain."
+  },
+  {
+   "type": "text",
+   "markdown": "**Numerical integration.** With step size $h$ (s), the forward **Euler** method updates each state by $x_{k+1}=x_k+h\\,f(x_k,u_k)$. It is simple but only first-order accurate: the local error scales as $h^2$ and the global error as $h$. The fourth-order **Runge-Kutta (RK4)** method evaluates $f$ four times per step and has global error of order $h^4$, so it needs far larger steps for the same accuracy. Both are explicit methods and are stable only if $h$ is small enough relative to the fastest dynamics."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Step size and stability",
+   "text": "For a decaying mode $\\dot x=\\lambda x$ ($\\lambda<0$, 1/s), forward Euler multiplies the state by $1+h\\lambda$ each step. The result decays only if $|1+h\\lambda|<1$, that is $h<2/|\\lambda|$. For an oscillatory mode ($\\lambda=-\\sigma\\pm j\\omega_d$) Euler is less forgiving: the amplification factor $|1+h\\lambda|$ exceeds 1 unless $h<2\\sigma/(\\sigma^2+\\omega_d^2)$, so an undamped oscillator always grows, which acts like negative numerical damping. RK4 is stable for $h|\\lambda|\\lesssim2.8$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Simulating a second-order system and comparing with theory",
+   "prompt": "A wrist is modelled with $\\omega_n=10$ rad/s and $\\zeta=0.5$ and unit DC gain, with $u=1$ from $t=0$. Predict the response by theory, then compare with simulations.",
+   "steps": [
+    {
+     "text": "State equations: $\\dot x_1=x_2$ and $\\dot x_2=100(1-x_1)-10x_2$, initial states zero.",
+     "latex": "\\dot x_1=x_2,\\quad\\dot x_2=100(1-x_1)-10x_2"
+    },
+    {
+     "text": "Theory: overshoot $\\exp(-\\pi\\times0.5/\\sqrt{0.75})=16.3\\%$, so the peak value is $1.163$; the peak time is $t_p=\\pi/(10\\sqrt{0.75})=0.363$ s; the final value is $1$ (DC gain).",
+     "latex": "M_p=16.3\\%,\\quad t_p=0.363\\ \\text{s},\\quad y_\\infty=1"
+    },
+    {
+     "text": "Simulate: with RK4 and $h=0.01$ s the first peak is $1.163$ at $t=0.36$ s and the final value is $1.000$, in agreement. With forward Euler and $h=0.01$ s the peak is $1.196$; with $h=0.05$ s it is $1.42$.",
+     "latex": "\\text{RK4: }1.163;\\quad\\text{Euler }(0.01)\\text{: }1.196;\\quad\\text{Euler }(0.05)\\text{: }1.42"
+    },
+    {
+     "text": "Interpretation: the Euler error shrinks as $h$ is reduced (peak $1.169$ at $h=0.002$ s), so the discrepancy is numerical, not a modelling error. The correct response to a mismatch is to halve $h$ until the result stops changing.",
+     "latex": "\\text{error}\\propto h\\ \\text{for Euler}"
+    }
+   ],
+   "answer": "The simulation agrees with theory when the step is small enough: RK4 ($h=0.01$ s) gives 16.3% overshoot and $t_p\\approx0.36$ s; forward Euler overestimates the overshoot (19.6% at $h=0.01$ s, 42% at $h=0.05$ s)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "Step $h$ (s)",
+    "First peak value",
+    "Overshoot (%)",
+    "Final value"
+   ],
+   "rows": [
+    [
+     "Theory",
+     "-",
+     "1.1632",
+     "16.3",
+     "1.000"
+    ],
+    [
+     "RK4",
+     "0.01",
+     "1.163",
+     "16.3",
+     "1.000"
+    ],
+    [
+     "RK4",
+     "0.05",
+     "1.162",
+     "16.2",
+     "1.000"
+    ],
+    [
+     "Euler",
+     "0.002",
+     "1.169",
+     "16.9",
+     "1.000"
+    ],
+    [
+     "Euler",
+     "0.01",
+     "1.196",
+     "19.6",
+     "1.000"
+    ],
+    [
+     "Euler",
+     "0.05",
+     "1.422",
+     "42.2",
+     "1.000"
+    ]
+   ],
+   "caption": "Step response of $\\omega_n=10$ rad/s, $\\zeta=0.5$ (computed by simulation)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing the step size.** The step must resolve the fastest dynamics in the model, otherwise the fast mode is either missed or numerically unstable. Practical rules (typical, not exact): pick $h$ so that $|\\lambda_{max}|h\\le0.1$ for forward Euler, equivalently $h\\le\\tau_{min}/10$ with $\\tau_{min}$ the smallest time constant (or $h\\le T/20$ to $T/50$ for an oscillation of period $T$); RK4 tolerates $|\\lambda|h$ up to about 0.5 for good accuracy. Then confirm by halving $h$ and checking the outputs do not change. The cost grows as $1/h$, so avoid unnecessarily small steps for slow phenomena."
+  },
+  {
+   "type": "worked_example",
+   "title": "Step size with a fast actuator",
+   "prompt": "A model has slow poles at $-2\\pm5j$ rad/s and a fast actuator pole at $-250$ rad/s. Choose a forward-Euler step and explain the choice.",
+   "steps": [
+    {
+     "text": "Stability limit from the fast pole: $h<2/250=8$ ms. A step of 20 ms would be unstable because $|1-250\\times0.02|=4$.",
+     "latex": "h<\\frac{2}{250}=0.008\\ \\text{s}"
+    },
+    {
+     "text": "Accuracy: the actuator time constant is $1/250=4$ ms. Use $h\\le\\tau_{min}/10=0.4$ ms so that the fast mode is represented.",
+     "latex": "h\\le\\frac{0.004}{10}=0.4\\ \\text{ms}"
+    },
+    {
+     "text": "The slow dynamics have a period $2\\pi/5=1.26$ s, so 10 s of simulation needs $10/0.0004=25\\,000$ steps, which is trivial for a computer.",
+     "latex": "N=\\frac{10}{0.0004}=25\\,000"
+    },
+    {
+     "text": "If the actuator is not of interest, one could replace it by a quasi-static gain and use a larger step, or switch to an implicit solver for stiff problems.",
+     "latex": "\\text{stiff: widely separated time scales}"
+    }
+   ],
+   "answer": "Use $h\\approx0.4$ ms (certainly below the stability bound of 8 ms); the stiffness ratio $250/5=50$ is what forces the small step."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Write the state equations and choose zero initial states.",
+    "Select the solver and a step size from the fastest pole (or the oscillation period).",
+    "Run the step response and record the final value, first peak and peak time.",
+    "Compare each with theory: DC gain, overshoot $\\exp(-\\pi\\zeta/\\sqrt{1-\\zeta^2})$, peak time $\\pi/\\omega_d$.",
+    "Halve the step: if the results change, keep halving until they converge."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "A simulation that matches theory at one step size may still be wrong at another, so always check convergence. Do not choose $h$ from the slow dynamics: the fastest pole sets the limit. Measuring the peak time from the plot is limited by the step size (an error of up to $h$). Using the damped frequency $\\omega_d$ in place of $\\omega_n$ when verifying gives a small but systematic error."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Verify against hand calculations",
+   "text": "Three quick checks catch most mistakes: the final value should equal the DC gain times the input, the oscillation period should give $\\omega_d=2\\pi/T_d$ (so $\\omega_n=\\omega_d/\\sqrt{1-\\zeta^2}$), and the overshoot should match $\\exp(-\\pi\\zeta/\\sqrt{1-\\zeta^2})$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A second-order system is simulated through its state equations $\\dot x_1=x_2$ and $\\dot x_2=\\omega_n^2(u-x_1)-2\\zeta\\omega_nx_2$.",
+    "Forward Euler is stable only if $h<2/|\\lambda|$ for real modes and adds negative damping to oscillatory modes; RK4 allows much larger steps.",
+    "Choose $h$ so that the fastest dynamics are resolved ($h\\lesssim\\tau_{min}/10$ for Euler), and confirm by halving.",
+    "Verify a simulation against steady-state gain, natural frequency (from the period of oscillation) and overshoot."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A model contains a fast real pole at $s=-250$ rad/s (time constant 4 ms) that is integrated with forward Euler. Find the largest step size for which the Euler recursion for this pole remains stable, in seconds.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o2"
+   ],
+   "correctValue": 0.008,
+   "tolerance": 0.0002,
+   "unit": "s",
+   "explanation": "Euler multiplies the state by $1+h\\lambda$ each step with $\\lambda=-250$. It decays only if $|1-250h|<1$, which gives $h<2/250=0.008$ s. In practice a much smaller step (around $h\\le4/10$ ms) is needed for accuracy.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A simulation includes a sensor with time constant 4 ms and is integrated with forward Euler. Using the guideline $h\\le\\tau_{min}/10$, which step size should be used?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$0.4$ ms"
+    },
+    {
+     "id": "b",
+     "text": "$4$ ms"
+    },
+    {
+     "id": "c",
+     "text": "$8$ ms"
+    },
+    {
+     "id": "d",
+     "text": "$40$ ms"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$0.4$ ms",
+   "distractorRationale": {
+    "a": "Correct: $\\tau_{min}/10=4/10=0.4$ ms.",
+    "b": "This equals the time constant itself, far too coarse to resolve the dynamics with Euler.",
+    "c": "This is the stability limit $2\\tau$, where Euler just reaches neutral stability; accuracy would be poor.",
+    "d": "This is ten time constants, so the fast mode would be missed or unstable."
+   },
+   "explanation": "Accuracy requires many steps per time constant, and $\\tau_{min}/10$ is a standard rule for forward Euler. The stability limit $2\\tau=8$ ms is an upper bound but gives a very inaccurate response.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A hand check of a simulation uses $\\omega_n=20$ rad/s and $\\zeta=0.3$ with unit DC gain. At what time (in s) should the first peak of the step response occur according to theory?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o1"
+   ],
+   "correctValue": 0.165,
+   "tolerance": 0.003,
+   "unit": "s",
+   "explanation": "The damped frequency is $\\omega_d=20\\sqrt{1-0.09}=19.08$ rad/s. The peak time is $t_p=\\pi/\\omega_d=0.1647$ s. The simulated peak should occur within one step size of this value.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A simulation of a mass-spring system ($k=3000$ N/m) is driven by a constant force step of 150 N. Its steady-state displacement can be checked by hand against the DC gain $1/k$. Find the expected final displacement in mm.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o3"
+   ],
+   "correctValue": 50,
+   "tolerance": 0.5,
+   "unit": "mm",
+   "explanation": "The DC gain is $1/k=1/3000$ m/N, so the final displacement is $150/3000=0.05$ m, which is 50 mm. A simulated final value that differs from this signals a modelling or coding error such as a wrong sign or a missed parameter.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A simulated step response of a lightly damped system (damping ratio known to be $\\zeta=0.1$) shows successive peaks 0.40 s apart. What natural frequency does this imply?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$15.8$ rad/s"
+    },
+    {
+     "id": "b",
+     "text": "$15.7$ rad/s"
+    },
+    {
+     "id": "c",
+     "text": "$25.1$ rad/s"
+    },
+    {
+     "id": "d",
+     "text": "$12.6$ rad/s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$15.8$ rad/s",
+   "distractorRationale": {
+    "a": "Correct: $\\omega_d=2\\pi/0.40=15.71$ rad/s and $\\omega_n=\\omega_d/\\sqrt{1-0.01}=15.79$ rad/s.",
+    "b": "This is the damped frequency $\\omega_d$; for $\\zeta=0.1$ the difference is small but it should be corrected.",
+    "c": "This is $2\\pi/0.25$, using the wrong period.",
+    "d": "This uses $\\omega=2\\pi f$ with $f$ read as 2 Hz instead of $1/0.40=2.5$ Hz."
+   },
+   "explanation": "The spacing of successive peaks is one damped period $T_d=2\\pi/\\omega_d$, giving $\\omega_d=15.71$ rad/s. Then $\\omega_n=\\omega_d/\\sqrt{1-\\zeta^2}=15.71/0.995=15.79$ rad/s, which should match the model parameter used to build the simulation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A forward-Euler simulation of a lightly damped oscillator shows the response growing with time, although the physical system decays. What is the best corrective action?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Reduce the step size, or switch to RK4, because Euler adds negative numerical damping to oscillatory modes"
+    },
+    {
+     "id": "b",
+     "text": "Increase the step size so the integration finishes sooner"
+    },
+    {
+     "id": "c",
+     "text": "Increase the damping ratio in the model to compensate"
+    },
+    {
+     "id": "d",
+     "text": "Change the input from a step to an impulse"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Reduce the step size, or switch to RK4, because Euler adds negative numerical damping to oscillatory modes",
+   "distractorRationale": {
+    "a": "Correct: the growth is a numerical artefact; smaller $h$ or a higher-order method restores the decaying behaviour.",
+    "b": "A larger step makes Euler's error and instability worse.",
+    "c": "This changes the physics to hide a numerical problem, so the simulation no longer represents the real system.",
+    "d": "The input type does not affect the stability of the numerical method."
+   },
+   "explanation": "Forward Euler multiplies an oscillatory mode by a factor of magnitude greater than 1, so amplitude grows even when the true mode decays. Halving $h$ until the result converges, or using RK4, cures it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 40 rad/s oscillatory model is integrated with forward Euler using the guideline $\\omega_nh\\le0.1$. Which is the largest step among the options that satisfies it?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$0.0025$ s"
+    },
+    {
+     "id": "b",
+     "text": "$0.02$ s"
+    },
+    {
+     "id": "c",
+     "text": "$0.05$ s"
+    },
+    {
+     "id": "d",
+     "text": "$0.0001$ s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$0.0025$ s",
+   "distractorRationale": {
+    "a": "Correct: $0.1/40=0.0025$ s is the largest step satisfying $\\omega_nh\\le0.1$.",
+    "b": "This gives $\\omega_nh=0.8$, too coarse for Euler.",
+    "c": "This gives $\\omega_nh=2$, which is far beyond the guideline and unstable for Euler.",
+    "d": "This satisfies the guideline but is not the largest; it needs 25 times more steps than necessary."
+   },
+   "explanation": "The guideline $\\omega_nh\\le0.1$ gives $h\\le0.1/40=2.5$ ms. Smaller steps are safe but increase the run time, so the largest acceptable step is the sensible choice.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "If a simulated step response of a stable unity-DC-gain second-order model settles at a value different from the hand-calculated DC gain, the simulation (or its parameters) should be suspected of an error.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The steady-state value of a stable linear system is fixed by its DC gain, independent of the solver. A mismatch means a modelling error, a wrong parameter or a coding bug, so this is one of the simplest and most important verification checks.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how you would build a simulation of a second-order system $y''+2\\zeta\\omega_ny'+\\omega_n^2y=\\omega_n^2u$ for a step input and verify it against theory. Name the quantities you would compare and what a mismatch would indicate.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o1",
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o3"
+   ],
+   "markingGuide": [
+    "Converts to states $x_1=y$, $x_2=\\dot y$ with $\\dot x_2=\\omega_n^2(u-x_1)-2\\zeta\\omega_nx_2$",
+    "Chooses a solver and step size, applies a step and records the output",
+    "Compares the final value with the DC gain (here 1)",
+    "Compares overshoot $\\exp(-\\pi\\zeta/\\sqrt{1-\\zeta^2})$, peak time $\\pi/\\omega_d$ and oscillation period",
+    "A mismatch indicates a modelling or coding error or too large a step; verifies by halving $h$"
+   ],
+   "explanation": "Strong answers distinguish numerical error (which decreases as $h$ is reduced) from model error (which does not). Comparing multiple independent quantities makes it unlikely that two errors cancel.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain how the step size should be chosen for a linear simulation containing both slow and fast dynamics, referring to stability and accuracy of explicit methods. Give an example with numbers and say what happens if the step is too large.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems.o2"
+   ],
+   "markingGuide": [
+    "The fastest pole (largest $|\\lambda|$) sets the limit, not the slow dynamics",
+    "Stability of Euler requires $h<2/|\\lambda|$; accuracy requires $h$ well below the fastest time constant (for example $\\tau_{min}/10$)",
+    "Example with numbers, such as a $-250$ rad/s pole giving a stability bound of 8 ms and an accuracy step of about 0.4 ms",
+    "A too-large step gives instability or an inaccurate response (growing oscillation, wrong overshoot, missed fast mode)",
+    "Verify by halving the step; higher-order or implicit methods allow larger steps for stiff models"
+   ],
+   "explanation": "The ratio between the fastest and slowest dynamics, the stiffness ratio, determines the number of steps. A higher-order method such as RK4 reduces the needed number of steps for accuracy but remains limited by stability for very stiff models.",
+   "board": "internal"
+  }
+ ]
+}

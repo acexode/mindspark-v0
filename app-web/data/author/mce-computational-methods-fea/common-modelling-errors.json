@@ -1,0 +1,378 @@
+{
+ "lessonTitle": "Common Modelling Errors: Rigid-Body Modes, Singularities and Units",
+ "estimatedMinutes": 38,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bracket model runs without a single warning and returns a peak stress of 3 million MPa at the corner of a cut-out, a deflection of 0.4 micrometres, and, in another run, a deflection larger than the bracket itself. The solver did what it was told each time. The errors lay in the model, and each one leaves a characteristic fingerprint that an engineer can learn to recognise in minutes."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** FE software solves exactly the problem it is given. Three families of mistakes account for most of the bad results in practice: (1) **boundary conditions** that do not remove rigid-body motion, or that over-constrain the model; (2) **singularities**, where the exact stress is infinite, so the computed peak grows without limit as the mesh is refined; and (3) **inconsistent units**, where a modulus, length or load carries the wrong power of ten. Each can be detected by a simple check."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Rigid-body modes",
+   "text": "A rigid-body mode is a displacement pattern that moves the structure without deforming it. An unconstrained 2D body has 3 (two translations and one rotation) and a 3D body has 6 (three translations and three rotations). Each is a vector $\\mathbf{u}_{rb}$ with $\\mathbf{K}\\mathbf{u}_{rb}=\\mathbf{0}$, i.e. a zero eigenvalue of the stiffness matrix. A static model must have enough supports to remove all of them, otherwise $\\mathbf{K}$ is singular."
+  },
+  {
+   "type": "text",
+   "markdown": "**Under-constrained models.** The solver can reveal the problem: a zero or tiny pivot during factorisation, a message such as 'the model is not adequately restrained' or 'negative pivot', or displacements of absurd size (e.g. $10^{6}$ mm). A quick count helps: the number of independent constraints must be at least the number of rigid-body modes, and they must be arranged so that none is left: two supports on one line leave a rotation about that line free, and three parallel roller directions leave a translation free."
+  },
+  {
+   "type": "worked_example",
+   "title": "Finding the missing constraint in a three-bar truss",
+   "prompt": "A triangular pin-jointed frame has nodes $(0,0)$, $(1000,0)$ and $(500,500)$ mm joined by three bars ($A=100$ mm$^2$, $E=200$ GPa). Examine the rank of the stiffness matrix for three support cases.",
+   "steps": [
+    {
+     "text": "Unsupported frame: 3 nodes with 2 DOFs gives a $6\\times6$ matrix; the 2D rigid-body modes number three, so the rank should be $6-3$.",
+     "latex": "\\text{rank}(\\mathbf{K})=3\\ \\Rightarrow\\ \\text{nullity}=6-3=3"
+    },
+    {
+     "text": "Pin the first node ($u_1=v_1=0$): delete two DOFs, leaving a $4\\times4$ matrix. The rotation about the pin is still possible.",
+     "latex": "\\text{rank}=3<4\\ \\Rightarrow\\ \\text{one rigid-body mode (rotation about node 1) remains: the solver stops with a zero pivot}"
+    },
+    {
+     "text": "Add a roller at node 2 ($v_2=0$, one more constraint) so that the rotation is prevented: $3\\times3$ matrix.",
+     "latex": "\\text{rank}=3=3\\ \\Rightarrow\\ \\text{non-singular, unique solution}"
+    }
+   ],
+   "answer": "Two constraints at one node leave one rigid-body mode (rank 3 of 4); a third constraint that prevents rotation about the pin (a roller at the other end of the base) gives a full-rank $3\\times3$ system (rank 3)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Singularities.** Linear elasticity predicts infinite stress at a **point load** (stress $\\propto1/r$ near the point in 2D) and at a **sharp re-entrant corner** (for a $270^{\\circ}$ corner the stress grows like $r^{-0.456}$, a typical value, as the distance $r\\to0$). The FE peak stress is then not a property of the structure but of the mesh: each time the element size is halved, the peak stress near the singularity grows (by about $2$ for the point load, and by $2^{0.456}\\approx1.37$ for the corner), and never converges. Real material yields or has a finite radius, and a real load is spread over a finite area."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Symptom",
+    "Likely cause",
+    "Check / remedy"
+   ],
+   "rows": [
+    [
+     "Zero pivot, 'not restrained', huge displacements",
+     "Rigid-body mode left",
+     "Count constraints; check rank or lowest eigenvalue; add a support that removes the mode"
+    ],
+    [
+     "Peak stress rises with every refinement, sits at a point load or sharp corner",
+     "Stress singularity",
+     "Distribute load over a patch; add a realistic radius; read stress at a distance (Saint-Venant)"
+    ],
+    [
+     "Displacement off by $10^{3}$ or $10^{6}$; stress looks reasonable for a statically determinate part",
+     "Unit inconsistency in $E$ or geometry",
+     "Hand-check one deflection; compare orders of magnitude; ask whether lengths, forces and modulus share one unit set"
+    ],
+    [
+     "Reaction forces do not balance the loads",
+     "Wrong load, constraint or mesh error",
+     "Sum reactions in each direction"
+    ]
+   ],
+   "caption": "Common errors and their fingerprints"
+  },
+  {
+   "type": "worked_example",
+   "title": "Detecting a unit error from the order of magnitude",
+   "prompt": "A steel cantilever of length 500 mm and square section 20 mm $\\times$ 20 mm is loaded by 200 N at the tip. The model uses N and mm; the modulus should be $E=210\\,000$ N/mm$^2$. Find the correct tip deflection and tip stress, and the values the model would report if $E$ were mistakenly entered as 210 (GPa) or as $210\\times10^{9}$ (Pa).",
+   "steps": [
+    {
+     "text": "Section property $I=bh^3/12$.",
+     "latex": "I=\\frac{(20)(20)^3}{12}=13333.3\\ \\text{mm}^4"
+    },
+    {
+     "text": "Correct deflection $\\delta=PL^3/(3EI)$ and tip stress $\\sigma=Mc/I$ (independent of $E$ for this statically determinate case).",
+     "latex": "\\delta=\\frac{(200)(500)^3}{3(210\\,000)(13333.3)}=2.976\\ \\text{mm},\\quad \\sigma=\\frac{(200)(500)(10)}{13333.3}=75.0\\ \\text{MPa}"
+    },
+    {
+     "text": "With $E=210$ the deflection is multiplied by 1000: it exceeds the length of the beam, which signals a unit error immediately.",
+     "latex": "\\delta=2976\\ \\text{mm}\\ (\\gg 500\\ \\text{mm})"
+    },
+    {
+     "text": "With $E=210\\times10^{9}$ the deflection is divided by $10^{6}$: the beam looks perfectly rigid.",
+     "latex": "\\delta=2.976\\times10^{-6}\\ \\text{mm}"
+    },
+    {
+     "text": "The stress is the same in all three cases, because it follows from statics, so only the displacement exposes the unit error.",
+     "latex": "\\sigma=75.0\\ \\text{MPa in all cases}"
+    }
+   ],
+   "answer": "Correct values: $\\delta=2.98$ mm and $\\sigma=75$ MPa. A deflection of 2976 mm, or of about $3\\times10^{-6}$ mm, would be implausible for a 500 mm cantilever and should trigger a units audit."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Before trusting any result, compare one displacement and one reaction with a quick hand calculation.",
+    "Write the unit set at the top of the model: for example N, mm, MPa (N/mm$^2$), tonne/mm$^3$ for density.",
+    "Never read the peak stress at a point load or a sharp re-entrant corner; read stress a few element sizes away or use a radius.",
+    "Look at the deformed shape: a model that translates or rotates as a whole is under-constrained; a model that does not move at all may be over-constrained."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Over-constraint hides itself",
+   "text": "Fixing a whole edge against all motion, when the real support allows the edge to rotate or slide, adds stiffness and produces artificially high local stresses and low deflections. The solver gives no warning because the matrix is perfectly well-conditioned."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Order-of-magnitude checks",
+   "text": "A statically determinate stress, a total reaction, and a simple deflection formula such as $PL^3/(3EI)$ or $PL/(AE)$ cost a minute and expose most gross errors. Do these before studying contours."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "An under-constrained model has zero-eigenvalue rigid-body modes (3 in 2D, 6 in 3D): look for zero pivots, warnings and absurd displacements, and add constraints that remove every mode.",
+    "A point load or sharp re-entrant corner produces a stress singularity: the peak keeps growing with mesh refinement, so apply the load over an area, add a radius or read stresses away from the singular point.",
+    "Unit inconsistencies show up as displacements wrong by powers of ten; a hand check of one displacement exposes them even when statically determinate stresses look reasonable."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How many rigid-body modes does an unconstrained three-dimensional solid body have?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "6"
+    },
+    {
+     "id": "b",
+     "text": "3"
+    },
+    {
+     "id": "c",
+     "text": "2"
+    },
+    {
+     "id": "d",
+     "text": "1"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "6",
+   "distractorRationale": {
+    "b": "Three is the number for a 2D body.",
+    "c": "Two would be the number of translations in 2D only.",
+    "d": "One would be the case of a body constrained against all but a single motion."
+   },
+   "explanation": "A body in space can translate along three axes and rotate about three axes without deforming. Each of these six modes must be removed by constraints; otherwise the stiffness matrix has six zero eigenvalues and cannot be inverted.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "During factorisation of the stiffness matrix of a static model the solver reports a zero pivot and then very large displacements. What is the most likely cause?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A rigid-body mode has been left unconstrained"
+    },
+    {
+     "id": "b",
+     "text": "The mesh is too fine"
+    },
+    {
+     "id": "c",
+     "text": "The material is too stiff"
+    },
+    {
+     "id": "d",
+     "text": "The load is too small"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A rigid-body mode has been left unconstrained",
+   "distractorRationale": {
+    "b": "A fine mesh increases cost but does not make $\\mathbf{K}$ singular.",
+    "c": "A stiff material scales $\\mathbf{K}$ up but does not make it singular.",
+    "d": "A small load gives small displacements, not very large ones."
+   },
+   "explanation": "A singular stiffness matrix appears when the structure can move without deforming. The solver encounters a pivot that is zero up to round-off, and any displacement it reports includes an arbitrary rigid-body component.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 3D plate is supported by two pins at the two ends of a horizontal line (each pin fixes all three translations at a node). It is loaded vertically in the middle. What does the solver find?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The matrix is singular: rotation about the line joining the pins is not prevented"
+    },
+    {
+     "id": "b",
+     "text": "The model is over-constrained and solves with high stresses"
+    },
+    {
+     "id": "c",
+     "text": "The model is fully determined and solves normally"
+    },
+    {
+     "id": "d",
+     "text": "The model fails only if the mesh is fine"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The matrix is singular: rotation about the line joining the pins is not prevented",
+   "distractorRationale": {
+    "b": "Six constraints are present but the arrangement is poor; it is under-constrained, not over-constrained.",
+    "c": "A fully determined model would require rotation about the pin line to be prevented as well.",
+    "d": "Mesh fineness is irrelevant to the presence of rigid-body modes."
+   },
+   "explanation": "Two points define a line, and a rotation about that line moves the structure without moving either pin. The count of constraints (six translations fixed) is enough numerically, but their arrangement leaves one rigid-body mode, so the matrix is singular and the solver stops with a zero-pivot warning.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A sharp $270^{\\circ}$ re-entrant corner in a linear elastic 2D model has a nodal peak stress that increases every time the mesh is refined. How should this be interpreted?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is a stress singularity: the computed peak depends on mesh size, so the stress should be assessed away from the corner or a realistic fillet radius modelled"
+    },
+    {
+     "id": "b",
+     "text": "The mesh has converged because the stress is large"
+    },
+    {
+     "id": "c",
+     "text": "The material has yielded"
+    },
+    {
+     "id": "d",
+     "text": "The load is too large"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is a stress singularity: the computed peak depends on mesh size, so the stress should be assessed away from the corner or a realistic fillet radius modelled",
+   "distractorRationale": {
+    "b": "Convergence means the value stops changing; here it keeps rising.",
+    "c": "Yielding is not part of a linear elastic model.",
+    "d": "The load magnitude does not explain unbounded growth with mesh refinement."
+   },
+   "explanation": "Near an ideal re-entrant corner the stress scales like $r^{-0.456}$ (typical value), so finer elements sample smaller $r$ and record larger stresses. A fillet of realistic radius removes the singularity, or the stress can be evaluated at a distance of a few element sizes.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "For a statically determinate structure, the computed stress does not depend on the Young's modulus, so a stress plot alone cannot reveal a wrong modulus.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Internal forces in a statically determinate structure follow from equilibrium alone, so stresses are independent of $E$ while displacements scale as $1/E$. A unit error in the modulus will therefore corrupt the displacements while leaving the stresses plausible, so a displacement check is essential.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An aluminium bar with $A=50$ mm$^2$ and length $200$ mm carries an axial 500 N load. The model is in N and mm but the modulus is entered as 70 (intended 70 000 N/mm$^2$). Compute the elongation the model would report, in mm.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o3"
+   ],
+   "correctValue": 28.571428571428573,
+   "tolerance": 0.05,
+   "unit": "mm",
+   "explanation": "With the wrong modulus, $\\delta=PL/(AE)=500\\times200/(50\\times70)=28.57$ mm, whereas the correct value is 0.0286 mm. The result is 1000 times too large, which on a 200 mm bar (14 per cent strain) is obviously unphysical.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a 2D model, the peak stress adjacent to a point load is 180 MPa with elements 2.0 mm long. Assuming a $1/r$ singularity so that the peak is inversely proportional to element size, estimate the peak stress in MPa when the mesh is refined to 0.5 mm elements.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o2"
+   ],
+   "correctValue": 720.0,
+   "tolerance": 2.0,
+   "unit": "MPa",
+   "explanation": "The element size falls by a factor of 4, so the nodal peak rises by about 4: $180\\times4=720$ MPa. A peak that grows in proportion to $1/h$ is the signature of a point-load singularity; the number has no physical meaning.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "At a $270^{\\circ}$ re-entrant corner the nodal peak stress scales as $h^{-0.456}$ with element size $h$ (a typical exponent). With $h=1.0$ mm the peak is 95 MPa. Estimate the peak in MPa when $h$ is reduced to 0.25 mm.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o2"
+   ],
+   "correctValue": 178.75696042761967,
+   "tolerance": 1.5,
+   "unit": "MPa",
+   "explanation": "The factor is $(1/0.25)^{0.456}=4^{0.456}=1.882$, so the peak rises to $95\\times1.882=178.8$ MPa. Even a factor-of-4 refinement increases the peak by 88 per cent, showing that the value is mesh-dependent and should not be used for strength.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A student's static model of a bracket reports a zero-pivot warning and a tip displacement of $10^{5}$ mm. Explain what is probably wrong, how you would confirm it, and how you would fix it.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o1"
+   ],
+   "markingGuide": [
+    "Probably a rigid-body mode: supports do not remove all three (2D) or six (3D) rigid-body motions, so $\\mathbf{K}$ is singular",
+    "Confirm: count constraints and their arrangement; check the deformed shape for rigid motion; check the rank or lowest eigenvalue of $\\mathbf{K}$, or run a free-free modal analysis for zero-frequency modes",
+    "Fix: add supports (or inertia relief) that remove every mode without over-constraining, e.g. one pin and one roller in 2D",
+    "Verify afterwards that reactions balance the applied loads",
+    "Mention that the huge displacement arises from the arbitrary rigid-body component"
+   ],
+   "explanation": "A zero pivot is the numerical sign of a singular stiffness matrix, which is the mathematical statement that the structure can move without deforming. Identifying which mode is free (translation or rotation) points directly to the missing support.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why a point load applied at a single node gives a stress singularity, what happens to the peak stress as the mesh is refined, and describe two ways of dealing with it in practice. State why stresses away from the load can still be trusted.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.common-modelling-errors.o2"
+   ],
+   "markingGuide": [
+    "Linear elasticity: a finite force on zero area implies infinite stress, local stress $\\propto1/r$",
+    "FE peak depends on the element size and grows without bound as the mesh is refined (no convergence)",
+    "Remedy 1: apply the load as a pressure or distributed force over a patch that reflects the real contact area",
+    "Remedy 2: ignore the singular value and read stresses at a distance of a few element sizes (Saint-Venant's principle), or model a realistic contact",
+    "Away from the load the stress field depends only on the resultant, so it converges normally"
+   ],
+   "explanation": "The singularity is a feature of the idealisation, not of the physical structure, where the load acts over a finite area. By Saint-Venant's principle the local detail of load application affects the stress only within a distance comparable with the size of the loaded region.",
+   "board": "internal"
+  }
+ ]
+}

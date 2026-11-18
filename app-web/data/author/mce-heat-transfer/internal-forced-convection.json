@@ -1,0 +1,378 @@
+{
+ "lessonTitle": "Internal Forced Convection in Tubes",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A water-cooled laser mirror and a car radiator tube both rely on a fluid heated while it flows inside a pipe. The designer must know two things: how hot the fluid leaves, and how hot the wall gets, because the wall is where the metal fails."
+  },
+  {
+   "type": "text",
+   "markdown": "In **internal flow** the fluid is confined by a wall, so the boundary layers merge. Unlike a plate, there is no free-stream temperature: instead we use the **bulk (mean) temperature** $T_m$, the energy-weighted average temperature of the fluid at a cross-section. Newton's law is written $q_s''=h(T_s-T_m)$. Far from the entrance the velocity and temperature profiles stop changing shape: the flow is **fully developed**."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Tube Reynolds number and flow regime",
+   "text": "For a circular tube of diameter $D$ and mean velocity $u_m$, $Re_D=\\rho u_mD/\\mu=4\\dot m/(\\pi D\\mu)$ where $\\dot m$ is the mass flow rate (kg/s) and $\\mu$ the dynamic viscosity (kg/m s). Flow is laminar for $Re_D<2300$ and fully turbulent above about 10 000; between them is transition and correlations are unreliable."
+  },
+  {
+   "type": "text",
+   "markdown": "An energy balance on the fluid fixes the bulk temperature. With uniform wall flux $q_s''$ over perimeter $P=\\pi D$, the heat added over length $x$ is $q_s''Px$, so the bulk temperature rises linearly with distance. With a constant wall temperature the rise is instead exponential, which we treat in the heat exchanger unit."
+  },
+  {
+   "type": "math",
+   "latex": "T_m(x)=T_{m,i}+\\frac{q_s''\\,P\\,x}{\\dot m\\,c_p},\\qquad T_{m,o}=T_{m,i}+\\frac{q_s''\\pi D L}{\\dot mc_p}",
+   "caption": "Uniform wall heat flux; c_p is the specific heat of the fluid (J/kg K)"
+  },
+  {
+   "type": "text",
+   "markdown": "In fully developed laminar flow in a circular tube, the Nusselt number is a pure constant. In fully developed turbulent flow, the Dittus-Boelter equation is the standard first-estimate correlation."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Condition",
+    "Correlation",
+    "Validity"
+   ],
+   "rows": [
+    [
+     "Laminar, fully developed, constant $q_s''$",
+     "$Nu_D=4.36$",
+     "$Re_D<2300$; $L/D$ long enough to be fully developed"
+    ],
+    [
+     "Laminar, fully developed, constant $T_s$",
+     "$Nu_D=3.66$",
+     "$Re_D<2300$; fully developed"
+    ],
+    [
+     "Turbulent, fully developed, heating",
+     "$Nu_D=0.023\\,Re_D^{0.8}Pr^{0.4}$",
+     "$Re_D\\ge10^4$, $0.6\\le Pr\\le160$, $L/D\\ge10$"
+    ],
+    [
+     "Turbulent, fully developed, cooling",
+     "$Nu_D=0.023\\,Re_D^{0.8}Pr^{0.3}$",
+     "Same range, for a cooled fluid"
+    ]
+   ],
+   "caption": "Fully developed internal flow correlations (properties at the mean bulk temperature)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Water heated in a tube with uniform wall flux",
+   "prompt": "Water at 20 $^\\circ$C flows at $\\dot m=0.30$ kg/s through a 25 mm diameter tube whose wall delivers a uniform heat flux of 15 kW/m$^2$ over a length of 3.0 m. Use typical properties: $c_p=4180$ J/kg K, $\\mu=8.5\\times10^{-4}$ kg/m s, $k=0.613$ W/m K, $Pr=5.8$. Find the bulk outlet temperature and the wall temperature at the exit. Assume fully developed turbulent flow.",
+   "steps": [
+    {
+     "text": "Reynolds number in a tube is $Re_D=4\\dot m/(\\pi D\\mu)=4\\times0.30/(\\pi\\times0.025\\times8.5\\times10^{-4})=17975$, which is above 10 000, so the flow is turbulent.",
+     "latex": "Re_D=\\frac{\\rho u_mD}{\\mu}=\\frac{4\\dot m}{\\pi D\\mu}"
+    },
+    {
+     "text": "Energy balance on the whole tube: the heat added is $q=q_s''\\pi DL=15000\\times\\pi\\times0.025\\times3.0=3534$ W.",
+     "latex": "q=q_s''\\,\\pi DL"
+    },
+    {
+     "text": "The bulk temperature rise is $q/(\\dot mc_p)=3534/(0.3\\times4180)=2.82$ K, so $T_{m,o}=22.82$ $^\\circ$C.",
+     "latex": "T_{m,o}=T_{m,i}+\\frac{q_s''\\pi DL}{\\dot mc_p}"
+    },
+    {
+     "text": "Dittus-Boelter for heating ($n=0.4$): $Nu_D=0.023\\,Re^{0.8}Pr^{0.4}=0.023\\times2534\\times2.020=117.7$, so $h=Nu_Dk/D=2886$ W/m$^2$K.",
+     "latex": "Nu_D=0.023\\,Re_D^{0.8}Pr^{n}"
+    },
+    {
+     "text": "Wall temperature at the exit: $T_{s,o}=T_{m,o}+q_s''/h=22.82+15000/2886=28.0$ $^\\circ$C.",
+     "latex": "T_s=T_m+\\frac{q_s''}{h}"
+    }
+   ],
+   "answer": "$T_{m,o}\\approx22.8$ $^\\circ$C and the exit wall temperature is about 28.0 $^\\circ$C. The wall is hotter than the bulk fluid by $q_s''/h\\approx5.2$ K."
+  },
+  {
+   "type": "worked_example",
+   "title": "Laminar oil flow: constant wall temperature versus constant flux",
+   "prompt": "Engine oil ($k=0.145$ W/m K, typical) flows slowly at $Re_D\\approx800$ through a 10 mm diameter tube. Assume the flow is hydrodynamically and thermally fully developed. Find the heat transfer coefficient (a) when the wall is held at a constant temperature, (b) when the wall flux is uniform.",
+   "steps": [
+    {
+     "text": "Check the regime: $Re_D=800<2300$, so the flow is laminar. In fully developed laminar tube flow $Nu_D$ is a constant that does not depend on $Re$ or $Pr$; only the thermal boundary condition matters."
+    },
+    {
+     "text": "(a) Constant wall temperature: $Nu_D=3.66$, so $h=Nu_Dk/D=3.66\\times0.145/0.010=53.1$ W/m$^2$K.",
+     "latex": "Nu_D=3.66\\;(T_s=\\text{const})"
+    },
+    {
+     "text": "(b) Uniform wall flux: $Nu_D=4.36$, so $h=4.36\\times0.145/0.010=63.2$ W/m$^2$K.",
+     "latex": "Nu_D=4.36\\;(q_s''=\\text{const})"
+    },
+    {
+     "text": "Uniform flux gives a coefficient 19% higher, because the temperature profile in the fluid is steeper at the wall."
+    }
+   ],
+   "answer": "(a) $h\\approx53$ W/m$^2$K; (b) $h\\approx63$ W/m$^2$K. Both are small compared with turbulent water, because laminar heat transfer is by conduction across the stream."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Compute $Re_D=4\\dot m/(\\pi D\\mu)$ and select laminar or turbulent.",
+    "Pick the correlation from the table and confirm its validity range ($Pr$, $L/D$).",
+    "Compute $h=Nu_Dk/D$ with $k$ at the mean bulk temperature.",
+    "Use $q=\\dot mc_p(T_{m,o}-T_{m,i})$ with the heat input to find the outlet bulk temperature.",
+    "Find the wall temperature from $T_s=T_m+q_s''/h$ (uniform flux)."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Wall versus bulk temperature",
+   "text": "Do not apply the energy balance to the wall temperature. The outlet bulk temperature comes from heat input and flow rate only, independent of $h$. The wall temperature does depend on $h$ since $T_s=T_m+q_s''/h$. Also, Dittus-Boelter fails at $Re<10^4$ or for very short tubes, where entrance effects raise $h$."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Laminar Nusselt numbers are constants",
+   "text": "For fully developed laminar flow in a circular tube $Nu_D$ is 4.36 (uniform flux) or 3.66 (constant wall temperature), independent of $Re$ and $Pr$. So $h=Nu_Dk/D$ falls as the tube diameter grows, and laminar flow gives much lower $h$ than turbulent flow at similar conditions."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Use the bulk temperature $T_m$ and $q_s''=h(T_s-T_m)$ for internal flow; $Re_D=4\\dot m/(\\pi D\\mu)$ with laminar below 2300 and turbulent above about $10^4$.",
+    "With uniform flux, $T_{m,o}=T_{m,i}+q_s''\\pi DL/(\\dot mc_p)$ and the bulk temperature is linear in $x$.",
+    "Fully developed laminar: $Nu_D=4.36$ (flux) or $3.66$ (wall temperature).",
+    "Turbulent: Dittus-Boelter $Nu_D=0.023Re^{0.8}Pr^n$ with $n=0.4$ heating, 0.3 cooling."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For hydrodynamically and thermally fully developed laminar flow in a circular tube with uniform wall heat flux, the Nusselt number $Nu_D=hD/k$ is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4.36, independent of $Re_D$ and $Pr$"
+    },
+    {
+     "id": "b",
+     "text": "3.66, independent of $Re_D$ and $Pr$"
+    },
+    {
+     "id": "c",
+     "text": "$0.023Re_D^{0.8}Pr^{0.4}$"
+    },
+    {
+     "id": "d",
+     "text": "proportional to $Re_D^{1/2}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "4.36, independent of $Re_D$ and $Pr$",
+   "distractorRationale": {
+    "b": "This is the value for a constant wall temperature, not a uniform flux.",
+    "c": "This is the turbulent Dittus-Boelter correlation.",
+    "d": "This belongs to laminar boundary layers over external surfaces."
+   },
+   "explanation": "In a fully developed laminar tube flow the dimensionless temperature profile no longer changes with $x$, so $Nu_D$ becomes a pure number: 4.36 for uniform $q_s''$ and 3.66 for constant $T_s$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Air (Pr = 0.71) at $Re_D=30000$ is heated inside a long smooth tube. The most suitable correlation for the Nusselt number is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$Nu_D=3.66$"
+    },
+    {
+     "id": "b",
+     "text": "$Nu_D=4.36$"
+    },
+    {
+     "id": "c",
+     "text": "Dittus-Boelter with $n=0.4$: $Nu_D=0.023Re_D^{0.8}Pr^{0.4}$"
+    },
+    {
+     "id": "d",
+     "text": "Dittus-Boelter with $n=0.3$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Dittus-Boelter with $n=0.4$: $Nu_D=0.023Re_D^{0.8}Pr^{0.4}$",
+   "distractorRationale": {
+    "a": "This is only for laminar flow below $Re_D=2300$.",
+    "b": "This is the laminar uniform-flux constant, invalid at this $Re_D$.",
+    "d": "The exponent 0.3 is for a fluid being cooled, not heated."
+   },
+   "explanation": "At $Re_D=30000$ the flow is fully turbulent, and the fluid is heated, so $n=0.4$ is used. The validity range is $Re_D\\ge10^4$ and $0.6\\le Pr\\le160$, which this case meets.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water ($c_p=4180$ J/kg K) enters a 15 mm diameter, 2.0 m long tube at 15 $^\\circ$C with $\\dot m=0.05$ kg/s. The wall supplies a uniform heat flux of 8000 W/m$^2$. Find the bulk outlet temperature in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o1"
+   ],
+   "correctValue": 18.61,
+   "tolerance": 0.05,
+   "unit": "degC",
+   "explanation": "The heat added is $q=q_s''\\pi DL=8000\\times\\pi\\times0.015\\times2.0=754.0$ W. The bulk rise is $q/(\\dot mc_p)=754.0/(0.05\\times4180)=3.61$ K, so $T_{m,o}=18.61$ $^\\circ$C.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water in a 20 mm diameter tube has $Re_D=25000$, $Pr=5.0$ and $k=0.62$ W/m K, and is being heated. Using Dittus-Boelter, find the heat transfer coefficient in W/m$^2$K.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o2"
+   ],
+   "correctValue": 4477.0,
+   "tolerance": 20.0,
+   "unit": "W/m^2K",
+   "explanation": "$Nu_D=0.023\\times25000^{0.8}\\times5.0^{0.4}=0.023\\times3299\\times1.904=144.4$ and $h=Nu_Dk/D=144.4\\times0.62/0.020=4477$ W/m$^2$K. The exponent $n=0.4$ is used because the fluid is heated.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Oil ($k=0.14$ W/m K) flows in a laminar, fully developed state through an 8 mm diameter tube with uniform wall heat flux. Find the heat transfer coefficient in W/m$^2$K.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o3"
+   ],
+   "correctValue": 76.3,
+   "tolerance": 0.5,
+   "unit": "W/m^2K",
+   "explanation": "For uniform flux in laminar flow $Nu_D=4.36$, so $h=Nu_Dk/D=4.36\\times0.14/0.008=76.3$ W/m$^2$K. The result does not depend on the flow rate as long as the flow is laminar and fully developed.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Fully developed laminar flow of oil in a tube with uniform wall flux is run at the same $Re_D$ but in a tube of double the diameter. The heat transfer coefficient $h$ becomes",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "twice its original value"
+    },
+    {
+     "id": "b",
+     "text": "half of its original value"
+    },
+    {
+     "id": "c",
+     "text": "unchanged, since $Nu_D$ is constant"
+    },
+    {
+     "id": "d",
+     "text": "a quarter of its original value"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "half of its original value",
+   "distractorRationale": {
+    "a": "$h=Nu_Dk/D$, and $Nu_D$ is constant, so $h$ falls as $D$ rises.",
+    "c": "$Nu_D$ is constant but $h=Nu_Dk/D$ still depends on $D$.",
+    "d": "$h$ varies as $1/D$, not $1/D^2$."
+   },
+   "explanation": "With $Nu_D=4.36$ fixed, $h=4.36k/D$ is inversely proportional to $D$. Doubling the diameter halves $h$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A hot oil is being cooled in a long tube at $Re_D=2\\times10^4$ and $Pr=50$. Which form of Dittus-Boelter applies?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$Nu_D=0.023Re_D^{0.8}Pr^{0.3}$"
+    },
+    {
+     "id": "b",
+     "text": "$Nu_D=0.023Re_D^{0.8}Pr^{0.4}$"
+    },
+    {
+     "id": "c",
+     "text": "$Nu_D=4.36$"
+    },
+    {
+     "id": "d",
+     "text": "$Nu_D=0.664Re_D^{1/2}Pr^{1/3}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$Nu_D=0.023Re_D^{0.8}Pr^{0.3}$",
+   "distractorRationale": {
+    "b": "This is for heating of the fluid.",
+    "c": "This is for laminar flow only.",
+    "d": "This is a laminar flat plate result, not a tube correlation."
+   },
+   "explanation": "Dittus-Boelter uses $n=0.3$ when the fluid is cooled and $n=0.4$ when it is heated. The Reynolds and Prandtl numbers are inside the validity range ($Re\\ge10^4$, $0.6\\le Pr\\le160$).",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "In a tube with uniform wall heat flux and fully developed flow, describe how the bulk temperature and the wall temperature each vary along the tube. Why does the difference $T_s-T_m$ become constant?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o1"
+   ],
+   "markingGuide": [
+    "The energy balance gives $dT_m/dx=q_s''P/(\\dot mc_p)$, which is constant, so the bulk temperature rises linearly.",
+    "For fully developed flow $h$ is constant, so $T_s-T_m=q_s''/h$ is constant.",
+    "Therefore the wall temperature rises parallel to the bulk temperature.",
+    "In the entrance region $h$ is higher, so $T_s-T_m$ is smaller there."
+   ],
+   "explanation": "Uniform flux plus fully developed flow yields a constant $h$ and so a constant wall-to-bulk difference. This is why the maximum wall temperature occurs at the exit.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why the Nusselt number in fully developed laminar tube flow is a constant, while in turbulent flow it increases with Reynolds number. State how this affects the choice between the correlations and what the heater designer should do about the transitional range $2300<Re_D<10^4$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o2",
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o3"
+   ],
+   "markingGuide": [
+    "Laminar flow transports heat across the stream only by conduction, so the dimensionless temperature profile depends only on geometry and the wall condition, giving a constant $Nu_D$.",
+    "Turbulent eddies add mixing, so heat transfer improves as $Re_D$ increases, with $Nu_D\\propto Re_D^{0.8}$.",
+    "Use 4.36 or 3.66 for laminar and Dittus-Boelter for $Re_D\\ge10^4$ with the validity range stated.",
+    "In transition ($2300<Re_D<10^4$) the flow is unstable and correlations are unreliable, so design conservatively or avoid it."
+   ],
+   "explanation": "The key contrast is conduction-only transfer versus turbulent mixing. The $Re$ exponent 0.8 reflects the stronger mixing; for laminar tubes, increasing velocity does not improve $h$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Air ($c_p=1007$ J/kg K, $\\mu=1.85\\times10^{-5}$ kg/m s, $k=0.026$ W/m K, $Pr=0.71$, typical) at 20 $^\\circ$C and $\\dot m=0.02$ kg/s flows through a 50 mm diameter, 1.5 m long duct with uniform wall flux 500 W/m$^2$. Assume fully developed turbulent flow and Dittus-Boelter. Find the wall temperature at the exit in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o1",
+    "ug.mce-heat-transfer.forced-convection.internal-forced-convection.o2"
+   ],
+   "correctValue": 39.3,
+   "tolerance": 1.5,
+   "unit": "degC",
+   "explanation": "$Re_D=4\\times0.02/(\\pi\\times0.05\\times1.85\\times10^{-5})=27530$ (turbulent). $Nu_D=0.023\\times3563\\times0.8720=71.5$, so $h=37.2$ W/m$^2$K. The outlet bulk temperature is $20+500\\pi(0.05)(1.5)/(0.02\\times1007)=25.85$ $^\\circ$C, and $T_s=T_m+q_s''/h=25.85+500/37.2=39.3$ $^\\circ$C.",
+   "board": "internal"
+  }
+ ]
+}

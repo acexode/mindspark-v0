@@ -1,0 +1,60 @@
+{
+  "subjectId": "ug.mce-mechatronics-instrumentation",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "All 16 units were read in full and every numeric key, worked example and marking-guide figure was recomputed independently in Python. This covered ADC and aliasing, Butterworth cutoffs, IIR and moving-average filters, timer and PWM arithmetic, latency and response time, DC motor operating points, gear selection (including the quadratic voltage limit N of about 4.9 to 43.1), PWM ripple and switching loss, UART and I2C timing, CAN frame length (44+8n plus 3 intermission = 47+8n; stuffing bound floor((34+8n-1)/4), giving 135 bits for 8 bytes), arbitration bit patterns, bus load, PLC response time, regression, bridge output, in-amp gain, SNR, CMRR, 2-link FK, IK, Jacobian and determinant, and scope readings. All keys and worked-example values agree with the source text. The sinking/sourcing convention (PNP to sinking input, NPN to sourcing input) is stated consistently. The scan for tab or control characters, literal \\uXXXX, e+06-style numbers, format placeholders, unbraced multi-digit exponents, stale option-letter references and '[object Object]' found nothing. Remaining problems are one wrong value in a marking guide and a handful of minor wording and consistency points. Confidence is high on the arithmetic and moderate on pedagogical level. This is an AI review only; the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop",
+      "questionId": "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.q010",
+      "severity": "major",
+      "category": "answer-key",
+      "problem": "The question states a tachometer valid between 1.0 V and 9.0 V on a 10 V analogue input, but the marking guide says the range check 'flags a disconnected input reading near 0 V or 5 V'. A 5 V reading lies inside the valid 1 to 9 V window and would not be a fault. The 5 V figure appears to be left over from the 0.5 to 4.5 V sensor on a 5 V ADC in the lesson.",
+      "suggestedFix": "Change the marking guide to 'flags a disconnected input reading near 0 V or 10 V (outside the 1.0 to 9.0 V valid window, with margin)'."
+    },
+    {
+      "subtopicId": "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic",
+      "questionId": "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.q008",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "The stem opens 'Three conveyors start in sequence' but then describes four conveyors (conveyor 1 to conveyor 4) and three timers. The key of 14 s is correct (2.5 + 4.0 + 7.5).",
+      "suggestedFix": "Reword to 'Four conveyors start in sequence' (or 'Conveyors 2 to 4 start in sequence after conveyor 1')."
+    },
+    {
+      "subtopicId": "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "The singularity table row for theta2 = 90 degrees says 'l1 l2 (maximum)' for det J and 'Best conditioned motion'. det J is indeed largest at 90 degrees (best manipulability), but the Jacobian condition number is not minimal there. Recomputed values: for l1 = l2 the condition number is 2.62 at 90 degrees and its minimum of about 1.62 is near 132 degrees.",
+      "suggestedFix": "Say 'largest determinant (greatest manipulability)' and drop or qualify 'best conditioned'."
+    },
+    {
+      "subtopicId": "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Gearbox paragraph: 'Motors deliver torque best at high speed and low torque' is self-contradictory and misleading. Small motors are efficient and deliver power at high speed and low torque; they do not deliver torque best there.",
+      "suggestedFix": "Reword to 'Motors deliver power most efficiently at high speed and low torque, while many machines need high torque at low speed.'"
+    },
+    {
+      "subtopicId": "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime",
+      "questionId": "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime.q003",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Key option b reads 'plus the hardware entry time, divided into clock cycles', which is garbled; latency is the cycle count divided by the clock frequency. Also the lesson definition lists 'the instruction in progress' as a latency term, but the formula N_block + N_entry omits it.",
+      "suggestedFix": "Reword option b to '... plus the hardware entry time, converted to seconds using the clock frequency'. In the lesson, either fold the instruction in progress into N_block or state that it is neglected."
+    },
+    {
+      "subtopicId": "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The fault table recommends 'Reject sample, hold last valid for a few cycles' for a noise spike, while the warning callout says 'Never keep driving on the last good value'. The two read as contradictory to a student.",
+      "suggestedFix": "Qualify the warning: holding the last valid value is acceptable only for a bounded number of cycles for a single rejected spike, after which the loop must go to the safe state and flag the fault."
+    },
+    {
+      "subtopicId": "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "SPI table row 'Signals: 4 plus 1 extra CS per slave' overcounts: the four signals (SCLK, MOSI, MISO, CS) already include one chip-select, so a bus with k slaves needs 3 + k lines. The text also says data move in both directions 'on each clock edge', where full duplex is per clock cycle (one bit each way per cycle).",
+      "suggestedFix": "Use '4 (including one CS), plus 1 further CS per additional slave' and 'one bit in each direction per clock cycle'."
+    }
+  ]
+}

@@ -1,0 +1,403 @@
+{
+ "lessonTitle": "Actuator Saturation and Sensor Limits",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 3-axis gantry is tuned on the bench with a gentle step, then commanded to snap to a far position. The motor drive hits its current limit for two seconds, and when the axis finally arrives it overshoots by a hand's width and takes another second to creep back. The linear design never predicted this: the controller and the hardware disagreed about what the actuator could actually do."
+  },
+  {
+   "type": "text",
+   "markdown": "Every control design in earlier units assumed that the plant input equals the controller output, and that the measurement equals the true output. Real hardware breaks both assumptions in three ways that this unit treats in turn:\n\n1. **Magnitude limits** (saturation): a motor drive, valve or heater can only deliver a bounded input, $|u|\\le u_{max}$. A controller with an integrator keeps integrating while the input is clipped, which is called *integrator windup*.\n2. **Resolution limits**: an ADC or encoder reports the measurement rounded to a finite step, called the *quantisation step* $\\Delta$.\n3. **Rate limits**: an actuator cannot change its output faster than a maximum slew rate $R$, which caps the usable closed-loop bandwidth for large signals."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Integrator windup",
+   "text": "Windup is the growth of the integrator state beyond the value needed to drive the plant when the actuator is saturated. The commanded input $u$ keeps rising but the applied input $u_{sat}$ does not change, so the error is not corrected while the integrator keeps accumulating. When the error finally changes sign, the stored excess must be unwound before the actuator leaves saturation, causing large overshoot and delay."
+  },
+  {
+   "type": "math",
+   "latex": "u(t)=K_p\\,e(t)+K_i\\int_0^t e(\\tau)\\,d\\tau,\\qquad u_{sat}(t)=\\operatorname{sat}(u(t),\\,\\pm u_{max})",
+   "caption": "PI law followed by the actuator limit. $K_p$ is proportional gain, $K_i$ is the integral gain, $e=r-y$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Windup time of a saturated PI loop",
+   "prompt": "A PI controller with $K_p=1$ and $K_i=3\\,\\mathrm{s^{-1}}$ (error in arbitrary units) drives an actuator limited to $\\pm 10$. The error is held at $e=+2$ for 4 s, then the response overshoots and the error becomes $e=-1$ and stays there. Find how long the actuator stays saturated after the sign change (a) with no anti-windup and (b) with the integrator clamped (frozen) whenever the actuator saturates.",
+   "steps": [
+    {
+     "text": "Without anti-windup the integrator state after 4 s is $I=K_i e t$.",
+     "latex": "I=3\\times 2\\times 4=24"
+    },
+    {
+     "text": "The command at the instant of sign change is $K_p e+I$ with the new error $e=-1$: it is far above the limit of 10.",
+     "latex": "u=1\\times(-1)+24=23>10"
+    },
+    {
+     "text": "After the sign change the integrator falls at $K_i e=-3$ per second, so the command is $u(\\tau)=-1+24-3\\tau$. The actuator leaves saturation when this drops to the limit.",
+     "latex": "23-3\\tau=10\\;\\Rightarrow\\;\\tau=13/3\\approx 4.33\\ \\mathrm{s}"
+    },
+    {
+     "text": "With clamping the command first reaches the limit when $K_p\\cdot 2+K_i\\cdot 2\\,t=10$, i.e. at $t=1.333$ s, and the integrator freezes at $I=8$.",
+     "latex": "I_{clamp}=3\\times 2\\times 1.333=8"
+    },
+    {
+     "text": "After the sign change the command is $-1+8-3\\tau=7-3\\tau$, already below the limit of 10, so the actuator leaves saturation immediately.",
+     "latex": "\\tau_{clamp}=0"
+    }
+   ],
+   "answer": "(a) about 4.33 s of saturation after the error reverses; (b) 0 s with clamping."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Scheme",
+    "How it works",
+    "Strength",
+    "Weakness"
+   ],
+   "rows": [
+    [
+     "Clamping (conditional integration)",
+     "Freeze the integrator while $u\\ne u_{sat}$ and the error would push it further into saturation",
+     "Very simple, one comparison",
+     "Can stall slowly if the clamp condition is poorly chosen"
+    ],
+    [
+     "Back-calculation",
+     "Feed $K_t(u_{sat}-u)$ into the integrator input so it relaxes toward the saturated value",
+     "Smooth, works with any saturation shape",
+     "One extra tuning gain $K_t$"
+    ],
+    [
+     "Integrator reset or limit",
+     "Limit the integrator state to a fixed band",
+     "Crude but robust",
+     "Band must be chosen for each operating point"
+    ]
+   ],
+   "caption": "Common anti-windup schemes for a PI or PID controller."
+  },
+  {
+   "type": "text",
+   "markdown": "In **back-calculation** the integrator obeys $\\dot I=K_i e+K_t(u_{sat}-u)$. While unsaturated, $u_{sat}=u$ and the extra term vanishes, so the normal PI law is recovered. During saturation the term is negative when $u$ exceeds the limit, which pulls $I$ down until $u$ settles close to $u_{sat}$. A larger $K_t$ unwinds faster; a typical starting choice is $K_t\\approx 1/T_t$ with $T_t$ comparable to the integral time."
+  },
+  {
+   "type": "text",
+   "markdown": "**Quantisation.** An $N$-bit converter spanning a range $V_{FS}$ has $2^N$ levels and a step of $\\Delta=V_{FS}/2^N$. Rounding to the nearest level creates an error that is roughly uniform over $[-\\Delta/2,\\Delta/2]$, so the worst-case error is $\\Delta/2$ and the rms error is $\\Delta/\\sqrt{12}$. Quantisation is more harmful when the signal is differentiated: a velocity estimate $(x_k-x_{k-1})/T_s$ from two quantised positions can be wrong by up to $\\Delta/T_s$."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta=\\frac{V_{FS}}{2^{N}},\\qquad |e_q|\\le\\frac{\\Delta}{2},\\qquad e_{q,rms}=\\frac{\\Delta}{\\sqrt{12}}\\approx 0.289\\,\\Delta",
+   "caption": "Quantisation step, worst-case error and rms error of a rounding converter."
+  },
+  {
+   "type": "worked_example",
+   "title": "Resolution of a temperature channel",
+   "prompt": "A 12-bit ADC spans 0 to 5 V. A temperature sensor outputs 10 mV per degree Celsius. Find the temperature resolution and the rms quantisation error.",
+   "steps": [
+    {
+     "text": "Compute the voltage step.",
+     "latex": "\\Delta=\\frac{5}{2^{12}}=\\frac{5}{4096}=1.2207\\ \\mathrm{mV}"
+    },
+    {
+     "text": "Convert voltage to temperature using the sensor sensitivity of 10 mV per degree Celsius.",
+     "latex": "\\Delta_T=1.2207/10=0.1221\\ ^\\circ\\mathrm{C}"
+    },
+    {
+     "text": "Find the rms error from the uniform-error result.",
+     "latex": "e_{rms}=0.1221/\\sqrt{12}=0.0352\\ ^\\circ\\mathrm{C}"
+    }
+   ],
+   "answer": "Resolution about 0.122 C per count, worst-case error about 0.061 C, rms error about 0.035 C."
+  },
+  {
+   "type": "text",
+   "markdown": "**Rate limits.** If the actuator output can change at most $R$ units per second, a sinusoidal command of amplitude $A$ and angular frequency $\\omega$ has peak slope $A\\omega$. As long as $A\\omega\\le R$ the actuator follows linearly. Beyond that the output turns into a triangular wave of reduced amplitude with extra phase lag, which erodes phase margin exactly when the loop is working hardest. Large-signal bandwidth is therefore limited to about $\\omega_{max}=R/A$ regardless of how fast the linear design is."
+  },
+  {
+   "type": "math",
+   "latex": "A\\,\\omega \\le R\\;\\Longrightarrow\\;\\omega_{max}=\\frac{R}{A},\\qquad f_{max}=\\frac{\\omega_{max}}{2\\pi}",
+   "caption": "Largest sinusoid frequency a rate-limited actuator can reproduce (rad/s and Hz)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Bandwidth ceiling from a slew rate",
+   "prompt": "A linear actuator has a rate limit of 200 mm/s. The loop must track a sinusoidal command of amplitude 5 mm. What is the highest frequency it can follow without slew limiting?",
+   "steps": [
+    {
+     "text": "Peak slope of the command $A\\sin\\omega t$ is $A\\omega$. Set it equal to the rate limit.",
+     "latex": "5\\,\\omega=200"
+    },
+    {
+     "text": "Solve for angular frequency.",
+     "latex": "\\omega_{max}=200/5=40\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "Convert to hertz using $f=\\omega/2\\pi$.",
+     "latex": "f_{max}=40/(2\\pi)=6.37\\ \\mathrm{Hz}"
+    }
+   ],
+   "answer": "About 40 rad/s, or 6.37 Hz. Larger amplitudes lower this ceiling in proportion."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Linear analysis is silent about limits",
+   "text": "Gain margin and phase margin are computed for small signals and say nothing about saturation or slewing. A loop with a healthy 60 degree phase margin can still wind up or go unstable for large commands. Always simulate the large-signal case with the actual limits included."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Windup occurs when an integrator accumulates while the actuator is saturated; clamping and back-calculation prevent it.",
+    "Quantisation step is $\\Delta=V_{FS}/2^N$, with worst-case error $\\Delta/2$ and rms error $\\Delta/\\sqrt{12}$.",
+    "A rate limit $R$ restricts a sinusoid of amplitude $A$ to $\\omega\\le R/A$, so large-signal bandwidth is bounded by the actuator, not only by the controller."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A PI controller drives a valve that is fully open for a long time because of a large setpoint change. What is the defining symptom of integrator windup when the setpoint is later reached?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The proportional term becomes negative and cancels the integral term"
+    },
+    {
+     "id": "b",
+     "text": "The sensor reading is quantised to fewer levels than before"
+    },
+    {
+     "id": "c",
+     "text": "The integrator has accumulated a large value, so the actuator stays saturated and the output overshoots after the error changes sign"
+    },
+    {
+     "id": "d",
+     "text": "The actuator rate limit is lowered by the controller"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The integrator has accumulated a large value, so the actuator stays saturated and the output overshoots after the error changes sign",
+   "distractorRationale": {
+    "a": "The proportional term follows the current error only and does not store history.",
+    "b": "Quantisation depends on converter resolution, not on actuator saturation.",
+    "c": "This is windup: stored integral must be unwound before the valve leaves its limit.",
+    "d": "The controller cannot change a hardware slew limit."
+   },
+   "explanation": "While the valve is saturated, the integral state keeps growing even though the plant input no longer changes. When the error reverses, the large stored value keeps the command above the limit until it has been unwound, which produces the delayed, overshooting recovery.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which change halves the quantisation step of an ADC with a fixed input range?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Adding one more bit of resolution"
+    },
+    {
+     "id": "b",
+     "text": "Doubling the sampling rate"
+    },
+    {
+     "id": "c",
+     "text": "Doubling the input voltage range"
+    },
+    {
+     "id": "d",
+     "text": "Halving the gain of the sensor amplifier"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Adding one more bit of resolution",
+   "distractorRationale": {
+    "a": "Each extra bit doubles the number of levels, halving the step.",
+    "b": "Sampling rate sets time resolution, not amplitude resolution.",
+    "c": "A larger range with the same number of levels makes the step larger.",
+    "d": "Reducing signal gain makes the signal smaller relative to the step, which is worse."
+   },
+   "explanation": "The step is $\\Delta=V_{FS}/2^N$, so raising $N$ by one doubles the denominator and halves $\\Delta$. Changing sampling rate or range does not improve amplitude resolution in this way.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In clamping (conditional integration) anti-windup, when should the integrator update be switched off?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Whenever the error is nonzero"
+    },
+    {
+     "id": "b",
+     "text": "When the controller output is beyond the limit and the error has the same sign as the excess"
+    },
+    {
+     "id": "c",
+     "text": "Whenever the controller output is below the limit"
+    },
+    {
+     "id": "d",
+     "text": "Only when the sensor is quantised"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "When the controller output is beyond the limit and the error has the same sign as the excess",
+   "distractorRationale": {
+    "a": "This would remove integral action entirely, so steady-state error would not be eliminated.",
+    "b": "Integrating would push the command further past the limit, so it is frozen.",
+    "c": "In the linear region the integrator must run normally.",
+    "d": "Sensor resolution is unrelated to the saturation logic."
+   },
+   "explanation": "Clamping freezes the integral only when integrating would worsen the saturation, that is, when the command is beyond the limit and the error would drive it further out. When the error reverses the integrator is allowed to run, so it can unwind promptly.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A position loop is designed with 40 rad/s bandwidth, but the actuator rate limit is exceeded by large commands. What is the expected closed-loop behaviour for those large commands?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The response is identical because rate limits only affect noise"
+    },
+    {
+     "id": "b",
+     "text": "The response becomes faster than the linear prediction"
+    },
+    {
+     "id": "c",
+     "text": "The steady-state error doubles for every step"
+    },
+    {
+     "id": "d",
+     "text": "Extra phase lag and lower effective gain, so the response is slower than the linear design and may oscillate"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Extra phase lag and lower effective gain, so the response is slower than the linear design and may oscillate",
+   "distractorRationale": {
+    "a": "Rate limits affect large signals, not just noise.",
+    "b": "Limiting a signal can never make the actuator deliver more than the linear command.",
+    "c": "Rate limits do not set steady-state error; they affect transients.",
+    "d": "Slew limiting turns sinusoids into triangular waves with lag, reducing margin."
+   },
+   "explanation": "When the demanded slope exceeds the slew rate the actuator output falls behind the command, which looks like additional delay inside the loop. That reduces phase margin and can cause oscillation, so the actual large-signal bandwidth is lower than the linear design suggests.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: with the same input range, a 10-bit channel has a quantisation step four times larger than a 12-bit channel.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Four times as many levels means a step one quarter as large, so the ratio of steps is $2^{12}/2^{10}=4$. Therefore the 10-bit channel has a step four times the 12-bit one.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A 10-bit ADC spans 0 to 3.3 V. What is the quantisation step in millivolts?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o2"
+   ],
+   "correctValue": 3.222656,
+   "tolerance": 0.01,
+   "unit": "mV",
+   "explanation": "The step is $\\Delta=V_{FS}/2^{N}=3.3/1024=3.223\\ \\mathrm{mV}$. The number of levels is $2^{10}=1024$ and the range is shared equally between them.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A servo valve has a rate limit of 120 degrees per second. A sinusoidal command has amplitude 15 degrees. Find the largest angular frequency, in rad/s, that avoids slew limiting.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o3"
+   ],
+   "correctValue": 8.0,
+   "tolerance": 0.05,
+   "unit": "rad/s",
+   "explanation": "Peak slope is $A\\omega$, which must not exceed $R$, so $\\omega_{max}=R/A=120/15=8$ rad/s. Using degrees for both quantities keeps the units consistent, and the frequency is unaffected.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A PI controller with $K_p=1.5$ and $K_i=2.0\\ \\mathrm{s^{-1}}$ has no anti-windup and drives an actuator limited to $\\pm 8$. The error is held at $3$ for 5 s, after which it is $-1$ and stays there. How long, in seconds, does the actuator remain saturated after the error becomes $-1$?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o1"
+   ],
+   "correctValue": 10.25,
+   "tolerance": 0.1,
+   "unit": "s",
+   "explanation": "The integrator stored $K_i e t=2.0\\times 3\\times 5=30$. After the reversal the command is $K_pe+I=-1.5+30-2\\tau$, which equals the limit 8 at $\\tau=(28.5-8)/2=10.25$ s. So the actuator stays saturated for about 10.25 s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "An optical encoder gives a position quantised in steps of 0.02 mm. A controller computes velocity by backward difference with a sample time of 5 ms. Estimate the worst-case velocity error and explain what remedy you would apply.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o2"
+   ],
+   "markingGuide": [
+    "Identifies that each position reading has error up to half a step, so the difference of two readings can be wrong by up to one step (0.02 mm).",
+    "Computes worst-case velocity error as $\\Delta/T_s=0.02/0.005=4$ mm/s.",
+    "Notes the error is noise-like and is amplified by differentiation, worse for shorter sample times.",
+    "Proposes a remedy such as low-pass filtering the derivative, a longer differencing interval, a higher-resolution encoder or an observer."
+   ],
+   "explanation": "Both position samples carry up to half a step of error, so their difference can be off by one step, giving $\\Delta/T_s=0.02\\ \\mathrm{mm}/0.005\\ \\mathrm{s}=4$ mm/s. Because differentiation amplifies high-frequency noise, filtering the derivative or using an observer trades a little lag for much lower noise.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A designer proposes raising the closed-loop bandwidth of a hydraulic positioner from 5 rad/s to 25 rad/s to reduce error, but the proportional valve has a rate limit. Explain how the rate limit should influence the choice of bandwidth, and what happens if it is ignored.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o3",
+    "ug.mce-control-engineering.control-hardware.actuators-sensors-limits.o1"
+   ],
+   "markingGuide": [
+    "States the sinusoidal slope condition $A\\omega\\le R$, so the usable frequency for amplitude $A$ is $R/A$.",
+    "Says the linear bandwidth should not be set above what the actuator can follow for the expected command amplitudes, or the command should be shaped or rate-limited.",
+    "Explains that exceeding the limit adds phase lag and effective gain reduction, which can cause oscillation or instability.",
+    "Mentions that a saturated or slewing actuator also causes integrator windup if integral action is present, so anti-windup is needed."
+   ],
+   "explanation": "A rate limit makes the actuator unable to follow commands whose slope $A\\omega$ exceeds $R$, so the useful bandwidth is bounded by $R/A$ regardless of the linear design. Ignoring it makes the actuator lag the command, adding phase lag that can cause oscillation, and if an integrator keeps accumulating during this, windup makes the recovery worse.",
+   "board": "internal"
+  }
+ ]
+}

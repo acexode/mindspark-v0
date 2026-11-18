@@ -1,0 +1,392 @@
+{
+ "lessonTitle": "Trapezoidal and Simpson Rules",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hydraulic press records force at five positions along its stroke, and the energy absorbed is the area under that force-displacement curve. There is no formula for the curve, only the table of readings. Numerical integration turns such tables, and integrals with no closed form, into numbers."
+  },
+  {
+   "type": "text",
+   "markdown": "The definite integral $I=\\int_a^b f(x)\\,dx$ is the area under $f$. When $f$ is known only at discrete points, or has no elementary antiderivative, we **approximate** the area by splitting $[a,b]$ into $n$ strips of width $h=(b-a)/n$ and replacing $f$ on each strip by a simple curve whose area we know. For a force $F(x)$ the integral is the **work done**, $W=\\int F\\,dx$, in joules when $F$ is in newtons and $x$ in metres."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Trapezoidal rule",
+   "text": "Join neighbouring points $(x_i,f_i)$ by straight lines. Each strip is a trapezoid of area $\\tfrac{h}{2}(f_i+f_{i+1})$. Adding all strips, the interior points are counted twice, giving the composite rule below. It works for unequal spacing too: use each strip's own width."
+  },
+  {
+   "type": "math",
+   "latex": "T=\\frac{h}{2}\\left[f_0+2\\sum_{i=1}^{n-1}f_i+f_n\\right]",
+   "caption": "Composite trapezoidal rule for n equal strips."
+  },
+  {
+   "type": "worked_example",
+   "title": "Work done by a variable force",
+   "prompt": "A press records force $F$ (N) at displacements $x$ (m): $x=0,0.1,0.2,0.3,0.4$ and $F=0,120,200,240,250$. Estimate the work done over the 0.4 m stroke.",
+   "steps": [
+    {
+     "text": "The spacing is uniform, $h=0.1$ m, with $n=4$ strips and five points."
+    },
+    {
+     "text": "Sum the interior values: $120+200+240=560$ N, and double it: $2\\times560=1120$ N.",
+     "latex": "2\\sum f_i=1120"
+    },
+    {
+     "text": "Add the end values: $f_0+f_4=0+250=250$, so the bracket is $1120+250=1370$ N."
+    },
+    {
+     "text": "Multiply by $h/2=0.05$ m: $W\\approx0.05\\times1370=68.5$ J. Units: N times m is joules.",
+     "latex": "W\\approx\\frac{0.1}{2}(1370)=68.5\\ \\text{J}"
+    }
+   ],
+   "answer": "W is approximately 68.5 J."
+  },
+  {
+   "type": "text",
+   "markdown": "**Simpson's rule** replaces the function over each *pair* of strips by a parabola through three points. It needs an **even** number of strips $n$, that is, an odd number of points. The weights are $1,4,2,4,\\dots,4,1$ times $h/3$."
+  },
+  {
+   "type": "math",
+   "latex": "S=\\frac{h}{3}\\left[f_0+4\\sum_{i\\,\\text{odd}}f_i+2\\sum_{i\\,\\text{even},\\,0<i<n}f_i+f_n\\right]",
+   "caption": "Composite Simpson's 1/3 rule; n must be even."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Order of accuracy",
+   "text": "The error of the composite trapezoidal rule is $E_T\\approx-\\dfrac{(b-a)h^2}{12}f''(\\xi)$, so it is **second order**, $O(h^2)$: halving $h$ cuts the error by about 4. Simpson's rule has $E_S\\approx-\\dfrac{(b-a)h^4}{180}f^{(4)}(\\xi)$, **fourth order**, $O(h^4)$: halving $h$ cuts the error by about 16. Simpson's rule is exact for polynomials up to degree 3."
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparing the rules as h is halved",
+   "prompt": "Integrate $\\int_0^{\\pi}\\sin x\\,dx$ (exact value 2) using $n=2$ and $n=4$ strips with both rules.",
+   "steps": [
+    {
+     "text": "For $n=2$: $h=\\pi/2$ and $f=0,1,0$. Trapezoid: $T=\\tfrac{\\pi}{4}[0+2(1)+0]=1.5708$, error $0.4292$. Simpson: $S=\\tfrac{\\pi}{6}[0+4(1)+0]=2.0944$, error $-0.0944$.",
+     "latex": "T_2=1.5708,\\quad S_2=2.0944"
+    },
+    {
+     "text": "For $n=4$: $h=\\pi/4$ and $f=0,0.7071,1,0.7071,0$. Trapezoid: $T=\\tfrac{\\pi}{8}[2(0.7071+1+0.7071)]=\\tfrac{\\pi}{8}(4.8284)=1.8961$, error $0.1039$.",
+     "latex": "T_4=1.8961"
+    },
+    {
+     "text": "Simpson: $S=\\tfrac{\\pi}{12}[0+4(0.7071)+2(1)+4(0.7071)+0]=\\tfrac{\\pi}{12}(7.6569)=2.0046$, error $-0.0046$.",
+     "latex": "S_4=2.0046"
+    },
+    {
+     "text": "Error ratios on halving $h$: trapezoid $0.4292/0.1039=4.1$, matching $2^2=4$; Simpson $0.0944/0.0046=20.7$, close to $2^4=16$ (the ratio approaches 16 as $h\\to0$)."
+    }
+   ],
+   "answer": "Trapezoid errors fall by about 4 per halving; Simpson errors fall by about 16 or more."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Strips n",
+    "Trapezoid error",
+    "Simpson error",
+    "Trapezoid ratio",
+    "Simpson ratio"
+   ],
+   "rows": [
+    [
+     "2",
+     "0.4292",
+     "0.0944",
+     "-",
+     "-"
+    ],
+    [
+     "4",
+     "0.1039",
+     "0.0046",
+     "4.1",
+     "20.7"
+    ],
+    [
+     "8",
+     "0.0258",
+     "0.00027",
+     "4.0",
+     "16.9"
+    ]
+   ],
+   "caption": "Errors for the integral of sin x from 0 to pi. Ratios compare each row with the one above."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Trapezoidal rule: any number of strips, $O(h^2)$, exact for straight lines.",
+    "Simpson's 1/3 rule: even number of strips, $O(h^4)$, exact up to cubics.",
+    "Both can be applied to tabulated data without a formula for $f$.",
+    "For unequal spacing use the trapezoid on each strip with its own width.",
+    "Halve $h$ and compare results to estimate the error."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "When Simpson does not help",
+   "text": "The high order applies only if $f$ is smooth. For data with sharp corners, steps or noise, Simpson's rule may be no better than the trapezoid, and applying it with an odd number of strips is an error. Always check that the answer is reasonable, for example by bounding the area between the largest and smallest readings times the interval length."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The trapezoidal rule sums strip areas (h/2)(f_i + f_{i+1}); it is second order, O(h^2).",
+    "Simpson's rule fits parabolas to pairs of strips, needs an even n, and is fourth order, O(h^4).",
+    "Work done by a variable force is the integral of F dx; tabulated data are integrated numerically.",
+    "Halving h reduces the error by about 4 (trapezoid) or about 16 (Simpson) for smooth functions."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A forming press records force at strokes of $0$, $5$, $10$ and $15$ mm as $0$, $8$, $14$ and $16$ kN. Using the trapezoidal rule, estimate the work done over the 15 mm stroke, in joules. (1 kN mm = 1 J.)",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o1"
+   ],
+   "correctValue": 150,
+   "tolerance": 1,
+   "unit": "J",
+   "explanation": "With h = 5 mm and n = 3: T = (5/2)[0 + 2(8 + 14) + 16] = 2.5 x 60 = 150 kN mm. Since 1 kN x 1 mm = 1000 N x 0.001 m = 1 J, the work is 150 J.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A variable force is measured at non-uniform positions $x=0, 0.2, 0.5, 0.6$ m with $F=0, 60, 90, 100$ N. What is the trapezoidal estimate of the work done?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "38 J"
+    },
+    {
+     "id": "b",
+     "text": "37.5 J"
+    },
+    {
+     "id": "c",
+     "text": "25 J"
+    },
+    {
+     "id": "d",
+     "text": "40 J"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "38 J",
+   "distractorRationale": {
+    "a": "Correct: strip-by-strip trapezoids.",
+    "d": "Applies the uniform formula with h = 0.2 for every strip, which is wrong.",
+    "b": "Multiplies the sum of the forces by an average width, ignoring the unequal strips.",
+    "c": "Does not match any valid calculation."
+   },
+   "explanation": "Each strip uses its own width: 0.2(0+60)/2 = 6 J, 0.3(60+90)/2 = 22.5 J and 0.1(90+100)/2 = 9.5 J, totalling 38 J. The uniform-spacing formula cannot be used directly because the strip widths differ.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A vehicle's speed is $v(t)=t^2+1$ m/s, and values at $t=0,1,2,3,4$ s are $1,2,5,10,17$ m/s. Use Simpson's rule with $h=1$ s to estimate the distance travelled in 4 s, in metres.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o2"
+   ],
+   "correctValue": 25.333,
+   "tolerance": 0.01,
+   "unit": "m",
+   "explanation": "S = (1/3)[1 + 4(2) + 2(5) + 4(10) + 17] = (1/3)(76) = 25.333 m. This agrees with the exact integral 64/3 + 4 = 25.333, as Simpson's rule is exact for polynomials up to cubics.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the order of accuracy of the composite Simpson's 1/3 rule?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "First order, error proportional to $h$"
+    },
+    {
+     "id": "b",
+     "text": "Fourth order, error proportional to $h^4$"
+    },
+    {
+     "id": "c",
+     "text": "Second order, error proportional to $h^2$"
+    },
+    {
+     "id": "d",
+     "text": "Sixth order, error proportional to $h^6$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Fourth order, error proportional to $h^4$",
+   "distractorRationale": {
+    "b": "Correct: O(h^4).",
+    "c": "That is the trapezoidal rule.",
+    "a": "That is the rectangle (Euler-type) rule.",
+    "d": "Simpson's rule is not sixth order."
+   },
+   "explanation": "The error of the composite Simpson rule is proportional to (b-a) h^4 f''''(xi)/180. Halving the step reduces the error by about 2^4 = 16.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The step size is halved. By roughly what factors do the errors of the trapezoidal and Simpson rules fall for a smooth integrand?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Trapezoid by about 2, Simpson by about 4"
+    },
+    {
+     "id": "b",
+     "text": "Trapezoid by about 16, Simpson by about 4"
+    },
+    {
+     "id": "c",
+     "text": "Trapezoid by about 4, Simpson by about 16"
+    },
+    {
+     "id": "d",
+     "text": "Both by about 2"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Trapezoid by about 4, Simpson by about 16",
+   "distractorRationale": {
+    "c": "Correct: factors 2^2 and 2^4.",
+    "a": "Those factors correspond to orders 1 and 2.",
+    "b": "The factors are reversed.",
+    "d": "Both methods being first order is false."
+   },
+   "explanation": "The trapezoid error scales as h^2, so halving h divides it by 2^2 = 4. Simpson's error scales as h^4, so it is divided by 2^4 = 16.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A numerical rule gives errors $4.0\\times10^{-4}$ for $h=0.2$ and $2.5\\times10^{-5}$ for $h=0.1$. Estimate the observed order of accuracy $p$ from $E\\propto h^p$.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o2"
+   ],
+   "correctValue": 4,
+   "tolerance": 0.1,
+   "unit": "dimensionless",
+   "explanation": "The error ratio is 4.0e-4 / 2.5e-5 = 16 when h is halved. Then 2^p = 16, so p = log2(16) = 4, consistent with Simpson's rule.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which data set can be integrated with the composite Simpson's 1/3 rule using all its points?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "7 equally spaced points (6 strips)"
+    },
+    {
+     "id": "b",
+     "text": "3 unequally spaced points"
+    },
+    {
+     "id": "c",
+     "text": "6 equally spaced points (5 strips)"
+    },
+    {
+     "id": "d",
+     "text": "8 equally spaced points (7 strips)"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "7 equally spaced points (6 strips)",
+   "distractorRationale": {
+    "a": "Correct: an even number of strips.",
+    "d": "Seven strips cannot be grouped into pairs.",
+    "b": "The rule as stated requires equal spacing.",
+    "c": "Five strips cannot be grouped into pairs."
+   },
+   "explanation": "Simpson's 1/3 rule pairs strips, so it needs an even number of equal strips, which means an odd number of points. Seven points give six strips, three pairs.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "The trapezoidal rule gives the exact integral of any function that is a straight line.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The rule replaces the function on each strip by a straight line, so if the function is itself linear, the approximation is the function. Its error term is proportional to f'', which is zero for a line.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how the trapezoidal rule is used to estimate the work done by a variable force from a table of force against displacement. Include the formula, the sources of error and one way to estimate the error.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o1",
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o3"
+   ],
+   "markingGuide": [
+    "Work equals the area under the force-displacement curve, W = integral of F dx",
+    "Each strip is a trapezoid of area (h/2)(F_i + F_{i+1}); the composite rule is (h/2)[F_0 + 2 sum F_i + F_n]",
+    "Uses the strip's own width if spacing is unequal",
+    "Error arises because the true curve is not straight between points (error proportional to h^2 f'')",
+    "Estimate the error by halving h (or comparing with a coarser estimate); the error drops by about 4"
+   ],
+   "explanation": "The method needs only the tabulated values and gives the area as a sum of simple shapes. Comparing results at two step sizes gives an estimate of the discretisation error.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why Simpson's rule is usually more accurate than the trapezoidal rule for smooth functions, and describe two situations in which you might still prefer the trapezoidal rule.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o2",
+    "ug.mce-computing-for-engineers.integration-and-odes.numerical-integration.o3"
+   ],
+   "markingGuide": [
+    "Simpson uses parabolas, giving an error O(h^4) against O(h^2) for the trapezoid",
+    "For the same number of points Simpson's error is much smaller for smooth integrands; exact for cubics",
+    "Trapezoid preferred when data have an odd number of strips or unequal spacing",
+    "Trapezoid preferred when data are noisy or have corners/discontinuities, where the high order is not realised",
+    "Trapezoid is simpler and robust; and works for any n"
+   ],
+   "explanation": "Fitting parabolas captures curvature that straight lines miss, which is why the error falls so much faster as h decreases. If the function is not smooth the higher order is not realised and the simpler rule is as good.",
+   "board": "internal"
+  }
+ ]
+}

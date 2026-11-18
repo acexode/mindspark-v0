@@ -1,0 +1,420 @@
+{
+ "lessonTitle": "Process Capability Indices",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bearing journal ground to 25.00 mm with a tolerance of plus or minus 0.05 mm looks fine on a single measurement, but a customer does not buy one part: it buys ten thousand. Whether a handful of them fall outside the band depends not on the average diameter alone, but on how widely the diameters scatter and how well the average sits in the middle of the tolerance band."
+  },
+  {
+   "type": "text",
+   "markdown": "Every manufacturing process produces a spread of results, even with a fixed setup. For many machining and forming operations the measured dimension is close to **normally distributed**, described by the mean $\\mu$ and the standard deviation $\\sigma$. About 99.73 percent of the output lies within $\\mu\\pm3\\sigma$, so the **natural width of the process** is $6\\sigma$. The customer's requirement is the tolerance band between the lower and upper specification limits, $LSL$ and $USL$. **Process capability indices** compare these two widths."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Cp and Cpk",
+   "text": "$C_p=(USL-LSL)/(6\\sigma)$ compares the tolerance width to the process width and ignores where the mean lies. $C_{pk}=\\min\\!\\big[(USL-\\mu)/3\\sigma,\\ (\\mu-LSL)/3\\sigma\\big]$ measures the distance from the mean to the nearest limit in units of $3\\sigma$ and so penalises an off-centre process. Always $C_{pk}\\le C_p$, with equality only for a centred process."
+  },
+  {
+   "type": "math",
+   "latex": "C_p=\\frac{USL-LSL}{6\\sigma},\\qquad C_{pk}=\\min\\left(\\frac{USL-\\mu}{3\\sigma},\\frac{\\mu-LSL}{3\\sigma}\\right)",
+   "caption": "Process capability indices (normally distributed, stable process)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Cp and Cpk for a ground shaft",
+   "prompt": "A shaft has a specification of $25.00\\pm0.05$ mm. Measurements give a mean of $\\mu=25.012$ mm and standard deviation $\\sigma=0.012$ mm. Find $C_p$ and $C_{pk}$.",
+   "steps": [
+    {
+     "text": "Limits.",
+     "latex": "USL=25.05,\\quad LSL=24.95"
+    },
+    {
+     "text": "Cp from the widths.",
+     "latex": "C_p=\\frac{0.10}{6(0.012)}=1.389"
+    },
+    {
+     "text": "Distances from the mean to each limit in units of $3\\sigma$.",
+     "latex": "\\frac{25.05-25.012}{0.036}=1.056,\\qquad\\frac{25.012-24.95}{0.036}=1.722"
+    },
+    {
+     "text": "Cpk is the smaller.",
+     "latex": "C_{pk}=1.056"
+    }
+   ],
+   "answer": "Cp = 1.39 but Cpk = 1.06; the process is capable in width but off-centre towards the upper limit."
+  },
+  {
+   "type": "text",
+   "markdown": "A $C_{pk}$ below 1 means the nearest specification limit is closer than $3\\sigma$ to the mean, so a noticeable fraction of parts falls beyond it. For a normal distribution, the fraction beyond a limit at distance $z\\sigma$ from the mean is the upper-tail area $Q(z)$, with $z=3C_{pk}$ for the nearest limit. Typical values are tabulated below; the far limit contributes much less, usually negligible unless the process is centred."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$C_{pk}$",
+    "$z=3C_{pk}$",
+    "One-sided fraction beyond nearest limit",
+    "Parts per million"
+   ],
+   "rows": [
+    [
+     "0.67",
+     "2.01",
+     "2.22156%",
+     "22216"
+    ],
+    [
+     "1.00",
+     "3.00",
+     "0.13499%",
+     "1350"
+    ],
+    [
+     "1.33",
+     "4.00",
+     "0.00317%",
+     "31.7"
+    ],
+    [
+     "1.67",
+     "5.00",
+     "0.000029%",
+     "0.29"
+    ]
+   ],
+   "caption": "One-sided normal tail beyond the nearest specification limit; a centred process has two tails"
+  },
+  {
+   "type": "worked_example",
+   "title": "Expected defect rate for Cpk below one",
+   "prompt": "A bored hole has specification $40.00\\pm0.04$ mm. A sample gives $\\mu=40.016$ mm and $\\sigma=0.010$ mm. Compute $C_p$, $C_{pk}$ and the expected fraction out of tolerance.",
+   "steps": [
+    {
+     "text": "Cp.",
+     "latex": "C_p=\\frac{0.08}{6(0.010)}=1.333"
+    },
+    {
+     "text": "Distances to the limits.",
+     "latex": "\\frac{40.04-40.016}{0.030}=0.80,\\qquad\\frac{40.016-39.96}{0.030}=1.87"
+    },
+    {
+     "text": "Cpk and tail beyond the upper limit ($z=3\\times0.80=2.4$).",
+     "latex": "C_{pk}=0.80,\\qquad Q(2.4)=0.00820"
+    },
+    {
+     "text": "Lower tail is negligible, so the total is the upper tail.",
+     "latex": "\\text{defects}\\approx0.82\\%\\approx8198\\ \\text{ppm}"
+    }
+   ],
+   "answer": "Cp is 1.33 (looks capable) but Cpk is 0.80, giving about 0.82 percent defective, mostly above the upper limit."
+  },
+  {
+   "type": "text",
+   "markdown": "Individual part tolerances combine in assemblies. If an assembly dimension is the sum or difference of $n$ independent part dimensions with standard deviations $\\sigma_i$, the variances add: $\\sigma_{asm}=\\sqrt{\\sum\\sigma_i^2}$. This is **statistical (root-sum-square) tolerancing**. The worst-case approach adds the tolerances arithmetically, assuming every part is at its extreme in the worst direction at once, which is extremely unlikely for several parts, so it is overconservative and costly."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_{asm}=\\sqrt{\\sigma_1^2+\\sigma_2^2+\\cdots+\\sigma_n^2},\\qquad T_{asm}=3\\sigma_{asm}\\ \\text{(statistical)}\\quad\\text{versus}\\quad T_{wc}=\\sum 3\\sigma_i",
+   "caption": "Statistical and worst-case assembly tolerance (independent, normal parts, $\\pm3\\sigma$ tolerances)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Statistical tolerance of a stack",
+   "prompt": "Three stacked parts have standard deviations of 0.02, 0.03 and 0.04 mm. Find the assembly standard deviation, the statistical tolerance ($\\pm3\\sigma$) and the worst-case tolerance.",
+   "steps": [
+    {
+     "text": "Add the variances.",
+     "latex": "\\sigma_{asm}^2=0.02^2+0.03^2+0.04^2=0.0029"
+    },
+    {
+     "text": "Square root.",
+     "latex": "\\sigma_{asm}=0.0539\\ \\text{mm},\\qquad T_{asm}=3\\sigma_{asm}=\\pm0.162\\ \\text{mm}"
+    },
+    {
+     "text": "Worst case.",
+     "latex": "T_{wc}=3(0.02+0.03+0.04)=\\pm0.27\\ \\text{mm}"
+    }
+   ],
+   "answer": "The statistical tolerance is about plus or minus 0.16 mm, much tighter than the worst-case plus or minus 0.27 mm."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Reading capability",
+   "text": "A centred process needs $C_p\\ge1.33$ to be comfortably capable (typical customer requirement, not a law). If $C_p$ is large but $C_{pk}$ is small, re-centring the process is cheaper than reducing variation. If both are small, the variation itself must be cut."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Assumptions",
+   "text": "These formulas assume a stable, normal, independent process measured on enough parts. Tool wear drifts the mean over time, so $C_{pk}$ from a short run can overestimate long-term capability. Statistical tolerancing is valid only when parts are independent and the process is in control."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$C_p=(USL-LSL)/6\\sigma$ measures spread against tolerance; $C_{pk}$ also penalises an off-centre mean.",
+    "A $C_{pk}<1$ means the nearest limit is within $3\\sigma$ and the expected fraction out of tolerance is the normal tail beyond $z=3C_{pk}$.",
+    "Assembly standard deviation is the root-sum-square of the part values, giving a statistical tolerance smaller than the worst-case sum.",
+    "Re-centre when $C_p\\gg C_{pk}$; reduce variation when both are low."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A process has $C_p=1.50$ but $C_{pk}=0.50$. What is the correct interpretation?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o1",
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The process is highly capable and centred"
+    },
+    {
+     "id": "b",
+     "text": "The spread is small enough but the mean is far from the centre of the tolerance band"
+    },
+    {
+     "id": "c",
+     "text": "The spread is too large"
+    },
+    {
+     "id": "d",
+     "text": "The specification limits are too wide"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The spread is small enough but the mean is far from the centre of the tolerance band",
+   "distractorRationale": {
+    "a": "A high $C_{pk}$, not a low one, would indicate a centred process.",
+    "c": "A high $C_p$ means the spread fits easily inside the tolerance.",
+    "d": "A high $C_p$ indicates comfortably wide limits relative to the spread."
+   },
+   "explanation": "$C_p$ compares tolerance with spread and ignores the mean, while $C_{pk}$ includes the distance from the mean to the nearest limit. A large gap between them shows the process is off-centre, so re-centring is the cheapest cure.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A turned dimension has specification limits $USL=10.30$ mm and $LSL=9.70$ mm. The process standard deviation is 0.05 mm. Calculate $C_p$.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o1"
+   ],
+   "correctValue": 2.0,
+   "tolerance": 0.01,
+   "unit": "(dimensionless)",
+   "explanation": "The tolerance width is $10.30-9.70=0.60$ mm and the process width is $6\\sigma=0.30$ mm, so $C_p=0.60/0.30=2.00$. The result is independent of where the mean lies.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A dimension has limits $50.00\\pm0.10$ mm. The process has mean 50.03 mm and standard deviation 0.02 mm. Calculate $C_{pk}$.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o1"
+   ],
+   "correctValue": 1.166667,
+   "tolerance": 0.01,
+   "unit": "(dimensionless)",
+   "explanation": "The distance to the upper limit is $50.10-50.03=0.07$ mm and to the lower limit $50.03-49.90=0.13$ mm. The nearer is the upper limit, so $C_{pk}=0.07/(3\\times0.02)=1.167$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a normally distributed process with $C_{pk}=1.00$, roughly what fraction of parts lies beyond the nearest specification limit?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 5 percent"
+    },
+    {
+     "id": "b",
+     "text": "About 32 percent"
+    },
+    {
+     "id": "c",
+     "text": "About 0.0003 percent"
+    },
+    {
+     "id": "d",
+     "text": "About 0.13 percent (1350 ppm)"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "About 0.13 percent (1350 ppm)",
+   "distractorRationale": {
+    "a": "5 percent corresponds to roughly 1.65 sigma, not 3 sigma.",
+    "b": "32 percent is the fraction beyond $\\pm1\\sigma$ on both sides.",
+    "c": "This is the tail for about $z=4.5$, i.e. a $C_{pk}$ near 1.5, far better than 1.0."
+   },
+   "explanation": "$C_{pk}=1$ places the nearest limit exactly $3\\sigma$ from the mean, and the one-sided normal tail beyond $3\\sigma$ is 0.135 percent, i.e. about 1350 ppm. A centred process would also have a similar tail on the other side.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A process has $C_{pk}=0.85$ and is far from the other limit. Estimate the expected fraction of defective parts, assuming normality.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 0.54 percent"
+    },
+    {
+     "id": "b",
+     "text": "About 0.0003 percent"
+    },
+    {
+     "id": "c",
+     "text": "About 5.4 percent"
+    },
+    {
+     "id": "d",
+     "text": "About 15 percent"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About 0.54 percent",
+   "distractorRationale": {
+    "b": "This would correspond to $z\\approx4.5$, i.e. $C_{pk}$ near 1.5, which is far more capable.",
+    "c": "5.4 percent corresponds to $z\\approx1.6$, not $z=3C_{pk}=2.55$.",
+    "d": "15 percent corresponds to a mean about $1\\sigma$ from the limit."
+   },
+   "explanation": "With $C_{pk}=0.85$ the nearest limit is at $z=3(0.85)=2.55$ standard deviations. The upper-tail area $Q(2.55)=0.0054$, about 0.54 percent defective.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A process has $C_p=1.5$ and $C_{pk}=0.6$. Which action is most likely to raise $C_{pk}$ cheaply?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o1",
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Buy a more precise machine to halve $\\sigma$"
+    },
+    {
+     "id": "b",
+     "text": "Widen the specification limits"
+    },
+    {
+     "id": "c",
+     "text": "Re-centre the process mean at the middle of the tolerance band"
+    },
+    {
+     "id": "d",
+     "text": "Inspect every part and scrap bad ones"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Re-centre the process mean at the middle of the tolerance band",
+   "distractorRationale": {
+    "a": "Variation is already small enough ($C_p$ high), so a new machine is wasted effort.",
+    "b": "Changing the specification is not an improvement in process capability and may not be allowed.",
+    "d": "Inspection does not improve capability; it sorts defects at the cost of scrap."
+   },
+   "explanation": "A high $C_p$ with a low $C_{pk}$ indicates a good spread but poor centring. Adjusting the tool offset or setting to move the mean to the centre of the band is typically far cheaper than reducing variation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does statistical (root-sum-square) tolerancing give a smaller assembly tolerance than the worst-case arithmetic sum?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Because standard deviations are always smaller than tolerances"
+    },
+    {
+     "id": "b",
+     "text": "Because root-sum-square ignores the largest tolerance"
+    },
+    {
+     "id": "c",
+     "text": "Because the arithmetic sum includes thermal expansion"
+    },
+    {
+     "id": "d",
+     "text": "Parts rarely sit at their extreme limits in the same direction at the same time, so variances add rather than ranges"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Parts rarely sit at their extreme limits in the same direction at the same time, so variances add rather than ranges",
+   "distractorRationale": {
+    "a": "The reason is not the size of the individual terms but how independent variations combine.",
+    "b": "RSS includes every part; it does not discard one.",
+    "c": "Thermal expansion is not part of either calculation."
+   },
+   "explanation": "For independent parts the variances add, so $\\sigma_{asm}=\\sqrt{\\sum\\sigma_i^2}$. The worst case assumes every part is simultaneously at its extreme, which is unlikely and leads to needlessly tight part tolerances.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Three stacked parts have standard deviations of 0.012 mm, 0.016 mm and 0.021 mm. Calculate the statistical assembly tolerance ($\\pm3\\sigma_{asm}$) in mm.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o3"
+   ],
+   "correctValue": 0.087,
+   "tolerance": 0.003,
+   "unit": "mm",
+   "explanation": "The variances sum to $0.012^2+0.016^2+0.021^2=0.000841$ mm$^2$, so $\\sigma_{asm}=0.0290$ mm. The statistical tolerance is $3\\sigma_{asm}=\\pm0.087$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A supplier reports $C_p=1.8$ and $C_{pk}=0.9$ for a critical bore diameter. Interpret both numbers, estimate the order of the defect rate, and recommend what the supplier should do first.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o1",
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o2"
+   ],
+   "markingGuide": [
+    "$C_p=1.8$ means the spread ($6\\sigma$) is much narrower than the tolerance band",
+    "$C_{pk}=0.9$ means the mean is close to one limit, only $2.7\\sigma$ from it",
+    "Tail beyond $z=2.7$ is about 0.35 percent (a few thousand ppm)",
+    "Diagnosis: process is off-centre, not too variable",
+    "Recommend re-centring (tool offset or setting) before investing in variance reduction"
+   ],
+   "explanation": "The large gap between $C_p$ and $C_{pk}$ shows an off-centre process. At $C_{pk}=0.9$ the nearest limit is $2.7\\sigma$ away, giving around 0.35 percent defective, which is fixed by adjusting the mean.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A designer wants an assembly gap of $\\pm0.12$ mm (taken as $\\pm3\\sigma_{asm}$) from four independent, equal parts. Derive the allowable standard deviation and tolerance for each part under statistical tolerancing, and compare with the worst-case tolerance. Comment on the cost implication.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.process-capability-and-tolerances.capability-indices.o3"
+   ],
+   "markingGuide": [
+    "Statistical: $3\\sigma_{asm}=0.12$ so $\\sigma_{asm}=0.04$ mm",
+    "Equal parts: $\\sigma_{asm}=\\sqrt{4}\\sigma=2\\sigma$ so $\\sigma=0.02$ mm",
+    "Part tolerance $\\pm3\\sigma=\\pm0.06$ mm",
+    "Worst case: $4T=0.12$ so each part only $\\pm0.03$ mm",
+    "Statistical allows twice the tolerance per part, meaning cheaper manufacturing, provided parts are independent and processes are centred and stable"
+   ],
+   "explanation": "RSS gives each part a tolerance of $\\pm0.06$ mm, whereas the worst-case sum would force $\\pm0.03$ mm. Doubling the permitted tolerance on each part can cut manufacturing cost significantly, but the method depends on centred, independent processes.",
+   "board": "internal"
+  }
+ ]
+}

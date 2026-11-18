@@ -1,0 +1,404 @@
+{
+ "lessonTitle": "Block Diagram Algebra: Series, Parallel and Feedback Reduction",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A CNC milling axis has a position loop wrapped around a velocity loop wrapped around a motor. The controller designer does not draw one giant equation: she reduces the diagram block by block until a single transfer function relates commanded position to actual position, and only then asks whether the axis is fast and stable enough."
+  },
+  {
+   "type": "text",
+   "markdown": "A **block diagram** shows how signals flow between subsystems. Each block holds a transfer function $G(s)=Y(s)/U(s)$, the Laplace-domain ratio of output to input with zero initial conditions. Arrows carry signals (position in m, voltage in V, temperature in K, depending on the system). A **summing junction** adds or subtracts the arriving signals according to the signs marked on it, and a **pick-off point** (take-off point) copies the same signal onto two or more branches without changing it. Reduction means replacing a group of blocks by one equivalent block that gives the same input-output relation. All rules here assume linear, time-invariant blocks, so that transfer functions multiply and add."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Series, parallel and feedback connections",
+   "text": "Series: blocks $G_1$ and $G_2$ with the output of the first feeding the second give $G_1G_2$. Parallel: two blocks fed by the same input whose outputs are added at a summing junction give $G_1\\pm G_2$. Feedback: a forward block $G(s)$ with a feedback block $H(s)$ returning the output to a summing junction is a closed loop; the loop is negative if the fed-back signal is subtracted."
+  },
+  {
+   "type": "math",
+   "latex": "G_{\\text{series}}=G_1G_2,\\qquad G_{\\text{parallel}}=G_1+G_2",
+   "caption": "Series multiplies transfer functions; parallel adds them (signs follow the summing junction)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Deriving the feedback formula.** Let the reference be $R(s)$, the output $Y(s)$, the forward block $G(s)$ and the feedback block $H(s)$. The summing junction produces the actuating (error) signal $E(s)=R(s)-H(s)Y(s)$ for negative feedback. The forward block gives $Y(s)=G(s)E(s)$. Substituting the first into the second and collecting $Y$ terms gives the closed-loop transfer function below. For unity feedback $H(s)=1$ it reduces to $G/(1+G)$."
+  },
+  {
+   "type": "math",
+   "latex": "Y=G(R-HY)\\;\\Rightarrow\\;Y(1+GH)=GR\\;\\Rightarrow\\;T(s)=\\frac{Y(s)}{R(s)}=\\frac{G(s)}{1+G(s)H(s)}",
+   "caption": "Negative feedback. For positive feedback the denominator becomes 1 - GH."
+  },
+  {
+   "type": "worked_example",
+   "title": "Closed loop with sensor gain",
+   "prompt": "A position loop has forward transfer function $G(s)=\\dfrac{20}{s(s+4)}$ and a feedback sensor with constant gain $H=0.5$ (negative feedback). Find $T(s)=Y/R$, its DC gain, and the natural frequency and damping ratio of its poles.",
+   "steps": [
+    {
+     "text": "Write the closed-loop formula for negative feedback.",
+     "latex": "T(s)=\\frac{G}{1+GH}"
+    },
+    {
+     "text": "Form $GH$ and substitute: $GH=\\dfrac{20\\cdot0.5}{s(s+4)}=\\dfrac{10}{s(s+4)}$.",
+     "latex": "T=\\frac{\\dfrac{20}{s(s+4)}}{1+\\dfrac{10}{s(s+4)}}"
+    },
+    {
+     "text": "Multiply numerator and denominator by $s(s+4)$ to clear the fractions.",
+     "latex": "T(s)=\\frac{20}{s(s+4)+10}=\\frac{20}{s^2+4s+10}"
+    },
+    {
+     "text": "The DC gain is $T(0)=20/10=2$. Compare with $\\omega_n^2=10$, so $\\omega_n=\\sqrt{10}=3.162$ rad/s, and $2\\zeta\\omega_n=4$, so $\\zeta=4/(2\\times3.162)=0.632$.",
+     "latex": "T(0)=\\frac{20}{10}=2,\\quad \\omega_n=3.162\\ \\text{rad/s},\\quad \\zeta=0.632"
+    }
+   ],
+   "answer": "$T(s)=20/(s^2+4s+10)$, DC gain 2 (not 1, because $H\\neq1$: the DC gain tends to $1/H$ only when the loop gain is large), $\\omega_n=3.16$ rad/s, $\\zeta=0.632$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Move",
+    "Rule: what must be inserted",
+    "Reason"
+   ],
+   "rows": [
+    [
+     "Pick-off from after block $G$ to before $G$",
+     "Insert a block $G$ in the moved branch",
+     "The branch must still carry $Y=GU$"
+    ],
+    [
+     "Pick-off from before block $G$ to after $G$",
+     "Insert a block $1/G$ in the moved branch",
+     "The branch must still carry $U=Y/G$"
+    ],
+    [
+     "Summing junction from after $G$ to before $G$",
+     "Insert $1/G$ in the added signal's path",
+     "The added signal $d$ now passes through $G$, so pre-divide it"
+    ],
+    [
+     "Summing junction from before $G$ to after $G$",
+     "Insert $G$ in the added signal's path",
+     "The added signal must now be scaled the way it would have been"
+    ],
+    [
+     "Two adjacent summing junctions",
+     "They may be swapped or merged freely",
+     "Addition is commutative and associative"
+    ]
+   ],
+   "caption": "Moving points across a block of transfer function G(s)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Moving points across blocks.** The golden rule is that every signal leaving the diagram, and every path from input to output, must be unchanged by the move. A pick-off moved *against* the signal flow (from after a block to before it) must pick up the block it jumped over; moved *with* the flow it needs the reciprocal. A summing junction behaves the opposite way: moving it with the signal flow (from before a block to after it) means the added signal must be multiplied by $G$, because it would have been multiplied by $G$ on the original path. Moves are used to separate overlapping loops so that each can be reduced by the feedback formula."
+  },
+  {
+   "type": "worked_example",
+   "title": "Nested loops",
+   "prompt": "A forward path has a gain block $2$ followed by a plant $G_2=\\dfrac{1}{s+2}$. An inner negative feedback loop of gain $H_2=3$ is wrapped around $G_2$ only, and the whole assembly is placed in an outer unity negative feedback loop. Find the overall transfer function.",
+   "steps": [
+    {
+     "text": "Reduce the inner loop first (it is wrapped around $G_2$ alone), with $H_2=3$.",
+     "latex": "G_{in}=\\frac{G_2}{1+G_2H_2}=\\frac{1/(s+2)}{1+3/(s+2)}=\\frac{1}{s+2+3}=\\frac{1}{s+5}"
+    },
+    {
+     "text": "Put the gain block in series with the reduced inner loop to get the forward path of the outer loop.",
+     "latex": "G_f=2\\cdot\\frac{1}{s+5}=\\frac{2}{s+5}"
+    },
+    {
+     "text": "Close the outer unity-feedback loop: $T=G_f/(1+G_f)$.",
+     "latex": "T(s)=\\frac{2/(s+5)}{1+2/(s+5)}=\\frac{2}{s+7}"
+    },
+    {
+     "text": "Check the DC gain: inner loop DC gain $1/5$, forward DC gain $2/5=0.4$, closed loop $0.4/1.4=0.2857=2/7$. Both routes agree.",
+     "latex": "T(0)=\\frac{2}{7}=0.2857"
+    }
+   ],
+   "answer": "$T(s)=2/(s+7)$: a single pole at $s=-7$ rad/s and DC gain $2/7\\approx0.286$."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Label every signal and identify which summing junctions and pick-offs bound each loop.",
+    "If loops overlap, move a pick-off or a summing junction (using the table) until the loops are nested or separate.",
+    "Reduce all series and parallel groups, then the innermost feedback loop with $G/(1+GH)$.",
+    "Repeat outward until one block remains; simplify the polynomial fraction.",
+    "Check with the DC gain: set $s=0$ in each block and compare with the reduced result."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "The denominator is $1+GH$, the product of the whole loop, not $1+G+H$. A positive feedback junction changes the sign to $1-GH$. A unity-feedback formula applied to a diagram with a sensor gain $H\\neq1$ gives the wrong DC gain, and a pick-off moved across a block without the compensating block silently changes the diagram."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Characteristic equation",
+   "text": "The closed-loop poles are the roots of $1+G(s)H(s)=0$, so feedback moves the poles while leaving the open-loop zeros of $G$ unchanged. The loop product $GH$ is the same wherever you break the loop, which is why equivalent diagrams share the same denominator."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Series blocks multiply, parallel blocks add, and a negative feedback loop reduces to $T=G/(1+GH)$.",
+    "For non-unity feedback the DC gain of the loop is $G(0)/(1+G(0)H(0))$, which approaches $1/H$ for large loop gain.",
+    "Moving a pick-off or summing junction across a block requires inserting that block or its reciprocal so every input-output path is unchanged.",
+    "Reduce nested loops from the innermost outward and verify by checking the DC gain."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A unity negative feedback loop has forward transfer function $G(s)=\\dfrac{8}{s(s+3)}$. What is the closed-loop transfer function $Y/R$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o1",
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dfrac{8}{s^2+3s+8}$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dfrac{8}{s^2+3s}$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dfrac{8}{s^2+3s-8}$"
+    },
+    {
+     "id": "d",
+     "text": "$\\dfrac{1}{s^2+3s+8}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\dfrac{8}{s^2+3s+8}$",
+   "distractorRationale": {
+    "a": "Correct: multiplying through by $s(s+3)$ gives $8/(s^2+3s+8)$.",
+    "b": "This is the open-loop transfer function; feedback was ignored.",
+    "c": "Sign error: positive feedback would give $1-G$, but the loop here is negative.",
+    "d": "The numerator 8 was lost; the forward numerator is retained in $G/(1+G)$."
+   },
+   "explanation": "With unity negative feedback $T=G/(1+G)$. Multiplying numerator and denominator by $s(s+3)$ gives $8/(s(s+3)+8)=8/(s^2+3s+8)$, so the denominator is the open-loop denominator plus the open-loop numerator.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A forward path $G(s)=\\dfrac{20}{(s+4)(s+1)}$ is placed in a negative feedback loop with sensor gain $H=0.2$ (dimensionless). Find the DC gain $T(0)$ of the closed loop (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o1",
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o2"
+   ],
+   "correctValue": 2.5,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "At $s=0$, $G(0)=20/(4\\times1)=5$. Then $T(0)=G(0)/(1+G(0)H)=5/(1+5\\times0.2)=5/2=2.5$. The result is meaningful as a steady-state gain because both closed-loop poles are in the left half-plane.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A first-order plant $G(s)=\\dfrac{50}{s+10}$ (s in rad/s) is wrapped in negative feedback with a constant sensor gain $h$. Find $h$ so that the closed-loop pole sits at $s=-30$ rad/s. Give $h$ as a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o2"
+   ],
+   "correctValue": 0.4,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "The closed-loop denominator is $s+10+50h$ from $1+GH=0$. Setting the pole at $-30$ gives $10+50h=30$, so $h=20/50=0.4$. Higher $h$ pushes the pole further left, giving a faster response.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a diagram a pick-off point takes the signal $Y$ from the output of a block $G(s)=\\dfrac{4}{s+2}$. The pick-off is to be moved to the input of that block while the branch must still deliver $Y$. What must be placed in the moved branch?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A block $\\dfrac{s+2}{4}$"
+    },
+    {
+     "id": "b",
+     "text": "A block $\\dfrac{4}{s+2}$"
+    },
+    {
+     "id": "c",
+     "text": "A unity gain, no block"
+    },
+    {
+     "id": "d",
+     "text": "A block $-\\dfrac{4}{s+2}$ with the sign inverted"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "A block $\\dfrac{4}{s+2}$",
+   "distractorRationale": {
+    "a": "That is $1/G$, which would be needed for moving the pick-off the other way (with the flow).",
+    "b": "Correct: the input signal is $U=Y/G$, so the branch needs $G=4/(s+2)$ to reproduce $Y=GU$.",
+    "c": "Without a block the branch would carry $U$, not $Y$.",
+    "d": "The sign would be wrong; a pick-off only copies a signal and does not invert it."
+   },
+   "explanation": "A pick-off copies a signal, so a branch tapped from the input of $G$ carries $U$, while the original branch carried $Y=GU$. To deliver the same $Y$ the moved branch must multiply by $G$, so the block $4/(s+2)$ is inserted. Moving with the flow would require the reciprocal instead.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A disturbance torque signal $d$ is added by a summing junction at the output of a block $G(s)=\\dfrac{1}{s+4}$. The junction is moved to the input side of $G$ so the output $Y$ is unchanged. What block must be inserted in the $d$ path?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dfrac{1}{s+4}$"
+    },
+    {
+     "id": "b",
+     "text": "$s+4$"
+    },
+    {
+     "id": "c",
+     "text": "A block $s+4$ placed in the main signal path instead"
+    },
+    {
+     "id": "d",
+     "text": "No block: junctions move freely"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$s+4$",
+   "distractorRationale": {
+    "a": "That would multiply $d$ by $G$ a second time; the junction moved before $G$ already passes $d$ through $G$.",
+    "b": "Correct: after the move $d$ passes through $G$, so it must be pre-multiplied by $1/G=s+4$.",
+    "c": "The compensation belongs in the added signal path, not in the main signal path.",
+    "d": "Only adjacent junctions move freely; passing a junction across a dynamic block changes the effect unless compensated."
+   },
+   "explanation": "Originally $Y=GU+d$. After moving the junction ahead of $G$ the path gives $Y=G(U+d')$, which equals the original only if $Gd'=d$, so $d'=d/G=(s+4)d$. The inserted block is the reciprocal of the block that was jumped.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A forward path consists of a gain $4$ in series with two parallel blocks $\\dfrac{1}{s+1}$ and $\\dfrac{2}{s+2}$ whose outputs are added. This is closed with unity negative feedback. Find the closed-loop DC gain $T(0)$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o1"
+   ],
+   "correctValue": 0.889,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "The parallel pair adds to $1/1+2/2=2$ at $s=0$, and in series with the gain 4 the forward DC gain is $G(0)=8$. With unity feedback $T(0)=8/(1+8)=0.889$. The reduction uses series multiplication, parallel addition and then the feedback formula.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A pick-off point located after a block $G(s)$ can be moved to before the block by inserting a block $1/G(s)$ in the moved branch.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The moved branch taps the signal before $G$, so it carries $U$ rather than $Y=GU$. To reproduce $Y$ the branch needs the block $G$, not $1/G$; the reciprocal is needed when moving the pick-off in the direction of signal flow.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A loop has forward block $G(s)=\\dfrac{5}{s+3}$ and a feedback block $H=0.4$ that is added (positive feedback) at the summing junction. What is $Y/R$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o1",
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dfrac{5}{s+5}$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dfrac{5}{s+1}$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dfrac{5}{s+3.4}$"
+    },
+    {
+     "id": "d",
+     "text": "$\\dfrac{2}{s+1}$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$\\dfrac{5}{s+1}$",
+   "distractorRationale": {
+    "a": "That is the negative-feedback result: $s+3+5(0.4)$.",
+    "b": "Correct: $T=G/(1-GH)=\\dfrac{5/(s+3)}{1-2/(s+3)}=\\dfrac{5}{s+1}$.",
+    "c": "Wrong: $H$ was added to the denominator instead of multiplied with $G$.",
+    "d": "The numerator was scaled by $H$, which does not occur in this loop."
+   },
+   "explanation": "For positive feedback $E=R+HY$, so $Y=G(R+HY)$ and $T=G/(1-GH)$. With $GH=2/(s+3)$ the denominator becomes $(s+3-2)/(s+3)$, so $T=5/(s+1)$. The pole moved from $-3$ towards the origin, which shows that positive feedback slows the system.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the closed-loop transfer function of a negative feedback loop with forward block $G(s)$ and feedback block $H(s)$. Then state what changes in the result if the feedback is unity, and explain why the DC gain of the closed loop need not be 1.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o1",
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o2"
+   ],
+   "markingGuide": [
+    "Defines error signal $E=R-HY$ and forward relation $Y=GE$",
+    "Substitutes and solves to obtain $T=G/(1+GH)$",
+    "States that unity feedback ($H=1$) gives $G/(1+G)$",
+    "Notes that the DC gain is $G(0)/(1+G(0)H(0))$, which tends to $1/H(0)$ for large $G(0)$ and equals 1 only when $H(0)=1$ and $G(0)$ is large (or the plant has an integrator)",
+    "Mentions the characteristic equation $1+GH=0$ or the effect on poles"
+   ],
+   "explanation": "A good answer starts from the signal equations at the summing junction and eliminates $E$. The closed-loop DC gain depends on the loop gain $G(0)H(0)$, so a finite-gain plant never tracks a constant reference exactly unless it contains an integrator.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A reduction problem has a feedback pick-off that overlaps a second loop so the loops cannot be reduced directly. Explain, with the rules for moving a pick-off point and a summing junction across a block $G(s)$, how you would rearrange the diagram and why the moved diagram is equivalent.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o1",
+    "ug.mce-system-dynamics-control-1.transfer-functions-and-block-diagrams.block-diagram-algebra.o3"
+   ],
+   "markingGuide": [
+    "States that every input-output path and branch signal must be unchanged after the move",
+    "Pick-off moved against the signal flow (from after $G$ to before $G$) needs $G$ inserted in the branch",
+    "Pick-off moved with the flow needs $1/G$ in the branch",
+    "Summing junction moved ahead of $G$ needs $1/G$ in the added path; moved past $G$ needs $G$ in the added path",
+    "Explains that after the move loops are nested or separate so the feedback formula $G/(1+GH)$ applies innermost first"
+   ],
+   "explanation": "Equivalence is checked by writing the output as a sum over the paths before and after the move. Compensating blocks are exactly what restore each path gain, and once loops no longer share overlapping segments they can be reduced from the inside out.",
+   "board": "internal"
+  }
+ ]
+}

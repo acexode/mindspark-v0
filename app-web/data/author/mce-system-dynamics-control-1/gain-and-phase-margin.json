@@ -1,0 +1,407 @@
+{
+ "lessonTitle": "Gain and Phase Margin: Relative Stability from the Bode Plot",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A technician turns up the position-loop gain on a robot joint to make it stiffer. At first the joint snaps to its target faster; then, a few turns later, it begins to buzz and overshoot wildly, and one more turn would make it shake itself apart. The loop was stable all the way up, but the safety margin shrank with every turn. Gain margin and phase margin are the two numbers that measure how much margin is left."
+  },
+  {
+   "type": "text",
+   "markdown": "Consider a negative unity-feedback loop whose **loop transfer function** is $L(s)=G(s)C(s)$ (controller times plant). The closed-loop poles are the roots of $1+L(s)=0$, so the loop sits on the edge of instability when $L(j\\omega)=-1$, that is, when $|L|=1$ (0 dB) and $\\angle L=-180^\\circ$ at the same frequency. Gain and phase margin measure how far the frequency response of $L$ is from that critical point, using two special frequencies. We use these for loops that are stable in open loop and cross 0 dB once."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Crossover frequencies and margins",
+   "text": "The **gain crossover frequency** $\\omega_{gc}$ is where $|L(j\\omega)|=1$ (0 dB). The **phase margin** is $\\text{PM}=180^\\circ+\\angle L(j\\omega_{gc})$. The **phase crossover frequency** $\\omega_{pc}$ is where $\\angle L(j\\omega)=-180^\\circ$. The **gain margin** is $\\text{GM}=-20\\log_{10}|L(j\\omega_{pc})|$ dB, or the linear factor $1/|L(j\\omega_{pc})|$ by which the gain could be raised before instability. Both margins positive means a stable closed loop."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{PM}=180^\\circ+\\angle L(j\\omega_{gc}),\\qquad \\text{GM}_{\\text{dB}}=-20\\log_{10}\\left|L(j\\omega_{pc})\\right|",
+   "caption": "Read PM on the phase plot at the 0 dB crossing; read GM on the magnitude plot at the -180 degree crossing."
+  },
+  {
+   "type": "text",
+   "markdown": "**Reading a Bode plot.** Find the frequency where the magnitude curve crosses 0 dB; call it $\\omega_{gc}$, and read the phase there. If the phase is $-140^\\circ$, then PM is $40^\\circ$. Then find the frequency where the phase curve crosses $-180^\\circ$; read the magnitude there. If it is $-12$ dB, the gain can be raised by 12 dB (a factor of about 4) before the loop reaches the critical point, so GM = 12 dB. If the magnitude at $\\omega_{pc}$ is above 0 dB, GM is negative and the loop is unstable. Typical design targets are PM of $45^\\circ$ to $60^\\circ$ and GM of at least 6 to 10 dB; these are representative values, not code requirements."
+  },
+  {
+   "type": "worked_example",
+   "title": "Margins of a third-order loop",
+   "prompt": "A joint loop has $L(s)=\\dfrac{20}{s(s+2)(s+5)}$ with $\\omega$ in rad/s. Find the gain crossover frequency, the phase margin, the phase crossover frequency and the gain margin.",
+   "steps": [
+    {
+     "text": "Gain crossover: solve $|L(j\\omega)|=\\dfrac{20}{\\omega\\sqrt{\\omega^2+4}\\sqrt{\\omega^2+25}}=1$. Numerically (bisection) $\\omega_{gc}=1.522$ rad/s; check: $1.522\\times\\sqrt{6.32}\\times\\sqrt{27.32}=1.522\\times2.514\\times5.227=20.0$.",
+     "latex": "\\omega_{gc}=1.522\\ \\text{rad/s}"
+    },
+    {
+     "text": "Phase there: $\\angle L=-90^\\circ-\\tan^{-1}(1.522/2)-\\tan^{-1}(1.522/5)=-90-37.2-16.9=-144.1^\\circ$, so PM $=35.8^\\circ$.",
+     "latex": "\\text{PM}=180-144.2=35.8^\\circ"
+    },
+    {
+     "text": "Phase crossover: $\\tan^{-1}(\\omega/2)+\\tan^{-1}(\\omega/5)=90^\\circ$ requires $(\\omega/2)(\\omega/5)=1$, so $\\omega_{pc}=\\sqrt{10}=3.162$ rad/s.",
+     "latex": "\\omega_{pc}=\\sqrt{10}=3.162\\ \\text{rad/s}"
+    },
+    {
+     "text": "Magnitude there: $20/(3.162\\sqrt{14}\\sqrt{35})=20/70=0.2857$, so GM $=-20\\log_{10}0.2857=10.9$ dB, a gain factor of $70/20=3.5$.",
+     "latex": "\\text{GM}=-20\\log_{10}(0.2857)=10.9\\ \\text{dB}"
+    }
+   ],
+   "answer": "$\\omega_{gc}=1.52$ rad/s, PM $=35.8^\\circ$, $\\omega_{pc}=3.16$ rad/s, GM $=10.9$ dB (the gain 20 can be raised to 70 before instability)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Phase margin and overshoot.** For a standard second-order loop $L(s)=\\omega_n^2/[s(s+2\\zeta\\omega_n)]$ the phase margin is a single-valued function of the closed-loop damping ratio $\\zeta$, rising from $0^\\circ$ at $\\zeta=0$ and roughly $\\text{PM}\\approx100\\zeta$ degrees for $\\zeta<0.6$. A smaller phase margin therefore means a lower $\\zeta$, a larger step overshoot $\\exp(-\\pi\\zeta/\\sqrt{1-\\zeta^2})$ and more ringing. Higher-order loops behave approximately like this when a single pair of poles dominates."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Damping ratio $\\zeta$",
+    "Phase margin (deg)",
+    "Step overshoot (%)"
+   ],
+   "rows": [
+    [
+     "0.1",
+     "11.4",
+     "72.9"
+    ],
+    [
+     "0.2",
+     "22.6",
+     "52.7"
+    ],
+    [
+     "0.3",
+     "33.3",
+     "37.2"
+    ],
+    [
+     "0.4",
+     "43.1",
+     "25.4"
+    ],
+    [
+     "0.5",
+     "51.8",
+     "16.3"
+    ],
+    [
+     "0.6",
+     "59.2",
+     "9.5"
+    ],
+    [
+     "0.7",
+     "65.2",
+     "4.6"
+    ]
+   ],
+   "caption": "Second-order loop L = wn^2/(s(s+2 zeta wn)): exact phase margin and closed-loop overshoot"
+  },
+  {
+   "type": "worked_example",
+   "title": "From a loop to overshoot",
+   "prompt": "A position loop $L(s)=\\dfrac{64}{s(s+8)}$ is closed with unity feedback. Find the gain crossover frequency, PM, the damping ratio and overshoot.",
+   "steps": [
+    {
+     "text": "Compare with $\\omega_n^2/[s(s+2\\zeta\\omega_n)]$: $\\omega_n^2=64$, so $\\omega_n=8$ rad/s, and $2\\zeta\\omega_n=8$, so $\\zeta=0.5$.",
+     "latex": "\\omega_n=8\\ \\text{rad/s},\\quad \\zeta=0.5"
+    },
+    {
+     "text": "Gain crossover: $64=\\omega^2(\\omega^2+64)$ gives $\\omega^2=39.55$, so $\\omega_{gc}=6.29$ rad/s.",
+     "latex": "\\omega_{gc}=6.29\\ \\text{rad/s}"
+    },
+    {
+     "text": "Phase margin: $\\text{PM}=90^\\circ-\\tan^{-1}(6.29/8)=90-38.2=51.8^\\circ$.",
+     "latex": "\\text{PM}=51.8^\\circ"
+    },
+    {
+     "text": "Overshoot from $\\zeta=0.5$: $\\exp(-\\pi\\times0.5/\\sqrt{0.75})=e^{-1.814}=16.3\\%$.",
+     "latex": "\\text{OS}=16.3\\%"
+    }
+   ],
+   "answer": "$\\omega_{gc}=6.29$ rad/s, PM $=51.8^\\circ$, $\\zeta=0.5$, step overshoot $16.3\\%$ (agrees with the table)."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Obtain $|L(j\\omega)|$ and $\\angle L(j\\omega)$, in dB and degrees, versus a log frequency axis.",
+    "Locate $\\omega_{gc}$ at 0 dB and compute $\\text{PM}=180^\\circ+\\angle L(j\\omega_{gc})$.",
+    "Locate $\\omega_{pc}$ where the phase is $-180^\\circ$ and compute $\\text{GM}=-|L(j\\omega_{pc})|_{\\text{dB}}$.",
+    "Interpret: positive margins mean stable; PM of $45^\\circ$ to $60^\\circ$ gives moderate overshoot.",
+    "Raise the gain: the magnitude curve moves up, $\\omega_{gc}$ increases and PM usually drops."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Gain margin is read at the phase crossover frequency, not at the gain crossover frequency, and phase margin the other way round. Margins are not a guarantee on their own: a loop can have large margins at one crossing and still be fragile if there are multiple crossovers. Use the 20 log10 conversion, and do not mix degrees with radians."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why margins matter",
+   "text": "Real plants differ from their models through delays, unmodelled dynamics and gain variation. A larger PM tolerates extra phase lag (such as a time delay $T$ costing $\\omega_{gc}T$ radians), and a larger GM tolerates gain variations. Both are proxies for damping."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The gain crossover frequency $\\omega_{gc}$ is where $|L|=1$; phase margin is $180^\\circ+\\angle L(j\\omega_{gc})$.",
+    "Gain margin is $-20\\log_{10}|L|$ evaluated at the phase crossover frequency where $\\angle L=-180^\\circ$.",
+    "Reducing phase margin lowers the effective damping ratio and increases overshoot and ringing.",
+    "Increasing loop gain raises $\\omega_{gc}$ and generally erodes both margins until the loop becomes unstable."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A unity-feedback loop has $L(s)=\\dfrac{50}{s(s+10)}$ with $\\omega$ in rad/s. Find the gain crossover frequency in rad/s.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o3"
+   ],
+   "correctValue": 4.55,
+   "tolerance": 0.05,
+   "unit": "rad/s",
+   "explanation": "Set $|L(j\\omega)|=50/(\\omega\\sqrt{\\omega^2+100})=1$, so $\\omega^2(\\omega^2+100)=2500$. With $x=\\omega^2$ this is $x^2+100x-2500=0$, giving $x=20.71$ and $\\omega=4.55$ rad/s (the negative root is rejected).",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "From a Bode plot of a loop transfer function $L$, the magnitude crosses 0 dB at 30 rad/s where the phase reads $-195^\\circ$. The phase crosses $-180^\\circ$ at 22 rad/s where the magnitude is $+4$ dB. What do these readings tell you?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Stable, with PM $=15^\\circ$ and GM $=4$ dB"
+    },
+    {
+     "id": "b",
+     "text": "Unstable, with PM $=-15^\\circ$ and GM $=-4$ dB"
+    },
+    {
+     "id": "c",
+     "text": "Stable, with PM $=195^\\circ$"
+    },
+    {
+     "id": "d",
+     "text": "Marginally stable with PM $=0^\\circ$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Unstable, with PM $=-15^\\circ$ and GM $=-4$ dB",
+   "distractorRationale": {
+    "a": "The signs are wrong: the phase at the 0 dB crossing is below $-180^\\circ$.",
+    "b": "Correct: PM $=180-195=-15^\\circ$ and GM $=-(+4)=-4$ dB, both negative, so the closed loop is unstable.",
+    "c": "The phase value is not the margin; PM is $180^\\circ$ plus the phase.",
+    "d": "Marginal stability requires the phase to be exactly $-180^\\circ$ at 0 dB."
+   },
+   "explanation": "At the gain crossover the phase is $-195^\\circ$, past the critical $-180^\\circ$, giving PM $=-15^\\circ$. At the phase crossover the loop gain is above 0 dB, so the gain margin is $-4$ dB. Negative margins indicate an unstable closed loop (for a stable open-loop loop).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A loop's Bode plot shows the magnitude crossing 0 dB at 25 rad/s, where the phase reads $-141^\\circ$. Find the phase margin in degrees.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o1"
+   ],
+   "correctValue": 39,
+   "tolerance": 1,
+   "unit": "deg",
+   "explanation": "The phase margin is $180^\\circ$ plus the phase at the gain crossover, so $\\text{PM}=180-141=39^\\circ$. A positive PM means the loop is stable, with moderate damping.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The phase margin of a well-damped servo loop is reduced from $60^\\circ$ to $30^\\circ$ by increasing the loop gain. Which change in the closed-loop step response is expected?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Overshoot rises (from about 10% to about 35-40%) and the response rings more"
+    },
+    {
+     "id": "b",
+     "text": "Overshoot falls and the response becomes more sluggish"
+    },
+    {
+     "id": "c",
+     "text": "Overshoot is unchanged because only the speed changes"
+    },
+    {
+     "id": "d",
+     "text": "The steady-state value changes by 30 degrees"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Overshoot rises (from about 10% to about 35-40%) and the response rings more",
+   "distractorRationale": {
+    "a": "Correct: PM maps roughly to $\\zeta\\approx\\text{PM}/100$, so $\\zeta$ falls from about 0.6 to 0.3 and overshoot rises from about 10% to about 37%.",
+    "b": "The effect is reversed: less phase margin means less damping, not more.",
+    "c": "Margin and overshoot are linked; less margin always increases overshoot for this kind of loop.",
+    "d": "Phase margin is an angle at the crossover; it is not a steady-state shift."
+   },
+   "explanation": "For a dominant second-order loop, $\\text{PM}\\approx100\\zeta$, so halving the phase margin roughly halves the damping ratio. The overshoot exp$(-\\pi\\zeta/\\sqrt{1-\\zeta^2})$ increases from about 10% at $\\zeta=0.6$ to about 37% at $\\zeta=0.3$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A servo loop that behaves like a standard second-order system has a measured phase margin of $45^\\circ$. What step overshoot would you expect, roughly?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 23%"
+    },
+    {
+     "id": "b",
+     "text": "About 45%"
+    },
+    {
+     "id": "c",
+     "text": "About 5%"
+    },
+    {
+     "id": "d",
+     "text": "About 9%"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About 23%",
+   "distractorRationale": {
+    "a": "Correct: $\\text{PM}=45^\\circ$ corresponds to $\\zeta\\approx0.42$, and overshoot $e^{-\\pi\\zeta/\\sqrt{1-\\zeta^2}}\\approx23\\%$.",
+    "b": "The percent overshoot is not numerically equal to the phase margin.",
+    "c": "That would be a phase margin near $65^\\circ$ ($\\zeta\\approx0.7$).",
+    "d": "That would be a phase margin near $60^\\circ$ ($\\zeta\\approx0.6$)."
+   },
+   "explanation": "From the table, a PM of $43^\\circ$ gives 25% and $52^\\circ$ gives 16%, so $45^\\circ$ lies near 23%. Equivalently PM $=45^\\circ$ means $\\zeta\\approx0.42$, and $e^{-\\pi(0.42)/0.907}=e^{-1.454}=23\\%$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A loop $L(s)=K/[s(s+4)]$ is closed with unity feedback. When $K$ is increased, what happens to the gain crossover frequency and the phase margin?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o2",
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\omega_{gc}$ increases and PM decreases"
+    },
+    {
+     "id": "b",
+     "text": "$\\omega_{gc}$ decreases and PM increases"
+    },
+    {
+     "id": "c",
+     "text": "Both $\\omega_{gc}$ and PM increase"
+    },
+    {
+     "id": "d",
+     "text": "Both are unchanged because $K$ only scales the phase"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\omega_{gc}$ increases and PM decreases",
+   "distractorRationale": {
+    "a": "Correct: a higher $K$ lifts the magnitude curve so it crosses 0 dB at a higher frequency, where the phase $-90^\\circ-\\tan^{-1}(\\omega/4)$ is more negative, so PM falls.",
+    "b": "The magnitude curve moves up, so the crossing moves up in frequency, not down.",
+    "c": "The phase at a higher crossover is more negative, so the margin decreases.",
+    "d": "A constant gain does not change the phase of $L$, but it changes where 0 dB occurs, so the margin changes."
+   },
+   "explanation": "The gain $K$ does not change $\\angle L(j\\omega)$ at a given frequency, but it moves the 0 dB crossing to a higher $\\omega$. Because the phase of this loop decreases monotonically towards $-180^\\circ$, the phase margin $90^\\circ-\\tan^{-1}(\\omega_{gc}/4)$ shrinks as $K$ grows.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A loop has a gain margin of 14 dB. By what factor (dimensionless) can the loop gain be multiplied before the closed loop reaches the stability limit?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o1"
+   ],
+   "correctValue": 5.01,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "The gain margin in linear terms is $10^{14/20}=5.01$. The gain can therefore be increased about five-fold, assuming the phase is unchanged, before $|L(j\\omega_{pc})|$ reaches 1.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "For a loop that behaves like a second-order system, a larger phase margin generally corresponds to less step overshoot in the closed loop.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A larger phase margin corresponds to a larger damping ratio $\\zeta$, and overshoot falls as $\\zeta$ rises. For example, 52 degrees gives about 16% overshoot while 65 degrees gives about 5%.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how to read gain margin and phase margin from a Bode plot of $L(j\\omega)$, naming the frequency at which each is read, and say what it means if either margin is negative.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o1",
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o3"
+   ],
+   "markingGuide": [
+    "Gain crossover frequency is where the magnitude plot crosses 0 dB",
+    "Phase margin $=180^\\circ+$ phase read at that frequency",
+    "Phase crossover frequency is where the phase plot crosses $-180^\\circ$",
+    "Gain margin $=-$(magnitude in dB) read at that frequency; linear factor $=1/|L|$",
+    "Negative margin indicates an unstable closed loop (for a typical open-loop stable plant)"
+   ],
+   "explanation": "A good answer keeps the two crossings distinct and notes that each margin is the distance of the locus from the critical point $-1$ in one coordinate (magnitude or angle). The margins are signed quantities.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A loop gain is increased by a factor of 3 in a servo with $L(s)=K/[s(s+4)]$. Explain, using the Bode plot, why the phase margin falls, what happens to the gain crossover frequency, and how the closed-loop overshoot and speed of response are expected to change.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o2",
+    "ug.mce-system-dynamics-control-1.stability.gain-and-phase-margin.o3"
+   ],
+   "markingGuide": [
+    "Raising gain lifts the magnitude plot by $20\\log_{10}3=9.5$ dB without changing the phase plot",
+    "The 0 dB crossing moves to a higher frequency",
+    "The phase at the new crossing is more negative, so PM falls",
+    "Smaller PM implies lower damping ratio and larger overshoot with more ringing",
+    "Higher crossover frequency (bandwidth) gives a faster response and shorter rise time"
+   ],
+   "explanation": "The trade-off between speed and robustness is the central point. A bigger gain buys bandwidth at the expense of margin, so the designer chooses the gain to meet a target PM, commonly $45^\\circ$ to $60^\\circ$.",
+   "board": "internal"
+  }
+ ]
+}

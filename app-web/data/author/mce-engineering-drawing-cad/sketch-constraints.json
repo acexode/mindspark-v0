@@ -1,0 +1,422 @@
+{
+ "lessonTitle": "Geometric and Dimensional Constraints",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "You drag one corner of a sketched bracket outline and the whole profile twists like a loose coat hanger. The sketch was never fully defined: it had degrees of freedom nobody had removed."
+  },
+  {
+   "type": "text",
+   "markdown": "A **sketch** is a two-dimensional profile from which solid features are built. Each sketch entity has **degrees of freedom (DOF)**, the independent numbers needed to fix it. A point has 2 (x and y), a line has 4 (two end points), a circle has 3 (centre x, centre y, radius). **Constraints** remove DOF: **geometric constraints** (relations such as horizontal, vertical, tangent, concentric, symmetric, coincident, equal, perpendicular) and **dimensional constraints** (numerical sizes)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Constraint",
+    "Typical DOF removed",
+    "Effect"
+   ],
+   "rows": [
+    [
+     "Coincident (point on point)",
+     "2",
+     "Joins two points"
+    ],
+    [
+     "Horizontal or vertical (line)",
+     "1",
+     "Aligns a line with an axis"
+    ],
+    [
+     "Parallel / perpendicular",
+     "1",
+     "Relates two lines"
+    ],
+    [
+     "Tangent",
+     "1",
+     "Smooth transition of a line and an arc"
+    ],
+    [
+     "Concentric (two circles)",
+     "2",
+     "Same centre"
+    ],
+    [
+     "Equal (two lengths or radii)",
+     "1",
+     "Same size"
+    ],
+    [
+     "Fixed point at origin",
+     "2",
+     "Locks position"
+    ],
+    [
+     "One dimension",
+     "1",
+     "Sets a size or distance"
+    ]
+   ],
+   "caption": "DOF removed by common constraints (independent use)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Defined, under-defined, over-defined",
+   "text": "A sketch is **fully defined** when its remaining DOF is 0, so nothing can move. It is **under-defined** if DOF > 0: parts can still be dragged. It is **over-defined** if a constraint is redundant (repeats a restriction) or conflicting (cannot be satisfied with the others); solvers report an error and the extra constraint must be removed."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{DOF}_{\\text{remaining}} = \\sum \\text{DOF}_{\\text{entities}} - \\sum \\text{DOF removed by independent constraints}",
+   "caption": "A sketch is fully defined when this value reaches zero"
+  },
+  {
+   "type": "worked_example",
+   "title": "Counting a rectangle",
+   "prompt": "A rectangle is sketched as four separate lines. Count the DOF as you add constraints, until fully defined.",
+   "steps": [
+    {
+     "text": "Four lines have 4 DOF each.",
+     "latex": "4 \\times 4 = 16"
+    },
+    {
+     "text": "Four coincident constraints at the corners remove 2 each.",
+     "latex": "16 - 4(2) = 8"
+    },
+    {
+     "text": "Two horizontal and two vertical constraints remove 1 each.",
+     "latex": "8 - 4 = 4"
+    },
+    {
+     "text": "Width and height dimensions remove 2 more, leaving the position (x, y).",
+     "latex": "4 - 2 = 2"
+    },
+    {
+     "text": "Fixing one corner at the origin removes the final 2.",
+     "latex": "2 - 2 = 0"
+    }
+   ],
+   "answer": "The rectangle reaches 0 DOF with 4 coincident, 4 horizontal/vertical, 2 dimensions and 1 fixed point."
+  },
+  {
+   "type": "worked_example",
+   "title": "A plate with two holes",
+   "prompt": "Two circles are sketched. The first centre is made coincident with the origin; the second centre is placed on the x axis; a spacing dimension of 50 mm between the centres is added, and each diameter is dimensioned. Is the sketch fully defined? What happens if a second 50 mm dimension (a horizontal one) is added?",
+   "steps": [
+    {
+     "text": "Two circles have 3 + 3 = 6 DOF."
+    },
+    {
+     "text": "Constraints: first centre at origin (2), second centre on x axis (1), spacing (1), two diameters (2).",
+     "latex": "2 + 1 + 1 + 2 = 6"
+    },
+    {
+     "text": "Remaining DOF is 6 - 6 = 0, so the sketch is fully defined."
+    },
+    {
+     "text": "A second dimension that repeats the 50 mm spacing is redundant: it removes no new DOF, and the sketch becomes over-defined (a conflict if the second value differs)."
+    }
+   ],
+   "answer": "Fully defined with 0 DOF; the extra dimension makes it over-defined."
+  },
+  {
+   "type": "text",
+   "markdown": "**Design intent in dimensions.** Choose dimensions that say what the part *means*, not whatever is easiest to read. If two holes must stay symmetric about a centreline, use a **symmetric** constraint and one spacing dimension, so changing the spacing keeps them symmetric, instead of two separate distances that can drift apart. Dimension from the datum that matters functionally, and use **equal** or tangent relations rather than typing the same number twice."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Constraints before dimensions",
+   "text": "Use geometric relations for facts that are always true (tangent, concentric, symmetric, equal). Use dimensions only for sizes that are genuine design variables."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Sketch roughly, then add geometric constraints for what is always true.",
+    "Add the dimensions that carry design intent.",
+    "Watch the DOF count fall toward zero.",
+    "If a constraint is flagged as redundant or conflicting, remove it rather than forcing it."
+   ]
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Entities carry DOF (point 2, line 4, circle 3) and each independent constraint removes some.",
+    "Fully defined means 0 DOF; under-defined means DOF remain; over-defined means a redundant or conflicting constraint.",
+    "Choose constraints and dimensions that express design intent, such as symmetric and equal relations."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which constraint makes a straight line meet an arc smoothly without a corner?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Perpendicular"
+    },
+    {
+     "id": "b",
+     "text": "Tangent"
+    },
+    {
+     "id": "c",
+     "text": "Concentric"
+    },
+    {
+     "id": "d",
+     "text": "Vertical"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Tangent",
+   "distractorRationale": {
+    "a": "Corner.",
+    "b": "Correct.",
+    "c": "Same centre.",
+    "d": "Aligns with the axis."
+   },
+   "explanation": "A tangent constraint makes the line direction equal to the arc direction at the contact point. Perpendicular would create a corner.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A sketch with 0 degrees of freedom remaining is described as:",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Under-defined"
+    },
+    {
+     "id": "b",
+     "text": "Fully defined"
+    },
+    {
+     "id": "c",
+     "text": "Over-defined"
+    },
+    {
+     "id": "d",
+     "text": "Free"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Fully defined",
+   "distractorRationale": {
+    "a": "DOF would remain.",
+    "b": "Correct.",
+    "c": "Redundant constraint.",
+    "d": "Not a term."
+   },
+   "explanation": "Zero DOF means nothing can move, so the sketch is fully defined. Remaining DOF means under-defined; redundant constraints mean over-defined.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A triangle is sketched as three lines (12 DOF). The three corners are made coincident (2 DOF each), one corner is fixed at the origin (2 DOF), the base is made horizontal (1 DOF) and the base length is dimensioned (1 DOF). How many DOF remain?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o2"
+   ],
+   "correctValue": 2,
+   "tolerance": 0.01,
+   "unit": "DOF",
+   "explanation": "12 - 6 - 2 - 1 - 1 = 2. Two further dimensions (for example a height and an angle) would fully define the triangle shape.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A fully defined rectangular plate outline has 0 DOF. A hole (circle, 3 DOF) is added, with its diameter and its distance from the left edge dimensioned. How many DOF remain?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o2"
+   ],
+   "correctValue": 1,
+   "tolerance": 0.01,
+   "unit": "DOF",
+   "explanation": "Two dimensions remove 2 of the circle's 3 DOF, leaving 1 (the vertical position of the centre). A third dimension from the bottom edge would complete the definition.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A hub sketch has an outer circle and a bore that must always share a centre, however either diameter is edited. Which is the best way to capture this?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o1",
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Dimension each centre from the origin separately"
+    },
+    {
+     "id": "b",
+     "text": "Apply a concentric constraint between the two circles"
+    },
+    {
+     "id": "c",
+     "text": "Make both circles equal"
+    },
+    {
+     "id": "d",
+     "text": "Add a horizontal constraint to each"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Apply a concentric constraint between the two circles",
+   "distractorRationale": {
+    "a": "Can drift apart.",
+    "b": "Correct.",
+    "c": "Forces equal size, not equal centre.",
+    "d": "Aligns lines, not circles."
+   },
+   "explanation": "A concentric constraint keeps the centres coincident by construction, so edits to either diameter cannot move them apart. Two separate dimensions can be changed independently.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A fully defined sketch has a 60 mm dimension added that repeats the length already set by other dimensions. What happens?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Nothing, the extra dimension is ignored silently"
+    },
+    {
+     "id": "b",
+     "text": "The sketch is over-defined with a redundant constraint"
+    },
+    {
+     "id": "c",
+     "text": "The sketch becomes under-defined"
+    },
+    {
+     "id": "d",
+     "text": "The sketch gains a DOF"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The sketch is over-defined with a redundant constraint",
+   "distractorRationale": {
+    "a": "It is flagged.",
+    "b": "Correct.",
+    "c": "DOF count unchanged.",
+    "d": "It does not add DOF."
+   },
+   "explanation": "The new dimension removes no further DOF, so it is redundant; if its value differed it would also conflict. The solver flags the over-definition.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A 100 mm wide plate has two holes that must always be symmetric about its centre, with the spacing as the design variable. Which dimensioning scheme best captures design intent?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Each hole 10 mm from its nearest edge"
+    },
+    {
+     "id": "b",
+     "text": "One 80 mm spacing dimension with a symmetric constraint about the centreline"
+    },
+    {
+     "id": "c",
+     "text": "Two separate 40 mm dimensions from the centre"
+    },
+    {
+     "id": "d",
+     "text": "Dimensions to convenient 5 mm multiples from the left edge"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "One 80 mm spacing dimension with a symmetric constraint about the centreline",
+   "distractorRationale": {
+    "a": "Tied to edges.",
+    "b": "Correct.",
+    "c": "Drift is possible.",
+    "d": "Not intent."
+   },
+   "explanation": "Symmetry plus one spacing dimension ensures the holes stay symmetric when the spacing is edited. The other schemes tie the holes to edges or allow drift.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the difference between an under-defined, a fully defined and an over-defined sketch, and how the DOF count shows each.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o2"
+   ],
+   "markingGuide": [
+    "Under: DOF > 0, entities can still move",
+    "Fully: DOF = 0",
+    "Over: redundant or conflicting constraint, extra constraint removes no DOF or cannot be satisfied",
+    "Remedy: add constraints or remove the redundant one"
+   ],
+   "explanation": "A good answer links each state to the DOF count: more than zero means under-defined, exactly zero means fully defined, and a repeated or contradictory constraint means over-defined. Each point in the marking guide earns credit, so state every point explicitly and give its reason.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A flange profile has an outer circle, a bore and four equal holes on a bolt circle. State the constraints and dimensions you would use to capture design intent, rather than convenient numbers.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o1",
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o3"
+   ],
+   "markingGuide": [
+    "Concentric: bore and outer circle share a centre",
+    "Equal constraint for the four holes",
+    "Bolt circle diameter as one driving dimension; holes spaced with symmetric or angle pattern",
+    "Bore diameter and outer diameter as key dimensions",
+    "Fix centre at the origin"
+   ],
+   "explanation": "A good answer uses relations (concentric, equal, symmetric) so that each real requirement is expressed once. Each point in the marking guide earns credit, so state every point explicitly and give its reason.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A concentric constraint between two circles makes their centres coincide.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.sketching-and-constraints.sketch-constraints.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Concentric places both circles on the same centre, removing 2 DOF. Their radii remain independent unless an equal constraint or dimensions are added.",
+   "board": "internal"
+  }
+ ]
+}

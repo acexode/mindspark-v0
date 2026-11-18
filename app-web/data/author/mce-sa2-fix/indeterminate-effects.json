@@ -1,0 +1,385 @@
+{
+ "lessonTitle": "Settlement, Misfit and Temperature Effects",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A steam pipe 60 m long, rigidly anchored at both ends, grows by 40 mm when it goes from cold to operating temperature. If the anchors are really rigid, the pipe cannot grow, and the stress it develops is enough to buckle the pipe or shear the anchors. Engineers fit expansion loops precisely to avoid this. The same logic governs a bridge pier that sinks by a few millimetres or a bolt that is slightly too long."
+  },
+  {
+   "type": "text",
+   "markdown": "In a **statically determinate** structure, the supports give just enough constraint to hold the structure in equilibrium. Imposed deformations, such as a temperature change, a lack of fit or a support settlement, can be accommodated by rigid-body movement, so they induce **no stress**. In a **statically indeterminate** structure the redundant constraints prevent this free movement and the imposed deformation forces the structure to deform elastically, producing **self-stresses** and reactions with no external load at all. We assume linear-elastic behaviour, small deformations and constant section and temperature along each member."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Self-stress",
+   "text": "Stress that exists in a structure without any external load, caused by an imposed deformation (temperature, misfit, settlement) that the redundant constraints prevent from occurring freely. It is found by compatibility, not equilibrium alone."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta_T=\\alpha\\,\\Delta T\\,L,\\qquad\\sigma=E\\left(\\varepsilon_{total}-\\alpha\\Delta T\\right)",
+   "caption": "Free thermal expansion (coefficient of thermal expansion $\\alpha$) and thermal stress; if the bar is fully restrained, $\\varepsilon_{total}=0$ and $\\sigma=-E\\alpha\\Delta T$"
+  },
+  {
+   "type": "worked_example",
+   "title": "Lack of fit in a two-bar assembly",
+   "prompt": "A steel bar (area $A_1=400$ mm$^2$, $E_1=200$ GPa) and an aluminium bar (area $A_2=300$ mm$^2$, $E_2=70$ GPa), each of length $L=500$ mm, connect two rigid plates. Before assembly the aluminium bar is 0.15 mm too short, and is forced to fit. Find the force in the bars and the stresses.",
+   "steps": [
+    {
+     "text": "There is no external load, so equilibrium of one plate requires equal and opposite bar forces: the steel bar is in compression, the aluminium bar in tension, with the same magnitude $F$.",
+     "latex": "F_{steel}=F_{Al}=F"
+    },
+    {
+     "text": "Compatibility: the aluminium bar is stretched and the steel bar is compressed so that their combined deformation takes up the misfit.",
+     "latex": "\\Delta=\\frac{FL}{A_1E_1}+\\frac{FL}{A_2E_2}"
+    },
+    {
+     "text": "Flexibilities, $f=L/(AE)$.",
+     "latex": "f_1=\\frac{500}{400(200000)}=6.250\\times10^{-6},\\quad f_2=\\frac{500}{300(70000)}=2.381\\times10^{-5}\\ \\text{mm/N}"
+    },
+    {
+     "text": "Solve for the force.",
+     "latex": "F=\\frac{0.15}{6.250\\times10^{-6}+2.381\\times10^{-5}}=4990\\ \\text{N}"
+    },
+    {
+     "text": "Stresses.",
+     "latex": "\\sigma_{steel}=\\frac{4990}{400}=12.5\\ \\text{MPa (compression)},\\quad\\sigma_{Al}=\\frac{4990}{300}=16.6\\ \\text{MPa (tension)}"
+    }
+   ],
+   "answer": "$F\\approx4.99$ kN; steel $12.5$ MPa compressive, aluminium $16.6$ MPa tensile. The less stiff bar takes most of the misfit."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Settlement.** If a support of a continuous beam moves down by $\\Delta$, a **determinate** beam (for example a simply supported one) simply rotates as a rigid body, so there is no bending moment and the reactions do not change. In a **continuous** beam, the settled support must still be reached by the beam: the beam is forced to bend, which changes the bending moments and **redistributes the reactions**. For a two-span beam with equal spans $L$, flexural rigidity $EI$ and a uniform load $w$, the central reaction without settlement is $5wL/4$, and settlement of the central support by $\\Delta$ reduces it by $6EI\\Delta/L^3$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Imposed effect",
+    "Determinate structure",
+    "Indeterminate structure"
+   ],
+   "rows": [
+    [
+     "Temperature change",
+     "Free expansion; no stress",
+     "Restrained expansion; thermal stress $E\\alpha\\Delta T$ (if fully restrained)"
+    ],
+    [
+     "Lack of fit",
+     "Member moves into place; no stress",
+     "Forced fit; self-stress and forces from compatibility"
+    ],
+    [
+     "Support settlement",
+     "Rigid-body motion; reactions unchanged",
+     "Moments and reactions redistribute"
+    ],
+    [
+     "Fixed-fixed beam, one end settles by $\\Delta$",
+     "(not determinate)",
+     "End moments $M=6EI\\Delta/L^2$ and shear $V=12EI\\Delta/L^3$"
+    ]
+   ],
+   "caption": "Effect of imposed deformations"
+  },
+  {
+   "type": "worked_example",
+   "title": "Support settlement in a two-span beam",
+   "prompt": "A two-span continuous beam has equal spans $L=4$ m, uniform load $w=10$ kN/m on both spans and $EI=200\\text{ GPa}\\times8\\times10^7\\text{ mm}^4=16000$ kN m$^2$. The central support settles by 5 mm. Find the central reaction and the end reactions.",
+   "steps": [
+    {
+     "text": "Without settlement the central reaction is $5wL/4$.",
+     "latex": "R_B^{(0)}=\\frac{5(10)(4)}{4}=50.0\\ \\text{kN}"
+    },
+    {
+     "text": "Settlement reduces it by $6EI\\Delta/L^3$ (the settled support relaxes part of its load).",
+     "latex": "\\Delta R=\\frac{6(16000)(0.005)}{4^3}=7.5\\ \\text{kN}"
+    },
+    {
+     "text": "New central reaction.",
+     "latex": "R_B=50.0-7.5=42.5\\ \\text{kN}"
+    },
+    {
+     "text": "End reactions from vertical equilibrium (total load $wL\\times2=80$ kN, shared equally by symmetry).",
+     "latex": "R_A=R_C=\\frac{80-42.5}{2}=18.75\\ \\text{kN}"
+    }
+   ],
+   "answer": "$R_B=42.5$ kN (down from 50 kN); $R_A=R_C=18.75$ kN (up from 15 kN)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Thermal stress in a fully restrained bar",
+   "prompt": "A steel bar is held between two rigid walls and heated by $\\Delta T=40$ K. Take $E=200$ GPa and $\\alpha=12\\times10^{-6}$ per K (typical). Find the stress, and compare with the same bar free at one end.",
+   "steps": [
+    {
+     "text": "If the bar were free, it would expand by $\\alpha\\Delta T$ per unit length.",
+     "latex": "\\varepsilon_T=12\\times10^{-6}\\times40=4.8\\times10^{-4}"
+    },
+    {
+     "text": "The walls prevent all expansion, so total strain is zero and the mechanical strain is $-\\varepsilon_T$.",
+     "latex": "\\sigma=-E\\alpha\\Delta T=-200000\\times4.8\\times10^{-4}=-96\\ \\text{MPa (compressive)}"
+    },
+    {
+     "text": "Free at one end: the bar is a determinate member and simply grows, so $\\sigma=0$ regardless of $\\Delta T$."
+    }
+   ],
+   "answer": "Restrained: $\\sigma=96$ MPa compressive, independent of length. Free: zero stress."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find the free (unrestrained) deformation: $\\alpha\\Delta T L$, a misfit $\\Delta$ or a settlement.",
+    "Write the compatibility condition between that imposed deformation and the elastic deformation of the redundant members.",
+    "Solve for the redundant force or moment (note that no external load is needed).",
+    "Check signs: a restrained heated member is in compression; a too-short member is stretched."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Statically determinate means no self-stress",
+   "text": "If you find a stress in a determinate structure caused only by a temperature change or misfit, you have made an error: the structure can always rearrange to accommodate it."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Self-stress scales with stiffness",
+   "text": "The stiffer the restraint and the members, the larger the self-stress. A thermal stress $E\\alpha\\Delta T$ does not depend on the bar length, only on the material and temperature rise."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A determinate structure carries no stress from temperature change, lack of fit or settlement because it can deform freely as a mechanism.",
+    "In an indeterminate structure, compatibility between the imposed deformation and elastic deformation gives the redundant force; for two bars in parallel $F=\\Delta/(f_1+f_2)$ with $f=L/AE$.",
+    "Fully restrained thermal stress is $\\sigma=-E\\alpha\\Delta T$; a partial gap reduces the restrained strain accordingly.",
+    "Settlement redistributes reactions in continuous beams, e.g. $\\Delta R=6EI\\Delta/L^3$ at the central support of a two-span beam."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A simply supported steel truss heats up uniformly by 40 K while its supports remain free to slide horizontally at one end. Why does it develop no thermal stress?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is statically determinate, so it can expand freely as a rigid-body movement of its members and supports"
+    },
+    {
+     "id": "b",
+     "text": "Steel has no thermal expansion"
+    },
+    {
+     "id": "c",
+     "text": "Thermal expansion always produces tension and compression that cancel"
+    },
+    {
+     "id": "d",
+     "text": "The truss is too light to develop stress"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is statically determinate, so it can expand freely as a rigid-body movement of its members and supports",
+   "distractorRationale": {
+    "a": "Correct: no redundant constraints, so nothing prevents free expansion.",
+    "b": "Steel does expand; $\\alpha\\approx12\\times10^{-6}$ per K.",
+    "c": "Individual members still expand but nothing is forced to extend or contract elastically, so the net stress is zero.",
+    "d": "Self-weight is irrelevant to thermal stress."
+   },
+   "explanation": "Thermal stress arises only when expansion is prevented. A determinate structure has exactly enough supports for equilibrium, so each member can change length without any other member resisting.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An aluminium bar ($E=70$ GPa, $\\alpha=23\\times10^{-6}$ per K, typical) is held rigidly between two fixed walls and warmed by 30 K. The thermal stress is closest to",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "48 MPa tensile"
+    },
+    {
+     "id": "b",
+     "text": "96 MPa compressive"
+    },
+    {
+     "id": "c",
+     "text": "48 MPa compressive"
+    },
+    {
+     "id": "d",
+     "text": "0 MPa"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "48 MPa compressive",
+   "distractorRationale": {
+    "a": "Restrained expansion produces compression, not tension.",
+    "b": "Doubles the correct value, perhaps from using $2E\\alpha\\Delta T$.",
+    "c": "Correct: $-E\\alpha\\Delta T=-70000\\times23\\times10^{-6}\\times30=-48.3$ MPa.",
+    "d": "The bar is restrained, so the stress is not zero."
+   },
+   "explanation": "With total strain zero, the elastic strain equals $-\\alpha\\Delta T=-6.9\\times10^{-4}$ and the stress is $E$ times that, $-48.3$ MPa. Compression results because the walls push back against the attempted expansion.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel bar (area 500 mm$^2$, $E=200$ GPa) and a brass bar (area 250 mm$^2$, $E=100$ GPa), each 400 mm long, connect two rigid end plates. The brass bar was 0.10 mm too short and has been forced to fit with no external load. Find the force in each bar in newtons.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o1"
+   ],
+   "correctValue": 5000.0,
+   "tolerance": 50,
+   "unit": "N",
+   "explanation": "$f_1=400/(500\\times200000)=4.0\\times10^{-6}$ and $f_2=400/(250\\times100000)=1.6\\times10^{-5}$ mm/N. Compatibility gives $\\Delta=F(f_1+f_2)$, so $F=0.10/(2.0\\times10^{-5})=5000$ N, tension in brass and compression in steel.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A tie rod and a stiff sleeve form a parallel assembly between rigid plates; the rod was machined 0.2 mm short. Describe how you would find the force induced, and say whether the rod or the sleeve carries the larger stress. State the equilibrium and compatibility equations used.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o1"
+   ],
+   "markingGuide": [
+    "Equilibrium with no external load: tension in the rod equals compression in the sleeve, $F_r=F_s=F$.",
+    "Compatibility: rod extension plus sleeve shortening equals the misfit, $\\Delta=FL/(A_rE_r)+FL/(A_sE_s)$.",
+    "Solve $F=\\Delta/(f_r+f_s)$ with $f=L/AE$.",
+    "Stress is force divided by area; the member with the smaller area carries the larger stress (the rod, if its area is smaller).",
+    "The more flexible member absorbs most of the misfit deformation."
+   ],
+   "explanation": "Equilibrium fixes the equal-and-opposite forces but not their size. The size comes from the geometric requirement that the deformations of the two members together close the 0.2 mm gap.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A two-span continuous beam has equal spans $L=3$ m and carries $w=12$ kN/m on both spans, with $EI=9000$ kN m$^2$. Without settlement the central reaction is $5wL/4$. The central support settles by 3 mm. Find the new central reaction in kN. (Settlement reduces the reaction by $6EI\\Delta/L^3$.)",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o2"
+   ],
+   "correctValue": 39.0,
+   "tolerance": 0.2,
+   "unit": "kN",
+   "explanation": "The initial reaction is $5(12)(3)/4=45$ kN. The reduction is $6(9000)(0.003)/3^3=6.0$ kN, so $R_B=39$ kN. The end supports pick up the 6 kN, 3 kN each.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A fixed-fixed steel beam of span 2.5 m has $E=200$ GPa and $I=2.0\\times10^7$ mm$^4$. One support settles by 2 mm relative to the other, with no applied load. Find the magnitude of the end moment $M=6EI\\Delta/L^2$ in kN m.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o2"
+   ],
+   "correctValue": 7.68,
+   "tolerance": 0.05,
+   "unit": "kN m",
+   "explanation": "$EI=200000\\times2.0\\times10^7=4.0\\times10^{12}$ N mm$^2$. Then $M=6(4.0\\times10^{12})(2)/(2500)^2=7.68\\times10^{6}$ N mm $=7.68$ kN m. The end shear is $12EI\\Delta/L^3=6144$ N.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel bar ($E=200$ GPa, $\\alpha=12\\times10^{-6}$ per K) of length 1.0 m is placed between a rigid wall and a stop with a 0.30 mm gap at one end. It is heated by 60 K. Find the compressive stress in the bar in MPa once the gap closes.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o3"
+   ],
+   "correctValue": 84.0,
+   "tolerance": 1.0,
+   "unit": "MPa",
+   "explanation": "Free expansion is $\\alpha\\Delta TL=12\\times10^{-6}\\times60\\times1000=0.72$ mm. The gap absorbs 0.30 mm, so the restrained expansion is 0.42 mm, giving a strain of $4.2\\times10^{-4}$ and $\\sigma=E\\varepsilon=84$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A simply supported beam (supported at its two ends) and a two-span continuous beam (supported at both ends and at mid-length) of the same material are each subjected to a 5 mm settlement of one support: an end support for the simply supported beam and the middle support for the continuous beam. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Both develop the same moments"
+    },
+    {
+     "id": "b",
+     "text": "The simply supported beam develops no moments, while the continuous beam's moments and reactions change"
+    },
+    {
+     "id": "c",
+     "text": "Only the simply supported beam develops moments"
+    },
+    {
+     "id": "d",
+     "text": "Neither is affected, since settlement acts only on loads"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The simply supported beam develops no moments, while the continuous beam's moments and reactions change",
+   "distractorRationale": {
+    "a": "The reaction pattern depends on indeterminacy.",
+    "b": "Correct: the determinate beam rotates as a rigid body; the continuous beam must bend.",
+    "c": "The reverse of the true situation.",
+    "d": "Settlement is an imposed displacement that does change the continuous beam's forces."
+   },
+   "explanation": "A determinate beam can accept any support movement as a rigid-body rotation, so internal forces are unchanged. In a continuous beam the redundant support forces the beam to bend, so the moments and reactions are redistributed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain, with a brief example of each, why a temperature rise causes no stress in a statically determinate bar but causes large stress in a fully restrained bar. Derive the restrained thermal stress, and state what happens if one end has a gap $g$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o3"
+   ],
+   "markingGuide": [
+    "Free bar: expands by $\\alpha\\Delta TL$, so strain is entirely thermal and the mechanical strain and stress are zero.",
+    "Restrained bar: total strain is zero, so the mechanical strain is $-\\alpha\\Delta T$ and $\\sigma=-E\\alpha\\Delta T$ (compression for heating).",
+    "The stress is independent of the length of the bar.",
+    "With a gap $g$: expansion is first free up to $g$; after contact the restrained strain is $(\\alpha\\Delta TL-g)/L$ and $\\sigma=E(\\alpha\\Delta TL-g)/L$, if positive.",
+    "A stress develops only when the imposed deformation exceeds the available free movement, which is the same reason determinate structures carry none."
+   ],
+   "explanation": "Stress is produced by the elastic strain needed to make the bar fit its constraint. If the supports allow the free thermal strain, no elastic strain is needed; if they forbid it, the elastic strain is the negative of the thermal strain.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: a lack of fit in a statically determinate truss member produces no stress when the truss is assembled.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o1",
+    "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A determinate truss can adjust its joint positions to accommodate a slightly too-long or too-short member without any member being forced to extend. Self-stress from lack of fit occurs only in indeterminate structures.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,407 @@
+{
+ "lessonTitle": "DC and Brushless Motors: Torque, Speed and Back-EMF",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A mobile-robot drive wheel jams against a kerb and the motor housing is too hot to touch within seconds, even though the battery voltage never changed. The motor equations explain why: a stalled motor has no back-EMF to oppose the supply, so current is limited only by winding resistance."
+  },
+  {
+   "type": "text",
+   "markdown": "A permanent-magnet DC motor converts electrical power to mechanical power through two coupled effects. Current $I$ in the armature produces torque; rotation at angular speed $\\omega$ induces a **back-EMF** that opposes the supply. Everything in this unit follows from those two relations plus Kirchhoff's voltage law around the armature circuit. Brushless DC (BLDC) motors obey the same equations per phase pair, with an electronic controller replacing the brushes."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Motor constants",
+   "text": "The **torque constant** $K_t$ (N m per A) relates torque to current, $T=K_tI$. The **back-EMF constant** $K_e$ (V s per rad) relates induced voltage to speed, $E=K_e\\omega$. In consistent SI units $K_t=K_e$ numerically, because electrical power $EI$ equals mechanical power $T\\omega$. Assumptions: constant magnetic field, negligible inductance in steady state, no friction unless stated."
+  },
+  {
+   "type": "math",
+   "latex": "V = I R + K_e \\omega",
+   "caption": "Armature voltage equation (R in ohms, V in volts, omega in rad/s)"
+  },
+  {
+   "type": "math",
+   "latex": "\\omega = \\frac{V}{K_e} - \\frac{R}{K_e K_t}\\,T",
+   "caption": "Speed-torque line obtained by substituting I = T/K_t"
+  },
+  {
+   "type": "worked_example",
+   "title": "Stall and no-load values",
+   "prompt": "A brushed motor has $K_t=K_e=0.040$ N m/A and $R=1.2\\ \\Omega$ and is run from 24 V. Find stall torque, stall current, no-load speed, and the speed when the load torque is 0.20 N m.",
+   "steps": [
+    {
+     "text": "At stall $\\omega=0$, so there is no back-EMF and $I=V/R$.",
+     "latex": "I_s=\\frac{24}{1.2}=20.0\\ \\text{A}"
+    },
+    {
+     "text": "Stall torque is torque constant times stall current.",
+     "latex": "T_s=K_tI_s=0.040\\times20=0.80\\ \\text{N m}"
+    },
+    {
+     "text": "At no load $T=0$, so $I=0$ and the back-EMF equals the supply.",
+     "latex": "\\omega_0=\\frac{V}{K_e}=\\frac{24}{0.040}=600\\ \\text{rad/s}=5730\\ \\text{rpm}"
+    },
+    {
+     "text": "With 0.20 N m the current is $T/K_t$, then solve the voltage equation for speed.",
+     "latex": "I=\\frac{0.20}{0.040}=5.0\\ \\text{A},\\quad \\omega=\\frac{24-5.0\\times1.2}{0.040}=450\\ \\text{rad/s}"
+    }
+   ],
+   "answer": "Stall torque 0.80 N m at 20 A; no-load speed 600 rad/s (5730 rpm); at 0.20 N m the speed is 450 rad/s (4297 rpm)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Brushed DC",
+    "Brushless DC (BLDC)"
+   ],
+   "rows": [
+    [
+     "Commutation",
+     "Mechanical brushes and commutator",
+     "Electronic, using rotor position (Hall sensors or back-EMF)"
+    ],
+    [
+     "Drive electronics",
+     "Single H-bridge or half-bridge",
+     "Three-phase inverter and commutation logic"
+    ],
+    [
+     "Wear and maintenance",
+     "Brush wear limits life",
+     "No brushes, long life"
+    ],
+    [
+     "Torque-speed behaviour",
+     "Linear line from $T_s$ to $\\omega_0$",
+     "Same linear form using line-to-line constants"
+    ],
+    [
+     "Cost and simplicity",
+     "Low cost, simple control",
+     "Higher cost, more complex control"
+    ]
+   ],
+   "caption": "Brushed versus brushless motors"
+  },
+  {
+   "type": "text",
+   "markdown": "**Motor and gearbox selection.** Motors are most efficient at high speed and low torque, while many machines need high torque at low speed. A gearbox of ratio $N$ (motor turns per output turn) trades speed for torque. The motor must satisfy two checks: its continuous torque rating (heating) must not be exceeded, and the supply voltage must be high enough to reach the required speed against the back-EMF."
+  },
+  {
+   "type": "math",
+   "latex": "T_{out}=N\\eta T_m,\\qquad \\omega_{out}=\\frac{\\omega_m}{N}",
+   "caption": "Gearbox with efficiency eta (0 to 1)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Selecting a gear ratio",
+   "prompt": "An axis needs 4.0 N m at 60 rpm ($2\\pi$ rad/s) from the motor above ($K_t=K_e=0.040$ N m/A, $R=1.2\\ \\Omega$), with gearbox efficiency 0.85, a typical continuous motor torque limit of 0.15 N m and a 24 V supply. Find a suitable ratio.",
+   "steps": [
+    {
+     "text": "Torque check sets the minimum ratio: $N \\ge T_{out}/(\\eta T_c)$.",
+     "latex": "N\\ge\\frac{4.0}{0.85\\times0.15}=31.4"
+    },
+    {
+     "text": "Try $N=35$. The motor torque and current are then:",
+     "latex": "T_m=\\frac{4.0}{35\\times0.85}=0.1345\\ \\text{N m},\\quad I=\\frac{T_m}{K_t}=3.361\\ \\text{A}"
+    },
+    {
+     "text": "The motor must turn $N$ times faster than the output.",
+     "latex": "\\omega_m=35\\times2\\pi=219.9\\ \\text{rad/s}"
+    },
+    {
+     "text": "Voltage check using the armature equation.",
+     "latex": "V=IR+K_e\\omega_m=4.03+8.80=12.83\\ \\text{V}"
+    }
+   ],
+   "answer": "N = 35 meets both checks: motor torque 0.134 N m is below 0.15 N m, and the required 12.8 V is below the 24 V supply."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Stall current",
+   "text": "Stall current $V/R$ can be many times the continuous rating, so a stalled motor overheats and can demagnetise or burn its windings. Drives need current limiting, because the motor itself provides no protection at standstill."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Reading the speed-torque line",
+   "text": "Supply voltage scales both intercepts (stall torque and no-load speed) in proportion, leaving the slope $R/(K_eK_t)$ unchanged. A stiffer line (small $R$) means speed changes little with load."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Torque is $T=K_tI$ and back-EMF is $E=K_e\\omega$, with $K_t=K_e$ in SI units.",
+    "Speed under load follows $\\omega=(V-IR)/K_e$ with $I=T/K_t$.",
+    "Stall torque is $K_tV/R$ and no-load speed is $V/K_e$ (ideal, ignoring friction).",
+    "A gearbox multiplies torque by $N\\eta$ and divides speed by $N$; check both the torque rating and the required supply voltage."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A permanent-magnet motor has a torque constant of 0.050 N m/A. What is its back-EMF constant in SI units?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.050 V per rpm"
+    },
+    {
+     "id": "b",
+     "text": "0.314 V s/rad"
+    },
+    {
+     "id": "c",
+     "text": "20 V s/rad"
+    },
+    {
+     "id": "d",
+     "text": "0.050 V s/rad"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "0.050 V s/rad",
+   "distractorRationale": {
+    "a": "A per-rpm constant would be much smaller, because one rpm is 0.105 rad/s.",
+    "b": "This multiplies by $2\\pi$, which confuses rev/s with rad/s.",
+    "c": "This is the reciprocal, which would be the ratio of speed to voltage.",
+    "d": "Correct: in SI units the two constants are numerically equal."
+   },
+   "explanation": "Electrical power in the back-EMF, $E I = K_e\\omega I$, must equal mechanical power $T\\omega = K_tI\\omega$, so $K_e=K_t$ numerically when volts per radian per second and N m per ampere are used. Therefore the back-EMF constant is 0.050 V s/rad.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A DC motor on a fixed supply voltage accelerates from standstill with no load change. What happens to the armature current as the speed rises?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It rises, because the motor does more work"
+    },
+    {
+     "id": "b",
+     "text": "It stays constant, because the supply voltage is constant"
+    },
+    {
+     "id": "c",
+     "text": "It reverses direction when back-EMF exceeds the supply"
+    },
+    {
+     "id": "d",
+     "text": "It falls, because the back-EMF increases and reduces the voltage across the resistance"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It falls, because the back-EMF increases and reduces the voltage across the resistance",
+   "distractorRationale": {
+    "a": "Mechanical output depends on torque and speed; current is set by the voltage across R.",
+    "b": "Constant voltage does not mean constant current, because the net voltage across R changes.",
+    "c": "At most the back-EMF reaches the supply at ideal no-load speed, where current is zero, not negative.",
+    "d": "Correct: back-EMF opposes the supply and reduces the current."
+   },
+   "explanation": "The current is $I=(V-K_e\\omega)/R$, so as speed rises the back-EMF grows and the net voltage across the winding resistance falls. This is why starting current is largest at standstill.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A motor has $K_t=0.025$ N m/A and $R=0.50\\ \\Omega$ and is supplied with 12 V. What is its stall torque?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.15 N m"
+    },
+    {
+     "id": "b",
+     "text": "0.60 N m"
+    },
+    {
+     "id": "c",
+     "text": "480 N m"
+    },
+    {
+     "id": "d",
+     "text": "1.2 N m"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "0.60 N m",
+   "distractorRationale": {
+    "a": "This multiplies by the resistance instead of dividing.",
+    "b": "Correct: 0.025 x 12 / 0.50 = 0.60 N m.",
+    "c": "This is $V/K_t$, which has units of rad/s and is the no-load speed in the ideal case, not torque.",
+    "d": "This doubles the correct value, for example by halving the resistance."
+   },
+   "explanation": "At stall the current is $V/R=12/0.50=24$ A, so $T_s=K_tI=0.025\\times24=0.60$ N m. The result is torque constant times voltage divided by resistance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A motor delivering 0.30 N m at 3000 rpm drives a 10:1 reduction gearbox of efficiency 90 percent. What are the output torque and speed?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3.0 N m at 300 rpm"
+    },
+    {
+     "id": "b",
+     "text": "2.7 N m at 30000 rpm"
+    },
+    {
+     "id": "c",
+     "text": "0.27 N m at 300 rpm"
+    },
+    {
+     "id": "d",
+     "text": "2.7 N m at 300 rpm"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "2.7 N m at 300 rpm",
+   "distractorRationale": {
+    "a": "This ignores the 10 percent loss.",
+    "b": "This multiplies the speed, which a reduction gearbox cannot do.",
+    "c": "This divides the torque instead of multiplying it.",
+    "d": "Correct: torque is multiplied by N and efficiency, speed is divided by N."
+   },
+   "explanation": "Output torque is $N\\eta T_m=10\\times0.90\\times0.30=2.7$ N m and output speed is $3000/10=300$ rpm. Efficiency reduces torque only, because the speed ratio is fixed by the gear teeth.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The supply voltage of a DC motor is halved from 24 V to 12 V. How does the ideal speed-torque line change?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Stall torque halves but no-load speed is unchanged"
+    },
+    {
+     "id": "b",
+     "text": "No-load speed halves but stall torque is unchanged"
+    },
+    {
+     "id": "c",
+     "text": "Stall torque and no-load speed both halve and the slope is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "Both intercepts are unchanged but the slope halves"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Stall torque and no-load speed both halve and the slope is unchanged",
+   "distractorRationale": {
+    "a": "No-load speed $V/K_e$ also depends on V, so it cannot remain unchanged.",
+    "b": "Stall torque $K_tV/R$ also depends on V, so it cannot remain unchanged.",
+    "c": "Correct: both intercepts scale with V and the slope is fixed by R, Ke and Kt.",
+    "d": "Slope depends on motor constants only, not on supply voltage."
+   },
+   "explanation": "Stall torque is $K_tV/R$ and no-load speed is $V/K_e$, both proportional to voltage, while the slope $R/(K_eK_t)$ depends only on motor constants. The line therefore shifts down in parallel.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "An ideal motor has a back-EMF constant of 0.0125 V s/rad and is supplied with 12 V. Calculate the no-load speed in rpm.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o2"
+   ],
+   "correctValue": 9167.3,
+   "tolerance": 10,
+   "unit": "rpm",
+   "explanation": "No-load speed is $V/K_e=12/0.0125=960$ rad/s, which is 9167 rpm after multiplying by $60/(2\\pi)$. At no load the back-EMF equals the supply.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A motor with $K_t=K_e=0.060$ N m/A and armature resistance 0.80 ohm runs from 36 V and carries a steady load torque of 0.45 N m. Calculate its speed in rad/s.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o1"
+   ],
+   "correctValue": 500.0,
+   "tolerance": 3,
+   "unit": "rad/s",
+   "explanation": "Current is $I=T/K_t=0.45/0.060=7.5$ A. Then $\\omega=(V-IR)/K_e=(36-7.5\\times0.80)/0.060=500$ rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An axis needs 6.0 N m at 20 rad/s. The gearbox has efficiency 0.80 and the motor ($K_t=K_e=0.050$ N m/A, $R=0.90$ ohm) has a continuous torque limit of 0.25 N m. Taking the smallest ratio that respects the torque limit, calculate the supply voltage needed, in volts.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o1",
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o3"
+   ],
+   "correctValue": 34.5,
+   "tolerance": 0.3,
+   "unit": "V",
+   "explanation": "The smallest ratio is $N=6.0/(0.80\\times0.25)=30$, giving motor torque 0.25 N m and current 5.0 A. The motor speed is $30\\times20=600$ rad/s, so $V=IR+K_e\\omega=4.5+30.0=34.5$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Starting from the armature voltage equation and $T=K_tI$, derive the ideal speed-torque relationship of a DC motor, and use it to explain what the stall torque and the no-load speed physically represent and why prolonged stall is dangerous.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o1",
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o2"
+   ],
+   "markingGuide": [
+    "Writes $V=IR+K_e\\omega$ and substitutes $I=T/K_t$ to reach $\\omega=V/K_e-RT/(K_eK_t)$ (2 marks)",
+    "Identifies no-load speed $V/K_e$ as the speed where back-EMF equals supply and current is zero (2 marks)",
+    "Identifies stall torque $K_tV/R$ as the torque with zero speed, no back-EMF and current $V/R$ (2 marks)",
+    "Notes the line is straight with slope set by $R/(K_eK_t)$ and shifts with voltage (1 mark)",
+    "States that stall current dissipates $I^2R$ with no mechanical output, so winding overheats unless current is limited (2 marks)"
+   ],
+   "explanation": "Substituting $I=T/K_t$ into $V=IR+K_e\\omega$ gives a straight line in torque and speed. Its intercepts are the no-load speed and stall torque, and at stall all electrical power becomes heat in the winding resistance.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "An axis must deliver 5.0 N m at 10 rad/s through a gearbox of efficiency 0.85. The motor has $K_t=K_e=0.050$ N m/A, $R=0.90$ ohm, a continuous torque limit of 0.20 N m, and is supplied with 24 V. Show how the torque limit and the supply voltage each restrict the gear ratio, and decide whether ratios of 20 and 100 are acceptable.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o1",
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o2",
+    "ug.mce-mechatronics-instrumentation.motor-drives.dc-bldc-motors.o3"
+   ],
+   "markingGuide": [
+    "Torque limit gives $N \\ge 5.0/(0.85\\times0.20)=29.4$, so a ratio of 20 overloads the motor (motor torque about 0.29 N m) (2 marks)",
+    "Voltage requirement is $V=\\dfrac{T_{out}R}{N\\eta K_t}+K_eN\\omega_{out}\\le24$ V, which rises with $N$ through the back-EMF term (2 marks)",
+    "Solving the quadratic gives an upper limit near $N\\approx43$ (and a lower root near 5), so a ratio of 100 needs motor speed of 1000 rad/s and about 51 V, which exceeds 24 V (2 marks)",
+    "Concludes the feasible range is roughly 29 to 43, for example N = 30 to 40 (1 mark)",
+    "Comments that the chosen ratio should leave margin on both limits (1 mark)"
+   ],
+   "explanation": "The torque limit sets a lower bound of about 29.4 and the 24 V supply sets an upper bound of about 43.1. Ratio 20 fails the torque limit and ratio 100 fails the voltage limit.",
+   "board": "internal"
+  }
+ ]
+}

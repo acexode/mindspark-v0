@@ -1,0 +1,389 @@
+{
+ "lessonTitle": "Plane Stress vs Plane Strain and Symmetry",
+ "estimatedMinutes": 38,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 3 mm sheet-metal bracket and a 40 m long concrete dam section are both 'two-dimensional' in the software, but the first is free to thin or thicken through its thickness while the second is held by the material on either side. Pick the wrong idealisation and the stiffness matrix you build can be off by roughly 10 to 20 per cent for metals, even with a perfect mesh."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** A 2D element describes a body by its in-plane displacements $u$ and $v$ only. To do this the third direction must be reduced to a simple rule. There are two limiting rules. In **plane stress** the body is thin and unloaded on its large faces, so $\\sigma_z=0$ while the thickness is free to change ($\\varepsilon_z=-\\nu(\\sigma_x+\\sigma_y)/E\\neq0$). In **plane strain** the body is very long in $z$, constrained by neighbouring material, so $\\varepsilon_z=0$ while $\\sigma_z=\\nu(\\sigma_x+\\sigma_y)\\neq0$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Plane stress and plane strain",
+   "text": "Plane stress: $\\sigma_z=\\tau_{xz}=\\tau_{yz}=0$; appropriate for a thin plate loaded in its own plane (thickness much smaller than the other dimensions). Plane strain: $\\varepsilon_z=\\gamma_{xz}=\\gamma_{yz}=0$; appropriate for a long prismatic body whose cross-section and loading do not vary along its length, such as a dam, a retaining wall or a long pipe far from its ends."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{D}_{\\text{plane strain}}=\\frac{E}{(1+\\nu)(1-2\\nu)}\\begin{bmatrix}1-\\nu&\\nu&0\\\\\\nu&1-\\nu&0\\\\0&0&\\dfrac{1-2\\nu}{2}\\end{bmatrix}",
+   "caption": "Plane-strain constitutive matrix (compare plane stress: $\\frac{E}{1-\\nu^2}[\\,1,\\nu,0;\\ \\nu,1,0;\\ 0,0,\\frac{1-\\nu}{2}\\,]$)"
+  },
+  {
+   "type": "text",
+   "markdown": "The two matrices differ only in how $E$ and $\\nu$ are combined. For $\\nu=0$ they are identical. As $\\nu$ increases the plane-strain material is **stiffer** in-plane because the missing thickness change adds restraint, and as $\\nu\\to0.5$ (incompressible) the plane-strain matrix tends to infinity, which is why nearly incompressible materials need special elements. The shear entry is always $G=E/[2(1+\\nu)]$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparing the two matrices for steel",
+   "prompt": "For steel with $E=200$ GPa and $\\nu=0.3$ compute $D_{11}$, $D_{12}$ and $D_{33}$ in plane stress and in plane strain, and the out-of-plane stress for a plane-strain state with $\\sigma_x=100$ MPa and $\\sigma_y=30$ MPa.",
+   "steps": [
+    {
+     "text": "Plane-stress prefactor and entries.",
+     "latex": "\\frac{E}{1-\\nu^2}=219780,\\ D_{11}=219780,\\ D_{12}=65934,\\ D_{33}=76923\\ \\text{MPa}"
+    },
+    {
+     "text": "Plane-strain prefactor and entries.",
+     "latex": "\\frac{E}{(1+\\nu)(1-2\\nu)}=384615,\\ D_{11}=269231,\\ D_{12}=115385,\\ D_{33}=76923\\ \\text{MPa}"
+    },
+    {
+     "text": "Plane strain is stiffer in the normal terms (the ratio of the $D_{11}$ values) but the shear term is identical.",
+     "latex": "\\frac{D_{11}^{\\text{strain}}}{D_{11}^{\\text{stress}}}=1.225,\\quad D_{33}\\ \\text{equal}"
+    },
+    {
+     "text": "Out-of-plane stress in plane strain from $\\sigma_z=\\nu(\\sigma_x+\\sigma_y)$.",
+     "latex": "\\sigma_z=0.3(100+30)=39.0\\ \\text{MPa}"
+    }
+   ],
+   "answer": "Plane strain gives $D_{11}=269231$ MPa against $219780$ MPa for plane stress (a ratio of 1.225), the shear terms both equal $G=76923$ MPa, and $\\sigma_z=39$ MPa in plane strain (zero in plane stress)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Plane stress",
+    "Plane strain"
+   ],
+   "rows": [
+    [
+     "Assumption",
+     "$\\sigma_z=0$",
+     "$\\varepsilon_z=0$"
+    ],
+    [
+     "Typical body",
+     "Thin plate, loaded in its plane",
+     "Long prismatic body: dam, retaining wall, tunnel section, long cylinder"
+    ],
+    [
+     "Out-of-plane quantity",
+     "$\\varepsilon_z=-\\nu(\\sigma_x+\\sigma_y)/E$",
+     "$\\sigma_z=\\nu(\\sigma_x+\\sigma_y)$"
+    ],
+    [
+     "Stiffness for $\\nu>0$",
+     "More flexible",
+     "Stiffer"
+    ],
+    [
+     "Thickness input",
+     "$t$ in the element stiffness",
+     "Unit length (loads per unit depth)"
+    ]
+   ],
+   "caption": "Choosing an idealisation"
+  },
+  {
+   "type": "text",
+   "markdown": "**Symmetry.** If geometry, material, supports **and** loads are all symmetric about a plane, only part of the body needs to be modelled. On a symmetry plane the displacement **normal** to the plane is zero and the plane is free to slide in its own direction (no shear traction). For a plate with a central hole under uniform tension along $x$, two symmetry planes give a quarter model: $u_x=0$ on the cut at $x=0$ and $u_y=0$ on the cut at $y=0$. The load on the quarter is the share that falls on its own boundary: the loaded edge of the quarter has half the width of the full edge, so it carries half of the total force."
+  },
+  {
+   "type": "worked_example",
+   "title": "Quarter-plate model with a hole",
+   "prompt": "A steel plate ($W=100$ mm wide, $t=5$ mm thick) has a central circular hole of diameter $d=20$ mm and is loaded in tension by a gross stress $\\sigma_g=80$ MPa. A quarter model with fine mesh near the hole gives a peak stress of $238$ MPa at the hole edge. Compare with the handbook value using $K_{t,\\text{net}}\\approx3.00-3.14(d/W)+3.667(d/W)^2-1.527(d/W)^3$ (a typical correlation based on net section stress).",
+   "steps": [
+    {
+     "text": "Apply symmetry: remove two quarters, fix $u_x=0$ on the vertical symmetry cut and $u_y=0$ on the horizontal cut. The loaded end of the quarter is half the width, so the edge force is $\\sigma_g(W/2)t$.",
+     "latex": "F_{\\text{quarter}}=(80)(50)(5)=20000\\ \\text{N}"
+    },
+    {
+     "text": "Net-section nominal stress. The hole removes the fraction $d/W=0.20$ of the width: $\\sigma_{\\text{net}}=\\sigma_g/(1-d/W)$.",
+     "latex": "\\sigma_{\\text{net}}=\\frac{80}{1-0.20}=100.0\\ \\text{MPa}"
+    },
+    {
+     "text": "Concentration factor from the correlation at $d/W=0.20$.",
+     "latex": "K_{t,\\text{net}}=3.00-0.628+0.147-0.012=2.506"
+    },
+    {
+     "text": "Predicted peak stress and error of the FE value.",
+     "latex": "\\sigma_{\\max}=2.506\\times100.0=250.6\\ \\text{MPa},\\quad \\frac{250.6-238}{250.6}=5.0\\ \\%"
+    }
+   ],
+   "answer": "The handbook peak is about 251 MPa; the FE value of 238 MPa is 5.0 per cent low, which is a typical sign of a mesh that is slightly too coarse at the hole edge and should be refined."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Choose plane stress for thin, in-plane loaded plates; choose plane strain for long bodies with constant section and loading.",
+    "In plane strain, report loads per unit depth; the out-of-plane stress is non-zero and is needed for a full von Mises check.",
+    "Use symmetry only when all four things (geometry, material, loads, supports) are symmetric.",
+    "Quarter-model loads: apply the load that falls on the modelled boundary, not a quarter of the face load per unit width."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Mixing idealisations",
+   "text": "Using plane stress for a long dam section under-predicts its stiffness and stresses, because it allows a thickness change that the real structure cannot make. Conversely, applying plane strain to a thin plate over-stiffens it, by about 22 per cent in $D_{11}$ for steel. Always state the idealisation and the thickness input."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Check the concentration",
+   "text": "A peak stress at a hole well below $K_t\\sigma_{\\text{nom}}$ is a signal of an under-refined mesh at the hole, not of a stronger plate. Note that the handbook factor depends on which nominal stress (gross or net) it is defined with; confirm before comparing."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Plane stress ($\\sigma_z=0$) suits thin plates; plane strain ($\\varepsilon_z=0$) suits long prismatic bodies; their matrices $\\mathbf{D}$ differ and plane strain is stiffer for $\\nu>0$.",
+    "Symmetry reduces a model to a quarter by fixing the normal displacement on each symmetry cut; the quarter carries only the share of load applied on its own boundary.",
+    "Comparing the FE peak stress at a hole with $K_t\\sigma_{\\text{nom}}$ from a handbook checks the mesh: a low FE value means the mesh near the hole needs refinement."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 60 m long retaining wall of constant cross-section carries soil pressure that does not vary along its length. Which 2D idealisation is appropriate for a slice taken well away from the ends?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Plane strain, because the material on either side prevents out-of-plane strain"
+    },
+    {
+     "id": "b",
+     "text": "Plane stress, because the wall is much longer than it is thick"
+    },
+    {
+     "id": "c",
+     "text": "Either, since the two idealisations give identical stiffness"
+    },
+    {
+     "id": "d",
+     "text": "Plane stress with a thickness of 60 m"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Plane strain, because the material on either side prevents out-of-plane strain",
+   "distractorRationale": {
+    "b": "Plane stress is for thin plates whose faces are stress-free, the opposite of a body restrained along its length.",
+    "c": "They give different $\\mathbf{D}$ whenever $\\nu>0$.",
+    "d": "Plane stress would still allow a free thickness change, which the surrounding wall prevents."
+   },
+   "explanation": "Neighbouring slices of the wall deform in the same way, so no slice can strain along the wall axis: $\\varepsilon_z=0$. This is the plane-strain condition and it gives a stiffer in-plane response than plane stress.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A thin steel bracket plate (thickness 2 mm, in-plane dimensions about 200 mm) is loaded only in its plane. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Plane stress applies, $\\sigma_z\\approx0$ and the thickness changes freely"
+    },
+    {
+     "id": "b",
+     "text": "Plane strain applies, $\\varepsilon_z=0$"
+    },
+    {
+     "id": "c",
+     "text": "Axisymmetric elements are required"
+    },
+    {
+     "id": "d",
+     "text": "Neither idealisation is possible in 2D"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Plane stress applies, $\\sigma_z\\approx0$ and the thickness changes freely",
+   "distractorRationale": {
+    "b": "$\\varepsilon_z=0$ would require the plate to be restrained against thickness change, which it is not.",
+    "c": "Axisymmetry requires a body of revolution, not a flat plate.",
+    "d": "The thin-plate case is exactly what plane stress is designed for."
+   },
+   "explanation": "Thin plates have stress-free faces, so $\\sigma_z=0$ through the thickness, while Poisson contraction changes the thickness. This is plane stress; the 2D element uses the thickness as an input.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A quarter model of a rectangular plate with a central hole under uniform tension in the $x$ direction is built using two symmetry planes. What boundary conditions are applied on the two symmetry cuts?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero normal displacement on each cut, with tangential motion free"
+    },
+    {
+     "id": "b",
+     "text": "Zero displacement in both directions on each cut"
+    },
+    {
+     "id": "c",
+     "text": "Zero tangential displacement on each cut, with normal motion free"
+    },
+    {
+     "id": "d",
+     "text": "A downward point load on each cut"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Zero normal displacement on each cut, with tangential motion free",
+   "distractorRationale": {
+    "b": "Fixing both directions would clamp the cut, which is not what symmetry implies and would over-stiffen the model.",
+    "c": "This reverses the rule: normal motion must be prevented, tangential motion allowed.",
+    "d": "Symmetry cuts carry reactions, not applied loads."
+   },
+   "explanation": "Reflecting the model across a plane maps a displacement normal to the plane to its negative, so by symmetry the normal component must vanish there. The tangential component is unrestricted because the reflection leaves it unchanged.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement about the out-of-plane behaviour of a plane-strain model with $\\nu>0$ is correct?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\varepsilon_z=0$ but $\\sigma_z=\\nu(\\sigma_x+\\sigma_y)\\neq0$"
+    },
+    {
+     "id": "b",
+     "text": "$\\sigma_z=0$ but $\\varepsilon_z\\neq0$"
+    },
+    {
+     "id": "c",
+     "text": "Both $\\sigma_z$ and $\\varepsilon_z$ are zero"
+    },
+    {
+     "id": "d",
+     "text": "Both $\\sigma_z$ and $\\varepsilon_z$ are non-zero and independent"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\varepsilon_z=0$ but $\\sigma_z=\\nu(\\sigma_x+\\sigma_y)\\neq0$",
+   "distractorRationale": {
+    "b": "This is the plane-stress state.",
+    "c": "Both vanishing would need $\\nu=0$.",
+    "d": "They are linked by Hooke's law: with $\\varepsilon_z=0$, $\\sigma_z$ follows from the in-plane stresses."
+   },
+   "explanation": "Setting $\\varepsilon_z=\\frac1E[\\sigma_z-\\nu(\\sigma_x+\\sigma_y)]=0$ gives $\\sigma_z=\\nu(\\sigma_x+\\sigma_y)$. The restraint that prevents the thickness change shows up as a non-zero through-thickness stress, which must be included in a von Mises check.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "For the same $E$ and a Poisson's ratio of 0.3, the in-plane normal stiffness entry $D_{11}$ of the plane-strain matrix is larger than that of the plane-stress matrix.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Plane strain uses $D_{11}=E(1-\\nu)/[(1+\\nu)(1-2\\nu)]$ and plane stress uses $E/(1-\\nu^2)$. For $\\nu=0.3$ the ratio of the two entries is about 1.22, so plane strain is stiffer because the thickness is not free to contract.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An aluminium dam-model material has $E=70$ GPa and $\\nu=0.33$. In plane strain compute the constitutive entry $D_{11}$ in GPa.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o1"
+   ],
+   "correctValue": 103.71517027863776,
+   "tolerance": 0.3,
+   "unit": "GPa",
+   "explanation": "$\\dfrac{E}{(1+\\nu)(1-2\\nu)}=\\dfrac{70}{1.33\\times0.34}=154.80$ GPa, and multiplying by $(1-\\nu)=0.67$ gives $D_{11}=103.72$ GPa. The plane-stress value would be $70/(1-0.33^2)=78.6$ GPa, so plane strain is stiffer.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A full plate with a central hole carries a total tensile force of $36$ kN on its end face. It is analysed with a quarter model using symmetry on both centre-lines. What total force in kN must be applied to the loaded edge of the quarter model?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o2"
+   ],
+   "correctValue": 18.0,
+   "tolerance": 0.05,
+   "unit": "kN",
+   "explanation": "The loaded end of the quarter is half of the full end face (it extends from the centre-line to the free edge), so it carries half of the total force, 18 kN. A common error is to divide by four, which would halve the stress on the quarter model.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A plate of width 80 mm has a central hole of diameter 20 mm ($d/W=0.25$) and carries a gross tensile stress of $50$ MPa. The handbook net-section factor is $K_{t,\\text{net}}=2.42$. What peak stress in MPa should an accurate FE model give at the hole edge?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o3"
+   ],
+   "correctValue": 161.33333333333334,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "The net-section nominal stress is $50/(1-0.25)=66.67$ MPa. The peak is $K_{t,\\text{net}}\\sigma_{\\text{net}}=2.42\\times66.67=161.3$ MPa; an FE value well below this suggests the mesh at the hole is too coarse.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how you would decide between plane stress and plane strain for (a) a 1.5 mm thick plate loaded in its plane and (b) a 30 m long gravity dam section, and state how each assumption affects the stiffness.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o1"
+   ],
+   "markingGuide": [
+    "(a) thin plate, stress-free faces: plane stress, $\\sigma_z=0$",
+    "(b) long prismatic body, loading constant along its length: plane strain, $\\varepsilon_z=0$",
+    "Plane strain restrains the thickness change and gives a larger in-plane stiffness for $\\nu>0$",
+    "Plane strain has a non-zero $\\sigma_z=\\nu(\\sigma_x+\\sigma_y)$; plane stress has non-zero $\\varepsilon_z$",
+    "Mentions that ends of a long body or a thick plate near its faces need 3D"
+   ],
+   "explanation": "The two idealisations are the limits of a thin body (free to change thickness) and a thick or long body (restrained). Choosing the wrong one changes the constitutive matrix and therefore stresses, with the difference growing with Poisson's ratio.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A plate with a central hole under uniform tension is to be modelled using symmetry. State the conditions that must hold for a quarter model to be valid, give the boundary conditions, and explain how you would judge whether the FE peak stress at the hole is acceptable.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o2",
+    "ug.mce-computational-methods-fea.plane-stress-problems.plane-stress-vs-strain.o3"
+   ],
+   "markingGuide": [
+    "Geometry, material, supports and loads must all be symmetric about both planes",
+    "$u_x=0$ on the cut normal to $x$ and $u_y=0$ on the cut normal to $y$; tangential motion free",
+    "Prevent rigid-body motion: the symmetry conditions together do this, so no extra supports are needed",
+    "Apply the load that falls on the quarter's own boundary (half the end face of the full plate)",
+    "Compare the peak with $K_t\\sigma_{\\text{nom}}$ using the matching nominal stress definition and refine the mesh at the hole until the result converges"
+   ],
+   "explanation": "Symmetry removes redundant geometry, but only valid when everything is symmetric, since an unsymmetric load or buckling mode breaks it. The theoretical concentration factor is a check on the answer, and a low FE peak points to an under-refined mesh at the hole.",
+   "board": "internal"
+  }
+ ]
+}

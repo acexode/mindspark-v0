@@ -1,0 +1,402 @@
+{
+ "lessonTitle": "Simulating Feedback Loops: PID, Saturation and Nonlinear Effects",
+ "estimatedMinutes": 34,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A rotary stage passed every linear test: a 1 rad step gave a tidy 17% overshoot and settled in about six seconds. On the machine, a 10 rad move overshot by more than a third and rang for fourteen seconds. The only difference was that the drive amplifier cannot deliver more than 5 V. Closed-loop simulation with a saturating actuator reveals this behaviour on the desk, long before the hardware does."
+  },
+  {
+   "type": "text",
+   "markdown": "A **closed-loop simulation** repeats the same cycle at every time step $h$: compute the error $e=r-y$, compute the controller output $u$, apply any actuator limits, then advance the plant states by one step. We use the plant $G(s)=\\dfrac{1}{s(0.5s+1)}$ (a servo with velocity lag: position $y$ in rad, input $u$ in V), written as $\\dot y=v$ and $\\dot v=2(u-v)$, and the PID controller below with gains $K_p=8$ V/rad, $K_i=2$ V/(rad s) and $K_d=1.5$ V s/rad. The derivative acts on the measured velocity ($-K_dv$) to avoid a spike when the reference steps."
+  },
+  {
+   "type": "math",
+   "latex": "u_{\\text{raw}}=K_pe+K_iI-K_dv,\\qquad \\dot I=e,\\qquad u=\\operatorname{sat}(u_{\\text{raw}},\\pm u_{max})",
+   "caption": "Controller with integrator state $I$ and actuator saturation at $\\pm u_{max}$ (here 5 V)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Overshoot and settling time from a simulation",
+   "text": "Percent overshoot is $100\\,(y_{peak}-r)/r$ for a step of size $r$. The 2% **settling time** is the last time the output is outside the band $r\\pm0.02r$: after that instant it stays inside. The 10-90% **rise time** is the difference between the times at which $y$ first crosses $0.9r$ and $0.1r$. Measure these from the logged samples, and report the step size $h$ used."
+  },
+  {
+   "type": "worked_example",
+   "title": "Linear loop, small step",
+   "prompt": "The loop above is simulated without saturation for a step $r=1$ rad (time step $h=0.5$ ms). Interpret the results and state how they scale to a step of $r=10$ rad.",
+   "steps": [
+    {
+     "text": "The logged output has first peak $y_{peak}=1.166$ at $t=1.02$ s and finally settles to $1.000$ (the integrator gives zero steady-state error).",
+     "latex": "y_{peak}=1.166,\\quad y_\\infty=1.000"
+    },
+    {
+     "text": "Overshoot: $100(1.166-1)/1=16.6\\%$.",
+     "latex": "\\text{OS}=16.6\\%"
+    },
+    {
+     "text": "The last exit from the $\\pm2\\%$ band ($0.98$ to $1.02$) is at $t=5.74$ s, so $t_s=5.74$ s. The long tail is due to the slow integral mode.",
+     "latex": "t_s=5.74\\ \\text{s}"
+    },
+    {
+     "text": "Scaling: the loop is linear, so a 10 rad step gives exactly 10 times the output: the same 16.6% overshoot and the same $t_s=5.74$ s, with a peak of $11.66$ rad. The controller output is also scaled: it starts at $K_p r=80$ V.",
+     "latex": "y_{peak}=11.66\\ \\text{rad},\\quad u(0^+)=80\\ \\text{V}"
+    }
+   ],
+   "answer": "For the linear loop: overshoot $16.6\\%$ and $t_s=5.74$ s independent of step size; but a 10 rad step demands 80 V, sixteen times the 5 V available."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Case",
+    "Step $r$ (rad)",
+    "Saturation",
+    "Peak (rad)",
+    "Overshoot (%)",
+    "2% settling time (s)"
+   ],
+   "rows": [
+    [
+     "Linear",
+     "1",
+     "none",
+     "1.166",
+     "16.6",
+     "5.74"
+    ],
+    [
+     "Linear",
+     "10",
+     "none",
+     "11.66",
+     "16.6",
+     "5.74"
+    ],
+    [
+     "Saturated",
+     "10",
+     "$\\pm5$ V",
+     "13.51",
+     "35.1",
+     "13.78"
+    ],
+    [
+     "Saturated with anti-windup (clamped integrator)",
+     "10",
+     "$\\pm5$ V",
+     "10.26",
+     "2.6",
+     "3.16"
+    ]
+   ],
+   "caption": "Simulation results for the servo loop (time step 0.5 ms; plant 1/(s(0.5s+1)), $K_p=8$, $K_i=2$, $K_d=1.5$)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Actuator saturation.** Real actuators have limits: a voltage supply, a valve that is fully open, a motor current limit. When the demanded output $u_{raw}$ exceeds $u_{max}$, the plant sees only $u_{max}$, so the effective loop gain falls and the response is slower than the linear prediction. At the same time the integrator keeps accumulating the (large) error, a condition called windup. For a large step the integral stored during saturation must be unwound by overshooting, which explains why the saturated response overshoots far more than the linear one and has a long settling time. A conditional-integration (clamping) anti-windup scheme, which freezes the integrator while the actuator is saturated and the error would drive it deeper, removes most of the effect."
+  },
+  {
+   "type": "worked_example",
+   "title": "Large step with saturation",
+   "prompt": "Using the loop above with a 10 rad step and $\\pm5$ V saturation, compare the saturated simulation with the linear one and interpret the difference.",
+   "steps": [
+    {
+     "text": "Demand versus capacity: the controller demands $K_pr=8\\times10=80$ V at $t=0^+$ but only 5 V is available, a ratio of 16 to 1.",
+     "latex": "\\frac{80}{5}=16"
+    },
+    {
+     "text": "Compare overshoot: saturated $13.51$ rad (35.1%) against linear $11.66$ rad (16.6%). The saturation adds $35.1-16.6=18.5$ percentage points of overshoot.",
+     "latex": "\\Delta\\text{OS}=35.1-16.6=18.5\\ \\text{points}"
+    },
+    {
+     "text": "Compare settling: $13.78$ s against $5.74$ s, a factor of about 2.4 slower.",
+     "latex": "\\frac{13.78}{5.74}=2.4"
+    },
+    {
+     "text": "Cause: windup. While $u$ is pinned at 5 V the integrator keeps growing; the overshoot is needed to unwind it. Clamping the integrator reduces overshoot to $2.6\\%$ and settling to $3.16$ s.",
+     "latex": "\\text{anti-windup: }2.6\\%,\\ 3.16\\ \\text{s}"
+    }
+   ],
+   "answer": "The linear model badly under-predicts the large-step overshoot (16.6% versus 35.1%) and settling time (5.7 s versus 13.8 s); anti-windup restores good behaviour."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Define the plant states, controller states and the sample time $h$ (small compared with the fastest time constant).",
+    "At each step: compute $e$, $u_{raw}$, apply saturation, update the plant and the integrator.",
+    "Log $y$, $u_{raw}$ and $u$ so that saturation intervals are visible.",
+    "Measure overshoot, rise time and settling time from the log (use the definitions above).",
+    "Repeat for small and large steps and with and without the nonlinearity to see where linear predictions fail."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Do not trust a linear simulation for a large step if the actuator saturates: percent overshoot is step-size independent only in the linear regime. Do not compute settling time from the first entry into the band; use the last exit. If the integrator is not protected, a long saturated interval can make the loop appear unstable although the linear design has a good phase margin."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Test across amplitudes",
+   "text": "Linear tests at small amplitude check the design of the loop; large-amplitude tests with limits check whether the design survives the real actuator. Always log $u_{raw}$ and $u$ so you can see how much of the time the actuator is saturated."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A closed-loop simulation repeats error, controller, actuator limit and plant update every step; overshoot and settling time are measured from the logged output.",
+    "In the linear regime overshoot is independent of step size; with saturation it increases with the step because the effective gain falls and the integrator winds up.",
+    "For the example servo, a 10 rad step overshoots 35.1% with saturation against 16.6% for the linear model.",
+    "Anti-windup (conditional integration) restores performance by freezing the integrator during saturation."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A simulated position loop is given a command step of 2.0 mm. The logged output peaks at 2.34 mm before settling. Find the percent overshoot (in percent).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o1"
+   ],
+   "correctValue": 17.0,
+   "tolerance": 0.2,
+   "unit": "%",
+   "explanation": "Percent overshoot is $100(y_{peak}-r)/r=100\\times(2.34-2.00)/2.00=17.0\\%$. The reference $r$ (the final value), not the peak, is the denominator.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a logged closed-loop step response the output (final value 5.0 rad) first enters the $\\pm2\\%$ band at 2.1 s, leaves it at 3.0 s (overshoot), re-enters at 3.6 s and then stays inside. What is the 2% settling time?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$3.6$ s"
+    },
+    {
+     "id": "b",
+     "text": "$2.1$ s"
+    },
+    {
+     "id": "c",
+     "text": "$3.0$ s"
+    },
+    {
+     "id": "d",
+     "text": "$0.5$ s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$3.6$ s",
+   "distractorRationale": {
+    "a": "Correct: the settling time is the last time the output enters the band and stays inside, here 3.6 s.",
+    "b": "This is the first entry into the band, but the output later left it again.",
+    "c": "This is the time of the last exit from the band, not the time at which it re-entered.",
+    "d": "This is not related to any event in the record."
+   },
+   "explanation": "The 2% settling time is defined by the final entry into the $\\pm2\\%$ band after which the response remains inside. The early entry at 2.1 s does not count because the response subsequently overshot out of the band.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A PID loop is simulated first without and then with an actuator that saturates at $\\pm5$ V, for a large step. Which change in the response should be expected from the saturating model?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A slower rise and, without anti-windup, larger overshoot because the integrator winds up"
+    },
+    {
+     "id": "b",
+     "text": "A faster rise because the actuator output is limited"
+    },
+    {
+     "id": "c",
+     "text": "The same response, since the controller is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "Smaller overshoot since the control effort is limited"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A slower rise and, without anti-windup, larger overshoot because the integrator winds up",
+   "distractorRationale": {
+    "a": "Correct: the limited drive slows the rise, and the integrator accumulates error during saturation, causing extra overshoot.",
+    "b": "Limiting the actuator can never make the response faster.",
+    "c": "The plant input differs from the controller output during saturation, so the response changes.",
+    "d": "Limiting the effort does not reduce overshoot; the stored integral generally increases it."
+   },
+   "explanation": "While the actuator is saturated the loop is effectively open and the error stays large, so the integral keeps growing. When the output reaches the target the stored integral still pushes the output past it, producing a large overshoot.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A PID controller with $K_p=8$ V/rad drives an actuator limited to $\\pm5$ V. For a 10 rad step command, find the ratio of the initial demanded controller output (from the proportional term) to the available actuator limit (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o2"
+   ],
+   "correctValue": 16.0,
+   "tolerance": 0.2,
+   "unit": "dimensionless",
+   "explanation": "At $t=0^+$ the error is 10 rad and the output is $K_pe=8\\times10=80$ V, ignoring the other terms. The ratio to the 5 V limit is $80/5=16$, so the actuator is deeply saturated at the start of the move.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A servo is simulated with a linear model for steps of 1 rad and 10 rad, and then with a saturating actuator. How does the percent overshoot behave?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Linear model: the same for both steps; saturating model: larger for the 10 rad step"
+    },
+    {
+     "id": "b",
+     "text": "Linear model: ten times larger for the 10 rad step; saturating model: the same"
+    },
+    {
+     "id": "c",
+     "text": "Both models: the same for both steps"
+    },
+    {
+     "id": "d",
+     "text": "Linear model: smaller for the larger step; saturating model: the same"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Linear model: the same for both steps; saturating model: larger for the 10 rad step",
+   "distractorRationale": {
+    "a": "Correct: scaling the input of a linear system scales the output, so percent overshoot is unchanged; saturation breaks the scaling.",
+    "b": "A linear model scales proportionally, so the percentage stays the same, not tenfold larger.",
+    "c": "Saturation introduces a nonlinearity that depends on amplitude.",
+    "d": "The linear overshoot percentage does not change with amplitude."
+   },
+   "explanation": "Superposition and homogeneity hold only for the linear loop, so percent overshoot is independent of step size. A saturating actuator makes the effective behaviour depend on the amplitude, so a larger step causes more saturation, more windup and more overshoot.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "For a 10 rad step, a linear simulation of a servo loop predicts a peak output of 11.66 rad, while the simulation with a saturating actuator gives a peak of 13.51 rad. By how many percentage points does saturation increase the overshoot?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o3"
+   ],
+   "correctValue": 18.5,
+   "tolerance": 0.3,
+   "unit": "percentage points",
+   "explanation": "Linear overshoot is $100(11.66-10)/10=16.6\\%$ and saturated overshoot is $100(13.51-10)/10=35.1\\%$. The difference is $18.5$ percentage points, which is the error you would make by trusting the linear simulation for this large step.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "In a purely linear closed-loop simulation (no saturation or other nonlinearity), the percent overshoot of a step response is independent of the step amplitude.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "For a linear system the output scales proportionally with the input, so the ratio of peak excess to step size is fixed. This is why saturation, which breaks proportionality, is the main reason large and small steps give different percentage overshoot.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A simulation of a PI loop with a saturating actuator is rerun with the integrator frozen while the actuator is saturated and the error would drive it further into saturation. The overshoot for a large step falls from 35% to about 3%. What does this show?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The large overshoot was caused mainly by integrator windup during saturation"
+    },
+    {
+     "id": "b",
+     "text": "The plant has changed its time constant"
+    },
+    {
+     "id": "c",
+     "text": "The linear design had too little damping"
+    },
+    {
+     "id": "d",
+     "text": "The sample time was too large"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The large overshoot was caused mainly by integrator windup during saturation",
+   "distractorRationale": {
+    "a": "Correct: freezing the integrator during saturation prevents the stored error from driving the overshoot.",
+    "b": "The plant is unchanged; only the controller's integrator logic changed.",
+    "c": "The linear design is unchanged, and a small step still had 16.6% overshoot; the extra came from saturation.",
+    "d": "The step size is unchanged, so the sample time is not the explanation."
+   },
+   "explanation": "Conditional integration (clamping) is an anti-windup measure. Its dramatic effect on overshoot confirms that the excess was stored integral accumulated while the actuator was pinned at its limit.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how you would simulate a PID loop around a plant with actuator saturation, and how you would measure overshoot and settling time from the result. State what you would log and how a large step differs from a small step.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o1",
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o2"
+   ],
+   "markingGuide": [
+    "At each time step computes error, controller output, applies the saturation, updates the plant and integrator",
+    "Chooses a time step small relative to the fastest time constant",
+    "Overshoot $=100(y_{peak}-r)/r$ and settling time is the last exit from the $\\pm2\\%$ band",
+    "Logs both the raw controller output and the saturated output to see when the actuator is limited",
+    "Large step: saturation reduces the effective gain and winds up the integrator, so overshoot and settling time rise compared with a small step"
+   ],
+   "explanation": "A good answer treats the simulation as an experiment: separate the numerical (time step) choices from the physical model, and measure performance with defined metrics rather than by eye. Credit should also go for noting that large and small steps must both be tested.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A designer finds that a PID loop that is well damped in a small-step linear simulation overshoots badly and settles slowly for large steps when the actuator saturates. Explain why this happens, how you would confirm the cause in the simulation, and suggest one remedy with the reasoning for it.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o2",
+    "ug.mce-system-dynamics-control-1.simulation.simulating-feedback-loops.o3"
+   ],
+   "markingGuide": [
+    "Saturation limits the effective drive, so the loop is no longer linear and the effective gain falls",
+    "The integrator keeps accumulating error while saturated (windup)",
+    "Confirms by logging raw and saturated controller outputs and the integrator state, and by rerunning with a very large limit (linear case) to see the difference",
+    "Remedy: anti-windup such as clamping the integrator or back-calculation, or reducing the step with a reference rate limiter",
+    "Reasoning: the remedy keeps the stored integral consistent with what the actuator actually delivers, so unwinding no longer causes overshoot"
+   ],
+   "explanation": "Comparing runs with and without the limit isolates the nonlinearity as the cause. A reference rate limiter is another remedy because it prevents the controller from demanding more than the actuator can supply.",
+   "board": "internal"
+  }
+ ]
+}

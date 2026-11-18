@@ -1,0 +1,398 @@
+{
+ "lessonTitle": "Features and the Feature Tree",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A gearbox input shaft is modelled in forty minutes by one engineer and rebuilt in four by another. The difference is not skill: the second engineer planned the feature order before touching the sketch tool."
+  },
+  {
+   "type": "text",
+   "markdown": "A solid model is a list of **features** applied in order: each one adds or removes material from the result of those above it. The list is the **feature tree**, and it is rebuilt from top to bottom whenever you edit. Common features: **extrude** (a profile pushed along a straight path), **revolve** (a profile swept about an axis), **cut** (a removing extrude or revolve), **hole**, **fillet** and **chamfer** (edge treatments), and **pattern** or **mirror** (repeats)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Feature tree",
+   "text": "The **feature tree** is the ordered history of operations that builds a part. Each feature can use only geometry that exists above it. Reordering features changes what each one sees, so it can change or break the result."
+  },
+  {
+   "type": "text",
+   "markdown": "**Planning a stepped shaft with a keyway.** Build the main body first and add detail later. A stepped shaft is naturally a **revolve** of its half-profile about the centreline, which creates every diameter and shoulder in one feature, so the dimensions are in one sketch. The keyway is a **cut-extrude** from a sketch on a plane through the axis or on the cylinder surface; the key's width and depth come from the shaft diameter. Chamfers and fillets come **last**, because earlier edge treatments can vanish or move when other features change."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Step",
+    "Feature",
+    "Why in this position"
+   ],
+   "rows": [
+    [
+     "1",
+     "Revolve half-profile (all diameters)",
+     "One sketch defines all diameters and lengths"
+    ],
+    [
+     "2",
+     "Cut-extrude keyway",
+     "Needs the finished cylinder to cut"
+    ],
+    [
+     "3",
+     "Cross hole or other cuts",
+     "Needs the shaft diameter"
+    ],
+    [
+     "4",
+     "Fillets at shoulders, chamfers at ends",
+     "Added last so they cannot break earlier steps"
+    ]
+   ],
+   "caption": "A robust feature order for a keyed shaft"
+  },
+  {
+   "type": "worked_example",
+   "title": "Planning a stepped shaft",
+   "prompt": "A shaft has three sections: diameter 20 mm over 40 mm, diameter 25 mm over 60 mm, and diameter 30 mm over 20 mm. It has a keyway 8 mm wide and 4 mm deep in the 25 mm section and a 1 mm chamfer at each end. Give the overall length, the feature sequence and the dimension from the far side of the 25 mm section to the keyway floor.",
+   "steps": [
+    {
+     "text": "Overall length is the sum of the sections.",
+     "latex": "40 + 60 + 20 = 120\\ \\text{mm}"
+    },
+    {
+     "text": "Sequence: revolve the half-profile with the three diameters; cut the keyway on the 25 mm section; chamfer both ends last."
+    },
+    {
+     "text": "Dimension across the diameter from the opposite surface to the keyway floor equals diameter minus keyway depth.",
+     "latex": "25 - 4 = 21\\ \\text{mm}"
+    }
+   ],
+   "answer": "Length 120 mm; order revolve, keyway cut, chamfers; the keyway floor is 21 mm from the opposite side."
+  },
+  {
+   "type": "text",
+   "markdown": "**Patterns and mirrors** remove repetition. A **linear pattern** repeats a feature at a set spacing and count; a **circular pattern** repeats it about an axis through equal angles; a **mirror** reflects features about a plane. You model one instance and the pattern makes the rest, so editing the seed (for example the hole diameter) updates every copy. For $n$ equally spaced copies around a full circle the angular spacing is $360^\\circ / n$."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta\\theta = \\frac{360^\\circ}{n},\\qquad x_k = R\\cos(k\\,\\Delta\\theta),\\ \\ y_k = R\\sin(k\\,\\Delta\\theta)",
+   "caption": "Circular pattern of n features on a bolt circle of radius R, k = 0, 1, ..., n - 1"
+  },
+  {
+   "type": "worked_example",
+   "title": "Six holes from one",
+   "prompt": "A flange has six holes on a 90 mm bolt-circle diameter, the first at angle 0 degrees on the x axis. Give the angular spacing and the coordinates of the second hole (k = 1).",
+   "steps": [
+    {
+     "text": "Radius is half the diameter.",
+     "latex": "R = 90/2 = 45\\ \\text{mm}"
+    },
+    {
+     "text": "Spacing for six holes.",
+     "latex": "\\Delta\\theta = 360/6 = 60^\\circ"
+    },
+    {
+     "text": "Second hole coordinates.",
+     "latex": "x_1 = 45\\cos 60^\\circ = 22.5\\ \\text{mm},\\quad y_1 = 45\\sin 60^\\circ = 38.97\\ \\text{mm}"
+    }
+   ],
+   "answer": "Spacing 60 degrees; second hole at (22.5, 38.97) mm. Only one hole and one pattern feature are needed."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Order matters",
+   "text": "If you drag a hole feature above the boss it was sketched on, the face no longer exists when the hole rebuilds and the model fails. If you move a fillet after a cut that removes its edge, the fillet loses its reference or applies to different geometry."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Parent features first, dependent features after.",
+    "One sketch for the main profile where possible.",
+    "Fillets and chamfers last.",
+    "Use pattern or mirror instead of copying geometry.",
+    "After reordering, rebuild and check for errors."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The feature tree rebuilds in order, so each feature can only use geometry above it.",
+    "A stepped shaft is naturally one revolve plus a keyway cut, with chamfers last.",
+    "Circular spacing is 360 degrees divided by n; patterns and mirrors avoid repeated geometry and update from a single seed.",
+    "Reordering features can change the result or break the model."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which feature is the natural first operation for a stepped shaft?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Chamfer"
+    },
+    {
+     "id": "b",
+     "text": "Revolve of the half-profile about the axis"
+    },
+    {
+     "id": "c",
+     "text": "Keyway cut"
+    },
+    {
+     "id": "d",
+     "text": "Fillet"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Revolve of the half-profile about the axis",
+   "distractorRationale": {
+    "a": "Needs edges first.",
+    "b": "Correct.",
+    "c": "Needs the cylinder.",
+    "d": "Needs the shoulders."
+   },
+   "explanation": "The revolve generates every diameter and shoulder from one sketch. Chamfers, fillets and cuts need geometry to exist first.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why use a circular pattern for a bolt circle instead of sketching each hole separately?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Patterns reduce file size only"
+    },
+    {
+     "id": "b",
+     "text": "Editing the seed hole updates every copy and the count and spacing are controlled"
+    },
+    {
+     "id": "c",
+     "text": "Patterns avoid the need for a sketch"
+    },
+    {
+     "id": "d",
+     "text": "Patterns are faster to print"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Editing the seed hole updates every copy and the count and spacing are controlled",
+   "distractorRationale": {
+    "a": "Not the main reason.",
+    "b": "Correct.",
+    "c": "A seed sketch is needed.",
+    "d": "Irrelevant."
+   },
+   "explanation": "One seed plus a pattern keeps design intent: hole size, count and spacing are changed in one place. Copying geometry creates independent holes.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A circular pattern places 5 equal holes around a full circle. Calculate the angular spacing between adjacent holes, in degrees.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o2"
+   ],
+   "correctValue": 72,
+   "tolerance": 0.1,
+   "unit": "degrees",
+   "explanation": "Spacing is 360/n = 360/5 = 72 degrees. The same formula applies to any equal circular pattern.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A shaft of diameter 28 mm carries a keyway cut 4 mm deep into the shaft. Calculate the distance, in mm, measured across the diameter from the surface opposite the keyway to the keyway floor.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o1"
+   ],
+   "correctValue": 24,
+   "tolerance": 0.1,
+   "unit": "mm",
+   "explanation": "The distance is diameter minus keyway depth: 28 - 4 = 24 mm. This is the dimension a machinist measures to check the keyway.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A hole feature is sketched on the top face of a boss. A designer drags the hole above the boss in the tree. What happens?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It rebuilds normally"
+    },
+    {
+     "id": "b",
+     "text": "It fails because the face it references does not yet exist"
+    },
+    {
+     "id": "c",
+     "text": "The hole is moved to the origin"
+    },
+    {
+     "id": "d",
+     "text": "The boss disappears"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It fails because the face it references does not yet exist",
+   "distractorRationale": {
+    "a": "Parent missing.",
+    "b": "Correct.",
+    "c": "Not how the solver acts.",
+    "d": "Boss unaffected."
+   },
+   "explanation": "A feature can only use geometry that is above it. The face is created by the boss, so the hole loses its parent and errors.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A bracket is symmetric about its mid-plane. Which approach best avoids repeating geometry?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Model both halves separately"
+    },
+    {
+     "id": "b",
+     "text": "Model one half and mirror it about the mid-plane"
+    },
+    {
+     "id": "c",
+     "text": "Copy and paste sketches"
+    },
+    {
+     "id": "d",
+     "text": "Use a linear pattern with spacing zero"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Model one half and mirror it about the mid-plane",
+   "distractorRationale": {
+    "a": "Doubles effort.",
+    "b": "Correct.",
+    "c": "Duplicates, unlinked.",
+    "d": "Not valid."
+   },
+   "explanation": "A mirror reflects features about the plane, so edits to the original side update the other. Copying breaks the link.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A 2 mm fillet is applied to a shoulder edge. A later groove cut removes that shoulder edge. The fillet feature is dragged after the groove. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Nothing changes since features commute"
+    },
+    {
+     "id": "b",
+     "text": "The fillet may fail or act on different geometry because its edge no longer exists"
+    },
+    {
+     "id": "c",
+     "text": "The groove disappears"
+    },
+    {
+     "id": "d",
+     "text": "The shoulder doubles"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The fillet may fail or act on different geometry because its edge no longer exists",
+   "distractorRationale": {
+    "a": "Order matters.",
+    "b": "Correct.",
+    "c": "Groove is unaffected.",
+    "d": "Not a modelling result."
+   },
+   "explanation": "The fillet now meets a different model state: the edge it referred to has been removed. Rebuild order determines what exists at each step, so order matters.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A pump spindle has two diameters, a retaining-ring groove, a cross hole for a pin and a chamfer at each end. Outline a feature sequence and say why the chamfers and any fillets come last.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o1",
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o3"
+   ],
+   "markingGuide": [
+    "Revolve half-profile for both diameters",
+    "Cut the ring groove (revolved cut) and the cross hole",
+    "Chamfer ends last",
+    "Edge features added last cannot break earlier geometry or be lost when other features change",
+    "Each cut needs the finished cylinder above it in the tree"
+   ],
+   "explanation": "The answer must give a revolve first, cuts after, and a reason for edge-treatment ordering. Each point in the marking guide earns credit, so state every point explicitly and give its reason.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A bracket carries eight identical holes on a circle and a rib pair symmetric about a plane. Explain how pattern and mirror features would model this and what updates automatically if the hole diameter is changed.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o2"
+   ],
+   "markingGuide": [
+    "One seed hole plus circular pattern count 8, spacing 45 degrees",
+    "Model one rib and mirror about the symmetry plane",
+    "Editing the seed hole diameter updates all eight copies",
+    "Mirror keeps the second rib linked to the first",
+    "No repeated sketches"
+   ],
+   "explanation": "Credit for correct spacing of 45 degrees, the single seed, and the linked update behaviour. Each point in the marking guide earns credit, so state every point explicitly and give its reason.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A feature can only reference geometry created by features above it in the tree.",
+   "objectiveIds": [
+    "ug.mce-engineering-drawing-cad.parametric-solid-modelling.features-and-feature-tree.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The tree rebuilds from top to bottom, so a feature sees only what already exists. This is why reordering can create errors.",
+   "board": "internal"
+  }
+ ]
+}

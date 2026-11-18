@@ -1,0 +1,355 @@
+{
+ "lessonTitle": "Gear Trains",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "An electric winch motor turns at 1440 rev/min, but the drum must creep at under 200 rev/min and with several times the motor's torque. A gearbox does that job: tooth numbers fix the speed ratio, and power conservation fixes the torque ratio."
+  },
+  {
+   "type": "text",
+   "markdown": "When two external gears mesh, their pitch-circle speeds match, so the gear with fewer teeth turns faster. For driver $A$ with $T_A$ teeth and driven gear $B$ with $T_B$ teeth, $N_B/N_A=T_A/T_B$ in magnitude, and the shafts turn in **opposite** directions. $N$ is speed in rev/min and $T$ is a tooth count (a pure number). An **idler** gear between them reverses the direction again but does not change the ratio."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Compound gear train",
+   "text": "In a **compound train** two gears are keyed on the same shaft (so they share one speed). The overall speed ratio is the product of the individual stage ratios, driver tooth numbers over driven tooth numbers."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{N_{\\text{out}}}{N_{\\text{in}}}=\\frac{T_{\\text{drivers}}}{T_{\\text{driven}}}=\\frac{T_A}{T_B}\\times\\frac{T_C}{T_D}",
+   "caption": "$A$ drives $B$; $C$ is on the same shaft as $B$ and drives $D$. Direction flips at each external mesh."
+  },
+  {
+   "type": "worked_example",
+   "title": "Two-stage compound train",
+   "prompt": "Pinion $A$ (20 teeth) on a motor shaft turning 1440 rev/min drives gear $B$ (60 teeth). Gear $C$ (25 teeth) on the same shaft as $B$ drives gear $D$ (75 teeth). Find the speed of $D$ and its direction relative to the input.",
+   "steps": [
+    {
+     "text": "Stage ratios.",
+     "latex": "\\frac{N_B}{N_A}=\\frac{20}{60}=\\frac13,\\qquad \\frac{N_D}{N_C}=\\frac{25}{75}=\\frac13"
+    },
+    {
+     "text": "Overall speed.",
+     "latex": "N_D=1440\\times\\frac13\\times\\frac13=160\\ \\text{rev/min}"
+    },
+    {
+     "text": "Two external meshes reverse direction twice.",
+     "latex": "\\text{Same sense as input}"
+    }
+   ],
+   "answer": "$N_D=160$ rev/min in the same direction as the motor; the overall reduction is 9:1."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Epicyclic (planetary) trains** have a gear whose axis itself moves. A planet gear is carried on an **arm** (or carrier) that rotates about the sun axis. The speeds are found with the **tabular method**: (1) lock the arm and turn the sun by $+1$ revolution, working out the turns of every other gear from tooth ratios, with a minus sign for each external mesh; (2) add $x$ revolutions to every element, including the arm (which now turns $x$); (3) apply the given conditions (such as a fixed gear having zero total turns) to solve for $x$ and $y$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Planetary gear with fixed ring",
+   "prompt": "A sun gear $S$ (30 teeth) meshes with planets that also mesh internally with a ring gear $R$ (90 teeth). The planets are carried on an arm. The ring is fixed and the sun turns at 100 rev/min. Find the arm speed.",
+   "steps": [
+    {
+     "text": "Planet teeth from geometry: $T_R=T_S+2T_P$ so $T_P=30$.",
+     "latex": "T_P=\\frac{90-30}{2}=30"
+    },
+    {
+     "text": "Table, arm fixed, sun $+y$: planet $-y\\,T_S/T_P=-y$; ring (internal mesh, same sense as planet) $-y\\,T_S/T_R=-y/3$. Add $x$ to all.",
+     "latex": "\\text{Arm}=x,\\ \\text{Sun}=x+y,\\ \\text{Ring}=x-y/3"
+    },
+    {
+     "text": "Ring fixed: $x-y/3=0$ so $y=3x$. Sun speed 100 rev/min gives $4x=100$.",
+     "latex": "x=\\frac{100}{4}=25\\ \\text{rev/min}"
+    }
+   ],
+   "answer": "Arm speed = 25 rev/min (same sense as the sun); the reduction is 4:1, equal to $1+T_R/T_S$ divided into the sun speed."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Condition",
+    "Arm speed in terms of sun speed $N_S$",
+    "Reduction"
+   ],
+   "rows": [
+    [
+     "Ring fixed, sun input, arm output",
+     "$\\dfrac{T_S}{T_S+T_R}N_S$",
+     "$1+T_R/T_S$"
+    ],
+    [
+     "Sun fixed, ring input, arm output",
+     "$\\dfrac{T_R}{T_S+T_R}N_R$ (in terms of ring speed $N_R$)",
+     "$1+T_S/T_R$"
+    ]
+   ],
+   "caption": "Two common ways of using a simple epicyclic train."
+  },
+  {
+   "type": "text",
+   "markdown": "**Torque and speed.** An ideal gear pair has no friction loss, so power in equals power out: $T_{\\text{in}}\\omega_{\\text{in}}=T_{\\text{out}}\\omega_{\\text{out}}$. Torque $T$ is in N m, $\\omega$ in rad/s. Slowing the shaft down by a ratio $i=\\omega_{\\text{in}}/\\omega_{\\text{out}}$ multiplies the torque by $i$. Real gearboxes lose a few per cent, so the output power is $\\eta$ times the input, where $\\eta<1$ is the efficiency."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{T_{\\text{out}}}{T_{\\text{in}}}=\\frac{\\omega_{\\text{in}}}{\\omega_{\\text{out}}}\\,\\eta=\\frac{T_{\\text{driven}}}{T_{\\text{driver}}}\\,\\eta",
+   "caption": "Ideal gears have $\\eta=1$; $\\omega=2\\pi N/60$ converts rev/min to rad/s."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Speed down, torque up",
+   "text": "Gearing trades speed for torque; it never creates power. The product torque times speed is the same on both sides for an ideal pair."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Inverting the tooth ratio (driven over driver), forgetting that the arm also gets $x$ revolutions in the second row of the table, and applying the fixed-gear condition to the arm instead of the fixed gear."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Compound train: $N_{\\text{out}}/N_{\\text{in}}$ is the product of driver-over-driven tooth ratios; each external mesh reverses the direction.",
+    "Epicyclic tabular method: arm locked first, then add $x$ to every element, then apply the fixed-gear condition.",
+    "Ideal gears conserve power, so torque ratio equals the inverse of the speed ratio."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An ideal gearbox reduces speed by a ratio of 4:1 (output turns four times slower than input). How does the output torque compare with the input torque?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Four times smaller"
+    },
+    {
+     "id": "b",
+     "text": "The same"
+    },
+    {
+     "id": "c",
+     "text": "Four times larger"
+    },
+    {
+     "id": "d",
+     "text": "Sixteen times larger"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Four times larger",
+   "distractorRationale": {
+    "a": "This would apply to a speed increase.",
+    "b": "Torque is unchanged only if the speed is unchanged.",
+    "c": "Correct.",
+    "d": "The ratio is $i$, not $i^2$."
+   },
+   "explanation": "Power conservation gives $T_{\\text{out}}\\omega_{\\text{out}}=T_{\\text{in}}\\omega_{\\text{in}}$, so $T_{\\text{out}}=T_{\\text{in}}\\omega_{\\text{in}}/\\omega_{\\text{out}}=4T_{\\text{in}}$. The speed reduction is paid for by torque multiplication.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A compound gear train has pinion $A$ (15 teeth) driving gear $B$ (45 teeth), and gear $C$ (20 teeth) on the same shaft as $B$ driving gear $D$ (80 teeth). The input $A$ turns at 3000 rev/min. Find the speed of $D$ in rev/min.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o1"
+   ],
+   "correctValue": 250.0,
+   "tolerance": 1,
+   "unit": "rev/min",
+   "explanation": "The ratio is $\\tfrac{15}{45}\\times\\tfrac{20}{80}=\\tfrac13\\times\\tfrac14=\\tfrac1{12}$. So $N_D=3000/12=250$ rev/min, in the same sense as $A$ because there are two external meshes.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A simple gear train has an idler gear placed between the driver and the driven gear. What does the idler do?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It reverses the output direction without changing the speed ratio"
+    },
+    {
+     "id": "b",
+     "text": "It doubles the output speed"
+    },
+    {
+     "id": "c",
+     "text": "It changes the speed ratio to depend on the idler's teeth"
+    },
+    {
+     "id": "d",
+     "text": "It has no effect on direction or speed"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It reverses the output direction without changing the speed ratio",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "The idler's tooth count cancels in the ratio.",
+    "c": "The idler is first the driven and then the driver, so its teeth cancel.",
+    "d": "It adds one extra external mesh and so reverses the direction."
+   },
+   "explanation": "The idler is driven by the first gear and drives the second, so $T_{\\text{idler}}$ cancels from $\\tfrac{T_A}{T_I}\\cdot\\tfrac{T_I}{T_B}$. The extra mesh reverses the sense of rotation of the output.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A simple epicyclic train has a sun gear (24 teeth), planets and a ring gear (96 teeth), with the planets mounted on an arm. The ring is fixed, and the sun is driven at 200 rev/min. Find the arm speed in rev/min.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o2"
+   ],
+   "correctValue": 40.0,
+   "tolerance": 0.5,
+   "unit": "rev/min",
+   "explanation": "Table: arm locked, sun $+y$, ring $-y(24/96)=-y/4$; add $x$: sun $x+y$, ring $x-y/4$. Ring fixed gives $y=4x$, so sun $=5x=200$ and $x=40$ rev/min.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "An ideal gearbox with speed ratio 6:1 (reduction) is driven by a motor that delivers 12 N m. Find the output torque in N m.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o3"
+   ],
+   "correctValue": 72,
+   "tolerance": 0.5,
+   "unit": "N m",
+   "explanation": "For an ideal gearbox power is conserved, so $T_{\\text{out}}=iT_{\\text{in}}=6\\times12=72$ N m while the speed falls to one sixth of the input.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the tabular method for an epicyclic train, what does the second step (adding $x$ revolutions to every element) accomplish?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It locks the arm so the gears turn about fixed axes"
+    },
+    {
+     "id": "b",
+     "text": "It fixes the sun gear to the frame"
+    },
+    {
+     "id": "c",
+     "text": "It changes the tooth ratios"
+    },
+    {
+     "id": "d",
+     "text": "It superimposes rotation of the whole train with the arm, so the arm itself ends up turning $x$ revolutions"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It superimposes rotation of the whole train with the arm, so the arm itself ends up turning $x$ revolutions",
+   "distractorRationale": {
+    "a": "That is step 1; step 2 releases the arm.",
+    "b": "The fixed gear condition is applied in step 3.",
+    "c": "Tooth ratios never change; only relative rotations do.",
+    "d": "Correct."
+   },
+   "explanation": "Step 1 gives turns of every gear relative to a stationary arm. Adding the same $x$ to all elements, including the arm, restores the actual motion because rotating everything together does not change the relative motion of meshing gears.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A simple epicyclic train has a sun gear (24 teeth), a ring gear (96 teeth) and planets on an arm. The sun is fixed and the ring is driven at 100 rev/min with the arm as output. Find the arm speed in rev/min.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o2"
+   ],
+   "correctValue": 80.0,
+   "tolerance": 0.5,
+   "unit": "rev/min",
+   "explanation": "Table: arm locked, ring $+y$, planet $+y(96/P)$, sun $-y(96/24)=-4y$ (external mesh to the planet). Add $x$: sun $x-4y=0$ gives $y=x/4$; ring $=x+y=1.25x=100$, so $x=80$ rev/min.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A compound train has two stages, each an external mesh, with no idlers. How does the output shaft turn relative to the input shaft?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "In the opposite direction"
+    },
+    {
+     "id": "b",
+     "text": "In the same direction"
+    },
+    {
+     "id": "c",
+     "text": "It cannot be determined without tooth numbers"
+    },
+    {
+     "id": "d",
+     "text": "At a speed that equals the input"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "In the same direction",
+   "distractorRationale": {
+    "a": "One reversal per mesh: two meshes reverse twice and return to the original direction.",
+    "b": "Correct.",
+    "c": "Direction depends only on the number of external meshes.",
+    "d": "The speed depends on the tooth ratios, which are different in general."
+   },
+   "explanation": "Each external mesh reverses the sense of rotation, so an even number of external meshes gives the same direction. The tooth numbers influence only the speed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe the tabular method for finding the arm speed of a simple epicyclic gear train with one sun, planet(s) on an arm, and a ring gear. State what is done in each row and how the fixed-gear condition is applied.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o2"
+   ],
+   "markingGuide": [
+    "Row 1: arm locked, sun given $+1$ (or $+y$) revolution, others follow from tooth ratios",
+    "Records a minus sign for external mesh, plus sign for internal mesh",
+    "Row 2: adds $x$ to every row, including the arm, to restore actual motion",
+    "Row 3: totals the two rows for each element",
+    "Applies conditions (e.g. fixed ring total zero, given sun speed) and solves the two linear equations for the arm speed"
+   ],
+   "explanation": "The method works because adding the same rotation to all members leaves relative gear motion unchanged. Two conditions give two equations for the two unknowns $x$ and $y$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A motor delivers 3 kW at 1500 rev/min to a gearbox with a 5:1 speed reduction and efficiency 96 per cent. Find the input torque, the ideal output torque and the actual output torque, and explain why the actual value is lower than the ideal.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.gear-trains.o3"
+   ],
+   "markingGuide": [
+    "Converts $\\omega=1500\\times2\\pi/60=157.1$ rad/s",
+    "Input torque $T=P/\\omega=3000/157.1=19.1$ N m",
+    "Ideal output torque $5\\times19.1=95.5$ N m",
+    "Actual output $0.96\\times95.5=91.7$ N m",
+    "Explains the loss: friction in tooth contacts, bearings and churning dissipates part of the input power as heat, so output power is $\\eta P$"
+   ],
+   "explanation": "Output speed is $1500/5=300$ rev/min, so the output power is $91.7\\times31.42=2.88$ kW, which equals $0.96\\times3$ kW.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,415 @@
+{
+ "lessonTitle": "Acceptance Sampling: Plans, OC Curves and Risk",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A receiving dock takes delivery of 5000 brake-caliper pistons. Measuring every piston would take two days; measuring none risks a recall. The inspector pulls 50 pistons, finds one out of tolerance and must decide: ship the lot, or send it back? Acceptance sampling turns that gut decision into a calculated one."
+  },
+  {
+   "type": "text",
+   "markdown": "**Acceptance sampling** inspects a random sample from a lot and accepts or rejects the whole lot from the sample result. It does not improve quality; it only screens lots. A **single sampling plan** is defined by two numbers: the sample size $n$ and the **acceptance number** $c$. Draw $n$ items at random; if the number of defective items found is $d\\le c$ accept the lot, otherwise reject it.\n\nBecause the sample is random, the decision is probabilistic: a lot with a fixed fraction defective $p$ is sometimes accepted and sometimes rejected, even with the same plan."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Probability of acceptance",
+   "text": "$P_a$ is the probability that a lot with fraction defective $p$ is accepted by the plan $(n,c)$, that is, the probability that the sample contains $c$ or fewer defectives. Assumptions: items are sampled at random and the lot is large compared with the sample (so each draw has defect probability $p$, independent of the others)."
+  },
+  {
+   "type": "math",
+   "latex": "P_a(p)=\\sum_{d=0}^{c}\\binom{n}{d}\\,p^{d}\\,(1-p)^{\\,n-d}",
+   "caption": "Binomial model of single sampling; valid when the lot is much larger than n (a common rule of thumb is N at least 10n)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Probability of acceptance for n = 50, c = 1",
+   "prompt": "A lot has fraction defective $p=0.02$. A plan takes $n=50$ items and accepts the lot if at most $c=1$ defective is found. Find $P_a$.",
+   "steps": [
+    {
+     "text": "Zero defectives in the sample: each of the 50 items is good with probability 0.98.",
+     "latex": "P(0)=0.98^{50}=0.3642"
+    },
+    {
+     "text": "Exactly one defective: choose which of the 50 items is bad (50 ways), one bad (0.02) and 49 good.",
+     "latex": "P(1)=50\\times0.02\\times0.98^{49}=0.3716"
+    },
+    {
+     "text": "The lot is accepted if the sample holds 0 or 1 defective, so add the two probabilities.",
+     "latex": "P_a=0.3642+0.3716=0.7358"
+    }
+   ],
+   "answer": "$P_a\\approx0.736$: about 74% of lots at 2% defective are accepted by this plan."
+  },
+  {
+   "type": "text",
+   "markdown": "**Small lots.** When the sample is a sizeable fraction of the lot, drawing without replacement changes the odds on each draw and the exact **hypergeometric** model is used: for a lot of $N$ items containing $D$ defectives, $P(d)=\\binom{D}{d}\\binom{N-D}{n-d}\\big/\\binom{N}{n}$. For $c=0$ this reduces to $\\binom{N-D}{n}\\big/\\binom{N}{n}$."
+  },
+  {
+   "type": "text",
+   "markdown": "**The operating characteristic (OC) curve** plots $P_a$ (vertical axis) against lot fraction defective $p$ (horizontal axis) for one plan. It always falls from near 1 at small $p$ to near 0 at large $p$. An ideal plan would be a step: accept every lot better than a chosen quality, reject every one worse. Real plans give a smooth S-shaped curve, and its steepness measures how well the plan discriminates between good and bad lots."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Fraction defective p",
+    "P_a, n=50, c=1",
+    "P_a, n=100, c=3",
+    "P_a, n=50, c=0"
+   ],
+   "rows": [
+    [
+     "0.01",
+     "0.911",
+     "0.982",
+     "0.605"
+    ],
+    [
+     "0.02",
+     "0.736",
+     "0.859",
+     "0.364"
+    ],
+    [
+     "0.04",
+     "0.401",
+     "0.430",
+     "0.130"
+    ],
+    [
+     "0.06",
+     "0.190",
+     "0.143",
+     "0.045"
+    ],
+    [
+     "0.08",
+     "0.083",
+     "0.037",
+     "0.016"
+    ]
+   ],
+   "caption": "Operating characteristic values computed from the binomial model."
+  },
+  {
+   "type": "text",
+   "markdown": "Reading the table: with $c$ fixed at 0 the plan is harsh (even a 1% lot is rejected 40% of the time). Raising $c$ with $n$ fixed shifts the curve up and to the right (more lenient). Enlarging both $n$ and $c$ together, as in the $(100,3)$ plan, makes the curve **steeper**: it accepts almost all good lots and rejects most poor ones, at the price of more inspection."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Producer risk and consumer risk",
+   "text": "The **AQL** (acceptable quality level) is the fraction defective the customer is happy to receive routinely. The **LTPD** (lot tolerance percent defective) is a poor quality level the customer wants to reject nearly always. **Producer risk** $\\alpha=1-P_a(\\text{AQL})$ is the probability that a good lot at AQL is wrongly rejected, so it hurts the supplier. **Consumer risk** $\\beta=P_a(\\text{LTPD})$ is the probability that a bad lot at LTPD is wrongly accepted, so it hurts the buyer."
+  },
+  {
+   "type": "worked_example",
+   "title": "Risks of the plan n = 50, c = 1",
+   "prompt": "A buyer defines AQL $=1\\%$ and LTPD $=8\\%$. Find the producer risk and consumer risk of the plan $n=50$, $c=1$.",
+   "steps": [
+    {
+     "text": "Compute $P_a$ at the AQL, $p=0.01$.",
+     "latex": "P_a=0.99^{50}+50\\times0.01\\times0.99^{49}=0.6050+0.3056=0.9106"
+    },
+    {
+     "text": "Producer risk is the chance a good lot is rejected.",
+     "latex": "\\alpha=1-0.9106=0.0894"
+    },
+    {
+     "text": "Compute $P_a$ at the LTPD, $p=0.08$.",
+     "latex": "P_a=0.92^{50}+50\\times0.08\\times0.92^{49}=0.0155+0.0672=0.0827"
+    },
+    {
+     "text": "Consumer risk is the chance a bad lot is accepted, which is this same value.",
+     "latex": "\\beta=0.0827"
+    }
+   ],
+   "answer": "Producer risk is about 8.9% and consumer risk about 8.3%."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Both risks are read off one OC curve: $\\alpha$ at the AQL point, $\\beta$ at the LTPD point.",
+    "Reducing both risks at once requires a larger sample, that is, more inspection cost.",
+    "Tightening $c$ at fixed $n$ lowers $\\beta$ but raises $\\alpha$: the risks trade against each other."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Acceptance is not a guarantee",
+   "text": "A lot that passes sampling can still contain defectives, and accepting a lot says nothing about the process that made it. Sampling plans screen lots; they do not replace process control."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A single sampling plan $(n,c)$ accepts the lot if the sample has at most $c$ defectives; $P_a$ is a binomial (or hypergeometric for small lots) sum.",
+    "The OC curve plots $P_a$ against $p$; a steeper curve discriminates better, and larger $n$ with proportionate $c$ steepens it.",
+    "Producer risk $\\alpha=1-P_a(\\text{AQL})$ is rejecting a good lot; consumer risk $\\beta=P_a(\\text{LTPD})$ is accepting a bad lot."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A plan for incoming rivets takes a random sample of $n=30$ and accepts the lot only if no defective rivet is found ($c=0$). The lot is very large and has fraction defective $p=0.03$. Use the binomial model to find the probability of acceptance (dimensionless, between 0 and 1).",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o1"
+   ],
+   "correctValue": 0.401,
+   "tolerance": 0.005,
+   "unit": "probability",
+   "explanation": "With $c=0$ the lot is accepted only if all 30 items are good, so $P_a=0.97^{30}$. This evaluates to about 0.401, so roughly 60% of such lots are rejected even though only 3% of items are bad.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A plan for machined bushings uses $n=40$ and $c=2$. A very large lot has fraction defective $p=0.04$. Find the probability of acceptance using the binomial model (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o1"
+   ],
+   "correctValue": 0.786,
+   "tolerance": 0.005,
+   "unit": "probability",
+   "explanation": "The lot is accepted for 0, 1 or 2 defectives: $0.96^{40}=0.1954$, $40\\times0.04\\times0.96^{39}=0.3256$ and $\\binom{40}{2}0.04^2\\,0.96^{38}=0.2646$. Summing these three terms gives $P_a\\approx0.786$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A bearing buyer sets AQL $=0.5\\%$ and uses the plan $n=60$, $c=1$. Assuming a very large lot exactly at the AQL, compute the producer risk $\\alpha$ (dimensionless probability) using the binomial model.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o3"
+   ],
+   "correctValue": 0.0365,
+   "tolerance": 0.002,
+   "unit": "probability",
+   "explanation": "At $p=0.005$ the acceptance probability is $0.995^{60}+60\\times0.005\\times0.995^{59}=0.7403+0.2232=0.9635$. The producer risk is the chance a lot of AQL quality is rejected, so $\\alpha=1-0.9635\\approx0.0365$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A small lot of $N=20$ valves contains exactly $D=2$ defective valves. A plan draws $n=5$ valves without replacement and accepts only if none is defective. Which value is the exact probability of acceptance?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.590"
+    },
+    {
+     "id": "b",
+     "text": "0.250"
+    },
+    {
+     "id": "c",
+     "text": "0.553"
+    },
+    {
+     "id": "d",
+     "text": "0.447"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "0.553",
+   "distractorRationale": {
+    "a": "This is $0.9^{5}$, the binomial value using $p=2/20=0.10$; it ignores that sampling without replacement from a small lot changes the odds.",
+    "b": "This confuses the sample fraction $5/20$ with the probability of avoiding both defectives.",
+    "c": "The exact hypergeometric value is $\\binom{18}{5}/\\binom{20}{5}=8568/15504=0.553$, the probability all 5 draws come from the 18 good valves.",
+    "d": "This is $1-0.553$, the probability of rejection, not acceptance."
+   },
+   "explanation": "For a small lot the draws are not independent, so the hypergeometric form is used. The number of ways to choose 5 good valves from 18 divided by the ways to choose any 5 from 20 gives 0.553; the binomial shortcut overstates the chance of meeting a defective here.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a sampling plan the sample size is held at $n=50$ while the acceptance number is raised from $c=1$ to $c=2$. How does the OC curve change?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It shifts upward and to the right, accepting more lots at every fraction defective, so consumer risk rises"
+    },
+    {
+     "id": "b",
+     "text": "It shifts downward and to the left, because accepting more defectives per sample makes the plan stricter"
+    },
+    {
+     "id": "c",
+     "text": "It becomes steeper without moving, because only the sample size controls the slope"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged, because the OC curve depends only on the lot size"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It shifts upward and to the right, accepting more lots at every fraction defective, so consumer risk rises",
+   "distractorRationale": {
+    "a": "Raising $c$ means the lot passes with more defectives in the sample, so $P_a$ is higher at every $p$.",
+    "b": "Allowing more defectives in the sample before rejecting makes the plan more lenient, not stricter.",
+    "c": "A change in $c$ at fixed $n$ moves the curve; it does not isolate a steeper slope.",
+    "d": "The OC curve depends on $n$ and $c$; lot size only matters for small lots."
+   },
+   "explanation": "A higher acceptance number increases the probability of acceptance for every lot quality, so the whole curve moves up and right. This helps the producer (lower $\\alpha$) but also accepts more poor lots, raising the consumer's risk.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A supplier complains that many lots of acceptable quality are being sent back after sampling. Which risk is being described, and who bears it?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Consumer risk, borne by the supplier"
+    },
+    {
+     "id": "b",
+     "text": "Producer risk, borne by the supplier"
+    },
+    {
+     "id": "c",
+     "text": "Producer risk, borne by the buyer"
+    },
+    {
+     "id": "d",
+     "text": "Consumer risk, borne by the buyer"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Producer risk, borne by the supplier",
+   "distractorRationale": {
+    "a": "Consumer risk concerns accepting bad lots, and it harms the buyer.",
+    "b": "Rejecting a lot that meets the AQL is the producer's risk, and it hurts the supplier.",
+    "c": "The risk is correctly named but it is the supplier who loses from rejected good lots.",
+    "d": "Rejecting good lots is not the buyer's accepting-bad-lots risk."
+   },
+   "explanation": "Producer risk is the probability that a good lot at the AQL is wrongly rejected. The supplier bears the cost of returned good product, which is why the risk is named for the producer.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Plan X is $(n=50,\\,c=1)$ and Plan Y is $(n=100,\\,c=3)$. Both give roughly $P_a\\approx0.4$ at $p=4\\%$. Compared with Plan X, what does Plan Y's OC curve look like?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Flatter, accepting fewer lots below 4% defective and more above it"
+    },
+    {
+     "id": "b",
+     "text": "Identical, because the two plans have the same acceptance ratio $c/n$"
+    },
+    {
+     "id": "c",
+     "text": "Steeper, but it accepts fewer lots at every fraction defective"
+    },
+    {
+     "id": "d",
+     "text": "Steeper, accepting more lots below 4% defective and fewer above it"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Steeper, accepting more lots below 4% defective and fewer above it",
+   "distractorRationale": {
+    "a": "A larger sample discriminates better, so the curve gets steeper, not flatter.",
+    "b": "Matching $c/n$ does not give the same curve; the larger sample reduces sampling scatter.",
+    "c": "Plan Y accepts more lots at low $p$ (0.982 against 0.911 at 1%), so it is not lower everywhere.",
+    "d": "Plan Y is more selective: $P_a$ is 0.982 at 1% defective but only 0.037 at 8%."
+   },
+   "explanation": "A larger sample reduces random scatter, so the curve pivots about the shared point near 4% and becomes steeper. Good lots are accepted more often and bad lots less often, at the cost of inspecting twice as many items.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A buyer wants a plan whose consumer risk at the LTPD is lowered without changing the sample size $n$. What is the effect of lowering the acceptance number $c$?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o3",
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Consumer risk falls, but producer risk rises"
+    },
+    {
+     "id": "b",
+     "text": "Both producer risk and consumer risk fall"
+    },
+    {
+     "id": "c",
+     "text": "Consumer risk rises and producer risk falls"
+    },
+    {
+     "id": "d",
+     "text": "Neither risk changes, because risks depend only on $n$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Consumer risk falls, but producer risk rises",
+   "distractorRationale": {
+    "a": "Lowering $c$ at fixed $n$ moves the curve down: bad lots are accepted less often, but good lots are rejected more often.",
+    "b": "With fixed $n$, a lower $c$ makes the plan stricter, which pushes producer risk up.",
+    "c": "This is the effect of raising $c$, not lowering it.",
+    "d": "Both risks depend on $c$ as well as $n$."
+   },
+   "explanation": "At fixed sample size the two risks trade against each other. The only way to reduce both together is to inspect more items, that is, increase $n$ and choose $c$ proportionally.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A plant evaluates the plan $n=100$, $c=3$ with the OC values $P_a=0.982$ at $p=1\\%$ and $P_a=0.037$ at $p=8\\%$. Explain how to read producer risk and consumer risk from these points, state their values if AQL $=1\\%$ and LTPD $=8\\%$, and say what would happen to the risks if the plant halved the sample size to $n=50$ while choosing $c$ to keep the curve in a similar location.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o2",
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o3"
+   ],
+   "markingGuide": [
+    "Producer risk is read at the AQL point: $\\alpha=1-0.982=0.018$ (1.8%)",
+    "Consumer risk is read at the LTPD point: $\\beta=0.037$ (3.7%)",
+    "Defines producer risk as rejecting a good lot and consumer risk as accepting a bad lot",
+    "Smaller sample gives a flatter OC curve (less discrimination)",
+    "So at least one risk, and typically both, increase unless the buyer accepts more risk",
+    "Links larger sample to higher inspection cost as the trade-off"
+   ],
+   "explanation": "Each risk comes from a different point of the same curve: the AQL point gives $1-P_a$ and the LTPD point gives $P_a$. Halving the sample reduces discrimination, so the plan cannot keep both risks as small without changing what the buyer and supplier accept.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A quality engineer says: 'The sample of 20 had no defectives, so the lot of 2000 is defect-free.' Using the idea of the probability of acceptance, explain why this conclusion is wrong, and compute the probability that a lot with 5% defective still passes a sample of $n=20$ with $c=0$.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o1",
+    "ug.mce-manufacturing-systems-metrology.quality-standards.acceptance-sampling.o3"
+   ],
+   "markingGuide": [
+    "States that sampling gives a probability, not certainty, of the lot condition",
+    "Computes $P_a=0.95^{20}=0.358$ (about 36%)",
+    "Interprets: more than a third of 5%-defective lots would pass",
+    "Notes a defect-free sample is consistent with a lot containing defectives",
+    "Concludes acceptance does not prove zero defects (consumer risk exists)"
+   ],
+   "explanation": "With $c=0$ and $p=0.05$, $P_a=0.95^{20}\\approx0.358$, so a clean sample is quite likely even when 100 of the 2000 items are bad. Acceptance is evidence about quality, not proof, and the consumer risk quantifies how often that evidence misleads.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,394 @@
+{
+ "lessonTitle": "DC Motors",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A conveyor drive motor runs at 3900 rpm with no load, then slows only slightly when a heavy crate lands on the belt, yet its supply current jumps several-fold. The permanent-magnet DC motor is the workhorse actuator of mechatronics because torque, current and speed are tied together by just two numbers."
+  },
+  {
+   "type": "text",
+   "markdown": "A **permanent-magnet DC motor** has a rotor (armature) winding of resistance $R_a$ carrying current $I_a$ in a fixed magnetic field. The field acts on the current to produce **torque**, and the winding moving through the field generates a voltage opposing the supply, the **back-EMF**. In SI units both effects are described by the same constant $K$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Motor constants",
+   "text": "Torque is proportional to armature current: $T=K_t I_a$ (N m, with $K_t$ in N m/A). Back-EMF is proportional to angular speed: $E_b=K_e\\omega$ (V, with $K_e$ in V s/rad and $\\omega$ in rad/s). In consistent SI units $K_t=K_e=K$."
+  },
+  {
+   "type": "math",
+   "latex": "T=K\\,I_a,\\qquad E_b=K\\,\\omega,\\qquad V_a=I_a R_a+E_b",
+   "caption": "Torque, back-EMF and the armature voltage equation (steady state, armature inductance neglected)"
+  },
+  {
+   "type": "text",
+   "markdown": "Think of the back-EMF as the motor's own speed sensor fighting the supply. At standstill $E_b=0$ and the full voltage drives current through only $R_a$ (a large **stall current** $V_a/R_a$). As the motor accelerates, $E_b$ grows, the net voltage $V_a-E_b$ falls, and so does current and torque. The motor stops accelerating when its torque equals the load torque: the **steady state**."
+  },
+  {
+   "type": "math",
+   "latex": "I_a=\\frac{T_{load}}{K},\\qquad \\omega=\\frac{V_a-I_aR_a}{K}=\\frac{V_a}{K}-\\frac{R_a}{K^{2}}\\,T_{load}",
+   "caption": "Steady-state current and speed for a given load torque; the speed-torque line falls linearly with load"
+  },
+  {
+   "type": "worked_example",
+   "title": "Steady-state operating point",
+   "prompt": "A motor has $K=0.050$ N m/A, $R_a=1.2\\ \\Omega$ and is supplied with 24 V. The load torque is 0.15 N m. Find the armature current, back-EMF and speed in rad/s and rpm.",
+   "steps": [
+    {
+     "text": "Current from torque balance.",
+     "latex": "I_a=\\frac{0.15}{0.050}=3.0\\ \\mathrm{A}"
+    },
+    {
+     "text": "Back-EMF from the voltage equation.",
+     "latex": "E_b=V_a-I_aR_a=24-3.0\\times1.2=20.4\\ \\mathrm{V}"
+    },
+    {
+     "text": "Speed from the back-EMF constant, then convert to rpm.",
+     "latex": "\\omega=\\frac{20.4}{0.050}=408\\ \\mathrm{rad/s}=408\\times\\frac{60}{2\\pi}=3896\\ \\mathrm{rpm}"
+    }
+   ],
+   "answer": "I_a = 3.0 A, E_b = 20.4 V, speed = 408 rad/s (about 3900 rpm)."
+  },
+  {
+   "type": "worked_example",
+   "title": "No-load speed and stall",
+   "prompt": "For the same motor and 24 V supply find the ideal no-load speed and the stall torque.",
+   "steps": [
+    {
+     "text": "No load: $T=0$ so $I_a=0$ and $E_b=V_a$.",
+     "latex": "\\omega_0=\\frac{V_a}{K}=\\frac{24}{0.050}=480\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "Stall: $\\omega=0$ so $E_b=0$ and only $R_a$ limits current.",
+     "latex": "I_{stall}=\\frac{24}{1.2}=20\\ \\mathrm{A},\\quad T_{stall}=K\\,I_{stall}=1.0\\ \\mathrm{N\\,m}"
+    }
+   ],
+   "answer": "No-load speed 480 rad/s (4584 rpm); stall current 20 A giving stall torque 1.0 N m. Operating at 3.0 A, the motor is far from stall."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Symbol and unit",
+    "Rule"
+   ],
+   "rows": [
+    [
+     "Torque",
+     "$T$ (N m)",
+     "$K\\,I_a$"
+    ],
+    [
+     "Back-EMF",
+     "$E_b$ (V)",
+     "$K\\,\\omega$"
+    ],
+    [
+     "Stall current",
+     "$I_{stall}$ (A)",
+     "$V_a/R_a$"
+    ],
+    [
+     "No-load speed",
+     "$\\omega_0$ (rad/s)",
+     "$V_a/K$"
+    ],
+    [
+     "Speed under load",
+     "$\\omega$ (rad/s)",
+     "$(V_a-I_aR_a)/K$"
+    ]
+   ],
+   "caption": "Motor relations in SI units"
+  },
+  {
+   "type": "text",
+   "markdown": "**Controlling speed with PWM.** To run a motor slower, we must lower the average voltage. Dropping voltage in a series resistor wastes power as heat. A better method is **pulse-width modulation**: a transistor switches the full supply $V_s$ on and off rapidly with duty cycle $D$. The winding inductance and rotor inertia filter the pulses, so the motor sees an average $V_{avg}=D\\,V_s$. Steady-state speed follows the earlier equations with $V_a$ replaced by $D V_s$, so speed is nearly proportional to duty cycle at light load."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Higher duty cycle: higher average voltage, higher no-load speed.",
+    "Greater load torque: higher current, lower speed (more resistive drop).",
+    "The transistor is either fully on or off, so it dissipates little power.",
+    "Reversing the supply polarity reverses the direction of rotation."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Respect the stall current",
+   "text": "At start-up, $E_b=0$ and the current is $V_a/R_a$, often ten or more times the rated value. Limit it with PWM ramp-up or current limiting to protect the driver and windings."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$T=K I_a$ and $E_b=K\\omega$ with the same constant $K$ in SI units; $V_a=I_aR_a+E_b$.",
+    "At steady state torque balances load: $I_a=T_{load}/K$ and $\\omega=(V_a-I_aR_a)/K$.",
+    "PWM sets average motor voltage $V_{avg}=D V_s$ efficiently, so duty cycle controls speed."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A motor with torque constant $K_t=0.080$ N m/A carries an armature current of 5.0 A. What torque does it produce?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.40 N m"
+    },
+    {
+     "id": "b",
+     "text": "0.016 N m"
+    },
+    {
+     "id": "c",
+     "text": "62.5 N m"
+    },
+    {
+     "id": "d",
+     "text": "4.0 N m"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.40 N m",
+   "distractorRationale": {
+    "a": "Correct: T = 0.080 x 5.0 = 0.40 N m.",
+    "b": "Wrong: this divides K by I.",
+    "c": "Wrong: this divides I by K, giving the units of A/(N m/A).",
+    "d": "Wrong: this multiplies by 50, a misplaced decimal."
+   },
+   "explanation": "Torque is directly proportional to armature current, $T=K_tI_a=0.080\\times5.0=0.40$ N m. The constant has units of N m per ampere, so multiplication gives N m.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "As a DC motor accelerates at constant supply voltage, what happens to its armature current?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It falls, because back-EMF grows and reduces the net voltage across R_a"
+    },
+    {
+     "id": "b",
+     "text": "It rises, because speed increases"
+    },
+    {
+     "id": "c",
+     "text": "It stays constant at V_a/R_a"
+    },
+    {
+     "id": "d",
+     "text": "It becomes zero immediately"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It falls, because back-EMF grows and reduces the net voltage across R_a",
+   "distractorRationale": {
+    "a": "Correct: I_a = (V_a - E_b)/R_a falls as E_b rises.",
+    "b": "Wrong: current is driven by V_a - E_b, which shrinks.",
+    "c": "Wrong: V_a/R_a is the stall current at zero speed only.",
+    "d": "Wrong: current is zero only when E_b = V_a at the no-load limit."
+   },
+   "explanation": "The armature equation gives $I_a=(V_a-E_b)/R_a$ and $E_b=K\\omega$ grows with speed. So the current is largest at start-up and falls as the motor speeds up.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "At a fixed supply voltage, the load torque on a DC motor is increased. In the new steady state the motor has:",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Lower speed and higher armature current"
+    },
+    {
+     "id": "b",
+     "text": "Higher speed and higher armature current"
+    },
+    {
+     "id": "c",
+     "text": "Lower speed and lower armature current"
+    },
+    {
+     "id": "d",
+     "text": "The same speed and current"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Lower speed and higher armature current",
+   "distractorRationale": {
+    "a": "Correct: higher torque needs higher I_a, whose R_a drop lowers E_b and hence speed.",
+    "b": "Wrong: speed cannot rise because the I_a R_a drop grows.",
+    "c": "Wrong: current must rise to supply the extra torque.",
+    "d": "Wrong: torque balance forces the current to change."
+   },
+   "explanation": "Steady state needs $K I_a=T_{load}$, so more load means more current. A larger $I_aR_a$ drop leaves less for $E_b=K\\omega$, so the speed falls slightly.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A motor on a 48 V bus must see an average of 30 V from a PWM driver. What duty cycle is required?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "62.5 %"
+    },
+    {
+     "id": "b",
+     "text": "37.5 %"
+    },
+    {
+     "id": "c",
+     "text": "160 %"
+    },
+    {
+     "id": "d",
+     "text": "30 %"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "62.5 %",
+   "distractorRationale": {
+    "a": "Correct: D = 30/48 = 0.625.",
+    "b": "Wrong: 37.5 % is the off fraction, 1 - 0.625.",
+    "c": "Wrong: this inverts the ratio, 48/30, giving more than 100 %.",
+    "d": "Wrong: this equates duty with the voltage value."
+   },
+   "explanation": "Average voltage is $D\\,V_s$, so $D=30/48=0.625$ or 62.5 %. The inverted ratio would exceed 100 %, which is impossible.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A motor with $K=0.030$ V s/rad is on a 12 V supply with negligible friction and no load. What is the ideal no-load speed?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "400 rad/s"
+    },
+    {
+     "id": "b",
+     "text": "0.36 rad/s"
+    },
+    {
+     "id": "c",
+     "text": "200 rad/s"
+    },
+    {
+     "id": "d",
+     "text": "3820 rad/s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "400 rad/s",
+   "distractorRationale": {
+    "a": "Correct: omega = 12/0.030 = 400 rad/s.",
+    "b": "Wrong: this multiplies K by V.",
+    "c": "Wrong: this halves the voltage, which is not required.",
+    "d": "Wrong: 3820 is the rpm value; the question asks for rad/s and this mixes units."
+   },
+   "explanation": "With no load $I_a=0$, so $E_b=V_a$ and $\\omega_0=V_a/K=12/0.030=400$ rad/s. That is about 3820 rpm, which is a common unit-confusion distractor.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A motor with $K=0.080$ N m/A (V s/rad) and $R_a=0.80\\ \\Omega$ is supplied with 12 V and drives a load torque of 0.20 N m. Find the steady-state speed in rad/s.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o2"
+   ],
+   "correctValue": 125.0,
+   "tolerance": 1,
+   "unit": "rad/s",
+   "explanation": "Current $I_a=0.20/0.080=2.5$ A. Back-EMF $E_b=12-2.5\\times0.80=10$ V. Speed $\\omega=E_b/K=10/0.080=125$ rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A motor with back-EMF constant 0.080 V s/rad is turned at 3000 rpm by an external drive with its terminals open. What voltage (in V) appears across the terminals?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o1"
+   ],
+   "correctValue": 25.1,
+   "tolerance": 0.2,
+   "unit": "V",
+   "explanation": "Convert $3000$ rpm to $\\omega=3000\\times2\\pi/60=314.2$ rad/s. Then $E_b=K\\omega=0.080\\times314.2=25.1$ V. This is the generator effect and is the basis of the tachometer.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A motor with $K=0.10$ N m/A and $R_a=1.0\\ \\Omega$ is driven from a 24 V supply by a PWM stage at 70 % duty cycle (average voltage applied, inductance smooths the current). The load torque is 0.60 N m. Find the steady-state speed in rad/s.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o2",
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o3"
+   ],
+   "correctValue": 108.0,
+   "tolerance": 1,
+   "unit": "rad/s",
+   "explanation": "Average voltage is $0.70\\times24=16.8$ V. Current is $0.60/0.10=6.0$ A, so $E_b=16.8-6.0\\times1.0=10.8$ V. Speed is $10.8/0.10=108$ rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Show that the torque constant and the back-EMF constant of an ideal DC motor are numerically equal in SI units, using conservation of energy.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o1"
+   ],
+   "markingGuide": [
+    "Electrical power converted to mechanical is E_b I_a",
+    "Mechanical power output is T omega",
+    "Equates E_b I_a = T omega",
+    "Substitutes T = K_t I_a and E_b = K_e omega to get K_e omega I_a = K_t I_a omega",
+    "Concludes K_e = K_t (losses in R_a, friction are separate)"
+   ],
+   "explanation": "The power crossing from electrical to mechanical form is $E_bI_a$, and the mechanical power is $T\\omega$. For a lossless conversion these are equal: $K_e\\omega I_a=K_tI_a\\omega$, so $K_e=K_t$ in SI units. Winding loss $I_a^2R_a$ is separate and does not affect this equality.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain how varying the PWM duty cycle controls the speed of a DC motor, and why this is more efficient than dropping the voltage across a series resistor.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.dc-motors.o3"
+   ],
+   "markingGuide": [
+    "States average voltage is D times supply voltage",
+    "Explains winding inductance and rotor inertia smooth the pulses so the motor responds to the average",
+    "Links lower average voltage to lower no-load speed omega = V_avg/K and speed under load",
+    "Explains the switch is fully on or fully off so it dissipates little power",
+    "Explains a series resistor dissipates I^2 R as heat and so wastes energy"
+   ],
+   "explanation": "The driver switches the supply on for a fraction $D$ of each period, so the motor responds to $V_{avg}=D\\,V_s$ and its speed follows $\\omega=(V_{avg}-I_aR_a)/K$. Because the transistor is either on (small voltage drop) or off (zero current), little power is lost in it. A series resistor carrying motor current $I$ would dissipate $I^2R$ as heat.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,435 @@
+{
+ "lessonTitle": "Building Loads and Air Handling",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "An open-plan office of 40 people on a sunny afternoon needs about 12 kW of sensible cooling, yet only 1.8 kW of the load is latent. A designer who knows those two numbers and the room and supply temperatures can size the fan, the duct and the coil in a few lines. Getting the split wrong gives a cold, clammy room, or a supply fan twice the size it needs to be."
+  },
+  {
+   "type": "text",
+   "markdown": "A conditioned room gains heat in two ways. **Sensible gains** change the dry-bulb temperature: heat conducted and radiated through walls and glazing, lights, equipment, and the dry heat from people. **Latent gains** add moisture (vapour from breathing and perspiration, cooking, open water), and the room's air must absorb the energy of vapourisation of that water. The air-handling unit supplies air that is cooler and often drier than the room, so it removes both."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Sensible, latent and total room load",
+   "text": "With supply dry-air mass flow $\\dot m_a$, room and supply temperatures $T_r$ and $T_s$ and humidity ratios $\\omega_r$ and $\\omega_s$: the sensible load is $\\dot Q_s=\\dot m_a c_p(T_r-T_s)$ with $c_p\\approx1.005$ kJ/(kg K) for dry air (typical), and the latent load is $\\dot Q_L=\\dot m_a(\\omega_r-\\omega_s)h_{fg}$ with $h_{fg}\\approx2454$ kJ/kg at room conditions (typical). The **sensible heat ratio** is $SHR=\\dot Q_s/(\\dot Q_s+\\dot Q_L)$."
+  },
+  {
+   "type": "math",
+   "latex": "\\dot Q_s=\\dot m_a c_p\\,(T_r-T_s),\\qquad \\dot Q_L=\\dot m_a\\,h_{fg}\\,(\\omega_r-\\omega_s),\\qquad SHR=\\frac{\\dot Q_s}{\\dot Q_s+\\dot Q_L}",
+   "caption": "Room load relations (c_p of dry air, h_fg at room temperature)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Sensible and latent load of an office",
+   "prompt": "An office has 40 occupants, each giving 70 W sensible and 45 W latent heat (typical office values), lighting 3 kW, equipment 2.2 kW and 4 kW of sensible gain through the envelope and glazing. Find the room sensible and latent loads and the SHR.",
+   "steps": [
+    {
+     "text": "Occupant gains.",
+     "latex": "\\dot Q_{s,occ}=40\\times0.07=2.8\\ \\text{kW},\\quad \\dot Q_{L,occ}=40\\times0.045=1.8\\ \\text{kW}"
+    },
+    {
+     "text": "Total sensible load adds occupants, lights, equipment and envelope.",
+     "latex": "\\dot Q_s=2.8+3+2.2+4=12\\ \\text{kW}"
+    },
+    {
+     "text": "The only latent source here is the occupants.",
+     "latex": "\\dot Q_L=1.8\\ \\text{kW}"
+    },
+    {
+     "text": "Sensible heat ratio.",
+     "latex": "SHR=\\frac{12}{12+1.8}=0.87"
+    }
+   ],
+   "answer": "The sensible load is 12 kW, the latent load 1.8 kW and the SHR is about 0.87."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Gain",
+    "Type",
+    "Notes"
+   ],
+   "rows": [
+    [
+     "Occupants",
+     "Sensible and latent",
+     "Typical office: about 70 W sensible and 45 W latent per person"
+    ],
+    [
+     "Lighting",
+     "Sensible",
+     "All electrical power becomes heat in the room"
+    ],
+    [
+     "Office equipment",
+     "Sensible",
+     "Use measured or diversified loads, not nameplate"
+    ],
+    [
+     "Solar through glazing",
+     "Sensible",
+     "Strongly time-dependent"
+    ],
+    [
+     "Conduction through walls and roof",
+     "Sensible",
+     "$UA\\,\\Delta T$"
+    ],
+    [
+     "Ventilation (fresh) air",
+     "Both",
+     "Treated as a load on the coil, not the room"
+    ],
+    [
+     "Infiltration and moisture sources",
+     "Both",
+     "Cooking, wet floors, open tanks"
+    ]
+   ],
+   "caption": "Typical sources of room heat gain"
+  },
+  {
+   "type": "text",
+   "markdown": "**Mixing of air streams.** An air-handling unit normally mixes fresh outdoor air (state 1) with recirculated room air (state 2) before the coil. Because mass and energy are conserved, the mixed state follows from flow-weighted averages: the dry-air mass, the water mass and the enthalpy of each stream add. On the psychrometric chart the mixed state lies on the straight line between the two states, at a distance from each inversely proportional to the mass flow of that stream."
+  },
+  {
+   "type": "math",
+   "latex": "\\dot m_3=\\dot m_1+\\dot m_2,\\qquad \\omega_3=\\frac{\\dot m_1\\omega_1+\\dot m_2\\omega_2}{\\dot m_3},\\qquad h_3=\\frac{\\dot m_1h_1+\\dot m_2h_2}{\\dot m_3}",
+   "caption": "Adiabatic mixing of two moist-air streams (dry-air flows)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Mixing fresh and recirculated air",
+   "prompt": "1 kg/s of fresh air at 32 °C with $\\omega=0.014$ mixes with 3 kg/s of recirculated air at 24 °C with $\\omega=0.0095$. Find the mixed humidity ratio, enthalpy and approximate temperature.",
+   "steps": [
+    {
+     "text": "Total dry-air flow.",
+     "latex": "\\dot m_3=1+3=4\\ \\text{kg/s}"
+    },
+    {
+     "text": "Water balance gives the mixed humidity ratio.",
+     "latex": "\\omega_3=\\frac{1\\times0.014+3\\times0.0095}{4}=0.01062"
+    },
+    {
+     "text": "Enthalpies of the streams, $h=1.005T+\\omega(2501+1.86T)$.",
+     "latex": "h_1=68.01\\ \\text{kJ/kg},\\quad h_2=48.3\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Energy balance gives the mixed enthalpy; the temperature follows from the weighted average to a good approximation.",
+     "latex": "h_3=\\frac{1\\times68.01+3\\times48.3}{4}=53.23\\ \\text{kJ/kg},\\quad T_3\\approx\\frac{1\\times32+3\\times24}{4}=26\\ ^\\circ\\text{C}"
+    }
+   ],
+   "answer": "$\\omega_3\\approx0.01062$ kg/kg, $h_3\\approx53.2$ kJ/kg and $T_3\\approx26$ °C (a check from the enthalpy gives 26 °C)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Supply air flow for the sensible load",
+   "prompt": "The office of the first example has a sensible load of 12 kW. Room air is held at 24 °C and the supply air enters at 14 °C. Find the dry-air mass flow and the volume flow at a density of 1.2 kg/m$^3$ (typical).",
+   "steps": [
+    {
+     "text": "Rearrange the sensible load equation for the mass flow.",
+     "latex": "\\dot m_a=\\frac{\\dot Q_s}{c_p\\,(T_r-T_s)}"
+    },
+    {
+     "text": "Substitute the numbers.",
+     "latex": "\\dot m_a=\\frac{12}{1.005\\times(24-14)}=1.194\\ \\text{kg/s}"
+    },
+    {
+     "text": "Convert to volume flow.",
+     "latex": "\\dot V=\\frac{\\dot m_a}{\\rho}=\\frac{1.194}{1.2}=0.995\\ \\text{m}^3/\\text{s}"
+    }
+   ],
+   "answer": "The supply needs about 1.19 kg/s, or 0.995 m$^3$/s (about 995 L/s)."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "List and total all room sensible gains and all latent gains separately.",
+    "Choose a supply temperature a few degrees (typically 8 to 12 K) below the room temperature to avoid draughts and cold spots.",
+    "Size the supply flow from the sensible load: $\\dot m_a=\\dot Q_s/(c_p\\Delta T)$.",
+    "Check the latent load: the supply humidity ratio must be low enough that $\\omega_r-\\omega_s=\\dot Q_L/(\\dot m_ah_{fg})$.",
+    "Mix fresh and recirculated air by mass and energy balances to find the coil entering state."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Flow is inversely proportional to the supply temperature difference",
+   "text": "For a fixed sensible load, supplying air 14 K below room temperature instead of 7 K needs half the air flow, so smaller fans and ducts, but a colder coil with more dehumidification. A higher latent fraction (lower SHR) calls for a colder, drier supply to absorb the moisture."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Room sensible load $\\dot Q_s=\\dot m_ac_p(T_r-T_s)$, latent load $\\dot Q_L=\\dot m_ah_{fg}(\\omega_r-\\omega_s)$ and $SHR=\\dot Q_s/(\\dot Q_s+\\dot Q_L)$.",
+    "Mixed state of two streams: flow-weighted averages of $\\omega$ and $h$, on a straight line between the two states.",
+    "Supply flow is sized from the sensible load: $\\dot m_a=\\dot Q_s/(c_p\\Delta T)$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of the following room heat gains is partly latent rather than purely sensible?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The heat given off by the occupants, because it includes moisture from breathing and perspiration"
+    },
+    {
+     "id": "b",
+     "text": "The electrical power of the lighting, because the heat is released slowly"
+    },
+    {
+     "id": "c",
+     "text": "Solar radiation transmitted through the glazing, because it is radiant energy"
+    },
+    {
+     "id": "d",
+     "text": "Conduction through the external wall, because water vapour permeates the wall"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The heat given off by the occupants, because it includes moisture from breathing and perspiration",
+   "distractorRationale": {
+    "a": "Correct: people add moisture as well as dry heat.",
+    "b": "Lighting energy becomes sensible heat; speed of release is irrelevant to type.",
+    "c": "Solar gain warms surfaces and air, so it is sensible.",
+    "d": "Conduction transfers sensible heat; negligible vapour is transferred."
+   },
+   "explanation": "Latent gain is the energy associated with moisture added to the room air. People release water vapour, so their heat gain has both sensible and latent parts, while lighting, solar gain and conduction are sensible only.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A room has a sensible load of 9.0 kW and a latent load of 3.0 kW. The sensible heat ratio is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3.0"
+    },
+    {
+     "id": "b",
+     "text": "0.75"
+    },
+    {
+     "id": "c",
+     "text": "0.33"
+    },
+    {
+     "id": "d",
+     "text": "0.25"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "0.75",
+   "distractorRationale": {
+    "a": "Divides sensible by latent load, which is not bounded by one and is not the SHR.",
+    "b": "Correct: sensible load over total load.",
+    "c": "Takes latent load over sensible load.",
+    "d": "Takes the latent fraction of the total, the complement of the SHR."
+   },
+   "explanation": "$SHR=\\dot Q_s/(\\dot Q_s+\\dot Q_L)=9.0/12.0=0.75$. Values near one mean the load is mostly sensible.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For the same sensible load, the design supply-to-room temperature difference is doubled from 6 K to 12 K. The required supply air mass flow:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "is doubled, because a larger difference gives more heat removal"
+    },
+    {
+     "id": "b",
+     "text": "is unchanged, because the load is unchanged"
+    },
+    {
+     "id": "c",
+     "text": "is halved, because $\\dot m_a=\\dot Q_s/(c_p\\Delta T)$"
+    },
+    {
+     "id": "d",
+     "text": "is quartered, because the heat transfer depends on the square of the difference"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "is halved, because $\\dot m_a=\\dot Q_s/(c_p\\Delta T)$",
+   "distractorRationale": {
+    "a": "Heat removal per kg is proportional to the difference, so less air is needed.",
+    "b": "The load is unchanged but each kilogram carries twice as much heat away.",
+    "c": "Correct: flow varies inversely with temperature difference.",
+    "d": "The relation is linear in the temperature difference, not quadratic."
+   },
+   "explanation": "Each kilogram of supply air removes $c_p\\Delta T$ of sensible heat, which doubles when $\\Delta T$ doubles. For the same load, the flow therefore halves.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A mixing box combines 25% (by dry-air mass) fresh air at 34 °C with 75% recirculated air at 24 °C. The mixed-air temperature (approximately, from a weighted average) is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "29 °C"
+    },
+    {
+     "id": "b",
+     "text": "31.5 °C"
+    },
+    {
+     "id": "c",
+     "text": "34 °C"
+    },
+    {
+     "id": "d",
+     "text": "26.5 °C"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "26.5 °C",
+   "distractorRationale": {
+    "a": "Takes a simple average, ignoring the mass fractions.",
+    "b": "Swaps the weights, giving the fresh air the larger share.",
+    "c": "Assumes the mixed state equals the fresh air state.",
+    "d": "Correct: the weights are the mass fractions, 0.25 and 0.75."
+   },
+   "explanation": "The weighted average is $0.25\\times34+0.75\\times24=26.5$ °C. The mixed state lies closer to the stream with the larger mass flow, here the recirculated air.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A room has a sensible load of 6.0 kW. The room air is at 25 °C and the supply air is at 17 °C. Using $c_p=1.005$ kJ/(kg K), the required dry-air mass flow is closest to:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.746 kg/s"
+    },
+    {
+     "id": "b",
+     "text": "47.8 kg/s"
+    },
+    {
+     "id": "c",
+     "text": "5.97 kg/s"
+    },
+    {
+     "id": "d",
+     "text": "0.896 kg/s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.746 kg/s",
+   "distractorRationale": {
+    "a": "Correct: the load over specific heat times temperature difference.",
+    "b": "Multiplies by the temperature difference instead of dividing.",
+    "c": "Omits the temperature difference.",
+    "d": "Multiplies by the density; that converts to a volume flow in the wrong direction."
+   },
+   "explanation": "$\\dot m_a=\\dot Q_s/(c_p\\Delta T)=6.0/(1.005\\times8)=0.746$ kg/s. This is about 0.622 m$^3$/s at 1.2 kg/m$^3$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A lecture theatre holds 60 people, each giving 75 W sensible and 55 W latent. Lighting is 1.8 kW and projection equipment 0.6 kW. Ignoring envelope gains, find the room sensible load in kW.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o1"
+   ],
+   "correctValue": 6.9,
+   "tolerance": 0.05,
+   "unit": "kW",
+   "explanation": "Occupants contribute $60\\times0.075=4.5$ kW sensible. Adding lighting 1.8 kW and equipment 0.6 kW gives $6.9$ kW. The latent load, $60\\times0.055=3.3$ kW, is separate and not included.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Fresh air of humidity ratio 0.0180 kg/kg at 0.80 kg/s (dry air) mixes with recirculated air of humidity ratio 0.0100 kg/kg at 2.40 kg/s (dry air). Find the mixed humidity ratio in kg/kg.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o2"
+   ],
+   "correctValue": 0.012,
+   "tolerance": 0.0002,
+   "unit": "kg/kg",
+   "explanation": "A water balance gives $\\omega_3=(0.80\\times0.0180+2.40\\times0.0100)/(0.80+2.40)=(0.0144+0.0240)/3.20=0.012$ kg/kg.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A conference room has a sensible load of 18.0 kW. It is held at 25 °C and supplied at 13 °C. Using $c_p=1.005$ kJ/(kg K) and an air density of 1.2 kg/m$^3$, find the supply air volume flow in m$^3$/s.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o3"
+   ],
+   "correctValue": 1.244,
+   "tolerance": 0.01,
+   "unit": "m^3/s",
+   "explanation": "The mass flow is $18.0/(1.005\\times12)=1.493$ kg/s. Dividing by the density 1.2 kg/m$^3$ gives $1.244$ m$^3$/s, or about 1240 L/s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe how the sensible and latent loads of a room set the supply air flow and the required supply-air humidity. Use the loads and the temperature and humidity of the room and supply air in your answer, and explain why a room with many occupants and little equipment needs a lower sensible heat ratio line through the room state.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o1",
+    "ug.mce-thermofluid-applications.hvac.building-loads.o3"
+   ],
+   "markingGuide": [
+    "Sensible load: Q_s = m_a cp (T_r - T_s) gives the dry-air flow for a chosen supply temperature",
+    "Latent load: Q_L = m_a h_fg (w_r - w_s) gives the required humidity ratio difference at that flow",
+    "SHR = Q_s/(Q_s+Q_L) defines the slope of the room process line through the room state; the supply state lies on it",
+    "Many occupants add latent load (moisture) so the SHR is lower and the line is steeper, requiring a drier (colder dew point) supply",
+    "Alternatively increase flow, since w_s = w_r - Q_L/(m_a h_fg)",
+    "Concludes that sensible and latent loads must both be met or the room humidity drifts"
+   ],
+   "explanation": "The sensible load fixes the air flow through $\\dot m_a=\\dot Q_s/(c_p\\Delta T)$. At that flow, the supply humidity ratio must be low enough that the supply air can absorb the room moisture: $\\omega_s=\\omega_r-\\dot Q_L/(\\dot m_ah_{fg})$. A low SHR means a large latent share and therefore a drier supply.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the state of the mixture when a fresh-air stream and a recirculated stream are combined adiabatically, using dry-air, water and energy balances. Explain why the mixed state lies on the straight line between the two on the psychrometric chart and how increasing the fresh-air fraction changes the coil load.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.hvac.building-loads.o2"
+   ],
+   "markingGuide": [
+    "Dry-air balance: m3 = m1 + m2",
+    "Water balance: m3 w3 = m1 w1 + m2 w2 so w3 is flow-weighted",
+    "Energy balance: m3 h3 = m1 h1 + m2 h2 so h3 is flow-weighted (adiabatic, no work)",
+    "Both w3 and h3 are linear in the flow fraction, so the state lies on the line between the states, dividing it in inverse ratio to the mass flows",
+    "Temperature is approximately flow-weighted as well",
+    "More fresh air in hot humid weather moves the mixed state toward outdoor conditions, raising h3 and the coil load (sensible and latent); more fresh air in mild weather may reduce the load"
+   ],
+   "explanation": "All three balances are linear, so the mixed enthalpy and humidity ratio are weighted averages with weights equal to the flow fractions. This puts the mixed state on the straight line joining the two states. A larger fresh-air fraction moves the mixed state toward the outdoor state and so raises the coil load in hot, humid weather.",
+   "board": "internal"
+  }
+ ]
+}

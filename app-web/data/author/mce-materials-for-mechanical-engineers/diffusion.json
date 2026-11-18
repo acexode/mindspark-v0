@@ -1,0 +1,379 @@
+{
+ "lessonTitle": "Diffusion in Solids and Carburising",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A steel gear is sealed in a furnace at 930 degrees C in a carbon-rich gas for several hours, and afterwards its surface is hard to 1 mm deep while its core stays tough. The carbon moved only because atoms in a solid hop between sites, and that movement can be calculated."
+  },
+  {
+   "type": "text",
+   "markdown": "Atoms in a crystal are not frozen. Thermal vibration occasionally lets an atom jump to an adjacent vacant site, and in a concentration gradient more atoms jump down the gradient than up it, producing a net flow called **diffusion**. This unit gives the equations for the flow (Fick's laws), how fast it goes (the temperature dependence of $D$), and one important application (carburising)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Flux and diffusion coefficient",
+   "text": "Flux $J$ is the quantity of diffusing species crossing unit area per unit time, in kg/(m$^2$ s) or atoms/(m$^2$ s). The diffusion coefficient $D$, in m$^2$/s, is the proportionality between flux and concentration gradient $\\mathrm{d}C/\\mathrm{d}x$ ($C$ in kg/m$^3$, $x$ in m)."
+  },
+  {
+   "type": "math",
+   "latex": "J=-D\\,\\frac{\\mathrm{d}C}{\\mathrm{d}x}",
+   "caption": "Fick's first law. The minus sign means flow is down the concentration gradient. Valid when the profile does not change with time (steady state)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Steady-state hydrogen leak through a vessel wall",
+   "prompt": "A thin steel wall 2.0 mm thick has hydrogen concentrations $C_1=2.0$ kg/m$^3$ on the high-pressure face and $C_2=0.4$ kg/m$^3$ on the other. The diffusion coefficient is assumed to be $1.0\\times10^{-9}$ m$^2$/s. Find the flux.",
+   "steps": [
+    {
+     "text": "In steady state the gradient is uniform, so $\\mathrm{d}C/\\mathrm{d}x=(C_2-C_1)/\\Delta x$.",
+     "latex": "J=D\\,\\frac{C_1-C_2}{\\Delta x}"
+    },
+    {
+     "text": "Convert the thickness: $\\Delta x=2.0\\times10^{-3}$ m."
+    },
+    {
+     "text": "Substitute.",
+     "latex": "J=\\frac{(1.0\\times10^{-9})(2.0-0.4)}{2.0\\times10^{-3}}=8.0\\times10^{-7}\\ \\mathrm{kg/(m^2\\,s)}"
+    }
+   ],
+   "answer": "$J=8.0\\times10^{-7}$ kg/(m$^2$ s), directed from the high-concentration face to the low one."
+  },
+  {
+   "type": "text",
+   "markdown": "**Time-dependent diffusion.** When the profile changes with time, Fick's second law, $\\partial C/\\partial t=D\\,\\partial^2C/\\partial x^2$, applies. For a semi-infinite solid with initial uniform concentration $C_0$ and a constant surface concentration $C_s$, which models carburising, the solution is"
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{C_x-C_0}{C_s-C_0}=1-\\operatorname{erf}\\!\\left(\\frac{x}{2\\sqrt{Dt}}\\right)",
+   "caption": "$C_x$: concentration at depth $x$ and time $t$; erf is the error function, tabulated in the table below."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$z$",
+    "0.2",
+    "0.4",
+    "0.5",
+    "0.6",
+    "0.8",
+    "1.0"
+   ],
+   "rows": [
+    [
+     "$\\operatorname{erf}(z)$",
+     "0.2227",
+     "0.4284",
+     "0.5205",
+     "0.6039",
+     "0.7421",
+     "0.8427"
+    ]
+   ],
+   "caption": "Selected error-function values."
+  },
+  {
+   "type": "text",
+   "markdown": "**Temperature dependence.** Diffusion is thermally activated. Only atoms with energy above the activation energy $Q_d$ (J/mol) can make a jump, and the diffusion coefficient follows an Arrhenius law,"
+  },
+  {
+   "type": "math",
+   "latex": "D=D_0\\exp\\!\\left(-\\frac{Q_d}{RT}\\right),\\qquad \\ln\\frac{D_2}{D_1}=\\frac{Q_d}{R}\\left(\\frac{1}{T_1}-\\frac{1}{T_2}\\right)",
+   "caption": "$D_0$: pre-exponential factor (m$^2$/s); $R=8.314$ J/(mol K); $T$ in kelvin."
+  },
+  {
+   "type": "worked_example",
+   "title": "Carburising time for a target case depth",
+   "prompt": "A steel with 0.20 wt% C is carburised at 950 degrees C ($T=1223$ K) with the surface held at $C_s=1.00$ wt% C. Typical values for carbon in FCC iron are $D_0=2.3\\times10^{-5}$ m$^2$/s and $Q_d=148$ kJ/mol. How long is needed to reach 0.60 wt% C at a depth of 0.50 mm?",
+   "steps": [
+    {
+     "text": "Compute $D$ at 1223 K.",
+     "latex": "D=2.3\\times10^{-5}\\exp\\left(-\\frac{148000}{8.314\\times1223}\\right)=1.10\\times10^{-11}\\ \\mathrm{m^2/s}"
+    },
+    {
+     "text": "Left side of the erf solution.",
+     "latex": "\\frac{0.60-0.20}{1.00-0.20}=0.50=1-\\operatorname{erf}(z)\\ \\Rightarrow\\ \\operatorname{erf}(z)=0.50"
+    },
+    {
+     "text": "From tables, $\\operatorname{erf}(z)=0.50$ gives $z=0.477$ (interpolating between 0.4284 at 0.4 and 0.5205 at 0.5).",
+     "latex": "z=\\frac{x}{2\\sqrt{Dt}}=0.477"
+    },
+    {
+     "text": "Solve for $t$ with $x=5.0\\times10^{-4}$ m.",
+     "latex": "t=\\frac{x^2}{4z^2D}=\\frac{(5.0\\times10^{-4})^2}{4(0.477)^2(1.10\\times10^{-11})}=2.5\\times10^{4}\\ \\mathrm{s}"
+    }
+   ],
+   "answer": "$t\\approx2.5\\times10^4$ s, about 6.9 hours."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Depth for a given concentration grows as $\\sqrt{Dt}$: doubling the depth needs four times the time.",
+    "A small rise in temperature raises $D$ strongly, so carburising is done hot (about 900 to 950 degrees C), where steel is FCC austenite and dissolves much more carbon than BCC ferrite.",
+    "Steady-state problems use Fick's first law; changing-profile problems use the erf solution.",
+    "Always convert thickness and depth to metres, temperature to kelvin and use consistent $R$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Which equation when?",
+   "text": "If the concentration at every point is constant in time, use $J=D(C_1-C_2)/\\Delta x$. If a surface is held at fixed concentration and atoms move in, use the error-function solution. If $D$ changes with temperature, use the Arrhenius form first."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Fick's first law, $J=-D\\,\\mathrm{d}C/\\mathrm{d}x$, gives flux for steady-state diffusion; through a thin plate $J=D\\Delta C/\\Delta x$.",
+    "$D=D_0\\exp(-Q_d/RT)$, so $\\ln D$ against $1/T$ has slope $-Q_d/R$ and $D$ at a new temperature follows from the ratio form.",
+    "The erf solution gives the concentration profile when a surface is held at $C_s$, and case depth scales as $\\sqrt{Dt}$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In Fick's first law, $J=-D\\,\\mathrm{d}C/\\mathrm{d}x$, why is there a minus sign?",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Because net flux is directed from high concentration to low concentration, opposite to the concentration gradient"
+    },
+    {
+     "id": "b",
+     "text": "Because diffusion always removes atoms from the material"
+    },
+    {
+     "id": "c",
+     "text": "Because $D$ is a negative number for diffusing species"
+    },
+    {
+     "id": "d",
+     "text": "Because the flux is measured in the direction of increasing temperature"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Because net flux is directed from high concentration to low concentration, opposite to the concentration gradient",
+   "distractorRationale": {
+    "a": "Correct: the gradient points up the concentration hill, the flux down it.",
+    "b": "Diffusion redistributes atoms; it does not remove them from a closed system.",
+    "c": "$D$ is always positive; the sign belongs to the gradient.",
+    "d": "Fick's first law relates flux to concentration gradient; temperature enters only through $D$."
+   },
+   "explanation": "The concentration gradient $\\mathrm{d}C/\\mathrm{d}x$ is positive when concentration increases with $x$, but atoms migrate toward lower concentration, so the flux has the opposite sign. $D$ is positive and sets only how fast this evening-out occurs.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "In steady-state diffusion through a thin plate of constant diffusion coefficient, the concentration varies linearly with position through the thickness.",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Steady state means the flux $J$ is the same at every position and constant in time. With $J=-D\\,\\mathrm{d}C/\\mathrm{d}x$ and constant $D$, the gradient must then be constant, so $C$ is linear in $x$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The diffusion coefficient follows $D=D_0\\exp(-Q_d/RT)$. What happens to $D$ when the absolute temperature is raised?",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases exponentially, and increases proportionally faster when $Q_d$ is larger"
+    },
+    {
+     "id": "b",
+     "text": "It increases linearly with $T$"
+    },
+    {
+     "id": "c",
+     "text": "It decreases because atoms collide more often"
+    },
+    {
+     "id": "d",
+     "text": "It is independent of $T$ and depends only on concentration"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It increases exponentially, and increases proportionally faster when $Q_d$ is larger",
+   "distractorRationale": {
+    "a": "Correct: the Arrhenius form means a larger activation energy makes $D$ more temperature sensitive.",
+    "b": "The dependence is exponential in $1/T$, not linear.",
+    "c": "More thermal energy lets more atoms overcome the barrier $Q_d$, so $D$ rises.",
+    "d": "$D$ depends strongly on temperature; this is the basis of thermally activated processes."
+   },
+   "explanation": "Diffusion is thermally activated: an atom must acquire the energy $Q_d$ to jump into the neighbouring site, and the fraction of atoms with that energy rises as $\\exp(-Q_d/RT)$. A higher $Q_d$ means a steeper rise of $D$ with temperature.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A polymer film 0.50 mm thick separates two chambers. A solute has concentration 1.2 kg/m$^3$ on one face and 0.2 kg/m$^3$ on the other face, and its diffusion coefficient in the film is $3.0\\times10^{-11}$ m$^2$/s. Assuming steady state, calculate the flux in units of $10^{-8}$ kg/(m$^2$ s).",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o1"
+   ],
+   "correctValue": 6.0,
+   "tolerance": 0.1,
+   "unit": "1e-8 kg/(m^2 s)",
+   "explanation": "Steady-state flux is $J=D(C_1-C_2)/\\Delta x=3.0\\times10^{-11}\\times(1.2-0.2)/(0.50\\times10^{-3})=6.0\\times10^{-8}$ kg/(m$^2$ s). The thickness must be converted to metres before substituting.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A diffusing species has $D=1.0\\times10^{-14}$ m$^2$/s at 900 K and an activation energy $Q_d=125$ kJ/mol. Taking $R=8.314$ J/(mol K), calculate $D$ at 1000 K in units of $10^{-14}$ m$^2$/s.",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o2"
+   ],
+   "correctValue": 5.32,
+   "tolerance": 0.1,
+   "unit": "1e-14 m^2/s",
+   "explanation": "From the Arrhenius law, $D_2=D_1\\exp\\left[\\frac{Q_d}{R}\\left(\\frac{1}{T_1}-\\frac{1}{T_2}\\right)\\right]$. The exponent is $(125000/8.314)(1/900-1/1000)=1.670$, so $D_2=1.0\\times10^{-14}\\times e^{1.670}=5.3\\times10^{-14}$ m$^2$/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A steel containing 0.10 wt% C is carburised in an atmosphere that holds the surface at 1.00 wt% C. The diffusion coefficient of carbon at the treatment temperature is $1.6\\times10^{-11}$ m$^2$/s. Using the error-function solution, calculate the depth in mm at which the carbon content is 0.40 wt% after 4.0 h.",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o3"
+   ],
+   "correctValue": 0.66,
+   "tolerance": 0.03,
+   "unit": "mm",
+   "explanation": "The solution is $\\frac{C_x-C_0}{C_s-C_0}=1-\\mathrm{erf}\\left(\\frac{x}{2\\sqrt{Dt}}\\right)$. Here $(0.40-0.10)/(1.00-0.10)=0.333$, so $\\mathrm{erf}(z)=0.667$; from tables, $\\mathrm{erf}(0.6)=0.6039$ and $\\mathrm{erf}(0.7)=0.6778$, so $z=0.684$ by interpolation. Then $x=2z\\sqrt{Dt}=2(0.684)\\sqrt{1.6\\times10^{-11}\\times14400}=0.66$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A carburising treatment gives a case depth of 0.6 mm in 4 h at a fixed temperature and surface carbon content. If the same treatment is run for 16 h, what case depth (to the same carbon level) is expected?",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 1.2 mm"
+    },
+    {
+     "id": "b",
+     "text": "About 2.4 mm"
+    },
+    {
+     "id": "c",
+     "text": "About 0.6 mm"
+    },
+    {
+     "id": "d",
+     "text": "About 0.3 mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About 1.2 mm",
+   "distractorRationale": {
+    "a": "Correct: depth scales as $\\sqrt t$, and $\\sqrt{16/4}=2$.",
+    "b": "This assumes depth is proportional to time, but diffusion depth goes as $\\sqrt{t}$.",
+    "c": "Case depth keeps growing with time; it does not saturate.",
+    "d": "Depth cannot decrease as treatment time increases."
+   },
+   "explanation": "For a given carbon level, $x/(2\\sqrt{Dt})$ is constant, so $x\\propto\\sqrt{Dt}$. Quadrupling the time doubles the depth, taking 0.6 mm to 1.2 mm; this is why deep cases take disproportionately long.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An Arrhenius plot of $\\ln D$ against $1/T$ (with $T$ in kelvin) for a diffusing species is a straight line of slope $-1.5\\times10^{4}$ K. Using $R=8.314$ J/(mol K), what is the activation energy?",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "125 kJ/mol"
+    },
+    {
+     "id": "b",
+     "text": "15 kJ/mol"
+    },
+    {
+     "id": "c",
+     "text": "1.8 kJ/mol"
+    },
+    {
+     "id": "d",
+     "text": "-125 kJ/mol"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "125 kJ/mol",
+   "distractorRationale": {
+    "a": "Correct: $Q_d=-R\\times\\text{slope}=8.314\\times15000=1.25\\times10^5$ J/mol.",
+    "b": "This reads the slope as an energy directly, without multiplying by $R$.",
+    "c": "This divides the slope by $R$ instead of multiplying.",
+    "d": "Activation energy is positive; the minus sign belongs to the slope."
+   },
+   "explanation": "Taking the logarithm of $D=D_0\\exp(-Q_d/RT)$ gives $\\ln D=\\ln D_0-(Q_d/R)(1/T)$, so the slope is $-Q_d/R$. Hence $Q_d=15000\\times8.314=1.25\\times10^5$ J/mol, or 125 kJ/mol.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "State Fick's first law and use it to explain why, for steady-state diffusion of a gas through a thin wall, the flux is inversely proportional to the wall thickness. State the assumptions.",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o1"
+   ],
+   "markingGuide": [
+    "States $J=-D\\,\\mathrm{d}C/\\mathrm{d}x$ with symbols and units defined (2 marks)",
+    "Steady state: $J$ is independent of position and time, so the gradient is constant and the profile linear (2 marks)",
+    "$J=D(C_1-C_2)/\\Delta x$, so doubling the thickness halves the flux for fixed face concentrations (2 marks)",
+    "Assumptions: constant $D$ (independent of $C$), fixed concentrations on both faces, one-dimensional flow (2 marks)"
+   ],
+   "explanation": "Fick's first law relates flux to the concentration gradient. In steady state with constant $D$ the profile is linear, so the gradient is $(C_1-C_2)/\\Delta x$ and flux falls as $1/\\Delta x$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Two gas-carburising runs are planned to reach the same carbon concentration at the same depth. Run A is at 900 degrees C and Run B at 950 degrees C. Using the error-function solution and $D=D_0\\exp(-Q_d/RT)$, explain which run is shorter and by roughly what factor, taking $Q_d=148$ kJ/mol, $D_0=2.3\\times10^{-5}$ m$^2$/s.",
+   "objectiveIds": [
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o2",
+    "ug.mce-materials-for-mechanical-engineers.defects-and-diffusion.diffusion.o3"
+   ],
+   "markingGuide": [
+    "For fixed surface, initial and target concentrations, $x/(2\\sqrt{Dt})$ is a constant, so $Dt$ is the same for both runs (2 marks)",
+    "So $t_B/t_A=D_A/D_B$ (1 mark)",
+    "$D_A=5.91e-12$ m$^2$/s at 1173 K and $D_B=1.1e-11$ m$^2$/s at 1223 K (2 marks)",
+    "Ratio $D_B/D_A\\approx1.86$, so Run B takes about 54 percent of the time of Run A (2 marks)",
+    "Mention of the trade-off: higher temperature increases grain growth and distortion (1 mark)"
+   ],
+   "explanation": "The target condition fixes $Dt$, so the run with the larger $D$ is shorter. Raising the temperature from 1173 K to 1223 K raises $D$ by about 1.86 times, so the time falls to roughly 0.54 of the original.",
+   "board": "internal"
+  }
+ ]
+}

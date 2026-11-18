@@ -1,0 +1,43 @@
+{
+  "subjectId": "ug.mce-thermodynamics-2",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 14,
+  "summary": "Full fresh review of all 14 units. The round-2 major on brayton-real is withdrawn: with the unit's own stated inputs (T1 = 300 K, T3 = 1400 K, r_p = 10, k = 1.4, cp = 1.005) T2 = 579.2 K, T4 = 725.1 K and the ideal net work is 1.005[(1400 - 725.1) - (579.2 - 300)] = 397.6 kJ/kg, so 'about 398 to 226 kJ/kg' is correct; the 544.3 figure arises only if T3 - T2 is used instead of T3 - T4 (wrong turbine temperature drop). All other requested fixes are confirmed in the packets (optimum r_p stated as T2 = sqrt(T1 T3); ideal efficiency bounded by 1; glass plate wording consistent in humid-air q009; refrigerant hook now gives a pressure ratio of about 14 for R-134a, matching 1.16/0.084 MPa; light-gas bullet rewritten correctly; HHV/LHV hedge present in combustion q009). Every numeric key, worked example and marking-guide figure was recomputed in Python (Brayton ideal and real, regeneration, intercooling, combined cycle, mixtures, combustion and flame temperature, exergy, Otto/Diesel, mep, psychrometrics, vapour compression, flash chamber, reheat and regenerative Rankine) and all agree within tolerance; steam and R-134a table values match the standard tables as I recall them. No critical or major issues remain; four minor items are left, two carried over (property data unverified). This is an AI review only: the course still needs a subject-matter expert before engineering reliance, and the sensible-enthalpy table and the 'representative' R-134a enthalpies should be checked against published tables.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Lesson sentence 'for r_p = 10, T_3 = 1400 K and efficiencies of 0.80 and 0.85 the net work falls from about 398 to 226 kJ/kg' is numerically correct (ideal 397.6, real 225.8) but does not say that 398 is the ideal-cycle value or give T_1, so a reader may not be able to reproduce it (a reviewer mis-recomputed it as 544 by using T3 - T2 for the turbine work).",
+      "suggestedFix": "Say 'for T_1 = 300 K, r_p = 10, T_3 = 1400 K the net work falls from about 398 kJ/kg (ideal) to 226 kJ/kg with efficiencies of 0.80 and 0.85'. Do not change the numbers."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Table row 'Thermal efficiency: ... Effect of raising T3: Increases at a given r_p' conflicts with the lesson text that the ideal air-standard efficiency 'depends only on the pressure ratio'. Raising T3 raises efficiency only when component losses are present (real cycle, e.g. about 29.9% at 1400 K to about 41.5% at 1600 K for r_p = 10 with eta_C = 0.80, eta_T = 0.85); for the ideal cycle it is unchanged.",
+      "suggestedFix": "Change the cell to 'Unchanged for the ideal cycle; increases for the real cycle at a given r_p' (or label the column as real-cycle behaviour)."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.combustion-and-gas-mixtures.combustion-energy-balance",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Sensible-enthalpy table: the H2O entry at 2000 K (72 790 kJ/kmol) appears slightly above the usual ideal-gas table value (about 72 690); the 2200 K and 2400 K H2O entries and the CO2 and N2 columns agree with the usual tables, and O2 agrees to about 0.05%. The effect on the keys is negligible (T_ad 2327 K worked example; ethane q008 2113 K, tolerance 15) but the data are from memory and unverified.",
+      "suggestedFix": "Check the table against JANAF or Cengel Table A-23 and cite the source; re-derive 2327 K and 2112.9 K only if any value changes."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.vapour-compression",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Unchanged from earlier rounds: the 'representative' R-134a values in q006/q007 (h1 = 235.3, h2 = 272.0, h3 = 101.6) do not belong to one consistent cycle (h3 = 101.6 matches saturated liquid at about 0.9 MPa, h1 = 235.3 matches saturated vapour near 0.1 MPa, for which isentropic compressor work would be roughly 40 to 45 kJ/kg, not 36.7). The key 2.196 kW follows arithmetically from the stated data, and the lesson examples (0.14/0.8 MPa: 239.16, 275.39, 95.47, COP 3.97; cold store 244.5, 272.0, 88.8) are correct and consistent.",
+      "suggestedFix": "Take h1, h2, h3 from one stated R-134a cycle (give the pressures) or label them hypothetical, and recompute q007 (2.196 kW) if the values change."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Bullet 'Pick evaporator pressure above atmospheric to avoid air leaking in' (and the text 'too low an evaporator pressure (below atmosphere) allows air in') sits beside the unit's own hook and q003 duty of -30 C evaporating, which for R-134a is about 0.084 MPa, i.e. below atmospheric. The guideline is presented as a rule without noting that low-temperature R-134a plants are sub-atmospheric.",
+      "suggestedFix": "Soften to 'Prefer an evaporator pressure above atmospheric where the fluid allows it (otherwise air ingress and purging become a problem, as for R-134a below about -26 C)'."
+    }
+  ]
+}

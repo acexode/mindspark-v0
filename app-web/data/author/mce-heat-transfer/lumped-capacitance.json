@@ -1,0 +1,380 @@
+{
+ "lessonTitle": "Lumped Capacitance and the Biot Number",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A solder ball of 3 mm diameter leaves a reflow oven and a technician needs to know how long it takes to solidify enough to handle. The ball is so small and so conductive that its temperature is the same all through it, and one exponential equation tells her everything."
+  },
+  {
+   "type": "text",
+   "markdown": "In transient conduction, a body that is suddenly exposed to a fluid at a different temperature changes temperature over time. If conduction inside the body is fast compared with convection at its surface, the body stays at a single temperature $T(t)$ and we can apply energy conservation to the whole body at once. This is the **lumped capacitance** model; all the spatial detail is discarded."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Biot number and characteristic length",
+   "text": "The Biot number $Bi=hL_c/k$ compares the resistance to conduction inside the body ($L_c/k$) with the resistance to convection at its surface ($1/h$). The characteristic length is $L_c=V/A_s$, where $V$ is volume (m$^3$) and $A_s$ the surface area (m$^2$) exposed to the fluid. A body is lumped when $Bi<0.1$, where internal temperature differences are under about 5%."
+  },
+  {
+   "type": "text",
+   "markdown": "Energy balance: the rate of change of stored energy equals the convective loss, $\\rho Vc\\,dT/dt=-hA_s(T-T_\\infty)$, with $\\rho$ the density (kg/m$^3$), $c$ the specific heat (J/kg K), $h$ the convection coefficient (W/m$^2$K) and $T_\\infty$ the fluid temperature. Defining $\\theta=T-T_\\infty$ gives a first-order ordinary differential equation with an exponential solution."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{T(t)-T_\\infty}{T_i-T_\\infty}=\\exp\\!\\left(-\\frac{t}{\\tau}\\right),\\qquad \\tau=\\frac{\\rho Vc}{hA_s}=R_{conv}C_{th}",
+   "caption": "Lumped capacitance response; tau is the time constant (s), C_th = rho V c is the thermal capacitance (J/K)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Quenching a small steel sphere",
+   "prompt": "A steel sphere of diameter 20 mm ($\\rho=7800$ kg/m$^3$, $c=480$ J/kg K, $k=45$ W/m K, all typical) at 600 $^\\circ$C is dropped into an oil bath at 30 $^\\circ$C where $h=100$ W/m$^2$K. Check whether the lumped model applies and find the sphere temperature after 200 s.",
+   "steps": [
+    {
+     "text": "Characteristic length is volume divided by surface area: for a sphere $V/A_s=(\\pi D^3/6)/(\\pi D^2)=D/6$.",
+     "latex": "L_c=\\frac{V}{A_s}=\\frac{D}{6}=3.333\\text{ mm}"
+    },
+    {
+     "text": "Biot number: $Bi=hL_c/k=100\\times0.00333/45=0.0074$, much less than 0.1, so the temperature inside the sphere is nearly uniform and the lumped model is acceptable.",
+     "latex": "Bi=\\frac{hL_c}{k}"
+    },
+    {
+     "text": "Time constant: $\\tau=\\rho cL_c/h=7800\\times480\\times0.00333/100=124.8$ s.",
+     "latex": "\\tau=\\frac{\\rho c V}{hA_s}=\\frac{\\rho c L_c}{h}"
+    },
+    {
+     "text": "Exponential response: $T=30+570\\exp(-200/124.8)=30+570\\times0.2014=144.8$ $^\\circ$C.",
+     "latex": "\\frac{T-T_\\infty}{T_i-T_\\infty}=e^{-t/\\tau}"
+    }
+   ],
+   "answer": "$Bi=0.0074$ (valid), $\\tau\\approx125$ s, and $T(200\\text{ s})\\approx145$ $^\\circ$C."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Shape",
+    "Characteristic length $L_c=V/A_s$",
+    "Notes"
+   ],
+   "rows": [
+    [
+     "Sphere, diameter $D$",
+     "$D/6$",
+     "Whole surface exposed"
+    ],
+    [
+     "Long cylinder, diameter $D$ (ends ignored)",
+     "$D/4$",
+     "Radial heat flow only"
+    ],
+    [
+     "Cube, side $a$",
+     "$a/6$",
+     "All six faces exposed"
+    ],
+    [
+     "Plane wall, thickness $2L$ (two faces exposed)",
+     "$L$",
+     "Half thickness"
+    ]
+   ],
+   "caption": "Characteristic lengths for the lumped capacitance model"
+  },
+  {
+   "type": "text",
+   "markdown": "After one time constant the excess temperature $\\theta$ has fallen to $e^{-1}=36.8\\%$ of its initial value; after $3\\tau$ it is about 5%, and after $5\\tau$ under 1%. Because $\\tau$ is proportional to $\\rho cL_c/h$, small, light, low-heat-capacity bodies in strong flow respond fastest."
+  },
+  {
+   "type": "worked_example",
+   "title": "Thermocouple bead in a hot gas stream",
+   "prompt": "A spherical thermocouple junction of diameter 1 mm ($\\rho=8500$ kg/m$^3$, $c=400$ J/kg K, typical values) sits in a gas stream with $h=250$ W/m$^2$K. Find its time constant and the time to reach 95% of a step change in gas temperature. Assume radiation and conduction along the wires are negligible.",
+   "steps": [
+    {
+     "text": "The bead is tiny and metallic, so $Bi$ is very small and the lumped model applies. For a sphere $V/A_s=D/6$.",
+     "latex": "\\tau=\\frac{\\rho c D}{6h}"
+    },
+    {
+     "text": "$\\tau=8500\\times400\\times0.001/(6\\times250)=2.267$ s."
+    },
+    {
+     "text": "For a step change the response is $\\theta/\\theta_i=e^{-t/\\tau}$. Reaching 95% of the step means the remaining difference is 5%, so $e^{-t/\\tau}=0.05$.",
+     "latex": "t=-\\tau\\ln(0.05)"
+    },
+    {
+     "text": "$t=-2.267\\ln(0.05)=6.79$ s, about three time constants."
+    }
+   ],
+   "answer": "$\\tau\\approx2.27$ s and $t_{95}\\approx6.8$ s. A smaller bead or a faster gas stream shortens the response."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Compute $L_c=V/A_s$ for the body.",
+    "Find $Bi=hL_c/k$. If $Bi<0.1$, use the lumped model; otherwise use spatial solutions (next unit).",
+    "Compute $\\tau=\\rho cL_c/h$.",
+    "Apply $T=T_\\infty+(T_i-T_\\infty)e^{-t/\\tau}$ or invert it: $t=\\tau\\ln[(T_i-T_\\infty)/(T-T_\\infty)]$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Check the Biot number before you rely on the answer",
+   "text": "A material with a high $k$ is not automatically lumped. A large copper block in vigorously boiling water can still have $Bi>0.1$ because $h$ is very large. Always compute $Bi$. Also, the model assumes constant properties and a constant $h$ and $T_\\infty$; large radiation loss changes the behaviour."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Time constant of a sensor",
+   "text": "A thermocouple measures gas temperature with a lag of about $\\tau=\\rho cD/(6h)$. For a faster sensor use a smaller junction, which lowers $L_c$, or raise $h$ by exposing it to higher gas velocity."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Lumped model: uniform body temperature when $Bi=hL_c/k<0.1$, with $L_c=V/A_s$.",
+    "The response is $(T-T_\\infty)/(T_i-T_\\infty)=e^{-t/\\tau}$ with $\\tau=\\rho Vc/(hA_s)$.",
+    "After $\\tau$ the excess is 36.8%; after $3\\tau$ about 5%.",
+    "For a bead thermocouple, $\\tau=\\rho cD/(6h)$; smaller beads and faster flow respond more quickly."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Physically, the Biot number $Bi=hL_c/k$ is the ratio of",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "the internal conduction resistance of the body to the external convection resistance at its surface"
+    },
+    {
+     "id": "b",
+     "text": "the convection resistance at the surface to the internal conduction resistance"
+    },
+    {
+     "id": "c",
+     "text": "the heat stored in the body to the heat lost to the fluid"
+    },
+    {
+     "id": "d",
+     "text": "the thermal diffusivity to the kinematic viscosity"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "the internal conduction resistance of the body to the external convection resistance at its surface",
+   "distractorRationale": {
+    "b": "This is the inverse of the Biot number.",
+    "c": "This sounds like a time ratio; it is not Bi.",
+    "d": "This is the Prandtl number, which does not involve $h$ or $L_c$."
+   },
+   "explanation": "Writing $Bi=(L_c/k)/(1/h)$ shows it is a resistance ratio. When it is small, heat crosses the interior easily, so the interior temperature is nearly uniform and the surface film controls the cooling.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A long solid cylinder of radius $R$ cools by convection from its curved surface only, with end effects neglected. Its characteristic length $V/A_s$ is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$R$"
+    },
+    {
+     "id": "b",
+     "text": "$R/3$"
+    },
+    {
+     "id": "c",
+     "text": "$R/2$"
+    },
+    {
+     "id": "d",
+     "text": "$2R$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$R/2$",
+   "distractorRationale": {
+    "a": "This is the wall-thickness-like length for a slab; for a cylinder $V/A_s=\\pi R^2L/(2\\pi RL)=R/2$.",
+    "b": "This is the sphere value, $R/3=D/6$.",
+    "d": "This is the diameter, which is not $V/A_s$."
+   },
+   "explanation": "For a cylinder of length $L$, $V=\\pi R^2L$ and $A_s=2\\pi RL$, so $V/A_s=R/2=D/4$. The sphere has $R/3$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A long ceramic rod of diameter 40 mm ($k=3.0$ W/m K, typical) is cooled by air with $h=60$ W/m$^2$K over its curved surface, ends neglected. Calculate the Biot number using $L_c=V/A_s$. Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o1"
+   ],
+   "correctValue": 0.2,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "$L_c=D/4=0.010$ m, so $Bi=60\\times0.010/3.0=0.200$. This is above 0.1, so the lumped model is not valid for the rod; the centre will be noticeably hotter than the surface.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An aluminium cube of side 30 mm ($\\rho=2700$ kg/m$^3$, $c=900$ J/kg K, $k=200$ W/m K, typical) is at 150 $^\\circ$C and is placed in air at 25 $^\\circ$C with $h=40$ W/m$^2$K on all faces. Assuming a lumped model, find its temperature after 300 s in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o1",
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o2"
+   ],
+   "correctValue": 71.6,
+   "tolerance": 0.5,
+   "unit": "degC",
+   "explanation": "$L_c=a/6=0.005$ m, $Bi=0.0010<0.1$, so the lumped model is valid. $\\tau=\\rho cL_c/h=303.8$ s, and $T=25+125\\exp(-300/303.8)=25+125\\times0.3724=71.6$ $^\\circ$C.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A spherical thermocouple junction of diameter 0.5 mm ($\\rho=8900$ kg/m$^3$, $c=420$ J/kg K, both typical) is in a gas stream where $h=400$ W/m$^2$K. Find the time constant of the junction in seconds.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o3"
+   ],
+   "correctValue": 0.779,
+   "tolerance": 0.01,
+   "unit": "s",
+   "explanation": "For a sphere $L_c=D/6$, so $\\tau=\\rho cD/(6h)=8900\\times420\\times0.0005/(6\\times400)=0.779$ s. After about three time constants (about 2.3 s) the reading has reached roughly 95% of a step.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A small lumped body starts with an excess temperature $T_i-T_\\infty=200$ K over the surrounding fluid. After exactly one time constant, what is the excess temperature?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "100.0 K"
+    },
+    {
+     "id": "b",
+     "text": "73.6 K"
+    },
+    {
+     "id": "c",
+     "text": "0.0 K"
+    },
+    {
+     "id": "d",
+     "text": "126.4 K"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "73.6 K",
+   "distractorRationale": {
+    "a": "This is a half-life; the exponential reaches 1/2 after $0.693\\tau$, not $\\tau$.",
+    "c": "The exponential never reaches exactly zero in finite time.",
+    "d": "This is the amount already lost, $200(1-e^{-1})$, not what remains."
+   },
+   "explanation": "At $t=\\tau$ the excess is $200e^{-1}=73.6$ K, i.e. 36.8% remains. The 63.2% that has been lost is the amount the body has moved toward the fluid temperature.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A thermocouple bead has time constant $\\tau=\\rho cD/(6h)$. The bead is replaced by one of half the diameter and the gas velocity is raised so that $h$ doubles (all else equal). The new time constant is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "one half of the original"
+    },
+    {
+     "id": "b",
+     "text": "unchanged"
+    },
+    {
+     "id": "c",
+     "text": "four times the original"
+    },
+    {
+     "id": "d",
+     "text": "one quarter of the original"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "one quarter of the original",
+   "distractorRationale": {
+    "a": "Only one of the two changes was counted; both halve $\\tau$.",
+    "b": "The diameter and $h$ both appear in $\\tau$.",
+    "c": "Both changes shorten the response; they do not lengthen it."
+   },
+   "explanation": "Since $\\tau\\propto D/h$, halving $D$ multiplies $\\tau$ by 0.5 and doubling $h$ multiplies it by another 0.5, giving $\\tau/4$. The sensor tracks gas temperature changes four times faster.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "A large copper block always satisfies the lumped capacitance criterion because copper has a high thermal conductivity.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The criterion is $Bi=hL_c/k<0.1$, which involves the size ($L_c$) and the convection coefficient $h$ as well as $k$. A large block with a large $L_c$, or a block in boiling water with very large $h$, can exceed $Bi=0.1$ even with a high $k$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "State the assumptions of the lumped capacitance model and derive the exponential temperature response from an energy balance, identifying the time constant. Explain how the Biot number tells you when the model is acceptable.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o1",
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o2"
+   ],
+   "markingGuide": [
+    "Assumptions: uniform body temperature, constant $\\rho$, $c$, $h$ and $T_\\infty$, no internal generation, negligible radiation.",
+    "Energy balance $\\rho Vc\\,dT/dt=-hA_s(T-T_\\infty)$.",
+    "Separation of variables with $\\theta=T-T_\\infty$ gives $\\theta/\\theta_i=e^{-t/\\tau}$ with $\\tau=\\rho Vc/(hA_s)$.",
+    "$Bi=hL_c/k<0.1$ means the internal resistance is small compared with the surface resistance, so temperature differences inside are under about 5% and the uniform-temperature assumption holds."
+   ],
+   "explanation": "A full answer links the physical assumption (uniform temperature) to the criterion (small $Bi$). The differential equation is first order, so the solution must be a single exponential with $\\tau$ equal to the product of the convective resistance and thermal capacitance.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 3 mm diameter solder ball ($\\rho=7400$ kg/m$^3$, $c=230$ J/kg K, $k=50$ W/m K, typical values) leaves an oven at 250 $^\\circ$C into still air at 25 $^\\circ$C where $h=60$ W/m$^2$K. Check that the lumped model applies and find the time in seconds for the ball to cool to 100 $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o1",
+    "ug.mce-heat-transfer.transient-conduction.lumped-capacitance.o2"
+   ],
+   "correctValue": 15.6,
+   "tolerance": 0.3,
+   "unit": "s",
+   "explanation": "$L_c=D/6=0.5$ mm, $Bi=6.0e-04$, so the lumped model is valid. $\\tau=\\rho cL_c/h=14.18$ s. Rearranging, $t=\\tau\\ln[(250-25)/(100-25)]=14.18\\times\\ln 3=15.6$ s.",
+   "board": "internal"
+  }
+ ]
+}

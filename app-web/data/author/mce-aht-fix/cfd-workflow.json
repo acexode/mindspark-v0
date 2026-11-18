@@ -1,0 +1,419 @@
+{
+ "lessonTitle": "CFD Workflow and Discretisation",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A team simulates air cooling of a battery module and gets a beautiful colour plot in an afternoon, with peak temperature 41 $^\\circ$C. The prototype measures 58 $^\\circ$C. Nothing was wrong with the solver; the geometry had been simplified by deleting the busbars, the mesh was never refined and a first-order scheme smeared the thermal wake. A CFD result is only as good as the process that produced it."
+  },
+  {
+   "type": "text",
+   "markdown": "**Computational fluid dynamics (CFD)** solves the equations of mass, momentum and energy conservation numerically on a computational grid. Instead of an algebraic formula it produces values of velocity, pressure and temperature in thousands to millions of cells. A disciplined study follows a standard workflow, and each step can introduce its own error."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "**Define the question**: the quantity of interest (pressure drop, peak temperature, heat transfer rate) and the accuracy needed.",
+    "**Geometry preparation**: import CAD, remove irrelevant detail, repair gaps, create the fluid domain and name boundaries.",
+    "**Meshing**: divide the domain into cells; refine near walls and in regions of strong gradients.",
+    "**Physics set-up**: choose models (laminar or turbulence, energy equation, compressibility), material properties, boundary and initial conditions.",
+    "**Solver set-up**: choose discretisation schemes, relaxation factors and convergence criteria.",
+    "**Solve and monitor**: run until residuals fall and monitored quantities stop changing; check global balances.",
+    "**Post-process and verify**: plot, integrate, compare with hand calculations or data, and do a grid-independence study."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Verification and validation",
+   "text": "**Verification** asks whether the equations were solved correctly (mesh independence, convergence, conservation). **Validation** asks whether the right equations were solved, by comparing with experiment. A result that is not verified cannot be validated meaningfully."
+  },
+  {
+   "type": "text",
+   "markdown": "Discretisation converts the continuous equations into algebraic equations. The **finite difference method (FD)** replaces derivatives at grid points by Taylor-series differences, for example $\\partial T/\\partial x\\approx(T_E-T_W)/2\\Delta x$. It is simple on structured grids but ties the formulae to the grid. The **finite volume method (FV)** integrates the conservation law over each small control volume (cell) and applies the divergence theorem, converting the volume integral of a divergence into the sum of fluxes through the faces. The flux leaving one cell is exactly the flux entering its neighbour, so the method conserves mass, momentum and energy by construction on any mesh, including unstructured ones."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Finite difference",
+    "Finite volume"
+   ],
+   "rows": [
+    [
+     "Basis",
+     "Taylor-series derivative at a point",
+     "Integral balance over a cell"
+    ],
+    [
+     "Conservation",
+     "Not automatic, especially on non-uniform grids",
+     "Exact, because face fluxes are shared by neighbours"
+    ],
+    [
+     "Mesh type",
+     "Mainly structured grids",
+     "Structured or unstructured, complex geometry"
+    ],
+    [
+     "Unknowns",
+     "Values at grid nodes",
+     "Cell-average values (cell-centred)"
+    ],
+    [
+     "Typical use",
+     "Research codes, simple domains",
+     "Most commercial CFD solvers"
+    ]
+   ],
+   "caption": "Finite difference and finite volume compared."
+  },
+  {
+   "type": "math",
+   "latex": "\\int_V\\nabla\\!\\cdot\\!(\\rho\\mathbf u\\phi-\\Gamma\\nabla\\phi)\\,dV=\\sum_{faces}\\left(\\rho\\mathbf u\\phi-\\Gamma\\nabla\\phi\\right)\\!\\cdot\\!\\mathbf A_f=\\int_VS_\\phi\\,dV",
+   "caption": "Steady scalar $\\phi$ transport: convection, diffusion with coefficient $\\Gamma$, and source $S_\\phi$; $\\mathbf A_f$ face area vectors"
+  },
+  {
+   "type": "worked_example",
+   "title": "Finite volume energy balance for a conduction cell",
+   "prompt": "A 1D cell in a steel bar ($k=50$ W/m K) has width $\\Delta x=10$ mm and cross-section $A=1.0\\times10^{-4}$ m$^2$. The temperatures of the west neighbour, this cell and the east neighbour are 100, 90 and 85 $^\\circ$C. Find the net heat conducted into the cell and the volumetric source that would balance it.",
+   "steps": [
+    {
+     "text": "Conductance between cell centres.",
+     "latex": "\\frac{kA}{\\Delta x}=\\frac{50\\times1.0\\times10^{-4}}{0.010}=0.50\\ \\mathrm{W/K}"
+    },
+    {
+     "text": "Heat in through the west face and out through the east face.",
+     "latex": "Q_W=0.50\\times(100-90)=5.0\\ \\mathrm{W},\\quad Q_E=0.50\\times(90-85)=2.5\\ \\mathrm{W}"
+    },
+    {
+     "text": "Net conduction into the cell.",
+     "latex": "Q_{net}=5.0-2.5=2.5\\ \\mathrm{W}"
+    },
+    {
+     "text": "A steady cell needs a sink or source to balance this; the equivalent volumetric rate with $V=A\\Delta x=1.0\\times10^{-6}$ m$^3$ is:",
+     "latex": "S=\\frac{2.5}{1.0\\times10^{-6}}=2.50\\times10^{6}\\ \\mathrm{W/m^3}"
+    }
+   ],
+   "answer": "The cell receives a net 2.5 W; at steady state it would need an equal heat sink of 2.5 W (volumetric rate 2.5 x 10^6 W/m$^3$) for the balance to close. The residual of this balance, summed over cells, is what the solver reduces."
+  },
+  {
+   "type": "text",
+   "markdown": "In the convection term, the value of the transported quantity at a cell face must be estimated from the cell-centre values. **First-order upwind** takes the face value equal to the value in the upstream cell: for flow from west to east, $\\phi_e=\\phi_P$. It is very stable and bounded (it never creates new maxima), but its truncation error acts like an artificial diffusion, with a coefficient $\\Gamma_{num}\\approx\\rho u\\Delta x/2$ that smears sharp gradients. **Second-order upwind** extrapolates linearly from two upstream cells, $\\phi_e=\\tfrac32\\phi_P-\\tfrac12\\phi_W$, so it reproduces a linear profile exactly, with an error of order $\\Delta x^2$ and little smearing, but it can overshoot or undershoot near steep gradients unless a limiter is applied."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "First-order upwind",
+    "Second-order upwind"
+   ],
+   "rows": [
+    [
+     "Face value",
+     "$\\phi_e=\\phi_P$",
+     "$\\phi_e=\\tfrac32\\phi_P-\\tfrac12\\phi_W$"
+    ],
+    [
+     "Accuracy",
+     "Order $\\Delta x$",
+     "Order $\\Delta x^2$"
+    ],
+    [
+     "Numerical diffusion",
+     "Large, $\\rho u\\Delta x/2$",
+     "Small"
+    ],
+    [
+     "Boundedness",
+     "Bounded and robust",
+     "May overshoot, needs limiter"
+    ],
+    [
+     "When to use",
+     "Start-up, poor mesh, initial convergence",
+     "Final results where gradients matter"
+    ]
+   ],
+   "caption": "Trade-off between accuracy and stability."
+  },
+  {
+   "type": "worked_example",
+   "title": "Face values by upwind schemes",
+   "prompt": "In a flow from west to east the cell values are $\\phi_{WW}$ (not needed), $\\phi_W=8$ and $\\phi_P=10$ (arbitrary units), where the nodes are equally spaced. Compute the east-face value with the two schemes and the numerical diffusivity for $u=2$ m/s, $\\Delta x=10$ mm (use $\\rho=1$ for per-unit-density units).",
+   "steps": [
+    {
+     "text": "First-order upwind takes the upstream cell.",
+     "latex": "\\phi_e=\\phi_P=10"
+    },
+    {
+     "text": "Second-order upwind extrapolates from $W$ and $P$.",
+     "latex": "\\phi_e=\\tfrac32\\times10-\\tfrac12\\times8=11"
+    },
+    {
+     "text": "A linear profile (8 at W, 10 at P) gives 11 at the face half a cell further on, so second-order is exact here; first-order is low by one unit."
+    },
+    {
+     "text": "Numerical diffusivity of the first-order scheme.",
+     "latex": "\\Gamma_{num}/\\rho=\\frac{u\\Delta x}{2}=\\frac{2\\times0.010}{2}=0.010\\ \\mathrm{m^2/s}"
+    }
+   ],
+   "answer": "First-order upwind gives 10 against the exact linear value 11, and adds a numerical diffusivity of 0.010 m$^2$/s, hundreds of times larger than a typical molecular thermal diffusivity of air (about $2\\times10^{-5}$ m$^2$/s)."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "A converged answer is not a correct answer",
+   "text": "Residuals can fall by six orders and the solution still be wrong if the mesh is too coarse, the scheme too diffusive, or the boundary conditions unrealistic. Always check global energy and mass balances and repeat on a finer mesh."
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Scheme strategy",
+   "text": "Start a difficult case with first-order upwind to get a converged flow field, then switch to second-order for the final answer. Report the scheme used and demonstrate that the quantity of interest does not change when the mesh is refined."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A CFD study runs from the question and geometry through meshing, physics and solver set-up, solution, and verification and post-processing.",
+    "Finite difference uses Taylor-series derivatives at nodes; finite volume integrates over cells and conserves fluxes exactly through shared faces.",
+    "First-order upwind is robust but adds numerical diffusion of order $\\rho u\\Delta x/2$; second-order upwind is more accurate but can overshoot.",
+    "Check mesh independence and global balances before trusting results."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which ordering of the main steps of a CFD study is correct?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Prepare geometry, generate mesh, set up physics and boundary conditions, solve, then post-process and check"
+    },
+    {
+     "id": "b",
+     "text": "Generate mesh, prepare geometry, solve, set up physics and boundary conditions, post-process"
+    },
+    {
+     "id": "c",
+     "text": "Set up physics, solve, generate mesh, prepare geometry, post-process"
+    },
+    {
+     "id": "d",
+     "text": "Solve, set up the boundary conditions, mesh, check and prepare geometry"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Prepare geometry, generate mesh, set up physics and boundary conditions, solve, then post-process and check",
+   "distractorRationale": {
+    "b": "The mesh depends on the geometry, and the physics must be set before solving.",
+    "c": "Solving needs a mesh and geometry first.",
+    "d": "Boundary conditions and a mesh are required before any solution exists."
+   },
+   "explanation": "The mesh is built on the prepared geometry, and the solver needs the mesh, models and boundary conditions before it can iterate. Verification and post-processing come last, though the first plots are often used to refine the earlier steps.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A CFD user refines the mesh from 200 000 to 800 000 cells and finds that the predicted pressure drop changes by 18 percent. What should the user conclude?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The solution is not yet mesh-independent, so further refinement or a higher-order scheme is needed before the result can be trusted"
+    },
+    {
+     "id": "b",
+     "text": "The first mesh was correct because it converged faster"
+    },
+    {
+     "id": "c",
+     "text": "The finer mesh must be wrong because results should never change with the mesh"
+    },
+    {
+     "id": "d",
+     "text": "The physics model has been validated because the result changed"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The solution is not yet mesh-independent, so further refinement or a higher-order scheme is needed before the result can be trusted",
+   "distractorRationale": {
+    "b": "Fast convergence does not show accuracy; the change on refinement shows the discretisation error.",
+    "c": "A discretisation error that decreases with refinement is expected; it should become small.",
+    "d": "Validation is comparison with experiment; mesh dependence is a verification issue."
+   },
+   "explanation": "A large change on refinement shows that the discretisation error is still significant. A mesh-independence study requires that the quantity of interest changes by less than an agreed tolerance between successive meshes.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A CFD simulation uses first-order upwind differencing for a flow of speed 3.0 m/s on cells of width 4.0 mm in the flow direction. Estimate the artificial (numerical) diffusivity, defined as u dx/2, in m^2/s.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o3"
+   ],
+   "correctValue": 0.006,
+   "tolerance": 0.0003,
+   "unit": "m^2/s",
+   "explanation": "The numerical diffusivity is u dx/2 = 3.0 x 0.004/2 = 0.0060 m^2/s. Compared with a physical diffusivity of about 2 x 10^-5 m^2/s this is about 300 times larger, so first-order upwind smears gradients in this case.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a flow from west to east the cell-centre values on a uniform grid are 12 (west cell W) and 15 (cell P). Using second-order upwind, calculate the value at the east face of cell P (arbitrary units).",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o3"
+   ],
+   "correctValue": 16.5,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "Second-order upwind uses phi_e = 1.5 phi_P - 0.5 phi_W = 1.5 x 15 - 0.5 x 12 = 16.5. A first-order scheme would have given 15, so the second-order value follows the upward trend of the profile.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 1D conduction cell in an aluminium-like solid (k = 20 W/m K) has width 2.0 mm and cross-sectional area 4.0 x 10^-4 m^2. The temperatures of the west cell, this cell and the east cell are 80, 76 and 75 degrees Celsius. Find the net conduction heat flow into the cell in W using the finite volume face balance.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o2"
+   ],
+   "correctValue": 12.0,
+   "tolerance": 0.1,
+   "unit": "W",
+   "explanation": "The conductance kA/dx is 20 x 4.0 x 10^-4/0.002 = 4.0 W/K. Heat in from the west is 4.0 x 4 = 16 W and heat out to the east is 4.0 x 1 = 4 W, so the net is 12 W. A cell in steady state would need a 12 W sink to balance it, so this cell is far from converged.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A grid refinement study halves the cell size from 0.04 m to 0.02 m. The error in the computed quantity falls from 2.0 x 10^-3 to 5.1 x 10^-4. Estimate the observed order of accuracy p, assuming error is proportional to dx^p.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o3"
+   ],
+   "correctValue": 1.97143,
+   "tolerance": 0.1,
+   "unit": "dimensionless",
+   "explanation": "The ratio of errors is 2.0 x 10^-3/5.1 x 10^-4 = 3.92 for a halving of dx, so p = log2(3.92) = 1.97. This is consistent with a second-order scheme; a first-order scheme would give a ratio near 2.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why is the finite volume method preferred for most commercial CFD codes?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Fluxes through each face are shared by the neighbouring cells, so conserved quantities are conserved exactly even on unstructured meshes"
+    },
+    {
+     "id": "b",
+     "text": "It does not require a mesh"
+    },
+    {
+     "id": "c",
+     "text": "It is always more accurate than finite difference at the same mesh size"
+    },
+    {
+     "id": "d",
+     "text": "It eliminates numerical diffusion"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Fluxes through each face are shared by the neighbouring cells, so conserved quantities are conserved exactly even on unstructured meshes",
+   "distractorRationale": {
+    "b": "The finite volume method needs a mesh of cells.",
+    "c": "Accuracy depends on the schemes used; the main advantage is conservation and geometric flexibility.",
+    "d": "Numerical diffusion depends on the interpolation scheme and not on using finite volumes."
+   },
+   "explanation": "In the finite volume method the same face flux appears with opposite signs in the two cells either side, so nothing is created or lost between them. This guarantees integral conservation and allows complex geometries with unstructured cells.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A user has difficulty converging a case with steep temperature gradients using second-order upwind. What is a sensible strategy?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Converge first with first-order upwind, then switch to second-order (with a limiter if needed) and re-converge"
+    },
+    {
+     "id": "b",
+     "text": "Switch permanently to first-order and report the result as final"
+    },
+    {
+     "id": "c",
+     "text": "Increase the relaxation factors to their maximum"
+    },
+    {
+     "id": "d",
+     "text": "Delete the cells where gradients are steep"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Converge first with first-order upwind, then switch to second-order (with a limiter if needed) and re-converge",
+   "distractorRationale": {
+    "b": "First-order upwind may smear the gradients and give a biased answer; it is a stepping stone.",
+    "c": "Larger relaxation factors usually make convergence less stable.",
+    "d": "Removing cells would alter the geometry and invalidate the solution."
+   },
+   "explanation": "First-order upwind is robust and gives a good starting field. Switching to a second-order scheme with a limiter then removes most numerical diffusion while keeping the solution bounded.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "List and briefly explain the main steps of a CFD study from geometry preparation to post-processing, and identify two checks that should be done before the results are used.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o1"
+   ],
+   "markingGuide": [
+    "States the question and quantity of interest (and required accuracy)",
+    "Geometry preparation and simplification, then meshing with refinement near walls and gradients",
+    "Physics set-up: models, properties, boundary and initial conditions",
+    "Solver set-up and solution with convergence monitoring",
+    "Post-processing and verification: mesh-independence study, global mass or energy balance, comparison with hand calculation or data"
+   ],
+   "explanation": "A CFD study is a chain from the engineering question to a verified answer. The two checks that guard against false confidence are mesh independence and a global conservation check, with validation against data where available.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Compare first-order and second-order upwind schemes for the convection term and explain how you would choose between them in a heat transfer simulation with a sharp thermal wake.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o3",
+    "ug.mce-advanced-heat-transfer.cfd-intro.cfd-workflow.o2"
+   ],
+   "markingGuide": [
+    "First-order: face value equals upstream cell, bounded and stable, order $\\Delta x$ accuracy, with numerical diffusion about $\\rho u\\Delta x/2$ that smears wakes",
+    "Second-order: linear extrapolation from two upstream cells, order $\\Delta x^2$, sharper gradients",
+    "Second-order may overshoot or oscillate near steep gradients, so a limiter or care is needed",
+    "For a sharp thermal wake use second-order (with limiter) on a refined mesh, because first-order would artificially thicken the wake and lower peak temperatures",
+    "Start with first-order for convergence and verify with mesh refinement"
+   ],
+   "explanation": "The choice is accuracy against robustness. A sharp wake is badly smeared by the numerical diffusion of first-order upwind, so a second-order scheme with a limiter is usually the right choice for the final result, started from a converged first-order solution.",
+   "board": "internal"
+  }
+ ]
+}

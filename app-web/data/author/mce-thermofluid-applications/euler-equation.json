@@ -1,0 +1,387 @@
+{
+ "lessonTitle": "The Euler Equation",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A steam turbine on a power-plant shaft produces 2.6 MW from a rotor only a metre or so across, while an ordinary cooling-water pump of similar size absorbs a few tens of kilowatts. Both are governed by one short equation that links the work to the swirl the fluid gains or loses. Euler's turbomachine equation is the starting point for every blade design."
+  },
+  {
+   "type": "text",
+   "markdown": "Fluid passes through a rotating wheel. Blades turn the flow, changing its **angular momentum** about the shaft. By Newton's second law, the torque on the fluid equals the rate of change of its angular momentum, and the power is that torque times the shaft angular speed. Writing $r$ for radius, $\\omega$ for shaft angular speed and $c_\\theta$ for the **whirl (tangential) component** of the absolute velocity, the blade speed is $U=\\omega r$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Euler turbomachine equation",
+   "text": "For steady flow through a rotor with uniform conditions at inlet (1) and outlet (2), the **work done on the fluid per unit mass** is $w=U_2c_{\\theta2}-U_1c_{\\theta1}$ (J/kg). Positive $c_\\theta$ is taken in the direction of rotation. A pump, fan or compressor has $w>0$; for a turbine the same expression is negative, and the work **output** per unit mass is $w_t=U_1c_{\\theta1}-U_2c_{\\theta2}$."
+  },
+  {
+   "type": "math",
+   "latex": "w_{pump}=U_2c_{\\theta2}-U_1c_{\\theta1},\\qquad w_{turbine}=U_1c_{\\theta1}-U_2c_{\\theta2},\\qquad P=\\dot m\\,w",
+   "caption": "Euler work per unit mass, and power for mass flow rate m-dot"
+  },
+  {
+   "type": "worked_example",
+   "title": "Ideal head of a centrifugal pump impeller",
+   "prompt": "A radial impeller of outer radius 0.15 m turns at 1450 rpm. The water enters with no whirl and leaves with a whirl velocity $c_{\\theta2}=14$ m/s. Find the Euler work per unit mass and the corresponding ideal head.",
+   "steps": [
+    {
+     "text": "Blade speed at the outlet.",
+     "latex": "U_2=\\omega r_2=\\frac{2\\pi\\times1450}{60}\\times0.15=22.78\\ \\text{m/s}"
+    },
+    {
+     "text": "Inlet whirl is zero, so only the outlet term remains.",
+     "latex": "w=U_2c_{\\theta2}-0=22.78\\times14=318.9\\ \\text{J/kg}"
+    },
+    {
+     "text": "Convert work per unit mass to head (head = energy per unit weight).",
+     "latex": "H=\\frac{w}{g}=\\frac{318.9}{9.81}=32.5\\ \\text{m}"
+    }
+   ],
+   "answer": "The Euler work is about 319 J/kg, an ideal head of about 32.5 m. The real head is lower because of losses and slip."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Machine",
+    "Sign of $w=U_2c_{\\theta2}-U_1c_{\\theta1}$",
+    "Stagnation enthalpy",
+    "Typical inlet whirl"
+   ],
+   "rows": [
+    [
+     "Pump, fan, compressor",
+     "Positive: work done on the fluid",
+     "Rises: $h_{02}>h_{01}$",
+     "Zero (axial inlet) or small, in the rotation direction"
+    ],
+    [
+     "Turbine",
+     "Negative: work done by the fluid",
+     "Falls: $h_{02}<h_{01}$",
+     "Large, set by the nozzle or guide vanes"
+    ]
+   ],
+   "caption": "Direction of work and stagnation enthalpy change"
+  },
+  {
+   "type": "text",
+   "markdown": "**First law link.** For a steady, adiabatic machine with negligible change in potential energy, the shaft work per unit mass equals the change in **stagnation (total) enthalpy** $h_0=h+\\tfrac12c^2$. Combining with Euler's equation gives the **rothalpy** result: across a rotor, $h_0-Uc_\\theta$ is conserved. So Euler's equation fixes the work, and the first law converts it to a stagnation-temperature change for an ideal gas, $\\Delta T_0=w/c_p$."
+  },
+  {
+   "type": "math",
+   "latex": "w=h_{02}-h_{01}=U_2c_{\\theta2}-U_1c_{\\theta1},\\qquad \\Delta T_0=\\frac{w}{c_p}",
+   "caption": "Adiabatic machine acting on a perfect gas of constant c_p"
+  },
+  {
+   "type": "worked_example",
+   "title": "Work and power of a steam turbine rotor",
+   "prompt": "A rotor has mean blade speed $U=250$ m/s. Steam enters with whirl $c_{\\theta1}=450$ m/s and leaves with $c_{\\theta2}=-80$ m/s (negative: opposite to rotation). The steam flow is 20 kg/s. Find the specific work and power output, assuming the blade speed is the same at inlet and outlet.",
+   "steps": [
+    {
+     "text": "Use the turbine form of the Euler equation.",
+     "latex": "w_t=U\\,(c_{\\theta1}-c_{\\theta2})"
+    },
+    {
+     "text": "Substitute, taking care with the sign of the outlet whirl.",
+     "latex": "w_t=250\\times(450-(-80))=1.325\\times10^{5}\\ \\text{J/kg}"
+    },
+    {
+     "text": "Multiply by the mass flow rate for power.",
+     "latex": "P=\\dot m\\,w_t=20\\times132.5=2650\\ \\text{kW}"
+    }
+   ],
+   "answer": "$w_t\\approx132.5$ kJ/kg and $P\\approx2650$ kW (about 2.65 MW)."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Define the rotation direction as positive and fix it before assigning signs to whirl components.",
+    "Compute $U$ at inlet and outlet separately if the radius changes (radial machines).",
+    "Use $w=U_2c_{\\theta2}-U_1c_{\\theta1}$ for pumps and fans and the reverse for turbines, or equivalently $w=\\Delta h_0$.",
+    "For an adiabatic gas machine, divide by $c_p$ to obtain the stagnation temperature change."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Euler work is an ideal, loss-free figure",
+   "text": "The equation gives the energy transferred between the blades and the fluid. It makes no statement about efficiency. Real pump head is lower than $w/g$ (slip, friction, leakage), and the stagnation pressure rise or fall depends on how efficiently the work is used. Euler's equation also contains no details of the blade shape: the shape only matters through $c_\\theta$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Euler's equation: work on the fluid per unit mass $w=U_2c_{\\theta2}-U_1c_{\\theta1}$; turbines produce work when this is negative, so output is $U_1c_{\\theta1}-U_2c_{\\theta2}$.",
+    "Power equals mass flow times specific work, and ideal head equals $w/g$.",
+    "For an adiabatic machine $w=h_{02}-h_{01}$, so Euler work sets the stagnation enthalpy (and, for a perfect gas, the stagnation temperature) change."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A fan rotor has blade speed 60 m/s at both inlet and outlet. Air enters with no whirl and leaves with a whirl velocity of 20 m/s in the direction of rotation. The Euler work per unit mass is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1200 J/kg"
+    },
+    {
+     "id": "b",
+     "text": "600 J/kg"
+    },
+    {
+     "id": "c",
+     "text": "2400 J/kg"
+    },
+    {
+     "id": "d",
+     "text": "-1200 J/kg"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "1200 J/kg",
+   "distractorRationale": {
+    "a": "Correct: the product of blade speed and outlet whirl.",
+    "b": "Includes an extra factor of one half, which belongs to kinetic energy but not to the Euler equation.",
+    "c": "Uses the blade speed minus the whirl, which is not a quantity in the Euler equation.",
+    "d": "Has the sign of a turbine; here work is done on the air so the value is positive."
+   },
+   "explanation": "With zero inlet whirl, $w=U_2c_{\\theta2}=60\\times20=1200$ J/kg. The product is positive because the fan adds energy to the air.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement correctly distinguishes a pump from a turbine in Euler's equation?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "In a pump $U_2c_{\\theta2}-U_1c_{\\theta1}$ is negative because the rotor does work, while in a turbine it is positive"
+    },
+    {
+     "id": "b",
+     "text": "In a pump the fluid gains angular momentum so $U_2c_{\\theta2}-U_1c_{\\theta1}$ is positive, whereas in a turbine the fluid loses it and the same expression is negative"
+    },
+    {
+     "id": "c",
+     "text": "Both machines have a positive value of the expression, since work always has positive magnitude"
+    },
+    {
+     "id": "d",
+     "text": "The expression applies only to pumps because turbines do not change the fluid's angular momentum"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "In a pump the fluid gains angular momentum so $U_2c_{\\theta2}-U_1c_{\\theta1}$ is positive, whereas in a turbine the fluid loses it and the same expression is negative",
+   "distractorRationale": {
+    "a": "Reverses the signs: a pump adds energy to the fluid, so the fluid's angular momentum increases.",
+    "b": "Correct: it gives the sign convention for work done on the fluid.",
+    "c": "Ignores that the expression is the work done on the fluid, which changes sign with the direction of energy transfer.",
+    "d": "A turbine extracts work precisely by removing angular momentum from the flow."
+   },
+   "explanation": "The expression is the work done **on** the fluid. A pump adds angular momentum, giving a positive value, while a turbine removes it, so the value is negative and the output is its magnitude.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An axial compressor stage runs adiabatically with $U=300$ m/s at both inlet and outlet. The whirl velocity increases by 100 m/s across the rotor. For air with a typical $c_p=1005$ J/(kg K), the rise in stagnation temperature is closest to:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "14.9 K"
+    },
+    {
+     "id": "b",
+     "text": "4.98 K"
+    },
+    {
+     "id": "c",
+     "text": "29.9 K"
+    },
+    {
+     "id": "d",
+     "text": "30 K"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "29.9 K",
+   "distractorRationale": {
+    "a": "Uses half the work (applying a kinetic-energy factor that is not in the first-law relation).",
+    "b": "Uses the kinetic energy of the whirl change rather than the Euler work.",
+    "c": "Correct: Euler work divided by cp.",
+    "d": "Divides by 1000 J/kg, mistaking the unit conversion for the specific heat."
+   },
+   "explanation": "Euler work is $w=U\\Delta c_\\theta=300\\times100=30\\,000$ J/kg. For an adiabatic machine $w=\\Delta h_0=c_p\\Delta T_0$, so $\\Delta T_0=30\\,000/1005=29.85$ K.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A centrifugal pump at fixed speed and fixed outlet whirl has a swirl introduced into the inlet in the direction of rotation (the inlet whirl $c_{\\theta1}$ changes from zero to a positive value). Compared with zero inlet whirl, the Euler work per unit mass:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o1",
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "increases, because the fluid enters already moving in the direction of rotation"
+    },
+    {
+     "id": "b",
+     "text": "is unchanged, because only the outlet whirl matters"
+    },
+    {
+     "id": "c",
+     "text": "becomes negative, because the pump behaves like a turbine"
+    },
+    {
+     "id": "d",
+     "text": "decreases, because $U_1c_{\\theta1}$ is subtracted from $U_2c_{\\theta2}$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "decreases, because $U_1c_{\\theta1}$ is subtracted from $U_2c_{\\theta2}$",
+   "distractorRationale": {
+    "a": "Ignores that the fluid already carries angular momentum, so less is added by the blades.",
+    "b": "The inlet term appears in the equation and cannot be neglected unless it is zero.",
+    "c": "The work would only become negative if $U_1c_{\\theta1}$ exceeded $U_2c_{\\theta2}$.",
+    "d": "Correct: the inlet term is subtracted, so work falls."
+   },
+   "explanation": "The equation $w=U_2c_{\\theta2}-U_1c_{\\theta1}$ subtracts the angular momentum the fluid already has. Pre-whirl in the direction of rotation therefore reduces the work required for the same outlet whirl (and is used deliberately in some inlet guide-vane control schemes).",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An adiabatic steam turbine rotor develops a specific work output of 145 kJ/kg. If the stagnation enthalpy entering is 3200 kJ/kg and kinetic and potential energy changes outside the stagnation enthalpy are ignored, the stagnation enthalpy leaving is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o2",
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3055 kJ/kg"
+    },
+    {
+     "id": "b",
+     "text": "3345 kJ/kg"
+    },
+    {
+     "id": "c",
+     "text": "145 kJ/kg"
+    },
+    {
+     "id": "d",
+     "text": "3200 kJ/kg"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "3055 kJ/kg",
+   "distractorRationale": {
+    "a": "Correct: it subtracts the work output from the inlet stagnation enthalpy.",
+    "b": "Adds the work output, which is how a compressor behaves, not a turbine.",
+    "c": "Gives the work itself instead of the stagnation enthalpy leaving the rotor.",
+    "d": "Assumes stagnation enthalpy is unchanged, which is only true for a stator or nozzle without work."
+   },
+   "explanation": "For an adiabatic turbine, work output $=h_{01}-h_{02}$, so $h_{02}=3200-145=3055$ kJ/kg. The stagnation enthalpy falls because energy is being removed as shaft work.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A water pump impeller has outer radius 0.20 m and turns at 1000 rpm. The inlet whirl is zero and the outlet whirl velocity is 12.0 m/s. Using Euler's equation and $g=9.81$ m/s$^2$, find the ideal (loss-free) head in m.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o1"
+   ],
+   "correctValue": 25.62,
+   "tolerance": 0.1,
+   "unit": "m",
+   "explanation": "$U_2=2\\pi\\times1000/60\\times0.20=20.94$ m/s, so $w=U_2c_{\\theta2}=251.3$ J/kg. The ideal head is $w/g=251.3/9.81=25.62$ m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A turbine rotor has equal blade speed 180 m/s at inlet and outlet. The inlet whirl is 380 m/s and the outlet whirl is $-60$ m/s (against the direction of rotation). For a mass flow of 35 kg/s, find the power output in kW.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o2"
+   ],
+   "correctValue": 2772.0,
+   "tolerance": 5.0,
+   "unit": "kW",
+   "explanation": "Turbine work is $U(c_{\\theta1}-c_{\\theta2})=180\\times(380-(-60))=79200$ J/kg. Multiplying by 35 kg/s gives $P=2772$ kW.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An adiabatic gas turbine stage has blade speed 300 m/s at inlet and outlet and the gas stagnation temperature falls by 60 K. Take a typical $c_p=1150$ J/(kg K) for the hot gas. Find the required change in whirl velocity $c_{\\theta1}-c_{\\theta2}$ in m/s.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o1",
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o3"
+   ],
+   "correctValue": 230.0,
+   "tolerance": 2.0,
+   "unit": "m/s",
+   "explanation": "The work output is $w=c_p\\Delta T_0=1150\\times60=69\\,000$ J/kg. Euler gives $w=U(c_{\\theta1}-c_{\\theta2})$, so $c_{\\theta1}-c_{\\theta2}=69\\,000/300=230$ m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Write Euler's equation for work in a form that applies to a pump and in a form for a turbine. Explain physically why the sign differs, and state how the blade angles at inlet and outlet affect the work in each case.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o2"
+   ],
+   "markingGuide": [
+    "States w = U2 c_theta2 - U1 c_theta1 (work done on the fluid) for the pump",
+    "States turbine output w = U1 c_theta1 - U2 c_theta2",
+    "Explains that pump blades increase the angular momentum of the fluid (torque on fluid in direction of rotation) while a turbine removes it",
+    "Sign convention: whirl positive in the direction of rotation",
+    "Blade angles affect work only through the whirl components c_theta: they set c_theta at outlet (and inlet) given blade speed and flow",
+    "Mentions that the equation is independent of the fluid and of losses"
+   ],
+   "explanation": "The torque on the fluid equals the rate of change of angular momentum. A pump imparts positive torque and increases $r c_\\theta$, so the work on the fluid is positive. A turbine receives torque from the fluid because $r c_\\theta$ falls across the rotor. Blade angles enter only by determining $c_\\theta$ for the given $U$ and flow.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Starting from the rate of change of angular momentum, derive Euler's equation for the specific work of a turbomachine, and show how it connects to the stagnation enthalpy change of an adiabatic machine. State the assumptions you make.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o1",
+    "ug.mce-thermofluid-applications.turbomachinery-theory.euler-equation.o3"
+   ],
+   "markingGuide": [
+    "Torque = mass flow x change in r c_theta between outlet and inlet: T = m-dot (r2 c_theta2 - r1 c_theta1)",
+    "Power = T x omega, with U = omega r, giving P = m-dot (U2 c_theta2 - U1 c_theta1)",
+    "Specific work w = U2 c_theta2 - U1 c_theta1",
+    "Assumptions: steady flow, uniform properties at inlet and outlet planes, torque from blades only",
+    "First law for steady adiabatic flow: w = h02 - h01 (stagnation enthalpy, neglecting potential energy)",
+    "Therefore h02 - h01 = U2 c_theta2 - U1 c_theta1 and Delta T0 = w/cp for a perfect gas"
+   ],
+   "explanation": "Torque is $\\dot m(r_2c_{\\theta2}-r_1c_{\\theta1})$, and multiplying by $\\omega$ and dividing by $\\dot m$ gives the specific work. The first law for steady adiabatic flow then states that the same quantity equals the stagnation enthalpy change.",
+   "board": "internal"
+  }
+ ]
+}

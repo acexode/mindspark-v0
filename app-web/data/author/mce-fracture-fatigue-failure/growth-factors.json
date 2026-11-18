@@ -1,0 +1,397 @@
+{
+ "lessonTitle": "Mean Stress, Overloads and Thresholds in Fatigue Crack Growth",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A steam-turbine blade carries a tiny crack and is cycled between two very different mean loads: once while spinning at constant speed, and once during start-up and shutdown. The stress range is the same in both cases, yet the crack grows faster in one of them. The mean level, the occasional big load and the existence of a minimum safe swing all change the Paris-law picture."
+  },
+  {
+   "type": "text",
+   "markdown": "The basic Paris law uses only $\\Delta K$. In reality three further effects matter: the **load ratio** $R$, **overloads**, and the **threshold**. All three act mainly through **crack closure**: contact between the crack faces at low load, caused by plastic deformation left in the wake of the crack, shields the tip so that only part of the cycle is effective."
+  },
+  {
+   "type": "math",
+   "latex": "R = \\frac{K_{min}}{K_{max}} = \\frac{\\sigma_{min}}{\\sigma_{max}}",
+   "caption": "Load ratio. $R=0$ for tension from zero, $R=-1$ for fully reversed loading; $\\Delta K = K_{max}(1-R)$."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Effect of load ratio",
+   "text": "At the same $\\Delta K$, a higher $R$ means a higher $K_{max}$ and a higher $K_{min}$, so the crack stays more open and closure shields the tip less. The growth rate therefore increases with $R$, and the threshold $\\Delta K_{th}$ decreases with $R$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Change in R (same $\\Delta K$)",
+    "$K_{max}$",
+    "Closure",
+    "Growth rate",
+    "Threshold $\\Delta K_{th}$"
+   ],
+   "rows": [
+    [
+     "Lower R (e.g. 0.1)",
+     "Lower",
+     "More",
+     "Lower",
+     "Higher"
+    ],
+    [
+     "Higher R (e.g. 0.7)",
+     "Higher",
+     "Less",
+     "Higher",
+     "Lower"
+    ]
+   ],
+   "caption": "Qualitative trend for metals; magnitudes depend on material and environment."
+  },
+  {
+   "type": "text",
+   "markdown": "A simple way to capture this is the Walker-type effective range, which combines $K_{max}$ and $\\Delta K$ with an exponent $\\gamma$ that is fitted to data (typically between 0.4 and 0.8 for many alloys, material dependent)."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta K_{eff} = K_{max}(1-R)^{\\gamma} = \\frac{\\Delta K}{(1-R)^{1-\\gamma}}, \\qquad \\frac{\\mathrm{d}a}{\\mathrm{d}N} = C\\,(\\Delta K_{eff})^m",
+   "caption": "Walker relation. $\\gamma = 1$ recovers the Paris law with no R effect."
+  },
+  {
+   "type": "worked_example",
+   "title": "Size of the R effect",
+   "prompt": "A steel obeys the Walker relation with $\\gamma = 0.5$ and $m = 3$. Compare the growth rate at $\\Delta K = 20$ MPa$\\sqrt{\\text{m}}$ for $R=0.5$ against the Paris prediction using $\\Delta K$ alone.",
+   "steps": [
+    {
+     "text": "Find $K_{max}$: $K_{max} = \\Delta K/(1-R) = 20/0.5 = 40$ MPa$\\sqrt{\\text{m}}$.",
+     "latex": "K_{max} = \\frac{20}{1-0.5} = 40"
+    },
+    {
+     "text": "Effective range: $K_{max}(1-R)^{0.5}=40\\times\\sqrt{0.5}$.",
+     "latex": "\\Delta K_{eff} = 40\\times0.7071 = 28.28\\ \\text{MPa}\\sqrt{\\text{m}}"
+    },
+    {
+     "text": "Growth-rate ratio: $(\\Delta K_{eff}/\\Delta K)^m = (28.28/20)^3$.",
+     "latex": "\\frac{(\\mathrm{d}a/\\mathrm{d}N)_{R=0.5}}{(\\mathrm{d}a/\\mathrm{d}N)_{Paris}} = 2.83"
+    }
+   ],
+   "answer": "The crack grows about 2.83 times faster than the pure Paris law predicts."
+  },
+  {
+   "type": "text",
+   "markdown": "**Threshold.** Below a threshold range $\\Delta K_{th}$ a fatigue crack does not grow measurably, which is the fracture mechanics counterpart of the endurance limit. If the computed $\\Delta K$ at the current crack size is below $\\Delta K_{th}$, the crack is non-propagating; if above, it grows and gets worse as $a$ increases. Setting $\\Delta K=\\Delta K_{th}$ gives the smallest crack that can grow at a given stress range."
+  },
+  {
+   "type": "math",
+   "latex": "a_{th} = \\frac{1}{\\pi}\\left(\\frac{\\Delta K_{th}}{Y\\,\\Delta\\sigma}\\right)^2",
+   "caption": "Smallest crack length that grows at stress range $\\Delta\\sigma$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Will a crack grow?",
+   "prompt": "A component sees $\\Delta\\sigma = 100$ MPa, $Y=1$. A typical steel threshold is $\\Delta K_{th} = 5$ MPa$\\sqrt{\\text{m}}$ (typical value at moderate R). Find $a_{th}$ and decide whether cracks of 1.0 mm and 0.5 mm will grow.",
+   "steps": [
+    {
+     "text": "Apply $a_{th} = \\frac1\\pi(\\Delta K_{th}/\\Delta\\sigma)^2$.",
+     "latex": "a_{th} = \\frac{1}{\\pi}\\left(\\frac{5}{100}\\right)^2 = 7.958\\times10^{-4}\\ \\text{m} = 0.796\\ \\text{mm}"
+    },
+    {
+     "text": "Check 1.0 mm directly: $\\Delta K = 100\\sqrt{\\pi\\times0.001}$.",
+     "latex": "\\Delta K = 5.6\\ \\text{MPa}\\sqrt{\\text{m}} > 5"
+    },
+    {
+     "text": "Check 0.5 mm: $\\Delta K = 100\\sqrt{\\pi\\times0.0005}$, which is below 5, so that crack does not grow.",
+     "latex": "\\Delta K = 3.96\\ \\text{MPa}\\sqrt{\\text{m}} < 5"
+    }
+   ],
+   "answer": "Cracks longer than about 0.8 mm grow; the 1.0 mm crack grows and the 0.5 mm crack does not."
+  },
+  {
+   "type": "text",
+   "markdown": "**Overloads.** A single high tensile load creates a large plastic zone at the tip (size proportional to $K_{max}^2$). When the load returns to the baseline, the surrounding elastic material squeezes this zone, leaving **compressive residual stress** ahead of the tip and extra plasticity-induced closure in the wake. The crack growth rate drops sharply for a while after the overload, called **retardation**, and recovers once the crack has grown through the overload plastic zone. A larger overload ratio gives a longer and deeper retardation; very high overloads can even arrest the crack. Compressive underloads reduce the benefit."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Higher R, same $\\Delta K$: faster growth and lower $\\Delta K_{th}$.",
+    "Tensile overload: temporary retardation of growth, because of compressive residual stress and closure.",
+    "Threshold: crack grows only if $\\Delta K>\\Delta K_{th}$; use the threshold measured at high R for conservative design."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not rely on overloads in design",
+   "text": "Retardation depends on the load history, can be removed by compressive underloads, and is hard to guarantee. Treat it as a benefit that explains observed behaviour, not as a margin to design on."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$R=K_{min}/K_{max}$; increasing $R$ at fixed $\\Delta K$ raises $K_{max}$, reduces closure, raises growth rate and lowers $\\Delta K_{th}$.",
+    "A tensile overload creates a large plastic zone and compressive residual stress, retarding growth until the crack passes through that zone.",
+    "A crack with $\\Delta K<\\Delta K_{th}$ does not grow; $a_{th}=(1/\\pi)(\\Delta K_{th}/(Y\\Delta\\sigma))^2$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "At a fixed stress intensity range $\\Delta K$, what happens to the fatigue crack growth rate when the load ratio $R$ is increased from 0.1 to 0.7?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It decreases"
+    },
+    {
+     "id": "b",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "c",
+     "text": "It increases"
+    },
+    {
+     "id": "d",
+     "text": "It becomes zero"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It increases",
+   "distractorRationale": {
+    "a": "That is the opposite of the trend.",
+    "b": "R does affect growth rate through closure and $K_{max}$.",
+    "c": "Correct: higher R means higher $K_{max}$ and less closure.",
+    "d": "Growth stops only below the threshold."
+   },
+   "explanation": "A higher load ratio at the same $\\Delta K$ means a higher $K_{max}$ and a crack that remains open for more of the cycle. Less crack closure means more of the cycle is effective, so the crack grows faster.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the immediate effect on crack growth of a single large tensile overload applied during constant-amplitude cycling?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The growth rate falls temporarily (retardation)"
+    },
+    {
+     "id": "b",
+     "text": "The growth rate rises permanently"
+    },
+    {
+     "id": "c",
+     "text": "The crack immediately fractures every time"
+    },
+    {
+     "id": "d",
+     "text": "There is no effect on the growth rate"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The growth rate falls temporarily (retardation)",
+   "distractorRationale": {
+    "a": "Correct: retardation follows a tensile overload.",
+    "b": "Permanent increases do not follow a tensile overload.",
+    "c": "Overloads below $K_c$ do not necessarily cause fracture.",
+    "d": "Overloads change the plastic zone and closure."
+   },
+   "explanation": "A tensile overload produces a large plastic zone that leaves compressive residual stress and closure at the tip. The growth rate falls for a while, until the crack has grown through the overload zone.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A crack has $\\Delta K = 3.0$ MPa$\\sqrt{\\text{m}}$ under cyclic loading and the material threshold is 4.0 MPa$\\sqrt{\\text{m}}$ at the relevant R. What do you expect?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "No measurable growth (a non-propagating crack) as long as the loading stays the same"
+    },
+    {
+     "id": "b",
+     "text": "Growth at a rate given by the Paris law"
+    },
+    {
+     "id": "c",
+     "text": "Immediate fracture"
+    },
+    {
+     "id": "d",
+     "text": "Growth that accelerates to regime III"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "No measurable growth (a non-propagating crack) as long as the loading stays the same",
+   "distractorRationale": {
+    "a": "Correct: below $\\Delta K_{th}$ cracks do not grow measurably.",
+    "b": "The Paris law applies above threshold.",
+    "c": "Fracture needs $K_{max}$ near $K_c$.",
+    "d": "Regime III is at high $K_{max}$."
+   },
+   "explanation": "Below $\\Delta K_{th}$ growth rates are too small to measure, so the crack is regarded as non-propagating. This holds only while the stress range and the crack length do not increase.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Compared with the baseline cycling, an overload gives $K_{max}$ 50 percent higher. By what factor is the overload plastic zone size larger?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.5 times"
+    },
+    {
+     "id": "b",
+     "text": "3.4 times"
+    },
+    {
+     "id": "c",
+     "text": "2.25 times"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "2.25 times",
+   "distractorRationale": {
+    "a": "That would be linear in $K$.",
+    "b": "That would be $1.5^3$.",
+    "c": "Correct: $r_y\\propto K^2$ and $1.5^2=2.25$.",
+    "d": "The plastic zone grows with $K_{max}^2$."
+   },
+   "explanation": "The plastic zone radius varies as $(K/\\sigma_{ys})^2$. A $K_{max}$ 1.5 times larger therefore gives a zone $1.5^2=2.25$ times larger, which is why a modest overload can produce a long retardation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement correctly relates the threshold range to the load ratio?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\Delta K_{th}$ typically decreases as $R$ increases"
+    },
+    {
+     "id": "b",
+     "text": "$\\Delta K_{th}$ typically increases as $R$ increases"
+    },
+    {
+     "id": "c",
+     "text": "$\\Delta K_{th}$ does not depend on $R$"
+    },
+    {
+     "id": "d",
+     "text": "$\\Delta K_{th}$ is infinite at high $R$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\Delta K_{th}$ typically decreases as $R$ increases",
+   "distractorRationale": {
+    "a": "Correct: less closure at high R lowers the threshold.",
+    "b": "That is reversed.",
+    "c": "Threshold depends on R through closure.",
+    "d": "Threshold is finite."
+   },
+   "explanation": "At higher R there is less crack closure, so smaller ranges are enough to drive the crack. Designers therefore use the threshold measured at high $R$, which is the more conservative choice.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A plate has $\\Delta\\sigma = 80$ MPa and a single edge crack ($Y = 1.12$). The threshold is $\\Delta K_{th} = 3.5$ MPa$\\sqrt{\\text{m}}$ (typical at high R). What is the smallest crack depth, in mm, that would grow?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o3"
+   ],
+   "correctValue": 0.485702,
+   "tolerance": 0.02,
+   "unit": "mm",
+   "explanation": "$a_{th}=(1/\\pi)(\\Delta K_{th}/(Y\\Delta\\sigma))^2=(1/\\pi)(3.5/89.6)^2=4.86\\times10^{-4}$ m, which is 0.486 mm. Any crack shorter than this has $\\Delta K<\\Delta K_{th}$ and is non-propagating at this range.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A material follows the Walker relation $\\Delta K_{eff}=K_{max}(1-R)^{\\gamma}$ with $\\gamma=0.6$. At $R=0.4$ the applied range is $\\Delta K = 15$ MPa$\\sqrt{\\text{m}}$. Find $\\Delta K_{eff}$ in MPa$\\sqrt{\\text{m}}$.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o1"
+   ],
+   "correctValue": 18.4005,
+   "tolerance": 0.2,
+   "unit": "MPa sqrt(m)",
+   "explanation": "$K_{max}=\\Delta K/(1-R)=15/0.6=25$ MPa$\\sqrt{\\text{m}}$. Then $\\Delta K_{eff}=25\\times0.6^{0.6}=25\\times0.7360=18.4$ MPa$\\sqrt{\\text{m}}$, which is larger than the applied 15, confirming the higher-R acceleration.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A steel obeys $\\mathrm{d}a/\\mathrm{d}N=C(\\Delta K_{eff})^m$ with $m=3$ and Walker exponent $\\gamma=0.5$, so $\\Delta K_{eff}=\\Delta K/(1-R)^{0.5}$. At the same $\\Delta K$, what is the ratio of the growth rate at $R=0.6$ to that at $R=0.1$ (a pure number)?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o1"
+   ],
+   "correctValue": 3.375,
+   "tolerance": 0.03,
+   "unit": "dimensionless",
+   "explanation": "The ratio is $[(1-0.1)/(1-0.6)]^{0.5\\times3}=(2.25)^{1.5}=3.375$. The growth rate at $R=0.6$ is therefore more than three times that at $R=0.1$ at the same $\\Delta K$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why a single tensile overload slows crack growth, and why the effect is temporary. Say why design should not rely on it.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o2"
+   ],
+   "markingGuide": [
+    "Overload produces a large plastic zone at the tip, size proportional to $K_{max}^2$",
+    "Surrounding elastic material leaves compressive residual stress ahead of the tip and increased crack closure",
+    "This reduces the effective $\\Delta K$ and so growth rate",
+    "Retardation ends once the crack grows out of the overload plastic zone",
+    "Dependence on load history, and compressive underloads can remove the benefit, so it cannot be guaranteed"
+   ],
+   "explanation": "The overload's large plastic zone leaves compression at the tip and more closure in the wake, lowering the effective range. When the crack grows beyond the overload zone the effect fades. Because it depends on sequence it is not a reliable design margin.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A bracket has an edge crack of depth 0.4 mm ($Y=1.12$). The threshold is $\\Delta K_{th}=4.0$ MPa$\\sqrt{\\text{m}}$ at the service R. Check whether the crack grows at stress ranges of (i) 120 MPa and (ii) 90 MPa, and explain what happens next in case (i).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o3",
+    "ug.mce-fracture-fatigue-failure.fatigue-crack-growth.growth-factors.o1"
+   ],
+   "markingGuide": [
+    "Uses $\\Delta K=Y\\Delta\\sigma\\sqrt{\\pi a}$ with $a=0.0004$ m",
+    "(i) gets about 4.76 MPa sqrt(m) > 4.0, so the crack grows",
+    "(ii) gets about 3.57 MPa sqrt(m) < 4.0, so it is non-propagating",
+    "States that in (i) $\\Delta K$ rises as the crack lengthens, so growth accelerates through regime II toward regime III",
+    "Mentions the threshold should be taken at high R for conservatism"
+   ],
+   "explanation": "With $a=0.4$ mm, $\\Delta K=1.12\\times\\Delta\\sigma\\times\\sqrt{\\pi\\times0.0004}=0.0397\\,\\Delta\\sigma$ (MPa), so 120 MPa gives 4.76 and 90 MPa gives 3.57 MPa$\\sqrt{\\text{m}}$. In case (i) the crack grows and, since $\\Delta K$ increases with $a$, it keeps accelerating.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,412 @@
+{
+ "lessonTitle": "Subcooling, Two-Stage Cycles and Refrigerant Choice",
+ "estimatedMinutes": 28,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A cold-chain warehouse in a hot climate runs its refrigeration plant with a condensing temperature of 45 °C and an evaporating temperature of -30 °C. A single compressor would have to work across a pressure ratio near 10, and it would overheat. Engineers fix this with simple tweaks: subcool the liquid, split the compression into two stages, and choose the refrigerant to suit the duty."
+  },
+  {
+   "type": "text",
+   "markdown": "The ideal cycle from the previous unit is only a starting point. Real plants add **subcooling** (cooling the liquid below its saturation temperature after the condenser), **superheating** (heating the vapour above saturation leaving the evaporator) and sometimes **two-stage compression**. Each change alters the refrigerating effect $q_L$ and the compressor work $w_{in}$, so each changes the COP $= q_L / w_{in}$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Subcooling and superheating",
+   "text": "Subcooling: liquid leaves the condenser at a temperature below $T_{sat}(P_{cond})$, so $h_3$ is lower than $h_f$. Superheating: vapour leaves the evaporator at a temperature above $T_{sat}(P_{evap})$, so $h_1$ is higher than $h_g$. Superheat guarantees dry vapour at the compressor inlet."
+  },
+  {
+   "type": "math",
+   "latex": "h_3 \\approx h_f(T_3) \\approx h_f(T_{sat}) - c_{p,l}\\,\\Delta T_{sub}",
+   "caption": "Liquid-state enthalpy approximated by the saturated liquid value at the actual liquid temperature; $c_{p,l}$ is the liquid specific heat (kJ/kg K)."
+  },
+  {
+   "type": "text",
+   "markdown": "Subcooling lowers $h_3$, and because the valve is isenthalpic, $h_4 = h_3$ is lower too. That makes the refrigerating effect $h_1 - h_4$ **larger** while compressor work $h_2 - h_1$ is unchanged. COP therefore rises, at no cost in compressor power. Superheating in the cold space also adds to $q_L$, but the vapour has a larger specific volume, so compressor work per kg rises; the net COP effect depends on the refrigerant, and the main reason for superheat is to keep liquid out of the compressor."
+  },
+  {
+   "type": "worked_example",
+   "title": "Effect of subcooling on COP",
+   "prompt": "An ideal cycle has $h_1 = 240.0$ kJ/kg, $h_2 = 275.0$ kJ/kg and condenser exit saturated liquid $h_3 = 100.0$ kJ/kg. Liquid is then subcooled so that $h_3 = 92.0$ kJ/kg. Assume $h_1$ and $h_2$ are unchanged (typical, approximate data). Find the COP before and after and the percentage change.",
+   "steps": [
+    {
+     "text": "Without subcooling: $q_L = 240.0 - 100.0 = 140.0$ kJ/kg and $w = 275.0 - 240.0 = 35.0$ kJ/kg.",
+     "latex": "\\mathrm{COP}_0 = 140.0/35.0 = 4.000"
+    },
+    {
+     "text": "With subcooling: $h_4 = 92.0$, so $q_L = 240.0 - 92.0 = 148.0$ kJ/kg; work is unchanged.",
+     "latex": "\\mathrm{COP}_1 = 148.0/35.0 = 4.229"
+    },
+    {
+     "text": "Percentage change.",
+     "latex": "(4.229 - 4.000)/4.000 = 5.7\\%"
+    }
+   ],
+   "answer": "COP rises from 4.000 to 4.229, an increase of 5.7%."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why two stages?",
+   "text": "At large pressure ratios a single stage gives high discharge temperature, low volumetric efficiency and large work. In a two-stage cycle with **flash intercooling**, a flash chamber at an intermediate pressure separates the vapour formed on the first throttle. That vapour bypasses the evaporator and is mixed into the low-pressure compressor discharge, so the evaporator carries only liquid, the low-pressure compressor handles less flow and the high-pressure compressor receives cooled vapour."
+  },
+  {
+   "type": "math",
+   "latex": "x = \\frac{h_5 - h_f}{h_g - h_f} \\qquad \\dot m_{LP} = \\frac{\\dot Q_L}{h_1 - h_{f}} \\qquad \\dot m_{HP} = \\frac{\\dot m_{LP}}{1 - x}",
+   "caption": "Flash chamber: $h_5$ = enthalpy of liquid after the first valve (= condenser liquid), $h_f,\\,h_g$ at the intermediate pressure; $x$ = mass fraction of the HP flow that flashes."
+  },
+  {
+   "type": "worked_example",
+   "title": "Flash chamber mass fractions",
+   "prompt": "A two-stage cycle with a flash chamber removes a 10 kW load. Representative data for the working fluid: condenser liquid $h_5 = 110.0$ kJ/kg; at the intermediate pressure $h_f = 80.0$ kJ/kg, $h_g = 237.0$ kJ/kg; evaporator exit $h_1 = 230.0$ kJ/kg. Liquid from the chamber is throttled to the evaporator, so $h_8 = h_f$. Find the flash fraction and the mass flow through each compressor stage.",
+   "steps": [
+    {
+     "text": "The first valve is isenthalpic, so the mixture in the chamber has $h = 110.0$ kJ/kg. Quality is found from lever rule.",
+     "latex": "x = (110.0-80.0)/(237.0-80.0) = 0.1911"
+    },
+    {
+     "text": "The evaporator carries liquid from the chamber: $q_L = h_1 - h_8 = 230.0 - 80.0 = 150.0$ kJ/kg.",
+     "latex": "\\dot m_{LP} = 10/150.0 = 0.0667\\ \\mathrm{kg/s}"
+    },
+    {
+     "text": "Only $(1-x)$ of the HP flow is liquid leaving the chamber.",
+     "latex": "\\dot m_{HP} = 0.0667/(1-0.1911) = 0.0824\\ \\mathrm{kg/s}"
+    }
+   ],
+   "answer": "Flash fraction x = 0.1911; LP compressor flow 0.0667 kg/s; HP compressor flow 0.0824 kg/s."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Refrigerant",
+    "Normal boiling point (approx.)",
+    "Latent heat at NBP (approx.)",
+    "Typical features"
+   ],
+   "rows": [
+    [
+     "R-134a",
+     "-26 °C",
+     "about 215 kJ/kg",
+     "ODP 0, GWP about 1400, non-toxic, non-flammable; moderate pressures"
+    ],
+    [
+     "R-717 (ammonia)",
+     "-33 °C",
+     "about 1370 kJ/kg",
+     "ODP 0, GWP 0, very high latent heat, toxic and mildly flammable; industrial plants"
+    ],
+    [
+     "R-290 (propane)",
+     "-42 °C",
+     "about 425 kJ/kg",
+     "ODP 0, GWP about 3, highly flammable; small charge systems"
+    ],
+    [
+     "R-744 (CO2)",
+     "-78 °C (sublimes at 1 atm)",
+     "low critical temperature about 31 °C",
+     "ODP 0, GWP 1, non-toxic, very high pressures; often transcritical"
+    ],
+    [
+     "R-22 (legacy)",
+     "-41 °C",
+     "about 233 kJ/kg",
+     "ODP about 0.05, GWP about 1800; phased out under the Montreal Protocol"
+    ]
+   ],
+   "caption": "Typical, approximate refrigerant data used for comparison; consult property tables for design."
+  },
+  {
+   "type": "text",
+   "markdown": "Large latent heat means less mass flow for the same load, so smaller piping and compressors. Pressure levels matter: too low an evaporator pressure (below atmosphere) allows air in; too high a condenser pressure needs thick-walled equipment. Environmental indicators are the ozone depletion potential (ODP) and the global warming potential (GWP), both relative to a reference substance (CFC-11 and CO2 respectively)."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Pick evaporator pressure above atmospheric to avoid air leaking in.",
+    "Pick condenser pressure low enough for economic pipework.",
+    "High latent heat reduces mass flow and equipment size.",
+    "Zero ODP and low GWP for compliance; weigh against toxicity and flammability."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Trade-offs, not a single best fluid",
+   "text": "Ammonia has the best thermodynamic properties but is toxic; propane is efficient and cheap but flammable; CO2 is benign but runs at very high pressure with lower efficiency in hot climates. Safety class matters as much as COP."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Subcooling raises refrigerating effect at constant compressor work, so COP rises.",
+    "Superheating protects the compressor; its COP effect depends on the fluid.",
+    "Flash intercooling in two-stage cycles suits large pressure ratios: lower compressor work, lower discharge temperature, lower evaporator flow.",
+    "Refrigerants are compared on pressure levels, latent heat, ODP, GWP, toxicity and flammability."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A liquid-line subcooler lowers the temperature of liquid leaving the condenser while the compressor operating conditions stay the same. What is the effect on COP?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Compressor work increases, so COP decreases"
+    },
+    {
+     "id": "b",
+     "text": "Refrigerating effect decreases because the liquid is colder"
+    },
+    {
+     "id": "c",
+     "text": "The refrigerating effect increases while compressor work is unchanged, so COP increases"
+    },
+    {
+     "id": "d",
+     "text": "COP is unchanged because the same refrigerant circulates"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The refrigerating effect increases while compressor work is unchanged, so COP increases",
+   "distractorRationale": {
+    "a": "Compressor work depends on $h_2 - h_1$, which is unchanged.",
+    "b": "Colder liquid has lower $h_3 = h_4$, so $h_1 - h_4$ is larger.",
+    "c": "Correct.",
+    "d": "The refrigerating effect changes, so COP changes."
+   },
+   "explanation": "Subcooling lowers $h_3$, and $h_4 = h_3$ for the isenthalpic valve. The evaporator then absorbs $h_1 - h_4$, which is larger, with the same compressor work.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a given cooling load, which refrigerant property most directly reduces the required mass flow rate?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A large latent heat of vaporisation"
+    },
+    {
+     "id": "b",
+     "text": "A high critical temperature"
+    },
+    {
+     "id": "c",
+     "text": "A low normal boiling point"
+    },
+    {
+     "id": "d",
+     "text": "A high ODP"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A large latent heat of vaporisation",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Critical temperature affects cycle shape, not directly mass flow per kW.",
+    "c": "Boiling point sets pressure levels, not mass flow per kW.",
+    "d": "ODP is an environmental measure unrelated to flow rate."
+   },
+   "explanation": "Mass flow is $\\dot m = \\dot Q_L / q_L$, and $q_L$ is mainly the latent heat absorbed during boiling. A larger latent heat means fewer kilograms are needed, so ammonia plants need smaller lines than R-134a plants.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why is a two-stage cycle with flash intercooling attractive for a large pressure ratio such as an evaporator at -30 °C and a condenser at 45 °C?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It eliminates the need for a throttling valve"
+    },
+    {
+     "id": "b",
+     "text": "It raises the refrigerating effect by compressing the vapour isentropically at the evaporator pressure"
+    },
+    {
+     "id": "c",
+     "text": "It lets the condenser operate at a lower temperature than the surroundings"
+    },
+    {
+     "id": "d",
+     "text": "It cuts total compressor work and discharge temperature and removes flash vapour before the evaporator"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It cuts total compressor work and discharge temperature and removes flash vapour before the evaporator",
+   "distractorRationale": {
+    "a": "Two valves are still used; flash intercooling adds one.",
+    "b": "Compression occurs in two stages; the evaporator pressure is not changed this way.",
+    "c": "The condenser must remain above the sink temperature.",
+    "d": "Correct."
+   },
+   "explanation": "Splitting compression with an intermediate cooling step reduces the work for a given overall pressure ratio and keeps discharge temperature down. The flash chamber also passes the flashed vapour straight to the HP compressor instead of letting it circulate through the evaporator.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer for a large cold store wants a working fluid with zero ODP, near-zero GWP and very high latent heat, and the plant is staffed and ventilated for toxic gas. Which refrigerant best fits?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "R-22"
+    },
+    {
+     "id": "b",
+     "text": "Ammonia (R-717)"
+    },
+    {
+     "id": "c",
+     "text": "R-134a"
+    },
+    {
+     "id": "d",
+     "text": "A legacy CFC"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Ammonia (R-717)",
+   "distractorRationale": {
+    "a": "ODP above zero and phased out under the Montreal Protocol.",
+    "b": "Correct.",
+    "c": "GWP of about 1400 and much lower latent heat than ammonia.",
+    "d": "High ODP and banned for new equipment."
+   },
+   "explanation": "Ammonia has zero ODP, GWP of 0 and a latent heat of about 1370 kJ/kg, several times that of halocarbons. Its toxicity is accepted in industrial plants with proper safety systems.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The vapour leaving an evaporator is superheated by 5 K in the cold space before reaching the compressor. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It always lowers compressor work because the vapour is warmer"
+    },
+    {
+     "id": "b",
+     "text": "It has no effect on either refrigerating effect or work"
+    },
+    {
+     "id": "c",
+     "text": "It adds to the refrigerating effect and ensures no liquid enters the compressor, but the larger specific volume increases compressor work per kg"
+    },
+    {
+     "id": "d",
+     "text": "It reduces the refrigerating effect because less vapour is saturated"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It adds to the refrigerating effect and ensures no liquid enters the compressor, but the larger specific volume increases compressor work per kg",
+   "distractorRationale": {
+    "a": "Warmer vapour has a larger specific volume, so compression work per kg increases.",
+    "b": "Both $h_1$ and $h_2$ change.",
+    "c": "Correct.",
+    "d": "The extra enthalpy absorbed in the cold space adds to the refrigerating effect."
+   },
+   "explanation": "Superheat raises $h_1$ and so increases $q_L$ if the heat comes from the cold space. The vapour also has a larger specific volume, raising $w_{in}$, so the net COP change depends on the fluid. Its key role is protecting the compressor from liquid slugging.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A refrigerant liquid leaves the condenser at saturation and is subcooled by 7 K. Assume liquid specific heat $c_{p,l} = 1.4$ kJ/(kg K), constant. By how much does the refrigerating effect increase, in kJ/kg?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o1"
+   ],
+   "correctValue": 9.8,
+   "tolerance": 0.1,
+   "unit": "kJ/kg",
+   "explanation": "Subcooling lowers $h_3$, and so $h_4$, by $c_{p,l}\\Delta T = 1.4 \\times 7 = 9.8$ kJ/kg. Since $h_1$ is unchanged, the refrigerating effect $h_1 - h_4$ rises by the same amount.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A chiller has $h_1 = 250.0$ kJ/kg, $h_2 = 290.0$ kJ/kg and condenser-exit liquid $h_3 = 120.0$ kJ/kg. Fitting a subcooler reduces $h_3$ to 108.0 kJ/kg without changing $h_1$ or $h_2$. Calculate the percentage increase in COP.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o1"
+   ],
+   "correctValue": 9.2308,
+   "tolerance": 0.2,
+   "unit": "%",
+   "explanation": "Before: COP $= (250-120)/(290-250) = 3.250$. After: COP $= (250-108)/40 = 3.550$. The percentage increase is $(3.550 - 3.250)/3.250 = 9.23\\%$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A two-stage plant with a flash chamber serves a load of 6.0 kW. Data for the refrigerant: liquid from the condenser $h = 118.0$ kJ/kg; at the intermediate pressure $h_f = 84.0$ kJ/kg and $h_g = 240.0$ kJ/kg; evaporator exit $h_1 = 236.0$ kJ/kg; chamber liquid is throttled to the evaporator. Find the mass flow rate through the high-pressure compressor in kg/s.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o2"
+   ],
+   "correctValue": 0.0505,
+   "tolerance": 0.002,
+   "unit": "kg/s",
+   "explanation": "The flash quality is $x = (118.0-84.0)/(240.0-84.0) = 0.2179$. The evaporator flow is $6.0/(236.0-84.0) = 0.0395$ kg/s, and the HP flow is $0.0395/(1-0.2179) = 0.0505$ kg/s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A plant engineer must choose between R-134a, ammonia and propane for three installations: (i) a small domestic fridge, (ii) a large cold store with trained staff and (iii) a mid-size supermarket chiller in a public space. Justify a suitable choice for each using pressure level, latent heat, safety and environmental impact.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o3"
+   ],
+   "markingGuide": [
+    "Domestic: propane (R-290) with a very small charge or a halocarbon; low GWP, flammability limited by small charge",
+    "Cold store: ammonia; very high latent heat, ODP and GWP of zero, toxicity managed by trained staff",
+    "Supermarket: low-charge or secondary loop with a non-toxic fluid, or R-134a replacement with low GWP, because the public is nearby",
+    "Mentions latent heat sets mass flow and equipment size",
+    "Mentions ODP and GWP of the options",
+    "Mentions toxicity and flammability trade-offs"
+   ],
+   "explanation": "No refrigerant is best everywhere. Latent heat, pressure levels, safety class, charge size and environmental indices (ODP, GWP) are weighed together, and the choice differs by application.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A refrigerator evaporates at 0.12 MPa and condenses at 1.2 MPa. Show that a single stage has a pressure ratio of 10 and estimate the intermediate pressure for a two-stage cycle with equal stage pressure ratios. Explain, with reference to flash intercooling, why the two-stage cycle uses less work and gives a safer discharge temperature.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants.o2"
+   ],
+   "markingGuide": [
+    "Pressure ratio 1.2/0.12 = 10",
+    "Equal ratios give intermediate pressure $\\sqrt{0.12 \\times 1.2} = 0.379$ MPa and a ratio of about 3.16 per stage",
+    "Work for gas compression is roughly minimised when each stage has the same ratio",
+    "Flash chamber removes vapour formed in the first throttle so it is not compressed from the low pressure",
+    "Vapour entering the HP compressor is cooled by mixing with the flash vapour, reducing discharge temperature",
+    "Evaporator carries only liquid from the chamber, so more of its capacity is useful refrigeration"
+   ],
+   "explanation": "The pressure ratio is 1.2/0.12 = 10, so each of two equal stages has ratio $\\sqrt{10} = 3.16$ with intermediate pressure 0.379 MPa. Splitting the compression and cooling the vapour between stages cuts work and discharge temperature.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,397 @@
+{
+ "lessonTitle": "Axial Deformation of Bars",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A tower crane's tie rod is not one diameter from end to end: it is thicker where it takes the full load and thinner where it carries less. To know how far the hook drops under a lift, an engineer must add up the stretch of every length of that rod, one piece at a time."
+  },
+  {
+   "type": "text",
+   "markdown": "Every axially loaded bar stretches or shortens. For a **uniform** bar with constant internal force $N$, cross-sectional area $A$, length $L$ and Young's modulus $E$ (linear elastic, small strains, load through the centroid, away from the ends where loads are introduced) the change in length is $\\delta = NL/(AE)$. Real members are rarely uniform, so the idea is to cut the bar into **segments** inside which $N$, $A$ and $E$ are all constant, and then add the segment results."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Compatibility",
+   "text": "Compatibility is a statement about geometry: the deformations of the parts of a structure must fit together. For a bar fixed between two rigid walls, the total change in length from wall to wall must be zero. Compatibility supplies the extra equation that statics alone cannot."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta_{\\text{total}} = \\sum_i \\frac{N_i L_i}{A_i E_i}",
+   "caption": "Stepped bar: $N_i$ is the internal force in segment $i$ (tension positive), found by a section cut. Units: N, mm, MPa give mm."
+  },
+  {
+   "type": "worked_example",
+   "title": "Stepped steel bar under two pulls",
+   "prompt": "A steel bar (E = 200 GPa) is fixed to a wall at A. Segment AB is 500 mm long with diameter 25 mm; segment BC is 400 mm long with diameter 15 mm. A 50 kN axial pull acts at B and a 20 kN pull acts at the free end C, both directed away from the wall. Find the total elongation of the bar.",
+   "steps": [
+    {
+     "text": "Internal forces by section cuts. Cutting BC and keeping the free end, N_BC = +20 kN. Cutting AB and keeping everything beyond, N_AB = 50 + 20 = +70 kN (both tension).",
+     "latex": "N_{BC}=20\\ \\text{kN},\\quad N_{AB}=70\\ \\text{kN}"
+    },
+    {
+     "text": "Areas: A_AB = (pi/4)(25)^2 = 490.9 mm^2 and A_BC = (pi/4)(15)^2 = 176.7 mm^2.",
+     "latex": "A_{AB}=490.9\\ \\text{mm}^2,\\ A_{BC}=176.7\\ \\text{mm}^2"
+    },
+    {
+     "text": "Segment AB: delta = N L /(A E) with E = 200 000 MPa.",
+     "latex": "\\delta_{AB}=\\frac{70\\,000\\times 500}{490.9\\times 200\\,000}=0.357\\ \\text{mm}"
+    },
+    {
+     "text": "Segment BC in the same way.",
+     "latex": "\\delta_{BC}=\\frac{20\\,000\\times 400}{176.7\\times 200\\,000}=0.226\\ \\text{mm}"
+    },
+    {
+     "text": "Add the segment elongations.",
+     "latex": "\\delta_{\\text{total}}=0.357+0.226=0.583\\ \\text{mm}"
+    }
+   ],
+   "answer": "The bar lengthens by about 0.583 mm, with the thicker segment AB contributing more because it carries the larger force over the greater length."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Segment property",
+    "Effect on elongation",
+    "Reason"
+   ],
+   "rows": [
+    [
+     "Larger internal force $N$",
+     "Larger",
+     "$\\delta \\propto N$"
+    ],
+    [
+     "Longer length $L$",
+     "Larger",
+     "strain accumulates along the length"
+    ],
+    [
+     "Larger area $A$",
+     "Smaller",
+     "stress $=N/A$ falls"
+    ],
+    [
+     "Larger modulus $E$",
+     "Smaller",
+     "stiffer material strains less"
+    ]
+   ],
+   "caption": "How each quantity controls the stretch of one segment"
+  },
+  {
+   "type": "text",
+   "markdown": "**Statically indeterminate bars.** If a bar is fixed at *both* ends, the two wall reactions cannot be found from one equilibrium equation $R_A + R_B = P$. We release one support, compute the elongation it would cause (the **primary** problem), then require the redundant reaction to push the end back so that the total change in length is zero."
+  },
+  {
+   "type": "worked_example",
+   "title": "Aluminium bar fixed at both ends",
+   "prompt": "An aluminium bar (E = 70 GPa, A = 400 mm^2) is 1.2 m long and fixed to rigid walls at A and B. A 30 kN axial load acts at C, 0.5 m from A. Find the wall reactions and the stress in each part.",
+   "steps": [
+    {
+     "text": "Equilibrium gives one equation for the two unknowns. Take R_A and R_B both resisting the load.",
+     "latex": "R_A+R_B=30\\ \\text{kN}"
+    },
+    {
+     "text": "Compatibility: AC is stretched by R_A and CB is shortened by R_B, with total change zero. Since A and E are constant:",
+     "latex": "\\frac{R_A(0.5)}{AE}-\\frac{R_B(0.7)}{AE}=0\\;\\Rightarrow\\;0.5R_A=0.7R_B"
+    },
+    {
+     "text": "Solve with R_B = 30 - R_A: 0.5 R_A = 0.7(30 - R_A), so 1.2 R_A = 21.",
+     "latex": "R_A=17.5\\ \\text{kN},\\quad R_B=12.5\\ \\text{kN}"
+    },
+    {
+     "text": "Stresses: AC is in tension, CB in compression.",
+     "latex": "\\sigma_{AC}=\\frac{17\\,500}{400}=43.75\\ \\text{MPa},\\quad \\sigma_{CB}=-\\frac{12\\,500}{400}=-31.25\\ \\text{MPa}"
+    }
+   ],
+   "answer": "R_A = 17.5 kN and R_B = 12.5 kN; the nearer wall takes the larger share (general result R_A = P b/L)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Self-weight.** In a hanging bar the internal force is not constant: at depth $x$ from the free end it equals the weight of the material below, so it is largest at the top and zero at the free end. We integrate $d\\delta = N(x)\\,dx/(AE)$ over the length instead of summing segments."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta=\\int_0^L \\frac{\\rho g A x}{AE}\\,dx=\\frac{\\rho g L^2}{2E}=\\frac{WL}{2AE}",
+   "caption": "$\\rho$ = density (kg/m^3), $g=9.81$ m/s^2, $W=\\rho g A L$ the total weight, $x$ measured from the free end."
+  },
+  {
+   "type": "worked_example",
+   "title": "Long hanging steel rod",
+   "prompt": "A steel rod (rho = 7850 kg/m^3, E = 200 GPa) hangs vertically from a support, length 50 m, carrying only its own weight. Find the elongation of the rod.",
+   "steps": [
+    {
+     "text": "At distance x above the free end the section carries the weight of the length x beneath it, so N(x) = rho g A x and the stress at the support is rho g L.",
+     "latex": "\\sigma_{\\max}=\\rho g L=7850(9.81)(50)=3.85\\ \\text{MPa}"
+    },
+    {
+     "text": "Integrate, or use delta = rho g L^2 /(2E).",
+     "latex": "\\delta=\\frac{7850\\times 9.81\\times 50^2}{2\\times 200\\times 10^{9}}=4.81\\times10^{-4}\\ \\text{m}"
+    }
+   ],
+   "answer": "delta = 4.81e-4 m = 0.481 mm. This is half the stretch that the same total weight would cause if hung at the free end."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Use internal force, not applied load",
+   "text": "In a stepped bar the force in each segment is found with a section cut, and it changes at every point load. Using the end load for all segments, or forgetting to give compressive segments a negative sign, are the commonest errors. For self-weight, the force varies continuously, so the answer is half of the concentrated-weight result."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Total elongation of a stepped bar is the sum of N L/(A E) over segments, with N from a section cut (tension positive).",
+    "A bar fixed at both ends is statically indeterminate: use equilibrium plus the compatibility condition that total change in length is zero.",
+    "For a bar hanging under its own weight the elongation is rho g L^2/(2E), half of the value if the weight were concentrated at the free end."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Two segments of the same bar have the same length, material and internal tensile force, but segment 1 has half the cross-sectional area of segment 2. How does the elongation of segment 1 compare with that of segment 2?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is twice as large"
+    },
+    {
+     "id": "b",
+     "text": "It is half as large"
+    },
+    {
+     "id": "c",
+     "text": "It is the same"
+    },
+    {
+     "id": "d",
+     "text": "It is four times as large"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is twice as large",
+   "distractorRationale": {
+    "a": "Correct: delta = NL/(AE), so halving A doubles delta.",
+    "b": "Wrong direction: a smaller area gives a larger stress and larger strain.",
+    "c": "Force and length are equal but area is not; delta depends on A.",
+    "d": "Confuses area with diameter; the question gives area, so the factor is 2, not 4."
+   },
+   "explanation": "Elongation of a segment is delta = NL/(AE). With N, L and E equal, delta is inversely proportional to A, so the segment with half the area stretches twice as much.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A uniform bar is fixed to rigid walls at both ends. An axial load P acts at a point one third of the length from the left wall. Assuming constant AE, which fraction of P is carried by the left wall reaction?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "P/3"
+    },
+    {
+     "id": "b",
+     "text": "P/2"
+    },
+    {
+     "id": "c",
+     "text": "P"
+    },
+    {
+     "id": "d",
+     "text": "2P/3"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "2P/3",
+   "distractorRationale": {
+    "a": "This is the share of the farther wall; the nearer wall carries more because the short segment is stiffer.",
+    "b": "This would be true only for a load at mid-length.",
+    "c": "Only true if the other wall did not resist; both walls must carry load.",
+    "d": "Correct: R_left = P b/L with b = 2L/3, so 2P/3."
+   },
+   "explanation": "Compatibility with constant AE gives R_left a = R_right b, hence R_left = P b/L. For a = L/3, b = 2L/3, so the left wall carries 2P/3 and the right wall P/3.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A vertical bar of length L hangs from a support and elongates by delta under its own weight alone. A bar of the same material and cross-section but length 2L is hung the same way. What is its elongation?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2 delta"
+    },
+    {
+     "id": "b",
+     "text": "4 delta"
+    },
+    {
+     "id": "c",
+     "text": "8 delta"
+    },
+    {
+     "id": "d",
+     "text": "delta"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "4 delta",
+   "distractorRationale": {
+    "a": "Would apply for a constant force, but the weight also grows with length.",
+    "b": "Correct: delta = rho g L^2/(2E) scales with L squared.",
+    "c": "Applies to a cubic dependence on L, which does not occur.",
+    "d": "Ignores the length dependence altogether."
+   },
+   "explanation": "For self-weight, delta = rho g L^2/(2E): a longer bar has both more weight and more length over which strain accumulates. Doubling L therefore multiplies delta by 2^2 = 4.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A bar fixed at wall A has a free end C and a junction B. A 30 kN pull acts at C and a 50 kN push (towards the wall) acts at B. What is the internal axial force in segment AB, tension positive?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "+80 kN (tension)"
+    },
+    {
+     "id": "b",
+     "text": "+30 kN (tension)"
+    },
+    {
+     "id": "c",
+     "text": "-20 kN (compression)"
+    },
+    {
+     "id": "d",
+     "text": "-50 kN (compression)"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "-20 kN (compression)",
+   "distractorRationale": {
+    "a": "Adds magnitudes and ignores that the 50 kN push opposes the pull.",
+    "b": "This is only the force in BC; the push at B changes the force in AB.",
+    "c": "Correct: cut AB, sum forces beyond the cut: +30 - 50 = -20 kN.",
+    "d": "Uses the push at B alone and ignores the 30 kN pull at C."
+   },
+   "explanation": "Cutting through AB and keeping the part beyond the cut, equilibrium gives N = +30 - 50 = -20 kN. The negative sign means compression, so segment AB would shorten.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: for a bar fixed rigidly at both ends, the compatibility condition requires the total change in length between the walls to be zero.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The walls do not move, so the sum of segment elongations and contractions must vanish. This condition supplies the second equation needed beyond equilibrium.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A brass stepped bar (E = 100 GPa) is fixed to a wall. Segment 1 (next to the wall) is 600 mm long with area 300 mm^2; segment 2 is 400 mm long with area 150 mm^2. A 24 kN tensile pull acts at the free end and a further 10 kN tensile pull acts at the junction, both away from the wall. Find the total elongation in mm.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o1"
+   ],
+   "correctValue": 1.32,
+   "tolerance": 0.02,
+   "unit": "mm",
+   "explanation": "Segment 2 carries 24 kN; segment 1 carries 24 + 10 = 34 kN. delta_1 = 34 000(600)/(300 x 100 000) = 0.68 mm and delta_2 = 24 000(400)/(150 x 100 000) = 0.64 mm, so the total is 1.32 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A steel bar is fixed to rigid walls at both ends. The left half is 0.4 m long with area 600 mm^2, the right half is 0.4 m long with area 300 mm^2, and both have the same E. A 90 kN axial load acts at the junction. Find the magnitude of the reaction at the right wall, in kN.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o1",
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o2"
+   ],
+   "correctValue": 30,
+   "tolerance": 0.3,
+   "unit": "kN",
+   "explanation": "Compatibility: R_L(0.4)/(600E) = R_R(0.4)/(300E), so R_L = 2 R_R. With R_L + R_R = 90 kN, R_R = 30 kN. The stiffer, thicker half takes twice the reaction.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An aluminium rod (density 2700 kg/m^3, E = 70 GPa, g = 9.81 m/s^2) hangs vertically from a support. Its length is 80 m and it carries no load except its own weight. Find the elongation in mm.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o3"
+   ],
+   "correctValue": 1.211,
+   "tolerance": 0.02,
+   "unit": "mm",
+   "explanation": "delta = rho g L^2/(2E) = 2700(9.81)(80^2)/(2 x 70e9) = 1.21e-3 m. The weight grows linearly with depth, so integrating N(x)/(AE) gives half of the end-load result.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A bar is fixed to rigid walls at both ends and loaded axially at an intermediate point. Explain why it is statically indeterminate and how compatibility is used to find the reactions.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o2"
+   ],
+   "markingGuide": [
+    "States that equilibrium gives only one equation (R_A + R_B = P) for two unknown reactions",
+    "Identifies one reaction as a redundant that can be released to give a determinate primary problem",
+    "Writes that the walls are rigid so the total change in length is zero",
+    "Expresses segment deformations as force x length/(AE) with correct signs (one tensile, one compressive)",
+    "Solves the two equations simultaneously for both reactions"
+   ],
+   "explanation": "Statics alone cannot give both wall forces, so geometry is added: the sum of segment elongations equals zero. Expressing each elongation as NL/(AE) turns this into a second equation in the same unknowns.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Show that the elongation of a uniform vertical bar due to its own weight is half the elongation it would suffer if the same total weight were applied as a point load at its free end.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.axial-loading-thermal.axial-deformation.o3"
+   ],
+   "markingGuide": [
+    "Writes N(x) = rho g A x at distance x from the free end (weight of material below)",
+    "Sets up the integral of N(x)/(AE) dx from 0 to L",
+    "Evaluates it to rho g L^2/(2E)",
+    "Writes the point-load elongation WL/(AE) with W = rho g A L, giving rho g L^2/E",
+    "Concludes the ratio is one half and states why (force varies linearly from zero to W)"
+   ],
+   "explanation": "The self-weight force varies linearly from zero at the free end to W at the support, so its average is W/2. Because elongation is linear in force, the elongation is half that of the full end load.",
+   "board": "internal"
+  }
+ ]
+}

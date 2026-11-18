@@ -1,0 +1,403 @@
+{
+ "lessonTitle": "Producing Engineering Plots",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bearing-temperature chart shows two suppliers' parts on a bar graph whose vertical axis starts at 70 degrees C, so a 2 degree difference looks like a threefold gap and the wrong supplier is chosen. A plot is an argument made from numbers, and the choices of labels, units and axis scales decide whether the argument is honest."
+  },
+  {
+   "type": "text",
+   "markdown": "An engineering plot communicates a relationship between measured or computed quantities. It must let a reader recover the numbers and the units without asking you. We use Python's Matplotlib, where `plt.plot(x, y)` draws a curve and further calls add labels, scales and a legend."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Elements of a complete engineering plot",
+   "text": "Every figure should have: (1) axis labels naming the **quantity and its unit**, for example `Time, t (s)`; (2) a legend whenever more than one series is shown, with each series identified by a `label`; (3) markers for measured points and lines for model curves; (4) an axis range and scale that suit the data; (5) a caption or title stating what is shown."
+  },
+  {
+   "type": "worked_example",
+   "title": "A labelled multi-series plot",
+   "prompt": "Plot measured pump head (points) and a fitted curve (line) against flow rate, with units and a legend.",
+   "steps": [
+    {
+     "text": "Call `plt.plot(Q, H_meas, 'o', label='Measured')` for the data points and `plt.plot(Q, H_fit, '-', label='Fitted curve')` for the model. The `label` argument is what the legend will display."
+    },
+    {
+     "text": "Label axes with quantity and unit: `plt.xlabel('Flow rate, Q (L/s)')` and `plt.ylabel('Head, H (m)')`. Never leave a unit out, because the number alone cannot be interpreted."
+    },
+    {
+     "text": "Add `plt.legend()` after the plot calls so Matplotlib collects the labels, then `plt.grid(True)` to help reading values."
+    },
+    {
+     "text": "Finish with `plt.savefig('pump.png', dpi=300)` or `plt.show()`. Check that the legend does not hide data."
+    }
+   ],
+   "answer": "plot(...label=...) for each series, xlabel/ylabel with units, legend(), and grid()."
+  },
+  {
+   "type": "text",
+   "markdown": "Choosing the **scale** matters as much as labelling. A linear axis spaces equal differences equally. A **logarithmic** axis spaces equal *ratios* equally, so it suits data spanning several orders of magnitude and exposes power laws and exponentials as straight lines. For a power law $y=ax^n$ and an exponential $y=ae^{bx}$ the logarithms are linear:"
+  },
+  {
+   "type": "math",
+   "latex": "\\log y=\\log a+n\\log x \\quad(\\text{power law}),\\qquad \\ln y=\\ln a+b\\,x\\quad(\\text{exponential})",
+   "caption": "A power law is a straight line on log-log axes with slope n. An exponential is a straight line on semi-log axes (log y, linear x) with slope b in ln units."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Relationship",
+    "Form",
+    "Plot on",
+    "Straight line gives"
+   ],
+   "rows": [
+    [
+     "Linear",
+     "$y=mx+c$",
+     "Linear-linear",
+     "slope $m$, intercept $c$"
+    ],
+    [
+     "Power law",
+     "$y=ax^n$",
+     "Log-log",
+     "slope $n$; intercept gives $a$"
+    ],
+    [
+     "Exponential",
+     "$y=ae^{bx}$",
+     "Semi-log (log y)",
+     "slope $b$ (ln scale); intercept gives $a$"
+    ],
+    [
+     "Data over many decades",
+     "any",
+     "Log axis on that variable",
+     "readable detail at all magnitudes"
+    ]
+   ],
+   "caption": "Matching the axes to the relationship."
+  },
+  {
+   "type": "worked_example",
+   "title": "Finding an exponent from a log-log plot",
+   "prompt": "Two readings of the pressure drop $\\Delta p$ across an orifice at flow rates $Q=1$ and $Q=10$ L/s are $\\Delta p=3$ kPa and $300$ kPa. Assuming a power law, find $n$ and $a$.",
+   "steps": [
+    {
+     "text": "On log-log axes the two points define a straight line, so $n=\\Delta\\log\\Delta p/\\Delta\\log Q$.",
+     "latex": "n=\\frac{\\log_{10}300-\\log_{10}3}{\\log_{10}10-\\log_{10}1}"
+    },
+    {
+     "text": "Numbers: $\\log_{10}300=2.4771$, $\\log_{10}3=0.4771$, $\\log_{10}10=1$, $\\log_{10}1=0$, so $n=2.0/1=2.0$.",
+     "latex": "n=\\frac{2.0}{1.0}=2.0"
+    },
+    {
+     "text": "Find $a$ from the first point: $3=a(1)^2$, so $a=3$ kPa per (L/s)^2. Check with the second: $3(10)^2=300$ kPa. Consistent.",
+     "latex": "\\Delta p=3\\,Q^{2}"
+    }
+   ],
+   "answer": "n = 2, a = 3 kPa/(L/s)^2, so Delta p = 3 Q^2 (typical of turbulent flow)."
+  },
+  {
+   "type": "text",
+   "markdown": "For an exponential decay such as a cooling curve, a semi-log plot straightens the data: the slope of $\\ln y$ against $x$ equals the exponent $b$, which is negative for decay. A curve that bends on log axes tells you the assumed model is wrong, which is why these plots are also diagnostic tools."
+  },
+  {
+   "type": "worked_example",
+   "title": "Spotting a misleading axis",
+   "prompt": "A bar chart compares the yield strength of two steels, 62 MPa and 65 MPa (illustrative values), with a vertical axis running from 60 MPa to 66 MPa. Quantify the distortion.",
+   "steps": [
+    {
+     "text": "With the truncated axis, the bar heights above the baseline are $62-60=2$ MPa and $65-60=5$ MPa.",
+     "latex": "h_1=2,\\;h_2=5"
+    },
+    {
+     "text": "The apparent ratio is $5/2=2.5$, so the second steel looks 150 percent stronger.",
+     "latex": "\\frac{h_2}{h_1}=2.5"
+    },
+    {
+     "text": "The true ratio is $65/62=1.048$, a 4.8 percent difference. A bar chart encodes value as length from zero, so its axis should start at zero."
+    },
+    {
+     "text": "Remedy: start the axis at 0, or show the data as points on a labelled axis with error bars if a zoom is needed, and state the axis range."
+    }
+   ],
+   "answer": "The truncated axis exaggerates a 4.8 percent difference to a factor of 2.5."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Label every axis with quantity and unit, and use a legend for multiple series.",
+    "Use points for measurements and lines for models.",
+    "Use log axes for data spanning decades and to test power-law or exponential models.",
+    "Start bar-chart axes at zero.",
+    "Check that colours, line styles and marker shapes still distinguish series in black and white."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Misleading choices",
+   "text": "Truncated axes, different vertical scales on stacked plots, unlabelled log axes, and connecting measured points with smooth lines that suggest data between them all mislead readers. Log axes cannot show zero or negative values. Decide the axes to show the data honestly, not to make a result look better."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A complete plot has labelled axes with units, a legend for multiple series and suitable markers.",
+    "Power laws are straight on log-log axes (slope = exponent); exponentials are straight on semi-log axes.",
+    "Truncated or inconsistent axis ranges and scales can exaggerate differences; bar charts should start at zero.",
+    "Plot choice is part of the engineering argument and must be stated clearly."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which axis label best follows engineering convention for a plot of shaft speed against time?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Speed"
+    },
+    {
+     "id": "b",
+     "text": "rad/s only on the title"
+    },
+    {
+     "id": "c",
+     "text": "omega"
+    },
+    {
+     "id": "d",
+     "text": "Angular speed, $\\omega$ (rad/s)"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Angular speed, $\\omega$ (rad/s)",
+   "distractorRationale": {
+    "d": "Correct: quantity, symbol and unit.",
+    "a": "Gives no unit, so the scale cannot be interpreted.",
+    "c": "A symbol alone does not say what it is or its unit.",
+    "b": "The unit must be on the axis label, not hidden elsewhere."
+   },
+   "explanation": "A good label names the quantity (and symbol if useful) and its unit. The first option does both, so the reader can interpret the numbers on the axis without asking.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Two curves, 'Stage 1' and 'Stage 2', are drawn with separate `plt.plot` calls and no legend appears. What is the minimal fix?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Call `plt.grid(True)`"
+    },
+    {
+     "id": "b",
+     "text": "Add `label='Stage 1'` and `label='Stage 2'` to the plot calls and then call `plt.legend()`"
+    },
+    {
+     "id": "c",
+     "text": "Call `plt.savefig` before plotting"
+    },
+    {
+     "id": "d",
+     "text": "Plot both curves in the same colour"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Add `label='Stage 1'` and `label='Stage 2'` to the plot calls and then call `plt.legend()`",
+   "distractorRationale": {
+    "b": "Correct: labels plus legend().",
+    "a": "A grid does not identify series.",
+    "c": "Saving earlier does not create a legend.",
+    "d": "Identical colours would make series harder to tell apart."
+   },
+   "explanation": "Matplotlib builds a legend from the labels attached to each plotted series, and `plt.legend()` draws it. Without labels there is nothing for the legend to show.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Measurements follow $\\theta=5e^{-0.2t}$, with $t$ from 0 to 30 s and $\\theta$ falling over three orders of magnitude. Which plot turns the model into a straight line?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Linear for $\\theta$, log for $t$"
+    },
+    {
+     "id": "b",
+     "text": "Linear-linear"
+    },
+    {
+     "id": "c",
+     "text": "Semi-log: log scale for $\\theta$, linear for $t$"
+    },
+    {
+     "id": "d",
+     "text": "Log-log"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Semi-log: log scale for $\\theta$, linear for $t$",
+   "distractorRationale": {
+    "c": "Correct: ln theta is linear in t.",
+    "d": "Log-log would curve this relationship because ln t does not appear.",
+    "b": "A linear plot would show a curve that is hard to read at small values.",
+    "a": "Logging t, not theta, does not linearise an exponential in t."
+   },
+   "explanation": "Taking logs gives ln theta = ln 5 - 0.2 t, which is linear in t. So log theta against linear t, a semi-log plot, produces a straight line of slope -0.2 (in ln units).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A drag test records $F=8$ N at $V=5$ m/s and $F=128$ N at $V=20$ m/s. Assuming a power law $F=aV^n$, find $n$ from the slope on log-log axes.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o2"
+   ],
+   "correctValue": 2,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "n = log(128/8) / log(20/5) = log 16 / log 4 = 1.2041/0.6021 = 2.0. This is the quadratic drag typical at high Reynolds number.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A cooling body has excess temperature $\\theta=80$ K at $t=10$ s and $\\theta=10$ K at $t=50$ s. On a semi-log plot the data are a straight line, $\\theta=\\theta_0e^{-t/\\tau}$. Find the time constant $\\tau$ in seconds.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o2"
+   ],
+   "correctValue": 19.24,
+   "tolerance": 0.1,
+   "unit": "s",
+   "explanation": "The slope of ln theta against t is (ln 10 - ln 80)/(50 - 10) = -2.0794/40 = -0.05199 per s. The time constant is the reciprocal of the magnitude, tau = 40/ln 8 = 19.24 s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A bar chart compares the fatigue lives of two alloys, 1.02 million and 1.05 million cycles, with the vertical axis running from 1.00 million to 1.06 million cycles. What is the main problem?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Nothing; bar charts may start at any value"
+    },
+    {
+     "id": "b",
+     "text": "The truncated axis makes a 3 percent difference look like a difference of a factor of about 2.5"
+    },
+    {
+     "id": "c",
+     "text": "The axis should be logarithmic"
+    },
+    {
+     "id": "d",
+     "text": "The bars should be replaced by a pie chart"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The truncated axis makes a 3 percent difference look like a difference of a factor of about 2.5",
+   "distractorRationale": {
+    "b": "Correct: truncation exaggerates the difference.",
+    "d": "A pie chart would not suit this comparison.",
+    "c": "A log axis does not fix truncation.",
+    "a": "Bar charts should start at zero to avoid distortion."
+   },
+   "explanation": "Bar length encodes value from the baseline, so with the baseline at 1.00 million the bars have apparent heights 0.02 and 0.05, a ratio of 2.5. The true ratio is 1.05/1.02 = 1.03.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two coupons have measured tensile strengths of 205 MPa and 215 MPa. They are drawn as bars on a vertical axis starting at 200 MPa. What is the apparent ratio of the bar lengths (longer to shorter)?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o3"
+   ],
+   "correctValue": 3.0,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "The bar lengths above the baseline are 215 - 200 = 15 MPa and 205 - 200 = 5 MPa, so the apparent ratio is 15/5 = 3.0. The true ratio of strengths is only 215/205 = 1.05.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "On log-log axes, the relationship $y=7x^{-1}$ appears as a straight line with slope $-1$.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Taking logs gives log y = log 7 - log x, which is linear in log x with slope -1. Any power law is a straight line on log-log axes.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A student submits a plot of three measured strain histories in the same black solid line, with the vertical axis labelled 'strain' and a range that starts at 800 microstrain although readings reach 1000 microstrain. List the faults and describe how you would correct the plot.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o1",
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o3"
+   ],
+   "markingGuide": [
+    "No units given: should read e.g. Strain, epsilon (microstrain) and Time (s)",
+    "Three series are indistinguishable: use different colours, markers or line styles and add a legend with labels",
+    "Truncated range exaggerates variation; use a range that shows the data in context and state any zoom",
+    "Time axis label missing or without unit",
+    "Notes that markers suit measured points and lines suit models"
+   ],
+   "explanation": "A reader must be able to identify each series and read values with units. Axis ranges should not exaggerate small variations, and any deliberate zoom should be stated.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A frequency-response test records amplitude ratio at frequencies from 1 Hz to 10 kHz. Explain which axes you would choose, why, and how you would use the plot to check whether a segment follows a power law and to find its exponent.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.plotting-and-data.engineering-plots.o2"
+   ],
+   "markingGuide": [
+    "Frequency spans four decades so it needs a logarithmic axis",
+    "Amplitude ratio also varies by orders of magnitude so a log (or dB) vertical axis is suitable, i.e. log-log",
+    "A power-law segment appears as a straight line on log-log axes",
+    "Slope = change in log(amplitude)/change in log(frequency), which equals the exponent n",
+    "Curvature on the log-log plot indicates the power-law model does not apply over that range"
+   ],
+   "explanation": "A log axis gives equal space to each decade, making all frequencies readable. The straight-line slope on a log-log plot directly gives the exponent of a power law.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "Planning and Final Report: Schedules, Critical Path and Traceability",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A final-year team of five builds a test rig. They plan 20 weeks, but in week 9 the machined parts arrive late and the whole team sits idle until week 12. The delay was avoidable: the late-arriving order was on the critical path, and nobody had recognised which activities could slip without consequence and which could not."
+  },
+  {
+   "type": "text",
+   "markdown": "A design project is finished on time not by working harder but by knowing what depends on what. **Planning** breaks the work into manageable pieces, shows how they depend on each other, and identifies the chain that fixes the end date. **Reporting** then records the design so that every decision can be traced to a requirement and to evidence. This unit covers the planning tools first and the report structure second."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Work breakdown structure (WBS) and Gantt chart",
+   "text": "A **work breakdown structure** divides the whole project into deliverables and then into work packages, each small enough to estimate, assign to one owner and check. A **Gantt chart** plots each work package as a bar against time, with *dependencies* drawn as links (most commonly finish-to-start: B cannot begin until A has finished) and *milestones* shown as zero-duration markers for events such as 'design freeze' or 'prototype delivered'."
+  },
+  {
+   "type": "text",
+   "markdown": "**Building the plan.** Start from the deliverables (rig, drawings, report, presentation). Break each into work packages until each lasts from a few days to two or three weeks. Estimate a duration for each, and for each ask 'what must be finished before this can start?'. That gives the dependencies. Place milestones where a decision or delivery is checked. The Gantt chart is simply this information drawn against a calendar."
+  },
+  {
+   "type": "text",
+   "markdown": "**Critical path and float.** Every route through the dependency network from start to end has a total duration. The **critical path** is the longest route; it fixes the minimum project duration, and any delay to an activity on it delays the finish by the same amount. Activities off the critical path have **float** (or slack), the time they can slip without delaying the end. Float is computed from the earliest start (ES), earliest finish (EF = ES + duration), latest finish (LF) and latest start (LS = LF - duration)."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{float}=LS-ES=LF-EF",
+   "caption": "Total float of an activity, in the same time unit as the durations (weeks). Critical activities have float 0."
+  },
+  {
+   "type": "worked_example",
+   "title": "Critical path of a rig project",
+   "prompt": "Activities (duration in weeks): A requirements 3; B concept design 4 (after A); C detailed design 6 (after B); D procure parts 5 (after B); E build 4 (after C and D); F test 3 (after E). Find the project duration, the critical path and the float of D.",
+   "steps": [
+    {
+     "text": "Path through C: A-B-C-E-F.",
+     "latex": "3+4+6+4+3=20\\ \\text{weeks}"
+    },
+    {
+     "text": "Path through D: A-B-D-E-F.",
+     "latex": "3+4+5+4+3=19\\ \\text{weeks}"
+    },
+    {
+     "text": "The longer route is critical: the project takes 20 weeks along A-B-C-E-F."
+    },
+    {
+     "text": "D starts at week 7 (end of B) and finishes at week 12. E cannot start before week 13 because C ends at 13, so the latest finish of D is 13.",
+     "latex": "\\text{float}_D=LF-EF=13-12=1\\ \\text{week}"
+    }
+   ],
+   "answer": "Project duration 20 weeks, critical path A-B-C-E-F, and D has 1 week of float."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Report section",
+    "Purpose",
+    "Links to"
+   ],
+   "rows": [
+    [
+     "Requirements",
+     "Numbered, measurable requirements (R1, R2 ...)",
+     "Customer brief"
+    ],
+    [
+     "Concept and selection",
+     "Options considered and the reasons for choice",
+     "Requirement IDs and decision matrix"
+    ],
+    [
+     "Detailed design and calculations",
+     "Calculations and drawings that define the design",
+     "Requirement IDs and assumptions"
+    ],
+    [
+     "Verification and test",
+     "Results against acceptance criteria",
+     "Requirement IDs and test records"
+    ],
+    [
+     "Conclusions",
+     "What was met, not met, and next steps",
+     "All of the above"
+    ]
+   ],
+   "caption": "A report structure in which each decision links to a requirement and evidence."
+  },
+  {
+   "type": "text",
+   "markdown": "**Structuring the report.** The reader should be able to pick any design decision and follow a chain: *requirement* (what was needed), *decision* (what was chosen), *evidence* (the calculation, analysis or test that shows it works). Number the requirements and cite the number wherever a decision or result addresses it. A decision without a requirement is unjustified; a requirement without evidence is unverified."
+  },
+  {
+   "type": "worked_example",
+   "title": "Effect of a late supplier",
+   "prompt": "In the rig project, procurement D slips to 7 weeks (all other durations unchanged). Find the new project duration and whether the critical path changes.",
+   "steps": [
+    {
+     "text": "New length of the route through D.",
+     "latex": "3+4+7+4+3=21\\ \\text{weeks}"
+    },
+    {
+     "text": "This is longer than the route through C (20 weeks), so the path through D becomes critical."
+    },
+    {
+     "text": "The project is delayed by $21-20=1$ week, because D used its 1 week of float and then 1 further week.",
+     "latex": "21-20=1\\ \\text{week}"
+    }
+   ],
+   "answer": "The project takes 21 weeks; the critical path moves to A-B-D-E-F."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Build the WBS from deliverables down to work packages with one owner each.",
+    "Link packages with dependencies and mark milestones.",
+    "Compute ES, EF, LS, LF and the float; list the critical activities.",
+    "Review the critical activities weekly and use the float of others for resource levelling.",
+    "In the report, tag each decision with the requirement it meets and the evidence that supports it."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Float belongs to the path, not only to the activity",
+   "text": "If two non-critical activities lie in series on the same route, they share the float: using it on the first leaves less for the second. Check float on the whole route after any slip."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "State your dependency type",
+   "text": "When drawing a Gantt chart or network, say which dependencies are finish-to-start and give a duration and unit for every activity. Show the longest path explicitly, with the sum written out."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A WBS divides the project into owned work packages; a Gantt chart shows durations, dependencies and milestones against time.",
+    "The critical path is the longest dependency route and fixes the project duration; float is $LS-ES$ and is zero on the critical path.",
+    "A good design report links every decision to a numbered requirement and to evidence from calculation, analysis or test."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement best describes a work breakdown structure?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A hierarchical division of the project deliverables into work packages that can be estimated and assigned to owners"
+    },
+    {
+     "id": "b",
+     "text": "A bar chart that shows when each activity happens against the calendar"
+    },
+    {
+     "id": "c",
+     "text": "A list of risks ranked by likelihood and severity"
+    },
+    {
+     "id": "d",
+     "text": "The longest path through the activity network"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A hierarchical division of the project deliverables into work packages that can be estimated and assigned to owners",
+   "distractorRationale": {
+    "a": "Correct: it breaks the deliverables down into manageable packages.",
+    "b": "That describes a Gantt chart, which uses a WBS as input.",
+    "c": "That is a risk register.",
+    "d": "That is the critical path."
+   },
+   "explanation": "The WBS is about what has to be produced, divided until each package has one owner and a reasonable estimate. The schedule and critical path are then built on it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "On a Gantt chart for a gearbox prototype, a marker with zero duration labelled 'Design freeze' appears at the end of detail design. What is this marker?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A milestone"
+    },
+    {
+     "id": "b",
+     "text": "A work package"
+    },
+    {
+     "id": "c",
+     "text": "A float"
+    },
+    {
+     "id": "d",
+     "text": "A dependency"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A milestone",
+   "distractorRationale": {
+    "a": "Correct: a milestone marks an event or decision point without duration.",
+    "b": "A work package has duration and an owner.",
+    "c": "Float is the slack of an activity.",
+    "d": "A dependency is a link between two activities."
+   },
+   "explanation": "A milestone is a zero-duration marker used to check progress at a key event. It makes it clear when a decision, such as freezing the design, must be complete.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A test engineer cannot begin the stress analysis until the CAD model has been completed and checked. What dependency should be drawn between the two tasks?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Finish-to-start: the analysis starts after the CAD model finishes"
+    },
+    {
+     "id": "b",
+     "text": "Start-to-start: the analysis starts at the same time as the CAD model"
+    },
+    {
+     "id": "c",
+     "text": "A milestone linking the two tasks"
+    },
+    {
+     "id": "d",
+     "text": "No link, because they have different owners"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Finish-to-start: the analysis starts after the CAD model finishes",
+   "distractorRationale": {
+    "a": "Correct: the second task cannot begin until the first is complete.",
+    "b": "This would let analysis start without a finished model.",
+    "c": "A milestone is an event and not a dependency type.",
+    "d": "Different owners do not remove dependencies."
+   },
+   "explanation": "Dependencies capture the logic of the work, whatever the owner. Here the analysis needs the finished model, which is a finish-to-start relationship.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a network of activities, which description fits the critical path?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The longest route from start to finish, whose activities have zero float"
+    },
+    {
+     "id": "b",
+     "text": "The route with the largest number of activities"
+    },
+    {
+     "id": "c",
+     "text": "The shortest route, which can be finished first"
+    },
+    {
+     "id": "d",
+     "text": "The route with the most expensive tasks"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The longest route from start to finish, whose activities have zero float",
+   "distractorRationale": {
+    "a": "Correct: it fixes the minimum project duration, with no slack.",
+    "b": "Length in time and not count of activities decides it.",
+    "c": "The shortest route has the most float and does not fix the duration.",
+    "d": "Cost does not determine the critical path."
+   },
+   "explanation": "The finish date cannot come earlier than the longest chain of dependent activities. Activities on that chain have zero float.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a project report, which entry best links a design decision to requirement and evidence?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "'Requirement R4 (shaft deflection under 0.1 mm): 40 mm shaft chosen; hand calculation in Appendix C gives 0.06 mm.'"
+    },
+    {
+     "id": "b",
+     "text": "'The 40 mm shaft was chosen because it felt right after much discussion.'"
+    },
+    {
+     "id": "c",
+     "text": "'The shaft is shown in Figure 7.'"
+    },
+    {
+     "id": "d",
+     "text": "'Calculations were carried out by the team.'"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "'Requirement R4 (shaft deflection under 0.1 mm): 40 mm shaft chosen; hand calculation in Appendix C gives 0.06 mm.'",
+   "distractorRationale": {
+    "a": "Correct: it cites a requirement, states a decision and points to evidence.",
+    "b": "It gives no requirement or evidence.",
+    "c": "A figure alone does not say which requirement it serves or why.",
+    "d": "It says calculations exist without showing the result."
+   },
+   "explanation": "A traceable decision names the requirement it meets, states the choice and cites evidence the reader can check. The other statements leave the reader unable to verify anything.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A small project has activity A (2 weeks), then B (5 weeks) and C (3 weeks) both starting after A, then D (4 weeks) starting after both B and C, then E (2 weeks) after D. Find the minimum project duration in weeks.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o2"
+   ],
+   "correctValue": 13,
+   "tolerance": 0.01,
+   "unit": "weeks",
+   "explanation": "The route through B has $2+5+4+2=13$ weeks and the route through C has $2+3+4+2=11$ weeks. The longer route, 13 weeks, fixes the duration.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "For the same project (A 2 weeks; B 5 weeks and C 3 weeks after A; D 4 weeks after B and C; E 2 weeks after D), find the total float of activity C, in weeks.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o2"
+   ],
+   "correctValue": 2,
+   "tolerance": 0.01,
+   "unit": "weeks",
+   "explanation": "C starts at week 2 and ends at week 5, but D cannot start until B finishes at week 7. The float is $7-5=2$ weeks.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "In another plan, X (4 weeks) comes first; Y (6 weeks) and Z (3 weeks) both follow X; W (5 weeks) follows both Y and Z. Activity Z slips and takes 8 weeks instead of 3. By how many weeks is the project finish delayed?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o2"
+   ],
+   "correctValue": 2,
+   "tolerance": 0.01,
+   "unit": "weeks",
+   "explanation": "The original duration is $4+6+5=15$ weeks and Z has 3 weeks of float. With Z at 8 weeks the route X-Z-W is $4+8+5=17$ weeks, so the project is delayed $17-15=2$ weeks.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "You are planning a student team project to design and build a small hydraulic press. List a work breakdown of at least eight work packages in two levels, give three dependencies between them with their type, and identify two milestones.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o1"
+   ],
+   "markingGuide": [
+    "Top-level deliverables (for example press frame, hydraulic circuit, controls, documentation)",
+    "At least eight sensible work packages beneath these, each with one owner",
+    "Dependencies stated as finish-to-start with correct logic (design before manufacture, manufacture before assembly)",
+    "At least two milestones with zero duration (for example design freeze, first pressure test)",
+    "Durations or estimates are mentioned"
+   ],
+   "explanation": "A good plan decomposes deliverables to estimable packages, links them logically and places milestones at decision points. Wrong logic, such as building before the design is frozen, would be penalised.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A draft report says: 'We chose a plastic gear to reduce noise. The gear is shown in Figure 5. It passed testing.' Rewrite or critique it so that the decision is traceable to a requirement and to evidence, and explain what structure you would give the report so that a reader can trace every decision.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.standards-project-management.planning-reporting.o3"
+   ],
+   "markingGuide": [
+    "Identifies missing requirement (for example numbered noise limit in dB)",
+    "Identifies missing evidence (test method, result with value and unit)",
+    "Rewritten with requirement ID, decision, rationale, and reference to calculation or test record",
+    "Report structure: requirements, concept selection, detailed design, verification, conclusions with cross references",
+    "Traceability matrix or numbering to link requirements to evidence",
+    "Notes that a requirement with no evidence is unverified, and a decision with no requirement is unjustified"
+   ],
+   "explanation": "A traceable report lets the reader follow requirement, decision and evidence. The draft gives a vague outcome without a number, so a reader cannot check it against anything.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,373 @@
+{
+ "lessonTitle": "Redundant Members and Compatibility",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A garage roof beam sits on three posts instead of two. The extra post makes the roof stiffer and the beam bending lower, but it also makes the post forces impossible to find from the equilibrium equations alone. This is a statically indeterminate structure: it has more supports than it strictly needs, and the extra information has to come from how it deforms."
+  },
+  {
+   "type": "text",
+   "markdown": "A structure is **statically determinate** when the equations of equilibrium alone give all the reactions and member forces, and **statically indeterminate** when there are more unknowns than equations. The excess is the **degree of indeterminacy** (or degree of redundancy). The extra unknowns, called **redundants**, are found from **compatibility** conditions: equations stating that the deformed structure still fits together and respects its supports. We assume linear-elastic material, small deflections, rigid (non-settling) supports and pin-jointed trusses with loads at the joints."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Degree of indeterminacy",
+   "text": "For a plane truss with $m$ members, $r$ reaction components and $j$ joints, $D=m+r-2j$. For a plane beam or frame, $D=r-3-c$, where $c$ is the number of equations of condition (internal hinges). $D=0$ is determinate, $D>0$ indeterminate, $D<0$ a mechanism."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Structure",
+    "Count",
+    "Degree $D$"
+   ],
+   "rows": [
+    [
+     "Plane truss, $j=5$, $m=8$, $r=3$",
+     "$8+3-10$",
+     "1"
+    ],
+    [
+     "Plane truss, $j=4$, $m=5$, $r=3$",
+     "$5+3-8$",
+     "0 (determinate)"
+    ],
+    [
+     "Propped cantilever (fixed + roller)",
+     "$r=4$; $4-3$",
+     "1"
+    ],
+    [
+     "Beam on three supports (pin + 2 rollers)",
+     "$r=4$; $4-3$",
+     "1"
+    ],
+    [
+     "Fixed-fixed beam",
+     "$r=6$; $6-3$",
+     "3 (2 if no axial load)"
+    ]
+   ],
+   "caption": "Degree of indeterminacy of common structures"
+  },
+  {
+   "type": "text",
+   "markdown": "**Method of consistent deformation (Castigliano).** Choose a redundant (a prop reaction, a bar force or a support moment) and treat it as an unknown load $R$. The structure with $R$ removed is the determinate **released structure**. The strain energy $U$ is written in terms of the applied loads and $R$. Because the real support at the redundant prevents deflection, **compatibility** requires the corresponding displacement to be zero, which Castigliano's theorem expresses as $\\partial U/\\partial R=0$ (for a rigid, non-settling support). Solving this single extra equation gives $R$, and equilibrium gives the rest."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\partial U}{\\partial R}=\\int\\frac{M}{EI}\\frac{\\partial M}{\\partial R}\\,dx=0",
+   "caption": "Compatibility condition for a rigid redundant support (bending energy only)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Propped cantilever with a uniformly distributed load",
+   "prompt": "A cantilever of length $L=4$ m is fixed at $A$ and has a rigid prop at the free end $B$. It carries a UDL $w=12$ kN/m over its whole length. Find the prop reaction, and then the reaction force and moment at $A$.",
+   "steps": [
+    {
+     "text": "Take the prop reaction $R$ upward at $B$ as the redundant, with $x$ measured from $B$.",
+     "latex": "M(x)=Rx-\\frac{wx^2}{2},\\qquad\\frac{\\partial M}{\\partial R}=x"
+    },
+    {
+     "text": "Compatibility: no deflection at the prop.",
+     "latex": "\\frac{1}{EI}\\int_0^L\\left(Rx-\\frac{wx^2}{2}\\right)x\\,dx=\\frac{1}{EI}\\left(\\frac{RL^3}{3}-\\frac{wL^4}{8}\\right)=0"
+    },
+    {
+     "text": "Solve for $R$.",
+     "latex": "R=\\frac{3wL}{8}=\\frac{3(12)(4)}{8}=18\\ \\text{kN}"
+    },
+    {
+     "text": "Vertical equilibrium gives the fixed-end force, and moments give the fixed-end moment.",
+     "latex": "R_A=wL-R=30\\ \\text{kN},\\qquad M_A=\\frac{wL^2}{2}-RL=24\\ \\text{kN m}"
+    }
+   ],
+   "answer": "$R_B=18$ kN, $R_A=30$ kN, $M_A=24$ kN m (hogging at the wall)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Trusses with a redundant bar.** In a truss, member forces unknown beyond the equilibrium equations are found by writing a **compatibility equation** for the joint displacements. A classic case is a load $W$ hung from a joint supported by three bars: a central vertical bar and two symmetric inclined bars at an angle $\\theta$ to the vertical. Equilibrium of the joint provides only one equation, vertical equilibrium, for two unknowns (the central force $F_c$ and the equal outer forces $F_o$). All three bars must lengthen so the joint moves down by the same amount, which provides the second equation."
+  },
+  {
+   "type": "worked_example",
+   "title": "Three-bar hanger: one redundant bar",
+   "prompt": "A load $W=60$ kN hangs from a joint supported by a central vertical bar (length $L$, area $A$) and two outer bars at $\\theta=30^\\circ$ to the vertical (length $L/\\cos\\theta$, same area $A$ and same $E$). Find the force in each bar.",
+   "steps": [
+    {
+     "text": "Vertical equilibrium of the joint.",
+     "latex": "F_c+2F_o\\cos\\theta=W"
+    },
+    {
+     "text": "Compatibility: the central bar's extension $\\delta_c=F_cL/AE$ is the joint's downward displacement; an outer bar's extension is $\\delta_o=\\delta_c\\cos\\theta$ (the displacement resolved along that bar).",
+     "latex": "\\frac{F_o(L/\\cos\\theta)}{AE}=\\frac{F_cL}{AE}\\cos\\theta\\;\\Rightarrow\\;F_o=F_c\\cos^2\\theta"
+    },
+    {
+     "text": "Substitute into equilibrium.",
+     "latex": "F_c\\left(1+2\\cos^3\\theta\\right)=W\\;\\Rightarrow\\;F_c=\\frac{60}{1+2(0.6495)}=26.10\\ \\text{kN}"
+    },
+    {
+     "text": "Outer bars.",
+     "latex": "F_o=26.10\\times\\cos^2 30^\\circ=19.57\\ \\text{kN}"
+    },
+    {
+     "text": "Check equilibrium: $26.10+2(19.57)(0.8660)=60.0$ kN, as required."
+    }
+   ],
+   "answer": "$F_c=26.1$ kN and each $F_o=19.6$ kN (all tensile); the central bar takes about 43% of the load."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Count unknowns and equations to find the degree of indeterminacy.",
+    "Select redundants and write the released (determinate) structure.",
+    "Write a compatibility equation for each redundant (zero displacement for a rigid support, or equal displacements for a truss joint).",
+    "Solve for the redundants, then use equilibrium for everything else."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Stiffness controls the share",
+   "text": "In an indeterminate structure, load is shared in proportion to stiffness. Changing a member's area or length changes every force, whereas in a determinate structure the forces do not depend on the member properties."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Redundants are a choice",
+   "text": "Any unknown that leaves a stable determinate structure when removed can be the redundant. The final answer does not depend on which is chosen, only the effort does."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Degree of indeterminacy: $D=m+r-2j$ for a plane truss and $D=r-3-c$ for a plane beam or frame.",
+    "Indeterminate problems need compatibility: a rigid prop implies $\\partial U/\\partial R=0$.",
+    "A propped cantilever with a UDL has a prop reaction of $3wL/8$; fixed-end moment $wL^2/8$.",
+    "In a truss with a redundant bar, equate joint displacements through each bar's extension, then use equilibrium."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A plane pin-jointed truss has 6 joints, 10 members and 3 support reactions. What is its degree of static indeterminacy?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0"
+    },
+    {
+     "id": "b",
+     "text": "1"
+    },
+    {
+     "id": "c",
+     "text": "2"
+    },
+    {
+     "id": "d",
+     "text": "3"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "1",
+   "distractorRationale": {
+    "a": "$D=0$ would need 9 members.",
+    "b": "Correct: $D=m+r-2j=10+3-12=1$.",
+    "c": "Would need 11 members.",
+    "d": "Confuses the reaction count with the degree of indeterminacy."
+   },
+   "explanation": "Each joint gives 2 equilibrium equations, so $2j=12$ equations. Unknowns are $m+r=13$, leaving 1 extra, so the truss is indeterminate to the first degree.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A continuous beam rests on four supports in a line: a pin at one end and three rollers. What is its degree of static indeterminacy for vertical loading? (Treat horizontal equilibrium as satisfied by the pin; count reaction components: 1 pin with 2, 3 rollers with 1 each.)",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1"
+    },
+    {
+     "id": "b",
+     "text": "3"
+    },
+    {
+     "id": "c",
+     "text": "2"
+    },
+    {
+     "id": "d",
+     "text": "0"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "2",
+   "distractorRationale": {
+    "a": "Would be a beam on three supports.",
+    "b": "Counts all reactions as redundant.",
+    "c": "Correct: $r=2+3=5$, so $D=r-3=2$.",
+    "d": "A beam on four supports is not determinate."
+   },
+   "explanation": "A plane beam has three equilibrium equations, so with five reaction components, there are two redundants. Equivalently, two of the supports could be removed and the beam would still be stable and determinate.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A plane pin-jointed truss has 5 joints, 6 members and 3 support reactions. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$D=6+3-10=-1$: the truss is a mechanism and is unstable"
+    },
+    {
+     "id": "b",
+     "text": "$D=0$: determinate"
+    },
+    {
+     "id": "c",
+     "text": "$D=1$: indeterminate to the first degree"
+    },
+    {
+     "id": "d",
+     "text": "$D=-1$ means it is determinate with a spare equation"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$D=6+3-10=-1$: the truss is a mechanism and is unstable",
+   "distractorRationale": {
+    "a": "Correct: negative $D$ means too few members for stability.",
+    "b": "Determinate would need 7 members.",
+    "c": "Would need 8 members.",
+    "d": "A spare equation means there are insufficient members and the structure can move."
+   },
+   "explanation": "With $2j=10$ equations and only $m+r=9$ unknowns, the structure is under-braced. It cannot carry a general loading in equilibrium without large movements, so it is a mechanism rather than a structure.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A propped cantilever (fixed at one end and a rigid prop at the other) of length 5 m carries a uniformly distributed load of 8 kN/m over its whole length. Using $\\partial U/\\partial R=0$, find the prop reaction in kN.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o2"
+   ],
+   "correctValue": 15.0,
+   "tolerance": 0.05,
+   "unit": "kN",
+   "explanation": "The compatibility condition gives $RL^3/3=wL^4/8$, so $R=3wL/8=3(8)(5)/8=15$ kN. This is 37.5% of the total load $wL=40$ kN, with the remaining 62.5% at the fixed end.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A propped cantilever of length $L$ is fixed at $A$ and has a rigid prop at $B$ at the free end. A central point load $P=24$ kN acts at mid-span. Find the prop reaction in kN. (Use compatibility: tip deflection of the cantilever under $P$ equals that under $R$.)",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o2"
+   ],
+   "correctValue": 7.5,
+   "tolerance": 0.05,
+   "unit": "kN",
+   "explanation": "The tip deflection of a cantilever under a mid-span load is $5PL^3/(48EI)$, and under a tip load $R$ it is $RL^3/(3EI)$. Equating gives $R=5P/16=5(24)/16=7.5$ kN.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A load $W=90$ kN hangs from a joint supported by a central vertical bar and two identical outer bars each at $\\theta=40^\\circ$ to the vertical. All bars have the same area and $E$, and the central bar has length $L$ (outer bars $L/\\cos\\theta$). Find the force in the central bar in kN.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o3"
+   ],
+   "correctValue": 47.391701,
+   "tolerance": 0.3,
+   "unit": "kN",
+   "explanation": "Compatibility gives $F_o=F_c\\cos^2\\theta$ and equilibrium gives $F_c+2F_o\\cos\\theta=W$, so $F_c=W/(1+2\\cos^3\\theta)=90/(1+2\\times0.4495)=47.39$ kN. Each outer bar carries $27.81$ kN, and a check shows $90.0$ kN supported vertically.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Determine the degree of static indeterminacy of (a) a plane truss with 7 joints, 11 members and 3 reactions, (b) a beam on three supports consisting of a pin and two rollers, and (c) a fixed-fixed beam under purely vertical loads. State whether each is determinate or indeterminate and what a redundant is.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o1"
+   ],
+   "markingGuide": [
+    "(a) $D=m+r-2j=11+3-14=0$: statically determinate.",
+    "(b) $r=2+1+1=4$ reaction components, $D=4-3=1$: indeterminate to the first degree.",
+    "(c) Fixed ends give $r=6$, so $D=6-3=3$ in general; under purely vertical loads the horizontal reactions are zero and there are effectively 2 redundants (4 effective unknowns, 2 equations).",
+    "A redundant is a reaction or internal force that is not required for equilibrium and can be removed to leave a stable determinate released structure.",
+    "Compatibility equations supply the additional equations."
+   ],
+   "explanation": "Counting unknowns against the available equilibrium equations gives the degree of indeterminacy. The result for case (c) depends on whether axial effects are included, which is why both counts are acceptable if explained.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how Castigliano's theorem provides the extra equation needed to find the prop reaction $R$ of a propped cantilever. Why is the condition $\\partial U/\\partial R=0$ used, and what would change if the prop sank by an amount $\\Delta$?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o2"
+   ],
+   "markingGuide": [
+    "Treat the prop reaction $R$ as an unknown load; the moment $M$ is a function of the applied loads and $R$.",
+    "The deflection at the prop in the direction of $R$ is $\\partial U/\\partial R$ (Castigliano's second theorem).",
+    "The prop is rigid, so the deflection there is zero: $\\partial U/\\partial R=0$.",
+    "This gives one equation in $R$ (compatibility); the remaining reactions follow from equilibrium.",
+    "If the prop sank by $\\Delta$, the condition would become $\\partial U/\\partial R=\\Delta$ (in the direction of $R$), changing $R$."
+   ],
+   "explanation": "Equilibrium alone leaves $R$ undetermined, so the displacement at the support must be used. For a rigid prop that displacement is zero, and Castigliano converts the condition into a derivative of the strain energy.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A load $W=100$ kN hangs from a joint supported by a central vertical bar of area $2A$ and two identical outer bars each of area $A$ at $\\theta=30^\\circ$ to the vertical. All bars have the same $E$, and the central bar has length $L$ (outer bars $L/\\cos\\theta$). Find the force in the central bar in kN.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o3"
+   ],
+   "correctValue": 60.623731,
+   "tolerance": 0.3,
+   "unit": "kN",
+   "explanation": "Compatibility: the outer-bar extension equals the central-bar extension times $\\cos\\theta$, so $\\frac{F_oL}{AE\\cos\\theta}=\\frac{F_cL}{2AE}\\cos\\theta$, which gives $F_o=F_c\\cos^2\\theta/2$. Equilibrium: $F_c+2F_o\\cos\\theta=W$, so $F_c(1+\\cos^3\\theta)=W$ and $F_c=100/(1+0.6495)=60.62$ kN. Each outer bar carries $22.73$ kN.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: adding one extra bar to a statically determinate plane truss (without adding any joints) makes it statically indeterminate to the first degree.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "An extra member increases $m$ by 1 while $j$ and $r$ stay the same, so $D=m+r-2j$ rises from 0 to 1. The extra bar is not needed for equilibrium and its force must be found from compatibility.",
+   "board": "internal"
+  }
+ ]
+}

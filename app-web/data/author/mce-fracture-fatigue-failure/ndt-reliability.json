@@ -1,0 +1,391 @@
+{
+ "lessonTitle": "Detection Capability and Inspection Intervals",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "An airline inspects the same wing-box fastener holes every few thousand flights with eddy-current probes. Inspect too rarely and a crack can grow from 'too small to see' to critical between inspections; inspect too often and the aircraft sits on the ground. Setting the interval is a calculation, but it begins with a statistical question: how small a crack can the inspection reliably find?"
+  },
+  {
+   "type": "text",
+   "markdown": "No inspection finds every flaw. The chance of finding a crack of a given size, its **probability of detection (POD)**, rises from near zero for very small cracks to near one for large ones, and the curve depends on the technique, the operator, the surface and access. Because the outcome for any single crack is random, the capability is expressed as a size that is found with high probability, with a stated confidence in that statement."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Smallest reliably detectable flaw size",
+   "text": "The smallest reliably detectable flaw size is commonly quoted as $a_{90/95}$: the crack length that the technique detects with 90 percent probability, established with 95 percent confidence from the demonstration data. In design it is the size assumed to be present at each inspection and is written $a_{det}$. A flaw below $a_{det}$ may be missed."
+  },
+  {
+   "type": "text",
+   "markdown": "**From capability to interval.** After an inspection that finds nothing, the worst case is that a crack just below $a_{det}$ remains. The interval must be shorter than the time that crack needs to grow to the critical size $a_c$, so that it can be found at the next inspection before it fails. The growth time (cycles) is found by integrating the Paris law from $a_{det}$ to $a_c$."
+  },
+  {
+   "type": "math",
+   "latex": "N_{det\\to c} = \\frac{a_c^{\\,1-m/2}-a_{det}^{\\,1-m/2}}{C\\,(Y\\Delta\\sigma\\sqrt{\\pi})^m\\,(1-m/2)}, \\qquad N_{int} = \\frac{N_{det\\to c}}{SF}",
+   "caption": "$a_c=(1/\\pi)(K_{Ic}/(Y\\sigma_{max}))^2$; $SF$ is the safety factor on the interval (typically 2 to 3; a labelled typical range, set by the governing rules for the structure)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Setting an inspection interval",
+   "prompt": "A component has an edge crack with $Y=1.12$ under a stress range of 200 MPa (tension from zero), $K_{Ic}=55$ MPa$\\sqrt{\\text{m}}$, $C=10^{-11}$ and $m=3$ (m/cycle, MPa$\\sqrt{\\text{m}}$). The technique has $a_{90/95}=2$ mm. The structure sees 4000 cycles per year and a safety factor of 3 is used. Find the inspection interval.",
+   "steps": [
+    {
+     "text": "Critical depth.",
+     "latex": "a_c = \\frac{1}{\\pi}\\left(\\frac{55}{1.12\\times200}\\right)^2 = 19.2\\ \\text{mm}"
+    },
+    {
+     "text": "Cycles from 2 mm to $a_c$, using $m=3$: numerator $2(a_{det}^{-0.5}-a_c^{-0.5})$ divided by $C(Y\\Delta\\sigma\\sqrt{\\pi})^3$.",
+     "latex": "N_{det\\to c} = 4.839\\times10^{4}\\ \\text{cycles}"
+    },
+    {
+     "text": "Apply the safety factor.",
+     "latex": "N_{int} = \\frac{4.839\\times10^{4}}{3} = 1.613\\times10^{4}\\ \\text{cycles}"
+    },
+    {
+     "text": "Convert to time.",
+     "latex": "\\frac{1.613\\times10^{4}}{4000} = 4.03\\ \\text{years}"
+    }
+   ],
+   "answer": "Inspect about every 4 years (1.61\\times10^{4} cycles)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why a safety factor?** The calculated growth time is a best estimate. Several uncertainties make it unsafe to inspect exactly at that time: (1) the POD at $a_{det}$ is below 100 percent, so a crack of that size can be missed at one inspection and needs further chances to be found; (2) crack growth rates scatter and the Paris constants are uncertain; (3) the real stresses, the geometry factor and the toughness are not known exactly; (4) crack growth in the early phase and the starting size are variable. A factor of 2 to 3 on the interval (so that two to three inspections occur before the crack could become critical) covers these."
+  },
+  {
+   "type": "worked_example",
+   "title": "Effect of a better technique",
+   "prompt": "Repeat the interval calculation if a more sensitive technique detects $a_{90/95}=1$ mm, keeping all other values the same.",
+   "steps": [
+    {
+     "text": "The critical depth and loading are unchanged, $a_c=19.2$ mm.",
+     "latex": "a_c = 19.2\\ \\text{mm}"
+    },
+    {
+     "text": "Cycles from 1 mm to $a_c$.",
+     "latex": "N_{det\\to c} = 7.799\\times10^{4}\\ \\text{cycles}"
+    },
+    {
+     "text": "Interval with safety factor 3.",
+     "latex": "N_{int} = 2.6\\times10^{4}\\ \\text{cycles} = 6.5\\ \\text{years}"
+    }
+   ],
+   "answer": "Halving $a_{det}$ lengthens the interval from 4 to 6.5 years: a better technique allows less frequent inspection."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Change",
+    "Effect on growth life from $a_{det}$ to $a_c$",
+    "Effect on interval"
+   ],
+   "rows": [
+    [
+     "Smaller $a_{det}$ (better technique)",
+     "Longer",
+     "Longer"
+    ],
+    [
+     "Higher stress range",
+     "Shorter ($\\propto\\Delta\\sigma^{-m}$), and $a_c$ falls too",
+     "Shorter"
+    ],
+    [
+     "Higher toughness $K_{Ic}$",
+     "Slightly longer (larger $a_c$)",
+     "Slightly longer"
+    ],
+    [
+     "Larger safety factor",
+     "Unchanged",
+     "Shorter"
+    ]
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "POD curves rise with flaw size; $a_{90/95}$ is the design detection size.",
+    "Interval = (growth life from $a_{det}$ to $a_c$) divided by a safety factor.",
+    "A more sensitive technique shortens inspections' burden because it allows a longer interval."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not use the best-case detection size",
+   "text": "A skilled operator may find 0.5 mm cracks on a clean test block, but the design size must reflect real conditions: dirty, awkward access, coated surfaces and ordinary inspectors. Using an optimistic $a_{det}$ makes the computed interval dangerously long."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$a_{90/95}$ is the crack size detected with 90 percent probability at 95 percent confidence; it sets the starting size for the interval calculation.",
+    "The inspection interval is the Paris-law growth life from $a_{det}$ to $a_c$ divided by a safety factor.",
+    "The factor covers imperfect detection, scatter in growth rate and uncertainty in loads and geometry."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is meant by the smallest reliably detectable flaw size $a_{90/95}$?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The crack length detected with 100 percent probability"
+    },
+    {
+     "id": "b",
+     "text": "The crack length detected with 90 percent probability, with 95 percent confidence in that statement"
+    },
+    {
+     "id": "c",
+     "text": "The crack length that causes fracture"
+    },
+    {
+     "id": "d",
+     "text": "The smallest crack the probe can ever display"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The crack length detected with 90 percent probability, with 95 percent confidence in that statement",
+   "distractorRationale": {
+    "a": "No technique is perfect.",
+    "b": "Correct: it is a statistical measure.",
+    "c": "That is the critical crack size.",
+    "d": "The best case is not the reliable size."
+   },
+   "explanation": "Detection is probabilistic, so the capability is the size found 90 percent of the time and shown with 95 percent confidence from the demonstration data. It is deliberately conservative compared with the best case.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How is a basic inspection interval derived from crack growth analysis?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "By multiplying the growth life by a safety factor"
+    },
+    {
+     "id": "b",
+     "text": "By taking the time for the crack to grow from zero to the detectable size"
+    },
+    {
+     "id": "c",
+     "text": "By choosing the interval equal to the design life"
+    },
+    {
+     "id": "d",
+     "text": "By taking the growth life from the detectable size to the critical size and dividing by a safety factor"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "By taking the growth life from the detectable size to the critical size and dividing by a safety factor",
+   "distractorRationale": {
+    "a": "Multiplying would lengthen the interval.",
+    "b": "The part before detection is not the concern.",
+    "c": "That would give no inspection.",
+    "d": "Correct: leaves time for extra chances to detect."
+   },
+   "explanation": "After a clean inspection the worst case is a crack just below the detectable size. The interval must be shorter than its growth time to criticality, so the growth life is divided by a factor.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why is a safety factor applied to the interval derived from the growth life?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "To make the part last longer between inspections"
+    },
+    {
+     "id": "b",
+     "text": "Because crack growth stops at the safety factor"
+    },
+    {
+     "id": "c",
+     "text": "To allow for imperfect detection, scatter in the growth rate and uncertainty in loads and geometry"
+    },
+    {
+     "id": "d",
+     "text": "Because the Paris law is exact"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "To allow for imperfect detection, scatter in the growth rate and uncertainty in loads and geometry",
+   "distractorRationale": {
+    "a": "It shortens the interval.",
+    "b": "Growth does not stop.",
+    "c": "Correct: several sources of uncertainty.",
+    "d": "It is an empirical fit with scatter."
+   },
+   "explanation": "A single inspection can miss a crack of detectable size, growth rates vary from part to part, and loads are uncertain. Dividing by a factor of about 2 to 3 gives several inspection opportunities before the crack becomes critical.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A new technique improves $a_{90/95}$ from 3 mm to 1.5 mm. With other parameters unchanged, what is the effect on the interval?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It becomes shorter"
+    },
+    {
+     "id": "b",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "c",
+     "text": "It becomes zero"
+    },
+    {
+     "id": "d",
+     "text": "It becomes longer, because more growth life is available between detection and critical size"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It becomes longer, because more growth life is available between detection and critical size",
+   "distractorRationale": {
+    "a": "The reverse is true.",
+    "b": "$a_{det}$ affects the growth life.",
+    "c": "It does not vanish.",
+    "d": "Correct: smaller $a_{det}$ gives more growth life."
+   },
+   "explanation": "The crack growth life from $a_{det}$ to $a_c$ includes the early slow growth. Starting from a smaller size increases this life and so lengthens the interval.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A crack of exactly the size $a_{90/95}$ is present at an inspection. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It will certainly be found"
+    },
+    {
+     "id": "b",
+     "text": "It will certainly be missed"
+    },
+    {
+     "id": "c",
+     "text": "There is a high probability (at least about 90 percent) that it is found, so a small chance remains that it is missed"
+    },
+    {
+     "id": "d",
+     "text": "It is below the detectability limit"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "There is a high probability (at least about 90 percent) that it is found, so a small chance remains that it is missed",
+   "distractorRationale": {
+    "a": "Detection is not certain.",
+    "b": "At this size detection is likely.",
+    "c": "Correct: it is defined as a 90 percent detection size.",
+    "d": "$a_{90/95}$ is the reliable size."
+   },
+   "explanation": "$a_{90/95}$ is the size at which the technique finds the crack about 90 percent of the time. There remains about a 10 percent chance of a miss, which the safety factor and repeat inspections help to cover.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "The growth life from the detectable size to the critical size is 60 000 cycles. A safety factor of 3 is used and the structure sees 5000 cycles per year. What inspection interval in years results?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o2"
+   ],
+   "correctValue": 4.0,
+   "tolerance": 0.05,
+   "unit": "years",
+   "explanation": "The interval in cycles is $60000/3=20000$, and in time is $20000/5000=4$ years. A factor of 3 gives three chances to find the crack.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An edge crack ($Y=1.12$) sees a stress range of 150 MPa (from zero, so $\\sigma_{max}=150$ MPa), $K_{Ic}=50$ MPa$\\sqrt{\\text{m}}$, $C=10^{-11}$, $m=3$ (m/cycle, MPa$\\sqrt{\\text{m}}$). The detectable size is $a_{det}=3$ mm. Using a safety factor of 2, find the inspection interval in cycles.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o2"
+   ],
+   "correctValue": 46593.2,
+   "tolerance": 1397.79,
+   "unit": "cycles",
+   "explanation": "The critical depth is $a_c=(1/\\pi)(50/(1.12\\times150))^2=28.2$ mm. The growth life from 3 mm is $9.319\\times10^{4}$ cycles, and dividing by 2 gives 4.66\\times10^{4} cycles.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A structure has $Y=1.12$, stress range 180 MPa (from zero), $K_{Ic}=60$ MPa$\\sqrt{\\text{m}}$, $C=10^{-11}$, $m=3$ (m/cycle, MPa$\\sqrt{\\text{m}}$), $a_{90/95}=2.5$ mm and 3000 cycles per year. Using a safety factor of 2.5, find the inspection interval in years.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o2",
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o3"
+   ],
+   "correctValue": 8.20881,
+   "tolerance": 0.246264,
+   "unit": "years",
+   "explanation": "The critical depth is $a_c=28.2$ mm and the growth life from 2.5 mm is 6.157\\times10^{4} cycles. Dividing by 2.5 and by 3000 cycles per year gives 8.21 years.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why a safety factor is applied to an inspection interval calculated from the crack growth life between the smallest reliably detectable and the critical crack sizes.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o3"
+   ],
+   "markingGuide": [
+    "Detection probability at $a_{det}$ is below 100 percent, so a crack of that size may be missed at one inspection",
+    "Crack growth rates and Paris constants vary and are uncertain",
+    "Loads, geometry factor and toughness are uncertain",
+    "A factor of about 2 to 3 gives several chances to detect before the crack becomes critical",
+    "Optional: initial crack size and environment variability"
+   ],
+   "explanation": "The calculation is a best estimate for a single deterministic crack. The factor converts it into a margin that covers imperfect detection, scatter in the growth rate and uncertain loads, so that the crack is likely to be found with time to spare.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A component has $Y=1.12$, stress range 160 MPa (from zero), $K_{Ic}=55$ MPa$\\sqrt{\\text{m}}$, $C=10^{-11}$, $m=3$ (m/cycle, MPa$\\sqrt{\\text{m}}$). Eddy-current inspection has $a_{90/95}=1$ mm and magnetic particle inspection has $a_{90/95}=3$ mm. Using a safety factor of 3, compute the inspection interval for each in cycles, and recommend which to use if the structure can only be inspected rarely, giving one other consideration.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o1",
+    "ug.mce-fracture-fatigue-failure.ndt.ndt-reliability.o2"
+   ],
+   "markingGuide": [
+    "Critical depth $a_c=(1/\\pi)(55/(1.12\\times160))^2\\approx30$ mm",
+    "Growth life from 1 mm about 1.61\\times10^{5} cycles, interval about 5.38\\times10^{4} cycles",
+    "Growth life from 3 mm about 7.79\\times10^{4} cycles, interval about 2.6\\times10^{4} cycles",
+    "Recommends eddy-current because the smaller detectable size gives an interval about 2.1 times longer",
+    "Other consideration, such as cost, access, surface condition or operator skill"
+   ],
+   "explanation": "Eddy-current inspection can start from 1 mm and gives an interval of about 5.38\\times10^{4} cycles, compared with 2.6\\times10^{4} cycles for the 3 mm capability. If inspection opportunities are rare, the more sensitive method is preferred, subject to practical aspects such as cost and access.",
+   "board": "internal"
+  }
+ ]
+}

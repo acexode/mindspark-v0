@@ -1,0 +1,429 @@
+{
+ "lessonTitle": "Contact Modelling: Penalty, Master/Slave and Convergence",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Press-fit pins, bolted flanges, gear teeth and a tyre on the road are all held together by contact: forces that exist only while surfaces touch and that vanish when they part. A contact analysis must find out which surfaces touch, how much force they carry, and the stresses that result, and every one of those answers changes with the load."
+  },
+  {
+   "type": "text",
+   "markdown": "**The non-penetration condition.** Let $g$ be the gap between two surfaces (m), positive when separated and negative when they overlap. Contact requires $g\\ge0$, a contact pressure $p\\ge0$ (compression only) and $g\\,p=0$: either there is a gap and no force, or there is contact and no gap. These inequalities make the problem nonlinear, because the active set of contacting points depends on the solution."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Penalty method",
+   "text": "The penalty method enforces non-penetration approximately. When the penetration depth $\\delta=-g>0$, the solver adds a contact force $F_c=k_p\\,\\delta$ through a very stiff spring of penalty stiffness $k_p$ (N/m) between the penetrating node and the opposing surface; when $g>0$ the spring is inactive. The result has a small penetration $\\delta=F_c/k_p$ that decreases as $k_p$ increases, so $k_p$ is a numerical parameter, not a physical property."
+  },
+  {
+   "type": "math",
+   "latex": "F_c=\\begin{cases}k_p\\,\\delta,&\\delta>0\\\\0,&\\delta\\le0\\end{cases},\\qquad\\delta=\\frac{F_c}{k_p},\\qquad\\frac{1}{k_{eff}}=\\frac{1}{k_{body}}+\\frac{1}{k_p}",
+   "caption": "Penalty contact force, penetration and the series stiffness with an adjacent body"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a penalty stiffness",
+   "prompt": "A steel block (40 mm by 40 mm, length 50 mm, $E=200$ GPa) is pressed against a rigid wall by $F=20$ kN. The wall contact is modelled by penalty springs with total stiffness $k_p$. The block stiffness is $k_b=EA/L=6.4\\times10^{9}$ N/m. Compare $k_p=1\\times10^{9}$ N/m and $1\\times10^{11}$ N/m.",
+   "steps": [
+    {
+     "text": "The real elastic shortening of the block is $F/k_b=20000/(6.4\\times10^{9})=3.12\\ \\mu$m."
+    },
+    {
+     "text": "With $k_p=1\\times10^{9}$ N/m the penetration is $\\delta=F/k_p=20\\ \\mu$m, larger than the real shortening, so the model is too soft at the interface. The effective stiffness of block and penalty is $1/(1/k_b+1/k_p)=8.65\\times10^{8}$ N/m, far below $k_b$."
+    },
+    {
+     "text": "With $k_p=1\\times10^{11}$ N/m: $\\delta=0.2\\ \\mu$m, only about 6.4% of the elastic shortening, so the interface is effectively rigid."
+    },
+    {
+     "text": "The trade-off: a larger $k_p$ gives a smaller penetration but a stiffer, worse-conditioned system with sharper changes of status, which hampers Newton-Raphson convergence. Guidance: with the plain penalty method choose $k_p$ large enough that the penetration is a small fraction (below about 10%) of the real deformation, which here needs $k_p$ of the order of 10 to 20 times $k_b$ (the choice $1\\times10^{11}$ N/m is about 16 times $k_b$); do not go far beyond that, and use augmented Lagrange if a moderate $k_p$ of the order of $k_b$ is wanted. Always check the penetration against the deformation."
+    }
+   ],
+   "answer": "Penetration is 20 micrometres with the soft penalty (too large compared with 3.12 micrometres of real shortening) and 0.2 micrometres with the stiff one."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "Penetration",
+    "Extra unknowns",
+    "Conditioning and convergence"
+   ],
+   "rows": [
+    [
+     "Penalty",
+     "Small but non-zero, set by $k_p$",
+     "None",
+     "Poorer as $k_p$ grows; chatter possible"
+    ],
+    [
+     "Lagrange multiplier",
+     "Zero (exact)",
+     "One multiplier per contact point",
+     "Zero diagonal terms; needs a suitable solver; status switching can be harsh"
+    ],
+    [
+     "Augmented Lagrange",
+     "Small, reduced by updates",
+     "None (multipliers updated iteratively)",
+     "Less sensitive to $k_p$; more iterations"
+    ]
+   ],
+   "caption": "Ways of enforcing contact"
+  },
+  {
+   "type": "text",
+   "markdown": "**Master and slave surfaces.** In the common node-to-surface formulation each node of the **slave** surface is prevented from penetrating the facets of the **master** surface. Penetration of master nodes into slave facets is not checked. This asymmetry means the choice matters. Typical guidance: make the master the **stiffer** body, the one with the **coarser** mesh, the larger or flatter surface, and the slave the softer, more finely meshed one, so that slave nodes sample the master surface closely. Symmetric (two-pass) contact checks both directions and avoids the choice, at higher cost."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Criterion",
+    "Master surface",
+    "Slave surface"
+   ],
+   "rows": [
+    [
+     "Stiffness",
+     "Stiffer material",
+     "Softer material"
+    ],
+    [
+     "Mesh",
+     "Coarser",
+     "Finer"
+    ],
+    [
+     "Geometry",
+     "Larger, flatter or convex surface",
+     "Smaller or concave surface"
+    ],
+    [
+     "What is checked",
+     "Surface facets",
+     "Slave nodes only"
+    ]
+   ],
+   "caption": "Typical selection rules for master and slave surfaces"
+  },
+  {
+   "type": "worked_example",
+   "title": "Master and slave for a pin in a bush",
+   "prompt": "A steel pin ($E=200$ GPa) with 2 mm surface elements sits in an aluminium bush ($E=70$ GPa) with 0.5 mm surface elements. Decide which surface is the master and which is the slave.",
+   "steps": [
+    {
+     "text": "Stiffness: steel is about 2.9 times stiffer than aluminium ($200/70$), so the steel pin is the master candidate."
+    },
+    {
+     "text": "Mesh: the pin has the coarser mesh (2 mm against 0.5 mm), which also points to the pin as master."
+    },
+    {
+     "text": "Choose the **pin surface as master** and the **bush surface as slave**. The 0.5 mm slave nodes sample the 2 mm master facets, with about 4 slave nodes per master edge, so penetration is detected closely."
+    },
+    {
+     "text": "If the roles were reversed, coarse 2 mm slave nodes would touch fine master facets and a large part of the interface would pass between nodes, so the master surface could penetrate the slave undetected."
+    }
+   ],
+   "answer": "Master: steel pin (stiffer, coarser); slave: aluminium bush (softer, finer)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Convergence trouble in contact.** Contact makes the stiffness change abruptly when a point switches between open and closed, so Newton-Raphson can stall or oscillate. Common causes are: (1) parts that are not in contact at the start, which leaves rigid-body motion and a singular matrix; (2) contact chatter, where points repeatedly open and close from iteration to iteration; (3) a penalty stiffness that is too high; (4) load increments that are too large; (5) initial gaps or interference that are not intended. The usual remedies are to add a small initial interference or contact stabilisation, to use displacement-controlled loading or ramp the load, to reduce increments, to adjust the contact stiffness, and to use augmented Lagrange or a smoother contact formulation."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Check that every body is constrained, including before contact is established.",
+    "Review the initial gaps and overclosures; close gaps with adjustment options.",
+    "Use smaller initial increments and allow automatic cutting.",
+    "Reduce or rescale the penalty stiffness, or use augmented Lagrange, if the status chatters.",
+    "Add stabilisation (a small spring or damping) while contact is being established, and check that it does not carry significant load."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Penetration is a result to check",
+   "text": "Always plot the penetration at the end of the run. Penetration larger than a small fraction of the element size or of the real deformation means the penalty stiffness is too low and the contact pressure is wrong."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Contact requires $g\\ge0$, $p\\ge0$ and $g\\,p=0$, a nonlinear status problem.",
+    "The penalty method adds a spring $F_c=k_p\\delta$: penetration $\\delta=F_c/k_p$ falls as $k_p$ rises, but a very high $k_p$ gives ill-conditioning and poor convergence.",
+    "The master surface should usually be the stiffer, coarser one and the slave the softer, finer one; slave nodes are checked against master facets.",
+    "Convergence trouble arises from rigid-body motion, chatter, high penalty stiffness and large increments, with remedies such as stabilisation, displacement control, smaller increments and augmented Lagrange."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the penalty method for contact, how is the contact force computed?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "As the penalty stiffness multiplied by the penetration depth"
+    },
+    {
+     "id": "b",
+     "text": "As a Lagrange multiplier solved as an extra unknown"
+    },
+    {
+     "id": "c",
+     "text": "As the gap multiplied by the friction coefficient"
+    },
+    {
+     "id": "d",
+     "text": "As the elastic modulus divided by the penetration depth"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "As the penalty stiffness multiplied by the penetration depth",
+   "distractorRationale": {
+    "a": "Correct: the force is $F_c=k_p\\delta$, a stiff spring that is active only when there is penetration.",
+    "b": "That describes the Lagrange multiplier method, which adds unknowns.",
+    "c": "Friction coefficient relates tangential to normal force and is not the normal contact law.",
+    "d": "Dividing by the penetration would make the force fall as penetration rises, the opposite of the intended behaviour."
+   },
+   "explanation": "The penalty method treats contact as a very stiff spring that acts only when surfaces overlap. The penetration is therefore not zero, but $\\delta=F_c/k_p$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A contact node in a penalty model carries a normal force of 8 kN. The penalty stiffness is $k_p=4\\times10^{8}$ N/m. Find the penetration depth in micrometres.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o1"
+   ],
+   "correctValue": 20.0,
+   "tolerance": 0.5,
+   "unit": "micrometres",
+   "explanation": "Penetration is $\\delta=F_c/k_p=8000/(4\\times10^{8})=2.0\\times10^{-5}$ m, i.e. 20 micrometres. If this is not small compared with the real deformation or the element size, the penalty stiffness must be raised.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A body has a stiffness $k_b=2.5\\times10^{9}$ N/m in the contact direction and is connected to a wall through a penalty spring $k_p=5\\times10^{9}$ N/m in series. Find the effective stiffness $1/(1/k_b+1/k_p)$ in GN/m.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o1"
+   ],
+   "correctValue": 1.6667,
+   "tolerance": 0.01,
+   "unit": "GN/m",
+   "explanation": "The compliances add: $1/k_b=4\\times10^{-10}$ m/N and $1/k_p=2\\times10^{-10}$ m/N, totalling $6\\times10^{-10}$. The effective stiffness is $1.667\\times10^{9}$ N/m, only two thirds of the body stiffness. The penalty spring has artificially softened the system, so $k_p$ must be much larger than $k_b$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the main consequence of choosing a penalty stiffness that is far too large?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Ill-conditioned stiffness matrices and slow or failed Newton-Raphson convergence, with contact chatter"
+    },
+    {
+     "id": "b",
+     "text": "Large penetration of the surfaces"
+    },
+    {
+     "id": "c",
+     "text": "Loss of the contact pressure"
+    },
+    {
+     "id": "d",
+     "text": "The contact becomes frictionless"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Ill-conditioned stiffness matrices and slow or failed Newton-Raphson convergence, with contact chatter",
+   "distractorRationale": {
+    "a": "Correct: an extremely stiff spring makes the matrix poorly conditioned and the status switches abruptly, which hinders convergence.",
+    "b": "Large penetration is the consequence of a penalty stiffness that is too low.",
+    "c": "Contact pressures are accurate for stiff penalties; the difficulty is numerical.",
+    "d": "The penalty stiffness for normal contact does not change friction behaviour."
+   },
+   "explanation": "A high penalty stiffness reduces penetration but adds a very large term to the stiffness matrix. The mix of very stiff and ordinary terms degrades conditioning and makes the iteration sensitive to small changes in contact status.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a general node-to-surface contact pair, which assignment of master and slave surfaces is recommended?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The stiffer, more coarsely meshed body as master and the softer, finer body as slave"
+    },
+    {
+     "id": "b",
+     "text": "The softer body as master and the stiffer as slave"
+    },
+    {
+     "id": "c",
+     "text": "The body with the finer mesh as master"
+    },
+    {
+     "id": "d",
+     "text": "It does not matter in any contact formulation"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The stiffer, more coarsely meshed body as master and the softer, finer body as slave",
+   "distractorRationale": {
+    "a": "Correct: slave nodes are tested against master facets, so a fine slave mesh samples a coarse, stiff master surface accurately.",
+    "b": "Making the softer body the master lets the stiffer body's nodes penetrate its facets undetected.",
+    "c": "A finer master mesh with coarser slave nodes leaves much of the master surface unchecked.",
+    "d": "The choice matters for node-to-surface formulations, because penetration is only checked for slave nodes."
+   },
+   "explanation": "Because only slave nodes are prevented from penetrating, they must be dense enough to represent the interface, and the master must be the surface that is not allowed to be penetrated. The stiffer and coarser body is the sensible master.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "In a node-to-surface contact formulation, penetration of master nodes into the slave surface is not detected, so a poor master/slave choice can allow visible overlap.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. The contact constraint is applied only to slave nodes, so master nodes can pass through slave facets without any force acting. This is why the finer, softer surface should be the slave, or two-pass symmetric contact should be used.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A thin rubber gasket (soft, finer mesh) is compressed between two steel flanges (stiff, coarser mesh). How should the contact pairs be defined?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Steel flange faces as master and the rubber gasket faces as slave"
+    },
+    {
+     "id": "b",
+     "text": "Rubber faces as master and steel faces as slave"
+    },
+    {
+     "id": "c",
+     "text": "Both steel flanges as slave to each other"
+    },
+    {
+     "id": "d",
+     "text": "Ignore contact and tie the gasket to the flanges, since rubber is soft"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Steel flange faces as master and the rubber gasket faces as slave",
+   "distractorRationale": {
+    "a": "Correct: the stiffer, coarser surfaces are the masters, with the soft fine rubber faces as slaves.",
+    "b": "The rubber is softer and finer, so as master its facets would be penetrated by steel nodes.",
+    "c": "The flanges do not touch each other in this configuration; the pairs are gasket-flange.",
+    "d": "Tying prevents sliding and separation and may change the load path and the compressive behaviour."
+   },
+   "explanation": "The softer, finer rubber is the slave so that its nodes are prevented from penetrating the steel faces. The stiff flanges behave almost as a rigid master.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A static contact analysis fails at the first increment with the message that the stiffness matrix is singular. The part to be loaded is not yet touching its support when the analysis starts. What is the most appropriate fix?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Establish initial contact with a small interference or add contact stabilisation, or load by displacement control"
+    },
+    {
+     "id": "b",
+     "text": "Increase the penalty stiffness by a factor of 1000"
+    },
+    {
+     "id": "c",
+     "text": "Remove the support"
+    },
+    {
+     "id": "d",
+     "text": "Switch off the nonlinear geometry and run the analysis again"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Establish initial contact with a small interference or add contact stabilisation, or load by displacement control",
+   "distractorRationale": {
+    "a": "Correct: the body is free to move rigidly until contact exists, so the initial state must be constrained by closing the gap or by stabilisation.",
+    "b": "A larger penalty does nothing while the surfaces are apart and no force is generated.",
+    "c": "Removing the support makes the model less constrained.",
+    "d": "Geometry settings do not provide the missing restraint."
+   },
+   "explanation": "Without contact or constraint the body has a rigid-body mode, so the matrix is singular. Closing the gap slightly, using stabilisation springs or displacement-controlled loading restrains the body until contact forms.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A contact analysis stalls: the contact status at several nodes switches between open and closed from one iteration to the next and the force residual does not fall. Diagnose the problem and propose two remedies, explaining how each helps.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o3"
+   ],
+   "markingGuide": [
+    "Diagnosis: contact chatter, nodes near the open/closed threshold flip status so the tangent stiffness jumps and Newton-Raphson oscillates",
+    "Likely contributors: load increment too large, penalty stiffness too high, poor initial gap or inadequate restraint",
+    "Remedy 1: reduce the increment size (automatic cutting) so the status changes gradually",
+    "Remedy 2: use a lower or rescaled penalty stiffness, augmented Lagrange or contact stabilisation to smooth the transition",
+    "Verification: check penetration and contact force are acceptable and the result is insensitive to the remedy"
+   ],
+   "explanation": "Chatter appears when the contact state is borderline and the stiffness changes abruptly. Smaller steps or softer, stabilised contact enforcement reduce the sensitivity of the iteration.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare the penalty and Lagrange multiplier methods for enforcing non-penetration. State the advantage and disadvantage of each and say when you would prefer an augmented Lagrange approach.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o1",
+    "ug.mce-finite-element-analysis.nonlinear-contact.contact.o2"
+   ],
+   "markingGuide": [
+    "Penalty: spring $F_c=k_p\\delta$, no extra unknowns, simple, but allows penetration depending on $k_p$",
+    "Penalty with a very high $k_p$ gives ill-conditioning and convergence trouble",
+    "Lagrange multiplier: exact zero penetration, contact force as extra unknown",
+    "Lagrange adds unknowns and zero diagonal terms, harder solution and harsher status switching",
+    "Augmented Lagrange: penalty with iterative multiplier updates, reduces penetration with moderate $k_p$, good compromise when accuracy of contact pressure matters"
+   ],
+   "explanation": "Penalty is simple but approximate, Lagrange is exact but heavier. Augmented Lagrange combines both, limiting sensitivity to the penalty value.",
+   "board": "internal"
+  }
+ ]
+}

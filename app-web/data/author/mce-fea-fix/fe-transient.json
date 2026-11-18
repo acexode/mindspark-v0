@@ -1,0 +1,356 @@
+{
+ "lessonTitle": "Transient and Harmonic Response",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A car crash simulation advances in steps of about a microsecond, yet a gearbox casing checked for a 400 Hz excitation is analysed in a single frequency sweep with no time steps at all. Dynamic finite element analysis offers different tools for different jobs, and picking the wrong one means either a model that blows up or one that takes weeks to run."
+  },
+  {
+   "type": "text",
+   "markdown": "**Equation of motion.** After spatial discretisation the dynamics of a structure with mass matrix $\\mathbf M$, damping matrix $\\mathbf C$ and stiffness matrix $\\mathbf K$ under a time-varying load $\\mathbf F(t)$ is $\\mathbf M\\ddot{\\mathbf u}+\\mathbf C\\dot{\\mathbf u}+\\mathbf K\\mathbf u=\\mathbf F(t)$ with displacement $\\mathbf u$ (m). Two families of method exist: **direct time integration** steps this equation forward in time, and **modal superposition** expresses the response as a combination of the first few mode shapes."
+  },
+  {
+   "type": "text",
+   "markdown": "**Explicit integration (central difference).** Accelerations are found from the current state, $\\ddot{\\mathbf u}_n=\\mathbf M^{-1}(\\mathbf F_n-\\mathbf C\\dot{\\mathbf u}_n-\\mathbf K\\mathbf u_n)$, and with a lumped (diagonal) $\\mathbf M$ no matrix needs to be solved. The scheme is only **conditionally stable**: the step must satisfy $\\Delta t\\le2/\\omega_{max}$, where $\\omega_{max}$ (rad/s) is the highest frequency of the discretised model. For a bar with linear elements, lumped mass and size $L_e$, $\\omega_{max}=2c/L_e$ with wave speed $c=\\sqrt{E/\\rho}$ (m/s), so the limit is the time for a stress wave to cross the smallest element. With a consistent mass matrix $\\omega_{max}=2\\sqrt3\\,c/L_e$ and the limit is smaller by $\\sqrt3$."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta t_{crit}=\\frac{2}{\\omega_{max}}=\\frac{L_e}{c}\\ \\ (\\text{lumped}),\\qquad\\Delta t_{crit}=\\frac{L_e}{\\sqrt3\\,c}\\ \\ (\\text{consistent}),\\qquad c=\\sqrt{E/\\rho}",
+   "caption": "Explicit stability limit for linear bar elements; $L_{e}$ is the smallest element size"
+  },
+  {
+   "type": "worked_example",
+   "title": "Explicit time step for a steel model",
+   "prompt": "A steel structure ($E=200$ GPa, $\\rho=7800$ kg/m$^3$, typical) is meshed with linear elements whose smallest edge is 4 mm. Find the stable explicit step with lumped mass, and show the effect of one 1 mm element.",
+   "steps": [
+    {
+     "text": "Wave speed $c=\\sqrt{E/\\rho}=\\sqrt{200\\times10^{9}/7800}=5064$ m/s."
+    },
+    {
+     "text": "With the 4 mm smallest element, $\\Delta t\\le L_e/c=0.004/5064=0.79\\ \\mu$s."
+    },
+    {
+     "text": "If one small element of 1 mm appears in the mesh, the limit becomes $0.001/5064=0.197\\ \\mu$s, a factor of 4 lower, even though all other elements could run at the larger step."
+    },
+    {
+     "text": "Consequence: the time step depends on the smallest element, so a few badly sized elements make the whole analysis expensive. The step also falls in proportion to $h$ when the mesh is refined, so halving $L_e$ halves $\\Delta t$. With a stability-limited step, halving $h$ gives 4 times as many elements and 2 times as many steps in two dimensions, so the run time grows by about 8 (and by about 16 in three dimensions, where the elements increase 8-fold). An implicit method run at a fixed time step would instead need about 4 times the work per step in 2D for a sparse solve, and more for a direct solver."
+    }
+   ],
+   "answer": "Stable step about 0.79 microseconds for the 4 mm mesh and 0.2 microseconds with a 1 mm element."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "Stability",
+    "Cost per step",
+    "Best for"
+   ],
+   "rows": [
+    [
+     "Explicit central difference (lumped mass)",
+     "Conditional: $\\Delta t\\le L_e/c$",
+     "Very low (no matrix solve)",
+     "Impact, blast, wave propagation, short events"
+    ],
+    [
+     "Implicit Newmark (average acceleration)",
+     "Unconditional (linear problems)",
+     "High (solve each step)",
+     "Structural dynamics lasting many periods of the lowest modes"
+    ],
+    [
+     "Modal superposition",
+     "No step limit (analytical modal solutions)",
+     "Low once modes are computed",
+     "Linear systems with a few important modes"
+    ],
+    [
+     "Full harmonic",
+     "Not applicable",
+     "One complex solve per frequency",
+     "Few frequencies or highly frequency-dependent damping"
+    ]
+   ],
+   "caption": "Choosing an integration method"
+  },
+  {
+   "type": "text",
+   "markdown": "**Harmonic response.** For a load $F_0\\sin\\Omega t$ with excitation frequency $\\Omega$, the steady response is harmonic. The **full method** solves $(\\mathbf K-\\Omega^2\\mathbf M+i\\Omega\\mathbf C)\\mathbf u=\\mathbf F$ at each frequency of the sweep. The **modal superposition method** uses the first $m$ undamped mode shapes to turn the problem into $m$ independent single-degree-of-freedom equations, each with a damping ratio $\\zeta$, and then adds them. It is much cheaper for sweeps over many frequencies but is limited to linear systems with proportional (modal) damping, and it requires that all modes with significant participation in the frequency range are included. A common guideline is to keep modes up to about 1.5 to 2 times the highest forcing frequency and a cumulative effective mass of at least about 90%."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{X}{F_0/k}=\\frac{1}{\\sqrt{\\left(1-r^2\\right)^2+\\left(2\\zeta r\\right)^2}},\\qquad r=\\frac{\\Omega}{\\omega_n}",
+   "caption": "Dynamic amplification of one mode (single degree of freedom)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing the time step to resolve a mode",
+   "prompt": "An implicit transient analysis must capture a structure's response up to the mode with natural frequency $f=1200$ Hz. Choose the time step, using about 20 steps per period (a typical guide to resolve the highest mode of interest), and decide whether an explicit scheme would be limited by stability or by accuracy for a smallest element with $L_e/c=2\\ \\mu$s.",
+   "steps": [
+    {
+     "text": "The period of the highest mode of interest is $T=1/f=1/1200=0.8333$ ms."
+    },
+    {
+     "text": "With 20 steps per period, $\\Delta t\\approx T/20=41.67\\ \\mu$s. A cruder 10 steps per period gives 83.3 microseconds but increases the period error and amplitude decay."
+    },
+    {
+     "text": "The implicit scheme is stable for any step, so the accuracy requirement governs: $\\Delta t=41.7\\ \\mu$s."
+    },
+    {
+     "text": "An explicit scheme would be stable only for $\\Delta t\\le2\\ \\mu$s, far below the accuracy step; so for this slow event the implicit choice needs about 24000 steps per second of response, compared with about 500000 explicit steps per second."
+    }
+   ],
+   "answer": "About 41.7 microseconds (20 steps per period); implicit is limited by accuracy, explicit would be limited by the 2 microsecond stability limit."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Decide whether the event is short (waves, impact: explicit) or long compared with the structure's periods (implicit or modal).",
+    "For explicit runs find the smallest element and compute $L_e/c$; avoid tiny elements.",
+    "For implicit runs choose $\\Delta t$ from the highest mode that matters, about $T_{min}/10$ to $T_{min}/20$.",
+    "For harmonic sweeps use modal superposition when the system is linear and many frequencies are needed; check that enough modes are included."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Unconditionally stable does not mean accurate",
+   "text": "An implicit scheme will not blow up for a large step, but it will smooth out or shift the high-frequency response. Resolve the highest mode of interest, and confirm by halving the step and checking that the key result is unchanged."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Explicit integration is conditionally stable with $\\Delta t\\le2/\\omega_{max}=L_e/c$ for a lumped linear bar mesh: the smallest element controls the step, and the step scales linearly with element size.",
+    "Implicit methods such as Newmark average acceleration are unconditionally stable for linear problems; the step is chosen for accuracy, about $T_{min}/10$ to $T_{min}/20$ for the highest mode of interest.",
+    "Modal superposition is efficient for linear harmonic problems if all participating modes (up to about 1.5 to 2 times the forcing frequency) are retained.",
+    "Full harmonic analysis is appropriate for few frequencies or complicated damping."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What chiefly determines the largest stable time step of an explicit central-difference analysis of a lumped-mass mesh of linear bar elements?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The smallest element size divided by the wave speed $\\sqrt{E/\\rho}$"
+    },
+    {
+     "id": "b",
+     "text": "The largest element size divided by the wave speed"
+    },
+    {
+     "id": "c",
+     "text": "The duration of the loading"
+    },
+    {
+     "id": "d",
+     "text": "The magnitude of the applied load"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The smallest element size divided by the wave speed $\\sqrt{E/\\rho}$",
+   "distractorRationale": {
+    "a": "Correct: the step must be shorter than the time for a stress wave to cross the smallest element.",
+    "b": "The largest element does not limit the step; the smallest does, since the highest frequency belongs to the smallest element.",
+    "c": "Load duration affects how many steps are needed, not stability.",
+    "d": "Linear stability does not depend on the load magnitude."
+   },
+   "explanation": "The stability limit is $2/\\omega_{max}$, and $\\omega_{max}$ rises as elements shrink. For a lumped bar mesh this equals $L_e/c$ for the smallest element.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An aluminium component ($E=70$ GPa, $\\rho=2700$ kg/m$^3$) is meshed with linear elements whose smallest length is 2.5 mm. Using a lumped mass matrix and the limit $\\Delta t_{crit}=L_e/c$, find the stable explicit time step in microseconds.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o1"
+   ],
+   "correctValue": 0.491,
+   "tolerance": 0.01,
+   "unit": "microseconds",
+   "explanation": "The wave speed is $c=\\sqrt{70\\times10^{9}/2700}=5092$ m/s. Then $\\Delta t_{crit}=0.0025/5092=4.91\\times10^{-7}$ s, i.e. 0.491 microseconds. Production codes use a safety factor of about 0.9 or less on this limit.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel mesh ($E=200$ GPa, $\\rho=7800$ kg/m$^3$) uses linear elements with a smallest length of 6 mm and a consistent mass matrix, for which $\\Delta t_{crit}=L_e/(\\sqrt3\\,c)$. Find the stable explicit step in microseconds.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o1"
+   ],
+   "correctValue": 0.6841,
+   "tolerance": 0.01,
+   "unit": "microseconds",
+   "explanation": "The wave speed is $c=5064$ m/s, so $L_e/c=1.185$ microseconds. Dividing by $\\sqrt3=1.732$ gives $0.684$ microseconds. The consistent mass matrix has a higher maximum frequency, which is why lumped mass is preferred for explicit analysis.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An explicit analysis of a bar is stable. The mesh is then refined so that all elements are half as long, with no other changes. How does the largest stable time step change?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is halved, because the step is proportional to element size"
+    },
+    {
+     "id": "b",
+     "text": "It is quartered"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "It is doubled"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is halved, because the step is proportional to element size",
+   "distractorRationale": {
+    "a": "Correct: the limit $L_e/c$ is proportional to the element size, so halving the size halves the step.",
+    "b": "A factor of 4 is the scaling for diffusion problems, where the limit goes as the size squared.",
+    "c": "The limit depends directly on element size.",
+    "d": "A smaller element has a higher maximum frequency and so needs a smaller step."
+   },
+   "explanation": "The highest frequency of the mesh scales as $c/L_e$, so $\\Delta t_{crit}$ scales as $L_e$. The number of steps needed doubles, and in 2D or 3D the cost grows further because there are more elements.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A linear machine casing must be analysed for a harmonic force sweeping from 50 Hz to 800 Hz in 1 Hz increments. The structure has about 20 modes below 1500 Hz and 200000 degrees of freedom. Which approach is most efficient and appropriate?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Modal superposition with modes up to at least 1200 Hz"
+    },
+    {
+     "id": "b",
+     "text": "Explicit time integration with a small step for each frequency"
+    },
+    {
+     "id": "c",
+     "text": "A full harmonic solve at each of the 750 frequencies"
+    },
+    {
+     "id": "d",
+     "text": "A static analysis at the highest frequency"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Modal superposition with modes up to at least 1200 Hz",
+   "distractorRationale": {
+    "a": "Correct: the system is linear and the excitation band contains few modes, so a modal basis is computed once and reused for all frequencies.",
+    "b": "Explicit integration is meant for short transient events and has stability limits, not for steady harmonic sweeps.",
+    "c": "A full solve is possible but requires 750 solves of a 200000-degree-of-freedom complex system, far more expensive.",
+    "d": "A static analysis ignores inertia, and thus the resonant amplification, which is the purpose of the analysis."
+   },
+   "explanation": "Modal superposition decouples the equations after one eigen-solution, so each extra frequency costs almost nothing. The retained modes should extend to roughly 1.5 times the highest forcing frequency to capture the residual effect.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A single mode has a static deflection of $F_0/k=0.2$ mm under the peak load, a damping ratio $\\zeta=0.025$ and a frequency ratio $r=\\Omega/\\omega_n=0.9$. Using $X=(F_0/k)/\\sqrt{(1-r^2)^2+(2\\zeta r)^2}$, find the dynamic amplitude in mm.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o2"
+   ],
+   "correctValue": 1.024,
+   "tolerance": 0.03,
+   "unit": "mm",
+   "explanation": "Compute $(1-r^2)^2=(0.19)^2=0.0361$ and $(2\\zeta r)^2=(0.045)^2=0.002025$. The square root of their sum is $0.1956$, so the amplification is $5.11$. The amplitude is $0.2\\times5.11=1.02$ mm, five times the static deflection, which shows why modal damping matters.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A structure's response must be resolved up to its mode at $f=1500$ Hz in an implicit transient analysis. Using about 20 time steps per period of that mode, find the time step in microseconds.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o3"
+   ],
+   "correctValue": 33.333,
+   "tolerance": 0.2,
+   "unit": "microseconds",
+   "explanation": "The period is $T=1/1500=0.667$ ms. With 20 steps per period, $\\Delta t=T/20=33.3$ microseconds. This is a typical accuracy criterion, since the implicit scheme has no stability limit.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "An implicit Newmark scheme with average acceleration is unconditionally stable for linear problems, so the time step can be chosen on accuracy grounds, such as the period of the highest mode of interest, rather than on the smallest element size.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. Stability does not restrict the step, so it is chosen to resolve the response of the modes that matter, usually at least 10 to 20 steps per period of the highest such mode. A step much larger than this would run but would smooth out or distort high-frequency content.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the explicit time step is controlled by the smallest element in the mesh, and discuss two ways in which the analyst can enlarge it without changing the physical problem.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o1",
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o3"
+   ],
+   "markingGuide": [
+    "Stability needs $\\Delta t\\le2/\\omega_{max}$ and the highest frequency belongs to the smallest, stiffest element",
+    "Bar result $\\omega_{max}=2c/L_e$ so $\\Delta t_{crit}=L_e/c$: a stress wave must not cross an element in less than one step",
+    "Remedy 1: remesh to remove tiny or badly shaped elements, making element sizes more uniform",
+    "Remedy 2: use lumped mass (consistent mass has a lower limit) or selective mass scaling of the smallest elements, checking that the added mass is a negligible fraction of the total",
+    "Check that energy balance and kinetic-energy ratio show the scaling did not alter the physics"
+   ],
+   "explanation": "The step limit follows from the highest natural frequency of the mesh, which is set by its smallest element. Reducing the range of element sizes or adding negligible mass to small elements raises the limit.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A linear model of a turbine blade is to be analysed for the response to a harmonic force at frequencies from 100 to 600 Hz. Compare the full and the modal superposition methods for this task, state the conditions under which modal superposition is valid, and say how many modes you would retain.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient.o2"
+   ],
+   "markingGuide": [
+    "Full method solves $(\\mathbf K-\\Omega^2\\mathbf M+i\\Omega\\mathbf C)\\mathbf u=\\mathbf F$ at every frequency: exact within the discretisation but costly for a dense sweep",
+    "Modal superposition: compute modes once, solve $m$ uncoupled equations with damping ratios, add the results; cheap for many frequencies",
+    "Valid for linear systems with constant properties and (proportional) modal damping, with no contact or nonlinear effects",
+    "Retain all modes up to about 1.5 to 2 times the highest forcing frequency (900 to 1200 Hz) and check that cumulative effective mass is at least about 90%",
+    "Full method preferable if only a few frequencies are needed or damping is strongly frequency dependent"
+   ],
+   "explanation": "Modal superposition is efficient for linear sweeps because the modes are computed only once. Missing modes above the retained set are the main source of error, so the cut-off must exceed the forcing band.",
+   "board": "internal"
+  }
+ ]
+}

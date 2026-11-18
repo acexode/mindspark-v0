@@ -1,0 +1,408 @@
+{
+ "lessonTitle": "S-N Curves and the Endurance Limit",
+ "estimatedMinutes": 55,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A railway axle turns about a billion times in its working life, so nobody tests it to failure; the designer must predict, from the strength of the steel and a handful of correction factors, the stress it can withstand for ever. The endurance limit and the S-N curve are how that prediction is made."
+  },
+  {
+   "type": "text",
+   "markdown": "Fatigue failure is the progressive growth of a crack under repeated stress, at stresses well below the yield strength. The classical test, due to Wohler, turns a polished specimen under a constant bending moment (a rotating-beam test) and records the stress amplitude $S$ and the number of cycles $N$ to failure. Plotting $S$ against $N$ on logarithmic scales gives the **S-N curve**. For many steels the curve flattens beyond about $10^6$ cycles at a limit called the **endurance limit** $S_e'$, below which failure does not occur."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Region",
+    "Cycles N",
+    "Behaviour"
+   ],
+   "rows": [
+    [
+     "Low-cycle fatigue",
+     "Below about $10^3$",
+     "Plastic strain dominates; strain-life methods used"
+    ],
+    [
+     "High-cycle, finite life",
+     "About $10^3$ to $10^6$",
+     "Straight line on the log-log S-N plot; life is finite"
+    ],
+    [
+     "Infinite life (steel)",
+     "Above about $10^6$",
+     "Endurance limit $S_e'$; no failure below this amplitude"
+    ],
+    [
+     "Non-ferrous metals",
+     "Beyond $10^8$",
+     "No true endurance limit; a fatigue strength at a stated life is quoted"
+    ]
+   ],
+   "caption": "Regions of the stress-life curve"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Endurance limit",
+   "text": "The endurance limit $S_e'$ (prime: for the polished laboratory specimen) is the greatest alternating stress amplitude that a material can withstand for an unlimited number of cycles at zero mean stress. For steels with ultimate tensile strength $S_{ut}$ the average relationship is $S_e'\\approx0.5S_{ut}$, with a ceiling of about 700 MPa for $S_{ut}$ above 1400 MPa. This is an average from test data with large scatter."
+  },
+  {
+   "type": "math",
+   "latex": "S_e'=\\begin{cases}0.5\\,S_{ut}&S_{ut}\\le1400\\ \\text{MPa}\\\\ 700\\ \\text{MPa}&S_{ut}>1400\\ \\text{MPa}\\end{cases}",
+   "caption": "Endurance limit of a steel rotating-beam specimen (Shigley)"
+  },
+  {
+   "type": "text",
+   "markdown": "**From specimen to component (Marin factors).** A real part differs from the polished laboratory specimen in surface, size, loading, temperature and the reliability required. Marin (Shigley notation) multiplies the specimen value by modifying factors, one for each effect. Typical forms (steel, $S_{ut}$ in MPa and $d$ in mm) are: surface $k_a=aS_{ut}^{\\,b}$ with $a=1.58,b=-0.085$ for ground; $a=4.51,b=-0.265$ for machined or cold-drawn; $a=57.7,b=-0.718$ for hot-rolled; $a=272,b=-0.995$ for as-forged. Size $k_b=1.24d^{-0.107}$ for a round rotating section with $2.79\\le d\\le51$ mm. Load $k_c=1$ for bending, 0.85 for axial and 0.59 for torsion. Temperature $k_d=1$ at room temperature. Reliability $k_e=0.897,0.868,0.814,0.753$ for 90, 95, 99 and 99.9 per cent reliability."
+  },
+  {
+   "type": "math",
+   "latex": "S_e=k_a\\,k_b\\,k_c\\,k_d\\,k_e\\,k_f\\,S_e'",
+   "caption": "Marin equation for the corrected endurance limit of a component (k_f covers other effects such as stress concentration and residual stress and is taken as 1 here)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Corrected endurance limit of a machined shaft",
+   "prompt": "A steel shaft of diameter 30 mm is machined from bar with $S_{ut}=700$ MPa. It is loaded in rotating bending, room temperature, and 99 per cent reliability is required. Find the corrected endurance limit $S_e$.",
+   "steps": [
+    {
+     "text": "Specimen endurance limit.",
+     "latex": "S_e'=0.5\\times700=350\\ \\text{MPa}"
+    },
+    {
+     "text": "Surface factor for a machined surface.",
+     "latex": "k_a=4.51\\times700^{-0.265}=0.795"
+    },
+    {
+     "text": "Size factor for $d=30$ mm; load factor 1 for bending; temperature factor 1; reliability 99 per cent gives 0.814.",
+     "latex": "k_b=1.24\\times30^{-0.107}=0.862,\\quad k_c=1,\\quad k_d=1,\\quad k_e=0.814"
+    },
+    {
+     "text": "Combine all the factors in the Marin product.",
+     "latex": "S_e=0.795\\times0.862\\times1\\times1\\times0.814\\times350=195\\ \\text{MPa}"
+    }
+   ],
+   "answer": "$S_e\\approx195$ MPa, only about 56 per cent of the polished specimen value."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**The S-N line for finite life.** Between $10^3$ and $10^6$ cycles the S-N curve of steel is nearly a straight line on log-log axes, $S_f=aN^b$. It is anchored at the strength $fS_{ut}$ at $10^3$ cycles (where $f$ is a fraction about 0.9, read from design charts for the material, typical) and at the corrected endurance limit $S_e$ at $10^6$ cycles. Solving for the two constants gives $a$ and $b$, and the life at a given alternating stress follows by inverting the line."
+  },
+  {
+   "type": "math",
+   "latex": "S_f=aN^b,\\qquad a=\\frac{(fS_{ut})^2}{S_e},\\qquad b=-\\frac13\\log_{10}\\!\\left(\\frac{fS_{ut}}{S_e}\\right),\\qquad N=\\left(\\frac{\\sigma_a}{a}\\right)^{1/b}",
+   "caption": "Fatigue strength S_f at N cycles and the inverse relation giving life N for a fully reversed amplitude sigma_a"
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading life and strength from the S-N line",
+   "prompt": "For the shaft above ($S_{ut}=700$ MPa, $S_e=195$ MPa, $f=0.9$), find the constants of the S-N line, the life at a fully reversed stress amplitude of 320 MPa and the fatigue strength at $10^5$ cycles.",
+   "steps": [
+    {
+     "text": "Strength at $10^3$ cycles.",
+     "latex": "fS_{ut}=0.9\\times700=630\\ \\text{MPa}"
+    },
+    {
+     "text": "Constants $a$ and $b$.",
+     "latex": "a=\\frac{630^2}{195}=2034\\ \\text{MPa},\\qquad b=-\\frac13\\log_{10}\\frac{630}{195}=-0.1697"
+    },
+    {
+     "text": "Life at 320 MPa (this lies on the sloping line, between $10^3$ and $10^6$ cycles).",
+     "latex": "N=\\left(\\frac{320}{2034}\\right)^{1/(-0.1697)}=5.42e+04\\ \\text{cycles}"
+    },
+    {
+     "text": "Fatigue strength at $10^5$ cycles.",
+     "latex": "S_f=2034\\times(10^5)^{-0.1697}=288\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The line has $a=2034$ MPa and $b=-0.1697$; life at 320 MPa is about 5.42e+04 cycles and the $10^5$-cycle strength is about 288 MPa."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Rough surfaces lower the endurance limit (as-forged worst, ground best), and the penalty grows with the strength of the steel.",
+    "Larger sections have lower endurance limits, because a larger stressed volume is more likely to contain a flaw.",
+    "Axial and torsional loading are taken as less favourable than bending in $k_c$ in this convention.",
+    "Stress concentrations (notches, keyways) are accounted for with a separate fatigue stress concentration factor, not in $k_a$ to $k_e$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Scatter and the 'infinite life' idea",
+   "text": "The endurance limit is a statistical average with large scatter, and conditions such as corrosion, fretting or overloads can remove it altogether. Treat $S_e$ as a design value only with the stated reliability factor, and note that non-ferrous alloys and corroded steels have no real endurance limit."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The S-N curve plots alternating stress against cycles to failure on log-log scales; steels show an endurance limit near $10^6$ cycles.",
+    "For steel $S_e'\\approx0.5S_{ut}$ (up to 700 MPa) for the polished specimen, and $S_e=k_ak_bk_ck_dk_ek_fS_e'$ for the component.",
+    "Between $10^3$ and $10^6$ cycles $S_f=aN^b$ with $a=(fS_{ut})^2/S_e$ and $b=-\\tfrac13\\log_{10}(fS_{ut}/S_e)$; invert for life.",
+    "Marin factors reduce the strength for surface finish, size, load type, temperature and reliability; scatter must be allowed for."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a steel with $S_{ut}=820$ MPa, what is the usual estimate of the endurance limit of the polished rotating-beam specimen?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "410 MPa"
+    },
+    {
+     "id": "b",
+     "text": "820 MPa"
+    },
+    {
+     "id": "c",
+     "text": "164 MPa"
+    },
+    {
+     "id": "d",
+     "text": "700 MPa"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "410 MPa",
+   "distractorRationale": {
+    "a": "Correct: S_e' = 0.5 x 820 = 410 MPa.",
+    "b": "820 MPa would equal the tensile strength, which fatigue never allows.",
+    "c": "164 MPa is 0.2 Sut, too low for a steel.",
+    "d": "700 MPa is the ceiling used only when Sut exceeds 1400 MPa."
+   },
+   "explanation": "The rule $S_e'\\approx0.5S_{ut}$ applies to steels with $S_{ut}$ up to 1400 MPa, so $S_e'=410$ MPa. This is a polished-specimen value before any Marin factors are applied.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which Marin factor accounts for the difference between a polished laboratory specimen and a component with a machined, ground or forged surface?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The surface factor $k_a$"
+    },
+    {
+     "id": "b",
+     "text": "The size factor $k_b$"
+    },
+    {
+     "id": "c",
+     "text": "The load factor $k_c$"
+    },
+    {
+     "id": "d",
+     "text": "The reliability factor $k_e$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The surface factor $k_a$",
+   "distractorRationale": {
+    "a": "Correct: k_a depends on the surface finish and the tensile strength.",
+    "b": "k_b accounts for diameter.",
+    "c": "k_c accounts for the type of loading.",
+    "d": "k_e accounts for the required probability of survival."
+   },
+   "explanation": "The surface factor $k_a=aS_{ut}^b$ reduces the endurance limit for rougher finishes, with as-forged parts worst and ground parts best. The effect is larger for high-strength steels.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the main difference between the S-N behaviour of a typical steel and an aluminium alloy?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Steel shows an endurance limit near $10^6$ cycles, whereas aluminium continues to fall and has no true endurance limit"
+    },
+    {
+     "id": "b",
+     "text": "Aluminium has a higher endurance limit than steel at the same strength"
+    },
+    {
+     "id": "c",
+     "text": "Steel has no knee, aluminium has a sharp knee"
+    },
+    {
+     "id": "d",
+     "text": "Both have an endurance limit at the same cycle count"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Steel shows an endurance limit near $10^6$ cycles, whereas aluminium continues to fall and has no true endurance limit",
+   "distractorRationale": {
+    "a": "Correct: aluminium needs a fatigue strength at a stated life, such as 5 x 10^8 cycles.",
+    "b": "Aluminium's fatigue strength is lower in absolute terms.",
+    "c": "The statement is reversed.",
+    "d": "They behave differently."
+   },
+   "explanation": "In steels, interstitial atoms pin dislocations, producing a stress below which cracks do not grow. Aluminium lacks this, so its curve keeps sloping and the fatigue strength must be quoted at a chosen number of cycles.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer compares a polished test specimen with a larger, machined shaft of the same steel loaded in rotating bending. Which statement about the shaft's corrected endurance limit is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is lower than the specimen's, because $k_a<1$ and $k_b<1$"
+    },
+    {
+     "id": "b",
+     "text": "It is higher, because the shaft is stronger"
+    },
+    {
+     "id": "c",
+     "text": "It is equal, because the steel is the same"
+    },
+    {
+     "id": "d",
+     "text": "It is higher, because a rougher surface strengthens the shaft"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is lower than the specimen's, because $k_a<1$ and $k_b<1$",
+   "distractorRationale": {
+    "a": "Correct: machining and larger size both reduce it.",
+    "b": "Strength of the steel is the same; size and surface reduce fatigue strength.",
+    "c": "The Marin factors adjust the value, so it is not equal.",
+    "d": "A rougher surface gives more stress raisers and reduces fatigue strength."
+   },
+   "explanation": "The surface and size factors are both normally less than 1 for a large machined part, so their product reduces the endurance limit. Using the specimen value would overestimate the safe stress.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "On the finite-life part of an S-N line the slope is $b=-0.10$. By what factor does the life increase when the stress amplitude is reduced by 10 per cent?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 2.9"
+    },
+    {
+     "id": "b",
+     "text": "About 1.1"
+    },
+    {
+     "id": "c",
+     "text": "About 10"
+    },
+    {
+     "id": "d",
+     "text": "About 1.5"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About 2.9",
+   "distractorRationale": {
+    "a": "Correct: N proportional to S^(1/b), so (0.9)^(-10) = 2.87.",
+    "b": "1.1 treats life as inversely proportional to stress.",
+    "c": "A factor of 10 is not supported by the exponent; the correct factor is 0.9 raised to the power -10.",
+    "d": "1.5 ignores the exponent of -10."
+   },
+   "explanation": "From $S=aN^b$ we have $N\\propto S^{1/b}=S^{-10}$. Reducing the stress to 0.9 times increases the life by $0.9^{-10}=2.87$, which shows how sensitive fatigue life is to small stress reductions.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A bar made of steel with $S_{ut}=1000$ MPa is tested in rotating bending using a polished specimen. Estimate the endurance limit $S_e'$ in MPa.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o1"
+   ],
+   "correctValue": 500,
+   "tolerance": 5,
+   "unit": "MPa",
+   "explanation": "Because $S_{ut}=1000$ MPa is below 1400 MPa, $S_e'=0.5S_{ut}=500$ MPa. This is only the polished specimen value.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel with $S_{ut}=550$ MPa has a hot-rolled surface ($k_a=57.7S_{ut}^{-0.718}$). A round part of diameter 20 mm in rotating bending is required to have 90 per cent reliability ($k_e=0.897$), with $k_b=1.24d^{-0.107}$, $k_c=k_d=1$. Find the corrected endurance limit in MPa.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o2"
+   ],
+   "correctValue": 138.016819,
+   "tolerance": 3,
+   "unit": "MPa",
+   "explanation": "The specimen value is $S_e'=0.5\\times550=275$ MPa. The factors are $k_a=57.7\\times550^{-0.718}=0.622$ and $k_b=1.24\\times20^{-0.107}=0.900$, so $S_e=0.622\\times0.900\\times0.897\\times275=138$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A component has $S_{ut}=500$ MPa and a corrected endurance limit $S_e=210$ MPa. Take $f=0.9$ and the S-N line $S_f=aN^b$ with $a=(fS_{ut})^2/S_e$ and $b=-\\tfrac13\\log_{10}(fS_{ut}/S_e)$. Find the number of cycles to failure under a fully reversed amplitude of 300 MPa (answer in cycles).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o3"
+   ],
+   "correctValue": 39448.09007,
+   "tolerance": 3000,
+   "unit": "cycles",
+   "explanation": "The constants are $a=450^2/210=964.3$ MPa and $b=-\\tfrac13\\log_{10}(450/210)=-0.1103$. The life is $N=(300/964.3)^{1/-0.1103}=39448$ cycles, well inside the finite-life range.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A designer takes the endurance limit of a steel shaft straight from the tabulated value for a polished test specimen. Explain why this is unsafe, naming at least four Marin factors and how each one changes the strength.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o2"
+   ],
+   "markingGuide": [
+    "Specimen is small, polished, loaded in rotating bending at room temperature with 50 per cent reliability; a real shaft is not.",
+    "Surface factor $k_a$: rougher machined, hot-rolled or forged surfaces have more stress raisers, so $k_a<1$.",
+    "Size factor $k_b$: larger section has a larger volume of highly stressed material, so $k_b<1$ for larger diameters.",
+    "Load factor $k_c$: axial (0.85) and torsional (0.59) loading are less favourable than bending.",
+    "Temperature $k_d$ and reliability $k_e$: elevated temperatures change strength, and a reliability of 99 per cent needs $k_e=0.814$.",
+    "Corrected $S_e=k_ak_bk_ck_dk_ek_fS_e'$ is therefore often a half or less of the specimen value."
+   ],
+   "explanation": "Using the unreduced value would overestimate the safe stress and may lead to fatigue failure. The Marin factors bridge the gap between the laboratory test and the real part.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Sketch in words and describe the S-N curve for a steel, explaining the low-cycle, finite-life and infinite-life regions, how the curve is idealised between $10^3$ and $10^6$ cycles, and what the endurance limit means for a design that must run for $10^9$ cycles.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o1",
+    "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit.o3"
+   ],
+   "markingGuide": [
+    "Log-log plot of stress amplitude against cycles to failure; a falling line for high stresses.",
+    "Low-cycle region below about $10^3$ cycles with large plastic strain; high-cycle finite-life region from $10^3$ to $10^6$ where $S_f=aN^b$ is a straight line.",
+    "Idealisation: line from $fS_{ut}$ at $10^3$ cycles to $S_e$ at $10^6$ cycles, giving $a=(fS_{ut})^2/S_e$ and $b=-\\tfrac13\\log_{10}(fS_{ut}/S_e)$.",
+    "Endurance limit: horizontal part beyond $10^6$ cycles; stress amplitudes below $S_e$ (corrected) are predicted to give infinite life.",
+    "For $10^9$ cycles the design must keep the stress amplitude below the corrected $S_e$ with a safety factor, noting that scatter, corrosion or overloads may remove the limit, and non-ferrous materials have no limit."
+   ],
+   "explanation": "The S-N curve gives the life for a given stress and, below the endurance limit, a stress level for which the life is unlimited. A design for $10^9$ cycles therefore works within the infinite-life region.",
+   "board": "internal"
+  }
+ ]
+}

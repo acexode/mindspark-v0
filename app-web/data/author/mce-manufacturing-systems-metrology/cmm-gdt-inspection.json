@@ -1,0 +1,397 @@
+{
+ "lessonTitle": "CMM Inspection: Datums, Form Errors and Traceability",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A gearbox casing is machined with its bearing bores 180 mm apart, to a position tolerance of 0.04 mm. At the end of the line a coordinate measuring machine (CMM) touches the part with a ruby sphere on a stylus, and an hour later a report says the bores pass. Why should anyone believe that report? Two things: the part was located on a datum frame the same way the designer intended, and the machine itself is tied by an unbroken chain of calibrations to the metre."
+  },
+  {
+   "type": "text",
+   "markdown": "A **coordinate measuring machine** moves a touch probe in three perpendicular axes and records the position $(x,y,z)$ of the probe centre every time the stylus tip touches the part. A typical measurement program probes a few points on each feature, fits an ideal geometric element (plane, line, circle, cylinder) to them and then reports sizes, locations and form errors. The CMM does not know where the part is on its table, so it first has to establish where the part's datums are."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Datum reference frame (DRF)",
+   "text": "A datum reference frame is a set of three mutually perpendicular planes defined from the part's own datum features, in order of priority: primary, secondary, tertiary. Together they remove all six degrees of freedom (three translations, three rotations) of the part. On a CMM the DRF is built by probing the datum features and fitting elements to them, then taking those fitted elements as the part coordinate system."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Order",
+    "Feature probed",
+    "Minimum points",
+    "Degrees of freedom removed",
+    "What it defines"
+   ],
+   "rows": [
+    [
+     "Primary datum A",
+     "A plane (largest face)",
+     "3 (not on a line)",
+     "3: one translation, two rotations",
+     "Plane for the z axis and the z origin"
+    ],
+    [
+     "Secondary datum B",
+     "A line or plane on a side face",
+     "2 on a line (or a plane of 3 points)",
+     "2: one translation, one rotation",
+     "The x axis direction (line projected into plane A)"
+    ],
+    [
+     "Tertiary datum C",
+     "A point on an end face (or a plane)",
+     "1 (or a plane of 3 points)",
+     "1: one translation",
+     "The origin along the x axis"
+    ]
+   ],
+   "caption": "The 3-2-1 build-up of a datum reference frame by probing (the minimum-point version). In practice, more points are probed per feature to average out form error."
+  },
+  {
+   "type": "text",
+   "markdown": "Priority matters. The primary plane is fitted first and fixes the z direction, then the secondary feature is projected into that plane to fix the x direction, and finally the tertiary feature fixes the last translation. Changing the order changes the coordinate system, and so changes the reported feature positions by amounts comparable to the part's form error. The CMM software then lets the operator align the coordinate system (origin at a datum, axes along the datum directions) before any dimensions are evaluated."
+  },
+  {
+   "type": "worked_example",
+   "title": "Establishing a DRF on a prismatic block",
+   "prompt": "A block is to be measured against datum A (bottom face), B (long side face) and C (end face). Explain the minimum probing and what each step fixes.",
+   "steps": [
+    {
+     "text": "Probe 3 points on the bottom face (not collinear). The fitted plane becomes datum A and removes translation along z and rotations about x and y.",
+     "latex": "3\\ \\text{degrees of freedom removed}"
+    },
+    {
+     "text": "Probe 2 points on the long side face. The line through them, projected into plane A, gives the x axis; this removes rotation about z and translation along y.",
+     "latex": "2\\ \\text{degrees of freedom removed}"
+    },
+    {
+     "text": "Probe 1 point on the end face. Its position along the x axis sets the origin along x and removes the last translation.",
+     "latex": "1\\ \\text{degree of freedom removed}"
+    }
+   ],
+   "answer": "$3+2+1=6$ degrees of freedom removed, so the block has a fully defined coordinate system."
+  },
+  {
+   "type": "text",
+   "markdown": "**Form evaluation.** Flatness and straightness are not measured by the CMM directly; they are computed from many probed points. Flatness is the width of the narrowest pair of parallel planes (the *minimum zone*) that contains all the measured points. A simpler estimate fits a *least-squares plane* to the points and takes the **highest residual minus the lowest residual**; this is never smaller than the minimum-zone value, so it is a safe (conservative) estimate. Straightness of a line of points is evaluated in the same way, using a reference line instead of a plane."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{flatness}\\approx e_{\\max}-e_{\\min}",
+   "caption": "e is the signed distance of each probed point from the fitted reference plane (micrometres); e_max and e_min are the largest and smallest values. A least-squares reference gives a value at or above the minimum-zone result."
+  },
+  {
+   "type": "worked_example",
+   "title": "Flatness from eight points",
+   "prompt": "After fitting a least-squares plane to a machined face, eight probed points have residuals (micrometres): $+3,\\,-2,\\,+5,\\,-4,\\,+1,\\,-3,\\,+2,\\,0$. The drawing flatness tolerance is 0.012 mm. Evaluate.",
+   "steps": [
+    {
+     "text": "Find the largest and smallest residuals.",
+     "latex": "e_{\\max}=+5,\\quad e_{\\min}=-4"
+    },
+    {
+     "text": "Subtract the smallest residual from the largest.",
+     "latex": "\\text{flatness}=5-(-4)=9\\ \\mu\\text{m}=0.009\\ \\text{mm}"
+    },
+    {
+     "text": "Compare with the tolerance of 0.012 mm.",
+     "latex": "0.009<0.012\\ \\text{mm}"
+    }
+   ],
+   "answer": "Flatness is about 9 micrometres, which passes. Too few points can hide a high spot and understate the error, so the margin of 3 micrometres is modest."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Number and spread of points",
+   "text": "Eight points can miss a local bump. Standards and practice recommend more points on large or critical surfaces, spread across the area rather than clustered. A flatness value from few points is a lower bound on the true flatness."
+  },
+  {
+   "type": "text",
+   "markdown": "**Calibration traceability.** A CMM result is only as trustworthy as the reference it was checked against. *Traceability* is the property that a result can be related to the SI metre through an unbroken chain of calibrations, each with a stated uncertainty. In length metrology the chain runs from the national metrology institute's realisation of the metre, to an accredited calibration laboratory's gauge blocks, to the company's reference artefacts (calibrated gauge blocks, step gauges, ball bars), and finally to the CMM's verification and the measured part. Each link adds uncertainty, so a reference must be much better than the measurement it is used for."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Probe qualification: the stylus tip diameter and position are found by probing a calibrated reference sphere.",
+    "Machine verification: error of indication for length measurement is checked with calibrated gauge blocks or step gauges at several positions, and compared with the maximum permissible error given by the maker (commonly of the form $A+L/K$).",
+    "Certificate: each calibration certificate states the measured value, its uncertainty and the reference used, which is what keeps the chain unbroken.",
+    "Recalibration interval: results drift, so calibrations are repeated at set intervals."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A CMM builds a datum reference frame by probing a primary plane (3 points), secondary line (2 points) and tertiary point (1 point), removing 3+2+1=6 degrees of freedom.",
+    "Flatness or straightness is computed from many points as the maximum minus minimum residual about a fitted reference; few points give a low estimate.",
+    "Traceability is an unbroken, documented chain of calibrations with stated uncertainties to the SI metre; without it a CMM result cannot be trusted to a stated uncertainty."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A technician probes three well-spread points on the bottom face of a casting, then fits a plane. Which degrees of freedom of the casting does this plane remove?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "All three translations, because the plane is a three-point feature"
+    },
+    {
+     "id": "b",
+     "text": "One translation (normal to the plane) and two rotations (about axes lying in the plane)"
+    },
+    {
+     "id": "c",
+     "text": "Two translations and one rotation about the plane normal"
+    },
+    {
+     "id": "d",
+     "text": "No degrees of freedom, because a single feature cannot constrain a part"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "One translation (normal to the plane) and two rotations (about axes lying in the plane)",
+   "distractorRationale": {
+    "a": "Three points on a plane constrain only motion normal to the plane and tilting; sliding along the plane is still free.",
+    "b": "A plane fixes the distance along its normal and the two tilts, 3 degrees of freedom in all.",
+    "c": "Sliding within the plane and rotating about its normal are the freedoms a plane leaves free.",
+    "d": "A primary datum plane constrains three degrees of freedom, as the first stage of the 3-2-1 build-up."
+   },
+   "explanation": "Sliding along the plane or turning about its normal does not change the plane's position, so those motions stay free for the secondary and tertiary datums to remove. The primary datum therefore removes exactly three degrees of freedom.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "After the primary plane and secondary line are probed on a rectangular block, what does a single probed point on the end face accomplish?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It removes the last translation and completes the datum reference frame"
+    },
+    {
+     "id": "b",
+     "text": "It fits the primary datum plane to the surface"
+    },
+    {
+     "id": "c",
+     "text": "It removes two rotations of the part"
+    },
+    {
+     "id": "d",
+     "text": "It establishes the direction of the x axis"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It removes the last translation and completes the datum reference frame",
+   "distractorRationale": {
+    "a": "The last point fixes the one remaining translation along the secondary line's direction.",
+    "b": "The primary plane needs at least three points, not one.",
+    "c": "Rotations are already fixed by the primary and secondary datums.",
+    "d": "The x axis direction comes from the secondary line, not from a single point."
+   },
+   "explanation": "A single point cannot set a direction, only a position. After 3+2 degrees of freedom are removed, one translation is left and one point removes it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A flatness check of a gasket face uses a least-squares fit and reports the largest residual minus the smallest residual. How does this value compare with the minimum-zone flatness of the same points?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is always smaller than the minimum-zone value, so it is the less safe estimate"
+    },
+    {
+     "id": "b",
+     "text": "It is always exactly equal to the minimum-zone flatness"
+    },
+    {
+     "id": "c",
+     "text": "It is unrelated to the minimum-zone value because the planes are different"
+    },
+    {
+     "id": "d",
+     "text": "It is equal to or larger than the minimum-zone flatness, so it never understates the minimum-zone result"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It is equal to or larger than the minimum-zone flatness, so it never understates the minimum-zone result",
+   "distractorRationale": {
+    "a": "The least-squares reference is not the narrowest enclosing pair of planes, so its zone is wider or equal.",
+    "b": "The two coincide only for special point patterns.",
+    "c": "Both describe the same points; the minimum zone is the minimum possible width.",
+    "d": "By definition the minimum zone is the narrowest enclosing zone, so any other reference gives a zone at least as wide."
+   },
+   "explanation": "The minimum-zone value is the smallest width of any pair of parallel planes containing all points. A least-squares reference is one particular plane, so its spread cannot be smaller.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two operators evaluate the same large plate for flatness, one with 6 points and the other with 60 well-spread points. What is the most likely outcome and why?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The 60-point result is likely larger, because more points are more likely to catch peaks and valleys"
+    },
+    {
+     "id": "b",
+     "text": "The 6-point result is likely larger, because fewer points give a wider zone"
+    },
+    {
+     "id": "c",
+     "text": "They must be equal, because flatness is a property of the surface"
+    },
+    {
+     "id": "d",
+     "text": "The 60-point result is likely smaller, because averaging reduces form error"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The 60-point result is likely larger, because more points are more likely to catch peaks and valleys",
+   "distractorRationale": {
+    "a": "Extra points can only add peaks or valleys, so the extreme-to-extreme spread cannot decrease.",
+    "b": "A subset of points can only produce a spread smaller than or equal to that of the full set.",
+    "c": "The reported value depends on which points were probed.",
+    "d": "Form evaluation takes extremes, not averages; more points can only find more of them."
+   },
+   "explanation": "Flatness is an extreme-based quantity, so a smaller sample may miss the highest and lowest spots. This is why critical surfaces are probed with many points.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A CMM verification report states that the machine was checked with a gauge block whose certificate was issued by an accredited laboratory, whose own reference was calibrated at a national metrology institute. What property does this describe?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Repeatability: the same value is obtained each time the block is measured"
+    },
+    {
+     "id": "b",
+     "text": "Resolution: the smallest change the CMM can display"
+    },
+    {
+     "id": "c",
+     "text": "Traceability: an unbroken chain of calibrations, each with stated uncertainty, back to the SI metre"
+    },
+    {
+     "id": "d",
+     "text": "Accuracy class: the CMM is automatically exact if its blocks are"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Traceability: an unbroken chain of calibrations, each with stated uncertainty, back to the SI metre",
+   "distractorRationale": {
+    "a": "Repeatability describes scatter under unchanged conditions, not a link to a reference.",
+    "b": "Resolution is an instrument property; it is not established by a calibration chain.",
+    "c": "A documented chain of calibrations with uncertainties linking a result to the SI unit is what traceability means.",
+    "d": "Calibrated blocks do not guarantee the CMM is exact; they allow its error to be measured."
+   },
+   "explanation": "Each link in the chain (national institute, accredited laboratory, company artefacts) carries a stated uncertainty and a certificate. Without such a chain, a CMM reading cannot be related to the metre with a known uncertainty.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A face of a milled bracket is probed at eight points. After fitting a least-squares plane, the residuals in micrometres are $+4,\\,-3,\\,+7,\\,-5,\\,+2,\\,-1,\\,0,\\,+3$. Using the largest minus smallest residual method, calculate the flatness in micrometres.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o2"
+   ],
+   "correctValue": 12,
+   "tolerance": 0.1,
+   "unit": "micrometres",
+   "explanation": "The largest residual is +7 and the smallest is -5. The flatness estimate is the difference, $7-(-5)=12$ micrometres.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 100 mm long ground edge is probed at five stations 25 mm apart. The measured heights above the CMM $x$ axis (micrometres) are 2, 9, 14, 12 and 4. Using the reference line through the two end points, calculate the straightness as the largest minus smallest deviation from that line, in micrometres.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o2"
+   ],
+   "correctValue": 11,
+   "tolerance": 0.1,
+   "unit": "micrometres",
+   "explanation": "The line through the ends rises from 2 to 4 micrometres, giving reference heights 2, 2.5, 3, 3.5 and 4. The deviations are 0, 6.5, 11, 8.5 and 0, so the range is 11 micrometres.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "To verify a CMM, a calibrated gauge block has a certificate length of 100.0004 mm, with an expanded uncertainty of 0.4 micrometres. The CMM measures it as 100.0027 mm. Calculate the error of indication of the CMM in micrometres.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o3"
+   ],
+   "correctValue": 2.3,
+   "tolerance": 0.05,
+   "unit": "micrometres",
+   "explanation": "The error of indication is the indicated value minus the reference value, $100.0027-100.0004=0.0023$ mm. That is 2.3 micrometres, which is far larger than the 0.4 micrometres uncertainty of the reference, so it is a real machine error.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A cast housing is to be inspected on a CMM with datum A (large mounting face), datum B (a bore axis) and datum C (a side slot). A new inspector probes the bore first and then the mounting face. Explain why the order of probing and the datum precedence matter, what the CMM actually fits for each datum, and how the results could change if the order is reversed.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o1",
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o3"
+   ],
+   "markingGuide": [
+    "States that datum precedence (primary, secondary, tertiary) defines how the part is located",
+    "Primary datum is fitted first and constrains the most degrees of freedom (a plane, 3)",
+    "Secondary and tertiary datums are constrained within the frame already established",
+    "Reversing the order changes which feature absorbs the part's form error and so alters the coordinate system",
+    "Hence reported feature positions can shift by amounts of the order of the form error",
+    "Notes that the drawing's datum order must be followed for results to be valid"
+   ],
+   "explanation": "The datum frame is built in the order specified, with the primary feature fixing the most freedom and later features measured within that frame. Reversing the order shifts where form error is absorbed, so positions measured from the new frame can differ, which can wrongly pass or fail a part.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A calibration laboratory certificate for a gauge block states a length and an expanded uncertainty. Explain how this certificate links a CMM measurement of a shaft to the SI metre, and why the uncertainty of the reference should be much smaller than the tolerance being checked. Give one consequence of using an uncalibrated or out-of-date reference.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.metrology.cmm-gdt-inspection.o3"
+   ],
+   "markingGuide": [
+    "Describes the chain: national institute to accredited laboratory to company reference to CMM to part",
+    "Each calibration is documented with a value and an uncertainty",
+    "Uncertainties accumulate along the chain, so the reference must be better than the measurement",
+    "Reference uncertainty much smaller than tolerance keeps the measurement uncertainty small relative to the tolerance",
+    "Consequence: results may carry unknown error, so conforming parts may be rejected or non-conforming parts accepted",
+    "Mentions recalibration intervals or loss of traceability"
+   ],
+   "explanation": "Traceability allows an unbroken, documented link from a part measurement to the metre, with an uncertainty at each step. A poor reference inflates the final uncertainty and can cause wrong accept or reject decisions, so recalibration at set intervals keeps the chain valid.",
+   "board": "internal"
+  }
+ ]
+}

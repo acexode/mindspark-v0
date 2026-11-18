@@ -1,0 +1,401 @@
+{
+ "lessonTitle": "Diodes",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The 12 V relay that switches a pneumatic valve survives millions of cycles only because of a 10-cent diode wired backwards across its coil. Remove that diode and each turn-off sends a voltage spike of hundreds of volts into the transistor driving it. The diode is a one-way valve for current, and that single property gives us rectifiers, protection and indicator lamps."
+  },
+  {
+   "type": "text",
+   "markdown": "An ideal **diode** conducts current from **anode** to **cathode** when forward-biased and blocks current when reverse-biased. A real silicon diode needs a **forward voltage drop** $V_f\\approx0.7$ V (typical; about 0.3 V for a Schottky diode) before it conducts appreciably, and once conducting its voltage stays close to $V_f$. Light-emitting diodes (LEDs) work the same way but with a larger $V_f$ that depends on colour: typically 1.8 to 2.2 V for red and green, and about 3 V for blue and white."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Constant-drop diode model",
+   "text": "Forward-biased: the diode is a fixed voltage source $V_f$ in the direction of conduction (current can only flow anode to cathode). Reverse-biased: open circuit (zero current), up to the breakdown voltage. This model is accurate enough for most switching and rectifier calculations."
+  },
+  {
+   "type": "text",
+   "markdown": "**Half-wave rectifier.** Put a diode in series with a load resistor and drive it from an AC source $v_{in}=V_p\\sin\\omega t$, where $V_p=\\sqrt2\\,V_{rms}$ is the peak voltage. During the positive half-cycle the diode conducts once $v_{in}$ exceeds $V_f$, and the load sees $v_{in}-V_f$. In the negative half-cycle the diode blocks and the load voltage is zero. The output is a train of positive humps, with peak $V_p-V_f$, that is clipped slightly at its base."
+  },
+  {
+   "type": "math",
+   "latex": "V_{out,peak}=V_p-V_f,\\qquad V_p=\\sqrt{2}\\,V_{rms},\\qquad \\theta_{on}=\\pi-2\\arcsin\\!\\left(\\frac{V_f}{V_p}\\right)",
+   "caption": "Peak of the rectified output and conduction angle per cycle (the diode conducts only while v_in > V_f)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Half-wave rectifier output",
+   "prompt": "A transformer secondary gives 12.0 V rms. It feeds a silicon diode ($V_f=0.7$ V) in series with a 220 ohm load. Find the peak output voltage and the peak load current.",
+   "steps": [
+    {
+     "text": "Convert rms to peak.",
+     "latex": "V_p=\\sqrt2\\times12.0=16.97\\ \\mathrm{V}"
+    },
+    {
+     "text": "Subtract the diode drop at the peak.",
+     "latex": "V_{out,peak}=16.97-0.7=16.27\\ \\mathrm{V}"
+    },
+    {
+     "text": "Ohm's law for the load.",
+     "latex": "I_{peak}=\\frac{16.27}{220}=73.9\\ \\mathrm{mA}"
+    }
+   ],
+   "answer": "Peak load voltage 16.3 V and peak load current 74 mA. The diode must also withstand a reverse voltage of about $V_p = 17$ V during the negative half-cycle."
+  },
+  {
+   "type": "text",
+   "markdown": "**LED current limiting.** An LED's voltage is nearly constant above $V_f$, so connecting it directly to a supply would let the current rise without limit and destroy it. A series resistor $R$ takes up the remaining voltage. Kirchhoff's voltage law around the loop gives the design equation below."
+  },
+  {
+   "type": "math",
+   "latex": "R=\\frac{V_s-V_f}{I_F}",
+   "caption": "Series resistor for supply V_s, LED forward voltage V_f and chosen forward current I_F"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing an LED resistor",
+   "prompt": "A red LED ($V_f=2.0$ V) is to run at 15 mA from a 5.0 V supply. Find $R$, choose a standard value and recompute the actual current.",
+   "steps": [
+    {
+     "text": "Voltage left for the resistor.",
+     "latex": "V_R=5.0-2.0=3.0\\ \\mathrm{V}"
+    },
+    {
+     "text": "Calculate the resistance.",
+     "latex": "R=\\frac{3.0}{15\\times10^{-3}}=200\\ \\Omega"
+    },
+    {
+     "text": "The nearest standard value above is 220 ohm; recompute the current.",
+     "latex": "I=\\frac{3.0}{220}=13.6\\ \\mathrm{mA}"
+    }
+   ],
+   "answer": "Use 220 ohm, which gives 13.6 mA. Rounding up is the safe direction, since it only reduces current."
+  },
+  {
+   "type": "text",
+   "markdown": "**Flyback (freewheel) diode.** An inductive load such as a relay coil or solenoid stores energy $\\tfrac12LI^2$. If the switch opens, the current $I$ cannot drop to zero instantly, so the coil produces a large voltage $v=L\\,di/dt$ of reversed polarity that can exceed the switch's rating. A diode connected **across the coil, cathode toward the positive supply**, is reverse-biased in normal operation and does nothing. When the switch opens, the coil's reversed voltage forward-biases the diode, which gives the current a path to circulate and decay. The coil voltage is clamped near $-V_f$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Application",
+    "Diode position",
+    "Normal operation",
+    "Role"
+   ],
+   "rows": [
+    [
+     "Half-wave rectifier",
+     "In series with load",
+     "Conducts on positive half-cycles",
+     "Converts AC to pulsating DC"
+    ],
+    [
+     "Flyback diode",
+     "Across the coil, cathode to +supply",
+     "Reverse biased (off)",
+     "Clamps the inductive spike; passes decaying coil current"
+    ],
+    [
+     "LED",
+     "In series with a resistor",
+     "Forward biased, ~2 V drop",
+     "Indicator; resistor sets current"
+    ],
+    [
+     "Reverse-polarity protection",
+     "In series with supply",
+     "Forward biased",
+     "Blocks a wrongly connected supply"
+    ]
+   ],
+   "caption": "Common roles of diodes in mechatronic circuits"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Silicon $V_f\\approx0.7$ V, Schottky $\\approx0.3$ V, LED about 1.8 to 3 V (typical values).",
+    "Half-wave output peak is $V_p-V_f$; conduction angle is slightly less than 180 degrees.",
+    "The LED resistor is $R=(V_s-V_f)/I_F$, rounded to a standard value that gives a safe current.",
+    "A flyback diode must be rated for the full coil current at turn-off."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Flyback diode polarity",
+   "text": "Fitted the wrong way round, the diode conducts the full supply current whenever the coil is switched on, creating a short circuit across the supply. Cathode to the positive side, anode to the switch side."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A real diode conducts only above $V_f$; a half-wave rectifier's output peaks at $V_p-V_f$ with $V_p=\\sqrt2V_{rms}$.",
+    "A flyback diode across an inductive load gives the coil current a path at turn-off and clamps the voltage spike.",
+    "LED resistor: $R=(V_s-V_f)/I_F$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 3.3 V supply drives an LED with $V_f=1.8$ V at 10 mA through a series resistor. Which resistor value is required?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "150 ohm"
+    },
+    {
+     "id": "b",
+     "text": "330 ohm"
+    },
+    {
+     "id": "c",
+     "text": "180 ohm"
+    },
+    {
+     "id": "d",
+     "text": "15 ohm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "150 ohm",
+   "distractorRationale": {
+    "a": "Correct: (3.3 - 1.8)/0.010 = 150 ohm.",
+    "b": "Wrong: this uses the full 3.3 V across the resistor and ignores the LED drop.",
+    "c": "Wrong: this uses V_f/I = 1.8/0.010, dividing the LED voltage rather than the resistor voltage.",
+    "d": "Wrong: this is 1.5/0.1, a decimal slip by a factor of ten in the current."
+   },
+   "explanation": "Kirchhoff's voltage law gives $V_R=3.3-1.8=1.5$ V across the resistor. Then $R=V_R/I=1.5/0.010=150$ ohm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A sinusoidal source of 10 V peak drives a silicon diode ($V_f=0.7$ V) in series with a resistor (half-wave rectifier). What is the peak voltage across the resistor?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "9.3 V"
+    },
+    {
+     "id": "b",
+     "text": "10 V"
+    },
+    {
+     "id": "c",
+     "text": "10.7 V"
+    },
+    {
+     "id": "d",
+     "text": "8.6 V"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "9.3 V",
+   "distractorRationale": {
+    "a": "Correct: 10 - 0.7 = 9.3 V.",
+    "b": "Wrong: this ignores the diode drop.",
+    "c": "Wrong: this adds the drop instead of subtracting it.",
+    "d": "Wrong: this subtracts the drop twice, as if there were two conducting diodes."
+   },
+   "explanation": "The diode drops $V_f$ whenever it conducts, so the load peak is $V_p-V_f=10-0.7=9.3$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the purpose of a flyback diode across a relay coil?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "To give the coil current a path when the switch opens, limiting the voltage spike"
+    },
+    {
+     "id": "b",
+     "text": "To increase the coil's pull-in force"
+    },
+    {
+     "id": "c",
+     "text": "To rectify the AC supply to the coil"
+    },
+    {
+     "id": "d",
+     "text": "To reduce the current when the coil is energised"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "To give the coil current a path when the switch opens, limiting the voltage spike",
+   "distractorRationale": {
+    "a": "Correct: it conducts the decaying inductor current and clamps the voltage.",
+    "b": "Wrong: the diode is reverse-biased while the coil is energised and has no effect on force.",
+    "c": "Wrong: the supply is DC; rectification is not involved.",
+    "d": "Wrong: the diode carries no current while the coil is on."
+   },
+   "explanation": "An inductor resists a change in current, so opening the switch would force a huge $L\\,di/dt$ voltage. The flyback diode conducts and lets the current decay safely.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A relay coil is powered from +12 V through a low-side transistor switch (coil between +12 V and the transistor). Which is the correct flyback diode connection?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Cathode to +12 V, anode to the transistor side of the coil"
+    },
+    {
+     "id": "b",
+     "text": "Anode to +12 V, cathode to the transistor side of the coil"
+    },
+    {
+     "id": "c",
+     "text": "In series with the coil, anode to +12 V"
+    },
+    {
+     "id": "d",
+     "text": "Across the transistor, anode to ground"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Cathode to +12 V, anode to the transistor side of the coil",
+   "distractorRationale": {
+    "a": "Correct: reverse-biased while the coil is on; conducts when the coil voltage reverses.",
+    "b": "Wrong: this is forward-biased and would short the supply to the transistor node.",
+    "c": "Wrong: a series diode would block the reverse current path it must provide.",
+    "d": "Wrong: this does not clamp the inductive kick safely and is not placed across the coil."
+   },
+   "explanation": "In normal operation the transistor node is near 0 V and the diode's cathode is at +12 V, so it is reverse-biased. At turn-off the coil end at the transistor swings above +12 V, forward-biasing the diode and providing a path for the current.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 5.0 V peak sine wave drives a silicon diode ($V_f=0.7$ V) in a half-wave rectifier. For approximately what fraction of each full cycle does the diode conduct?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "45.5 %"
+    },
+    {
+     "id": "b",
+     "text": "50 %"
+    },
+    {
+     "id": "c",
+     "text": "86 %"
+    },
+    {
+     "id": "d",
+     "text": "14 %"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "45.5 %",
+   "distractorRationale": {
+    "a": "Correct: it conducts while 5 sin(theta) > 0.7, i.e. 8.05 to 171.95 degrees = 163.9 degrees, 45.5 % of 360.",
+    "b": "Wrong: this is the ideal diode case with V_f = 0.",
+    "c": "Wrong: this is 100 % minus 14 %, which confuses the blocked fraction.",
+    "d": "Wrong: this is V_f/V_p, not a time fraction."
+   },
+   "explanation": "Conduction starts when $5\\sin\\theta=0.7$, i.e. $\\theta=\\arcsin(0.14)=8.05^\\circ$, and ends at $171.95^\\circ$. That is $163.9^\\circ$ of $360^\\circ$, or 45.5 %.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A white LED ($V_f=3.1$ V typical) is to run at 20 mA from a 12 V supply. What series resistance (in ohms) is needed?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o3"
+   ],
+   "correctValue": 445,
+   "tolerance": 5,
+   "unit": "ohm",
+   "explanation": "The resistor must drop $12-3.1=8.9$ V at 20 mA, so $R=8.9/0.020=445$ ohm. A standard 470 ohm part would give about 18.9 mA.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A green LED ($V_f=2.2$ V) is connected with a 330 ohm series resistor to a 5.0 V supply. What current (in mA) does it carry?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o3"
+   ],
+   "correctValue": 8.5,
+   "tolerance": 0.1,
+   "unit": "mA",
+   "explanation": "The resistor drops $5.0-2.2=2.8$ V, so $I=2.8/330=8.5$ mA. This is a safe, comfortably bright level for a small indicator LED.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A transformer secondary of 18.0 V rms feeds a silicon diode ($V_f=0.7$ V) and a 47 ohm resistor in series (half-wave rectifier). What is the peak load current, in amperes?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o1"
+   ],
+   "correctValue": 0.527,
+   "tolerance": 0.005,
+   "unit": "A",
+   "explanation": "The peak source voltage is $\\sqrt2\\times18.0=25.46$ V. After the diode drop the peak load voltage is $24.76$ V, so $I_{peak}=24.76/47=0.527$ A.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A 24 V solenoid (inductance 0.2 H, carrying 0.5 A) is switched by a transistor. Explain what happens when the transistor turns off with and without a flyback diode. Include the energy stored in the coil.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o2"
+   ],
+   "markingGuide": [
+    "States stored energy 0.5 L I^2 = 25 mJ",
+    "States an inductor opposes sudden current change: v = L di/dt",
+    "Without diode, current is forced to fall fast so the coil voltage spikes far above 24 V, possibly destroying the transistor",
+    "With diode across the coil, cathode to supply, the diode conducts the decaying current",
+    "Voltage clamped to about the supply plus V_f at the transistor node, energy dissipated in coil resistance and diode"
+   ],
+   "explanation": "The coil stores $\\tfrac12LI^2=0.5\\times0.2\\times0.5^2=25$ mJ. Without a diode the transistor tries to cut the current abruptly, so $v=L\\,di/dt$ becomes very large and may exceed the transistor's rating. With a flyback diode the coil current continues through it and decays slowly, and the transistor sees only about the supply voltage plus one diode drop.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe and sketch (in words, giving key voltages and angles) the output of a half-wave rectifier driven by a 6 V peak, 50 Hz sine through a silicon diode with $V_f=0.7$ V into a resistor. State the peak output, the time the diode conducts per cycle, and the peak reverse voltage across the diode.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.diodes.o1"
+   ],
+   "markingGuide": [
+    "Peak output = 6 - 0.7 = 5.3 V",
+    "Output is zero during negative half-cycles",
+    "Diode conducts only when v_in > 0.7 V: starts at about 6.7 degrees and stops at about 173.3 degrees",
+    "Conduction time per cycle approx 166.6/360 x 20 ms = about 9.3 ms (less than a half period of 10 ms)",
+    "Peak reverse voltage across diode about 6 V (the source peak) when load is purely resistive"
+   ],
+   "explanation": "The load peak is $6-0.7=5.3$ V and the output is zero in the negative half-cycle. Conduction starts when $6\\sin\\theta=0.7$, i.e. at $6.7^\\circ$, and ends at $173.3^\\circ$, giving $166.6^\\circ$ or about 9.3 ms of each 20 ms period. The reverse voltage across the diode reaches about 6 V.",
+   "board": "internal"
+  }
+ ]
+}

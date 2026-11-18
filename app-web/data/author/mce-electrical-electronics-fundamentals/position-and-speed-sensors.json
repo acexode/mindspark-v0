@@ -1,0 +1,410 @@
+{
+ "lessonTitle": "Position and Speed Sensors",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A pick-and-place head must park a 0.5 mm component within 0.02 mm, and the controller must know the motor's speed to hold a constant belt feed. Both facts come from a small disc of slots on the motor shaft: an incremental encoder turns rotation into pulses that a microcontroller can count."
+  },
+  {
+   "type": "text",
+   "markdown": "A **position or speed sensor** converts shaft angle or motion into an electrical signal. Simple choices include a **potentiometer** (a resistive divider whose wiper voltage is proportional to angle: cheap, analogue, limited travel) and an **incremental optical encoder**, which has a disc with a fixed number of equally spaced slots in front of a light source and detector. Each slot passing produces one pulse, so counting pulses gives angle and counting pulses per second gives speed."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Incremental encoder resolution",
+   "text": "An encoder with $N$ pulses per revolution (PPR) on one channel has angular resolution $\\Delta\\theta=360^\\circ/N$ per pulse. Two channels, A and B, are offset by a quarter of a pitch (quadrature), so a decoder can count all four edges per slot: counts per revolution $=4N$ and $\\Delta\\theta=360^\\circ/(4N)$. The order of the edges (A leads B or B leads A) gives the direction of rotation."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta\\theta=\\frac{360^{\\circ}}{4N},\\qquad \\theta=\\frac{n}{4N}\\,360^{\\circ},\\qquad \\omega=\\frac{2\\pi f_A}{N}\\ \\mathrm{(rad/s)},\\qquad n_{rpm}=\\frac{60\\,f_A}{N}",
+   "caption": "Position from count n, and shaft speed from the pulse frequency f_A of channel A (N = pulses per revolution)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Resolution and position",
+   "prompt": "A 1024 PPR encoder is decoded in x4 quadrature mode. Find its angular resolution, and the shaft angle after a net count of 3000.",
+   "steps": [
+    {
+     "text": "Counts per revolution.",
+     "latex": "4N=4\\times1024=4096"
+    },
+    {
+     "text": "Resolution.",
+     "latex": "\\Delta\\theta=\\frac{360}{4096}=0.0879^\\circ"
+    },
+    {
+     "text": "Angle for $n=3000$ counts.",
+     "latex": "\\theta=\\frac{3000}{4096}\\times360^\\circ=263.7^\\circ"
+    }
+   ],
+   "answer": "Resolution 0.0879 degrees per count; a net count of 3000 corresponds to 263.7 degrees from the start."
+  },
+  {
+   "type": "worked_example",
+   "title": "Speed from pulse frequency",
+   "prompt": "The same 1024 PPR encoder produces 25.6 kHz on channel A. What is the shaft speed in rev/s, rpm and rad/s?",
+   "steps": [
+    {
+     "text": "Pulses per second divided by pulses per revolution.",
+     "latex": "n=\\frac{25600}{1024}=25.0\\ \\mathrm{rev/s}"
+    },
+    {
+     "text": "Convert to rpm and rad/s.",
+     "latex": "25.0\\times60=1500\\ \\mathrm{rpm},\\qquad \\omega=2\\pi\\times25.0=157.1\\ \\mathrm{rad/s}"
+    }
+   ],
+   "answer": "25 rev/s = 1500 rpm = 157 rad/s. At low speed it is better to measure the time between pulses; at high speed, count pulses in a fixed gate time."
+  },
+  {
+   "type": "text",
+   "markdown": "**Signal conditioning for an ADC.** Many sensors (strain bridges, thermocouples, current shunts) give millivolt-level outputs, but an ADC input spans volts. An op-amp **amplifier** scales the sensor range to fill the ADC range, which makes best use of its resolution; the gain is $G=V_{ADC,max}/V_{sensor,max}$. A **low-pass filter** placed before the ADC removes noise above the signal band and prevents aliasing: its cut-off should be well below half the sampling rate, but above the highest signal frequency of interest."
+  },
+  {
+   "type": "math",
+   "latex": "G=\\frac{V_{ADC,fs}}{V_{sensor,fs}},\\qquad G_{non}=1+\\frac{R_f}{R_g},\\qquad f_c=\\frac{1}{2\\pi RC}",
+   "caption": "Gain to match sensor and ADC full scale, non-inverting gain and first-order RC filter cut-off"
+  },
+  {
+   "type": "worked_example",
+   "title": "Conditioning a 0 to 20 mV sensor",
+   "prompt": "A sensor outputs 0 to 20 mV. The 10-bit ADC spans 0 to 3.3 V. Choose a non-inverting gain and resistors, leaving some headroom. Then choose an RC low-pass to suppress 1 kHz noise while passing signals below 50 Hz.",
+   "steps": [
+    {
+     "text": "Maximum gain without clipping.",
+     "latex": "G_{max}=\\frac{3.3}{0.020}=165"
+    },
+    {
+     "text": "Choose $G=150$ (about 91 % of full scale), with $R_g=1$ k$\\Omega$.",
+     "latex": "R_f=(G-1)R_g=149\\ \\mathrm{k\\Omega}\\ \\Rightarrow\\ \\text{use }150\\ \\mathrm{k\\Omega},\\ G=151,\\ V_{max}=3.02\\ \\mathrm{V}"
+    },
+    {
+     "text": "Filter cut-off: choose $f_c=100$ Hz. With $C=100$ nF, find $R$.",
+     "latex": "R=\\frac{1}{2\\pi f_cC}=\\frac{1}{2\\pi\\times100\\times100\\times10^{-9}}=15.9\\ \\mathrm{k\\Omega}\\ (\\text{use }16\\ \\mathrm{k\\Omega})"
+    }
+   ],
+   "answer": "Non-inverting gain of 151 (R_g = 1 k, R_f = 150 k) maps 20 mV to 3.02 V. An RC with 16 kohm and 100 nF has f_c = 99.5 Hz, which attenuates 1 kHz noise by about 10 times."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Sensor",
+    "Output",
+    "Strength",
+    "Limitation"
+   ],
+   "rows": [
+    [
+     "Potentiometer",
+     "Analogue voltage proportional to angle",
+     "Simple, absolute position",
+     "Wear, limited travel, noise"
+    ],
+    [
+     "Incremental encoder",
+     "Pulse trains A/B",
+     "High resolution, digital, rugged",
+     "Needs a reference (homing); loses position if counts are missed"
+    ],
+    [
+     "Absolute encoder",
+     "Digital code for each angle",
+     "Position known at power-up",
+     "More expensive, more wires"
+    ],
+    [
+     "Tachogenerator",
+     "Voltage proportional to speed",
+     "Direct speed signal",
+     "Brush wear, needs ADC"
+    ]
+   ],
+   "caption": "Position and speed sensor options"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Higher PPR or x4 decoding gives finer angular and linear resolution.",
+    "Speed is the rate of count change: $f_A/N$ in rev/s.",
+    "Match amplifier gain to the ADC full scale, leaving a margin of 5 to 10 %.",
+    "Set the filter cut-off below half the sampling rate to avoid aliasing."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Resolution is not accuracy",
+   "text": "An encoder's counts per revolution fix the smallest angular step, but the disc's slot-position error, mechanical backlash and mounting eccentricity limit true accuracy."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Incremental encoder: $\\Delta\\theta=360^\\circ/N$ per pulse, or $360^\\circ/4N$ with quadrature decoding.",
+    "Shaft speed is $n=f_A/N$ in rev/s (rpm $=60f_A/N$).",
+    "Condition a low-level sensor with gain $G=V_{ADC,fs}/V_{sensor,fs}$ and an RC low-pass with $f_c=1/2\\pi RC$ before the ADC."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 600 PPR incremental encoder is read with only one channel and one edge counted per slot. What is the angular resolution?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.6 degrees"
+    },
+    {
+     "id": "b",
+     "text": "0.15 degrees"
+    },
+    {
+     "id": "c",
+     "text": "1.67 degrees"
+    },
+    {
+     "id": "d",
+     "text": "2.4 degrees"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.6 degrees",
+   "distractorRationale": {
+    "a": "Correct: 360/600 = 0.6 degrees.",
+    "b": "Wrong: 0.15 degrees is 360/(4 x 600), the quadrature value.",
+    "c": "Wrong: this is 600/360 inverted.",
+    "d": "Wrong: this is 360/150, a misread PPR."
+   },
+   "explanation": "With one count per slot the resolution is $360^\\circ/N=360/600=0.6^\\circ$. Quadrature decoding would improve this by a factor of four.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 500 PPR encoder is decoded in x4 quadrature mode. What is the angular resolution?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.18 degrees"
+    },
+    {
+     "id": "b",
+     "text": "0.72 degrees"
+    },
+    {
+     "id": "c",
+     "text": "0.045 degrees"
+    },
+    {
+     "id": "d",
+     "text": "1.44 degrees"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.18 degrees",
+   "distractorRationale": {
+    "a": "Correct: 360/(4 x 500) = 0.18 degrees.",
+    "b": "Wrong: 0.72 degrees is the single-edge resolution 360/500.",
+    "c": "Wrong: 0.045 degrees applies a further factor of 4.",
+    "d": "Wrong: this multiplies by 2 instead of dividing by 4."
+   },
+   "explanation": "There are $4\\times500=2000$ counts per revolution, so $\\Delta\\theta=360/2000=0.18^\\circ$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why is a low-pass filter placed in front of an ADC input?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "To remove noise above the signal band and prevent aliasing"
+    },
+    {
+     "id": "b",
+     "text": "To increase the ADC resolution"
+    },
+    {
+     "id": "c",
+     "text": "To amplify the sensor signal"
+    },
+    {
+     "id": "d",
+     "text": "To convert the signal to digital"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "To remove noise above the signal band and prevent aliasing",
+   "distractorRationale": {
+    "a": "Correct: components above half the sampling rate would fold into the band.",
+    "b": "Wrong: resolution depends on bit depth and reference.",
+    "c": "Wrong: a passive filter does not amplify.",
+    "d": "Wrong: conversion is the ADC's job."
+   },
+   "explanation": "Frequencies above half the sampling rate fold back into the measured band as false low-frequency signals. A filter placed before the ADC attenuates them first.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 360 PPR encoder gives 3.0 kHz on channel A. What is the shaft speed?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "500 rpm"
+    },
+    {
+     "id": "b",
+     "text": "8.33 rpm"
+    },
+    {
+     "id": "c",
+     "text": "1080 rpm"
+    },
+    {
+     "id": "d",
+     "text": "125 rpm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "500 rpm",
+   "distractorRationale": {
+    "a": "Correct: 3000/360 = 8.33 rev/s = 500 rpm.",
+    "b": "Wrong: this forgets to convert rev/s to rpm.",
+    "c": "Wrong: this multiplies pulses by PPR.",
+    "d": "Wrong: this divides by the x4 factor, which applies to counting, not to the channel A frequency."
+   },
+   "explanation": "Revolutions per second are pulses per second divided by pulses per revolution: $3000/360=8.33$ rev/s. Multiply by 60 for 500 rpm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A sensor gives 0 to 50 mV and must fill a 0 to 5.0 V ADC range exactly. Which non-inverting amplifier is correct?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "R_f = 99 k$\\Omega$, R_g = 1 k$\\Omega$"
+    },
+    {
+     "id": "b",
+     "text": "R_f = 100 k$\\Omega$, R_g = 1 k$\\Omega$"
+    },
+    {
+     "id": "c",
+     "text": "R_f = 10 k$\\Omega$, R_g = 1 k$\\Omega$"
+    },
+    {
+     "id": "d",
+     "text": "R_f = 100 k$\\Omega$ inverting with R_in = 1 k$\\Omega$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "R_f = 99 k$\\Omega$, R_g = 1 k$\\Omega$",
+   "distractorRationale": {
+    "a": "Correct: gain 1 + 99 = 100, so 50 mV gives 5.0 V.",
+    "b": "Wrong: gain 101 gives 5.05 V, which exceeds the ADC range.",
+    "c": "Wrong: gain 11 gives only 0.55 V.",
+    "d": "Wrong: the inverting circuit would give a negative output (-5 V), outside the unipolar ADC range."
+   },
+   "explanation": "The required gain is $5.0/0.050=100$. For a non-inverting stage $G=1+R_f/R_g$, so $R_f/R_g=99$, i.e. 99 k$\\Omega$ with 1 k$\\Omega$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A lead screw has a pitch of 5.0 mm per revolution and is driven directly by a 2000 PPR encoder shaft decoded in x4 mode. What linear resolution is obtained, in micrometres?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o1"
+   ],
+   "correctValue": 0.625,
+   "tolerance": 0.01,
+   "unit": "um",
+   "explanation": "Counts per revolution are $4\\times2000=8000$. One count moves the nut $5.0\\ \\mathrm{mm}/8000=0.625\\ \\mu$m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 2048 PPR encoder is decoded in x4 mode and 2400 counts are accumulated in a gate time of 50 ms. What is the shaft speed in rpm?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o2"
+   ],
+   "correctValue": 351.6,
+   "tolerance": 1,
+   "unit": "rpm",
+   "explanation": "Counts per revolution are $4\\times2048=8192$, so 2400 counts is $2400/8192=0.2930$ rev. In 0.050 s this is 5.859 rev/s, which is $5.859\\times60=351.6$ rpm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A sensor has a full-scale output of 12 mV. The ADC range is 0 to 3.3 V and the design must use 90 % of full scale at the maximum sensor output to leave headroom. What amplifier gain is required?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o3"
+   ],
+   "correctValue": 247.5,
+   "tolerance": 2,
+   "unit": "(dimensionless)",
+   "explanation": "The target maximum is $0.90\\times3.3=2.97$ V. The gain is $2.97/0.012=247.5$. For a non-inverting stage, $R_f/R_g=246.5$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how an incremental encoder with channels A and B determines position, direction and speed. Why does quadrature decoding improve resolution?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o1",
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o2"
+   ],
+   "markingGuide": [
+    "Each slot gives pulses; counting pulses gives angle = count x 360/(counts per rev)",
+    "A and B are offset by a quarter period (90 degrees electrical)",
+    "Which channel leads determines the direction of rotation",
+    "Counting all four edges per slot gives 4N counts per revolution, a 4x finer resolution",
+    "Speed from pulse frequency f_A/N or count change per gate time"
+   ],
+   "explanation": "Counting pulses from the slotted disc gives the angle moved. Channels A and B are a quarter-period apart, so which one leads indicates the direction, and counting both edges of both channels gives $4N$ counts per revolution, four times the resolution of counting one channel. Speed follows from the pulse rate, $f_A/N$ revolutions per second.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A strain-gauge bridge outputs 0 to 25 mV. It is to be sampled at 1 kHz by a 12-bit ADC (0 to 3.3 V). Specify a suitable amplifier gain, a filter cut-off frequency, and state the sensor-referred voltage resolution. Justify your choices.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.sensors.position-and-speed-sensors.o3"
+   ],
+   "markingGuide": [
+    "Maximum gain 3.3/0.025 = 132; chooses about 120 (headroom), giving about 3.0 V full scale",
+    "ADC LSB = 3.3/4096 = 0.806 mV",
+    "Sensor-referred resolution = 0.806 mV / 120 = about 6.7 uV",
+    "Nyquist: sampling at 1 kHz requires signals below 500 Hz; filter cut-off chosen well below, e.g. 100 to 200 Hz",
+    "Filter removes noise (mains hum, motor noise) above the signal band to prevent aliasing"
+   ],
+   "explanation": "The largest gain that avoids clipping is $3.3/0.025=132$; a gain near 120 gives a 3.0 V full scale and some headroom. The ADC step is $3.3/4096=0.806$ mV, which referred to the sensor is $0.806/120\\approx6.7\\ \\mu$V. With $f_s=1$ kHz, only signals below 500 Hz can be represented, so an anti-alias low-pass with $f_c$ of about 100 to 200 Hz removes noise and prevents aliasing.",
+   "board": "internal"
+  }
+ ]
+}

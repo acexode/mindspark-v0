@@ -1,0 +1,381 @@
+{
+ "lessonTitle": "Computing Mass Moments of Inertia",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A robot arm link and a bicycle wheel can have the same mass yet very different resistance to being spun up. The difference is the mass moment of inertia, which tells you how much torque is needed for a given angular acceleration. Designers calculate it from simple shapes rather than integrating every time."
+  },
+  {
+   "type": "text",
+   "markdown": "Newton's second law for rotation about a fixed axis is $\\sum M=I\\alpha$, where $M$ is moment in N m, $\\alpha$ is angular acceleration in rad/s$^2$ and $I$ is the **mass moment of inertia** about that axis in kg m$^2$. Unlike mass, $I$ depends on the axis chosen and on how far the mass lies from it. It is defined as a sum over all mass elements $dm$ at perpendicular distance $r$ from the axis."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Mass moment of inertia",
+   "text": "$I=\\int r^{2}\\,dm$ about a stated axis, in kg m$^2$. Mass far from the axis counts for much more than mass near it because distance is squared. Every value of $I$ must be quoted with its axis."
+  },
+  {
+   "type": "math",
+   "latex": "I_{\\text{rod, centre}}=\\frac{1}{12}ML^{2},\\quad I_{\\text{rod, end}}=\\frac{1}{3}ML^{2},\\quad I_{\\text{disc}}=\\frac{1}{2}MR^{2}",
+   "caption": "Uniform slender rod of length $L$ about a perpendicular axis, and a uniform solid disc or cylinder about its own axis (mass $M$, radius $R$)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Slender rod",
+   "prompt": "A uniform slender rod of mass 3 kg and length 1.2 m. Find $I$ about a perpendicular axis through its centre and through one end.",
+   "steps": [
+    {
+     "text": "Centre axis: apply $ML^2/12$.",
+     "latex": "I_G=\\frac{3(1.2)^2}{12}=0.360\\ \\text{kg m}^2"
+    },
+    {
+     "text": "End axis: apply $ML^2/3$ (this is also the parallel-axis result with offset 0.6 m).",
+     "latex": "I_{\\text{end}}=\\frac{3(1.2)^2}{3}=1.440\\ \\text{kg m}^2"
+    }
+   ],
+   "answer": "$I_G=0.360$ kg m$^2$ and $I_{\\text{end}}=1.440$ kg m$^2$, four times larger, because the average mass is moved farther from the axis."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Body",
+    "Axis",
+    "I"
+   ],
+   "rows": [
+    [
+     "Slender rod",
+     "Perpendicular, through centre",
+     "$\\tfrac{1}{12}ML^2$"
+    ],
+    [
+     "Slender rod",
+     "Perpendicular, through end",
+     "$\\tfrac{1}{3}ML^2$"
+    ],
+    [
+     "Solid disc/cylinder",
+     "Own axis",
+     "$\\tfrac{1}{2}MR^2$"
+    ],
+    [
+     "Thin ring/hoop",
+     "Own axis",
+     "$MR^2$"
+    ],
+    [
+     "Solid sphere",
+     "Through centre",
+     "$\\tfrac{2}{5}MR^2$"
+    ]
+   ],
+   "caption": "Standard moments of inertia for uniform bodies."
+  },
+  {
+   "type": "text",
+   "markdown": "**Parallel-axis theorem.** If the moment of inertia $I_G$ about an axis through the centre of mass $G$ is known, the moment about any parallel axis a perpendicular distance $d$ away is larger by exactly $md^2$. The axis through $G$ always gives the **smallest** value among parallel axes. The theorem only links a centroidal axis to another one, so to move between two non-centroidal axes you go via $G$."
+  },
+  {
+   "type": "math",
+   "latex": "I=I_G+md^{2}",
+   "caption": "$m$ is the body mass in kg and $d$ the distance between the axes in m."
+  },
+  {
+   "type": "text",
+   "markdown": "**Composite bodies.** Moments of inertia about the **same axis** add. Split the body into standard shapes, find each $I$ about the common axis using the parallel-axis theorem where needed, and sum. A cut-out (hole) is treated as a body of negative mass, so its inertia is subtracted."
+  },
+  {
+   "type": "worked_example",
+   "title": "Pendulum with a disc",
+   "prompt": "A pendulum is a uniform rod (2 kg, 0.8 m) pinned at one end O. A thin solid disc (1.5 kg, radius 0.1 m) is fixed to the free end so that the disc centre lies on the rod axis 0.9 m from O. Find $I_O$ about the pin axis (perpendicular to the plane).",
+   "steps": [
+    {
+     "text": "Rod about its end.",
+     "latex": "I_{\\text{rod}}=\\frac{2(0.8)^2}{3}=0.4267\\ \\text{kg m}^2"
+    },
+    {
+     "text": "Disc about its own centre.",
+     "latex": "I_{G,\\text{disc}}=\\frac{1}{2}(1.5)(0.1)^2=0.0075\\ \\text{kg m}^2"
+    },
+    {
+     "text": "Shift the disc to O with $d=0.9$ m.",
+     "latex": "I_{\\text{disc}}=0.0075+1.5(0.9)^2=1.2225\\ \\text{kg m}^2"
+    },
+    {
+     "text": "Add the parts.",
+     "latex": "I_O=0.4267+1.2225=1.649\\ \\text{kg m}^2"
+    }
+   ],
+   "answer": "$I_O\\approx1.65$ kg m$^2$. The disc contributes most of it because it is far from the pin."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Checklist",
+   "text": "State the axis. Use $I_G$ with $md^2$ for any axis that does not pass through the centre of mass. Add parts about the same axis; subtract holes. Never add moments taken about different axes."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Using $ML^2/12$ when the axis is at the end of the rod, forgetting the $md^2$ term, using the diameter instead of the radius in $\\tfrac12MR^2$, and adding a hole's inertia instead of subtracting it."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "$I$ has units kg m$^2$ (not kg m).",
+    "Rods and discs: memorise $\\tfrac{1}{12}ML^2$, $\\tfrac{1}{3}ML^2$ and $\\tfrac12MR^2$.",
+    "Composite: same axis, parallel-axis for each part, add, subtract holes."
+   ]
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$I=\\int r^2dm$ about a stated axis; a rod is $\\tfrac1{12}ML^2$ about its centre and a disc is $\\tfrac12MR^2$ about its axis.",
+    "The parallel-axis theorem $I=I_G+md^2$ shifts a centroidal inertia to a parallel axis.",
+    "Composite inertia is the sum of the parts about the same axis, with cut-outs subtracted."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A uniform slender rod of mass $M$ and length $L$ rotates about a perpendicular axis through its midpoint. Which expression gives its mass moment of inertia?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\tfrac{1}{12}ML^2$"
+    },
+    {
+     "id": "b",
+     "text": "$\\tfrac{1}{3}ML^2$"
+    },
+    {
+     "id": "c",
+     "text": "$\\tfrac{1}{2}ML^2$"
+    },
+    {
+     "id": "d",
+     "text": "$\\tfrac{1}{4}ML^2$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\tfrac{1}{12}ML^2$",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "This is the value about an axis through one end.",
+    "c": "This would apply to a rod of length $L$ with all its mass at one end of an arm of length $L$ halved incorrectly; it overestimates greatly.",
+    "d": "This would result from placing all the mass at distance $L/2$, which is a point-mass approximation."
+   },
+   "explanation": "Integrating $r^2dm$ along the rod from $-L/2$ to $+L/2$ gives $ML^2/12$. The value is smaller than the end-axis value $ML^2/3$ because the mass is on average closer to the axis.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A solid steel disc of mass 12 kg and diameter 0.50 m rotates about its own axis. Find its mass moment of inertia in kg m$^2$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o1"
+   ],
+   "correctValue": 0.375,
+   "tolerance": 0.005,
+   "unit": "kg m^2",
+   "explanation": "The radius is $R=0.25$ m. Using $I=\\tfrac12MR^2=0.5(12)(0.0625)=0.375$ kg m$^2$. Using the diameter instead of the radius would give a value 4 times too large.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A slender rod has moment of inertia $I_G$ about a perpendicular axis through its centre. What is the ratio $I_{\\text{end}}/I_G$ for a parallel axis through one end?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o1",
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2"
+    },
+    {
+     "id": "b",
+     "text": "3"
+    },
+    {
+     "id": "c",
+     "text": "4"
+    },
+    {
+     "id": "d",
+     "text": "12"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "4",
+   "distractorRationale": {
+    "a": "This would arise from treating the rod as two half-rods without squaring the distance.",
+    "b": "This is the difference $ML^2/3$ over $ML^2/12$ miscalculated as $3$.",
+    "c": "Correct.",
+    "d": "This is the denominator of $I_G$ and not a ratio."
+   },
+   "explanation": "With $d=L/2$, $I_{\\text{end}}=\\tfrac1{12}ML^2+M(L/2)^2=\\tfrac13ML^2$. The ratio is $(1/3)/(1/12)=4$, which confirms the standard result from the parallel-axis theorem.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A solid roller of mass 8 kg and radius 0.15 m rolls on a table. Find the moment of inertia, in kg m$^2$, about a line parallel to the roller axis that lies on the roller's cylindrical surface.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o2"
+   ],
+   "correctValue": 0.27,
+   "tolerance": 0.005,
+   "unit": "kg m^2",
+   "explanation": "About its own axis $I_G=\\tfrac12(8)(0.15)^2=0.090$ kg m$^2$. The parallel axis is a distance $d=R=0.15$ m away, so $I=0.090+8(0.15)^2=0.270$ kg m$^2$, three times $I_G$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A flywheel has $I_G=0.50$ kg m$^2$ about an axis through its centre of mass and a mass of 10 kg. What is its moment of inertia about a parallel axis 0.40 m from the centre of mass?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4.50 kg m$^2$"
+    },
+    {
+     "id": "b",
+     "text": "0.66 kg m$^2$"
+    },
+    {
+     "id": "c",
+     "text": "1.60 kg m$^2$"
+    },
+    {
+     "id": "d",
+     "text": "2.10 kg m$^2$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "2.10 kg m$^2$",
+   "distractorRationale": {
+    "a": "This uses $md$ rather than $md^2$.",
+    "b": "This adds $d^2$ without multiplying by the mass.",
+    "c": "This gives only $md^2$ and forgets to add $I_G$.",
+    "d": "Correct."
+   },
+   "explanation": "Apply $I=I_G+md^2=0.50+10(0.40)^2=0.50+1.60=2.10$ kg m$^2$. Both terms are needed and the distance must be squared.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A uniform circular plate of radius 0.30 m would have a mass of 20 kg if solid. A concentric hole of radius 0.10 m is cut out (the plate has uniform thickness, so the removed mass is proportional to area). Find the moment of inertia in kg m$^2$ of the drilled plate about its central axis.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o3"
+   ],
+   "correctValue": 0.8889,
+   "tolerance": 0.005,
+   "unit": "kg m^2",
+   "explanation": "The removed disc has mass $20(0.10/0.30)^2=2.222$ kg. Then $I=\\tfrac12(20)(0.30)^2-\\tfrac12(2.222)(0.10)^2=0.900-0.0111=0.889$ kg m$^2$. The hole is subtracted because it removes inertia.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A uniform rod (3 kg, 1.0 m long) is pivoted at its midpoint. Two small collars, each 1 kg, are clamped at its ends (treat them as point masses). What is the moment of inertia of the assembly about the pivot?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.50 kg m$^2$"
+    },
+    {
+     "id": "b",
+     "text": "0.75 kg m$^2$"
+    },
+    {
+     "id": "c",
+     "text": "0.25 kg m$^2$"
+    },
+    {
+     "id": "d",
+     "text": "2.25 kg m$^2$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "0.75 kg m$^2$",
+   "distractorRationale": {
+    "a": "This uses $ML^2/3$ for the rod, which is the end-axis formula, plus the collars.",
+    "b": "Correct.",
+    "c": "This is the rod alone; the collars have been omitted.",
+    "d": "This puts the collars at 1.0 m instead of 0.5 m from the pivot."
+   },
+   "explanation": "The rod contributes $3(1.0)^2/12=0.25$ kg m$^2$ and each collar contributes $1(0.5)^2=0.25$ kg m$^2$. The total is $0.25+0.50=0.75$ kg m$^2$, because moments about the same axis add.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "State the parallel-axis theorem, define every term, and explain (a) why the centroidal axis gives the smallest moment of inertia of all parallel axes and (b) how you would find $I$ about axis B from a known value about a non-centroidal axis A.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o2"
+   ],
+   "markingGuide": [
+    "States $I=I_G+md^2$",
+    "Defines $I_G$ as the moment about the parallel axis through the centre of mass, $m$ the mass and $d$ the perpendicular distance between the axes",
+    "Explains that $md^2\\ge0$ so every parallel axis gives a value at least $I_G$",
+    "For (b) subtracts $md_A^2$ to return to $I_G$, then adds $md_B^2$ to reach axis B",
+    "Notes the theorem applies only to parallel axes and uses the centre of mass as the reference"
+   ],
+   "explanation": "The theorem is rooted in the fact that the first moment of mass about the centre of mass is zero, which removes the cross term. That is why the reference must be the centroidal axis; moving between two other axes requires two steps via $G$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A uniform rod of mass 5 kg and length 2.0 m is pivoted about a perpendicular axis located 0.50 m from one end. Find the moment of inertia about that axis in kg m$^2$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o1",
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o2"
+   ],
+   "correctValue": 2.9167,
+   "tolerance": 0.02,
+   "unit": "kg m^2",
+   "explanation": "The pivot is 0.50 m from the end, so it is $1.0-0.5=0.50$ m from the centre. Then $I=\\tfrac1{12}(5)(2.0)^2+5(0.50)^2=1.667+1.250=2.917$ kg m$^2$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A uniform disc of radius $R$ has mass $M$ when solid. A circular hole of radius $R/2$ is drilled with its centre a distance $R/2$ from the disc centre O. Derive the moment of inertia of the drilled disc about the axis through O perpendicular to the disc, in terms of $M$ and $R$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.mass-moment-of-inertia.computing-inertia.o3"
+   ],
+   "markingGuide": [
+    "Treats the drilled disc as the solid disc minus the removed disc",
+    "Finds the removed mass as $M/4$ (area ratio $(1/2)^2$)",
+    "Gives the solid disc inertia $\\tfrac12MR^2$",
+    "Applies parallel-axis to the hole: $\\tfrac12(M/4)(R/2)^2+(M/4)(R/2)^2=\\tfrac{3}{32}MR^2$",
+    "Subtracts to obtain $I_O=\\tfrac{13}{32}MR^2$, about $0.406\\,MR^2$"
+   ],
+   "explanation": "The hole is a body of negative mass about the same axis. Its centroidal inertia is $\\tfrac{1}{32}MR^2$ and its transfer term is $\\tfrac{1}{16}MR^2$, giving $\\tfrac{3}{32}MR^2$ to subtract from $\\tfrac{16}{32}MR^2$.",
+   "board": "internal"
+  }
+ ]
+}

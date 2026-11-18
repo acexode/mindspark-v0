@@ -1,0 +1,394 @@
+{
+ "lessonTitle": "Requirements Capture: From Customer Need to Verifiable Specification",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A customer asks for a hand winch that 'lifts heavy loads easily'. Three teams read the sentence three ways: one designs for 50 kg, one for 500 kg, and nobody agrees what 'easily' means for a person turning a crank. A requirement that cannot be measured cannot be designed to, tested or argued over; capturing requirements is the discipline of removing that ambiguity before any drawing is made."
+  },
+  {
+   "type": "text",
+   "markdown": "A **customer need** is expressed in the customer's words: 'easy to carry', 'quiet', 'lasts a long time'. An **engineering requirement** restates the need in measurable terms with a **target value** and units, so that a design can be calculated against it and a finished prototype can be checked. Good requirements are *necessary* (a real need behind them), *unambiguous*, *measurable*, *achievable* and *verifiable*, and each carries a unique identifier so that it can be traced through design and test."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Requirement types",
+   "text": "**Functional**: what the product must do (lift a load, transmit torque). **Performance**: how well it must do it, with a number (lift 200 kg at up to 100 N handle force). **Constraint**: a limit imposed on the solution (maximum mass, envelope, budget, materials, interfaces). **Regulatory**: a requirement from law or a mandatory standard (safety guarding, labelling). The classification matters because each type is checked differently and some, such as regulatory ones, cannot be traded off."
+  },
+  {
+   "type": "text",
+   "markdown": "**From need to measurable requirement.** The method has four steps. (1) Ask what the need means physically (what quantity could be measured?). (2) Choose the measure and its unit. (3) Choose the target value and its direction (at most or at least) from the customer, a benchmark or a calculation. (4) State the conditions of measurement, otherwise the number is meaningless. 'Quiet' becomes 'sound pressure level at most 65 dB(A) at 1 m distance, at rated speed'."
+  },
+  {
+   "type": "worked_example",
+   "title": "Deriving a design target from a need",
+   "prompt": "A customer wants a hand winch to 'lift 200 kg easily'. The team converts 'easily' to a handle force of at most 100 N at a crank radius of 0.25 m, and the drum radius is 0.05 m. Taking $g=9.81\\ \\mathrm{m/s^2}$ and an assumed overall efficiency of 0.85, find the minimum gear ratio.",
+   "steps": [
+    {
+     "text": "Load force on the rope.",
+     "latex": "F=200\\times9.81=1962\\ \\mathrm{N}"
+    },
+    {
+     "text": "Torque needed at the drum.",
+     "latex": "T_d=1962\\times0.05=98.1\\ \\mathrm{N\\,m}"
+    },
+    {
+     "text": "Crank torque the person may apply.",
+     "latex": "T_c=100\\times0.25=25\\ \\mathrm{N\\,m}"
+    },
+    {
+     "text": "The gear ratio $i$ must satisfy $T_d=i\\,\\eta\\,T_c$.",
+     "latex": "i\\ge\\frac{98.1}{0.85\\times25}=4.62"
+    }
+   ],
+   "answer": "The requirement 'handle force at most 100 N' leads to a gear ratio of at least 4.62:1."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Statement",
+    "Classification",
+    "Reason"
+   ],
+   "rows": [
+    [
+     "The winch shall lift 200 kg to a height of 1.5 m",
+     "Functional / performance",
+     "Defines what it does and how much"
+    ],
+    [
+     "The winch shall weigh no more than 12 kg",
+     "Constraint",
+     "Limits the solution"
+    ],
+    [
+     "Handle force at most 100 N at rated load",
+     "Performance",
+     "Measures how well, with a number"
+    ],
+    [
+     "The winch shall carry a rated-load marking as required by the applicable lifting equipment regulation",
+     "Regulatory",
+     "Imposed by law or mandatory standard"
+    ]
+   ],
+   "caption": "Classifying requirements (illustrative)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Acceptance criteria and verification.** Every requirement needs an **acceptance criterion**: a pass/fail statement stating what is measured, how, under what conditions, and what counts as a pass. It also needs a **verification method**. *Test*: operate the product and measure (a load test). *Inspection*: examine or measure a feature without operating (check a label, a dimension). *Analysis*: calculate or simulate when a test is impractical or the product does not yet exist (a stress calculation). Choosing the method early prevents unverifiable requirements."
+  },
+  {
+   "type": "worked_example",
+   "title": "Writing an acceptance criterion",
+   "prompt": "Requirement: 'The winch shall lift 200 kg through 1.5 m in at most 30 s.' Write the acceptance criterion and find the minimum average rope speed.",
+   "steps": [
+    {
+     "text": "Minimum average rope speed.",
+     "latex": "v=\\frac{1.5}{30}=0.05\\ \\mathrm{m/s}"
+    },
+    {
+     "text": "Criterion: with a 200 kg test mass, operated by one person at the rated handle force, the load is raised 1.5 m in at most 30 s, measured with a stopwatch of 0.1 s resolution, in each of three consecutive trials."
+    },
+    {
+     "text": "Verification method: test (the requirement describes operation, so the product must be run)."
+    }
+   ],
+   "answer": "The criterion states what, how, conditions and pass limit; the minimum average speed is 0.05 m/s; method is test."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "A ranking of the customer needs by importance.",
+    "A measurable requirement for each need, with unit, target and direction.",
+    "A classification of each requirement.",
+    "An acceptance criterion and a verification method for each requirement.",
+    "A unique identifier (for example R-07) to support traceability."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Verifiable means decided in advance",
+   "text": "If two reviewers could disagree about whether a requirement has been met after seeing the same data, it is not yet an acceptance criterion. State the measurement method and the pass threshold in numbers."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not specify the solution as a requirement",
+   "text": "'The winch shall use a worm gear' prescribes a solution and closes off better ideas. State the need ('shall not back-drive under load') and let the design choose how."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Convert needs into measurable requirements with a quantity, unit, target value, direction and measurement conditions.",
+    "Classify requirements as functional, performance, constraint or regulatory.",
+    "Write acceptance criteria that name the measurement, conditions and pass threshold, and choose test, inspection or analysis as the verification method."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A customer says a portable compressor must be 'lightweight'. Which statement is a measurable engineering requirement derived from this need?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Total mass at most 14 kg, measured with the unit empty on a calibrated scale"
+    },
+    {
+     "id": "b",
+     "text": "The compressor shall be as light as practical"
+    },
+    {
+     "id": "c",
+     "text": "The compressor shall feel light when carried"
+    },
+    {
+     "id": "d",
+     "text": "The compressor shall be lighter than most competitors"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Total mass at most 14 kg, measured with the unit empty on a calibrated scale",
+   "distractorRationale": {
+    "a": "Correct: it states a quantity, unit, limit and measurement condition.",
+    "b": "'As practical' has no number and cannot be verified.",
+    "c": "'Feel' is subjective.",
+    "d": "'Most competitors' gives no target value."
+   },
+   "explanation": "A measurable requirement fixes a quantity, a target and a way to measure it. Only the mass limit can be checked unambiguously.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "'The machine shall comply with the applicable machinery safety regulation for guarding of moving parts.' How is this requirement classified?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Regulatory"
+    },
+    {
+     "id": "b",
+     "text": "Functional"
+    },
+    {
+     "id": "c",
+     "text": "Performance"
+    },
+    {
+     "id": "d",
+     "text": "Constraint on budget"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Regulatory",
+   "distractorRationale": {
+    "a": "Correct: it comes from law or a mandatory standard.",
+    "b": "It does not describe what the machine does.",
+    "c": "It does not give a measured level of performance.",
+    "d": "It is not about cost."
+   },
+   "explanation": "Regulatory requirements arise from legislation or mandatory standards and are normally non-negotiable. They are verified against the text of the rule.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A project brief says: 'The unit shall fit inside a 400 mm by 300 mm by 250 mm envelope.' How is this requirement best classified?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Constraint"
+    },
+    {
+     "id": "b",
+     "text": "Functional"
+    },
+    {
+     "id": "c",
+     "text": "Regulatory"
+    },
+    {
+     "id": "d",
+     "text": "Performance"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Constraint",
+   "distractorRationale": {
+    "a": "Correct: it limits the size of any acceptable solution.",
+    "b": "It does not describe an action of the product.",
+    "c": "No law or standard is cited.",
+    "d": "It does not describe how well a function is carried out."
+   },
+   "explanation": "A constraint bounds the solution space (size, mass, cost, material) rather than describing function. The designer must satisfy it but is not told how.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A requirement says: 'The drive shaft shall not yield under a 2.4 kN peak load with a safety factor of at least 1.5.' No prototype exists yet. Which verification method is most appropriate at this stage?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Analysis, by a hand calculation or finite element study"
+    },
+    {
+     "id": "b",
+     "text": "Inspection of the shaft's paint"
+    },
+    {
+     "id": "c",
+     "text": "Test, by loading a prototype that has not been built"
+    },
+    {
+     "id": "d",
+     "text": "Demonstration by the supplier's brochure"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Analysis, by a hand calculation or finite element study",
+   "distractorRationale": {
+    "a": "Correct: analysis can verify the stress against yield before hardware exists.",
+    "b": "Paint inspection says nothing about yield.",
+    "c": "A prototype is not available yet.",
+    "d": "A brochure does not verify this design."
+   },
+   "explanation": "Verification must be possible at the time it is needed. Calculated stress against yield strength with the factor stated is an analysis that can be done before manufacture, and may later be confirmed by test.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which is the best acceptance criterion for the requirement 'the gearbox shall not overheat'?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "With the rated load applied for 2 h at 25 degrees C ambient, the casing temperature at three marked points does not exceed 60 degrees C, and no leakage is seen"
+    },
+    {
+     "id": "b",
+     "text": "The gearbox must not run too hot during normal use"
+    },
+    {
+     "id": "c",
+     "text": "The gearbox will be checked for temperature by the test engineer"
+    },
+    {
+     "id": "d",
+     "text": "The casing should feel acceptable to touch"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "With the rated load applied for 2 h at 25 degrees C ambient, the casing temperature at three marked points does not exceed 60 degrees C, and no leakage is seen",
+   "distractorRationale": {
+    "a": "Correct: it gives conditions, duration, measurement points and a numerical limit.",
+    "b": "'Too hot' is not defined.",
+    "c": "It names who checks, not what counts as a pass.",
+    "d": "'Acceptable to touch' is subjective."
+   },
+   "explanation": "An acceptance criterion defines what is measured, under what conditions and the pass threshold. Without numbers two testers could reach different conclusions.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A hand pump must be operated at a handle force of at most 80 N applied at a lever radius of 0.30 m. What is the maximum torque the user is required to apply, in N m?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o1"
+   ],
+   "correctValue": 24.0,
+   "tolerance": 0.05,
+   "unit": "N m",
+   "explanation": "The torque equals force times radius, $80\\times0.30=24$ N m. This converts the need 'easy to pump' into a torque the mechanism can be designed to.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A tilting table must rise through 0.6 m in at most 40 s. Calculate the minimum average rising speed, in mm/s, that the mechanism must achieve.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o1"
+   ],
+   "correctValue": 15.0,
+   "tolerance": 0.1,
+   "unit": "mm/s",
+   "explanation": "The speed is distance over time, $0.6/40=0.015$ m/s, which is 15 mm/s. A slower average speed fails the time requirement.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A requirement states that the mass of a unit shall be at most 12.0 kg. The scale used for acceptance has an accuracy of $\\pm0.2$ kg. If the acceptance criterion requires the pass to be certain even in the worst case of scale error, what is the highest reading, in kg, that should be accepted?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o3"
+   ],
+   "correctValue": 11.8,
+   "tolerance": 0.01,
+   "unit": "kg",
+   "explanation": "The true mass could be up to 0.2 kg higher than the reading, so the reading must be at most $12.0-0.2=11.8$ kg. Acceptance criteria must allow for measurement uncertainty.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A customer states four needs for an electric wheelbarrow: 'it is easy to push', 'it fits through a garden gate', 'it must be safe' and 'it should last'. Convert each into a measurable requirement with a target and unit, and classify each as functional, performance, constraint or regulatory.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o1",
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o2"
+   ],
+   "markingGuide": [
+    "Easy to push: for example handle force at most a stated N when loaded, classified performance",
+    "Fits through gate: overall width at most a stated mm, classified constraint",
+    "Safe: compliance with a named applicable safety standard or guard requirement, classified regulatory",
+    "Last: for example life of a stated number of hours or cycles at rated load, classified performance",
+    "Each requirement has unit, target and a direction",
+    "Measurement conditions are mentioned for at least two"
+   ],
+   "explanation": "Each need must be reduced to a quantity that can be measured, with a limit, and given a class. Safety normally leads to a regulatory item, and size to a constraint.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "The requirement 'The lifting jack shall support a 1500 kg load without permanent deformation' is to be verified. Write an acceptance criterion, choose a verification method (test, inspection or analysis) for the design stage and for the prototype stage, and justify the choices.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.scoping-requirements.requirements-capture.o3"
+   ],
+   "markingGuide": [
+    "Criterion states load (with $g$ and any overload factor), duration, measurement of deformation, and pass limit",
+    "Design stage: analysis, by stress calculation against yield with a safety factor",
+    "Prototype stage: proof load test with dimensional inspection before and after loading",
+    "Justifies analysis because hardware does not exist yet, and test because it checks the real part",
+    "Notes the need for a defined measurement resolution and conditions",
+    "Identifier and traceability of the requirement to the evidence"
+   ],
+   "explanation": "The same requirement can be verified at different stages with different methods. Analysis allows early decisions, and a proof test confirms the real hardware.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,390 @@
+{
+ "lessonTitle": "Vectorised Operations and Linear Algebra",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A dynamometer test produces torque and speed readings at 50 000 operating points, and you need the power at every one. A Python loop works but takes long and clutters the code. One vectorised line computes all 50 000 powers at once, and the same toolkit solves the equilibrium equations of a truss in a single call."
+  },
+  {
+   "type": "text",
+   "markdown": "**Vectorisation** means writing an operation on a whole array instead of looping over its elements. In NumPy, arithmetic operators act **element-wise**: `a + b`, `a * b` and `a ** 2` combine elements in matching positions. The loop still happens, but inside fast compiled code, so vectorised programs are usually both shorter and much faster, and they read like the mathematical formula."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Element-wise and broadcasting rules",
+   "text": "For arrays of the same shape, `a * b` multiplies corresponding elements. A scalar is **broadcast**: `a - 5` subtracts 5 from every element, and `x - x.mean()` subtracts the mean from each value. Functions such as `np.sqrt`, `np.sin` and `np.exp` also act on every element. Conditions are vectorised with comparisons and `np.where`."
+  },
+  {
+   "type": "worked_example",
+   "title": "Replacing a loop with one expression",
+   "prompt": "Power is $P=T\\omega$ with torque $T$ (N m) and angular speed $\\omega=2\\pi N/60$ (rad/s) for $N$ in rpm. Compute $P$ for $T=[50,45,40]$ N m at $N=[600,1200,1800]$ rpm, first with a loop and then vectorised.",
+   "steps": [
+    {
+     "text": "Loop version: `P = np.zeros(3)` then `for i in range(3): P[i] = T[i] * (2*np.pi*N[i]/60)`. This works but needs an index and an output array."
+    },
+    {
+     "text": "Vectorised version: `P = T * (2*np.pi*N/60)`. The expression `2*np.pi*N/60` converts all speeds at once, and `T * ...` multiplies matching elements.",
+     "latex": "P=T\\cdot\\frac{2\\pi N}{60}"
+    },
+    {
+     "text": "Evaluate: $\\omega=[62.83,\\ 125.66,\\ 188.50]$ rad/s, so $P=[50\\times62.83,\\ 45\\times125.66,\\ 40\\times188.50]=[3141.6,\\ 5654.9,\\ 7539.8]$ W.",
+     "latex": "P\\approx[3.14,\\ 5.65,\\ 7.54]\\ \\text{kW}"
+    },
+    {
+     "text": "Both give the same numbers; the vectorised form scales to 50 000 points without any change in the code."
+    }
+   ],
+   "answer": "P = [3141.6, 5654.9, 7539.8] W from the single expression T * (2*np.pi*N/60)."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why vectorise",
+   "text": "Vectorised code removes index bookkeeping, which is where many loop bugs live (off-by-one errors, forgotten initialisation). It also makes the units of each line easier to check, because the line mirrors the physical formula. Reserve explicit loops for steps that truly depend on the previous result, such as time marching."
+  },
+  {
+   "type": "text",
+   "markdown": "Linear algebra uses a different product. For a matrix $A$ of shape $(m,n)$ and $B$ of shape $(n,p)$, the **matrix product** `A @ B` has shape $(m,p)$, with entry $(AB)_{ij}=\\sum_kA_{ik}B_{kj}$. It needs the inner dimensions to match. The `*` operator, by contrast, is always element-wise and needs equal (or broadcastable) shapes."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Operation",
+    "NumPy",
+    "Shape rule",
+    "Example with A (2x2), B (2x2)"
+   ],
+   "rows": [
+    [
+     "Element-wise product",
+     "`A * B`",
+     "same shape (or broadcastable)",
+     "entry $(i,j)$ is $A_{ij}B_{ij}$"
+    ],
+    [
+     "Matrix product",
+     "`A @ B`",
+     "$(m,n)@(n,p)\\to(m,p)$",
+     "entry $(i,j)$ is $\\sum_kA_{ik}B_{kj}$"
+    ],
+    [
+     "Dot product of vectors",
+     "`a @ b`",
+     "$(n,)\\,@\\,(n,)\\to$ scalar",
+     "$\\sum_ia_ib_i$"
+    ],
+    [
+     "Solve $A\\mathbf x=\\mathbf b$",
+     "`np.linalg.solve(A, b)`",
+     "$A$ square $(n,n)$, $b$ shape $(n,)$",
+     "returns $\\mathbf x$ of shape $(n,)$"
+    ]
+   ],
+   "caption": "Products and solves in NumPy."
+  },
+  {
+   "type": "text",
+   "markdown": "A **truss** analysis by the method of joints writes force balance in $x$ and $y$ at every joint. The unknown member forces and reactions collect into a vector $\\mathbf x$, giving a linear system that a library routine solves."
+  },
+  {
+   "type": "math",
+   "latex": "A\\,\\mathbf x=\\mathbf b",
+   "caption": "Joint equilibrium as a linear system: A holds direction cosines, b holds the applied loads, x holds the unknown forces."
+  },
+  {
+   "type": "worked_example",
+   "title": "Solving for truss member forces",
+   "prompt": "A symmetric triangular truss has span 4 m and height 3 m, with a vertical load $P=12$ kN at the apex, so each support reaction is 6 kN. At the left pin $A$, member $AC$ rises at $\\alpha=\\arctan(3/2)=56.3^{\\circ}$ and member $AB$ is horizontal. Taking tension as positive, find $F_{AC}$ and $F_{AB}$ using a library solver.",
+   "steps": [
+    {
+     "text": "Joint equilibrium at A: vertical, $F_{AC}\\sin\\alpha+6=0$; horizontal, $F_{AC}\\cos\\alpha+F_{AB}=0$. With $\\sin\\alpha=0.8321$ and $\\cos\\alpha=0.5547$.",
+     "latex": "\\begin{aligned}0.8321\\,F_{AC}+0\\cdot F_{AB}&=-6\\\\0.5547\\,F_{AC}+1\\cdot F_{AB}&=0\\end{aligned}"
+    },
+    {
+     "text": "Write $A\\mathbf x=\\mathbf b$ with $\\mathbf x=[F_{AC},F_{AB}]$: `A = np.array([[0.8321, 0], [0.5547, 1]])` and `b = np.array([-6, 0])`. Then `x = np.linalg.solve(A, b)`."
+    },
+    {
+     "text": "Result: $F_{AC}=-6/0.8321=-7.211$ kN (negative means compression) and $F_{AB}=-0.5547(-7.211)=+4.000$ kN (tension).",
+     "latex": "F_{AC}=-7.21\\ \\text{kN},\\quad F_{AB}=+4.00\\ \\text{kN}"
+    },
+    {
+     "text": "Check by residual: `A @ x - b` should be zero within rounding. Also check physically: a tie along the bottom chord carries tension and the sloping rafters carry compression, as found."
+    }
+   ],
+   "answer": "F_AC = -7.21 kN (compression) and F_AB = +4.00 kN (tension)."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Replace loops over data points by whole-array expressions; scalars broadcast automatically.",
+    "Use `*` for element-wise and `@` for matrix products; do not mix them up.",
+    "Use `np.linalg.solve(A, b)` rather than computing the inverse.",
+    "Check shapes with `.shape` before and after each operation.",
+    "Verify a solve by computing the residual `A @ x - b`."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Shape errors and silent mistakes",
+   "text": "`A * B` on two matrices does **not** multiply them as matrices, and it runs without error if the shapes are equal, so the numbers are simply wrong. A singular matrix (for example from a mechanism with too few members) makes `np.linalg.solve` raise `LinAlgError`. A nearly singular matrix may give large, meaningless forces, so inspect the result."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Vectorised expressions apply an operation to every element at once; scalars are broadcast.",
+    "* is element-wise; @ is the matrix product with shape (m,n)@(n,p) giving (m,p).",
+    "np.linalg.solve(A, b) solves a square linear system, for example the joint equilibrium of a truss.",
+    "Verify results with the residual A @ x - b and a physical sign check."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A loop computes `y[i] = 3 * x[i]**2 + 2` for every element of the NumPy array `x`. Which single statement is equivalent?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "`y = 3 * x**2 + 2`"
+    },
+    {
+     "id": "b",
+     "text": "`y = 3 * x * 2 + 2`"
+    },
+    {
+     "id": "c",
+     "text": "`y = sum(3 * x**2) + 2`"
+    },
+    {
+     "id": "d",
+     "text": "`y = 3 * (x**2 + 2)`"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "`y = 3 * x**2 + 2`",
+   "distractorRationale": {
+    "a": "Correct: same formula element by element.",
+    "b": "This computes 6x + 2, not 3x^2 + 2.",
+    "c": "sum collapses the array into one number.",
+    "d": "This evaluates 3x^2 + 6, with a misplaced bracket."
+   },
+   "explanation": "NumPy applies ** , * and + to each element, so 3 * x**2 + 2 reproduces the formula for every i. The other options change the formula or reduce the array to a single number.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Three masses $m=[4,2,10]$ kg move at $v=[2,3,5]$ m/s. Using the vectorised expression `0.5 * m * v**2`, find the total kinetic energy (sum of the three elements) in joules.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o1"
+   ],
+   "correctValue": 142,
+   "tolerance": 0.5,
+   "unit": "J",
+   "explanation": "The element-wise energies are 0.5(4)(4) = 8 J, 0.5(2)(9) = 9 J and 0.5(10)(25) = 125 J. Their sum is 142 J.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For `v = np.array([10, 12, 14])`, what does `v - v.mean()` return?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "12"
+    },
+    {
+     "id": "b",
+     "text": "[10, 12, 14]"
+    },
+    {
+     "id": "c",
+     "text": "[-2, 0, 2]"
+    },
+    {
+     "id": "d",
+     "text": "[-12, 0, 2]"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "[-2, 0, 2]",
+   "distractorRationale": {
+    "c": "Correct: broadcasting subtracts the mean from each element.",
+    "b": "This is the original array; nothing is subtracted.",
+    "a": "The mean alone is a scalar; the expression returns an array.",
+    "d": "Only the first element has 12 subtracted incorrectly."
+   },
+   "explanation": "The mean is 12 and is broadcast to every element, so each value has 12 subtracted. The result is [10-12, 12-12, 14-12] = [-2, 0, 2].",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Equilibrium of a joint gives $0.6F_1-F_2=0$ and $0.8F_1=20$ (forces in kN). Written as $A\\mathbf x=\\mathbf b$ with $\\mathbf x=[F_1,F_2]$ and solved with `np.linalg.solve`, what is $F_2$ in kN?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o2"
+   ],
+   "correctValue": 15,
+   "tolerance": 0.05,
+   "unit": "kN",
+   "explanation": "The second equation gives F1 = 20/0.8 = 25 kN. Then F2 = 0.6 x 25 = 15 kN, which is what the library solver returns.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Joint equilibrium has been written as `A x = b` with `A` square and invertible. Which statement computes the unknown member forces correctly?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "`x = b / A`"
+    },
+    {
+     "id": "b",
+     "text": "`x = A * b`"
+    },
+    {
+     "id": "c",
+     "text": "`x = np.linalg.solve(A, b)`"
+    },
+    {
+     "id": "d",
+     "text": "`x = np.linalg.inv(A) * b`"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "`x = np.linalg.solve(A, b)`",
+   "distractorRationale": {
+    "c": "Correct: a direct solve.",
+    "b": "This multiplies element by element; it is not a matrix product.",
+    "d": "The inverse is right in principle, but * is element-wise; it would need @, and solve is still preferred.",
+    "a": "Element-wise division does not solve the system."
+   },
+   "explanation": "np.linalg.solve performs the matrix solve directly and is more accurate than forming an inverse. The * operator is element-wise, so inv(A) * b or A * b does not perform the matrix operations required.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A has shape (3, 4) and B has shape (4, 2). What is the shape of `A @ B`?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "(3, 2)"
+    },
+    {
+     "id": "b",
+     "text": "(3, 4)"
+    },
+    {
+     "id": "c",
+     "text": "It raises an error"
+    },
+    {
+     "id": "d",
+     "text": "(4, 4)"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "(3, 2)",
+   "distractorRationale": {
+    "a": "Correct: (m,n)@(n,p) gives (m,p).",
+    "d": "Takes the inner dimension twice.",
+    "b": "Keeps A's shape, ignoring B.",
+    "c": "The product is defined because the inner dimensions match."
+   },
+   "explanation": "The inner dimensions (4 and 4) match and are contracted, leaving the outer dimensions (3, 2). A * B would raise an error because the shapes are not equal or broadcastable.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Let `A = [[1, 2], [3, 4]]` and `B = [[0, 1], [1, 0]]`. What is the sum of all four entries of the matrix product `A @ B`?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o3"
+   ],
+   "correctValue": 10,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "A @ B = [[1(0)+2(1), 1(1)+2(0)], [3(0)+4(1), 3(1)+4(0)]] = [[2, 1], [4, 3]]. The entries sum to 10, whereas A * B would give [[0, 2], [3, 0]] with sum 5.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "For two NumPy arrays `A` and `B` of the same shape, the expression `A * B` performs matrix multiplication.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The * operator is element-wise in NumPy: each entry is the product of the corresponding entries. Matrix multiplication uses the @ operator or np.matmul.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A loop computes the Reynolds number `Re[i] = rho * v[i] * d / mu` for each of 10 000 flow velocities `v` and then a second loop sets `regime[i] = 'turbulent'` if `Re[i] > 4000` else `'laminar'`. Rewrite it in vectorised form and give two advantages of doing so.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o1"
+   ],
+   "markingGuide": [
+    "Re = rho * v * d / mu applied to the whole array v",
+    "Regime via a boolean mask Re > 4000 or np.where(Re > 4000, 'turbulent', 'laminar')",
+    "Advantage: shorter, closer to the formula and easier to check",
+    "Advantage: much faster because the looping is done in compiled code",
+    "Notes that scalars rho, d and mu are broadcast"
+   ],
+   "explanation": "Arithmetic on the whole array replaces the loop, and a boolean comparison replaces the if statement. This keeps the code close to the mathematics and executes far faster.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe how you would set up and verify the calculation of truss member forces with a library solver. Include forming the equations, the call, the checks on the answer and what can go wrong.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.arrays-and-vectorisation.vectorised-operations.o2"
+   ],
+   "markingGuide": [
+    "Write equilibrium for each joint (two equations per joint) with one unknown per member and reaction, assembling A and b",
+    "Call x = np.linalg.solve(A, b), not an inverse",
+    "Check the residual A @ x - b is close to zero",
+    "Check signs against the sign convention (tension positive) and with an independent statics check such as the method of sections",
+    "Singular or ill-conditioned matrix indicates a mechanism or wrong geometry and raises LinAlgError or gives huge values"
+   ],
+   "explanation": "Assembling joint equations turns statics into a standard linear system. The residual check confirms the solver result satisfies the equations, while a physical check confirms the equations themselves are right.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,441 @@
+{
+ "lessonTitle": "Cycle Improvements and Refrigerants",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A frozen-food warehouse must hold −30 °C while the condenser rejects heat at 35 °C. A single compressor would have to raise the pressure about tenfold in one step: the discharge gas would overheat, the compressor's volumetric efficiency would collapse, and the work would be large. Designers therefore cool the liquid before the valve, split the compression into two stages with cooling between them, and choose refrigerants as much for environmental properties as for thermodynamics."
+  },
+  {
+   "type": "text",
+   "markdown": "The basic vapour-compression cycle can be improved in two thermodynamic ways. **Subcooling** lowers the temperature of the liquid leaving the condenser below its saturation temperature, which lowers $h_3$ and raises the refrigerating effect $q_L=h_1-h_4$ with $h_4=h_3$. **Multistage compression with intercooling** divides a large pressure ratio into two (or more) smaller steps and cools the vapour between them, reducing the total compressor work. A third consideration, **refrigerant choice**, trades performance against safety, operating pressure and global warming potential (GWP)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Subcooling",
+   "text": "**Subcooling** is the cooling of the condensed liquid below the saturation temperature at the condensing pressure, at constant pressure. The enthalpy of the subcooled liquid is $h_3'=h_3-c_{p,l}\\,\\Delta T_{sc}$, where $c_{p,l}$ is the liquid specific heat (about 1.4 kJ/(kg K) for R134a, typical) and $\\Delta T_{sc}$ the degree of subcooling. Because the throttling process keeps $h_4=h_3'$, less liquid flashes to vapour at the valve and the evaporator receives more useful liquid."
+  },
+  {
+   "type": "math",
+   "latex": "q_L'=h_1-h_3'=q_L+c_{p,l}\\,\\Delta T_{sc},\\qquad COP_R'=\\frac{q_L'}{w_c}",
+   "caption": "Refrigerating effect and COP with subcooling (compressor work unchanged at fixed pressures)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Gain from subcooling",
+   "prompt": "An ideal R134a cycle (typical values) has $h_1=239.16$ kJ/kg, saturated liquid enthalpy $h_3=95.47$ kJ/kg at the condensing pressure and compressor work $w_c=36.23$ kJ/kg. At the evaporating pressure $h_f=27.08$ and $h_{fg}=212.08$ kJ/kg. The liquid is subcooled by 6 K ($c_{p,l}=1.4$ kJ/(kg K)). Find the new refrigerating effect, COP and the quality after the valve.",
+   "steps": [
+    {
+     "text": "Enthalpy reduction from subcooling.",
+     "latex": "\\Delta h=c_{p,l}\\Delta T_{sc}=1.4\\times6=8.4\\ \\text{kJ/kg},\\quad h_3'=95.47-8.4=87.07\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Refrigerating effect before and after.",
+     "latex": "q_L=239.16-95.47=143.69\\ \\text{kJ/kg},\\quad q_L'=239.16-87.07=152.09\\ \\text{kJ/kg}"
+    },
+    {
+     "text": "Relative gain, with the compressor work unchanged.",
+     "latex": "\\frac{q_L'}{q_L}-1=\\frac{152.09}{143.69}-1=0.0585"
+    },
+    {
+     "text": "COP before and after.",
+     "latex": "COP_R=\\frac{143.69}{36.23}=3.97,\\quad COP_R'=\\frac{152.09}{36.23}=4.2"
+    },
+    {
+     "text": "Quality after the valve falls: less flash gas.",
+     "latex": "x_4=\\frac{h_4-h_f}{h_{fg}}:\\ 0.322\\to0.283"
+    }
+   ],
+   "answer": "Subcooling by 6 K raises the refrigerating effect by about 5.85% and the COP from 3.97 to 4.2, with the flash-gas fraction falling from 0.322 to 0.283."
+  },
+  {
+   "type": "text",
+   "markdown": "**Multistage compression.** For a given pressure ratio, the work of compressing a vapour from $p_1$ to $p_2$ is $\\int v\\,dp$. If the vapour is cooled part-way, its specific volume is smaller during the second stage, so less work is needed. For an ideal gas with ratio of specific heats $k$, compressing in two isentropic stages with perfect intercooling back to the inlet temperature, the total work is least when each stage has the same pressure ratio, i.e. the intermediate pressure is the geometric mean of the evaporating and condensing pressures."
+  },
+  {
+   "type": "math",
+   "latex": "p_i=\\sqrt{p_e\\,p_c},\\qquad \\frac{w_{2\\text{-}stage}}{w_{1\\text{-}stage}}=\\frac{2\\left[r^{(k-1)/(2k)}-1\\right]}{r^{(k-1)/k}-1},\\quad r=\\frac{p_c}{p_e}",
+   "caption": "Optimum intermediate pressure, and the ideal-gas work ratio for two equal stages with perfect intercooling"
+  },
+  {
+   "type": "worked_example",
+   "title": "Two-stage versus single-stage compression",
+   "prompt": "A refrigerant vapour, treated as an ideal gas with $k=1.3$ (typical of a halocarbon vapour for illustration), is compressed from 0.12 MPa to 1.08 MPa, a pressure ratio of 9. Find the optimum intermediate pressure and the work ratio of two-stage with perfect intercooling to single stage.",
+   "steps": [
+    {
+     "text": "Optimum intermediate pressure.",
+     "latex": "p_i=\\sqrt{0.12\\times1.08}=0.36\\ \\text{MPa}"
+    },
+    {
+     "text": "Exponent and single-stage work factor.",
+     "latex": "\\frac{k-1}{k}=0.2308,\\quad r^{(k-1)/k}-1=9^{0.2308}-1=0.6604"
+    },
+    {
+     "text": "Two equal stages, each with ratio $\\sqrt r=3$.",
+     "latex": "2\\left[3^{0.2308}-1\\right]=0.5771"
+    },
+    {
+     "text": "Work ratio.",
+     "latex": "\\frac{0.5771}{0.6604}=0.874"
+    }
+   ],
+   "answer": "The intermediate pressure is 0.36 MPa. Two-stage compression needs about 87.4% of the single-stage work, a saving of about 13%."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Refrigerant",
+    "Approx. GWP (100 yr)",
+    "Approx. saturation pressure at 40 °C",
+    "Safety notes (typical)"
+   ],
+   "rows": [
+    [
+     "R134a",
+     "about 1300 to 1430",
+     "about 1.0 MPa",
+     "Non-flammable, low toxicity"
+    ],
+    [
+     "R1234yf",
+     "below 5",
+     "about 1.0 MPa",
+     "Mildly flammable"
+    ],
+    [
+     "R410A",
+     "about 2100",
+     "about 2.4 MPa",
+     "Non-flammable; high pressure"
+    ],
+    [
+     "R290 (propane)",
+     "about 3",
+     "about 1.4 MPa",
+     "Highly flammable; small charge only"
+    ],
+    [
+     "R717 (ammonia)",
+     "0",
+     "about 1.55 MPa",
+     "Toxic, mildly flammable"
+    ],
+    [
+     "R744 (carbon dioxide)",
+     "1",
+     "Transcritical at high heat-rejection temperatures (above 31 °C), pressures of 10 MPa or more",
+     "Non-flammable; very high pressure"
+    ]
+   ],
+   "caption": "Representative refrigerants; GWP depends on the assessment report and values are shown as typical"
+  },
+  {
+   "type": "worked_example",
+   "title": "Environmental effect of leakage",
+   "prompt": "A system holds 5 kg of R134a (GWP about 1430) and leaks 8% of its charge per year. Find the annual CO$_2$-equivalent emission, and compare with the same leak mass of propane (GWP about 3).",
+   "steps": [
+    {
+     "text": "Leaked mass per year.",
+     "latex": "m_{leak}=5\\times0.08=0.4\\ \\text{kg}"
+    },
+    {
+     "text": "CO$_2$-equivalent is mass times GWP.",
+     "latex": "m_{CO_2e}=0.4\\times1430=572\\ \\text{kg}"
+    },
+    {
+     "text": "Same mass of propane.",
+     "latex": "0.4\\times3=1.2\\ \\text{kg}"
+    }
+   ],
+   "answer": "The R134a leak is equivalent to about 572 kg of CO$_2$ a year, against about 1.2 kg for propane."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Subcool the liquid where a cold sink is available (a subcooling section of the condenser, a liquid-suction heat exchanger or a separate mechanical subcooler).",
+    "Use two-stage compression when the pressure ratio is high (typically above about 8 for a reciprocating compressor), with intermediate pressure $\\sqrt{p_ep_c}$.",
+    "Balance GWP, flammability, toxicity and operating pressure when selecting a refrigerant; higher pressure means heavier equipment.",
+    "Quantify leakage as mass $\\times$ GWP to compare the climate impact of different refrigerants."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Subcooling does not change compressor work",
+   "text": "At fixed evaporating and condensing pressures, subcooling leaves $h_1$ and $h_2$ unchanged. The gain in COP comes entirely from the larger refrigerating effect. A liquid-suction heat exchanger that subcools the liquid by superheating the vapour also raises $h_1$ and the specific volume, which can offset part of the benefit."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Subcooling lowers $h_3$ by $c_{p,l}\\Delta T_{sc}$, raising $q_L=h_1-h_4$ and the COP at unchanged compressor work.",
+    "Two-stage compression with intercooling has lowest work at $p_i=\\sqrt{p_ep_c}$ because the cooled vapour has a smaller specific volume in the second stage.",
+    "Refrigerants are compared on GWP, operating pressure and safety; leakage impact is mass leaked times GWP."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Subcooling the liquid refrigerant leaving the condenser, at fixed evaporating and condensing pressures, has what effect on the cycle?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It raises the refrigerating effect per kg while the compressor work per kg is unchanged"
+    },
+    {
+     "id": "b",
+     "text": "It reduces the compressor work per kg while the refrigerating effect is unchanged"
+    },
+    {
+     "id": "c",
+     "text": "It raises the compressor work per kg and the refrigerating effect equally"
+    },
+    {
+     "id": "d",
+     "text": "It has no effect on the cycle, because the pressure of the liquid is unchanged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It raises the refrigerating effect per kg while the compressor work per kg is unchanged",
+   "distractorRationale": {
+    "a": "Correct: only the refrigerating effect changes.",
+    "b": "The compressor states are unchanged; only the liquid enthalpy changes.",
+    "c": "The compressor work does not change.",
+    "d": "The liquid enthalpy falls with temperature, which changes the valve outlet state."
+   },
+   "explanation": "Subcooling reduces $h_3$ and hence $h_4=h_3$, so $q_L=h_1-h_4$ rises. The compressor inlet and outlet are fixed by the two pressures, so $w_c=h_2-h_1$ stays the same.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cycle has $h_1=250$ kJ/kg and saturated liquid enthalpy 100 kJ/kg. Subcooling lowers the liquid enthalpy to 91 kJ/kg. Compared with the unsubcooled cycle (same mass flow and compressor work), the refrigerating capacity and the COP both increase by:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "9.0%"
+    },
+    {
+     "id": "b",
+     "text": "6.0%"
+    },
+    {
+     "id": "c",
+     "text": "3.6%"
+    },
+    {
+     "id": "d",
+     "text": "10.0%"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "6.0%",
+   "distractorRationale": {
+    "a": "Takes the enthalpy change as a percentage, ignoring the base of 150 kJ/kg.",
+    "b": "Correct: the refrigerating effect rises from 150 to 159 kJ/kg.",
+    "c": "Divides the enthalpy change by the new refrigerating effect and by 250 instead of by 150.",
+    "d": "Compares the enthalpy change with the liquid enthalpy of 91 kJ/kg, which is not the refrigerating effect."
+   },
+   "explanation": "The refrigerating effect rises from $250-100=150$ to $250-91=159$ kJ/kg, a ratio of $159/150=1.06$. With the compressor work unchanged, the COP rises by the same 6.0%.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why does cooling the vapour between the two stages of a compressor reduce the total work?",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The cooling adds energy that the second stage can recover"
+    },
+    {
+     "id": "b",
+     "text": "The cooled vapour has a larger specific volume, so it is easier to compress"
+    },
+    {
+     "id": "c",
+     "text": "The cooled vapour has a smaller specific volume, so the second stage needs less work per unit mass to reach the same final pressure"
+    },
+    {
+     "id": "d",
+     "text": "The cooling raises the pressure ratio of the second stage"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The cooled vapour has a smaller specific volume, so the second stage needs less work per unit mass to reach the same final pressure",
+   "distractorRationale": {
+    "a": "Intercooling removes heat; the compressor does not recover it.",
+    "b": "Cooling reduces the specific volume at a given pressure, which is what lowers the work.",
+    "c": "Correct: smaller specific volume in the second stage means less work.",
+    "d": "Intercooling does not alter the pressure ratio of a stage; the pressure ratio is chosen separately."
+   },
+   "explanation": "Compressor work per unit mass is $\\int v\\,dp$. Cooling the vapour at the intermediate pressure lowers its specific volume over the second-stage range, so the integral is smaller. The total shaft work therefore falls.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A two-stage refrigeration compressor operates between an evaporating pressure of 0.20 MPa and a condensing pressure of 1.25 MPa. The intermediate pressure that minimises ideal compressor work is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.725 MPa"
+    },
+    {
+     "id": "b",
+     "text": "6.25 MPa"
+    },
+    {
+     "id": "c",
+     "text": "0.25 MPa"
+    },
+    {
+     "id": "d",
+     "text": "0.5 MPa"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "0.5 MPa",
+   "distractorRationale": {
+    "a": "Takes the arithmetic mean rather than the geometric mean.",
+    "b": "This is the overall pressure ratio, not a pressure.",
+    "c": "Multiplies the pressures but forgets the square root.",
+    "d": "Correct: the geometric mean of the two pressures."
+   },
+   "explanation": "For equal pressure ratios in the two stages, $p_i/p_e=p_c/p_i$ so $p_i=\\sqrt{p_ep_c}=\\sqrt{0.20\\times1.25}=0.5$ MPa. Each stage then has a pressure ratio of $\\sqrt{6.25}=2.5$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer wants a refrigerant with a very low GWP and a saturation pressure at 40 °C close to that of R134a (about 1.0 MPa), accepting a mildly flammable fluid. From the lesson's table, the best candidate is:",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "R1234yf"
+    },
+    {
+     "id": "b",
+     "text": "R410A"
+    },
+    {
+     "id": "c",
+     "text": "R744 (carbon dioxide)"
+    },
+    {
+     "id": "d",
+     "text": "R134a itself"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "R1234yf",
+   "distractorRationale": {
+    "a": "Correct: it combines a very low GWP with a pressure close to R134a.",
+    "b": "It has a high GWP (about 2100) and a much higher pressure of about 2.4 MPa at 40 °C.",
+    "c": "It has a very low GWP but operates at pressures of 10 MPa or more in the transcritical region.",
+    "d": "Its pressure matches, but its GWP is about 1300 to 1430, not low."
+   },
+   "explanation": "R1234yf has a GWP below 5 and a pressure near 1.0 MPa at 40 °C, matching the requirements, at the cost of mild flammability. R410A and carbon dioxide both operate at much higher pressures, and R134a has a high GWP.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An R134a cycle has $h_1=248$ kJ/kg and saturated liquid enthalpy $h_3=98$ kJ/kg at the condensing pressure. The liquid is subcooled by 8.0 K, with $c_{p,l}=1.4$ kJ/(kg K). With the compressor work unchanged, find the percentage increase in refrigerating effect.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o1"
+   ],
+   "correctValue": 7.467,
+   "tolerance": 0.1,
+   "unit": "%",
+   "explanation": "The enthalpy drop is $1.4\\times8.0=11.2$ kJ/kg. The base refrigerating effect is $248-98=150$ kJ/kg, so the increase is $11.2/150=7.467$%.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A refrigerant vapour treated as an ideal gas with $k=1.3$ is compressed through a pressure ratio of 16. Compare single-stage compression with two equal isentropic stages and perfect intercooling back to the inlet temperature. Find the percentage reduction in compressor work achieved by two-stage compression.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o2"
+   ],
+   "correctValue": 15.86,
+   "tolerance": 0.5,
+   "unit": "%",
+   "explanation": "With $(k-1)/k=0.2308$: single stage $16^{0.2308}-1=0.8962$, two stages $2(4^{0.2308}-1)=0.754$. The work ratio is 0.8414, so the saving is about 15.9%.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A commercial refrigeration plant contains 12.0 kg of a blend with a typical GWP of 3900 and loses 6.0% of its charge each year through leakage. Find the yearly CO$_2$-equivalent emission in kg.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o3"
+   ],
+   "correctValue": 2808.0,
+   "tolerance": 10.0,
+   "unit": "kg CO2e",
+   "explanation": "The leaked mass is $12.0\\times0.060=0.72$ kg per year. Multiplying by the GWP gives $0.72\\times3900=2808$ kg CO$_2$-equivalent.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Compare subcooling and two-stage compression with intercooling as ways of improving a refrigeration cycle. For each, state the mechanism that improves performance, which of $q_L$ and $w_c$ changes, and one practical limitation.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o1",
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o2"
+   ],
+   "markingGuide": [
+    "Subcooling lowers h3 and so h4 = h3, raising q_L = h1 - h4 with compressor work unchanged",
+    "Subcooling also lowers flash gas quality at the valve and raises COP and capacity",
+    "Subcooling limit: needs a cold sink below the condensing temperature; liquid-suction heat exchangers also raise h1 and the specific volume",
+    "Two-stage compression: cooling between stages lowers specific volume in the second stage so w_c falls (optimum p_i = sqrt(p_e p_c))",
+    "Also lowers discharge temperature and improves volumetric efficiency",
+    "Multistage limit: extra compressor, intercooler and controls; benefit only worthwhile for large pressure ratios"
+   ],
+   "explanation": "Subcooling acts on the evaporator side of the cycle by increasing $q_L$ at constant $w_c$, whereas intercooling acts on the compressor side by decreasing $w_c$. Both raise the COP, but each has costs: a cold sink for subcooling, extra hardware for multistage compression.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A plant operates with a pressure ratio of about 10. Explain why a two-stage compressor with intercooling is favoured over a single-stage compressor, and why the choice of refrigerant (GWP, operating pressure) matters for the design of such a system.",
+   "objectiveIds": [
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o2",
+    "ug.mce-thermofluid-applications.refrigeration-systems.refrigeration-improvements.o3"
+   ],
+   "markingGuide": [
+    "Large pressure ratio gives high single-stage discharge temperature and low volumetric efficiency",
+    "Two stages with intercooling reduce total work (smaller specific volume in stage two) and discharge temperature",
+    "Optimum intermediate pressure sqrt(p_e p_c), equal stage pressure ratios",
+    "Refrigerant with high operating pressure (e.g. R410A, CO2) raises component pressure ratings and cost; low-pressure refrigerants need larger equipment",
+    "GWP determines the climate impact of leakage (mass leaked times GWP) and regulatory exposure",
+    "Trade-off with flammability or toxicity (propane, ammonia) and need for safety measures"
+   ],
+   "explanation": "A pressure ratio near 10 is too high for efficient single-stage compression: discharge temperatures climb and volumetric efficiency falls. Two stages with intercooling reduce the work and temperature. The refrigerant then sets the pressure levels and the climate and safety risks associated with leakage.",
+   "board": "internal"
+  }
+ ]
+}

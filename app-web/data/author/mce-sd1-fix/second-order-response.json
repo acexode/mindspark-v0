@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Second-Order Response: Natural Frequency, Damping and Specifications",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "When a robot arm stops at a pick-up point, there are three possible behaviours: it can creep in slowly and take forever, it can swing past the target and wobble before settling, or it can arrive crisply with no overshoot. Which one happens depends on two numbers read off the characteristic equation, the natural frequency and the damping ratio, and with those two numbers the overshoot, peak time and settling time can be predicted before anything is built."
+  },
+  {
+   "type": "text",
+   "markdown": "A **standard second-order system** has the closed-loop transfer function $G(s)=\\dfrac{\\omega_n^2}{s^2+2\\zeta\\omega_ns+\\omega_n^2}$, where $\\omega_n$ (rad/s) is the **natural frequency** and $\\zeta$ (dimensionless) is the **damping ratio**. The denominator set to zero, $s^2+2\\zeta\\omega_ns+\\omega_n^2=0$, is the **characteristic equation**. A mass-spring-damper $m\\ddot x+c\\dot x+kx=f$ has $\\omega_n=\\sqrt{k/m}$ and $\\zeta=c/(2\\sqrt{km})$, and a general characteristic equation $s^2+as+b=0$ has $\\omega_n=\\sqrt b$ and $\\zeta=a/(2\\sqrt b)$."
+  },
+  {
+   "type": "math",
+   "latex": "s=-\\zeta\\omega_n\\pm j\\omega_n\\sqrt{1-\\zeta^2}=-\\sigma\\pm j\\omega_d",
+   "caption": "Roots of the characteristic equation: decay rate $\\sigma=\\zeta\\omega_n$ (1/s) and damped natural frequency $\\omega_d=\\omega_n\\sqrt{1-\\zeta^2}$ (rad/s)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Damping ratio",
+    "Class",
+    "Poles",
+    "Step response"
+   ],
+   "rows": [
+    [
+     "$0<\\zeta<1$",
+     "Underdamped",
+     "Complex pair, $-\\zeta\\omega_n\\pm j\\omega_d$",
+     "Oscillates about the final value and overshoots"
+    ],
+    [
+     "$\\zeta=1$",
+     "Critically damped",
+     "Repeated real pole at $-\\omega_n$",
+     "Fastest approach without overshoot"
+    ],
+    [
+     "$\\zeta>1$",
+     "Overdamped",
+     "Two distinct real poles, $-\\omega_n(\\zeta\\mp\\sqrt{\\zeta^2-1})$",
+     "Slow, no overshoot"
+    ],
+    [
+     "$\\zeta=0$",
+     "Undamped",
+     "Imaginary pair $\\pm j\\omega_n$",
+     "Sustained oscillation (marginal)"
+    ]
+   ],
+   "caption": "Classification of a second-order system by damping ratio"
+  },
+  {
+   "type": "worked_example",
+   "title": "Specifications from a characteristic equation",
+   "prompt": "A closed-loop system has characteristic equation $s^2+6s+25=0$ and unit DC gain. Find $\\omega_n$, $\\zeta$, the poles, the percent overshoot, the peak time and the 2% settling time for a unit step.",
+   "steps": [
+    {
+     "text": "Compare $s^2+as+b$ with $a=6$, $b=25$: $\\omega_n=\\sqrt{25}=5$ rad/s and $\\zeta=6/(2\\times5)=0.6$.",
+     "latex": "\\omega_n=5\\ \\text{rad/s},\\quad\\zeta=0.6"
+    },
+    {
+     "text": "Poles: $-\\zeta\\omega_n=-3$ and $\\omega_d=5\\sqrt{1-0.36}=4$ rad/s, so $s=-3\\pm4j$.",
+     "latex": "s=-3\\pm4j"
+    },
+    {
+     "text": "Overshoot: $M_p=\\exp\\left(-\\pi\\zeta/\\sqrt{1-\\zeta^2}\\right)=\\exp(-\\pi\\times0.6/0.8)=e^{-2.356}=0.0948$.",
+     "latex": "M_p=9.5\\%"
+    },
+    {
+     "text": "Peak time: $t_p=\\pi/\\omega_d=\\pi/4=0.785$ s.",
+     "latex": "t_p=\\frac{\\pi}{4}=0.785\\ \\text{s}"
+    },
+    {
+     "text": "Settling time to within 2%: $t_s\\approx4/(\\zeta\\omega_n)=4/3=1.33$ s.",
+     "latex": "t_s\\approx\\frac{4}{3}=1.33\\ \\text{s}"
+    }
+   ],
+   "answer": "$\\omega_n=5$ rad/s, $\\zeta=0.6$, poles $-3\\pm4j$, overshoot $9.5\\%$, $t_p=0.785$ s and $t_s\\approx1.33$ s."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "math",
+   "latex": "M_p=\\exp\\!\\left(\\frac{-\\pi\\zeta}{\\sqrt{1-\\zeta^2}}\\right),\\qquad t_p=\\frac{\\pi}{\\omega_n\\sqrt{1-\\zeta^2}},\\qquad t_s\\approx\\frac{4}{\\zeta\\omega_n}",
+   "caption": "Underdamped step response specifications: overshoot fraction, peak time (s) and 2% settling time (s)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Direction of effects.** For a fixed $\\omega_n$, raising $\\zeta$ lowers the overshoot (from $52.7\\%$ at $\\zeta=0.2$ to $25.4\\%$ at $0.4$, $9.5\\%$ at $0.6$ and $1.5\\%$ at $0.8$) and lengthens the peak time, since $\\omega_d$ falls. For a fixed $\\zeta$, raising $\\omega_n$ shortens the peak and settling times but leaves the overshoot unchanged, because overshoot depends on $\\zeta$ alone. Because the envelope decays as $e^{-\\zeta\\omega_nt}$, the settling time depends on the real part of the poles."
+  },
+  {
+   "type": "worked_example",
+   "title": "Classifying a mass-spring-damper",
+   "prompt": "A 2 kg mass is on a spring of stiffness $k=50$ N/m. Classify the response for damper coefficients $c=8$, $20$ and $30$ N s/m, and find the poles for the first and last cases.",
+   "steps": [
+    {
+     "text": "Critical damping coefficient: $c_c=2\\sqrt{km}=2\\sqrt{50\\times2}=20$ N s/m, so $\\zeta=c/20$.",
+     "latex": "c_c=2\\sqrt{km}=20\\ \\text{N s/m}"
+    },
+    {
+     "text": "$c=8$: $\\zeta=0.4$, underdamped. The equation $2s^2+8s+50=0$ gives $s^2+4s+25=0$ with poles $-2\\pm4.58j$ and overshoot $25.4\\%$.",
+     "latex": "\\zeta=0.4,\\quad s=-2\\pm4.58j"
+    },
+    {
+     "text": "$c=20$: $\\zeta=1$, critically damped, a double pole at $-\\omega_n=-5$ rad/s.",
+     "latex": "\\zeta=1,\\quad s=-5,-5"
+    },
+    {
+     "text": "$c=30$: $\\zeta=1.5$, overdamped. From $s^2+15s+25=0$ the poles are $s=(-15\\pm\\sqrt{125})/2=-1.91$ and $-13.09$; the slow pole dominates the response, so it is sluggish.",
+     "latex": "\\zeta=1.5,\\quad s=-1.91,\\ -13.09"
+    }
+   ],
+   "answer": "$c=8$: underdamped ($\\zeta=0.4$); $c=20$: critically damped; $c=30$: overdamped ($\\zeta=1.5$, poles $-1.91$ and $-13.09$ rad/s)."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Write the characteristic equation in the form $s^2+as+b=0$ (divide by the leading coefficient).",
+    "Read $\\omega_n=\\sqrt b$ and $\\zeta=a/(2\\sqrt b)$.",
+    "Classify: $\\zeta<1$ underdamped, $\\zeta=1$ critical, $\\zeta>1$ overdamped.",
+    "For $\\zeta<1$ compute $\\omega_d$, $M_p$, $t_p$ and $t_s$ from the formulas above.",
+    "For $\\zeta>1$ find the two real poles; the slower pole sets the speed."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "The overshoot formula gives a fraction, not a percentage, unless multiplied by 100. The peak time uses $\\omega_d=\\omega_n\\sqrt{1-\\zeta^2}$, not $\\omega_n$. The formulas apply to the standard form with unit DC gain and no zeros; extra poles or zeros change the numbers. Use the formula $t_s\\approx4/(\\zeta\\omega_n)$ only for $\\zeta<1$; it is an estimate for 2% settling."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Two numbers, three classes",
+   "text": "$\\omega_n$ sets how fast the system moves; $\\zeta$ sets how it moves (oscillation and overshoot). Overshoot depends only on $\\zeta$, and pole location on the s-plane encodes both: the distance from the origin is $\\omega_n$ and the angle from the negative real axis is $\\cos^{-1}\\zeta$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The characteristic equation $s^2+2\\zeta\\omega_ns+\\omega_n^2=0$ gives $\\omega_n=\\sqrt b$ and $\\zeta=a/(2\\sqrt b)$ for $s^2+as+b$.",
+    "Underdamped ($0<\\zeta<1$), critically damped ($\\zeta=1$) and overdamped ($\\zeta>1$) systems differ in pole type and overshoot.",
+    "Overshoot $\\exp(-\\pi\\zeta/\\sqrt{1-\\zeta^2})$ depends only on $\\zeta$; peak time is $\\pi/\\omega_d$; settling time is about $4/(\\zeta\\omega_n)$.",
+    "Increasing $\\zeta$ reduces overshoot; increasing $\\omega_n$ speeds the response."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A hydraulic positioner has characteristic equation $s^2+7.2s+81=0$ (with $s$ in 1/s). Find its damping ratio $\\zeta$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o1"
+   ],
+   "correctValue": 0.4,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "Compare with $s^2+2\\zeta\\omega_ns+\\omega_n^2$: $\\omega_n^2=81$ gives $\\omega_n=9$ rad/s, and $2\\zeta\\omega_n=7.2$ gives $\\zeta=7.2/18=0.4$. The system is underdamped with poles $-3.6\\pm8.25j$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A load-cell platform has $m=0.8$ kg, damping $c=12$ N s/m and stiffness $k=500$ N/m. What is its natural frequency?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$25$ rad/s"
+    },
+    {
+     "id": "b",
+     "text": "$625$ rad/s"
+    },
+    {
+     "id": "c",
+     "text": "$22.4$ rad/s"
+    },
+    {
+     "id": "d",
+     "text": "$12.5$ rad/s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$25$ rad/s",
+   "distractorRationale": {
+    "a": "Correct: $\\omega_n=\\sqrt{k/m}=\\sqrt{500/0.8}=\\sqrt{625}=25$ rad/s.",
+    "b": "This is $\\omega_n^2=k/m$; the square root was forgotten.",
+    "c": "This ignores the mass: $\\sqrt{500}=22.4$.",
+    "d": "This halves the answer, mixing it up with a corner frequency or $k/m$ scaling."
+   },
+   "explanation": "The equation $0.8s^2+12s+500=0$ divides to $s^2+15s+625=0$, so $\\omega_n=\\sqrt{625}=25$ rad/s. The damping ratio is $15/(2\\times25)=0.3$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A second-order closed-loop system has damping ratio $\\zeta=0.35$ and unit DC gain. Find the percent overshoot of its unit step response (in percent).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o2"
+   ],
+   "correctValue": 30.9,
+   "tolerance": 0.3,
+   "unit": "%",
+   "explanation": "The overshoot is $M_p=\\exp(-\\pi\\zeta/\\sqrt{1-\\zeta^2})=\\exp(-\\pi\\times0.35/0.9367)=e^{-1.174}=0.309$, so $30.9\\%$. This depends only on $\\zeta$, not on $\\omega_n$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A closed-loop servo has natural frequency $\\omega_n=12$ rad/s and damping ratio $\\zeta=0.5$. Find the peak time of its unit step response in seconds.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o2"
+   ],
+   "correctValue": 0.302,
+   "tolerance": 0.005,
+   "unit": "s",
+   "explanation": "The damped frequency is $\\omega_d=12\\sqrt{1-0.25}=10.39$ rad/s. The peak time is $t_p=\\pi/\\omega_d=\\pi/10.39=0.302$ s. The overshoot at that instant is $16.3\\%$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 4 kg mass is on a spring of stiffness 100 N/m with a viscous damper of coefficient $c$. For which value of $c$ is the response critically damped?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$40$ N s/m"
+    },
+    {
+     "id": "b",
+     "text": "$20$ N s/m"
+    },
+    {
+     "id": "c",
+     "text": "$10$ N s/m"
+    },
+    {
+     "id": "d",
+     "text": "$80$ N s/m"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$40$ N s/m",
+   "distractorRationale": {
+    "a": "Correct: $c_c=2\\sqrt{km}=2\\sqrt{100\\times4}=40$ N s/m.",
+    "b": "This is half the critical value, giving $\\zeta=0.5$ (underdamped).",
+    "c": "This is a quarter of the critical value, so $\\zeta=0.25$ (underdamped).",
+    "d": "This is twice the critical value, so $\\zeta=2$ (overdamped)."
+   },
+   "explanation": "Critical damping occurs when $\\zeta=c/(2\\sqrt{km})=1$, so $c=2\\sqrt{km}=40$ N s/m. Lower values oscillate and overshoot, while higher values give two real poles and a sluggish response.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A second-order system with fixed $\\omega_n$ has its damping ratio increased from 0.2 to 0.6. Which change in the step response is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Overshoot falls from about 53% to about 9.5% and the peak time increases"
+    },
+    {
+     "id": "b",
+     "text": "Overshoot rises and the peak time decreases"
+    },
+    {
+     "id": "c",
+     "text": "Overshoot is unchanged because $\\omega_n$ is fixed"
+    },
+    {
+     "id": "d",
+     "text": "Overshoot falls and the peak time decreases"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Overshoot falls from about 53% to about 9.5% and the peak time increases",
+   "distractorRationale": {
+    "a": "Correct: $M_p=e^{-\\pi\\zeta/\\sqrt{1-\\zeta^2}}$ falls with $\\zeta$, and $t_p=\\pi/(\\omega_n\\sqrt{1-\\zeta^2})$ increases since $\\omega_d$ decreases.",
+    "b": "Overshoot falls as damping rises.",
+    "c": "Overshoot depends only on $\\zeta$, so changing $\\zeta$ changes it even when $\\omega_n$ is fixed.",
+    "d": "The peak time increases because $\\omega_d=\\omega_n\\sqrt{1-\\zeta^2}$ falls as $\\zeta$ rises."
+   },
+   "explanation": "At $\\omega_n$ fixed, $\\zeta=0.2$ gives overshoot $52.7\\%$ and $\\zeta=0.6$ gives $9.5\\%$. The damped frequency falls from $0.980\\omega_n$ to $0.8\\omega_n$, so the peak occurs later.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A second-order system with damping ratio $\\zeta>1$ has two distinct real poles and its unit step response has no overshoot.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Overdamped systems have real poles at $-\\omega_n(\\zeta\\pm\\sqrt{\\zeta^2-1})$ and the response is a sum of two decaying exponentials that approaches the final value monotonically. The slower pole dominates, so the response is sluggish compared with critical damping.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The closed-loop poles of a system are at $s=-5\\pm12j$ rad/s. What are $\\omega_n$ and $\\zeta$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\omega_n=13$ rad/s, $\\zeta=0.385$"
+    },
+    {
+     "id": "b",
+     "text": "$\\omega_n=12$ rad/s, $\\zeta=0.417$"
+    },
+    {
+     "id": "c",
+     "text": "$\\omega_n=13$ rad/s, $\\zeta=0.923$"
+    },
+    {
+     "id": "d",
+     "text": "$\\omega_n=17$ rad/s, $\\zeta=0.294$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\omega_n=13$ rad/s, $\\zeta=0.385$",
+   "distractorRationale": {
+    "a": "Correct: $\\omega_n=|s|=\\sqrt{25+144}=13$ and $\\zeta=5/13=0.385$.",
+    "b": "That treats the damped frequency 12 as the natural frequency.",
+    "c": "This uses $12/13$, which is $\\sin$ of the pole angle, not the damping ratio.",
+    "d": "This adds the real and imaginary parts instead of finding the magnitude."
+   },
+   "explanation": "The natural frequency is the distance of the pole from the origin, $\\omega_n=\\sqrt{\\sigma^2+\\omega_d^2}=13$ rad/s. The damping ratio is $\\zeta=\\sigma/\\omega_n=5/13=0.385$, the cosine of the angle from the negative real axis.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A closed-loop system has characteristic equation $s^2+2s+16=0$ and unit DC gain. Determine $\\omega_n$ and $\\zeta$, classify the response, and calculate the percent overshoot and peak time. State the effect on overshoot and settling time of doubling $\\omega_n$ at constant $\\zeta$.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o1",
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o2",
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o3"
+   ],
+   "markingGuide": [
+    "$\\omega_n=4$ rad/s and $\\zeta=2/(2\\times4)=0.25$",
+    "Underdamped since $0<\\zeta<1$",
+    "Overshoot $\\exp(-\\pi\\times0.25/\\sqrt{0.9375})=44.4\\%$",
+    "Peak time $\\pi/(4\\sqrt{0.9375})=0.811$ s",
+    "Doubling $\\omega_n$ at constant $\\zeta$ leaves overshoot unchanged and halves the peak and settling times"
+   ],
+   "explanation": "Overshoot depends only on $\\zeta$, so scaling $\\omega_n$ rescales time but not the shape of the response. The poles are at $-1\\pm3.87j$ and $\\omega_d=3.87$ rad/s gives $t_p=0.811$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Compare the unit step responses of underdamped, critically damped and overdamped second-order systems with the same $\\omega_n$. Explain, in terms of pole locations, why critical damping is the fastest response that has no overshoot, and why a designer might still choose $\\zeta\\approx0.7$.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o2",
+    "ug.mce-system-dynamics-control-1.time-response.second-order-response.o3"
+   ],
+   "markingGuide": [
+    "Underdamped: complex poles, oscillates and overshoots by $\\exp(-\\pi\\zeta/\\sqrt{1-\\zeta^2})$",
+    "Critical: double real pole at $-\\omega_n$, no overshoot",
+    "Overdamped: two real poles, the slower one dominates so response is slow without overshoot",
+    "Increasing $\\zeta$ beyond 1 moves one pole towards the origin, slowing the response",
+    "$\\zeta\\approx0.7$ gives only about 4.6% overshoot with a fast rise and short settling time, a good compromise"
+   ],
+   "explanation": "Critical damping has the largest decay rate for a response with no overshoot, since further damping splits the poles and the slow one controls settling. A modest overshoot is often accepted in exchange for faster rise and settling.",
+   "board": "internal"
+  }
+ ]
+}

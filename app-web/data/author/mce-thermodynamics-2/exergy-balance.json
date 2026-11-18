@@ -1,0 +1,424 @@
+{
+ "lessonTitle": "Exergy Balance and Second-Law Efficiency",
+ "estimatedMinutes": 28,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A power station engineer reads that her steam turbine is 90% efficient and her boiler 92% efficient, yet the whole station turns only 38% of the fuel energy into electricity. Energy accounting cannot find where the shortfall hides. An exergy balance can: it assigns a number to every throttle, heat exchanger and turbine showing exactly how much work potential is wasted there."
+  },
+  {
+   "type": "text",
+   "markdown": "The previous unit defined exergy. Here we use it as a bookkeeping tool. A **steady-flow exergy balance** says that the exergy entering a device with streams, heat and work, minus the exergy leaving, equals the exergy destroyed inside it. For a control volume with several inlets and outlets, at steady state:"
+  },
+  {
+   "type": "math",
+   "latex": "\\dot X_{dest} = \\sum_{in}\\dot m\\psi + \\sum_j\\left(1 - \\frac{T_0}{T_j}\\right)\\dot Q_j - \\dot W - \\sum_{out}\\dot m\\psi \\;\\ge 0",
+   "caption": "Rates in kW; $\\dot Q_j$ is heat received at boundary temperature $T_j$; $\\dot W$ is work output. Exergy destruction is always $\\ge 0$ and zero only for a reversible process."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Gouy-Stodola relation",
+   "text": "The rate of exergy destruction equals the dead-state temperature times the rate of entropy generation: $\\dot X_{dest} = T_0\\,\\dot S_{gen}$, with $T_0$ in K and $\\dot S_{gen}$ in kW/K. It gives a way to compute lost work from the entropy balance alone."
+  },
+  {
+   "type": "math",
+   "latex": "\\dot X_{dest} = T_0\\,\\dot S_{gen} \\qquad \\eta_{II,turbine} = \\frac{w_{actual}}{w_{rev}} = \\frac{w_{actual}}{\\psi_1 - \\psi_2} \\qquad w_{rev} - w_{actual} = x_{dest}",
+   "caption": "$w_{rev}$ is the maximum (reversible) work between the same inlet and exit states, relative to the dead state. $\\eta_{II}$ is the second-law efficiency."
+  },
+  {
+   "type": "worked_example",
+   "title": "Exergy destroyed in a throttle",
+   "prompt": "Air (ideal gas, $R = 0.287$ kJ/(kg K)) flows at 0.5 kg/s through an adiabatic throttle valve from 800 kPa to 300 kPa. Enthalpy is constant, so temperature is unchanged. The dead-state temperature is $T_0 = 300$ K. Find the exergy destruction rate.",
+   "steps": [
+    {
+     "text": "Entropy change of an ideal gas at constant temperature.",
+     "latex": "s_2 - s_1 = -R\\ln(P_2/P_1) = -0.287\\ln(300/800) = 0.2815\\ \\mathrm{kJ/(kg\\,K)}"
+    },
+    {
+     "text": "Entropy generation rate (adiabatic, steady).",
+     "latex": "\\dot S_{gen} = \\dot m(s_2 - s_1) = 0.5\\times0.2815 = 0.1407\\ \\mathrm{kW/K}"
+    },
+    {
+     "text": "Gouy-Stodola.",
+     "latex": "\\dot X_{dest} = T_0\\dot S_{gen} = 300\\times0.1407 = 42.2\\ \\mathrm{kW}"
+    }
+   ],
+   "answer": "Exergy destruction = 42.2 kW. The valve conserves energy but wastes 42.2 kW of work potential."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "worked_example",
+   "title": "Exergy destroyed in a heat exchanger",
+   "prompt": "In a counterflow water-water heat exchanger, hot water (1.0 kg/s) cools from 90 °C to 60 °C. It heats cold water (2.0 kg/s) entering at 20 °C. Take $c = 4.18$ kJ/(kg K), $T_0 = 293.15$ K and neglect heat loss and pressure drops. Find the cold-water outlet temperature and exergy destruction rate.",
+   "steps": [
+    {
+     "text": "Heat transferred, then the cold outlet temperature.",
+     "latex": "\\dot Q = 1.0(4.18)(30) = 125.4\\ \\mathrm{kW},\\quad T_{c2} = 20 + 125.4/(2.0\\times4.18) = 35.0\\ ^\\circ\\mathrm{C}"
+    },
+    {
+     "text": "Entropy generation rate.",
+     "latex": "\\dot S_{gen} = 1.0(4.18)\\ln\\frac{333.15}{363.15} + 2.0(4.18)\\ln\\frac{308.15}{293.15} = 0.05677\\ \\mathrm{kW/K}"
+    },
+    {
+     "text": "Exergy destruction.",
+     "latex": "\\dot X_{dest} = 293.15\\times0.05677 = 16.64\\ \\mathrm{kW}"
+    }
+   ],
+   "answer": "Cold outlet = 35.0 °C, exergy destruction = 16.64 kW (about 13.3% of the heat duty of 125.4 kW), caused by heat transfer across a finite temperature difference."
+  },
+  {
+   "type": "worked_example",
+   "title": "Second-law efficiency of a turbine",
+   "prompt": "Air enters a turbine at 1100 K and 800 kPa and leaves at 100 kPa. The isentropic efficiency is 0.85. The dead state is 300 K, 100 kPa. Take $c_p = 1.005$, $R = 0.287$ kJ/(kg K), $k = 1.4$. Find the actual work, the reversible work, the second-law efficiency and exergy destruction per kg.",
+   "steps": [
+    {
+     "text": "Isentropic and actual exit temperatures.",
+     "latex": "T_{2s} = 1100(100/800)^{0.2857} = 607.2\\ \\mathrm{K},\\quad T_2 = 1100 - 0.85(1100 - 607.2) = 681.2\\ \\mathrm{K}"
+    },
+    {
+     "text": "Actual work.",
+     "latex": "w_{act} = 1.005(1100 - 681.2) = 420.9\\ \\mathrm{kJ/kg}"
+    },
+    {
+     "text": "Entropy change and reversible work. $w_{rev} = (h_1 - h_2) - T_0(s_1 - s_2) = w_{act} + T_0(s_2 - s_1)$.",
+     "latex": "s_2 - s_1 = 1.005\\ln\\frac{681.2}{1100} - 0.287\\ln\\frac{100}{800} = 0.1151\\ \\mathrm{kJ/(kg\\,K)},\\quad w_{rev} = 455.5\\ \\mathrm{kJ/kg}"
+    },
+    {
+     "text": "Second-law efficiency and destruction.",
+     "latex": "\\eta_{II} = 420.9/455.5 = 0.9242,\\quad x_{dest} = 300\\times0.1151 = 34.5\\ \\mathrm{kJ/kg}"
+    }
+   ],
+   "answer": "w_act = 420.9 kJ/kg, w_rev = 455.5 kJ/kg, second-law efficiency = 92.4%, exergy destroyed = 34.5 kJ/kg."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Device",
+    "Exergy destruction (cause)",
+    "Second-law efficiency"
+   ],
+   "rows": [
+    [
+     "Throttle valve",
+     "$T_0\\dot m(s_2 - s_1)$ (pressure drop with no work)",
+     "Often near 0 (no work is recovered)"
+    ],
+    [
+     "Heat exchanger",
+     "$T_0\\dot S_{gen}$ (finite $\\Delta T$)",
+     "$\\dot X_{cold,gain}/\\dot X_{hot,loss}$"
+    ],
+    [
+     "Turbine",
+     "$T_0\\dot m(s_2 - s_1)$ (internal friction)",
+     "$w_{actual}/w_{rev}$"
+    ],
+    [
+     "Compressor",
+     "$T_0\\dot m(s_2 - s_1)$",
+     "$w_{rev}/w_{actual}$"
+    ],
+    [
+     "Mixing chamber",
+     "$T_0\\dot S_{gen}$ (mixing at different $T$)",
+     "Fraction of inlet exergy retained"
+    ]
+   ],
+   "caption": "Common devices in an exergy analysis."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why use exergy",
+   "text": "The energy balance says that a throttle and a heat exchanger lose nothing, which is misleading. The exergy balance quantifies the lost work for each device, so the designer can attack the largest losses first. Reducing the temperature difference in a heat exchanger or replacing a throttle with an expander reduces destruction."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "$\\dot X_{dest} = T_0\\dot S_{gen}$ gives destruction from an entropy balance only.",
+    "For work-producing devices $\\eta_{II} = w_{act}/w_{rev}$; for work-consuming devices $\\eta_{II} = w_{rev}/w_{act}$.",
+    "$\\eta_{II}$ = 1 only for a reversible device.",
+    "Use the same $T_0$ throughout a system analysis."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Use kelvin in $T_0$ and in entropy logarithms. Do not confuse $\\eta_{II}$ with the isentropic efficiency: the isentropic efficiency compares with the adiabatic work, $\\eta_{II}$ with the maximum possible (reversible, heat exchange with the environment allowed) work. Do not take $\\ln$ of a temperature in Celsius."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Exergy balance: inflow minus outflow minus work equals destruction.",
+    "Gouy-Stodola: $\\dot X_{dest} = T_0 \\dot S_{gen}$.",
+    "Throttles and finite-$\\Delta T$ heat exchangers destroy exergy.",
+    "Turbine second-law efficiency $= w_{actual}/w_{rev}$, with $w_{rev} = \\psi_1 - \\psi_2$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The Gouy-Stodola relation states that the rate of exergy destruction in a process is",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dot X_{dest} = \\dot S_{gen}/T_0$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dot X_{dest} = T_0\\,\\dot Q$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dot X_{dest} = T_0\\,\\dot S_{gen}$"
+    },
+    {
+     "id": "d",
+     "text": "$\\dot X_{dest} = \\dot W_{rev}/\\dot W_{act}$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$\\dot X_{dest} = T_0\\,\\dot S_{gen}$",
+   "distractorRationale": {
+    "a": "Inverts the dependence; dimensionally inconsistent.",
+    "b": "Not related to entropy generation.",
+    "c": "Correct.",
+    "d": "This is a ratio, the form of a second-law efficiency."
+   },
+   "explanation": "The lost work in an irreversible process equals the dead-state temperature times the entropy generated. The units are kW = K × kW/K.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which device destroys exergy in a throttling process?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The throttle valve, because the pressure drop generates entropy without producing work"
+    },
+    {
+     "id": "b",
+     "text": "None, because throttling conserves enthalpy"
+    },
+    {
+     "id": "c",
+     "text": "The valve only if it is cooled externally"
+    },
+    {
+     "id": "d",
+     "text": "Only a compressor can destroy exergy"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The throttle valve, because the pressure drop generates entropy without producing work",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Energy is conserved but exergy is not.",
+    "c": "Even an adiabatic valve destroys exergy.",
+    "d": "Any irreversible process destroys it."
+   },
+   "explanation": "Throttling is a highly irreversible, constant-enthalpy expansion; entropy increases while no work is recovered. The generated entropy is multiplied by $T_0$ to give the lost exergy.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A turbine delivers 420 kJ/kg of actual work between inlet and exit states for which the reversible work is 510 kJ/kg. How is the second-law efficiency defined, and what is its value?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$w_{rev}/w_{actual} = 1.21$"
+    },
+    {
+     "id": "b",
+     "text": "$1 - w_{actual}/w_{rev} = 0.18$"
+    },
+    {
+     "id": "c",
+     "text": "$w_{actual} - w_{rev} = -90$ kJ/kg"
+    },
+    {
+     "id": "d",
+     "text": "$w_{actual}/w_{rev} = 0.82$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$w_{actual}/w_{rev} = 0.82$",
+   "distractorRationale": {
+    "a": "Inverted; an efficiency cannot exceed 1.",
+    "b": "This is the fraction of exergy destroyed, not the efficiency.",
+    "c": "This is the lost work, not an efficiency.",
+    "d": "Correct."
+   },
+   "explanation": "For a work-producing device $\\eta_{II} = w_{actual}/w_{rev} = 420/510 = 0.8235$. The difference $510 - 420 = 90$ kJ/kg is the exergy destroyed.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For the same heat duty in a heat exchanger, how does a larger mean temperature difference between the hot and cold streams affect the exergy destruction?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It decreases the exergy destruction"
+    },
+    {
+     "id": "b",
+     "text": "It increases the exergy destruction"
+    },
+    {
+     "id": "c",
+     "text": "It leaves it unchanged, since the energy transferred is the same"
+    },
+    {
+     "id": "d",
+     "text": "It makes the destruction zero"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It increases the exergy destruction",
+   "distractorRationale": {
+    "a": "Larger $\\Delta T$ means more entropy generation.",
+    "b": "Correct.",
+    "c": "Entropy generation depends on the temperatures, not only on energy.",
+    "d": "Zero only for a reversible (zero-$\\Delta T$) exchange."
+   },
+   "explanation": "Entropy generation in heat transfer across a finite $\\Delta T$ is $Q(1/T_c - 1/T_h)$, which grows with $\\Delta T$. Hence the exergy destruction $T_0S_{gen}$ grows too.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Air (R = 0.287 kJ/(kg K)) at 1.0 kg/s is throttled adiabatically from 500 kPa to 200 kPa. The dead-state temperature is 300 K. What is the exergy destruction rate?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.263 kW"
+    },
+    {
+     "id": "b",
+     "text": "-78.9 kW"
+    },
+    {
+     "id": "c",
+     "text": "78.9 kW"
+    },
+    {
+     "id": "d",
+     "text": "34.3 kW"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "78.9 kW",
+   "distractorRationale": {
+    "a": "Omits $T_0$ and the proper units; entropy generation is in kW/K.",
+    "b": "Exergy destruction cannot be negative; the sign of the log is mishandled.",
+    "c": "Correct.",
+    "d": "Uses a base-10 logarithm instead of the natural logarithm."
+   },
+   "explanation": "For an ideal gas throttled at constant temperature $\\dot S_{gen} = \\dot m R\\ln(P_1/P_2) = 0.287\\ln2.5 = 0.2630$ kW/K. Multiplying by $T_0 = 300$ K gives 78.9 kW.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A process generates entropy at a rate of 0.15 kW/K. With the dead-state temperature $T_0 = 290$ K, find the rate of exergy destruction in kW.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o3"
+   ],
+   "correctValue": 43.5,
+   "tolerance": 0.1,
+   "unit": "kW",
+   "explanation": "By the Gouy-Stodola relation $\\dot X_{dest} = T_0\\dot S_{gen}$. Therefore $\\dot X_{dest} = 290\\times0.15 = 43.5$ kW.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steam turbine delivers an actual specific work of 640 kJ/kg while the reversible work between the same inlet and exit states (relative to the dead state) is 775 kJ/kg. Find the second-law efficiency (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o2"
+   ],
+   "correctValue": 0.8258,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "The second-law efficiency of a work-producing device is $w_{actual}/w_{rev} = 640/775 = 0.8258$. The remaining 135 kJ/kg is exergy destroyed by internal irreversibility.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "In a counterflow water-water heat exchanger, hot water (0.80 kg/s) cools from 80 °C to 50 °C and heats cold water (1.50 kg/s) entering at 15 °C. Take $c = 4.18$ kJ/(kg K), $T_0 = 288.15$ K, and neglect heat loss and pressure drop. Calculate the exergy destruction rate in kW.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o1"
+   ],
+   "correctValue": 12.0913,
+   "tolerance": 0.05,
+   "unit": "kW",
+   "explanation": "Heat duty $= 0.8\\times4.18\\times30 = 100.32$ kW, so the cold outlet is $15 + 100.32/(1.5\\times4.18) = 31.0$ °C. Entropy generation is $0.8(4.18)\\ln(323.15/353.15) + 1.5(4.18)\\ln(304.15/288.15) = 0.04196$ kW/K, and $\\dot X_{dest} = 288.15\\times0.04196 = 12.091$ kW.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "State and explain the Gouy-Stodola relation, and show how it links the second-law analysis of a device to its entropy balance. Give a physical meaning for the result.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o3"
+   ],
+   "markingGuide": [
+    "States $\\dot X_{dest} = T_0 \\dot S_{gen}$",
+    "Entropy balance for steady flow: $\\dot S_{gen} = \\sum_{out}\\dot m s - \\sum_{in}\\dot m s - \\sum \\dot Q_j/T_j \\ge 0$",
+    "Combine with the energy balance to eliminate heat and show lost work $= T_0 \\dot S_{gen}$",
+    "Interpretation: the work potential wasted equals the entropy created times the environment temperature",
+    "States that $\\dot S_{gen} = 0$ for a reversible process and $> 0$ for any real process",
+    "Notes that this lets you find lost work without computing exergies of each stream"
+   ],
+   "explanation": "The lost work equals $T_0 S_{gen}$ because every unit of entropy generated is, in effect, heat that must be rejected to the environment at $T_0$ and which could otherwise have been work. It is zero only for reversible processes.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Air expands in an adiabatic turbine from 900 K and 600 kPa to 100 kPa with an isentropic efficiency of 0.88. The dead state is 300 K and 100 kPa. Using $c_p = 1.005$ kJ/(kg K), $R = 0.287$ kJ/(kg K) and $k = 1.4$, calculate the actual work, the reversible work and the second-law efficiency, and explain why the second-law efficiency differs from the isentropic efficiency.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o1",
+    "ug.mce-thermodynamics-2.exergy-and-irreversibility.exergy-balance.o2"
+   ],
+   "markingGuide": [
+    "Isentropic exit temperature $T_{2s} = 900(100/600)^{0.2857} = 539.4$ K",
+    "Actual exit $T_2 = 900 - 0.88(900 - 539.4) = 582.7$ K",
+    "Actual work $= 1.005(900 - 582.7) = 318.9$ kJ/kg",
+    "Entropy change $s_2 - s_1 = 0.0773$ kJ/(kg K)",
+    "Reversible work $= w_{act} + T_0(s_2 - s_1) = 342.1$ kJ/kg",
+    "Second-law efficiency $= 318.9/342.1 = 0.932$",
+    "Explains that the isentropic efficiency compares actual work with the isentropic work, which ends at a different (cooler) exit state, whereas the second-law efficiency compares with $w_{rev} = \\psi_1 - \\psi_2$ between the actual inlet and actual exit states, so it charges the turbine only for the entropy actually generated"
+   ],
+   "explanation": "The actual work is 318.9 kJ/kg and the reversible work is 342.1 kJ/kg, so the second-law efficiency is 0.932. It differs from the isentropic efficiency of 0.88 because the isentropic work is evaluated for a different (cooler) exit state, while the reversible work is evaluated between the actual inlet and exit states and charges the turbine only for the entropy actually generated.",
+   "board": "internal"
+  }
+ ]
+}

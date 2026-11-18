@@ -1,0 +1,405 @@
+{
+ "lessonTitle": "Analogue-to-Digital Conversion: Resolution, Sampling and Anti-Aliasing",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 2 kg load cell on a gearbox test stand outputs 0 to 3.3 V as the torque arm flexes. Your microcontroller sees only numbers from 0 to 4095. How small a change in torque can it notice, and how fast must it look so that a 400 Hz gear-mesh vibration does not masquerade as a slow drift?"
+  },
+  {
+   "type": "text",
+   "markdown": "An **analogue-to-digital converter (ADC)** measures a voltage at discrete instants (sampling) and rounds it to one of a finite set of levels (quantisation). Two separate questions follow. *How finely* can it resolve voltage (set by the number of bits $N$ and the reference voltage $V_{ref}$)? And *how often* must it sample (set by the signal bandwidth)? This unit answers both and then shows how an analogue filter in front of the ADC protects against errors that cannot be repaired afterwards."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Resolution and LSB",
+   "text": "An N-bit ADC with reference voltage $V_{ref}$ (volts) divides the input span 0 to $V_{ref}$ into $2^N$ equal steps. One step is the least significant bit (LSB), the voltage resolution $Q$ in volts per code. Assumption: unipolar, ideal converter with no offset or gain error."
+  },
+  {
+   "type": "math",
+   "latex": "Q = \\frac{V_{ref}}{2^{N}}",
+   "caption": "Voltage resolution (LSB size) of an ideal N-bit ADC"
+  },
+  {
+   "type": "text",
+   "markdown": "Rounding to the nearest code makes the **quantisation error** lie between $-Q/2$ and $+Q/2$. It is a property of the converter, not a fault: halving the error needs one extra bit. For a code $k$ the voltage represented is about $kQ$, and the maximum code is $2^N-1$. Real converters add offset, gain and noise errors on top of this ideal limit."
+  },
+  {
+   "type": "worked_example",
+   "title": "Resolution of a 12-bit ADC",
+   "prompt": "A 12-bit ADC uses $V_{ref}=3.3$ V. Find the LSB size and the maximum quantisation error.",
+   "steps": [
+    {
+     "text": "Number of codes: $2^{12}=4096$.",
+     "latex": "2^{12}=4096"
+    },
+    {
+     "text": "Divide the reference by the number of steps.",
+     "latex": "Q=\\frac{3.3}{4096}=0.8057\\ \\text{mV}"
+    },
+    {
+     "text": "Maximum quantisation error is half a step.",
+     "latex": "\\frac{Q}{2}=0.4028\\ \\text{mV}"
+    }
+   ],
+   "answer": "Q = 0.806 mV per code, so the maximum quantisation error is about 0.403 mV."
+  },
+  {
+   "type": "text",
+   "markdown": "**Sampling.** Sampling a continuous signal $x(t)$ every $T_s=1/f_s$ seconds keeps only the values at those instants. The **Nyquist criterion** says a signal whose highest frequency component is $f_{max}$ (hertz) can be reconstructed from its samples only if the sampling rate satisfies the condition below. Sampling too slowly causes **aliasing**: a component at frequency $f$ above $f_s/2$ appears at the false lower frequency $f_{alias} = |f - n f_s|$, where the integer $n$ puts the result between 0 and $f_s/2$."
+  },
+  {
+   "type": "math",
+   "latex": "f_s > 2 f_{max}",
+   "caption": "Nyquist criterion"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Symbol",
+    "Rule",
+    "Effect of getting it wrong"
+   ],
+   "rows": [
+    [
+     "Resolution",
+     "$Q$",
+     "$V_{ref}/2^N$",
+     "Coarse steps, visible quantisation noise"
+    ],
+    [
+     "Sample rate",
+     "$f_s$",
+     "$f_s > 2 f_{max}$, practically 5 to 10 times $f_{max}$",
+     "Aliasing: false low-frequency signal"
+    ],
+    [
+     "Anti-alias cutoff",
+     "$f_c$",
+     "Above $f_{max}$, well below $f_s - f_{max}$",
+     "Either signal attenuated or aliases leak in"
+    ]
+   ],
+   "caption": "The three design quantities of an ADC channel"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Aliasing cannot be undone",
+   "text": "Once a 430 Hz tone has been sampled at 500 Hz it is indistinguishable from a genuine 70 Hz tone. No software filter can separate them afterwards, so the filtering must happen in the analogue domain before the converter."
+  },
+  {
+   "type": "text",
+   "markdown": "**Anti-aliasing filter.** An analogue low-pass filter placed before the ADC removes energy above the band of interest. Its cutoff $f_c$ (the frequency at which the gain has fallen to $1/\\sqrt{2}$) must be above $f_{max}$ so the wanted signal passes, and low enough that content at $f_s - f_{max}$, which would alias into the band, is attenuated below the resolution of the ADC. The magnitude of an $n$-th order Butterworth low-pass filter is given below; $n=1$ is a simple RC filter with $f_c = 1/(2\\pi RC)$."
+  },
+  {
+   "type": "math",
+   "latex": "|H(f)| = \\frac{1}{\\sqrt{1+(f/f_c)^{2n}}}",
+   "caption": "Butterworth low-pass magnitude response, order n"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing an anti-alias cutoff",
+   "prompt": "A signal has bandwidth $f_{max}=1$ kHz and is sampled at $f_s=10$ kHz. Content at $f_s-f_{max}=9$ kHz would alias onto 1 kHz, and must be attenuated by at least 40 dB (a factor of 100 in amplitude). Test a first-order filter, then a fourth-order Butterworth.",
+   "steps": [
+    {
+     "text": "The required amplitude ratio is $|H|=10^{-40/20}=0.01$. Rearranging the magnitude response gives $(f/f_c)^{2n}=1/|H|^2-1=9999$.",
+     "latex": "\\left(\\frac{f}{f_c}\\right)^{2n}=\\frac{1}{0.01^2}-1=9999"
+    },
+    {
+     "text": "First order, $n=1$: $f/f_c=\\sqrt{9999}\\approx 100$, so $f_c = 9000/100$ Hz.",
+     "latex": "f_c=\\frac{9000}{99.99}=90.0\\ \\text{Hz}"
+    },
+    {
+     "text": "That cutoff is far below the 1 kHz signal, which would itself be heavily attenuated. A first-order filter cannot do the job at this sampling rate."
+    },
+    {
+     "text": "Fourth order, $n=4$: $f/f_c=9999^{1/8}$.",
+     "latex": "\\frac{f}{f_c}=3.162\\Rightarrow f_c=\\frac{9000}{3.162}=2846\\ \\text{Hz}"
+    },
+    {
+     "text": "Check the passband: at 1 kHz the gain with this cutoff is 0.99988, essentially unity. Any $f_c$ between 1 kHz and about 2846 Hz works; choosing about 2.5 kHz leaves margin."
+    }
+   ],
+   "answer": "A first-order filter would need f_c = 90 Hz (unusable). A fourth-order Butterworth with f_c up to about 2846 Hz meets the 40 dB requirement while passing the 1 kHz signal."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Resolution is not accuracy",
+   "text": "The LSB sets the smallest step the converter can report. Offset, gain error, reference drift and noise decide how close the reported value is to the truth, so a 16-bit converter is not automatically a 16-bit-accurate measurement."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "An N-bit ADC has $2^N$ codes and resolution $Q=V_{ref}/2^N$; the quantisation error is at most $Q/2$.",
+    "Nyquist requires $f_s > 2 f_{max}$; a tone above $f_s/2$ aliases to $|f - n f_s|$.",
+    "An analogue anti-alias filter must precede the ADC because aliasing is irreversible.",
+    "The cutoff is chosen above $f_{max}$ and so that content at $f_s - f_{max}$ is attenuated enough; a higher order or higher $f_s$ eases the compromise."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 10-bit ADC has a 5.0 V reference and a unipolar 0 to 5.0 V input. What is the voltage resolution (one LSB)?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4.88 mV"
+    },
+    {
+     "id": "b",
+     "text": "5.00 mV"
+    },
+    {
+     "id": "c",
+     "text": "9.77 mV"
+    },
+    {
+     "id": "d",
+     "text": "0.49 mV"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "4.88 mV",
+   "distractorRationale": {
+    "a": "Correct: 5.0 V divided by 1024 steps is 4.88 mV.",
+    "b": "This treats 1000 as the number of steps instead of $2^{10}=1024$.",
+    "c": "This is double the correct value; it would result from dividing by 512 (9 bits).",
+    "d": "This divides by 10240; the exponent was misapplied."
+   },
+   "explanation": "There are $2^{10}=1024$ codes, so $Q=5.0/1024=4.88$ mV per code. The resolution is the span divided by the number of steps.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A bearing vibration sensor produces components up to 120 Hz. According to the Nyquist criterion, which sampling condition is the minimum requirement for faithful reconstruction?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The sample rate must equal 120 Hz"
+    },
+    {
+     "id": "b",
+     "text": "The sample rate must exceed 60 Hz"
+    },
+    {
+     "id": "c",
+     "text": "The sample rate must exceed 240 Hz"
+    },
+    {
+     "id": "d",
+     "text": "The sample rate must be exactly 480 Hz"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The sample rate must exceed 240 Hz",
+   "distractorRationale": {
+    "a": "Sampling at the signal frequency itself gives one sample per cycle, which cannot capture the oscillation.",
+    "b": "This is $f_{max}/2$, the folding frequency, not the sampling requirement; the condition has been inverted.",
+    "c": "Correct: the sample rate must be more than twice the highest frequency, so above 240 Hz.",
+    "d": "480 Hz would be a sensible practical choice but it is not a required exact value; the Nyquist condition is an inequality."
+   },
+   "explanation": "Nyquist requires $f_s > 2 f_{max} = 240$ Hz. Sampling at exactly twice the highest frequency is the limiting case and in practice a margin is used.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A data logger samples at 500 Hz. A 430 Hz electrical interference tone reaches the ADC unfiltered. At what frequency does it appear in the sampled data?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "430 Hz"
+    },
+    {
+     "id": "b",
+     "text": "70 Hz"
+    },
+    {
+     "id": "c",
+     "text": "215 Hz"
+    },
+    {
+     "id": "d",
+     "text": "930 Hz"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "70 Hz",
+   "distractorRationale": {
+    "a": "Frequencies above $f_s/2$ cannot appear at their true value in the sampled spectrum; they fold back.",
+    "b": "Correct: $|430 - 500| = 70$ Hz.",
+    "c": "This halves 430 Hz, which is not how folding works.",
+    "d": "This adds the sample rate instead of subtracting it; the alias must lie between 0 and $f_s/2$."
+   },
+   "explanation": "Aliasing maps 430 Hz to $|430-500|=70$ Hz, which lies below the folding frequency $f_s/2=250$ Hz. The sampled data cannot distinguish it from a genuine 70 Hz signal.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An engineer keeps a 12-bit ADC but changes the reference voltage from 2.5 V to 5.0 V to fit a larger signal. What happens to the LSB size and what is the trade-off?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The LSB halves, so fine detail is resolved better and the span is unchanged"
+    },
+    {
+     "id": "b",
+     "text": "The LSB doubles, so fine detail is resolved less well, but a larger input span is accepted"
+    },
+    {
+     "id": "c",
+     "text": "The LSB is unchanged because it depends only on the number of bits"
+    },
+    {
+     "id": "d",
+     "text": "The LSB quadruples because the span is squared"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The LSB doubles, so fine detail is resolved less well, but a larger input span is accepted",
+   "distractorRationale": {
+    "a": "Doubling the reference cannot halve the step; the relationship is direct, not inverse.",
+    "b": "Correct: Q is proportional to the reference voltage for fixed N.",
+    "c": "The LSB depends on both $N$ and $V_{ref}$, not on the bit count alone.",
+    "d": "The relationship is linear in $V_{ref}$, not quadratic."
+   },
+   "explanation": "Since $Q=V_{ref}/2^N$ and $N$ is fixed, doubling $V_{ref}$ doubles $Q$. The converter accepts a larger input but each step is twice as large, so small signal changes are resolved less finely.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why must an anti-aliasing filter be an analogue circuit placed before the ADC, rather than a digital filter applied afterwards?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Digital filters cannot attenuate any frequency above 1 Hz"
+    },
+    {
+     "id": "b",
+     "text": "Analogue filters have zero phase shift and digital filters do not"
+    },
+    {
+     "id": "c",
+     "text": "The ADC cannot sample until the filter has settled, which is a hardware rule"
+    },
+    {
+     "id": "d",
+     "text": "After sampling, aliased components are indistinguishable from genuine low-frequency content"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "After sampling, aliased components are indistinguishable from genuine low-frequency content",
+   "distractorRationale": {
+    "a": "Digital filters can attenuate a wide range of frequencies; this statement is false.",
+    "b": "Analogue filters do introduce phase shift, and phase is not the reason.",
+    "c": "There is no such settling rule; the reason is the irreversible folding of the spectrum.",
+    "d": "Correct: the information distinguishing the alias from a real tone is lost at sampling."
+   },
+   "explanation": "Aliasing folds high-frequency energy onto lower frequencies at the moment of sampling. After that, the aliased tone is mathematically identical to a real low-frequency tone, so no digital processing can separate them; the high frequencies must be removed beforehand.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A 16-bit ADC has a 4.096 V reference and a unipolar input. Calculate the voltage resolution (one LSB) in microvolts.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o1"
+   ],
+   "correctValue": 62.5,
+   "tolerance": 0.5,
+   "unit": "microvolts",
+   "explanation": "$Q=4.096/2^{16}=4.096/65536=6.25\\times10^{-5}$ V, which is 62.5 microvolts. The reference was chosen so that the LSB is a round number.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A pressure transducer gives 0 to 5 V. You must resolve changes of 1 mV anywhere in the range. What is the minimum number of ADC bits required (give the smallest whole number of bits)?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o1"
+   ],
+   "correctValue": 13,
+   "tolerance": 0.5,
+   "unit": "bits",
+   "explanation": "The span must contain at least 5000 steps of 1 mV, so $2^N \\ge 5000$ and $N \\ge \\log_2 5000 = 12.29$. Rounding up to a whole number of bits gives 13 bits, with resolution $5/8192=0.61$ mV.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A signal of bandwidth 200 Hz is sampled at 2000 Hz. Interference at $f_s - f_{max}=1800$ Hz must be attenuated by at least 50 dB (amplitude ratio 0.00316). Using a third-order Butterworth anti-alias filter, $|H|=1/\\sqrt{1+(f/f_c)^{6}}$, find the largest cutoff frequency, in hertz, that meets the requirement.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o2",
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o3"
+   ],
+   "correctValue": 264.2,
+   "tolerance": 4,
+   "unit": "Hz",
+   "explanation": "The condition $(1800/f_c)^6 = 10^5-1 = 99999$ gives $1800/f_c = 99999^{1/6} = 6.813$, so $f_c = 264.2$ Hz. At 200 Hz the gain with this cutoff is 0.917 (-0.75 dB), so the wanted band passes nearly unchanged.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why meeting the Nyquist criterion alone is not enough to design the front end of a data-acquisition channel. In your answer discuss the role of the anti-aliasing filter and why practical sample rates are several times the signal bandwidth.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o2",
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o3"
+   ],
+   "markingGuide": [
+    "States that Nyquist applies only if the input has no content above $f_s/2$; real signals and noise have energy beyond $f_{max}$ (1 mark)",
+    "Explains that out-of-band content aliases onto in-band frequencies and cannot be removed after sampling (2 marks)",
+    "Describes an analogue low-pass filter before the ADC with cutoff above $f_{max}$ and strong attenuation at $f_s - f_{max}$ (2 marks)",
+    "Explains that real filters have a finite roll-off, so a transition band is needed between $f_{max}$ and $f_s/2$, which requires $f_s$ well above $2f_{max}$ (2 marks)",
+    "Mentions that sampling at 5 to 10 times $f_{max}$ also preserves waveform shape and eases filter order (1 mark)"
+   ],
+   "explanation": "Nyquist is a necessary condition for a band-limited signal; real inputs carry noise beyond the band of interest, so a filter and a margin on $f_s$ are needed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A temperature channel samples at $f_s=100$ Hz to follow a thermal signal that changes below 5 Hz. A motor drive couples a 95 Hz interference tone into the wiring. Determine the frequency at which the interference appears in the sampled data, explain why this is harmful, and propose two distinct design changes that remove the problem.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o2",
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.adc-basics.o3"
+   ],
+   "markingGuide": [
+    "Alias frequency $|95-100|=5$ Hz (2 marks)",
+    "Observes this lies inside the signal band, so it is indistinguishable from real temperature variation and cannot be filtered digitally (2 marks)",
+    "Proposes an analogue low-pass filter before the ADC with cutoff above 5 Hz and strong attenuation at 95 Hz (2 marks)",
+    "Proposes a second remedy such as raising $f_s$ so that 95 Hz is below $f_s/2$ and then digitally filtering, or shielding and twisting the wiring to reduce pickup at source (2 marks)"
+   ],
+   "explanation": "$|95-100|=5$ Hz, exactly in the wanted band. Because aliasing cannot be undone digitally, the remedy must act before sampling (analogue filter, shielding) or change $f_s$.",
+   "board": "internal"
+  }
+ ]
+}

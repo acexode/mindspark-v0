@@ -1,0 +1,30 @@
+{
+  "subjectId": "ug.mce-finite-element-analysis",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 15,
+  "summary": "Round 2 review of all 15 units. Every round-1 fix was checked in Python and holds: transient cost scaling (8x in 2D, 16x in 3D), the cantilever shear-deformation explanation (about 0.30 percent, 0.0125 mm), the 0.24 percent mesh-convergence figure, the reworked mesh-convergence q005 (ratios 1.373 and 1.369, next value 386 MPa), shell q007 (219.6 mm), the Ritz energy-bound callout and its q007 (+3.205 percent, strain energy ratio 0.987 so energy is indeed underestimated), the Q8/T6 strain wording, the LaTeX answer 2.0x10^-3, and the contact penalty guidance. Every numeric key (weak form, Ritz/Galerkin, Jacobians, Gauss rules, triangle strains, beam and shear ratios, thermal assembly and stability limits, restrained-bar stresses, bar eigenvalues, central-difference steps, Newton-Raphson table, penalty contact, Richardson and GCI) was recomputed and agrees with its key and tolerance. No tabs, control characters, format placeholders, e-notation, plain x in LaTeX, placeholder steps or stale option-letter references were found. Two issues remain: a factual claim in the nonlinear-sources worked example (the 'low' stress is about 240 MPa) and the unaddressed round-1 rule of thumb on elements per wavelength. This is an AI review only; the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Worked example 'Is the linear assumption valid?' (steel strip 0.4 m x 25 mm x 2 mm, P = 10 N) says \"The stresses are low, so the material is linear\". The linear-theory root stress is M c / I = (10 x 0.4)(0.001)/(1.667e-11) = 240 MPa, which is close to the yield strength of ordinary structural steel (about 250 MPa) and would be higher still once large rotations are included. The claim is wrong and teaches students to skip the material check.",
+      "suggestedFix": "Either reduce the load or thicken the strip so the root stress is clearly low (for example P = 3 N gives about 72 MPa), or reword the step to say that the prompt states the material stays elastic, that the linear-theory stress is about 240 MPa and would need checking against yield for mild steel, and that the geometric nonlinearity conclusion is unaffected."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources",
+      "questionId": "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.q003",
+      "severity": "minor",
+      "category": "explanation",
+      "problem": "Q003 (20 N tip load, 3 mm strip, L = 0.5 m) concludes only that large-displacement analysis is required, but the linear-theory root stress is (20 x 0.5)(0.0015)/(6.75e-11) = 222 MPa, close to yield for ordinary steel. The question does not say the material stays elastic.",
+      "suggestedFix": "Add that the material stays elastic (as in the lesson example) or note that the 222 MPa root stress would also need a yield check; the key 12.346 percent is correct."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Still present from round 1: \"a rule of thumb is at least 8 to 10 linear elements per half wavelength (typical guidance)\". Common guidance for linear elements is about 10 or more elements per wavelength; per half wavelength would mean 16 to 20 per wavelength. Unverified and probably overstated.",
+      "suggestedFix": "Restate as about 10 or more linear elements per wavelength (or name the source if per half-wave is intended) and keep the 'typical guidance' label; recommend a source check."
+    }
+  ]
+}

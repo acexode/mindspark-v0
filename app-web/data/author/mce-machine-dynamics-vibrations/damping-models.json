@@ -1,0 +1,404 @@
+{
+ "lessonTitle": "Damping Models: Viscous, Coulomb and Structural",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A turbine blade clamped in its fir-tree root stops ringing far sooner than the same blade bolted to a rigid test stand, because rubbing at the root joint turns vibration energy into heat. Choosing a damping model means asking how much energy each cycle removes, and how that changes with amplitude and frequency."
+  },
+  {
+   "type": "text",
+   "markdown": "Every real vibrating system loses energy. The **energy dissipated per cycle**, $\\Delta W$ (J), is the area of the force-displacement hysteresis loop. Three models are used. **Viscous damping** applies a force $c\\dot{x}$ proportional to velocity ($c$ in N s/m). **Coulomb (dry-friction) damping** applies a constant-magnitude force $F_f=\\mu N$ (N) that always opposes the velocity. **Structural (hysteretic) damping** is a material-type loss whose energy per cycle does not depend on frequency. Each is a model, chosen to match what experiments show."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Energy per cycle and loss measures",
+   "text": "For harmonic motion $x=X\\sin\\omega t$ with amplitude $X$ (m), the peak elastic energy is $U=\\tfrac12kX^2$ (J). The equivalent viscous damping ratio from a measured loss is $\\zeta_{eq}=\\Delta W/(4\\pi U)$ when the motion is near resonance, the specific damping capacity is $\\psi=\\Delta W/U=4\\pi\\zeta_{eq}$ and the loss factor is $\\eta=\\Delta W/(2\\pi U)=2\\zeta_{eq}$."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta W_{visc}=\\pi c\\omega X^2,\\qquad \\Delta W_{Coul}=4F_fX,\\qquad \\Delta W_{struct}=\\pi hX^2=\\pi\\eta kX^2",
+   "caption": "Energy dissipated per cycle for harmonic motion at frequency omega (rad/s)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Where the formulas come from.** For viscous damping the force $c\\dot{x}=c\\omega X\\cos\\omega t$ acts through the displacement; integrating force times velocity over one period $2\\pi/\\omega$ gives $\\pi c\\omega X^2$. For Coulomb damping the friction force $F_f$ acts over a path of length $4X$ per cycle (out and back, two half-cycles each of length $2X$), so the loss is $4F_fX$. For structural damping the loop area is made proportional to $X^2$ and independent of $\\omega$: $\\Delta W=\\pi hX^2$, where $h$ (N/m) is the hysteretic damping coefficient and $h=\\eta k$. Viscous loss grows linearly with frequency; the structural loss does not."
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparing viscous and Coulomb loss",
+   "prompt": "A mass is vibrated at 60 rad/s with amplitude 10 mm. A viscous damper with c = 20 N s/m is compared with a dry-friction joint with friction force 5 N. Find the energy lost per cycle in each case, and again after the amplitude has halved to 5 mm.",
+   "steps": [
+    {
+     "text": "Viscous loss at 10 mm.",
+     "latex": "\\Delta W=\\pi c\\omega X^2=\\pi\\times20\\times60\\times0.01^2=0.377\\ \\text{J}"
+    },
+    {
+     "text": "Coulomb loss at 10 mm.",
+     "latex": "\\Delta W=4F_fX=4\\times5\\times0.01=0.200\\ \\text{J}"
+    },
+    {
+     "text": "Halve the amplitude. Viscous loss scales with X squared and so falls by a factor of four; Coulomb loss scales with X and falls by a factor of two.",
+     "latex": "\\Delta W_{visc}=0.0942\\ \\text{J},\\quad \\Delta W_{Coul}=0.100\\ \\text{J}"
+    },
+    {
+     "text": "Compare: at 10 mm the viscous damper removes more energy, but at 5 mm the friction joint removes more. Friction is relatively more effective at small amplitudes.",
+     "latex": null
+    }
+   ],
+   "answer": "At 10 mm: viscous 0.377 J, Coulomb 0.200 J. At 5 mm: viscous 0.0942 J, Coulomb 0.100 J."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Viscous",
+    "Coulomb (dry friction)",
+    "Structural (hysteretic)"
+   ],
+   "rows": [
+    [
+     "Damping force",
+     "$c\\dot{x}$",
+     "$\\mu N\\,\\mathrm{sgn}(\\dot{x})$ (constant magnitude)",
+     "Force in phase with velocity, magnitude $\\propto$ displacement"
+    ],
+    [
+     "Energy per cycle",
+     "$\\pi c\\omega X^2$",
+     "$4F_fX$",
+     "$\\pi hX^2$"
+    ],
+    [
+     "Depends on frequency?",
+     "Yes, linearly",
+     "No",
+     "No"
+    ],
+    [
+     "Depends on amplitude as",
+     "$X^2$",
+     "$X$",
+     "$X^2$"
+    ],
+    [
+     "Free decay",
+     "Exponential envelope",
+     "Linear envelope, drop $4F_f/k$ per cycle",
+     "Exponential-like for small loss"
+    ],
+    [
+     "Typical use",
+     "Dampers, fluid films",
+     "Bolted joints, sliding contacts",
+     "Metals, composites, rubber (typical)"
+    ]
+   ],
+   "caption": "Comparison of damping models"
+  },
+  {
+   "type": "text",
+   "markdown": "**Coulomb decay.** In free vibration with dry friction, the loss per cycle is $4F_fX$ while the energy is $\\tfrac12kX^2$. Equating the energy lost over a cycle to the fall in energy shows the amplitude decreases by a fixed amount, $4F_f/k$ (m), every cycle, so the envelope is a straight line, and the motion stops completely once the spring force can no longer overcome friction."
+  },
+  {
+   "type": "worked_example",
+   "title": "Equivalent viscous damping from a hysteresis loop",
+   "prompt": "A force-displacement test on a mount of stiffness 25000 N/m cycled at amplitude 12 mm gives a loop of area 0.45 J per cycle. Find the equivalent viscous damping ratio and the loss factor.",
+   "steps": [
+    {
+     "text": "Peak elastic energy at the test amplitude.",
+     "latex": "U=\\tfrac12kX^2=\\tfrac12\\times25000\\times0.012^2=1.80\\ \\text{J}"
+    },
+    {
+     "text": "Equivalent damping ratio from the energy ratio.",
+     "latex": "\\zeta_{eq}=\\frac{\\Delta W}{4\\pi U}=\\frac{0.45}{4\\pi\\times1.80}=0.0199"
+    },
+    {
+     "text": "The loss factor is twice the damping ratio.",
+     "latex": "\\eta=2\\zeta_{eq}=0.0398"
+    }
+   ],
+   "answer": "zeta_eq = 0.0199 (about 2.0 %), eta = 0.0398."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Viscous: choose when the resisting force really is proportional to velocity (oil film, dashpot, fluid drag at low speed).",
+    "Coulomb: choose for dry-friction joints and sliding; amplitude-dependent, linear decay, stops at a non-zero offset.",
+    "Structural: choose for solid metals and composites vibrating harmonically, where tests show energy loss per cycle almost independent of frequency.",
+    "To compare models use the equivalent viscous damping ratio $\\zeta_{eq}=\\Delta W/(4\\pi U)$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why the structural model exists",
+   "text": "Tests on many solid materials show a loss per cycle that barely changes with frequency over a wide band. A viscous model would predict loss proportional to frequency, which does not match. The structural model fits that observation: equivalent damping $c_{eq}=h/\\omega$ falls as $1/\\omega$. Its limitation is that it is a frequency-domain model for harmonic motion, and is not used for transient time-domain simulation."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Equivalent damping depends on amplitude",
+   "text": "For Coulomb damping at resonance, $\\zeta_{eq}=2F_f/(\\pi kX)$. It rises as the amplitude falls, so a single number is not valid for all amplitudes. Equivalent viscous values are linearisations at one amplitude and frequency."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Energy lost per cycle: viscous $\\pi c\\omega X^2$, Coulomb $4F_fX$, structural $\\pi hX^2$.",
+    "Viscous loss grows with frequency and amplitude squared; Coulomb loss grows with amplitude only and is independent of frequency.",
+    "An equivalent viscous damping ratio from measured loss is $\\zeta_{eq}=\\Delta W/(4\\pi U)$ with $U=\\tfrac12kX^2$.",
+    "Structural damping is preferred for solid materials in harmonic loading where the loss per cycle is nearly independent of frequency."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A viscously damped system is vibrated harmonically at a fixed frequency. If the amplitude is doubled, the energy dissipated per cycle",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "increases by a factor of four"
+    },
+    {
+     "id": "b",
+     "text": "increases by a factor of two"
+    },
+    {
+     "id": "c",
+     "text": "stays the same"
+    },
+    {
+     "id": "d",
+     "text": "increases by a factor of eight"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "increases by a factor of four",
+   "distractorRationale": {
+    "a": "Correct: Viscous loss per cycle is pi c omega X^2, proportional to the square of the amplitude.",
+    "b": "That is the dependence for Coulomb friction, not viscous damping.",
+    "c": "The energy per cycle depends on the amplitude squared.",
+    "d": "Cubic dependence does not arise from a force proportional to velocity."
+   },
+   "explanation": "Viscous loss per cycle is pi c omega X^2, proportional to the square of the amplitude. Doubling X therefore multiplies the loss by four.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A sliding joint exerts a constant friction force of 12 N while the vibration amplitude is 25 mm. The energy lost to Coulomb friction per cycle is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.6 J"
+    },
+    {
+     "id": "b",
+     "text": "0.3 J"
+    },
+    {
+     "id": "c",
+     "text": "1.2 J"
+    },
+    {
+     "id": "d",
+     "text": "3.77 J"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "1.2 J",
+   "distractorRationale": {
+    "a": "That counts only one half-cycle (a path of 2X), not the full out-and-back path of 4X.",
+    "b": "That multiplies force by one amplitude only, covering a quarter of the path.",
+    "c": "Correct: Over one cycle the block travels a path of 4X, and the friction force of 12 N opposes motion throughout.",
+    "d": "That inserts a factor of pi, which belongs to the viscous formula, not to Coulomb friction."
+   },
+   "explanation": "Over one cycle the block travels a path of 4X, and the friction force of 12 N opposes motion throughout. The energy lost is 4 F_f X = 4 x 12 x 0.025 = 1.2 J.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A viscous damper with coefficient 35 N s/m is driven harmonically at 40 rad/s with amplitude 8 mm. Find the energy dissipated per cycle in joules.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o1"
+   ],
+   "correctValue": 0.281487,
+   "tolerance": 0.00562973,
+   "unit": "J",
+   "explanation": "Energy per cycle for viscous damping is pi c omega X^2 = pi x 35 x 40 x (0.008)^2 = 0.2815 J.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A rubber bush of stiffness 60000 N/m is cycled at amplitude 5 mm and the measured hysteresis loop has area 0.3 J. Find the equivalent viscous damping ratio (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o2"
+   ],
+   "correctValue": 0.031831,
+   "tolerance": 0.001,
+   "unit": "dimensionless",
+   "explanation": "The peak elastic energy is U = 0.5 k X^2 = 0.5 x 60000 x 0.005^2 = 0.75 J. The equivalent damping ratio is zeta = dW / (4 pi U) = 0.3 / (4 pi x 0.75) = 0.0318.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A mass on a spring of stiffness 1500 N/m is damped by dry friction of 3 N and released. By how much does the peak amplitude fall each cycle?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4.0 mm, the same drop every cycle"
+    },
+    {
+     "id": "b",
+     "text": "8.0 mm, the same drop every cycle"
+    },
+    {
+     "id": "c",
+     "text": "A fixed fraction of the previous amplitude each cycle"
+    },
+    {
+     "id": "d",
+     "text": "It cannot be found without knowing the mass"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "8.0 mm, the same drop every cycle",
+   "distractorRationale": {
+    "a": "That is the drop per half-cycle (2 F_f / k); a full cycle has two half-cycles.",
+    "b": "Correct: Dry friction removes energy 4 F_f X per cycle, and the amplitude falls by 4 F_f / k each cycle: 4 x 3 / 1500 = 0.008 m, which is 8.0 mm.",
+    "c": "A constant fractional decay is the viscous pattern, not Coulomb friction.",
+    "d": "The drop depends only on friction force and stiffness, because it comes from the energy balance."
+   },
+   "explanation": "Dry friction removes energy 4 F_f X per cycle, and the amplitude falls by 4 F_f / k each cycle: 4 x 3 / 1500 = 0.008 m, which is 8.0 mm. The decay is linear, not exponential, so the amplitude drop does not depend on the mass or on the current amplitude.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A test on a steel beam shows that the energy lost per cycle is nearly independent of the frequency at which it is cycled. Explain why the structural (hysteretic) model is more suitable than the viscous model here, and state a limitation of the structural model.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o3"
+   ],
+   "markingGuide": [
+    "Viscous model predicts loss per cycle proportional to frequency (pi c omega X^2)",
+    "Measured loss is nearly frequency-independent, matching structural damping, loss = pi h X^2",
+    "Structural model uses loss factor eta = DeltaW / (2 pi U), constant with frequency",
+    "Equivalent viscous damping then falls as c_eq = h / omega",
+    "Limitation: it applies to steady harmonic motion; it is not a valid time-domain model for transients"
+   ],
+   "explanation": "A viscous damper would dissipate more energy per cycle at higher frequency, which the test does not show. The structural model reproduces the constant loss, though only for harmonic response.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 4 kg machine on a mount of stiffness 1 x 10^5 N/m has structural damping with loss factor 0.03. Find the equivalent viscous damping coefficient at its natural frequency in N s/m (use c_eq = eta k / omega).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o2",
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o3"
+   ],
+   "correctValue": 18.9737,
+   "tolerance": 0.379473,
+   "unit": "N s/m",
+   "explanation": "The natural frequency is sqrt(k/m) = sqrt(25000) = 158.1 rad/s. The hysteretic coefficient is h = eta k = 3000 N/m, so c_eq = h / omega_n = 18.97 N s/m. This equals 2 zeta_eq sqrt(km) with zeta_eq = eta/2 = 0.015.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A block vibrates at resonance with dry-friction damping only. As the amplitude decays, the equivalent viscous damping ratio of the friction joint",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "increases, because it varies inversely with amplitude"
+    },
+    {
+     "id": "b",
+     "text": "decreases, because the energy lost per cycle falls"
+    },
+    {
+     "id": "c",
+     "text": "stays constant, as for a viscous damper"
+    },
+    {
+     "id": "d",
+     "text": "is zero, because friction cannot be linearised"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "increases, because it varies inversely with amplitude",
+   "distractorRationale": {
+    "a": "Correct: At resonance zeta_eq = 2 F_f / (pi k X).",
+    "b": "Energy lost falls, but energy stored falls faster (with X squared), so the ratio rises.",
+    "c": "Constancy holds for viscous damping only; for friction it depends on amplitude.",
+    "d": "An equivalent value can be defined at each amplitude; it is just not constant."
+   },
+   "explanation": "At resonance zeta_eq = 2 F_f / (pi k X). The loss per cycle falls like X but the stored energy falls like X^2, so the equivalent damping ratio rises as the amplitude decays, which is why friction brings the motion to rest quickly at small amplitude.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Compare viscous, Coulomb and structural damping in terms of (a) how energy loss per cycle depends on amplitude, (b) how it depends on frequency, and (c) the shape of the free-decay envelope.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o1",
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o2"
+   ],
+   "markingGuide": [
+    "Viscous: loss pi c omega X^2, so X squared and proportional to frequency; exponential envelope",
+    "Coulomb: loss 4 F_f X, linear in X and independent of frequency; linear envelope with fixed drop 4 F_f / k per cycle and stops at finite amplitude",
+    "Structural: loss pi h X^2, X squared and independent of frequency; envelope close to exponential for small loss factor",
+    "Equivalent viscous damping ratio zeta_eq = DeltaW / (4 pi U) can compare the three",
+    "Coulomb equivalent damping rises as amplitude falls"
+   ],
+   "explanation": "The three models differ in how they scale with X and omega. Those scalings are what an experimenter tests to select the right model.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "For a viscous damper, the energy dissipated per cycle at fixed amplitude is independent of the vibration frequency.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o1",
+    "ug.mce-machine-dynamics-vibrations.damping-q.damping-models.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The viscous loss is pi c omega X^2, which increases in proportion to frequency at fixed amplitude. It is the structural and Coulomb models whose loss per cycle does not depend on frequency.",
+   "board": "internal"
+  }
+ ]
+}

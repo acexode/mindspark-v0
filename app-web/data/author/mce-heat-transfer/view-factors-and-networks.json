@@ -1,0 +1,401 @@
+{
+ "lessonTitle": "View Factors and Radiation Networks",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A cryogenic tank is wrapped in dozens of paper-thin layers of aluminised film, with almost no thickness and hardly any weight, yet the heat leaking in from the room drops by a factor of a hundred. The layers do nothing about conduction or convection: they are radiation shields, and they work because of two geometric and surface-property rules."
+  },
+  {
+   "type": "text",
+   "markdown": "Radiation exchange between real surfaces depends on how much of one surface's view is occupied by another, and on their emissivities. The first part is geometry, captured by the **view factor**. The second is surface properties. Together they allow us to build an electrical-style resistance network for radiation."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "View factor",
+   "text": "The view factor $F_{ij}$ is the fraction of the radiation leaving diffuse surface $i$ that strikes surface $j$ directly. It depends only on geometry (shape, size, distance, orientation) and is dimensionless, $0\\le F_{ij}\\le1$."
+  },
+  {
+   "type": "math",
+   "latex": "A_iF_{ij}=A_jF_{ji}\\;(\\text{reciprocity}),\\qquad \\sum_{j=1}^{N}F_{ij}=1\\;(\\text{summation})",
+   "caption": "Reciprocity and summation rules for an enclosure of N surfaces; F_ii = 0 for flat or convex surfaces, nonzero for concave ones"
+  },
+  {
+   "type": "worked_example",
+   "title": "View factors for a sphere inside a sphere",
+   "prompt": "A sphere of diameter 0.20 m sits at the centre of a larger concentric spherical shell of diameter 0.60 m. Find the view factors $F_{12}$, $F_{21}$ and $F_{22}$, where 1 is the inner sphere's outer surface and 2 is the inner surface of the shell.",
+   "steps": [
+    {
+     "text": "Every ray leaving the convex inner sphere must strike the shell, since there is nothing else in the enclosure. So $F_{11}=0$ (a convex surface cannot see itself) and, by the summation rule, $F_{12}=1$.",
+     "latex": "\\sum_jF_{ij}=1,\\quad F_{11}=0\\Rightarrow F_{12}=1"
+    },
+    {
+     "text": "Areas: $A_1=\\pi D_1^2=0.12566$ m$^2$ and $A_2=\\pi D_2^2=1.13097$ m$^2$.",
+     "latex": "A=\\pi D^2"
+    },
+    {
+     "text": "Reciprocity: $A_1F_{12}=A_2F_{21}$ gives $F_{21}=A_1/A_2=(D_1/D_2)^2=(0.2/0.6)^2=0.1111$.",
+     "latex": "A_1F_{12}=A_2F_{21}"
+    },
+    {
+     "text": "Summation for the shell: $F_{21}+F_{22}=1$, so $F_{22}=1-0.1111=0.8889$. The shell sees itself over most of its view because it is concave.",
+     "latex": "F_{21}+F_{22}=1"
+    }
+   ],
+   "answer": "$F_{12}=1$, $F_{21}=0.111$ and $F_{22}=0.889$."
+  },
+  {
+   "type": "text",
+   "markdown": "For two diffuse gray surfaces that form an enclosure, we write the net heat exchange in terms of **radiosity** and resistance. A surface of area $A$ and emissivity $\\varepsilon$ has a **surface resistance** $(1-\\varepsilon)/(\\varepsilon A)$ between its blackbody emissive power $E_b=\\sigma T^4$ and its radiosity, and two surfaces are joined by a **space resistance** $1/(A_iF_{ij})$. The resistances are in series for a two-surface enclosure, and $q=\\Delta E_b/\\sum R$, exactly like Ohm's law."
+  },
+  {
+   "type": "math",
+   "latex": "q_{12}=\\frac{\\sigma(T_1^4-T_2^4)}{\\dfrac{1-\\varepsilon_1}{\\varepsilon_1A_1}+\\dfrac{1}{A_1F_{12}}+\\dfrac{1-\\varepsilon_2}{\\varepsilon_2A_2}}",
+   "caption": "Two-surface gray diffuse enclosure; T in kelvin; if A_2 is much larger than A_1, the last term vanishes and q = epsilon_1 A_1 sigma (T_1^4 - T_2^4)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Net radiation between concentric cylinders",
+   "prompt": "A long hot pipe of diameter 0.10 m at 500 K (emissivity 0.8) runs along the axis of a long cylindrical duct of diameter 0.30 m at 300 K (emissivity 0.6). Find the net radiation exchange per metre of length. Use $\\sigma=5.67\\times10^{-8}$ W/m$^2$K$^4$.",
+   "steps": [
+    {
+     "text": "Treat the two surfaces as a two-surface enclosure. Draw the radiation network between the blackbody emissive powers $E_{b1}=\\sigma T_1^4$ and $E_{b2}=\\sigma T_2^4$: a surface resistance for each surface, $(1-\\varepsilon)/(\\varepsilon A)$, in series with a space resistance $1/(A_1F_{12})$.",
+     "latex": "q_{12}=\\frac{\\sigma(T_1^4-T_2^4)}{\\dfrac{1-\\varepsilon_1}{\\varepsilon_1A_1}+\\dfrac{1}{A_1F_{12}}+\\dfrac{1-\\varepsilon_2}{\\varepsilon_2A_2}}"
+    },
+    {
+     "text": "Per metre of length: $A_1=\\pi D_1=0.3142$ m$^2$/m and $A_2=\\pi D_2=0.9425$ m$^2$/m. The pipe is convex and fully enclosed, so $F_{12}=1$."
+    },
+    {
+     "text": "Resistances (m$^{-2}$): $(1-0.8)/(0.8\\times0.3142)=0.7958$; space $1/0.3142=3.1831$; $(1-0.6)/(0.6\\times0.9425)=0.7074$. Total $4.6862$."
+    },
+    {
+     "text": "Numerator: $\\sigma(T_1^4-T_2^4)=5.67\\times10^{-8}\\times(6.2500e+10-8.1000e+09)=3084.5$ W/m$^2$. So $q'=3084.5/4.6862=658.2$ W/m."
+    }
+   ],
+   "answer": "$q'\\approx658$ W per metre, from the pipe to the duct."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Resistance",
+    "Expression",
+    "Special cases"
+   ],
+   "rows": [
+    [
+     "Surface resistance",
+     "$(1-\\varepsilon)/(\\varepsilon A)$",
+     "Zero for a blackbody ($\\varepsilon=1$); large for polished metal"
+    ],
+    [
+     "Space (geometric) resistance",
+     "$1/(A_iF_{ij})$",
+     "Depends only on geometry"
+    ],
+    [
+     "Parallel infinite plates",
+     "$1/\\varepsilon_1+1/\\varepsilon_2-1$ per unit area",
+     "Net flux $=\\sigma(T_1^4-T_2^4)/$this"
+    ],
+    [
+     "$N$ identical thin shields (all $\\varepsilon$ equal)",
+     "Resistance multiplied by $(N+1)$",
+     "Flux reduced to $1/(N+1)$ of the unshielded flux"
+    ]
+   ],
+   "caption": "Radiation resistances and shield rule"
+  },
+  {
+   "type": "text",
+   "markdown": "A **radiation shield** is a thin sheet of low emissivity placed between two surfaces. It adds extra surface resistances $(1-\\varepsilon_3)/\\varepsilon_3$ on both of its faces, and extra space resistance for each additional gap. The shield floats to the temperature at which the heat arriving from the hot side equals the heat leaving to the cold side."
+  },
+  {
+   "type": "worked_example",
+   "title": "A low-emissivity radiation shield between parallel plates",
+   "prompt": "Two large parallel plates at 600 K and 300 K both have emissivity 0.8. Find the net radiative flux between them, and the flux when a thin shield of emissivity 0.1 on both faces is placed midway. Also find the shield temperature. Use $\\sigma=5.67\\times10^{-8}$ W/m$^2$K$^4$.",
+   "steps": [
+    {
+     "text": "For large parallel plates $F_{12}=1$ and the areas are equal, so the flux is $q''=\\sigma(T_1^4-T_2^4)/(1/\\varepsilon_1+1/\\varepsilon_2-1)$.",
+     "latex": "q''_{12}=\\frac{\\sigma(T_1^4-T_2^4)}{\\dfrac{1}{\\varepsilon_1}+\\dfrac{1}{\\varepsilon_2}-1}"
+    },
+    {
+     "text": "Without shield: denominator $1/0.8+1/0.8-1=1.5$ and $\\sigma(T_1^4-T_2^4)=6889.1$ W/m$^2$, so $q''=4592.7$ W/m$^2$."
+    },
+    {
+     "text": "With the shield, the network has two gaps in series (plate 1 to shield, shield to plate 2). Surface and space resistances combine into $(1/\\varepsilon_1+1/\\varepsilon_3-1)$ and $(1/\\varepsilon_3+1/\\varepsilon_2-1)$, and the resistances add.",
+     "latex": "q''=\\frac{\\sigma(T_1^4-T_2^4)}{\\left(\\frac{1}{\\varepsilon_1}+\\frac{1}{\\varepsilon_3}-1\\right)+\\left(\\frac{1}{\\varepsilon_3}+\\frac{1}{\\varepsilon_2}-1\\right)}"
+    },
+    {
+     "text": "Denominator: $(1.25+10-1)+(10+1.25-1)=10.25+10.25=20.5$. So $q''=6889.1/20.5=336.1$ W/m$^2$, a reduction by a factor 13.7."
+    },
+    {
+     "text": "Shield temperature from the first gap: $T_3^4=T_1^4-q''(10.25)/\\sigma$, giving $T_3=512.2$ K. By symmetry of the resistances it is at the temperature whose fourth power is the average of $T_1^4$ and $T_2^4$."
+    }
+   ],
+   "answer": "$q''\\approx4593$ W/m$^2$ without shield and $336$ W/m$^2$ with it (about 13.7 times lower); shield at about 512 K."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Identify the surfaces and sketch the enclosure; list $A_i$, $T_i$, $\\varepsilon_i$.",
+    "Find the needed view factors from reciprocity and summation (and standard cases like $F_{12}=1$ for a convex body fully inside another).",
+    "Write the network: surface resistances and space resistances in series (two-surface case).",
+    "Compute $q=\\sigma(T_1^4-T_2^4)/\\sum R$ with $T$ in kelvin.",
+    "For a shield, add the resistances of the extra gaps and surfaces, then find the shield temperature from one of the gaps."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common mistakes",
+   "text": "Do not set $F_{22}=0$ for the outer enclosure: a concave surface sees itself. Do not forget the factor $A$ in the surface resistance. Use the unit-area form only for infinite parallel plates. And a shield's benefit comes mainly from its low emissivity: a high-emissivity shield (for example black paint) gives only a modest reduction."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Shields",
+   "text": "With a shield of the same emissivity on both faces and equal plate emissivities, one shield halves the flux, $N$ shields reduce it by $N+1$. A low-emissivity shield does much better, because each added gap carries the large resistance $1/\\varepsilon_3$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Reciprocity $A_iF_{ij}=A_jF_{ji}$ and summation $\\sum_jF_{ij}=1$ determine unknown view factors; $F_{ii}=0$ for flat or convex surfaces.",
+    "Two-surface enclosure: $q_{12}=\\sigma(T_1^4-T_2^4)/[\\frac{1-\\varepsilon_1}{\\varepsilon_1A_1}+\\frac{1}{A_1F_{12}}+\\frac{1-\\varepsilon_2}{\\varepsilon_2A_2}]$.",
+    "Parallel plates: $q''=\\sigma(T_1^4-T_2^4)/(1/\\varepsilon_1+1/\\varepsilon_2-1)$.",
+    "A radiation shield inserts extra resistances in series; low-emissivity shields are most effective."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The reciprocity relation for view factors between two diffuse surfaces 1 and 2 is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$A_1F_{12}=A_2F_{21}$"
+    },
+    {
+     "id": "b",
+     "text": "$F_{12}=F_{21}$ for any two surfaces"
+    },
+    {
+     "id": "c",
+     "text": "$F_{12}+F_{21}=1$"
+    },
+    {
+     "id": "d",
+     "text": "$F_{12}/A_1=F_{21}/A_2$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$A_1F_{12}=A_2F_{21}$",
+   "distractorRationale": {
+    "b": "This holds only when the areas are equal.",
+    "c": "The summation rule sums over all surfaces that a given surface sees, not over a pair.",
+    "d": "This inverts the relation; the factors are weighted by area on the same side."
+   },
+   "explanation": "Reciprocity follows from the symmetric exchange of rays between the two surfaces: the radiant energy leaving 1 that reaches 2 is $A_1F_{12}$ times the same blackbody emission, and is equal to the corresponding quantity from 2 to 1.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A surface 1 is flat and part of an enclosure with two other surfaces 2 and 3. The summation rule gives",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$F_{11}+F_{12}+F_{13}=2$"
+    },
+    {
+     "id": "b",
+     "text": "$F_{12}=F_{13}=0.5$"
+    },
+    {
+     "id": "c",
+     "text": "$F_{11}=1$"
+    },
+    {
+     "id": "d",
+     "text": "$F_{12}+F_{13}=1$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$F_{12}+F_{13}=1$",
+   "distractorRationale": {
+    "a": "The summation always totals 1.",
+    "b": "The split depends on geometry; it is not always equal.",
+    "c": "A flat surface cannot see itself, so $F_{11}=0$."
+   },
+   "explanation": "Rays leaving 1 must go somewhere in the enclosure: $F_{11}+F_{12}+F_{13}=1$. A flat surface has $F_{11}=0$, so $F_{12}+F_{13}=1$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Surface 1 has area 0.5 m$^2$ and surface 2 has area 2.0 m$^2$ in the same enclosure. The view factor from 1 to 2 is $F_{12}=0.6$. Find $F_{21}$ as a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o1"
+   ],
+   "correctValue": 0.15,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "Reciprocity gives $F_{21}=A_1F_{12}/A_2=0.5\\times0.6/2.0=0.150$. The larger surface sends a smaller fraction of its radiation to the small one.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A sphere of diameter 0.15 m is placed concentrically inside a spherical shell of diameter 0.45 m. Find the view factor $F_{22}$ of the shell's inner surface to itself.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o1"
+   ],
+   "correctValue": 0.8889,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "$F_{21}=A_1/A_2=(0.15/0.45)^2=0.1111$ by reciprocity with $F_{12}=1$, and by summation $F_{22}=1-F_{21}=0.8889$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A sphere of diameter 0.10 m at 800 K with emissivity 0.7 is at the centre of a larger concentric sphere of diameter 0.40 m at 300 K with emissivity 0.5. Find the net radiation heat transfer from the inner to the outer sphere in W. Use $\\sigma=5.67\\times10^{-8}$ W/m$^2$K$^4$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o2"
+   ],
+   "correctValue": 479.6,
+   "tolerance": 1.0,
+   "unit": "W",
+   "explanation": "$A_1=\\pi(0.1)^2=0.03142$ m$^2$ and $A_2=\\pi(0.4)^2=0.50265$ m$^2$; $F_{12}=1$. The resistances are $(1-0.7)/(0.7A_1)=13.64$, $1/A_1=31.83$ and $(1-0.5)/(0.5A_2)=1.99$, total 47.46. The numerator is $\\sigma(800^4-300^4)=22765.0$ W/m$^2$, so $q=479.6$ W.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two large parallel plates at 500 K and 300 K both have emissivity 0.7. A thin shield with emissivity 0.07 on both faces is placed between them. Find the net radiative flux between the plates with the shield in W/m$^2$. Use $\\sigma=5.67\\times10^{-8}$ W/m$^2$K$^4$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o3"
+   ],
+   "correctValue": 104.8,
+   "tolerance": 0.3,
+   "unit": "W/m^2",
+   "explanation": "Without a shield $q''=\\sigma(500^4-300^4)/(1/0.7+1/0.7-1)=1660.9$ W/m$^2$. With the shield the denominator is $(1/0.7+1/0.07-1)+(1/0.07+1/0.7-1)=2\\times(14.7143)=29.429$, so $q''=3084.5/29.429=104.8$ W/m$^2$, a reduction by about 16 times.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Three identical parallel gray plates are arranged so that the middle plate acts as a single thin shield of the same emissivity as the outer two. Compared with the two outer plates alone, the net radiative flux is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "unchanged, since the shield is at the temperature of neither plate"
+    },
+    {
+     "id": "b",
+     "text": "half as large"
+    },
+    {
+     "id": "c",
+     "text": "one third as large"
+    },
+    {
+     "id": "d",
+     "text": "one quarter as large"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "half as large",
+   "distractorRationale": {
+    "a": "The shield adds resistance in series, so the flux decreases.",
+    "c": "This would need two shields ($N+1=3$).",
+    "d": "This would need three shields ($N+1=4$)."
+   },
+   "explanation": "With equal emissivities each gap has the same resistance, so one shield doubles the total resistance and halves the flux. In general $N$ shields reduce the flux to $1/(N+1)$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a radiation network the surface resistance $(1-\\varepsilon)/(\\varepsilon A)$ of a surface becomes zero when the surface is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "a blackbody ($\\varepsilon=1$)"
+    },
+    {
+     "id": "b",
+     "text": "a perfect reflector ($\\varepsilon=0$)"
+    },
+    {
+     "id": "c",
+     "text": "at the same temperature as its surroundings"
+    },
+    {
+     "id": "d",
+     "text": "flat, with $F_{11}=0$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "a blackbody ($\\varepsilon=1$)",
+   "distractorRationale": {
+    "b": "At $\\varepsilon\\to0$ the resistance becomes infinite: the surface exchanges no net radiation.",
+    "c": "Temperature affects the driving potential, not the resistance.",
+    "d": "The view factor affects the space resistance, not the surface resistance."
+   },
+   "explanation": "A blackbody has no reflected component, so its radiosity equals its emissive power and there is no surface resistance. A perfect reflector has the opposite limit, an infinite resistance.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Define the view factor and state its main properties (reciprocity and summation). Explain with an example why $F_{11}=0$ for a flat surface but not for the inside of a hollow sphere.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o1"
+   ],
+   "markingGuide": [
+    "$F_{ij}$ is the fraction of radiation leaving diffuse surface $i$ that directly strikes surface $j$; it depends only on geometry.",
+    "Reciprocity: $A_iF_{ij}=A_jF_{ji}$.",
+    "Summation: $\\sum_jF_{ij}=1$ for an enclosure.",
+    "A flat or convex surface cannot see itself, so $F_{11}=0$; the inside of a sphere is concave, so some of its radiation strikes itself, e.g. $F_{22}=1-(D_1/D_2)^2$ for a concentric inner sphere."
+   ],
+   "explanation": "An answer should state the definition and both rules, and use a concrete geometry. The self-view of a concave surface follows from the summation rule.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain how a thin radiation shield reduces the radiative heat transfer between two parallel plates. Use a resistance network to show why a low-emissivity shield is more effective than a high-emissivity one, and describe how the shield temperature is found.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.radiation.view-factors-and-networks.o3"
+   ],
+   "markingGuide": [
+    "The shield splits the gap into two radiation gaps in series, so there are two sets of surface and space resistances in the path.",
+    "Resistance of each gap $(1/\\varepsilon_{plate}+1/\\varepsilon_3-1)$ increases as $\\varepsilon_3$ falls, since $1/\\varepsilon_3$ grows, so a low-emissivity shield adds large resistance; a black shield ($\\varepsilon_3=1$) adds little.",
+    "Heat flux $q''=\\sigma(T_1^4-T_2^4)/\\sum R$ falls as the total resistance rises.",
+    "The shield's temperature is found from the first gap, $T_3^4=T_1^4-q''R_{13}/\\sigma$, equivalent to equating heat flow to and from the shield (steady state)."
+   ],
+   "explanation": "The shield works by adding series resistance. Emissivity matters because a low-$\\varepsilon$ face is both a poor absorber and poor emitter, so the resistance per face is large.",
+   "board": "internal"
+  }
+ ]
+}

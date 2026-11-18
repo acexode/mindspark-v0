@@ -1,0 +1,404 @@
+{
+ "lessonTitle": "Ohm's and Kirchhoff's Laws",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 12 V lead-acid battery in a mobile robot feeds a motor driver, a sensor board and an LED strip through a shared wiring harness. Before building it you want to know how much current each branch draws and which resistors will run warm. Two conservation laws and a few resistor-combining rules answer all of that."
+  },
+  {
+   "type": "text",
+   "markdown": "An electric circuit is a set of elements joined at nodes. Three quantities describe it: **voltage** $v$ in volts (energy per unit charge), **current** $i$ in amperes (charge flow per second) and **power** $p$ in watts. For a resistor $R$ (in ohm) **Ohm's law** states $v=iR$, where $v$ is the voltage drop in the direction of current flow. This holds for ohmic materials at constant temperature."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Kirchhoff's laws",
+   "text": "**KCL (current law):** the algebraic sum of currents entering any node is zero, a statement of conservation of charge. **KVL (voltage law):** the algebraic sum of voltages around any closed loop is zero, a statement of conservation of energy. Both hold for lumped circuits at DC."
+  },
+  {
+   "type": "math",
+   "latex": "\\sum_{node} i = 0,\\qquad \\sum_{loop} v = 0,\\qquad v=iR",
+   "caption": "Kirchhoff's current law, voltage law and Ohm's law"
+  },
+  {
+   "type": "text",
+   "markdown": "**Series and parallel.** Elements in **series** carry the same current, and their resistances add: $R_{eq}=R_1+R_2+\\dots$. Elements in **parallel** share the same voltage, and their conductances ($G=1/R$) add: $1/R_{eq}=1/R_1+1/R_2+\\dots$. For two resistors in parallel, $R_{eq}=R_1R_2/(R_1+R_2)$. A parallel combination is always smaller than its smallest member. Series-parallel networks are reduced step by step, working from the far end towards the source."
+  },
+  {
+   "type": "math",
+   "latex": "R_{series}=\\sum R_k,\\qquad \\frac{1}{R_{par}}=\\sum\\frac{1}{R_k},\\qquad R_{par,2}=\\frac{R_1R_2}{R_1+R_2}",
+   "caption": "Combining resistors"
+  },
+  {
+   "type": "worked_example",
+   "title": "Equivalent resistance",
+   "prompt": "A 12 V battery feeds a 100 ohm resistor in series with a parallel pair of 220 ohm and 330 ohm resistors. Find the equivalent resistance, the battery current and the voltage across the parallel pair.",
+   "steps": [
+    {
+     "text": "Combine the parallel pair first.",
+     "latex": "R_p=\\frac{220\\times330}{220+330}=132\\ \\Omega"
+    },
+    {
+     "text": "Add the series resistor.",
+     "latex": "R_{eq}=100+132=232\\ \\Omega"
+    },
+    {
+     "text": "Battery current, then the voltage across the pair.",
+     "latex": "I=\\frac{12}{232}=51.7\\ \\mathrm{mA},\\qquad V_p=I\\,R_p=0.0517\\times132=6.83\\ \\mathrm{V}"
+    }
+   ],
+   "answer": "R_eq = 232 ohm, I = 51.7 mA, and 6.83 V appears across the parallel pair (the other 5.17 V is across the 100 ohm resistor)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Two-loop circuits.** When there are several sources or branches, use KCL at a node and KVL around loops (or the node-voltage form of KCL). Define a current for every branch with an assumed direction. A negative result simply means the true direction is opposite. **Power.** The power absorbed by a resistor is $p=vi=i^2R=v^2/R$ (watts), always positive. A source delivering energy has $p=vi$ out of it; a source absorbing power (a battery being charged) shows a negative delivered power. Total delivered power equals total absorbed power."
+  },
+  {
+   "type": "worked_example",
+   "title": "Two-loop circuit and power balance",
+   "prompt": "Three branches meet at the top node A and the bottom rail is 0 V. Branch 1: a 12 V source in series with 4 ohm. Branch 2: a 6 ohm resistor to ground. Branch 3: a 6 V source in series with 3 ohm. Find $V_A$, each branch current (into the node is positive) and the power in each element.",
+   "steps": [
+    {
+     "text": "KCL at A, currents leaving A: toward each source branch and through the 6 ohm resistor.",
+     "latex": "\\frac{V_A-12}{4}+\\frac{V_A-6}{3}+\\frac{V_A}{6}=0"
+    },
+    {
+     "text": "Multiply by 12 and solve.",
+     "latex": "3(V_A-12)+4(V_A-6)+2V_A=0\\ \\Rightarrow\\ 9V_A=60\\ \\Rightarrow\\ V_A=6.667\\ \\mathrm{V}"
+    },
+    {
+     "text": "Branch currents into A.",
+     "latex": "I_1=\\frac{12-6.667}{4}=1.333\\ \\mathrm{A},\\quad I_3=\\frac{6-6.667}{3}=-0.222\\ \\mathrm{A},\\quad I_2=\\frac{6.667}{6}=1.111\\ \\mathrm{A}"
+    },
+    {
+     "text": "Powers: resistors absorb $i^2R$; the 12 V source delivers $12\\times1.333=16.0$ W; the 6 V source has current flowing into it, so it absorbs.",
+     "latex": "p_{4\\Omega}=7.11,\\ p_{6\\Omega}=7.41,\\ p_{3\\Omega}=0.148,\\ p_{6V,absorbed}=1.33\\ \\mathrm{W}"
+    },
+    {
+     "text": "Check: absorbed total.",
+     "latex": "7.11+7.41+0.148+1.33=16.0\\ \\mathrm{W}=P_{delivered}"
+    }
+   ],
+   "answer": "V_A = 6.67 V; I_1 = 1.33 A, I_2 = 1.11 A, I_3 = -0.222 A (the 6 V source is being charged). The 16.0 W delivered by the 12 V source equals the total absorbed."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Series connection",
+    "Parallel connection"
+   ],
+   "rows": [
+    [
+     "Current",
+     "Same in every element",
+     "Divides between branches"
+    ],
+    [
+     "Voltage",
+     "Divides in proportion to $R$",
+     "Same across every element"
+    ],
+    [
+     "Equivalent resistance",
+     "Sum; larger than largest",
+     "Reciprocal sum; smaller than smallest"
+    ],
+    [
+     "Power in each",
+     "$P_k=I^2R_k$ (larger $R$, more power)",
+     "$P_k=V^2/R_k$ (smaller $R$, more power)"
+    ]
+   ],
+   "caption": "Series versus parallel"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Label branch currents and node voltages before writing equations.",
+    "A negative answer is not an error; it means the assumed direction was opposite.",
+    "Check by computing total power delivered and total power absorbed.",
+    "Check that KCL holds at every node using your final values."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Series gets the same current, parallel the same voltage",
+   "text": "In a series chain the biggest resistor dissipates the most power; in a parallel bank the smallest resistor does. Use $P=I^2R$ for the first and $P=V^2/R$ for the second."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Ohm: $v=iR$; KCL: currents sum to zero at a node; KVL: voltages sum to zero around a loop.",
+    "Series: $R_{eq}=\\sum R$; parallel: $1/R_{eq}=\\sum1/R$.",
+    "Resistor power $p=i^2R=v^2/R$; total delivered power equals total absorbed power."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 6 k$\\Omega$ and a 3 k$\\Omega$ resistor in parallel are connected in series with a 1 k$\\Omega$ resistor. What is the total resistance?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3 k$\\Omega$"
+    },
+    {
+     "id": "b",
+     "text": "10 k$\\Omega$"
+    },
+    {
+     "id": "c",
+     "text": "9 k$\\Omega$"
+    },
+    {
+     "id": "d",
+     "text": "2 k$\\Omega$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "3 k$\\Omega$",
+   "distractorRationale": {
+    "a": "Correct: 6||3 = 2 k, plus 1 k = 3 k.",
+    "b": "Wrong: this adds all three in series.",
+    "c": "Wrong: this adds 6 + 3 = 9 and ignores the 1 k.",
+    "d": "Wrong: this forgets the series 1 k."
+   },
+   "explanation": "Parallel first: $6\\times3/(6+3)=2$ k$\\Omega$. Then add the series resistor: $2+1=3$ k$\\Omega$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 50 ohm resistor has 5.0 V across it. What power does it dissipate?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.50 W"
+    },
+    {
+     "id": "b",
+     "text": "250 W"
+    },
+    {
+     "id": "c",
+     "text": "0.10 W"
+    },
+    {
+     "id": "d",
+     "text": "10 W"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.50 W",
+   "distractorRationale": {
+    "a": "Correct: V^2/R = 25/50 = 0.5 W.",
+    "b": "Wrong: this multiplies V^2 by R.",
+    "c": "Wrong: this is the current in amperes (0.10 A), not a power.",
+    "d": "Wrong: this is V x R, which has no physical meaning."
+   },
+   "explanation": "$P=V^2/R=5.0^2/50=0.50$ W. Equivalent routes are $P=VI$ with $I=0.10$ A or $P=I^2R$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a single series loop a 9 V source drives three elements. Two have voltage drops of 2 V and 3 V. What is the voltage drop across the third?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4 V"
+    },
+    {
+     "id": "b",
+     "text": "5 V"
+    },
+    {
+     "id": "c",
+     "text": "14 V"
+    },
+    {
+     "id": "d",
+     "text": "6 V"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "4 V",
+   "distractorRationale": {
+    "a": "Correct: KVL gives 9 - 2 - 3 = 4 V.",
+    "b": "Wrong: this is 2 + 3, the sum of the two known drops.",
+    "c": "Wrong: this adds all three values 9+2+3.",
+    "d": "Wrong: this is 9 - 3 and forgets the 2 V drop."
+   },
+   "explanation": "KVL says the drops around the loop sum to the source voltage: $2+3+v_3=9$, so $v_3=4$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 20 ohm resistor is in parallel with a series pair of 10 ohm and 30 ohm, and this combination is in series with a 5 ohm resistor. What is the total resistance?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "18.3 ohm"
+    },
+    {
+     "id": "b",
+     "text": "65 ohm"
+    },
+    {
+     "id": "c",
+     "text": "25 ohm"
+    },
+    {
+     "id": "d",
+     "text": "8.3 ohm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "18.3 ohm",
+   "distractorRationale": {
+    "a": "Correct: 20 || 40 = 13.33; plus 5 = 18.3 ohm.",
+    "b": "Wrong: adds all resistors in series.",
+    "c": "Wrong: this is 20 + 5, ignoring the 10+30 branch.",
+    "d": "Wrong: this treats 10+30 as 10||30 pairs mis-combined, omitting the 5 ohm."
+   },
+   "explanation": "The series pair gives $10+30=40$ ohm. In parallel with 20 ohm: $20\\times40/60=13.33$ ohm. Adding the 5 ohm in series gives 18.3 ohm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two resistors of 2 ohm and 8 ohm are in series across a 10 V source. How does the power in the 8 ohm resistor compare with the power in the 2 ohm resistor?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Four times larger"
+    },
+    {
+     "id": "b",
+     "text": "Equal"
+    },
+    {
+     "id": "c",
+     "text": "Four times smaller"
+    },
+    {
+     "id": "d",
+     "text": "Sixteen times larger"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Four times larger",
+   "distractorRationale": {
+    "a": "Correct: same current 1 A, P = I^2 R gives 8 W versus 2 W.",
+    "b": "Wrong: equal power would need equal resistance.",
+    "c": "Wrong: this inverts the ratio.",
+    "d": "Wrong: this squares the resistance ratio."
+   },
+   "explanation": "The series current is $10/10=1$ A. Then $P_8=1^2\\times8=8$ W and $P_2=1^2\\times2=2$ W, a ratio of 4.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Three branches meet at a node A, with the bottom rail at 0 V. Branch 1: 24 V source in series with 6 ohm. Branch 2: 4 ohm to ground. Branch 3: 12 V source in series with 12 ohm. Find the current through the 4 ohm resistor (A to ground), in amperes.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o2"
+   ],
+   "correctValue": 2.5,
+   "tolerance": 0.02,
+   "unit": "A",
+   "explanation": "KCL at A: $(24-V_A)/6+(12-V_A)/12=V_A/4$. Multiplying by 12: $2(24-V_A)+(12-V_A)=3V_A$, so $60=6V_A$ and $V_A=10$ V. The current is $10/4=2.5$ A.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 9.0 V supply drives a 100 ohm and a 330 ohm resistor in series. What power (in watts) is dissipated in the 330 ohm resistor?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o1",
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o3"
+   ],
+   "correctValue": 0.145,
+   "tolerance": 0.003,
+   "unit": "W",
+   "explanation": "The series resistance is 430 ohm, so $I=9.0/430=20.93$ mA. The power is $P=I^2R=(0.02093)^2\\times330=0.145$ W.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 24 V source drives an 8 ohm resistor in series with a parallel pair (12 ohm and 24 ohm), which is in series with a 4 ohm resistor. What power (in watts) is dissipated in the 24 ohm resistor?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o1",
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o2",
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o3"
+   ],
+   "correctValue": 3.84,
+   "tolerance": 0.03,
+   "unit": "W",
+   "explanation": "The parallel pair is $12\\parallel24=8$ ohm, so $R_{eq}=8+8+4=20$ ohm and $I=24/20=1.2$ A. The voltage across the pair is $1.2\\times8=9.6$ V, so $P=9.6^2/24=3.84$ W in the 24 ohm resistor.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "State Kirchhoff's current and voltage laws, say which physical conservation principle each expresses, and use them to explain why series elements carry the same current and parallel elements share the same voltage.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o2"
+   ],
+   "markingGuide": [
+    "KCL: algebraic sum of currents at a node is zero",
+    "KCL expresses conservation of charge",
+    "KVL: algebraic sum of voltages around a loop is zero",
+    "KVL expresses conservation of energy",
+    "Series: only one path so KCL at the joining node forces equal currents; parallel: elements span the same two nodes so they have the same voltage by KVL"
+   ],
+   "explanation": "KCL says the currents at a node sum to zero, expressing conservation of charge; KVL says the voltages around a closed loop sum to zero, expressing conservation of energy. In a series chain there is a single path, so applying KCL at each joining node forces the same current. Parallel elements connect the same two nodes, so by KVL around the loop they form, they have the same voltage.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A 14 V supply charges a 12 V battery through a 0.5 ohm resistor (the supply, resistor and battery are in a single series loop, with the battery's positive terminal connected to the supply's positive terminal through the resistor). Find the current, and the power delivered by the supply, absorbed by the resistor and absorbed by the battery. Show that power is conserved.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o2",
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.ohm-and-kirchhoff.o3"
+   ],
+   "markingGuide": [
+    "KVL: 14 - 0.5 I - 12 = 0 so I = 4.0 A",
+    "Power delivered by supply = 14 x 4 = 56 W",
+    "Resistor absorbs I^2 R = 16 x 0.5 = 8 W",
+    "Battery absorbs 12 x 4 = 48 W (charging; current enters its positive terminal)",
+    "56 W = 8 W + 48 W: delivered equals absorbed"
+   ],
+   "explanation": "KVL around the loop gives $14-0.5I-12=0$, so $I=4.0$ A. The supply delivers $14\\times4=56$ W; the resistor dissipates $4^2\\times0.5=8$ W; the battery absorbs $12\\times4=48$ W because current flows into its positive terminal. Since $8+48=56$ W, the delivered power equals the total absorbed power.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,410 @@
+{
+ "lessonTitle": "Film and Rotating Flows: Falling Films and Journal Bearings",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Hot gear oil drains in a sheet only a few millimetres thick down the tilted wall of a gearbox cover, and a motor shaft turns at 3000 rev/min in a bearing whose oil gap is thinner than a human hair. Both flows are laminar, unidirectional and solvable exactly, and the answers tell the designer how fast the oil drains and how much torque the bearing steals from the shaft."
+  },
+  {
+   "type": "text",
+   "markdown": "This unit applies the Navier-Stokes simplification of the previous units to two more geometries. In each case the velocity has a single component that depends on one coordinate, so the momentum equation reduces to an ordinary differential equation that we integrate and fit with boundary conditions: **no-slip** at a solid wall, and **zero shear stress** at a free surface exposed to air (air viscosity is negligible compared with the liquid's)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Gravity-driven film on an incline",
+   "text": "A steady, fully developed laminar film of thickness $h$ (m) flows down a plane inclined at angle $\\theta$ to the horizontal. Take $x$ down the slope and $y$ normal to the plate, with the wall at $y=0$ and the free surface at $y=h$. The only velocity component is $u(y)$, there is no pressure gradient along the flow (atmospheric pressure on the free surface), and gravity supplies the driving force per unit volume $\\rho g\\sin\\theta$."
+  },
+  {
+   "type": "text",
+   "markdown": "The $x$-momentum equation reduces to $\\mu\\,d^2u/dy^2=-\\rho g\\sin\\theta$. Integrating once: $\\mu\\,du/dy=-\\rho g\\sin\\theta\\,y+C_1$. The free-surface condition $du/dy=0$ at $y=h$ gives $C_1=\\rho g h\\sin\\theta$. Integrating again and using $u(0)=0$ gives a parabolic profile with its maximum at the free surface. Integrating over the thickness gives the flow rate per unit width of the plate."
+  },
+  {
+   "type": "math",
+   "latex": "u(y)=\\frac{\\rho g\\sin\\theta}{\\mu}\\left(hy-\\frac{y^2}{2}\\right),\\quad u_{max}=\\frac{\\rho g\\sin\\theta\\,h^2}{2\\mu},\\quad q=\\frac{\\rho g\\sin\\theta\\,h^3}{3\\mu},\\quad \\bar V=\\frac{q}{h}=\\tfrac23u_{max},\\quad \\tau_w=\\rho g h\\sin\\theta",
+   "caption": "Falling film: velocity, free-surface speed, flow rate per unit width q (m^2/s), mean velocity and wall shear"
+  },
+  {
+   "type": "worked_example",
+   "title": "Oil film on a sloping wall",
+   "prompt": "Oil with typical density 880 kg/m^3 and viscosity 0.12 Pa s forms a laminar film 3.0 mm thick on a wall inclined at 20 degrees to the horizontal. Find the free-surface speed, the flow rate per metre of width and the wall shear stress, and check the film Reynolds number.",
+   "steps": [
+    {
+     "text": "The driving term is rho g sin(theta) = 880 x 9.81 x sin 20 = 2952.6 N/m^3.",
+     "latex": "\\rho g\\sin\\theta=880(9.81)(0.3420)=2953\\ \\text{N/m}^3"
+    },
+    {
+     "text": "Maximum (free-surface) velocity from the parabolic profile.",
+     "latex": "u_{max}=\\frac{\\rho g\\sin\\theta\\,h^2}{2\\mu}=\\frac{2953(0.003)^2}{2(0.12)}=0.1107\\ \\text{m/s}"
+    },
+    {
+     "text": "Flow rate per unit width: mean velocity is two thirds of the maximum, multiplied by the thickness.",
+     "latex": "q=\\bar Vh=\\tfrac23(0.1107)(0.003)=2.21e-04\\ \\text{m}^2/\\text{s}"
+    },
+    {
+     "text": "Wall shear stress from the weight of the fluid layer resolved along the slope.",
+     "latex": "\\tau_w=\\rho g h\\sin\\theta=2952.6\\times0.003=8.86\\ \\text{Pa}"
+    },
+    {
+     "text": "Reynolds number based on mean velocity and thickness is small, so the laminar assumption is consistent.",
+     "latex": "Re=\\frac{\\rho\\bar Vh}{\\mu}=1.62"
+    }
+   ],
+   "answer": "u_max = 0.1107 m/s, q = 2.21e-04 m^2/s (about 221 cm^3/s per metre of width), tau_w = 8.86 Pa, Re = 1.62."
+  },
+  {
+   "type": "text",
+   "markdown": "**Journal bearing.** A shaft of radius $R$ rotates at angular speed $\\omega$ (rad/s) inside a bearing of nearly the same radius, the gap being filled with oil of viscosity $\\mu$. When the radial clearance $c$ is very small compared with $R$ (typically $c/R\\sim10^{-3}$), the curvature of the gap is negligible: unwrapped, the film looks like two parallel plates, one fixed (the bearing) and one moving at speed $U=\\omega R$ (the shaft surface). This is **plane Couette flow**, so the shear stress is uniform, $\\tau=\\mu\\omega R/c$. The tangential force acts over the surface area $2\\pi RL$, and its moment about the axis is the friction torque."
+  },
+  {
+   "type": "math",
+   "latex": "\\tau=\\frac{\\mu\\omega R}{c},\\qquad F=\\tau\\,(2\\pi RL),\\qquad T=FR=\\frac{2\\pi\\mu\\omega R^3L}{c},\\qquad P_{loss}=T\\omega",
+   "caption": "Concentric journal bearing: friction torque and power loss (shaft length L, radial clearance c)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Friction torque in a bearing",
+   "prompt": "A shaft of diameter 50 mm turns at 3000 rev/min in a concentric bearing of length 40 mm. The radial oil clearance is 0.050 mm and the oil has typical viscosity 0.020 Pa s. Find the shear stress, the friction torque and the power lost.",
+   "steps": [
+    {
+     "text": "Angular speed and surface speed of the shaft.",
+     "latex": "\\omega=\\frac{2\\pi(3000)}{60}=314.2\\ \\text{rad/s},\\quad U=\\omega R=7.854\\ \\text{m/s}"
+    },
+    {
+     "text": "The gap is thin, so treat it as Couette flow: uniform shear stress equal to viscosity times U/c.",
+     "latex": "\\tau=\\frac{\\mu U}{c}=\\frac{0.020\\times7.854}{5.0\\times10^{-5}}=3142\\ \\text{Pa}"
+    },
+    {
+     "text": "Shear force over the cylindrical surface area 2 pi R L = 0.00628 m^2.",
+     "latex": "F=\\tau\\times2\\pi RL=3142\\times0.00628=19.74\\ \\text{N}"
+    },
+    {
+     "text": "Friction torque is force times shaft radius, and power loss is torque times angular speed.",
+     "latex": "T=FR=0.493\\ \\text{N m},\\quad P=T\\omega=155\\ \\text{W}"
+    }
+   ],
+   "answer": "tau = 3142 Pa, T = 0.493 N m, power loss = 155 W."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Flow",
+    "Driving mechanism",
+    "Boundary conditions",
+    "Profile",
+    "Key result"
+   ],
+   "rows": [
+    [
+     "Plane Couette",
+     "Moving plate",
+     "No-slip at both plates",
+     "Linear",
+     "$\\tau=\\mu U/h$"
+    ],
+    [
+     "Pipe (Poiseuille)",
+     "Pressure gradient",
+     "No-slip at wall, finite on axis",
+     "Parabolic",
+     "$Q=\\pi R^4\\Delta p/8\\mu L$"
+    ],
+    [
+     "Falling film",
+     "Gravity component",
+     "No-slip at wall, zero shear at free surface",
+     "Half-parabola",
+     "$q=\\rho g\\sin\\theta h^3/3\\mu$"
+    ],
+    [
+     "Journal bearing",
+     "Rotating shaft",
+     "No-slip on shaft and bearing",
+     "Linear (thin gap)",
+     "$T=2\\pi\\mu\\omega R^3L/c$"
+    ]
+   ],
+   "caption": "Summary of the viscous exact solutions met so far"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Sketch the flow and choose coordinates with the wall at $y=0$.",
+    "Reduce the Navier-Stokes equation to an ODE for the single velocity component.",
+    "Integrate twice and apply no-slip at the wall and zero shear (or the moving-wall speed) at the other boundary.",
+    "Compute stresses from $\\mu\\,du/dy$ and flow per unit width by integrating $u\\,dy$.",
+    "For bearings: surface speed $\\omega R$, stress $\\mu\\omega R/c$, torque = stress $\\times$ area $\\times$ radius."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Cubic dependence on thickness",
+   "text": "Flow rate in a falling film scales as $h^3$: doubling the film thickness multiplies the drainage rate by eight at fixed slope and viscosity. Viscosity appears inversely, so cooler, thicker oil drains much more slowly."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Limits of the bearing and film models",
+   "text": "The concentric Couette model for a bearing ignores eccentricity: a loaded bearing runs off-centre, the film is wedge-shaped, and the pressure that carries the load is generated by that wedge (hydrodynamic lubrication). The film solution applies only to laminar, fully developed, wave-free films; real films become wavy at modest Reynolds numbers."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A gravity-driven film has $u=\\frac{\\rho g\\sin\\theta}{\\mu}(hy-y^2/2)$, with no-slip at the wall and zero shear at the free surface.",
+    "The film flow rate per unit width is $q=\\rho g\\sin\\theta h^3/(3\\mu)$ and the mean velocity is two thirds of the surface speed.",
+    "A thin-gap journal bearing behaves as Couette flow: $\\tau=\\mu\\omega R/c$ and torque $T=2\\pi\\mu\\omega R^3L/c$.",
+    "Power loss in the bearing is $T\\omega$; it grows with $\\omega^2$ and falls as the clearance is increased."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a steady laminar liquid film flowing down an inclined plate, which pair of boundary conditions is used to fix the velocity profile?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "du/dy = 0 at the plate and u = 0 at the free surface"
+    },
+    {
+     "id": "b",
+     "text": "u = 0 at the plate and u = 0 at the free surface"
+    },
+    {
+     "id": "c",
+     "text": "u = U at the plate and du/dy = 0 at the free surface"
+    },
+    {
+     "id": "d",
+     "text": "u = 0 at the plate and du/dy = 0 at the free surface"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "u = 0 at the plate and du/dy = 0 at the free surface",
+   "distractorRationale": {
+    "a": "This reverses the conditions: the wall must be no-slip.",
+    "b": "Fluid at the free surface moves at its maximum speed; it is not at rest.",
+    "c": "The plate is stationary, so U would be zero.",
+    "d": "Correct: no-slip at the wall and negligible shear from the air at the free surface."
+   },
+   "explanation": "The solid wall imposes no-slip, $u(0)=0$. The free surface is exposed to air, which can support almost no shear stress, so $\\mu\\,du/dy=0$ there; this makes the surface velocity the maximum in the film.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What force drives a steady, fully developed liquid film down an inclined plate open to the atmosphere?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Surface tension at the free surface"
+    },
+    {
+     "id": "b",
+     "text": "The pressure gradient along the slope"
+    },
+    {
+     "id": "c",
+     "text": "The shear stress exerted by the surrounding air"
+    },
+    {
+     "id": "d",
+     "text": "The component of the weight along the slope"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The component of the weight along the slope",
+   "distractorRationale": {
+    "a": "Surface tension acts normal to the surface and is not a driving force along the film.",
+    "b": "The pressure at the free surface is atmospheric everywhere, so there is no streamwise pressure gradient in the film.",
+    "c": "Air viscosity is negligible, so it provides no significant driving shear.",
+    "d": "Correct: the body force per unit volume is rho g sin(theta) down the slope."
+   },
+   "explanation": "The $x$-momentum balance has the viscous stress gradient balanced by the body force $\\rho g\\sin\\theta$, because the free surface is at constant atmospheric pressure and so has no pressure gradient along the slope.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water (typical values: density 998 kg/m^3, viscosity 1.0e-3 Pa s) flows as a laminar film 1.5 mm thick down a plane inclined at 4 degrees to the horizontal. Use g = 9.81 m/s^2 and find the volume flow rate per metre of width in cm^3/s per metre (that is, cm^3/s for each metre of plate width). Assume the film is laminar and fully developed.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o3"
+   ],
+   "correctValue": 768.31,
+   "tolerance": 5.0,
+   "unit": "cm^3/s per m",
+   "explanation": "q = rho g sin(theta) h^3/(3 mu) = 998 x 9.81 x sin 4 x (0.0015)^3 /(3 x 1.0e-3) = 7.683e-04 m^3/s per metre = 768 cm^3/s per metre of width. This is the laminar-flow (Nusselt-type) result. The film Reynolds number rho q/mu = 767 is far above the few tens at which surface waves typically appear, so a real film at this flow rate would be wavy or transitional; treat 768 cm^3/s per metre as an idealised laminar estimate, not a prediction of the actual flow.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A concentric journal bearing has a shaft radius of 40 mm, a length of 60 mm and a radial clearance of 0.10 mm filled with oil of dynamic viscosity 0.050 Pa s. The shaft turns at 1200 rev/min. Treating the film as plane Couette flow, find the friction torque on the shaft in N m.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o2"
+   ],
+   "correctValue": 1.51597,
+   "tolerance": 0.01,
+   "unit": "N m",
+   "explanation": "omega = 2 pi (1200)/60 = 125.66 rad/s, so U = omega R = 5.027 m/s and tau = mu U/c = 2513.3 Pa. The area is 2 pi R L = 0.01508 m^2, so F = 37.90 N and T = F R = 1.516 N m.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The thickness of a laminar falling film is doubled while the slope, fluid and fluid properties are unchanged. By what factor does the flow rate per unit width increase?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "8"
+    },
+    {
+     "id": "b",
+     "text": "2"
+    },
+    {
+     "id": "c",
+     "text": "16"
+    },
+    {
+     "id": "d",
+     "text": "4"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "8",
+   "distractorRationale": {
+    "a": "Correct: q is proportional to h^3.",
+    "b": "This treats flow rate as proportional to thickness, ignoring the faster velocity of a thicker film.",
+    "c": "This would need q proportional to h^4, as for pipe flow with the radius.",
+    "d": "This would correspond to q proportional to h^2, i.e. only the dependence of the surface velocity."
+   },
+   "explanation": "Both the mean velocity ($\\propto h^2$) and the cross-section ($\\propto h$) increase, so $q=\\rho g\\sin\\theta\\,h^3/(3\\mu)\\propto h^3$. Doubling h therefore gives a factor of $2^3=8$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A laminar oil film (typical density 900 kg/m^3, viscosity 0.20 Pa s) of thickness 2.0 mm flows down a plane inclined at 30 degrees to the horizontal. Use g = 9.81 m/s^2 and find the speed of the oil at its free surface in m/s.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o1"
+   ],
+   "correctValue": 0.044145,
+   "tolerance": 0.001,
+   "unit": "m/s",
+   "explanation": "The free surface velocity is u_max = rho g sin(theta) h^2/(2 mu) = 900 x 9.81 x 0.5 x (0.002)^2/(2 x 0.20) = 0.0441 m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Reducing the radial clearance of a concentric journal bearing, with the same shaft speed and oil, reduces the friction torque.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The thin-gap shear stress is $\\mu\\omega R/c$, so the torque $T=2\\pi\\mu\\omega R^3L/c$ is inversely proportional to the clearance. A smaller clearance steepens the velocity gradient and increases the torque, even though it improves stiffness.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why can the oil film in a journal bearing with c much smaller than the shaft radius R be analysed as plane Couette flow?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The oil does not stick to the shaft, so there is slip"
+    },
+    {
+     "id": "b",
+     "text": "The shaft speed is low enough for turbulence to be negligible only if c is large"
+    },
+    {
+     "id": "c",
+     "text": "Pressure variations in the film are large and dominate the flow"
+    },
+    {
+     "id": "d",
+     "text": "The film is so thin that its curvature is negligible, so it looks like two parallel plates, one moving at speed omega R"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The film is so thin that its curvature is negligible, so it looks like two parallel plates, one moving at speed omega R",
+   "distractorRationale": {
+    "a": "No-slip applies at both surfaces; the Couette result relies on it.",
+    "b": "Thinness of the film is the justification; a large clearance would invalidate the approximation.",
+    "c": "In the concentric model the pressure is uniform; the linear profile arises from shear only.",
+    "d": "Correct: when c/R is very small the geometry unwraps to a gap between parallel plates."
+   },
+   "explanation": "For $c\\ll R$ the cylindrical gap can be unrolled into a flat gap of height $c$ with one wall moving at $U=\\omega R$. Plane Couette flow then gives a linear profile and a uniform stress $\\mu U/c$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the velocity profile of a steady, fully developed laminar liquid film of thickness h flowing down a plane inclined at angle theta to the horizontal. State the governing equation, the boundary conditions, and the resulting expressions for the surface velocity and flow rate per unit width.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o1",
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o3"
+   ],
+   "markingGuide": [
+    "Sets up x down the slope, y normal to the wall, u = u(y), no streamwise pressure gradient",
+    "Writes mu d2u/dy2 = - rho g sin(theta)",
+    "Applies du/dy = 0 at y = h (free surface) giving mu du/dy = rho g sin(theta)(h - y)",
+    "Applies u(0) = 0 and integrates to get u = (rho g sin(theta)/mu)(h y - y^2/2)",
+    "Surface velocity u_max = rho g sin(theta) h^2/(2 mu)",
+    "Integrates over thickness: q = rho g sin(theta) h^3/(3 mu)"
+   ],
+   "explanation": "Newton's law and the x-momentum balance give $\\mu u''=-\\rho g\\sin\\theta$. The free-surface condition fixes the first constant and no-slip the second, giving a half-parabola; integrating over $0\\le y\\le h$ yields $q=\\rho g\\sin\\theta\\,h^3/(3\\mu)$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A high-speed shaft of radius 15 mm and length 25 mm turns at 6000 rev/min in a concentric journal bearing with radial clearance 0.040 mm. The oil viscosity is 0.015 Pa s (typical). (a) Explain why the film can be treated as plane Couette flow. (b) Calculate the shear stress in the oil, the friction torque and the power lost to viscous friction.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.film-and-rotating-flows.o2"
+   ],
+   "markingGuide": [
+    "States c << R so curvature negligible; gap behaves as a flat Couette gap with moving wall speed U = omega R",
+    "omega = 2 pi N/60 = 628.3 rad/s and U = omega R = 9.425 m/s",
+    "tau = mu U/c = 3534 Pa",
+    "Friction force = tau x 2 pi R L, torque T = F R = 2 pi mu omega R^3 L/c = 0.125 N m",
+    "Power loss = T omega = 78 W"
+   ],
+   "explanation": "Because c/R is about 0.003, the film is effectively flat Couette flow, with tau = 3534 Pa. The force is tau x 2 pi R L, so T = 0.125 N m and the power loss is T omega = 78 W, all dissipated as heat in the oil.",
+   "board": "internal"
+  }
+ ]
+}

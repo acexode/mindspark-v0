@@ -1,0 +1,379 @@
+{
+ "lessonTitle": "The Shear Stress Formula",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "When a plank bridging a stream is loaded at mid-span, you can see it bend, but there is another failure hiding inside: the top half tries to slide along the bottom half, and a laminated beam glued in layers can split along its neutral plane. The shear stress formula tells you how large that internal sliding stress is and where it peaks."
+  },
+  {
+   "type": "text",
+   "markdown": "A beam carrying a bending moment that changes along its length also carries a **transverse shear force** $V$. Equilibrium of a slice of the beam shows that bending stresses on the two faces of the slice differ, and the difference must be balanced by a horizontal shear stress on a longitudinal cut. By the complementary property of shear, the same stress acts on the vertical cross-section. The result gives the shear stress at any level $y$ of the section."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "First moment of area, Q",
+   "text": "$Q$ is the first moment, about the neutral axis, of the part of the cross-section lying beyond the level where the stress is wanted: $Q=\\int y'\\,dA=A'\\bar y'$ where $A'$ is that area and $\\bar y'$ is the distance from the neutral axis to its centroid. Units: mm$^3$."
+  },
+  {
+   "type": "math",
+   "latex": "\\tau=\\frac{V\\,Q}{I\\,t}",
+   "caption": "$V$ = shear force at the section (N), $I$ = second moment of area of the whole section about the neutral axis (mm$^4$), $t$ = width of the section at the level being examined (mm). Assumes linear elastic bending, and $t$ small relative to depth."
+  },
+  {
+   "type": "worked_example",
+   "title": "Maximum shear in a rectangular beam",
+   "prompt": "A rectangular beam 80 mm wide and 160 mm deep carries a shear force of 40 kN. Find the maximum shear stress.",
+   "steps": [
+    {
+     "text": "Maximum shear occurs at the neutral axis. Area above it is 80 x 80 mm with centroid 40 mm above the axis.",
+     "latex": "Q=80(80)(40)=2.56\\times10^{5}\\ \\text{mm}^3"
+    },
+    {
+     "text": "Second moment of area.",
+     "latex": "I=\\frac{80(160)^3}{12}=2.731\\times10^{7}\\ \\text{mm}^4"
+    },
+    {
+     "text": "Apply the formula with t = 80 mm.",
+     "latex": "\\tau_{\\max}=\\frac{40\\,000\\times2.56\\times10^{5}}{2.731\\times10^{7}\\times80}=4.69\\ \\text{MPa}"
+    },
+    {
+     "text": "Check with the rectangular-section result.",
+     "latex": "\\tau_{\\max}=\\frac{3V}{2A}=\\frac{3(40\\,000)}{2(12\\,800)}=4.69\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The maximum shear stress is 4.69 MPa, 1.5 times the average V/A = 3.13 MPa."
+  },
+  {
+   "type": "text",
+   "markdown": "**Distribution in a rectangle.** At the top and bottom faces $Q=0$, so $\\tau=0$ (free surfaces carry no shear). Moving inward, $Q$ varies quadratically with the height $y$ from the neutral axis ($Q=\tfrac{b}{2}(h^2/4-y^2)$ for a rectangle of width $b$ and depth $h$), so the distribution is **parabolic** with the maximum at the neutral axis. At 40 mm above the axis in the same beam, the area above is 80 x 40 mm with centroid 60 mm from the axis, so $Q=192\\,000$ mm$^3$ and $\\tau=40\\,000(192\\,000)/(2.731\\times10^{7}\\times 80)=3.52$ MPa."
+  },
+  {
+   "type": "worked_example",
+   "title": "Shear stress in an I-beam",
+   "prompt": "An I-beam has flanges 100 mm wide by 20 mm thick, a web 10 mm thick and 200 mm tall, and overall depth 240 mm. It carries V = 60 kN. Find the shear stress at the neutral axis, at the top of the web, and just inside the flange at the same level.",
+   "steps": [
+    {
+     "text": "Second moment of area as outer rectangle minus voids.",
+     "latex": "I=\\frac{100(240)^3}{12}-\\frac{90(200)^3}{12}=5.52\\times10^{7}\\ \\text{mm}^4"
+    },
+    {
+     "text": "At the neutral axis, Q = flange + upper half web = 100(20)(110) + 10(100)(50) = 270 000 mm^3, t = 10 mm.",
+     "latex": "\\tau_{NA}=\\frac{60\\,000\\times270\\,000}{5.52\\times10^{7}\\times10}=29.3\\ \\text{MPa}"
+    },
+    {
+     "text": "Top of web: Q = flange only = 220 000 mm^3, t = 10 mm.",
+     "latex": "\\tau=\\frac{60\\,000\\times220\\,000}{5.52\\times10^{7}\\times10}=23.9\\ \\text{MPa}"
+    },
+    {
+     "text": "Just inside the flange at the same level, the same Q but t = 100 mm.",
+     "latex": "\\tau=\\frac{60\\,000\\times220\\,000}{5.52\\times10^{7}\\times100}=2.39\\ \\text{MPa}"
+    }
+   ],
+   "answer": "tau is 29.3 MPa at the neutral axis, 23.9 MPa at the top of the web and drops abruptly to 2.39 MPa in the flange because the width jumps from 10 mm to 100 mm."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Location in I-beam",
+    "$Q$ (mm$^3$)",
+    "$t$ (mm)",
+    "$\\tau$ (MPa)"
+   ],
+   "rows": [
+    [
+     "Bottom or top face",
+     "0",
+     "100",
+     "0"
+    ],
+    [
+     "Just inside flange",
+     "220 000",
+     "100",
+     "2.39"
+    ],
+    [
+     "Top of web",
+     "220 000",
+     "10",
+     "23.9"
+    ],
+    [
+     "Neutral axis",
+     "270 000",
+     "10",
+     "29.3"
+    ]
+   ],
+   "caption": "Shear stress at levels of the I-beam (V = 60 kN)"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "The web carries the shear",
+   "text": "The stress is nearly uniform in the web (23.9 to 29.3 MPa) and small in the flanges, so the web resists about 92 percent of the shear force (integrating tau over the web gives 0.918 V for this section). Flanges resist bending; the web resists shear. As a quick estimate, V divided by the web area, 60 000/2000 = 30 MPa, is close to the true peak of 29.3 MPa."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Which t and which Q",
+   "text": "$Q$ is for the area beyond the level of interest, and $t$ is the width at that same level. The formula gives the shear stress only at that level and assumes it is uniform across $t$; for thin flanges it is only an approximation of the flange shear flow."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The shear stress at a level is tau = V Q/(I t), with Q the first moment of the area beyond that level and t the width there.",
+    "For a rectangle the distribution is parabolic: zero at the surfaces and 1.5 V/A at the neutral axis.",
+    "In an I-beam the shear stress jumps at the web-flange junction because t changes, and the web carries most of the shear force."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a rectangular beam section with transverse shear force V and area A, the maximum shear stress equals:",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.5 V/A at the neutral axis"
+    },
+    {
+     "id": "b",
+     "text": "V/A at the neutral axis"
+    },
+    {
+     "id": "c",
+     "text": "1.5 V/A at the top fibre"
+    },
+    {
+     "id": "d",
+     "text": "2 V/A at the neutral axis"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "1.5 V/A at the neutral axis",
+   "distractorRationale": {
+    "a": "Correct: parabolic distribution with peak 3V/(2A).",
+    "b": "That is the average, not the peak.",
+    "c": "The shear stress is zero at the top surface.",
+    "d": "2 would apply to a different section shape (the factor is 4/3 for a solid circle)."
+   },
+   "explanation": "For a rectangle, Q = b h^2/8 at the neutral axis and I = b h^3/12, giving tau_max = 3V/(2bh). The peak is 50 percent above the average shear stress.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the shear stress distribution through an I-beam, there is a sudden change at the junction of web and flange. What causes it?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The shear force V changes at that point"
+    },
+    {
+     "id": "b",
+     "text": "The second moment of area changes abruptly"
+    },
+    {
+     "id": "c",
+     "text": "The width t in the formula changes abruptly from the web thickness to the flange width"
+    },
+    {
+     "id": "d",
+     "text": "The material changes at the junction"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The width t in the formula changes abruptly from the web thickness to the flange width",
+   "distractorRationale": {
+    "a": "V is the same at a given cross-section.",
+    "b": "I is a property of the whole section, constant for all levels.",
+    "c": "Correct: Q is continuous but t drops by the ratio of widths.",
+    "d": "The beam is one material."
+   },
+   "explanation": "At the junction Q is the same on both sides, but t jumps from the thin web to the wide flange. Since tau = VQ/(It), the stress falls by the width ratio as one passes into the flange.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the first moment of area Q, about the neutral axis, of the part of a 60 mm wide, 100 mm deep rectangle lying above the neutral axis?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "75 000 mm^3"
+    },
+    {
+     "id": "b",
+     "text": "150 000 mm^3"
+    },
+    {
+     "id": "c",
+     "text": "37 500 mm^3"
+    },
+    {
+     "id": "d",
+     "text": "300 000 mm^3"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "75 000 mm^3",
+   "distractorRationale": {
+    "a": "Correct: Q = 60 x 50 x 25 = 75 000 mm^3.",
+    "b": "Doubles the value, perhaps by using the full depth.",
+    "c": "Halves it, perhaps by using 12.5 mm for the centroid.",
+    "d": "Uses the whole area times the full half-depth, 60 x 100 x 50."
+   },
+   "explanation": "The area above the axis is 60 x 50 = 3000 mm^2 with centroid 25 mm above the axis, so Q = 3000 x 25 = 75 000 mm^3. This equals b h^2/8.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the shear stress at the extreme top surface of a loaded beam of any cross-section, away from supports?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Maximum"
+    },
+    {
+     "id": "b",
+     "text": "Equal to the average V/A"
+    },
+    {
+     "id": "c",
+     "text": "Equal to the neutral-axis value"
+    },
+    {
+     "id": "d",
+     "text": "Zero"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Zero",
+   "distractorRationale": {
+    "a": "The maximum is typically at the neutral axis.",
+    "b": "Average has no relation to local value.",
+    "c": "That is the maximum for many sections.",
+    "d": "Correct: Q is zero because there is no area beyond that level."
+   },
+   "explanation": "At the free top surface there is no area above, so Q = 0 and tau = VQ/(It) = 0. This is consistent with the complementary shear on a stress-free surface.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: in an I-beam the web carries most of the transverse shear force, while the flanges carry most of the bending moment.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The web is where the shear stress is large, and flanges are far from the neutral axis, so they resist moment. This division is why I-sections are efficient.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A rectangular beam 50 mm wide and 120 mm deep carries a shear force of 18 kN. Find the maximum shear stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o1"
+   ],
+   "correctValue": 4.5,
+   "tolerance": 0.05,
+   "unit": "MPa",
+   "explanation": "tau_max = 3V/(2A) = 3 x 18 000/(2 x 6000) = 4.5 MPa at the neutral axis.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An I-section has overall depth 200 mm and flanges 120 mm wide by 15 mm thick. Find the first moment of area Q of one flange about the neutral axis, in mm^3.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o3"
+   ],
+   "correctValue": 166500.0,
+   "tolerance": 200,
+   "unit": "mm^3",
+   "explanation": "The flange area is 120 x 15 = 1800 mm^2 and its centroid is 100 - 7.5 = 92.5 mm from the neutral axis, so Q = 1800 x 92.5 = 166 500 mm^3.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An I-section has flanges 80 mm wide by 16 mm thick, a web 8 mm thick and 168 mm tall, and overall depth 200 mm. It carries a shear force of 30 kN. Find the maximum shear stress, at the neutral axis in the web, in MPa.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o1",
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o3"
+   ],
+   "correctValue": 22.0,
+   "tolerance": 0.3,
+   "unit": "MPa",
+   "explanation": "I = 80(200)^3/12 - 72(168)^3/12 = 2.488e7 mm^4. Q = 80(16)(92) + 8(84)(42) = 145 984 mm^3. tau = 30 000 x 145 984/(2.488e7 x 8) = 22.0 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how the shear stress formula tau = VQ/(It) arises from the equilibrium of a slice of a beam, and describe what each symbol represents.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o1"
+   ],
+   "markingGuide": [
+    "Considers a short slice of beam where the moment changes by dM = V dx",
+    "Bending stress differences on the two faces give a net horizontal force on the part above the cut",
+    "Balances that force with a shear stress on the horizontal cut of width t",
+    "Q is the first moment of the area above the cut, I the second moment of the whole section",
+    "Complementary shear gives the same stress on the vertical section"
+   ],
+   "explanation": "The change in bending force over the slice has to be carried by shear on the longitudinal cut. Dividing by the cut area and using dM/dx = V yields VQ/(It).",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Sketch in words the shear stress distribution through the depth of an I-beam under shear force V, and explain each feature of it (zero values, parabolic parts, jumps).",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.shear-in-beams.shear-stress-formula.o2"
+   ],
+   "markingGuide": [
+    "Zero at the top and bottom free surfaces",
+    "Parabolic variation in the flanges, with small magnitudes since t is large",
+    "Sudden jump at the web-flange junction because t changes",
+    "Roughly parabolic but nearly uniform in the web",
+    "Maximum at the neutral axis; web carries most of V"
+   ],
+   "explanation": "Each feature follows from tau = VQ/(It): Q grows towards the axis, and t changes abruptly at the junction. The web, being thin, has a high stress for a given Q and carries most of the shear.",
+   "board": "internal"
+  }
+ ]
+}

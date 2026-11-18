@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "Time Standards and Costing: Machining Time, Unit Cost and Break-even",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A shop is quoting 1200 hydraulic spools a year. The salesperson asks for a price by the end of the afternoon. The estimator reads the drawing, works out how long each cut takes, adds material, labour and a share of the factory's running costs, and then asks a final question: is it cheaper to make these on a manual lathe or to build a fixture and run them on a CNC? Every one of those steps is arithmetic that can be done before a single chip is cut."
+  },
+  {
+   "type": "text",
+   "markdown": "A **process estimate** has two halves: *time* (how long the part occupies each machine) and *cost* (what that time, the material and the support structure cost). Cost estimates use representative rates; the numbers in this unit are in generic **currency units (cu)**, so that the method rather than any particular price level is taught."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Machining time for turning",
+   "text": "In straight turning the tool moves along the workpiece at feed $f$ (mm per revolution) while the work turns at $N$ rpm. The cutting speed is $V_c$ (m/min) and the diameter is $D$ (mm), so $N=1000V_c/(\\pi D)$. The cutting time for a length of cut $L$ (mm) is $T_m=L/(fN)$ in minutes. Assumptions: constant cutting conditions, a single pass, and $L$ includes any approach and overrun of the tool."
+  },
+  {
+   "type": "math",
+   "latex": "T_m=\\frac{L}{fN}=\\frac{\\pi D L}{1000\\,f\\,V_c}",
+   "caption": "T_m in minutes; D diameter (mm); L length of cut (mm); f feed (mm per revolution); V_c cutting speed (m/min)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Turning time for a shaft",
+   "prompt": "A 50 mm diameter shaft is turned over a length of cut of 120 mm at $V_c=150$ m/min and $f=0.25$ mm/rev. Find the cutting time.",
+   "steps": [
+    {
+     "text": "Spindle speed from the cutting speed.",
+     "latex": "N=\\frac{1000\\times150}{\\pi\\times50}=955\\ \\text{rpm}"
+    },
+    {
+     "text": "Feed rate is feed per revolution times spindle speed.",
+     "latex": "f\\,N=0.25\\times955=238.7\\ \\text{mm/min}"
+    },
+    {
+     "text": "Cutting time is the length of cut divided by the feed rate.",
+     "latex": "T_m=\\frac{120}{238.7}=0.503\\ \\text{min}\\approx30\\ \\text{s}"
+    }
+   ],
+   "answer": "$T_m\\approx0.50$ min, about 30 s for the cut."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Machining time for milling",
+   "text": "For a milling pass the table moves at feed rate $F=f_zzN$ (mm/min), where $f_z$ is the feed per tooth, $z$ the number of teeth and $N$ the spindle speed. The time is $T_m=(L+A)/F$, where $L$ is the length of the workpiece along the feed direction and $A$ is the total tool approach and overtravel."
+  },
+  {
+   "type": "text",
+   "markdown": "A cut time is only part of the cycle. The time the part occupies the machine also includes loading and unloading, tool changes, in-process measurement and any idle time. Estimators use a **cycle time per part**, often from time studies, and add a **setup time** per batch (fixing, tooling, program proving) that is spread over the batch size."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Unit cost",
+   "text": "The unit cost is the sum of material, machine, labour, overhead and spread setup costs: $C=C_{\\text{mat}}+t_c\\,r_m+t_c\\,r_l+C_{\\text{oh}}+\\dfrac{t_s\\,(r_m+r_l)}{Q_b}$. Here $t_c$ is the cycle time per part (h), $r_m$ the machine rate (cu/h, covering depreciation, power and tooling), $r_l$ the direct labour rate (cu/h), $C_{\\text{oh}}$ the overhead (commonly a percentage of direct labour), $t_s$ the setup time (h) and $Q_b$ the batch size. Machine and labour rates are charged for the full cycle time as a simplification (a single operator attends one machine)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Unit cost of a machined part",
+   "prompt": "Material is 3.20 cu per part. The cycle time is 4.5 min. The machine rate is 48 cu/h and the labour rate is 30 cu/h. Overhead is 120% of direct labour. Setup takes 1.5 h per batch of 200. Find the unit cost.",
+   "steps": [
+    {
+     "text": "Machine cost for 4.5 min is $0.075$ h.",
+     "latex": "0.075\\times48=3.60\\ \\text{cu}"
+    },
+    {
+     "text": "Direct labour for the same time.",
+     "latex": "0.075\\times30=2.25\\ \\text{cu}"
+    },
+    {
+     "text": "Overhead is 120% of the labour cost.",
+     "latex": "1.2\\times2.25=2.70\\ \\text{cu}"
+    },
+    {
+     "text": "Setup is charged at the machine plus labour rate, spread over the batch.",
+     "latex": "\\frac{1.5\\times(48+30)}{200}=0.585\\ \\text{cu}"
+    },
+    {
+     "text": "Add material and all the contributions.",
+     "latex": "C=3.20+3.60+2.25+2.70+0.585=12.335\\ \\text{cu}"
+    }
+   ],
+   "answer": "The unit cost is 12.34 cu per part (to the nearest hundredth)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Cost element",
+    "Depends on",
+    "Reduced by"
+   ],
+   "rows": [
+    [
+     "Material",
+     "Part mass, scrap rate, bar price",
+     "Net-shape stock, nesting, less scrap"
+    ],
+    [
+     "Machine time",
+     "Cycle time, machine rate",
+     "Higher cutting parameters, fewer set-ups, faster machines"
+    ],
+    [
+     "Direct labour",
+     "Operator time, labour rate",
+     "Automation, multi-machine tending"
+    ],
+    [
+     "Overhead",
+     "Allocation rule (percentage of labour or machine hours)",
+     "Better utilisation of the factory"
+    ],
+    [
+     "Setup",
+     "Setup time, batch size",
+     "Quick-change fixtures, larger batches"
+    ]
+   ],
+   "caption": "Elements of unit cost and what drives them."
+  },
+  {
+   "type": "text",
+   "markdown": "**Break-even between two methods.** Each production method has a fixed cost $F$ (tooling, programming, fixtures: independent of quantity) and a variable cost $v$ per part. The total cost for quantity $Q$ is $F+vQ$. A method with a high fixed cost and low variable cost (for example CNC with a custom fixture) beats a low-fixed, high-variable method (a manual lathe) only above a certain quantity."
+  },
+  {
+   "type": "math",
+   "latex": "F_A+v_AQ^{*}=F_B+v_BQ^{*}\\ \\Rightarrow\\ Q^{*}=\\frac{F_B-F_A}{v_A-v_B}",
+   "caption": "Method A: low fixed cost, high variable cost. Method B: high fixed cost, low variable cost. Valid for Q above 0 and when v_A is greater than v_B."
+  },
+  {
+   "type": "worked_example",
+   "title": "Break-even volume",
+   "prompt": "A manual lathe (method A) needs 800 cu of tooling and costs 9.50 cu per part. A CNC lathe with a special fixture (method B) needs 6200 cu and costs 4.10 cu per part. Find the break-even quantity and the total cost there.",
+   "steps": [
+    {
+     "text": "Substitute in the break-even formula.",
+     "latex": "Q^{*}=\\frac{6200-800}{9.50-4.10}=\\frac{5400}{5.40}=1000\\ \\text{parts}"
+    },
+    {
+     "text": "Check that the total costs agree at 1000 parts.",
+     "latex": "800+9.50\\times1000=10300,\\qquad 6200+4.10\\times1000=10300"
+    }
+   ],
+   "answer": "At 1000 parts both cost 10 300 cu; above 1000 parts the CNC option is cheaper, below it the manual lathe is."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Time estimates rest on cutting parameters: doubling the feed halves the cutting time; raising the cutting speed shortens it in proportion.",
+    "Setup cost per part falls as 1 over the batch size.",
+    "Overhead rules (a percentage of labour, per machine hour) change the answer; use the shop's own allocation.",
+    "A break-even calculation ignores capacity limits, quality differences and lead time, which can override it."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Turning time is $T_m=L/(fN)$ with $N=1000V_c/(\\pi D)$; milling time is $(L+A)/F$ with $F=f_zzN$.",
+    "Unit cost sums material, machine, labour, overhead and setup spread over the batch; each term is a rate times a time.",
+    "Break-even quantity $Q^*=(F_B-F_A)/(v_A-v_B)$: the lower-fixed-cost method wins below it, the lower-variable-cost method above."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A bar of diameter 40 mm is turned over a length of cut of 90 mm at a cutting speed of 100 m/min and a feed of 0.20 mm/rev. Calculate the cutting time in minutes.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o1"
+   ],
+   "correctValue": 0.565,
+   "tolerance": 0.005,
+   "unit": "min",
+   "explanation": "$N=1000\\times100/(\\pi\\times40)=795.8$ rpm. The feed rate is $0.20\\times795.8=159.2$ mm/min, so $T_m=90/159.2=0.565$ min.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 180 mm long plate is face milled with a 4-tooth cutter at 800 rpm and a feed per tooth of 0.10 mm. The total tool approach and overtravel is 25 mm. Calculate the time for one pass in minutes.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o1"
+   ],
+   "correctValue": 0.641,
+   "tolerance": 0.005,
+   "unit": "min",
+   "explanation": "The table feed rate is $F=f_zzN=0.10\\times4\\times800=320$ mm/min. The time is $(180+25)/320=0.641$ min.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Material costs 5.40 cu per part. The cycle time is 6.0 min, the machine rate is 54 cu/h and the labour rate 27 cu/h. Overhead is 150% of direct labour. Setup takes 1.0 h at the combined machine plus labour rate for a batch of 150. Find the unit cost in cu.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o2"
+   ],
+   "correctValue": 18.09,
+   "tolerance": 0.05,
+   "unit": "cu",
+   "explanation": "Machine cost is $0.1\\times54=5.40$ cu, labour $0.1\\times27=2.70$ cu and overhead $1.5\\times2.70=4.05$ cu. The setup is $1.0\\times81/150=0.54$ cu per part, so the total is $5.40+5.40+2.70+4.05+0.54=18.09$ cu.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Method X has fixed cost 1500 cu and variable cost 6.80 cu per part. Method Y has fixed cost 9300 cu and variable cost 3.90 cu per part. Find the break-even quantity in parts.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o3"
+   ],
+   "correctValue": 2690,
+   "tolerance": 10,
+   "unit": "parts",
+   "explanation": "$Q^*=(F_Y-F_X)/(v_X-v_Y)=(9300-1500)/(6.80-3.90)=7800/2.90=2690$ parts. Below this quantity method X is cheaper.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Keeping all else equal, what happens to the cutting time in turning if the feed per revolution is doubled?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is doubled, because a larger feed removes more material"
+    },
+    {
+     "id": "b",
+     "text": "It is halved, since $T_m=L/(fN)$"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged, because cutting time depends only on cutting speed"
+    },
+    {
+     "id": "d",
+     "text": "It is quartered, because cutting time varies with the square of feed"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It is halved, since $T_m=L/(fN)$",
+   "distractorRationale": {
+    "a": "More material per revolution means fewer revolutions are needed, so time falls.",
+    "b": "Cutting time is inversely proportional to the feed.",
+    "c": "Feed appears in the cutting time formula.",
+    "d": "The relation is inverse-linear, not quadratic."
+   },
+   "explanation": "Twice the feed means the tool covers the length in half as many spindle revolutions. Higher feed increases cutting force and roughness, so it is limited in practice.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Setup takes 2.0 h at a combined rate of 80 cu/h. How does the setup cost per part change when the batch size is increased from 100 to 400 parts?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It rises from 1.60 cu to 6.40 cu per part"
+    },
+    {
+     "id": "b",
+     "text": "It stays the same, because setup is a fixed time"
+    },
+    {
+     "id": "c",
+     "text": "It falls from 1.60 cu to 0.40 cu per part, one quarter as much"
+    },
+    {
+     "id": "d",
+     "text": "It falls from 1.60 cu to 0.80 cu per part, one half"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It falls from 1.60 cu to 0.40 cu per part, one quarter as much",
+   "distractorRationale": {
+    "a": "A larger batch spreads the same setup over more parts.",
+    "b": "The total is fixed but is spread over more parts.",
+    "c": "Setup cost per part is $160/Q_b$, so it is 1.60 cu at 100 parts and 0.40 cu at 400 parts.",
+    "d": "The spread cost is inversely proportional to batch size, so a fourfold batch gives a quarter."
+   },
+   "explanation": "The total setup cost is 160 cu whatever the batch size. Dividing by four times as many parts gives a quarter of the per-part charge.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Method A has the lower fixed cost and the higher variable cost, while method B has the opposite. At the planned quantity, which method is cheaper if the quantity is below the break-even value?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Method B, because fixed costs do not matter at low volumes"
+    },
+    {
+     "id": "b",
+     "text": "Method B, because it has the lower cost per part"
+    },
+    {
+     "id": "c",
+     "text": "Both cost the same at any quantity"
+    },
+    {
+     "id": "d",
+     "text": "Method A, because its low fixed cost is not yet outweighed by its higher cost per part"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Method A, because its low fixed cost is not yet outweighed by its higher cost per part",
+   "distractorRationale": {
+    "a": "Fixed costs matter most at low volumes.",
+    "b": "Method B's fixed cost has not yet been recovered below break-even.",
+    "c": "The totals are equal only at the break-even quantity.",
+    "d": "Below the break-even quantity, the lower fixed cost dominates."
+   },
+   "explanation": "Total cost is $F+vQ$. At small $Q$ the fixed term decides, so the method with the lower $F$ is cheaper; only above $Q^*$ does the lower variable cost of the other method overcome its higher fixed cost.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cost estimator adds a rent of the factory building to a part's cost. In which category does this belong?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Overhead, because it is a shared cost that cannot be traced to one part"
+    },
+    {
+     "id": "b",
+     "text": "Direct material, because the building contains the material"
+    },
+    {
+     "id": "c",
+     "text": "Direct labour, because people work in the building"
+    },
+    {
+     "id": "d",
+     "text": "Setup cost, because it is incurred before production"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Overhead, because it is a shared cost that cannot be traced to one part",
+   "distractorRationale": {
+    "a": "Costs shared across all parts, like rent, are overhead.",
+    "b": "Direct material is the stock consumed in the part itself.",
+    "c": "Direct labour is operator time charged to the part.",
+    "d": "Setup is the time to prepare a machine for a batch, not a shared facility cost."
+   },
+   "explanation": "Overhead is allocated to products using a rule, such as a percentage of direct labour or a rate per machine hour. The estimator applies the shop's own allocation.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how to estimate the unit cost of a machined bracket in a batch of 250. Identify each cost element, the data needed for it, and explain why increasing batch size reduces the unit cost, and why cycle time includes more than the cutting time.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o2"
+   ],
+   "markingGuide": [
+    "Material cost: mass, price per kg, scrap allowance",
+    "Machine cost: cycle time times machine rate",
+    "Cycle time: cutting time plus loading, unloading, tool changes and measurement",
+    "Labour: time times labour rate",
+    "Overhead: percentage of labour or per machine hour",
+    "Setup cost: setup time times rate divided by batch size, falling as the batch grows"
+   ],
+   "explanation": "Unit cost is the sum of material, machine, labour, overhead and spread setup, each from a rate multiplied by a time. Larger batches reduce the setup share, and cycle time exceeds cutting time because handling and tool changes also occupy the machine.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Method A (manual, fixed 2200 cu, 7.40 cu per part) and Method B (CNC with fixture, fixed 7600 cu, 4.40 cu per part) are candidates. Find the break-even quantity. Recommend a method for annual volumes of 1200 and 3000 parts, giving the total cost for each, and name one factor other than cost that might change the recommendation.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.process-planning.process-costing.o3"
+   ],
+   "markingGuide": [
+    "$Q^*=(7600-2200)/(7.40-4.40)=5400/3.00=1800$ parts",
+    "1200 parts: A costs $2200+7.40\\times1200=11080$ and B costs $7600+4.40\\times1200=12880$; choose A",
+    "3000 parts: A costs $2200+7.40\\times3000=24400$ and B costs $7600+4.40\\times3000=20800$; choose B",
+    "States that A is better below 1800 and B above",
+    "Names a non-cost factor such as lead time, quality, capacity or repeat orders",
+    "Notes the fixture cost may be reused for repeat orders"
+   ],
+   "explanation": "The break-even is 1800 parts, so method A is cheaper at 1200 parts (11 080 against 12 880 cu) and method B at 3000 parts (20 800 against 24 400 cu). Quality consistency, lead time, capacity or expected repeat orders could shift the decision.",
+   "board": "internal"
+  }
+ ]
+}

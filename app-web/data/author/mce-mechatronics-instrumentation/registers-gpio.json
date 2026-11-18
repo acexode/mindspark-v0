@@ -1,0 +1,408 @@
+{
+ "lessonTitle": "Registers, GPIO and Timers",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A single line of firmware, PORTB = 0x08, lights a lamp on pin 3, but it also forces the other seven pins on that port to zero, including the one holding a relay closed. Microcontroller peripherals are controlled by writing bits in registers, and every write must change only the bits you intend."
+  },
+  {
+   "type": "text",
+   "markdown": "A **register** is a memory location, at a fixed address, connected to hardware. Writing it configures or drives a peripheral; reading it reports hardware state. A **GPIO (general-purpose input/output)** port has a *direction register* (one bit per pin: 1 = output, 0 = input), an *output register* (the level driven on output pins, or the pull-up enable for inputs on many devices) and an *input register* (the level read from the pins). Names vary by device; here we use DDRx, PORTx and PINx as typical examples."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Read-modify-write with bit masks",
+   "text": "To change one bit without disturbing the others, combine the register with a mask built by shifting: $(1<<n)$ is a value with only bit $n$ set. Set: `REG |= (1<<n)`. Clear: `REG &= ~(1<<n)`. Toggle: `REG ^= (1<<n)`. Test: `REG & (1<<n)`."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Operation",
+    "C expression",
+    "Effect on other bits",
+    "Example (bit 3)"
+   ],
+   "rows": [
+    [
+     "Set bit",
+     "`REG |= (1<<n)`",
+     "Unchanged",
+     "0x21 becomes 0x29"
+    ],
+    [
+     "Clear bit",
+     "`REG &= ~(1<<n)`",
+     "Unchanged",
+     "0x29 becomes 0x21"
+    ],
+    [
+     "Toggle bit",
+     "`REG ^= (1<<n)`",
+     "Unchanged",
+     "0x21 becomes 0x29, then 0x21"
+    ],
+    [
+     "Test bit",
+     "`if (REG & (1<<n))`",
+     "Not modified",
+     "True if bit 3 is 1"
+    ],
+    [
+     "Whole-register assignment",
+     "`REG = value`",
+     "All overwritten",
+     "Dangerous for shared ports"
+    ]
+   ],
+   "caption": "Bit operations on registers"
+  },
+  {
+   "type": "worked_example",
+   "title": "Configuring pins",
+   "prompt": "A port has DDRB = 0x21 (pins 5 and 0 are outputs) and PORTB = 0x00. Make pin 3 an output, make pin 0 an input with its internal pull-up enabled, and leave everything else unchanged. Give the final register values.",
+   "steps": [
+    {
+     "text": "Set bit 3 of DDRB to make pin 3 an output: `DDRB |= (1<<3);`",
+     "latex": "0x21\\ \\lor\\ 0x08=0x29"
+    },
+    {
+     "text": "Clear bit 0 of DDRB to make pin 0 an input: `DDRB &= ~(1<<0);`. The mask $\\sim(1<<0)$ is 0xFE.",
+     "latex": "0x29\\ \\land\\ 0xFE=0x28"
+    },
+    {
+     "text": "Writing a 1 to the PORTB bit of an input enables its pull-up on this type of device: `PORTB |= (1<<0);`",
+     "latex": "0x00\\ \\lor\\ 0x01=0x1"
+    },
+    {
+     "text": "Check: the other bits of DDRB (bit 5 stays an output) were not disturbed."
+    }
+   ],
+   "answer": "DDRB = 0x28 (bits 5 and 3 outputs, others inputs) and PORTB = 0x1 (pull-up on pin 0)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Timers and PWM.** A hardware timer counts clock pulses. A **prescaler** divides the clock by $(PSC+1)$, and the counter counts from 0 up to the auto-reload value $ARR$ and restarts, so the period is $(ARR+1)$ timer ticks. A compare value $CCR$ switches the output high while the counter is below it, which gives the duty cycle."
+  },
+  {
+   "type": "math",
+   "latex": "f_{PWM}=\\frac{f_{clk}}{(PSC+1)(ARR+1)},\\qquad D=\\frac{CCR}{ARR+1}",
+   "caption": "PWM frequency and duty cycle for an edge-aligned timer (counts are integers)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Computing prescaler and period",
+   "prompt": "A 72 MHz timer with a 16-bit counter (ARR at most 65 535) must generate 1 kHz PWM at 30 percent duty. Choose PSC, ARR and CCR.",
+   "steps": [
+    {
+     "text": "Total division needed.",
+     "latex": "\\frac{f_{clk}}{f_{PWM}}=\\frac{72\\times10^6}{1000}=72\\,000=(PSC+1)(ARR+1)"
+    },
+    {
+     "text": "72 000 does not fit in 16 bits, so a prescaler is needed. Choose $PSC+1=2$ (PSC = 1).",
+     "latex": "ARR+1=\\frac{72\\,000}{2}=36\\,000\\Rightarrow ARR=35\\,999"
+    },
+    {
+     "text": "Compare value for 30 percent duty.",
+     "latex": "CCR=0.30\\times36\\,000=10800"
+    }
+   ],
+   "answer": "PSC = 1, ARR = 35999, CCR = 10800 gives 1 kHz at 30 percent duty."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why `volatile`?** A compiler assumes that a variable changes only when your code changes it. It may therefore keep the value in a CPU register, or even delete a loop that seems to wait for something nothing in the code can change. A variable modified by an **interrupt service routine** or a **hardware register** can change at any time, so it must be declared `volatile`, which forces the compiler to read or write memory on every access."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "`volatile uint8_t flag;` for a flag set by an ISR and tested in `while(!flag);`.",
+    "`volatile uint32_t * const STATUS = (uint32_t *)0x40010000;` for a memory-mapped status register.",
+    "`volatile` does not make a multi-byte access atomic: a 16-bit value on an 8-bit CPU can still change between the two byte reads."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not assign a whole register to change one pin",
+   "text": "Writing `PORTB = 0x08;` sets pin 3 but also clears every other pin of that port. Use the bit operations above unless you deliberately mean to set the whole register."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Datasheet is the contract",
+   "text": "Register names, bit positions and prescaler formulas differ between devices (some timers count $ARR$ or $ARR+1$ ticks, some have fixed divide-by-N values). Always check the device datasheet before computing values."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "GPIO direction, output and input registers are manipulated with bit masks: `|=` to set, `&= ~` to clear, `^=` to toggle.",
+    "PWM frequency is $f_{clk}/((PSC+1)(ARR+1))$ and duty is $CCR/(ARR+1)$.",
+    "If $f_{clk}/f_{PWM}$ exceeds the counter range, use a prescaler.",
+    "`volatile` stops the compiler caching or removing accesses to variables changed by hardware or an ISR, but does not make multi-byte accesses atomic."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement sets bit 4 of PORTB to 1 and leaves the other bits unchanged?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "PORTB = (1<<4);"
+    },
+    {
+     "id": "b",
+     "text": "PORTB &= ~(1<<4);"
+    },
+    {
+     "id": "c",
+     "text": "PORTB ^= 0xEF;"
+    },
+    {
+     "id": "d",
+     "text": "PORTB |= (1<<4);"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "PORTB |= (1<<4);",
+   "distractorRationale": {
+    "a": "Assignment clears all other bits.",
+    "b": "This clears bit 4 instead of setting it.",
+    "c": "XOR with 0xEF toggles seven bits.",
+    "d": "Correct: OR with a single-bit mask sets that bit only."
+   },
+   "explanation": "OR-ing with a mask that has only bit 4 set forces that bit to 1 and leaves all others as they were. Plain assignment would overwrite the other bits with zero.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement configures pin 2 of a port as an input (1 = output in the direction register) without changing other pins?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "DDRC |= (1<<2);"
+    },
+    {
+     "id": "b",
+     "text": "DDRC = (1<<2);"
+    },
+    {
+     "id": "c",
+     "text": "DDRC &= ~(1<<2);"
+    },
+    {
+     "id": "d",
+     "text": "DDRC ^= 0xFF;"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "DDRC &= ~(1<<2);",
+   "distractorRationale": {
+    "a": "This sets the bit and makes the pin an output.",
+    "b": "This makes pin 2 the only output and changes all others.",
+    "c": "Correct: AND with an inverted mask clears the bit.",
+    "d": "This toggles every pin direction."
+   },
+   "explanation": "Clearing bit 2 of the direction register makes that pin an input. The mask $\\sim(1<<2)$ has a 0 only in bit 2, so AND-ing leaves the rest unchanged.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A timer runs from a 16 MHz clock with PSC+1 = 8 and ARR+1 = 200. If the prescaler is changed to PSC+1 = 32 with ARR unchanged, what happens to the PWM frequency?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It falls by a factor of 4"
+    },
+    {
+     "id": "b",
+     "text": "It rises by a factor of 4"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "It falls by a factor of 32"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It falls by a factor of 4",
+   "distractorRationale": {
+    "a": "Correct: frequency is inversely proportional to the prescaler.",
+    "b": "A larger divider slows the timer, so the frequency cannot rise.",
+    "c": "The prescaler enters the frequency formula.",
+    "d": "The ratio of the prescaler values is 4, not 32."
+   },
+   "explanation": "The frequency is $f_{clk}/((PSC+1)(ARR+1))$, so multiplying the prescaler by 4 divides the frequency by 4, from 10 kHz to 2.5 kHz.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A firmware loop `while (!data_ready) { }` waits for `data_ready`, which is set by an ISR. What can go wrong if the variable is not declared volatile?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The ISR will not run"
+    },
+    {
+     "id": "b",
+     "text": "The variable will be stored in flash"
+    },
+    {
+     "id": "c",
+     "text": "The loop exits immediately in all cases"
+    },
+    {
+     "id": "d",
+     "text": "The compiler may keep the value in a register and the loop may never exit"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The compiler may keep the value in a register and the loop may never exit",
+   "distractorRationale": {
+    "a": "Declaring volatile does not affect whether the ISR runs.",
+    "b": "Storage location is unrelated to volatile.",
+    "c": "The behaviour is optimisation-dependent, not an automatic immediate exit.",
+    "d": "Correct: caching in a register hides the ISR's update."
+   },
+   "explanation": "Since nothing in the loop changes the variable, the optimiser may read it once and loop forever on the cached value. Declaring it `volatile` forces a memory read on every pass.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "On an 8-bit microcontroller, a 16-bit counter variable is updated in an ISR and declared volatile. The main loop copies it with `x = count;`. What risk remains?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The compiler will remove the read"
+    },
+    {
+     "id": "b",
+     "text": "The ISR will be unable to modify the variable"
+    },
+    {
+     "id": "c",
+     "text": "The main loop may read one byte before and one byte after an ISR update and get an inconsistent value"
+    },
+    {
+     "id": "d",
+     "text": "The variable will be negative"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The main loop may read one byte before and one byte after an ISR update and get an inconsistent value",
+   "distractorRationale": {
+    "a": "volatile makes the compiler keep the read, not remove it.",
+    "b": "volatile allows modification by an ISR.",
+    "c": "Correct: volatile does not guarantee atomicity.",
+    "d": "The sign is unrelated to the access order."
+   },
+   "explanation": "volatile prevents caching but does not make the 2-byte read indivisible. If the ISR fires between the two byte reads, the copy mixes old and new bytes, so the read should be made with interrupts briefly disabled.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A timer has a 16 MHz clock, PSC+1 = 8 and ARR+1 = 100. Calculate the PWM frequency in kilohertz.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o2"
+   ],
+   "correctValue": 20,
+   "tolerance": 0.1,
+   "unit": "kHz",
+   "explanation": "The frequency is $16\\times10^6/(8\\times100)=20\\,000$ Hz, which is 20 kHz. The period is 50 microseconds.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 72 MHz timer with PSC = 71 produces a 1 MHz counter clock. For a 50 Hz servo signal (period 20 ms), find the value to load into ARR (the counter runs from 0 to ARR).",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o2"
+   ],
+   "correctValue": 19999,
+   "tolerance": 1,
+   "unit": "counts",
+   "explanation": "The period is $1/50=20$ ms, which is 20 000 ticks at 1 MHz. Since the period is $ARR+1$ ticks, $ARR=19\\,999$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 48 MHz timer with PSC = 0 must generate 25 kHz PWM at 37.5 percent duty. Find the CCR value (an integer count).",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o2"
+   ],
+   "correctValue": 720,
+   "tolerance": 1,
+   "unit": "counts",
+   "explanation": "$ARR+1=48\\times10^6/25\\,000=1920$, so $ARR=1919$. Then $CCR=0.375\\times1920=720$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how to configure pin 5 of a port as an output driven high and pin 1 as an input, without disturbing other pins. Explain read-modify-write, the masks used, and why a whole-register assignment is hazardous.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o1"
+   ],
+   "markingGuide": [
+    "Sets the direction bit for the output: `DDR |= (1<<5)` (1 mark)",
+    "Clears the direction bit for the input: `DDR &= ~(1<<1)` (1 mark)",
+    "Drives the output high with `PORT |= (1<<5)` (1 mark)",
+    "Explains read-modify-write: read the register, change one bit with a mask, write back, so other bits keep their values (2 marks)",
+    "Explains `REG = value` overwrites all bits and can switch other pins or peripherals unintentionally (2 marks)",
+    "Mentions checking the datasheet for bit meanings (1 mark)"
+   ],
+   "explanation": "Each operation uses a single-bit mask and a read-modify-write so only that pin changes; assignment would overwrite the other seven bits.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain what the `volatile` qualifier does and give two situations where it is required. Describe what the compiler might do without it, and name one problem that `volatile` does not solve.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.embedded-c.registers-gpio.o3"
+   ],
+   "markingGuide": [
+    "States volatile forces a real memory access on every read or write and prevents caching or removal (2 marks)",
+    "Situation 1: a flag or buffer shared between an ISR and the main loop (1 mark)",
+    "Situation 2: a memory-mapped hardware register such as a status register (1 mark)",
+    "Explains that without it the compiler may hold the value in a CPU register, or delete a wait loop (2 marks)",
+    "States volatile does not give atomicity for multi-byte variables or ordering across threads, so critical sections are needed (2 marks)"
+   ],
+   "explanation": "volatile tells the compiler the value can change outside its knowledge, so every access must reach memory. It does not make multi-byte accesses indivisible.",
+   "board": "internal"
+  }
+ ]
+}

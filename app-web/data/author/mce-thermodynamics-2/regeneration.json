@@ -1,0 +1,402 @@
+{
+ "lessonTitle": "Regenerative Feedwater Heating in the Rankine Cycle",
+ "estimatedMinutes": 28,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 600 MW coal-fired unit sends 15 MPa, 600 °C steam to its turbine, yet only about 40% of the fuel energy becomes electricity. One cheap trick: bleed a little partly expanded steam from the turbine to pre-heat the water on its way back to the boiler. The steam you extract never reaches the condenser, so it never throws its latent heat away. This unit shows how much to bleed and what it gains."
+  },
+  {
+   "type": "text",
+   "markdown": "In a simple Rankine cycle, feedwater enters the boiler as compressed liquid at the condenser temperature, so a large part of the heat input is spent raising liquid water through low temperatures, where the heat-addition process is thermodynamically poor. **Regeneration** raises the feedwater temperature before it enters the boiler using steam extracted from the turbine, so heat is added at a higher average temperature."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Open feedwater heater (OFWH)",
+   "text": "A mixing chamber in which extracted steam (fraction $y$ of the boiler flow) mixes directly with the subcooled feedwater from the first pump $(1-y)$. It is designed so the stream leaving is saturated liquid at the heater pressure; a second pump then raises it to boiler pressure. Steady flow, adiabatic, no work, negligible kinetic and potential energy."
+  },
+  {
+   "type": "math",
+   "latex": "y\\,h_6 + (1-y)\\,h_2 = 1\\cdot h_3 \\;\\;\\Rightarrow\\;\\; y = \\frac{h_3 - h_2}{h_6 - h_2}",
+   "caption": "Energy balance on the OFWH per kg of steam through the boiler. $h_6$ = extraction steam, $h_2$ = pump-1 exit, $h_3 = h_f$ at the heater pressure (kJ/kg)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Open heater",
+    "Closed heater"
+   ],
+   "rows": [
+    [
+     "Heat exchange",
+     "Direct mixing",
+     "Through tube walls, streams stay separate"
+    ],
+    [
+     "Exit state",
+     "Saturated liquid at heater pressure",
+     "Feedwater approaches (does not reach) the extraction saturation temperature"
+    ],
+    [
+     "Pumps needed",
+     "One after each heater (extra pump)",
+     "One only if the drain is cascaded back"
+    ],
+    [
+     "Cost and complexity",
+     "Simple, cheap; deaerates the water",
+     "Costlier, but more flexible with pressure"
+    ]
+   ],
+   "caption": "Comparison of feedwater heater types."
+  },
+  {
+   "type": "worked_example",
+   "title": "Extraction fraction and efficiency (one OFWH)",
+   "prompt": "An ideal regenerative Rankine cycle has steam at 15 MPa and 600 °C entering the turbine; some steam is extracted at 1.2 MPa to an open feedwater heater; the rest expands to 10 kPa. Use these typical tabulated values (rounded): $h_1 = 191.81$ kJ/kg (sat. liquid at 10 kPa), $v_1 = 0.00101$ m³/kg; $h_3 = 798.33$ kJ/kg and $v_3 = 0.001138$ m³/kg (sat. liquid at 1.2 MPa); $h_5 = 3583.1$ kJ/kg; $h_6 = 2860.2$ kJ/kg (extraction state); $h_7 = 2115.3$ kJ/kg (turbine exit). Find $y$ and the thermal efficiency.",
+   "steps": [
+    {
+     "text": "Pump I work, with $w = v\\,\\Delta P$ ($\\Delta P$ in kPa gives kJ/kg), then the pump exit enthalpy.",
+     "latex": "w_{p1} = 0.00101\\,(1200-10) = 1.20\\ \\mathrm{kJ/kg},\\quad h_2 = 193.01"
+    },
+    {
+     "text": "Pump II work raises saturated liquid from 1.2 MPa to 15 MPa.",
+     "latex": "w_{p2} = 0.001138\\,(15000-1200) = 15.70,\\quad h_4 = 814.03"
+    },
+    {
+     "text": "Extraction fraction from the OFWH energy balance.",
+     "latex": "y = \\frac{798.33 - 193.01}{2860.2 - 193.01} = 0.2269"
+    },
+    {
+     "text": "Heat input: boiler heats from $h_4$ to $h_5$. Heat rejected is by the $(1-y)$ fraction reaching the condenser.",
+     "latex": "q_{in} = 3583.1 - 814.03 = 2769.07,\\quad q_{out} = (1-0.2269)(2115.3-191.81) = 1486.95"
+    },
+    {
+     "text": "Thermal efficiency.",
+     "latex": "\\eta = 1 - q_{out}/q_{in} = 1 - 1486.95/2769.07 = 0.4630"
+    }
+   ],
+   "answer": "y = 0.2269 (about 22.7% of the flow is extracted); thermal efficiency = 46.3%."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "The efficiency is found two equivalent ways: $\\eta = 1 - q_{out}/q_{in}$, or $\\eta = (w_{turb} - w_{pump})/q_{in}$. Regeneration reduces net work per kg of boiler steam (less steam reaches the low-pressure end), but it reduces the heat input by even more, so efficiency increases."
+  },
+  {
+   "type": "worked_example",
+   "title": "Check using net work",
+   "prompt": "For the cycle above, confirm the efficiency by a work balance.",
+   "steps": [
+    {
+     "text": "Turbine work per kg of boiler steam: all flow from 5 to 6, then $(1-y)$ from 6 to 7.",
+     "latex": "w_{turb} = (3583.1-2860.2) + (1-0.2269)(2860.2-2115.3) = 1298.75"
+    },
+    {
+     "text": "Pump work per kg of boiler steam: pump I carries $(1-y)$, pump II carries 1.",
+     "latex": "w_{pump} = (1-0.2269)(1.20) + 15.70 = 16.63"
+    },
+    {
+     "text": "Efficiency.",
+     "latex": "\\eta = (1298.75 - 16.63)/2769.07 = 0.4630"
+    }
+   ],
+   "answer": "Net work = 1282.11 kJ/kg and efficiency = 46.3%, agreeing with the heat-balance value of 46.3%."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why efficiency rises",
+   "text": "The extracted steam condenses inside the heater, so its latent heat goes into the feedwater instead of the condenser cooling water. The feedwater enters the boiler hotter, which raises the average temperature at which heat is added. Cycle efficiency approaches the Carnot form $1 - T_L/T_H$ as the mean $T_H$ rises."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Raise heater pressure: more feedwater heating, but the extracted steam has more energy and does less turbine work.",
+    "Use several heaters in practice (typical large plants have 5 to 8) to approach a smooth temperature rise.",
+    "An OFWH also deaerates the feedwater, removing dissolved gases.",
+    "Always count mass fractions per kg of boiler steam."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Do not apply $h_3 = h_g$: the OFWH exit is saturated liquid ($h_f$). Do not forget that pump I carries only $(1-y)$ of the flow. Do not count extracted steam in the condenser heat rejection."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "OFWH balance: $y = (h_3 - h_2)/(h_6 - h_2)$.",
+    "Heater exit is saturated liquid at the heater pressure; two pumps are needed.",
+    "Efficiency $\\eta = 1 - q_{out}/q_{in}$ with $q_{out} = (1-y)(h_7 - h_1)$.",
+    "Regeneration raises efficiency because heat is added at a higher average temperature and less latent heat is rejected."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why does regenerative feedwater heating raise the thermal efficiency of a Rankine cycle?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases the turbine inlet pressure"
+    },
+    {
+     "id": "b",
+     "text": "It lowers the condenser pressure"
+    },
+    {
+     "id": "c",
+     "text": "Feedwater enters the boiler hotter, so heat is added at a higher average temperature"
+    },
+    {
+     "id": "d",
+     "text": "It removes the need for a feed pump"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Feedwater enters the boiler hotter, so heat is added at a higher average temperature",
+   "distractorRationale": {
+    "a": "Boiler pressure and turbine inlet state are unchanged.",
+    "b": "Condenser pressure is set by the cooling water, not by regeneration.",
+    "c": "Correct.",
+    "d": "Pumps are still required to raise the pressure."
+   },
+   "explanation": "Mean heat-addition temperature rises when the cold liquid is pre-heated from steam bled off the turbine. Less of the heat input goes into the low-temperature part of the process, so efficiency approaches the Carnot form more closely.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For an open feedwater heater, which energy balance (per kg of boiler steam, with extraction fraction $y$) is correct?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$y\\,h_6 + (1-y)\\,h_2 = h_3$"
+    },
+    {
+     "id": "b",
+     "text": "$y\\,h_2 + (1-y)\\,h_6 = h_3$"
+    },
+    {
+     "id": "c",
+     "text": "$h_6 + h_2 = h_3$"
+    },
+    {
+     "id": "d",
+     "text": "$y\\,h_6 = (1-y)\\,h_3$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$y\\,h_6 + (1-y)\\,h_2 = h_3$",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Swaps which stream carries the fraction $y$.",
+    "c": "Ignores the mass fractions of the two streams.",
+    "d": "Omits the feedwater stream's enthalpy."
+   },
+   "explanation": "Extracted steam of fraction $y$ at $h_6$ mixes with the $(1-y)$ feedwater at $h_2$ to give one kg of saturated liquid at $h_3$. Solving gives $y = (h_3-h_2)/(h_6-h_2)$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A regenerative Rankine cycle is compared with a simple Rankine cycle at the same boiler and condenser pressures. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Net work per kg is higher and efficiency is higher because more steam is expanded"
+    },
+    {
+     "id": "b",
+     "text": "Efficiency is unchanged because the same boiler pressure is used"
+    },
+    {
+     "id": "c",
+     "text": "Net work per kg is the same but heat input is higher"
+    },
+    {
+     "id": "d",
+     "text": "Net work per kg of boiler steam is lower, but heat input falls more, so efficiency is higher"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Net work per kg of boiler steam is lower, but heat input falls more, so efficiency is higher",
+   "distractorRationale": {
+    "a": "Less steam expands to condenser pressure, so net work per kg falls.",
+    "b": "Average heat-addition temperature changes, so efficiency changes.",
+    "c": "Heat input per kg falls because feedwater is hotter.",
+    "d": "Correct."
+   },
+   "explanation": "Extracted steam does less work in the low-pressure turbine section, so work per kg of boiler steam falls. But the heat to the boiler falls by a larger proportion, so the ratio rises.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement about an open feedwater heater (as opposed to a closed one) is correct?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The streams stay separate and exit at different pressures"
+    },
+    {
+     "id": "b",
+     "text": "Streams mix directly and the exit is saturated liquid at the heater pressure, requiring a pump after the heater"
+    },
+    {
+     "id": "c",
+     "text": "It needs no pump after the heater because pressure is already boiler pressure"
+    },
+    {
+     "id": "d",
+     "text": "The exit is superheated vapour at the extraction pressure"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Streams mix directly and the exit is saturated liquid at the heater pressure, requiring a pump after the heater",
+   "distractorRationale": {
+    "a": "That describes a closed heater.",
+    "b": "Correct.",
+    "c": "The mixed stream is at the heater pressure, so it needs a pump.",
+    "d": "The exit is saturated liquid, not vapour."
+   },
+   "explanation": "Mixing in an open heater drives the exit to saturated liquid at the heater pressure, well below boiler pressure. A second pump therefore raises the feedwater to boiler pressure.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a regenerative cycle with one open heater, the extraction fraction is $y = 0.18$ and the turbine inlet flow is 100 kg/s. What is the mass flow rate through the condenser?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "18 kg/s"
+    },
+    {
+     "id": "b",
+     "text": "100 kg/s"
+    },
+    {
+     "id": "c",
+     "text": "82 kg/s"
+    },
+    {
+     "id": "d",
+     "text": "118 kg/s"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "82 kg/s",
+   "distractorRationale": {
+    "a": "This is the extracted flow, not the condenser flow.",
+    "b": "Ignores the steam extracted from the turbine.",
+    "c": "Correct.",
+    "d": "Adds the extracted flow instead of subtracting it."
+   },
+   "explanation": "Extraction fraction $y$ is the portion of boiler flow bled off to the heater. The remaining $(1-y) \\times 100 = 82$ kg/s continues to the condenser.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "An open feedwater heater operates at 1.0 MPa. Pump I delivers feedwater at $h_2 = 192.0$ kJ/kg, the heater exit is saturated liquid with $h_3 = 762.5$ kJ/kg and the extracted steam has $h_6 = 2780.0$ kJ/kg. Find the extraction fraction $y$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o1"
+   ],
+   "correctValue": 0.2204,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "Applying the OFWH balance gives $y = (762.5 - 192.0)/(2780.0 - 192.0) = 570.5/2588.0 = 0.2204$. The result is quoted in dimensionless and is of a physically reasonable magnitude.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An ideal regenerative cycle with one open feedwater heater has steam at 5 MPa and 400 °C entering the turbine, extraction at 1.0 MPa and a condenser at 10 kPa. Use these typical, approximate values: $h_1 = 191.8$ kJ/kg, $h_2 = 192.8$ kJ/kg (after pump I), $h_3 = 762.5$ kJ/kg, $v_3 = 0.001127$ m³/kg, $h_5 = 3195.7$ kJ/kg, $h_6 = 2805.0$ kJ/kg and $h_7 = 2104.6$ kJ/kg. Calculate the thermal efficiency as a percentage.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o2"
+   ],
+   "correctValue": 38.4181,
+   "tolerance": 0.5,
+   "unit": "%",
+   "explanation": "First $y = (762.5-192.8)/(2805.0-192.8) = 0.2181$. Pump II work is $0.001127\\times(5000-1000) = 4.508$ kJ/kg, so $h_4 = 767.01$ kJ/kg and $q_{in} = 3195.7 - 767.01 = 2428.7$ kJ/kg. Then $q_{out} = (1-y)(2104.6-191.8) = 1495.6$ kJ/kg and $\\eta = 1 - q_{out}/q_{in} = 0.3842$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Steam at 8 MPa and 500 °C feeds a turbine with an open feedwater heater at 0.7 MPa and a condenser at 10 kPa. Use these typical, approximate values: $h_5 = 3399.5$ kJ/kg; extraction state $h_6 = 2772$ kJ/kg; turbine exit $h_7 = 2130.1$ kJ/kg; $h_1 = 191.8$ kJ/kg with $v_1 = 0.00101$ m³/kg; saturated liquid at 0.7 MPa $h_3 = 697.0$ kJ/kg with $v_3 = 0.001108$ m³/kg. By how many percentage points does regeneration raise the thermal efficiency compared with the same simple Rankine cycle (no extraction, same boiler and condenser, same pump formula)?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o1",
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o2"
+   ],
+   "correctValue": 2.7108,
+   "tolerance": 0.3,
+   "unit": "percentage points",
+   "explanation": "Regenerative: $h_2 = 191.8 + 0.697 = 192.50$, $y = (697.0-192.50)/(2772-192.50) = 0.1956$, $h_4 = 697.0+8.09 = 705.09$, $q_{in} = 2694.4$, net work $= 1143.9 - 8.65 = 1135.2$ so $\\eta = 0.4213$. Simple cycle: pump work $0.00101\\times 7990 = 8.07$, $q_{in} = 3199.6$, net work $= 1261.3$, $\\eta = 0.3942$. The gain is 2.71 percentage points.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain, using the idea of mean temperature of heat addition, why regenerative feedwater heating improves the efficiency of a Rankine cycle even though it reduces the net work per kilogram of steam leaving the boiler.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o3"
+   ],
+   "markingGuide": [
+    "Efficiency depends on the average temperature of heat addition, $T_{H,avg}$, and the heat rejection temperature",
+    "In a simple cycle liquid enters the boiler at a low temperature, so the early part of heat addition is at low temperature and lowers $T_{H,avg}$",
+    "Extracted steam pre-heats the feedwater, so the boiler heats it from a higher temperature, raising $T_{H,avg}$",
+    "Extracted steam condenses in the heater, so its latent heat is not rejected to the condenser",
+    "Less steam expands to condenser pressure, so net work per kg falls",
+    "Heat input falls by a larger proportion than net work, so net work divided by heat input rises"
+   ],
+   "explanation": "Extraction trades a small loss of turbine work for a larger reduction in heat input and heat rejection. The pre-heated feedwater raises the average heat-addition temperature, so efficiency increases.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A plant has one open feedwater heater. (a) Derive the extraction fraction $y$ from an energy balance. (b) State what happens to $y$ and to the plant's net work per kg of boiler steam if the heater pressure is raised, and explain the competing effects on efficiency.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o1",
+    "ug.mce-thermodynamics-2.vapour-power-cycles.regeneration.o2"
+   ],
+   "markingGuide": [
+    "Control volume around the OFWH, steady flow, adiabatic, no work",
+    "Writes $y\\,h_6 + (1-y)\\,h_2 = h_3$ and solves $y = (h_3-h_2)/(h_6-h_2)$",
+    "Notes $h_3$ is saturated liquid at the heater pressure",
+    "Higher heater pressure raises $h_3$ so feedwater is hotter, and increases $y$ in most cases",
+    "But the extracted steam is expanded less in the turbine, so turbine work per kg falls",
+    "Efficiency gain from higher feedwater temperature competes with loss of turbine work; an optimum pressure exists (often intermediate between boiler and condenser)"
+   ],
+   "explanation": "The energy balance on the heater gives $y = (h_3-h_2)/(h_6-h_2)$. Raising the heater pressure gives hotter feedwater but takes steam out earlier, so work per kg falls; efficiency typically peaks at an intermediate pressure.",
+   "board": "internal"
+  }
+ ]
+}

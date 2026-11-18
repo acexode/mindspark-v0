@@ -1,0 +1,408 @@
+{
+ "lessonTitle": "Preparing a Design Review: Evidence, Calculations and Risks",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "At a critical design review a reviewer points at a 20 mm shaft on the drawing and asks, 'Why 20?' The designer says it 'looked about right'. The review stops there: the number may be perfectly good, but nothing in the pack proves it, and two weeks of reviewer effort have gone into a question that a half-page calculation would have answered. Preparing a review is the work of making every important number defensible before anybody asks."
+  },
+  {
+   "type": "text",
+   "markdown": "A design review is only as good as the evidence the reviewers can see. **Preparation** means assembling a **review pack** that lets an independent reader check, without help from the designer, that the design meets its requirements. Three parts of the pack deserve most of the effort: a traceability table from requirements to evidence, documented hand calculations for the critical dimensions, and an honest list of open risks with owners and closure actions."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Review pack and traceability",
+   "text": "The **review pack** is the set of documents circulated before the review: requirements list, concept or layout drawings, calculations, analysis reports, test plans or results, interface and budget summaries, the risk list and the checklist to be used. **Traceability** links each numbered requirement to the design feature that addresses it and to the evidence that shows it is met (calculation, analysis, test, inspection). A requirement with no evidence is *unverified*; a design feature with no requirement is *unjustified*."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Req. ID",
+    "Requirement",
+    "Design element",
+    "Evidence",
+    "Status"
+   ],
+   "rows": [
+    [
+     "R1",
+     "Transmit 120 N m at 300 rpm",
+     "Drive shaft, 20 mm",
+     "Hand calculation HC-03",
+     "Verified by analysis"
+    ],
+    [
+     "R2",
+     "Mass at most 9.5 kg",
+     "Mass table rev C (9.1 kg)",
+     "Mass budget sheet",
+     "Verified by analysis"
+    ],
+    [
+     "R3",
+     "Operate at 70 dB(A) or below at 1 m",
+     "Enclosure with damping",
+     "None yet",
+     "Open: test planned"
+    ],
+    [
+     "R4",
+     "Meet guarding regulation",
+     "Fixed guard",
+     "Drawing check",
+     "Open: awaiting inspection"
+    ]
+   ],
+   "caption": "A traceability matrix extract. Gaps such as R3 and R4 are visible and become actions."
+  },
+  {
+   "type": "text",
+   "markdown": "**Justifying a critical dimension.** A critical dimension is one whose value directly governs whether a requirement (strength, fit, clearance, life, safety) is met. For each, a documented hand calculation should contain: the requirement it serves; the inputs with units and sources; the assumptions (load case, material properties labelled as typical or from a datasheet, safety factor and why); the formula and its basis; the calculation with intermediate steps; the result compared with the allowable value, giving a margin; and a reference to the drawing and revision. A reviewer must be able to repeat it."
+  },
+  {
+   "type": "math",
+   "latex": "\\tau=\\frac{16T}{\\pi d^{3}}\\;\\;\\Rightarrow\\;\\; d_{\\min}=\\left(\\frac{16\\,T}{\\pi\\,\\tau_{\\mathrm{allow}}}\\right)^{1/3}",
+   "caption": "Maximum shear stress in a solid circular shaft of diameter d (m) carrying pure torque T (N m); tau_allow is the allowable shear stress (Pa). Valid away from stress concentrations such as keyways and shoulders, which need extra checks."
+  },
+  {
+   "type": "worked_example",
+   "title": "A documented calculation for a shaft diameter",
+   "prompt": "Requirement R1: transmit a steady torque of 120 N m. Assume (typical) a steel with tensile yield strength 350 MPa; shear yield is taken as $0.577\\times350\\approx202$ MPa by the maximum distortion energy criterion; use a safety factor of 2. Find the minimum diameter, then check a 20 mm shaft.",
+   "steps": [
+    {
+     "text": "Divide the shear yield strength by the safety factor to get the allowable shear stress.",
+     "latex": "\\tau_{\\mathrm{allow}}=\\frac{202}{2}=101\\ \\mathrm{MPa}"
+    },
+    {
+     "text": "Rearrange the torsion formula for diameter and insert the torque and allowable stress.",
+     "latex": "d_{\\min}=\\left(\\frac{16\\times120}{\\pi\\times101\\times10^{6}}\\right)^{1/3}=0.0182\\ \\mathrm{m}=18.2\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Check the chosen 20 mm shaft.",
+     "latex": "\\tau=\\frac{16\\times120}{\\pi\\,(0.020)^3}=76.4\\ \\mathrm{MPa}"
+    },
+    {
+     "text": "Achieved safety factor and margin: $202/76.4=2.64$, which exceeds the required 2.0. The assumption of pure steady torque and the neglected keyway concentration should be written in the calculation sheet."
+    }
+   ],
+   "answer": "Minimum 18.2 mm; the chosen 20 mm gives 76.4 MPa and a safety factor of 2.64 against the required 2."
+  },
+  {
+   "type": "text",
+   "markdown": "**Listing open risks.** A risk is an uncertain event that could prevent a requirement being met. The risk list for the review should include, for each open risk: a description in the form 'cause, event, consequence'; likelihood $L$ and consequence $C$ on agreed scales (for example 1 to 5), giving an exposure $L\\times C$; a named **owner**; a **closure action** that would retire or reduce it (a test, an analysis, a design change); a due date and the current status. Risks the team knows about but leaves out of the pack damage the review's credibility."
+  },
+  {
+   "type": "worked_example",
+   "title": "Ranking open risks",
+   "prompt": "Three risks are scored (likelihood, consequence) on 1 to 5 scales: R-A supplier delay on castings (4, 3); R-B shaft keyway fatigue not yet assessed (2, 5); R-C noise requirement unverified (3, 4). Rank them.",
+   "steps": [
+    {
+     "text": "Compute the exposure of each risk as likelihood multiplied by consequence.",
+     "latex": "L\\times C:\\;\\; 4\\times3=12,\\;\\; 2\\times5=10,\\;\\; 3\\times4=12"
+    },
+    {
+     "text": "Ranking: R-A and R-C tie at 12, R-B has 10. Because R-B has the highest consequence (5), it is flagged for attention regardless of its exposure."
+    },
+    {
+     "text": "Each risk receives an owner and closure action, for example R-B: owner stress lead, perform fatigue check of keyway, due before CDR."
+    }
+   ],
+   "answer": "R-A (12) and R-C (12) rank equal, R-B (10) follows but is flagged for its consequence of 5."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Gather the requirements list and give each requirement an identifier.",
+    "Build the traceability table and mark every gap.",
+    "For each critical dimension write the hand calculation with inputs, assumptions, result and margin.",
+    "Compile the open risk list with owner, closure action and date.",
+    "Circulate the pack early enough for reviewers to read it."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Gaps shown honestly are better than gaps found",
+   "text": "Marking R3 as 'open: test planned' costs nothing and shows control; leaving it blank and having a reviewer discover it costs credibility and review time."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Label assumed values",
+   "text": "Material strengths and safety factors that are typical values must be labelled as such and referenced. Quoting a precise strength without a source invites the question that stops the review."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A review pack lets an independent reader trace each requirement to design elements and to evidence, with gaps marked openly.",
+    "A critical dimension is justified by a documented hand calculation stating inputs, assumptions, formula, result and margin against the allowable value.",
+    "Open risks are listed with likelihood, consequence, a named owner, a closure action and a due date."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of the following belongs in a design review pack?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A requirements list with a traceability table linking each requirement to evidence"
+    },
+    {
+     "id": "b",
+     "text": "Only the final CAD model with no supporting documents"
+    },
+    {
+     "id": "c",
+     "text": "A verbal summary prepared on the morning of the review"
+    },
+    {
+     "id": "d",
+     "text": "The designers' private notes about who is to blame for earlier errors"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A requirements list with a traceability table linking each requirement to evidence",
+   "distractorRationale": {
+    "a": "Correct: it lets reviewers check the design against its requirements.",
+    "b": "A model alone provides no evidence of how requirements are met.",
+    "c": "The pack must be available in advance and in writing.",
+    "d": "Personal notes are irrelevant to the design evidence."
+   },
+   "explanation": "The pack exists so that an independent reader can check the design without the designer present. Traceability is its backbone because it connects requirements, design and evidence.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a traceability table, requirement R5 (survive a 1.5 m drop onto concrete) has a design element listed but the evidence column is empty. What is the correct treatment?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Mark it as unverified and raise an action to produce evidence, such as a drop test or analysis"
+    },
+    {
+     "id": "b",
+     "text": "Mark it as verified because a design element exists"
+    },
+    {
+     "id": "c",
+     "text": "Delete the requirement from the table"
+    },
+    {
+     "id": "d",
+     "text": "Fill the evidence column with the design element's drawing number"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Mark it as unverified and raise an action to produce evidence, such as a drop test or analysis",
+   "distractorRationale": {
+    "a": "Correct: a requirement without evidence is unverified and needs a planned verification.",
+    "b": "Having a design feature does not prove the requirement is met.",
+    "c": "Deleting the requirement hides the gap.",
+    "d": "A drawing number is not evidence of performance."
+   },
+   "explanation": "Traceability needs both a design element and evidence. Showing the gap honestly lets the team plan a test or analysis before the review rather than being surprised by it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which set of items must a documented hand calculation for a critical dimension contain so that a reviewer can repeat it?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Inputs with units and sources, assumptions, formula, working, result compared with allowable, and drawing reference"
+    },
+    {
+     "id": "b",
+     "text": "Only the final dimension and a tick mark"
+    },
+    {
+     "id": "c",
+     "text": "The formula and nothing else"
+    },
+    {
+     "id": "d",
+     "text": "The software used with no inputs recorded"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Inputs with units and sources, assumptions, formula, working, result compared with allowable, and drawing reference",
+   "distractorRationale": {
+    "a": "Correct: this gives the reviewer everything needed to repeat and check it.",
+    "b": "A result with no working cannot be checked.",
+    "c": "Without inputs and assumptions the formula cannot be reproduced.",
+    "d": "Software without inputs is not reproducible."
+   },
+   "explanation": "A review is a check, so the calculation must be reproducible. That requires all inputs, assumptions and the comparison with the allowable value to be written down.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which dimension is most clearly a critical dimension needing a documented calculation?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The diameter of a shaft that carries the full drive torque"
+    },
+    {
+     "id": "b",
+     "text": "The radius of a decorative chamfer on a cover"
+    },
+    {
+     "id": "c",
+     "text": "The colour of a protective coating"
+    },
+    {
+     "id": "d",
+     "text": "The lettering height on a name plate"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The diameter of a shaft that carries the full drive torque",
+   "distractorRationale": {
+    "a": "Correct: its value directly governs strength and safety.",
+    "b": "A decorative chamfer does not govern a requirement.",
+    "c": "Colour has no effect on performance requirements here.",
+    "d": "Lettering height is not a function or safety item."
+   },
+   "explanation": "A critical dimension is one whose value decides whether a requirement is met. The torque-carrying shaft diameter determines stress and hence safety.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which entry makes the best open-risk record in a review pack?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "'Keyway fatigue not assessed, may cause shaft failure; likelihood 2, consequence 5; owner: stress lead; action: fatigue check; due 20 May'"
+    },
+    {
+     "id": "b",
+     "text": "'There might be some problems with the shaft.'"
+    },
+    {
+     "id": "c",
+     "text": "'Fatigue: see someone'"
+    },
+    {
+     "id": "d",
+     "text": "'Risk of failure; the team will try to be careful'"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "'Keyway fatigue not assessed, may cause shaft failure; likelihood 2, consequence 5; owner: stress lead; action: fatigue check; due 20 May'",
+   "distractorRationale": {
+    "a": "Correct: it has cause and event, scoring, an owner, a closure action and a date.",
+    "b": "It has no cause, score, owner or action.",
+    "c": "It names neither an owner nor an action nor a date.",
+    "d": "It offers intent but not a closure action or owner."
+   },
+   "explanation": "A risk record must be actionable. Naming an owner, a concrete closure action and a date turns a worry into something that can be tracked and closed.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A solid steel shaft of diameter 28 mm carries a steady torque of 250 N m. Assuming pure torsion, calculate the maximum shear stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o2"
+   ],
+   "correctValue": 58.001073,
+   "tolerance": 0.3,
+   "unit": "MPa",
+   "explanation": "Using $\\tau=16T/(\\pi d^3)$ gives $16\\times250/(\\pi\\times0.028^3)=58.0$ MPa. The result applies away from keyways and shoulders, which would raise the local stress.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A solid shaft must carry a steady torque of 60 N m with an allowable shear stress of 80 MPa. Find the minimum diameter in mm, assuming pure torsion.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o2"
+   ],
+   "correctValue": 15.631853,
+   "tolerance": 0.1,
+   "unit": "mm",
+   "explanation": "The minimum diameter is $d=(16T/(\\pi\\tau))^{1/3}=(16\\times60/(\\pi\\times80\\times10^6))^{1/3}=15.6$ mm. A larger standard size would normally be selected.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 32 mm solid shaft transmits a steady torque of 400 N m. Taking a typical shear yield strength of 200 MPa for the material, find the safety factor against yield in pure torsion (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o2"
+   ],
+   "correctValue": 3.216991,
+   "tolerance": 0.03,
+   "unit": "dimensionless",
+   "explanation": "The shear stress is $16\\times400/(\\pi\\times0.032^3)=62.2$ MPa. The safety factor is $200/62.2=3.22$, which would be quoted with the assumptions in the calculation sheet.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "You are preparing the pack for a preliminary design review of a hand-operated press. List the contents of the pack, and describe how you would build a traceability table for three requirements: a force of 5 kN, a mass of at most 8 kg and a guarding requirement.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o1"
+   ],
+   "markingGuide": [
+    "Pack contents: requirements, layout drawings, calculations, mass budget, interface summary, test plan outline, risk list, checklist",
+    "Traceability columns: requirement ID, requirement, design element, evidence, status",
+    "Force requirement linked to a stress or force calculation as evidence",
+    "Mass requirement linked to the mass budget table",
+    "Guarding requirement linked to a guard drawing and an inspection or standard reference",
+    "Gaps marked as open with an action"
+   ],
+   "explanation": "The table makes every requirement visible with its evidence. Any empty cell becomes an action before the review.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A calculation sheet in a review pack says only 'Shaft 25 mm OK' and the risk list says 'fatigue maybe'. Explain what is missing from each, and rewrite them in a form suitable for the review, using a torque of 150 N m and a safety factor of 2 as illustrative values.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.design-review.review-preparation.o2",
+    "ug.mce-machine-design-project.design-review.review-preparation.o3"
+   ],
+   "markingGuide": [
+    "Calculation missing inputs, material property and its source or label as typical, assumptions, formula, working, result against allowable and margin",
+    "Shows an example formula such as $\\tau=16T/(\\pi d^3)$ and numerical evaluation with units",
+    "Notes stress concentrations (keyway, shoulders) and fatigue needing separate checks",
+    "Risk statement missing cause-event-consequence, likelihood and consequence scores",
+    "Risk missing owner, closure action and due date",
+    "Rewritten risk entry or action that is specific and trackable"
+   ],
+   "explanation": "A reviewer must be able to repeat the calculation and track the risk. The rewritten versions state their inputs and assumptions and carry an owner, a closure action and a date.",
+   "board": "internal"
+  }
+ ]
+}

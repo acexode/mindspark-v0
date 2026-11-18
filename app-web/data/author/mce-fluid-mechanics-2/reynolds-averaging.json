@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "Reynolds Decomposition and Averaging",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Hold a hot-wire probe in the air stream behind a fan and the voltage trace never settles: the speed flickers by several per cent around a steady value, hundreds of times per second. Nobody wants to follow every eddy in a pipe or a chimney, yet the flicker matters because it adds a large extra friction. Splitting the velocity into a mean and a fluctuation, and averaging the equations of motion, shows exactly how."
+  },
+  {
+   "type": "text",
+   "markdown": "Above a critical Reynolds number the flow is **turbulent**: velocity and pressure fluctuate irregularly in space and time over a wide range of scales, even when the boundary conditions are steady. Solving for every fluctuation is practical only for small problems; engineers usually want the **mean flow** and the average effect of the turbulence on it. Osborne Reynolds proposed writing each flow variable as the sum of a time-averaged part and a fluctuating part."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Reynolds decomposition",
+   "text": "$u(t)=\\bar u+u'(t)$ with the time average $\\bar u=\\dfrac{1}{T}\\int_0^Tu\\,dt$ taken over a time $T$ long compared with the fluctuations. By construction the average of the fluctuation is zero, $\\overline{u'}=0$, but the average of its square is not: $\\overline{u'^2}>0$. The same decomposition applies to $v$, $w$ and $p$."
+  },
+  {
+   "type": "math",
+   "latex": "u=\\bar u+u',\\qquad \\overline{u'}=0,\\qquad u_{rms}=\\sqrt{\\overline{u'^2}},\\qquad I=\\frac{u_{rms}}{\\bar U}",
+   "caption": "Decomposition, root-mean-square fluctuation and turbulence intensity (usually quoted as a percentage; U-bar is the local mean speed)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Mean, rms and turbulence intensity from samples",
+   "prompt": "A hot-wire records ten equally spaced streamwise velocity samples (m/s) in an air stream: 12.1, 11.4, 12.8, 12.3, 11.7, 12.6, 11.9, 12.5, 11.2, 12.5. Find the mean velocity, the rms fluctuation and the turbulence intensity.",
+   "steps": [
+    {
+     "text": "The mean is the sum of the samples divided by the number of samples N = 10.",
+     "latex": "\\bar u=\\frac{1}{10}\\sum u_i=12.10\\ \\text{m/s}"
+    },
+    {
+     "text": "Fluctuations are u' = u - mean: (+0.00, -0.70, +0.70, +0.20, -0.40, +0.50, -0.20, +0.40, -0.90, +0.40) m/s; they sum to zero as they must.",
+     "latex": "\\sum u_i'=0.00"
+    },
+    {
+     "text": "The mean square of the fluctuations is the sum of squared deviations divided by N, and the rms is its square root.",
+     "latex": "u_{rms}=\\sqrt{\\frac{1}{10}\\sum u_i'^2}=\\sqrt{0.2600}=0.510\\ \\text{m/s}"
+    },
+    {
+     "text": "Turbulence intensity is the ratio of the rms fluctuation to the mean speed.",
+     "latex": "I=\\frac{u_{rms}}{\\bar u}=\\frac{0.510}{12.10}=4.2\\%"
+    }
+   ],
+   "answer": "Mean = 12.10 m/s, u_rms = 0.510 m/s, intensity = 4.2 per cent."
+  },
+  {
+   "type": "text",
+   "markdown": "**Averaging the momentum equation.** Substitute $u_i=\\bar u_i+u_i'$ and $p=\\bar p+p'$ into the incompressible Navier-Stokes equations and take the time average. Linear terms average simply: for instance $\\overline{\\partial u_i/\\partial x_i}=\\partial\\bar u_i/\\partial x_i$, so the mean field satisfies continuity. The non-linear convective term is different. Because $\\overline{u_iu_j}=\\bar u_i\\bar u_j+\\overline{u_i'u_j'}$ (the cross terms contain $\\overline{u'}=0$), averaging leaves an extra term that does not vanish. Moving it to the right-hand side where it acts like a stress gives the **Reynolds-averaged Navier-Stokes (RANS) equations**."
+  },
+  {
+   "type": "math",
+   "latex": "\\rho\\left(\\frac{\\partial\\bar u_i}{\\partial t}+\\bar u_j\\frac{\\partial\\bar u_i}{\\partial x_j}\\right)=-\\frac{\\partial\\bar p}{\\partial x_i}+\\frac{\\partial}{\\partial x_j}\\left(\\mu\\frac{\\partial\\bar u_i}{\\partial x_j}-\\rho\\,\\overline{u_i'u_j'}\\right)",
+   "caption": "RANS equation: -rho times the average of u_i' u_j' is the Reynolds stress tensor"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Reynolds stress",
+   "text": "The quantity $\\tau_{ij}^{R}=-\\rho\\,\\overline{u_i'u_j'}$ (Pa) is the **Reynolds stress**. It is not a true fluid stress but the net momentum flux carried by the velocity fluctuations. In a boundary layer or pipe flow the dominant component is $-\\rho\\,\\overline{u'v'}$, where $u'$ is along the wall and $v'$ is normal to it; it is positive because a fluctuation moving away from the wall ($v'>0$) tends to carry slow fluid ($u'<0$), so $\\overline{u'v'}<0$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reynolds shear stress from paired fluctuations",
+   "prompt": "In a wind-tunnel boundary layer, six simultaneous samples of the streamwise and wall-normal fluctuations (m/s) are: u' = 0.6, -0.5, 0.4, -0.7, 0.5, -0.3 and v' = -0.3, 0.2, -0.1, 0.4, -0.3, 0.1. The air has density 1.20 kg/m^3. Find the covariance, the Reynolds shear stress and the correlation coefficient.",
+   "steps": [
+    {
+     "text": "Check that each set averages to zero, a property of fluctuations (the sums are 0.0 for both).",
+     "latex": "\\overline{u'}=0,\\qquad\\overline{v'}=0"
+    },
+    {
+     "text": "Average the products u'v' of simultaneous pairs: the sum of the six products is -0.78.",
+     "latex": "\\overline{u'v'}=\\frac{1}{6}\\sum u_i'v_i'=-0.130\\ \\text{m}^2/\\text{s}^2"
+    },
+    {
+     "text": "Reynolds shear stress is minus density times this covariance.",
+     "latex": "\\tau_R=-\\rho\\,\\overline{u'v'}=-1.20\\times(-0.130)=0.156\\ \\text{Pa}"
+    },
+    {
+     "text": "Correlation coefficient from the mean squares 0.267 and 0.067 (m^2/s^2): a strong negative correlation shows the fluctuations are coupled.",
+     "latex": "R_{uv}=\\frac{\\overline{u'v'}}{\\sqrt{\\overline{u'^2}\\,\\overline{v'^2}}}=-0.98"
+    }
+   ],
+   "answer": "Covariance = -0.130 m^2/s^2, Reynolds shear stress = 0.156 Pa, correlation = -0.98."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Aspect",
+    "Laminar flow",
+    "Turbulent flow (averaged)"
+   ],
+   "rows": [
+    [
+     "Velocity",
+     "Smooth, steady",
+     "Mean $\\bar u$ plus random $u'$"
+    ],
+    [
+     "Shear stress",
+     "$\\mu\\,d u/dy$ only",
+     "$\\mu\\,d\\bar u/dy-\\rho\\overline{u'v'}$"
+    ],
+    [
+     "Momentum transport",
+     "Molecular (viscosity)",
+     "Eddy mixing dominates away from the wall"
+    ],
+    [
+     "Equations",
+     "Navier-Stokes, closed",
+     "RANS, not closed (extra Reynolds stresses)"
+    ],
+    [
+     "Profile shape (pipe)",
+     "Parabolic",
+     "Much fuller, steeper at the wall"
+    ]
+   ],
+   "caption": "Laminar and Reynolds-averaged turbulent flow compared"
+  },
+  {
+   "type": "text",
+   "markdown": "**The closure problem.** The Reynolds stress tensor is symmetric, so it contributes **six** new independent unknowns ($\\overline{u'^2}$, $\\overline{v'^2}$, $\\overline{w'^2}$, $\\overline{u'v'}$, $\\overline{u'w'}$, $\\overline{v'w'}$), but averaging gave no additional equations. We have four mean equations (continuity and three momentum) for the four mean unknowns $\\bar u,\\bar v,\\bar w,\\bar p$ plus these six stresses: the system is **not closed**. Deriving transport equations for the stresses introduces third-order correlations such as $\\overline{u_i'u_j'u_k'}$, and so on forever. A **turbulence model** must supply extra relations. The simplest is the **Boussinesq eddy viscosity** hypothesis, $-\\rho\\overline{u'v'}=\\mu_t\\,d\\bar u/dy$, in which the eddy viscosity $\\mu_t$ is a property of the flow, not of the fluid."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Decompose each variable as mean plus fluctuation and remember $\\overline{u'}=0$.",
+    "Use $u_{rms}=\\sqrt{\\overline{u'^2}}$ and $I=u_{rms}/\\bar U$ to describe how intense the turbulence is.",
+    "The average of a product is the product of averages plus the covariance of the fluctuations.",
+    "The extra term in the averaged momentum equation is the Reynolds stress $-\\rho\\overline{u_i'u_j'}$.",
+    "Count unknowns and equations to see that the RANS system needs a closure model."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Mean flow feels the fluctuations",
+   "text": "Even though the fluctuations average to zero, they transport momentum. In turbulent boundary layers and pipes the Reynolds stress is much larger than the viscous stress except in a thin layer next to the wall, which is why turbulent friction is higher than laminar friction."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Averages of products are not products of averages",
+   "text": "A common mistake is to say $\\overline{u^2}=\\bar u^2$. In fact $\\overline{u^2}=\\bar u^2+\\overline{u'^2}$, which exceeds $\\bar u^2$ by the mean square of the fluctuation. Likewise $\\overline{u'v'}$ is not zero even though $\\overline{u'}=\\overline{v'}=0$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Reynolds decomposition writes $u=\\bar u+u'$ with $\\overline{u'}=0$; turbulence intensity is $I=u_{rms}/\\bar U$.",
+    "Averaging the non-linear convective term produces the Reynolds stresses $-\\rho\\overline{u_i'u_j'}$ in the mean momentum equation.",
+    "The Reynolds stress tensor adds six unknowns without new equations, so the RANS equations are not closed.",
+    "A turbulence model, such as the Boussinesq eddy viscosity $\\mu_t$, is needed to close the system."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a turbulent velocity u = u-bar + u', which of these statements about the time averages is correct?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The average of u' is positive and equals u-bar"
+    },
+    {
+     "id": "b",
+     "text": "The average of u' is zero, but the average of u'^2 is positive"
+    },
+    {
+     "id": "c",
+     "text": "The average of u'^2 is zero because u' fluctuates in sign"
+    },
+    {
+     "id": "d",
+     "text": "Both the average of u' and the average of u'^2 are zero"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The average of u' is zero, but the average of u'^2 is positive",
+   "distractorRationale": {
+    "a": "u' is defined so that its mean is zero; u-bar is the mean of u.",
+    "b": "Correct: u' is defined as the deviation from the mean, so its mean is zero, while its square is always non-negative and its average is positive.",
+    "c": "Squaring removes the sign, so the average of u'^2 cannot be zero for a fluctuating quantity.",
+    "d": "If the mean square were zero, the fluctuation would be identically zero and there would be no turbulence."
+   },
+   "explanation": "By definition $u'=u-\\bar u$, so $\\overline{u'}=\\bar u-\\bar u=0$. The square $u'^2\\ge0$ is non-negative everywhere, so its average is positive for any non-zero fluctuation; its square root is the rms fluctuation used in the turbulence intensity.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "In a wind tunnel the mean speed at a point is 12.5 m/s and the rms of the streamwise velocity fluctuations is 0.55 m/s. Find the turbulence intensity as a percentage.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o1"
+   ],
+   "correctValue": 4.4,
+   "tolerance": 0.05,
+   "unit": "%",
+   "explanation": "The turbulence intensity is I = u_rms/U-bar = 0.55/12.5 = 0.044, i.e. 4.4 per cent.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A velocity probe in a flow records six samples (m/s): 9.8, 10.4, 10.1, 9.6, 10.3 and 9.8. Find the rms fluctuation about the mean in m/s, dividing the sum of squared deviations by N = 6.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o1"
+   ],
+   "correctValue": 0.288675,
+   "tolerance": 0.005,
+   "unit": "m/s",
+   "explanation": "The mean is 10.00 m/s and the deviations are -0.20, +0.40, +0.10, -0.40, +0.30, -0.20. Their squares sum to 0.500, so u_rms = sqrt(0.500/6) = 0.2887 m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Where do Reynolds stresses come from in the Reynolds-averaged Navier-Stokes equations?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "From the body force term"
+    },
+    {
+     "id": "b",
+     "text": "From averaging the pressure gradient term"
+    },
+    {
+     "id": "c",
+     "text": "From averaging the non-linear convective term, whose average includes the mean of the product of fluctuations"
+    },
+    {
+     "id": "d",
+     "text": "From the molecular viscosity of the fluid"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "From averaging the non-linear convective term, whose average includes the mean of the product of fluctuations",
+   "distractorRationale": {
+    "a": "The body force is linear and unaffected by averaging.",
+    "b": "The pressure gradient term is linear, so averaging gives only the mean pressure gradient.",
+    "c": "Correct: the average of u_i u_j equals the product of means plus the average of u_i' u_j'.",
+    "d": "The viscous term is linear and gives only the mean viscous stress; molecular viscosity is already included separately."
+   },
+   "explanation": "Only the non-linear convective term $u_j\\,\\partial u_i/\\partial x_j$ produces a new term on averaging, because $\\overline{u_iu_j}=\\bar u_i\\bar u_j+\\overline{u_i'u_j'}$. The last piece, moved to the right-hand side, acts like a stress.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a turbulent air flow (density 1.20 kg/m^3) a probe measures the covariance of the streamwise and wall-normal fluctuations as the mean value of u'v' = -0.35 m^2/s^2. Find the turbulent (Reynolds) shear stress, -rho times mean u'v', in pascals.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o2"
+   ],
+   "correctValue": 0.42,
+   "tolerance": 0.005,
+   "unit": "Pa",
+   "explanation": "The Reynolds shear stress is tau_R = -rho (u'v'-bar) = -1.20 x (-0.35) = 0.42 Pa. It is positive because u' and v' are negatively correlated in a boundary layer.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Time-averaging the Navier-Stokes equations gives a closed set of equations for the mean velocity and mean pressure.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Averaging produces the Reynolds stresses as additional unknowns, with no new equations to determine them. The system is therefore not closed, and a turbulence model is required.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In three-dimensional incompressible turbulent flow, how many independent Reynolds stress components appear as new unknowns in the averaged momentum equations?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4"
+    },
+    {
+     "id": "b",
+     "text": "3"
+    },
+    {
+     "id": "c",
+     "text": "6"
+    },
+    {
+     "id": "d",
+     "text": "9"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "6",
+   "distractorRationale": {
+    "a": "4 is the number of mean unknowns (three velocities and pressure), not the number of Reynolds stresses.",
+    "b": "3 counts only the normal stresses or only the shear stresses.",
+    "c": "Correct: the tensor is symmetric, so 3 normal and 3 shear stresses are independent.",
+    "d": "9 is the number of components of a general second-order tensor, but symmetry (u_i'u_j' = u_j'u_i') removes three."
+   },
+   "explanation": "The Reynolds stress tensor $-\\rho\\overline{u_i'u_j'}$ is symmetric, so it has 6 independent components: three normal stresses and three shear stresses. They are unknown in addition to the four mean quantities, which is the closure problem.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the Boussinesq eddy viscosity hypothesis, -rho times the mean of u'v' equals mu_t times d(u-bar)/dy. What kind of quantity is the eddy viscosity mu_t?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A property of the flow that varies with position and turbulence level"
+    },
+    {
+     "id": "b",
+     "text": "A quantity that is exactly zero in turbulent flow"
+    },
+    {
+     "id": "c",
+     "text": "A constant equal to the molecular viscosity"
+    },
+    {
+     "id": "d",
+     "text": "A fixed property of the fluid, like molecular viscosity"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A property of the flow that varies with position and turbulence level",
+   "distractorRationale": {
+    "a": "Correct: mu_t depends on the turbulence, which varies throughout the flow.",
+    "b": "Eddy viscosity is typically much larger than molecular viscosity in turbulent flow.",
+    "c": "It is not equal to mu; it can be hundreds or thousands of times larger.",
+    "d": "Molecular viscosity is a fluid property; eddy viscosity is not."
+   },
+   "explanation": "The eddy viscosity represents the effect of turbulent mixing and so depends on the flow (its intensity and length scales), not on the fluid. It is large away from the wall and tends to zero at the wall, where the fluctuations are damped.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Starting from the decomposition u_i = u_i-bar + u_i' and the non-linear convective term of the Navier-Stokes equation, show how averaging produces the Reynolds stress. Explain why the term appears in the mean momentum equation as a stress.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o2"
+   ],
+   "markingGuide": [
+    "Write convective term using continuity: rho d(u_i u_j)/dx_j",
+    "Substitute u_i u_j = (ubar_i + u_i')(ubar_j + u_j') and expand into four products",
+    "Average: cross terms vanish because the average of u' is zero",
+    "Left with average of u_i u_j = ubar_i ubar_j + average of u_i' u_j'",
+    "Move the term rho d(avg u_i'u_j')/dx_j to the right-hand side: acts as the divergence of a stress, -rho avg(u_i' u_j')",
+    "Physical meaning: momentum flux carried by turbulent fluctuations across a surface"
+   ],
+   "explanation": "Expanding the product and averaging leaves $\\overline{u_iu_j}=\\bar u_i\\bar u_j+\\overline{u_i'u_j'}$, because the cross terms contain $\\overline{u'}=0$. Transferring the remaining term to the right side gives $\\partial(-\\rho\\overline{u_i'u_j'})/\\partial x_j$, which has exactly the form of the divergence of a stress, hence the name Reynolds stress.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain the closure problem of the Reynolds-averaged Navier-Stokes equations. State how many unknowns and equations there are for incompressible flow in three dimensions, why deriving equations for the Reynolds stresses does not solve the problem, and give one way in which it is overcome in engineering practice.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.turbulence-intro.reynolds-averaging.o3"
+   ],
+   "markingGuide": [
+    "Mean unknowns: three velocity components and pressure (4); equations: continuity and three momentum (4)",
+    "Reynolds stresses add six more independent unknowns (symmetric tensor) with no new equations",
+    "Equations for the Reynolds stresses contain triple correlations, introducing new unknowns at each level (hierarchy never closes)",
+    "Closure requires modelling: express Reynolds stresses in terms of mean quantities",
+    "Example: Boussinesq eddy viscosity -rho avg(u'v') = mu_t d(ubar)/dy, with mu_t from a model such as mixing length or k-epsilon"
+   ],
+   "explanation": "The mean equations contain 4 equations for 4 mean unknowns but also 6 Reynolds stresses, so there are 10 unknowns and only 4 equations. Taking moments of the equation for the fluctuations produces still higher-order correlations, so the hierarchy never closes and turbulence models must supply additional relations, such as an eddy viscosity.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,389 @@
+{
+ "lessonTitle": "Reporting Results: Stress Measures, Contours and the Margin of Safety",
+ "estimatedMinutes": 38,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bracket is checked against a yield strength of 355 MPa. The contour plot's legend maximum reads 262 MPa, so it passes; but the legend shows the averaged nodal maximum of the first principal stress, not the von Mises stress that governs yielding, and the unaveraged value at the same location differs by 15 per cent. Choosing the right stress measure, reading the contour honestly and writing down what was done are as important as the solution itself."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** A finite element solution produces strain and stress at integration points. Post-processing converts these into a few scalar measures and contour plots, and every step involves a choice. This unit covers three: which **stress measure** to compare with a material limit, how to use **averaged and unaveraged contours** to judge mesh quality, and how to report an analysis with its assumptions, checks and **margin of safety**."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Stress measures",
+   "text": "For a plane state $(\\sigma_x,\\sigma_y,\\tau_{xy})$ the principal stresses are $\\sigma_{1,2}=\\tfrac{\\sigma_x+\\sigma_y}{2}\\pm\\sqrt{\\left(\\tfrac{\\sigma_x-\\sigma_y}{2}\\right)^2+\\tau_{xy}^2}$. The **von Mises** (distortion energy) equivalent stress is $\\sigma_{vM}=\\sqrt{\\sigma_x^2-\\sigma_x\\sigma_y+\\sigma_y^2+3\\tau_{xy}^2}$ (plane stress), the **Tresca** (maximum shear) equivalent is the largest of $|\\sigma_1|,|\\sigma_2|,|\\sigma_1-\\sigma_2|$, and the **maximum principal stress** is $\\sigma_1$. All are in MPa."
+  },
+  {
+   "type": "text",
+   "markdown": "**Which measure for yield?** Ductile metals yield when shear distortion reaches a limit, and the von Mises criterion predicts this well; Tresca is slightly more conservative. Brittle materials (cast iron, ceramics) fail by tensile fracture, so the maximum principal stress is used instead. Comparing the maximum principal stress of a ductile part with yield is not conservative: for a shear-dominated state, $\\sigma_1$ can be much lower than the von Mises value. The result is compared with an **allowable** stress, here yield divided by a safety factor, and the **margin of safety** is reported."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{MS}=\\frac{\\sigma_{\\text{allow}}}{\\sigma_{\\text{applied}}}-1,\\qquad \\sigma_{\\text{allow}}=\\frac{\\sigma_y}{SF}",
+   "caption": "Margin of safety (positive means acceptable; zero means no margin)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing the stress measure and computing the margin",
+   "prompt": "At a critical point of a steel bracket (typical yield strength $\\sigma_y=355$ MPa, required safety factor $SF=1.5$) the FE model gives $\\sigma_x=180$ MPa, $\\sigma_y=-40$ MPa and $\\tau_{xy}=60$ MPa. Compute the principal stresses, the von Mises and Tresca equivalents and the margin of safety on yield.",
+   "steps": [
+    {
+     "text": "Principal stresses.",
+     "latex": "\\sigma_{1,2}=70\\pm\\sqrt{(110)^2+60^2}=195.3,\\ -55.3\\ \\text{MPa}"
+    },
+    {
+     "text": "Von Mises equivalent stress.",
+     "latex": "\\sigma_{vM}=\\sqrt{180^2-(180)(-40)+(-40)^2+3(60)^2}=\\sqrt{52000}=228.0\\ \\text{MPa}"
+    },
+    {
+     "text": "Tresca equivalent (largest of $|\\sigma_1|,|\\sigma_2|,|\\sigma_1-\\sigma_2|$).",
+     "latex": "\\sigma_{T}=250.6\\ \\text{MPa}"
+    },
+    {
+     "text": "Allowable stress and margin of safety using von Mises.",
+     "latex": "\\sigma_{allow}=\\frac{355}{1.5}=236.7\\ \\text{MPa},\\quad \\text{MS}=\\frac{236.7}{228.0}-1=0.038"
+    }
+   ],
+   "answer": "The von Mises stress is 228.0 MPa and MS $=+0.04$: the part passes with very little margin. Using only the maximum principal stress (195.3 MPa) would have given MS $=0.21$, which overstates the margin by a factor of about five."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Material behaviour",
+    "Measure compared with the limit",
+    "Reason"
+   ],
+   "rows": [
+    [
+     "Ductile metal under static load",
+     "Von Mises (or Tresca, conservative) against yield",
+     "Yielding is governed by distortion energy / shear"
+    ],
+    [
+     "Brittle material (cast iron, ceramic)",
+     "Maximum principal stress against tensile strength",
+     "Fracture occurs on planes of maximum tension"
+    ],
+    [
+     "Fatigue with multiaxial stresses",
+     "Equivalent alternating stress (e.g. von Mises) against the endurance limit, with stress-concentration treatment",
+     "Cyclic stress range governs crack initiation"
+    ],
+    [
+     "Buckling-critical thin members",
+     "Buckling load factor, not a stress",
+     "Failure by loss of stability before yield"
+    ]
+   ],
+   "caption": "Which stress to check"
+  },
+  {
+   "type": "text",
+   "markdown": "**Averaged versus unaveraged contours.** Stresses are most accurate at integration points inside elements. To draw smooth contours the software extrapolates to the nodes, and a node shared by several elements receives one value from each element. **Unaveraged** (element-by-element) contours show each element's own extrapolated value, so jumps across element edges are visible. **Averaged** contours take the mean of the contributions at each node and look smooth. The size of the unaveraged jumps relative to the stress level is a direct indicator of discretisation error: smooth averaged contours can hide a mesh that is too coarse."
+  },
+  {
+   "type": "worked_example",
+   "title": "Judging mesh adequacy from stress jumps",
+   "prompt": "At a node shared by four elements in a fillet region the unaveraged von Mises values are 205, 231, 198 and 225 MPa. Find the averaged nodal value and the spread, and judge whether the mesh is adequate if the criterion is that jumps should not exceed about 5 per cent of the averaged value.",
+   "steps": [
+    {
+     "text": "Averaged nodal value.",
+     "latex": "\\bar\\sigma=\\frac{205+231+198+225}{4}=214.75\\ \\text{MPa}"
+    },
+    {
+     "text": "Spread between the largest and smallest element values.",
+     "latex": "231-198=33\\ \\text{MPa}"
+    },
+    {
+     "text": "Relative spread.",
+     "latex": "\\frac{33}{214.75}\\times100=15.4\\%"
+    },
+    {
+     "text": "Compare with the criterion: 15 per cent is three times the 5 per cent target.",
+     "latex": "15\\%>5\\%"
+    }
+   ],
+   "answer": "The averaged value is 214.8 MPa but the elements disagree by 15 per cent, so the mesh is too coarse here. The averaged contour looks smooth and would hide this; refine the region and re-compare before accepting the stress."
+  },
+  {
+   "type": "text",
+   "markdown": "**Writing the analysis summary.** A reader who was not at the keyboard must be able to judge the result. A short, structured summary has five parts: (1) the **purpose** and the criterion (for example, von Mises below yield divided by 1.5); (2) the **model**: geometry source, element types, mesh size at critical locations, material data and their source; (3) **loads and boundary conditions**, with the units; (4) **checks performed**: reaction balance, a hand-calculation comparison, mesh convergence and the averaged-versus-unaveraged check; and (5) the **result**: location and value of the governing stress, the allowable, the margin of safety and any limitations (such as singularities excluded)."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "State the stress measure and the criterion; never quote 'max stress' without naming it.",
+    "Report the stress at the location of interest after confirming convergence, not the nodal peak at a singularity.",
+    "List the assumptions: linear elastic, small displacements, nominal dimensions, load case, temperature.",
+    "Include the margin of safety with its definition and say whether it is on yield or ultimate."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Peak value in the legend",
+   "text": "The maximum in the colour legend is often an averaged nodal value at a mesh-dependent point, or a singularity. It is not necessarily the stress at the design-critical location, and it can be significantly higher or lower than the unaveraged peak."
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Checks to quote",
+   "text": "Typical statements: reactions balance the applied loads to within 0.1 per cent; deflection agrees with hand calculation within 5 per cent; the peak stress changed by less than 2 per cent between the last two meshes; unaveraged stress jumps at the critical location are below 5 per cent of the averaged value."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Compare von Mises (or Tresca) stress with yield for ductile metals and the maximum principal stress with tensile strength for brittle materials; the margin of safety is $\\sigma_{allow}/\\sigma_{applied}-1$.",
+    "Averaged contours are smooth and can hide discretisation error; the jumps in unaveraged contours at a node show whether the mesh is adequate.",
+    "A good analysis summary states assumptions, the checks performed (equilibrium, hand check, convergence) and the margin of safety with its definition."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which stress measure is normally compared with the yield strength of a ductile steel under a multiaxial stress state?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Von Mises equivalent stress"
+    },
+    {
+     "id": "b",
+     "text": "The largest component of normal stress in the global $x$ direction"
+    },
+    {
+     "id": "c",
+     "text": "The average of the nodal stress components"
+    },
+    {
+     "id": "d",
+     "text": "The mean stress $(\\sigma_x+\\sigma_y)/2$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Von Mises equivalent stress",
+   "distractorRationale": {
+    "b": "A single global component ignores the other components and the shear, and need not be the critical one.",
+    "c": "An average of components has no direct relation to yielding.",
+    "d": "The mean stress (hydrostatic part) does not cause yielding in ductile metals."
+   },
+   "explanation": "Yielding of ductile metals is governed by shear distortion, which the von Mises equivalent stress measures in a single number. Tresca is a slightly more conservative alternative, and the maximum principal stress is reserved for brittle failure.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The margin of safety is defined as $\\sigma_{allow}/\\sigma_{applied}-1$. What does a margin of safety of $-0.10$ indicate?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The applied stress exceeds the allowable stress; the design does not meet the criterion"
+    },
+    {
+     "id": "b",
+     "text": "The design has a 10 per cent reserve"
+    },
+    {
+     "id": "c",
+     "text": "The model has not converged"
+    },
+    {
+     "id": "d",
+     "text": "The yield strength was entered with the wrong sign"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The applied stress exceeds the allowable stress; the design does not meet the criterion",
+   "distractorRationale": {
+    "b": "A positive margin of 0.10 would indicate a 10 per cent reserve.",
+    "c": "Convergence is unrelated to the sign of the margin.",
+    "d": "The sign of the margin comes from the ratio, not from an entry error."
+   },
+   "explanation": "A margin of $-0.10$ means $\\sigma_{allow}/\\sigma_{applied}=0.90$, i.e. the applied stress is about 11 per cent above the allowable. The design must be strengthened or the analysis refined before acceptance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In an unaveraged stress contour plot, large jumps in stress across the boundaries of neighbouring elements at the critical location indicate what?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The mesh is too coarse there, because the elements disagree about the stress at shared nodes"
+    },
+    {
+     "id": "b",
+     "text": "The material is non-linear"
+    },
+    {
+     "id": "c",
+     "text": "The load has been applied incorrectly"
+    },
+    {
+     "id": "d",
+     "text": "The averaged contour is invalid, but the unaveraged contour is correct"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The mesh is too coarse there, because the elements disagree about the stress at shared nodes",
+   "distractorRationale": {
+    "b": "Nonlinearity changes the solution method, not the interelement jump.",
+    "c": "Load application errors affect the global solution, not specifically interelement jumps.",
+    "d": "Neither contour is more correct; the jumps measure the error in the underlying element stresses."
+   },
+   "explanation": "Stress is not forced to be continuous across elements, so the jump measures how far the FE stress field is from a continuous exact field. Refining until jumps are small at the point of interest is a standard mesh adequacy check.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which set of items belongs in a short FEA analysis summary for a reviewer?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The criterion, model description and units, assumptions, checks performed (equilibrium, hand check, convergence) and the margin of safety"
+    },
+    {
+     "id": "b",
+     "text": "Only a colour contour plot and the legend maximum"
+    },
+    {
+     "id": "c",
+     "text": "The solver version and the computer used, but no checks"
+    },
+    {
+     "id": "d",
+     "text": "The mesh file and a statement that the result is acceptable"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The criterion, model description and units, assumptions, checks performed (equilibrium, hand check, convergence) and the margin of safety",
+   "distractorRationale": {
+    "b": "A plot alone does not show whether the result is meaningful or what criterion it is compared with.",
+    "c": "Computing details do not help the reviewer judge the result.",
+    "d": "Unsupported statements of acceptance give the reviewer nothing to assess."
+   },
+   "explanation": "A summary lets an independent reader judge whether the result is credible: it states the intent, model and assumptions, evidence of verification and the quantitative margin against a defined limit.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "For a ductile steel, comparing only the maximum principal stress with the yield strength is always conservative compared with using the von Mises stress.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "In a shear-dominated state the maximum principal stress can be much smaller than the von Mises stress (for pure shear $\\sigma_1=\\tau$ while $\\sigma_{vM}=\\sqrt3\\tau$). Using the principal stress alone would therefore overstate the margin, and is not conservative.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "At a point in a shaft the plane stress state is $\\sigma_x=100$ MPa, $\\sigma_y=0$ and $\\tau_{xy}=50$ MPa. Compute the von Mises equivalent stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o1"
+   ],
+   "correctValue": 132.28756555322954,
+   "tolerance": 0.2,
+   "unit": "MPa",
+   "explanation": "$\\sigma_{vM}=\\sqrt{\\sigma_x^2-\\sigma_x\\sigma_y+\\sigma_y^2+3\\tau^2}=\\sqrt{10\\,000+7500}=\\sqrt{17\\,500}=132.3$ MPa. This is larger than the normal stress of 100 MPa because the shear adds distortion.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A component made of a steel with yield strength 275 MPa must meet a safety factor of 1.5 on yield. The FE von Mises stress at the critical location is 140 MPa after convergence. Compute the margin of safety $\\sigma_{allow}/\\sigma_{applied}-1$.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o3"
+   ],
+   "correctValue": 0.30952380952380953,
+   "tolerance": 0.005,
+   "unit": "(dimensionless)",
+   "explanation": "The allowable stress is $275/1.5=183.3$ MPa, so $\\text{MS}=183.3/140-1=0.310$. A positive margin of about 0.31 means the component passes with 31 per cent reserve on the required safety factor.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "At a shared node, four elements give unaveraged von Mises values of 148, 171, 160 and 139 MPa. Compute the spread (largest minus smallest) as a percentage of the averaged nodal value.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o2"
+   ],
+   "correctValue": 20.711974110032365,
+   "tolerance": 0.2,
+   "unit": "percent",
+   "explanation": "The averaged value is $(148+171+160+139)/4=154.5$ MPa and the spread is $171-139=32$ MPa. Relative to the average this is $32/154.5=0.207$, i.e. 20.7 per cent, well above a 5 per cent target, so the mesh at this node should be refined.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the difference between averaged and unaveraged stress contours in an FE post-processor and describe how you would use them to judge whether the mesh is adequate at a critical location.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o2"
+   ],
+   "markingGuide": [
+    "Unaveraged: each element's own (extrapolated) nodal stress, so jumps between elements are visible",
+    "Averaged: mean of element contributions at each node, smooth appearance",
+    "Jumps (or the difference between averaged and unaveraged values) measure discretisation error",
+    "Criterion: jump small, e.g. below about 5 per cent of the stress level, at the location of interest",
+    "If large: refine locally and recheck; smooth averaged contours alone do not prove convergence"
+   ],
+   "explanation": "Stress is not continuous between elements in a displacement-based FE model, so the disagreement between elements is a direct measure of how well the mesh resolves the stress field. Averaging hides this by construction.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Write the outline of a brief FEA results summary for a ductile steel bracket checked against yield. Include the stress measure, the assumptions, the checks performed and how the margin of safety is stated, and explain why each element is needed.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o1",
+    "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results.o3"
+   ],
+   "markingGuide": [
+    "Criterion: von Mises stress against yield divided by a stated safety factor, margin of safety defined as allowable/applied minus 1",
+    "Model: geometry, element type and mesh size at the critical location, material properties and source, units",
+    "Loads and boundary conditions with the assumptions (linear elastic, small displacements, nominal dimensions)",
+    "Checks: reactions balance loads, hand-calculation comparison, mesh convergence of the governing stress, averaged vs unaveraged jumps",
+    "Result: location and value of the governing stress, margin of safety and limitations (singularities excluded, etc.)",
+    "Each part allows the reader to judge credibility and reproduce the analysis"
+   ],
+   "explanation": "The summary is evidence that the result can be trusted: it names the criterion and the numbers, shows how errors were guarded against and records the assumptions on which the conclusion depends.",
+   "board": "internal"
+  }
+ ]
+}

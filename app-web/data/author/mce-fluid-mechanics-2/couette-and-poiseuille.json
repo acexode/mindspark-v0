@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "Couette and Poiseuille Flow: Exact Viscous Solutions",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hydraulic engineer wants to know how hard a 4 mm hose of thick oil must be pushed, and a bearing designer wants the drag force in a 2 mm oil gap between a fixed block and a sliding table. Both problems have exact closed-form answers because the flow is straight, steady and the Navier-Stokes equations collapse to a single ordinary differential equation."
+  },
+  {
+   "type": "text",
+   "markdown": "In a **unidirectional** flow the velocity has one component, $u=u(y)$ or $u_z=u_z(r)$, and the fluid never accelerates along its path. The inertia terms vanish and the momentum equation reduces to a balance between the pressure gradient and the viscous stress. Two classic cases follow: **Couette flow** between parallel plates, driven by the motion of one plate, and **Poiseuille flow**, driven by a pressure difference along a channel or pipe. Both assume an incompressible Newtonian fluid of constant viscosity $\\mu$ (Pa s), and the no-slip condition at every wall."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Plane Couette flow",
+   "text": "Steady, fully developed flow of a viscous fluid between two parallel plates a distance $h$ apart, with the lower plate at rest ($y=0$) and the upper plate ($y=h$) moving at constant speed $U$ in the $x$ direction, with no imposed pressure gradient. The only non-zero velocity component is $u(y)$."
+  },
+  {
+   "type": "text",
+   "markdown": "The $x$-momentum equation for $u=u(y)$ with $dp/dx=0$ and no body force in $x$ reduces to $\\mu\\,d^2u/dy^2=0$. Integrating twice gives $u=C_1y+C_2$. No-slip at the lower plate gives $u(0)=0$, so $C_2=0$; at the upper plate $u(h)=U$, so $C_1=U/h$. The profile is a straight line and the shear stress is uniform across the gap."
+  },
+  {
+   "type": "math",
+   "latex": "u(y)=U\\,\\frac{y}{h},\\qquad \\tau=\\mu\\frac{du}{dy}=\\frac{\\mu U}{h}",
+   "caption": "Plane Couette flow (zero pressure gradient)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Drag in an oil gap",
+   "prompt": "A flat table of contact area 0.50 m^2 slides at 1.5 m/s over a fixed surface separated by a 2.0 mm gap filled with oil of typical dynamic viscosity 0.10 Pa s. Assume plane Couette flow. Find the shear stress, the force needed to hold the speed, and the oil velocity 0.5 mm above the fixed surface.",
+   "steps": [
+    {
+     "text": "State the profile: with the lower surface fixed and the upper moving, velocity is linear across the gap.",
+     "latex": "u(y)=U\\frac{y}{h}"
+    },
+    {
+     "text": "The shear stress is uniform and equal to mu times the constant velocity gradient U/h.",
+     "latex": "\\tau=\\frac{\\mu U}{h}=\\frac{0.10\\times1.5}{0.0020}=75.0\\ \\text{Pa}"
+    },
+    {
+     "text": "The force on the moving surface is the stress times the contact area.",
+     "latex": "F=\\tau A=75.0\\times0.50=37.50\\ \\text{N}"
+    },
+    {
+     "text": "The velocity at y = 0.5 mm follows from the linear profile.",
+     "latex": "u=1.5\\times\\frac{0.5}{2.0}=0.375\\ \\text{m/s}"
+    }
+   ],
+   "answer": "tau = 75.0 Pa, F = 37.50 N, u(0.5 mm) = 0.375 m/s."
+  },
+  {
+   "type": "text",
+   "markdown": "Now consider pressure-driven flow in a circular pipe of radius $R$. Fully developed laminar flow has only an axial velocity $u_z(r)$, and the axial momentum equation becomes $\\frac{1}{r}\\frac{d}{dr}\\!\\left(r\\frac{du_z}{dr}\\right)=\\frac{1}{\\mu}\\frac{dp}{dz}$. Integrating twice, requiring a finite velocity at $r=0$ and no-slip $u_z(R)=0$, gives a parabolic profile. The pressure gradient $dp/dz$ is negative in the direction of flow, so we write $-dp/dz=\\Delta p/L$ for a pressure drop $\\Delta p$ over length $L$."
+  },
+  {
+   "type": "math",
+   "latex": "u_z(r)=\\frac{\\Delta p}{4\\mu L}\\left(R^2-r^2\\right),\\qquad Q=\\frac{\\pi R^4\\,\\Delta p}{8\\mu L},\\qquad \\bar V=\\frac{Q}{\\pi R^2}=\\frac{u_{max}}{2}",
+   "caption": "Hagen-Poiseuille flow in a circular pipe"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Wall shear stress from a force balance",
+   "text": "Consider a cylinder of fluid of radius $R$ and length $L$ in steady fully developed flow. Pressure acts on the end faces with net force $\\Delta p\\,\\pi R^2$; the wall shear acts on the side area $2\\pi RL$. Equating them gives $\\tau_w=\\dfrac{\\Delta p\\,R}{2L}=-\\dfrac{R}{2}\\dfrac{dp}{dz}$. In laminar flow this is also $\\tau_w=\\mu\\,|du_z/dr|_{r=R}=\\dfrac{4\\mu\\bar V}{R}$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Oil in a narrow pipe",
+   "prompt": "Oil (typical values: density 850 kg/m^3, viscosity 0.080 Pa s) flows through a horizontal pipe of radius 5.0 mm and length 3.0 m under a pressure drop of 60 kPa. Find the flow rate, mean velocity, whether the flow is laminar, and the wall shear stress.",
+   "steps": [
+    {
+     "text": "Flow rate from Hagen-Poiseuille.",
+     "latex": "Q=\\frac{\\pi R^4\\Delta p}{8\\mu L}=\\frac{\\pi(0.005)^4(60000)}{8(0.080)(3.0)}=6.136e-05\\ \\text{m}^3/\\text{s}"
+    },
+    {
+     "text": "Mean velocity is Q over the cross-section area.",
+     "latex": "\\bar V=\\frac{Q}{\\pi R^2}=0.781\\ \\text{m/s}"
+    },
+    {
+     "text": "Check the Reynolds number based on diameter D = 10 mm: it is below about 2300, so laminar flow is a valid assumption.",
+     "latex": "Re=\\frac{\\rho \\bar V D}{\\mu}=\\frac{850(0.781)(0.010)}{0.080}=83"
+    },
+    {
+     "text": "Wall shear stress from the force balance.",
+     "latex": "\\tau_w=\\frac{\\Delta p\\,R}{2L}=\\frac{60000\\times0.005}{2\\times3.0}=50.0\\ \\text{Pa}"
+    }
+   ],
+   "answer": "Q = 6.14e-05 m^3/s (3.68 L/min), mean velocity 0.781 m/s, Re = 83 (laminar), tau_w = 50.0 Pa."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Plane Couette flow",
+    "Hagen-Poiseuille pipe flow"
+   ],
+   "rows": [
+    [
+     "Driving mechanism",
+     "Moving plate",
+     "Pressure gradient"
+    ],
+    [
+     "Velocity profile",
+     "Linear: $u=Uy/h$",
+     "Parabolic: $u_z=\\frac{\\Delta p}{4\\mu L}(R^2-r^2)$"
+    ],
+    [
+     "Shear stress",
+     "Uniform, $\\mu U/h$",
+     "Linear in $r$, zero on axis, $\\tau_w=\\Delta pR/2L$ at wall"
+    ],
+    [
+     "Flow rate",
+     "$Q=Uhb/2$ per width $b$",
+     "$Q=\\pi R^4\\Delta p/(8\\mu L)$"
+    ],
+    [
+     "Mean to maximum velocity",
+     "$\\bar u=U/2$ (maximum $U$)",
+     "$\\bar V=u_{max}/2$"
+    ]
+   ],
+   "caption": "Comparison of the two basic viscous exact solutions"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Reduce the Navier-Stokes equation using symmetry: one velocity component, depending on one coordinate.",
+    "Integrate the remaining ODE and keep the integration constants.",
+    "Apply no-slip at each wall, and finiteness (or symmetry) on the axis of a pipe.",
+    "Obtain stresses from $\\tau=\\mu\\,du/dy$ and flow rates by integrating $u$ over the cross-section.",
+    "Check the Reynolds number: laminar solutions fail above roughly $Re\\approx2300$ in pipes."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Fourth-power sensitivity",
+   "text": "Flow rate in laminar pipe flow scales as $R^4$: doubling the diameter at fixed $\\Delta p$ and $L$ multiplies $Q$ by 16, while doubling the viscosity halves it. This is why small clogged tubes, narrow cannulas and thin lubrication lines are so sensitive to size."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Fully developed flow only",
+   "text": "Hagen-Poiseuille applies far downstream of the pipe inlet, where the profile no longer changes with $z$, and only for laminar, incompressible, Newtonian flow. In the entrance length the velocity profile is still developing and the pressure gradient is larger."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Plane Couette flow has a linear velocity profile $u=Uy/h$ and a uniform shear stress $\\tau=\\mu U/h$.",
+    "Hagen-Poiseuille flow has a parabolic profile, with $Q=\\pi R^4\\Delta p/(8\\mu L)$ and mean velocity equal to half the centreline velocity.",
+    "The wall shear stress in a pipe follows from a force balance, $\\tau_w=\\Delta pR/(2L)$, and equals $4\\mu\\bar V/R$ in laminar flow.",
+    "Both exact solutions come from reducing the Navier-Stokes equations for unidirectional flow and applying no-slip."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For steady plane Couette flow between a fixed lower plate and an upper plate moving at speed U with zero pressure gradient, which statement about the velocity profile and shear stress is correct?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The profile is linear and the shear stress is uniform across the gap"
+    },
+    {
+     "id": "b",
+     "text": "The profile is parabolic and the shear stress is uniform across the gap"
+    },
+    {
+     "id": "c",
+     "text": "The profile is linear and the shear stress is largest at the moving plate"
+    },
+    {
+     "id": "d",
+     "text": "The profile is parabolic and the shear stress is zero at the fixed plate"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The profile is linear and the shear stress is uniform across the gap",
+   "distractorRationale": {
+    "a": "Correct: u''=0 gives a straight line, so du/dy and tau are constant.",
+    "b": "A parabola needs a pressure gradient; with dp/dx = 0 the ODE gives a linear profile.",
+    "c": "The gradient du/dy is constant so the stress is the same at both plates.",
+    "d": "This describes pressure-driven Poiseuille flow, not Couette flow."
+   },
+   "explanation": "With $dp/dx=0$ and $u=u(y)$ the momentum equation is $\\mu u''=0$, so $u=C_1y+C_2$ and with the no-slip conditions $u=Uy/h$. Since $du/dy=U/h$ is constant, $\\tau=\\mu U/h$ is uniform.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two parallel plates are 1.5 mm apart with the space filled with oil of typical dynamic viscosity 0.25 Pa s. The lower plate is fixed and the upper plate moves at 0.80 m/s. Assuming plane Couette flow with no pressure gradient, find the shear stress in the oil in pascals.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o1"
+   ],
+   "correctValue": 133.333,
+   "tolerance": 0.5,
+   "unit": "Pa",
+   "explanation": "For Couette flow the stress is uniform, tau = mu U/h = 0.25 x 0.80 / 0.0015 = 133.3 Pa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Oil of typical viscosity 0.030 Pa s flows through a straight horizontal tube of internal diameter 4.0 mm and length 0.50 m. The pressure drop between the ends is 2.0 kPa. Assuming fully developed laminar flow, find the volume flow rate in cubic centimetres per second (cm^3/s).",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o2"
+   ],
+   "correctValue": 0.837758,
+   "tolerance": 0.05,
+   "unit": "cm^3/s",
+   "explanation": "The radius is 2.0 mm. Q = pi R^4 Dp/(8 mu L) = pi(0.002)^4(2000)/(8 x 0.030 x 0.50) = 8.378e-07 m^3/s = 0.838 cm^3/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A laminar flow of oil through a pipe is driven by a fixed pressure drop. The pipe is replaced by one of twice the diameter with the same length. By what factor does the flow rate change, assuming the flow remains laminar and fully developed?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases by a factor of 2"
+    },
+    {
+     "id": "b",
+     "text": "It increases by a factor of 4"
+    },
+    {
+     "id": "c",
+     "text": "It increases by a factor of 16"
+    },
+    {
+     "id": "d",
+     "text": "It increases by a factor of 8"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It increases by a factor of 16",
+   "distractorRationale": {
+    "a": "This assumes Q scales linearly with diameter, ignoring the increase in mean velocity.",
+    "b": "This uses Q proportional to R^2, i.e. only the area change with the mean velocity unchanged.",
+    "c": "Correct: Q is proportional to R^4, so 2^4 = 16.",
+    "d": "This uses R^3, which has no basis in the Hagen-Poiseuille result."
+   },
+   "explanation": "From $Q=\\pi R^4\\Delta p/(8\\mu L)$ with $\\Delta p$, $\\mu$ and $L$ fixed, $Q\\propto R^4$. Doubling the diameter doubles R, giving $2^4=16$ times the flow: area rises by 4 and the mean velocity also rises by 4.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water-like fluid flows in a horizontal pipe of internal diameter 50 mm. Over a straight 12 m length, the measured pressure drop is 1800 Pa in steady fully developed flow. Calculate the wall shear stress in pascals.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o3"
+   ],
+   "correctValue": 1.875,
+   "tolerance": 0.02,
+   "unit": "Pa",
+   "explanation": "A force balance on the fluid cylinder gives tau_w = Dp R/(2L) = 1800 x 0.025/(2 x 12) = 1.875 Pa. This holds whatever the fluid, because it follows from momentum balance alone.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "For fully developed flow in a circular pipe, the wall shear stress is found from the pressure gradient by the relation tau_w = (R/2)(Delta p / L), which comes from a force balance and does not itself assume a parabolic velocity profile.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Balancing the net pressure force $\\Delta p\\pi R^2$ against the wall shear force $\\tau_w2\\pi RL$ gives $\\tau_w=\\Delta pR/(2L)$ with no reference to the shape of the profile. The parabolic profile is only needed to link $\\tau_w$ to the flow rate or velocity.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In fully developed laminar flow in a circular pipe, the mean velocity is 0.60 m/s. What is the centreline velocity?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.90 m/s"
+    },
+    {
+     "id": "b",
+     "text": "0.30 m/s"
+    },
+    {
+     "id": "c",
+     "text": "0.60 m/s"
+    },
+    {
+     "id": "d",
+     "text": "1.20 m/s"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "1.20 m/s",
+   "distractorRationale": {
+    "a": "This is 1.5 times the mean, the ratio for flow between fixed parallel plates, not for a pipe.",
+    "b": "This confuses the mean with half the mean; the centreline velocity is larger than the mean.",
+    "c": "This would apply to a uniform (plug) velocity profile, which no-slip rules out.",
+    "d": "Correct: u_max = 2 V for a parabolic profile."
+   },
+   "explanation": "For $u_z=u_{max}(1-r^2/R^2)$ the mean velocity is $u_{max}/2$, so the centreline speed is twice the mean: $2\\times0.60=1.20$ m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An oil film of thickness h in plane Couette flow is modified so that the gap is halved and the moving plate speed is doubled, with the same oil and plate area. How does the drag force change?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases by a factor of 8"
+    },
+    {
+     "id": "b",
+     "text": "It stays the same"
+    },
+    {
+     "id": "c",
+     "text": "It increases by a factor of 4"
+    },
+    {
+     "id": "d",
+     "text": "It increases by a factor of 2"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It increases by a factor of 4",
+   "distractorRationale": {
+    "a": "This applies an extra power; F depends linearly on U and on 1/h.",
+    "b": "The force depends on U/h, which has changed.",
+    "c": "Correct: F is proportional to U/h; doubling U and halving h gives 4.",
+    "d": "This accounts for only one of the two changes."
+   },
+   "explanation": "The force is $F=\\tau A=\\mu UA/h$. Doubling U doubles F and halving h doubles it again, so the force rises by a factor of 4.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Starting from the x-momentum equation for steady, incompressible, fully developed flow between a fixed plate at y = 0 and a plate at y = h moving at speed U, derive the velocity profile for plane Couette flow with zero pressure gradient. State the boundary conditions used and find the shear stress.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o1"
+   ],
+   "markingGuide": [
+    "States that u = u(y) only, v = w = 0 and that inertia terms and dp/dx vanish, leaving mu d2u/dy2 = 0",
+    "Integrates twice to get u = C1 y + C2",
+    "Applies no-slip u(0) = 0, giving C2 = 0",
+    "Applies u(h) = U, giving C1 = U/h and u = U y/h",
+    "Finds tau = mu du/dy = mu U/h, uniform across the gap"
+   ],
+   "explanation": "Continuity forces $\\partial u/\\partial x=0$ for unidirectional flow, so inertia terms vanish, and with $dp/dx=0$ the momentum equation reduces to $\\mu\\,d^2u/dy^2=0$. Two boundary conditions fix the two constants, giving the linear profile and constant stress $\\mu U/h$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Using a force balance on a cylinder of fluid of radius r and length L in fully developed laminar pipe flow, show that the shear stress varies linearly with radius and equals tau_w = Delta p R/(2L) at the wall. Then use tau = -mu du/dr to obtain the parabolic velocity profile.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o2",
+    "ug.mce-fluid-mechanics-2.viscous-exact-solutions.couette-and-poiseuille.o3"
+   ],
+   "markingGuide": [
+    "Net pressure force on the cylinder is Delta p pi r^2 (pressure drop Delta p over length L)",
+    "Shear force on the cylindrical surface is tau 2 pi r L",
+    "Equates forces to obtain tau = Delta p r/(2L), linear in r and zero on the axis",
+    "At r = R gives tau_w = Delta p R/(2L)",
+    "Uses tau = -mu du/dr (stress decreasing velocity outward) and integrates to get u = (Delta p/(4 mu L))(R^2 - r^2) with u(R) = 0"
+   ],
+   "explanation": "Steady flow with no acceleration requires the net pressure force to equal the wall shear force, giving $\\tau=\\Delta p\\,r/(2L)$ at radius r. Substituting Newton's law $\\tau=-\\mu\\,du/dr$ and integrating with no-slip at $r=R$ yields the parabola.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,417 @@
+{
+ "lessonTitle": "Additive Processes: FDM, Powder Bed Fusion and When to Use Them",
+ "estimatedMinutes": 25,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A drone company needs six aluminium gimbal brackets by Friday. Each has internal cable channels that a drill cannot reach and no tooling exists. Cutting them from billet would take weeks of fixtures; a laser can build all six overnight, layer by layer, from powder."
+  },
+  {
+   "type": "text",
+   "markdown": "Additive manufacturing (AM) builds a part by adding material, usually in thin horizontal layers, directly from a 3D model. The model is sliced into layers of height $h$ (typically 0.05 to 0.3 mm), and the machine deposits or fuses material in each cross-section before moving up by one layer. Three families matter at this level: **material extrusion**, **vat photopolymerisation** and **powder bed fusion**."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Fused deposition modelling (FDM)",
+   "text": "FDM is a material extrusion process. A thermoplastic filament is pushed into a heated nozzle, softened or melted, and extruded as a thin bead of width $w$ onto the previous layer. The bead is still warm, so it bonds to the layer below, and the nozzle traces the outline and infill of each cross-section before the platform steps down by one layer height."
+  },
+  {
+   "type": "text",
+   "markdown": "**Powder bed fusion (PBF)** works differently. A recoater blade spreads a thin layer of fine powder (polymer, or metal such as titanium or stainless steel) across a bed. A laser or electron beam scans the cross-section and sinters or melts the powder where the part should exist. The bed then lowers by one layer height, fresh powder is spread, and the cycle repeats. Unfused powder stays in place around the part and acts as a support, and most of it can be sieved and reused."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "FDM (extrusion)",
+    "Vat photopolymerisation",
+    "Powder bed fusion"
+   ],
+   "rows": [
+    [
+     "Feedstock",
+     "Thermoplastic filament",
+     "Liquid photopolymer resin",
+     "Polymer or metal powder"
+    ],
+    [
+     "Energy source",
+     "Heated nozzle",
+     "UV light or laser curing resin",
+     "Laser or electron beam"
+    ],
+    [
+     "Typical layer height",
+     "0.1 to 0.3 mm",
+     "0.025 to 0.1 mm",
+     "0.03 to 0.1 mm"
+    ],
+    [
+     "Support needed?",
+     "Yes, for overhangs",
+     "Yes, for overhangs and islands",
+     "Polymer: no. Metal: yes, anchors and heat paths"
+    ],
+    [
+     "Typical use",
+     "Prototypes, jigs, low-cost parts",
+     "Fine detail, smooth surfaces",
+     "Functional end-use parts, metal parts"
+    ]
+   ],
+   "caption": "Representative values; actual figures depend on the machine."
+  },
+  {
+   "type": "text",
+   "markdown": "Each process trades speed, accuracy, material choice and cost. Because FDM is cheap and simple it dominates teaching labs; PBF is expensive but produces dense, functional parts with no tooling."
+  },
+  {
+   "type": "math",
+   "latex": "\\dot{V} = w\\,h\\,v \\qquad t_{build} \\approx \\frac{V}{\\dot{V}}",
+   "caption": "Volumetric deposition rate of an extruded bead (width w, layer height h, nozzle speed v) and the resulting build time, ignoring travel moves and non-printing time."
+  },
+  {
+   "type": "worked_example",
+   "title": "FDM deposition rate and build time",
+   "prompt": "An FDM printer lays a bead of width $w=0.4$ mm at layer height $h=0.2$ mm with nozzle speed $v=60$ mm/s. How long does it take to deposit a part of volume 30 cm$^3$, ignoring travel moves?",
+   "steps": [
+    {
+     "text": "The bead cross-section is a rectangle approximated by $w\\times h$, so the volumetric rate is the cross-section times speed.",
+     "latex": "\\dot{V}=0.4\\times0.2\\times60"
+    },
+    {
+     "text": "Evaluate: 0.4 x 0.2 = 0.08 mm^2, multiplied by 60 mm/s gives 4.8 mm^3/s.",
+     "latex": "\\dot{V}=4.8\\ \\mathrm{mm^3/s}"
+    },
+    {
+     "text": "Convert the part volume: 30 cm^3 = 30 000 mm^3. Divide by the rate to get time in seconds.",
+     "latex": "t=\\frac{30000}{4.8}=6250\\ \\mathrm{s}"
+    },
+    {
+     "text": "Convert to hours: 6250 / 3600 = 1.74 h. Real builds take longer because of travel moves, retractions and heating.",
+     "latex": "t\\approx1.74\\ \\mathrm{h}"
+    }
+   ],
+   "answer": "About 4.8 mm^3/s, so roughly 1.7 hours of pure deposition."
+  },
+  {
+   "type": "text",
+   "markdown": "**AM versus machining for a low-volume complex part.** Machining removes material from stock, needs fixtures and CAM programming (a large setup cost) but is quick and cheap per part. AM has very small setup cost (load a file) but a high cost per part because machine time and material are expensive. Complexity is almost free in AM: internal channels, lattices and organic shapes cost no more than a block. In machining, each extra feature needs tool access, extra set-ups and time."
+  },
+  {
+   "type": "worked_example",
+   "title": "Break-even quantity: AM versus CNC machining",
+   "prompt": "A part costs: AM setup 50 and 180 per part; CNC setup 1200 (fixtures and programming) and 60 per part (cost units). Find the quantity below which AM is cheaper.",
+   "steps": [
+    {
+     "text": "Write total cost for each route: $C_{AM}=50+180N$ and $C_{CNC}=1200+60N$.",
+     "latex": "C_{AM}=50+180N,\\quad C_{CNC}=1200+60N"
+    },
+    {
+     "text": "At break-even the costs are equal, so solve for $N$.",
+     "latex": "50+180N=1200+60N\\Rightarrow N^*=\\frac{1200-50}{180-60}"
+    },
+    {
+     "text": "Evaluate: 1150 / 120 = 9.58. AM is cheaper for quantities below this.",
+     "latex": "N^*\\approx9.6"
+    },
+    {
+     "text": "Check with whole numbers: at N=9, AM = 50+1620 = 1670 and CNC = 1200+540 = 1740. At N=10, AM = 1850 and CNC = 1800, so CNC wins.",
+     "latex": "N=9:\\ 1670<1740;\\quad N=10:\\ 1850>1800"
+    }
+   ],
+   "answer": "AM is cheaper for up to 9 parts; CNC is cheaper from 10 parts. This ignores geometry that machining may be unable to produce at all."
+  },
+  {
+   "type": "text",
+   "markdown": "**Support structures.** Each new layer must rest on something. In FDM and vat processes a layer printed over empty space sags or collapses. As a typical rule, a face whose overhang angle (measured from the vertical build direction) exceeds about 45 degrees needs support, as does a horizontal bridge longer than a few millimetres, and the first layer of any island that is not connected to what is below."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Horizontal shelves or flanges projecting from a wall (underside needs support).",
+    "Holes with a horizontal axis (the top of the bore is an overhang); small ones are often printed as teardrops instead.",
+    "Steep overhangs beyond roughly 45 degrees from vertical.",
+    "Isolated islands that appear mid-build and attach to the part only higher up.",
+    "In metal PBF: any overhanging or thin section, because supports also conduct heat away and anchor the part against distortion."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Supports cost time and surface quality",
+   "text": "Support material adds build time and material, and its removal leaves marks on the surface it touched. Supports inside closed internal cavities may be impossible to remove, so design with escape holes for powder and support, or choose an orientation that avoids the problem."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Choosing a process",
+   "text": "Use FDM for cheap, quick prototypes, vat photopolymerisation for fine detail, and PBF for functional or metal parts. Choose AM over machining when the quantity is small and the geometry is complex; choose machining when quantity is high or when tight tolerances and surface finish are essential."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "FDM extrudes heated thermoplastic filament as a bead; PBF fuses selected regions of a powder bed with a laser or electron beam, layer by layer.",
+    "AM has low setup cost and high per-part cost; machining is the opposite, giving a break-even quantity below which AM is cheaper.",
+    "Overhangs beyond about 45 degrees, horizontal shelves and horizontal holes need supports; metal PBF also needs supports as heat paths and anchors."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a laser powder bed fusion machine, which sequence correctly describes one build cycle?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A recoater spreads a thin powder layer, the laser fuses the cross-section, and the bed lowers by one layer height"
+    },
+    {
+     "id": "b",
+     "text": "A heated nozzle extrudes filament along the cross-section, then the platform rises by one layer height"
+    },
+    {
+     "id": "c",
+     "text": "A projector cures a layer of liquid resin at the surface of a vat, then the part is peeled upward"
+    },
+    {
+     "id": "d",
+     "text": "A wire is fed into a melt pool on the surface and the part is rotated by one layer"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A recoater spreads a thin powder layer, the laser fuses the cross-section, and the bed lowers by one layer height",
+   "distractorRationale": {
+    "b": "Describes fused deposition modelling, not powder bed fusion.",
+    "c": "Describes vat photopolymerisation.",
+    "d": "Describes a wire-fed directed-energy process, not powder bed fusion."
+   },
+   "explanation": "In powder bed fusion each layer begins with fresh powder spread by the recoater, the beam melts or sinters the part cross-section, and the bed indexes down by one layer. The nozzle, resin and wire descriptions belong to other processes.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A polymer part with a large overhang is built by laser sintering of nylon powder. Why is no separate support structure normally needed for that overhang?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o1",
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The surrounding unfused powder physically supports the overhanging layers"
+    },
+    {
+     "id": "b",
+     "text": "The laser fuses an extra solid raft beneath every overhang automatically"
+    },
+    {
+     "id": "c",
+     "text": "Nylon is stiff enough at sintering temperature to bridge any gap"
+    },
+    {
+     "id": "d",
+     "text": "The recoater blade presses each layer onto the layer below"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The surrounding unfused powder physically supports the overhanging layers",
+   "distractorRationale": {
+    "b": "The laser only fuses the part cross-section; it does not build a raft unless one is designed.",
+    "c": "Nylon is not self-supporting at that temperature, and the argument would apply equally to FDM.",
+    "d": "The recoater spreads powder; it does not hold the part up."
+   },
+   "explanation": "In a powder bed the part is buried in loose powder, which carries the weight of overhanging layers. This is why polymer PBF can build complex, nested shapes without added supports.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A team needs 5 turbine guide vanes with internal cooling passages that cannot be drilled. No tooling exists. Which choice is best justified?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Use metal AM, because setup cost is small and internal passages add almost no cost"
+    },
+    {
+     "id": "b",
+     "text": "Use CNC machining, because it is always cheaper per part regardless of geometry"
+    },
+    {
+     "id": "c",
+     "text": "Use sand casting, because patterns are free for such small quantities"
+    },
+    {
+     "id": "d",
+     "text": "Use AM only if the quantity exceeds 1000, since its setup cost is high"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Use metal AM, because setup cost is small and internal passages add almost no cost",
+   "distractorRationale": {
+    "b": "Machining cannot reach the internal passages and its fixture and programming cost is spread over only five parts.",
+    "c": "Casting needs a pattern and core, which is a large setup cost for five parts.",
+    "d": "AM has the low setup cost; it is the high per-part cost that limits large quantities."
+   },
+   "explanation": "For small quantities of complex parts, setup cost dominates the machining route while AM offers geometric freedom at low setup cost. The internal passages make machining impractical anyway.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A part is printed in FDM standing on its flat base. Which feature will most certainly need support material?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A horizontal shelf projecting 20 mm out from a vertical wall"
+    },
+    {
+     "id": "b",
+     "text": "A vertical cylindrical boss of 15 mm diameter"
+    },
+    {
+     "id": "c",
+     "text": "A face sloping 30 degrees from the vertical"
+    },
+    {
+     "id": "d",
+     "text": "A solid rectangular block at the base"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A horizontal shelf projecting 20 mm out from a vertical wall",
+   "distractorRationale": {
+    "b": "A vertical boss builds up on itself layer by layer, so no support is needed.",
+    "c": "A 30 degree slope from vertical is below the typical 45 degree limit and prints unsupported.",
+    "d": "The base layers sit directly on the build plate."
+   },
+   "explanation": "A horizontal shelf has nothing beneath it, so each of its first layers would be deposited into air. Faces within about 45 degrees of vertical overlap the layer below enough to be self-supporting.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement best describes the principle of fused deposition modelling?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Thermoplastic filament is melted in a heated nozzle and deposited as a bead that bonds to the layer below"
+    },
+    {
+     "id": "b",
+     "text": "A laser melts selected regions of a powder bed"
+    },
+    {
+     "id": "c",
+     "text": "UV light cures liquid resin selectively"
+    },
+    {
+     "id": "d",
+     "text": "Binder is jetted onto powder and the part is later sintered in a furnace"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Thermoplastic filament is melted in a heated nozzle and deposited as a bead that bonds to the layer below",
+   "distractorRationale": {
+    "b": "Describes powder bed fusion.",
+    "c": "Describes vat photopolymerisation.",
+    "d": "Describes binder jetting, which is a different process."
+   },
+   "explanation": "FDM is extrusion-based: the heated nozzle softens thermoplastic filament and lays down beads that fuse to the warm layer beneath. The other statements describe powder-based or resin-based processes.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An FDM printer deposits a bead of width 0.45 mm and layer height 0.25 mm with a nozzle speed of 50 mm/s. A part contains 45 cm$^3$ of material. Ignoring travel moves, how long, in hours, does it take to deposit the part?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o1"
+   ],
+   "correctValue": 2.222,
+   "tolerance": 0.05,
+   "unit": "h",
+   "explanation": "The volumetric rate is $0.45\\times0.25\\times50=5.625$ mm^3/s. The volume is 45 000 mm^3, so the time is 45 000 / 5.625 = 8000 s, which is 2.22 h. Real print time is longer because of travel, retraction and warm-up.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Machining a bracket costs a setup of 640 and 45 per part. Building it by AM costs a setup of 20 and 95 per part (all in the same cost units). Find the break-even quantity, as a number of parts, at which the two routes cost the same.",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o2"
+   ],
+   "correctValue": 12.4,
+   "tolerance": 0.1,
+   "unit": "parts",
+   "explanation": "Set $20+95N=640+45N$, so $50N=620$ and $N=12.4$. Below about 12 parts AM is cheaper, above it machining wins, because AM carries a high per-part cost and machining carries a high setup cost.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A bracket has a horizontal flange with an underside area of 60 mm by 25 mm that needs support up to a height of 40 mm. The support structure is printed at 15 % fill density. What volume of support material, in cm$^3$, is used?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o3"
+   ],
+   "correctValue": 9.0,
+   "tolerance": 0.1,
+   "unit": "cm^3",
+   "explanation": "The enclosed volume is $60\\times25\\times40=60\\,000$ mm^3. At 15 % fill the material volume is 9000 mm^3, which is 9.0 cm^3. Supports increase material use and print time, and this is the cost of an overhang.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A start-up needs 8 units of an impeller with curved internal vanes and hollow hub. Compare additive manufacturing and machining from solid for this part, and recommend one.",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o2"
+   ],
+   "markingGuide": [
+    "Machining has large setup cost (fixtures, CAM, multiple orientations) spread over only 8 parts",
+    "Internal vanes and hollow hub are difficult or impossible to reach with cutting tools",
+    "AM has low setup cost and geometric complexity is almost free",
+    "AM has higher per-part cost and rougher surfaces, which may need finishing",
+    "Recommends AM for this low-volume complex part, with some justification such as break-even quantity or later machining of critical surfaces"
+   ],
+   "explanation": "The combination of low quantity and high geometric complexity favours AM because setup dominates machining cost and tool access limits machining geometry. AM's per-part cost and surface roughness are the trade-off, and critical surfaces can be finished by machining.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A metal powder bed fusion part is completely surrounded by loose powder, yet designers still add support structures. Explain why, and name two design features that would need them.",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o1",
+    "ug.mce-design-and-manufacture-1.additive-manufacturing.am-processes.o3"
+   ],
+   "markingGuide": [
+    "Supports are not only for weight: they conduct heat from the melt pool to the plate",
+    "Residual thermal stresses cause warping and curl of thin or overhanging sections",
+    "Supports anchor the part to the build plate and resist the recoater forces",
+    "Examples: downward-facing overhangs, thin walls, horizontal holes, or low-angle surfaces"
+   ],
+   "explanation": "Unfused powder is a poor conductor and cannot restrain thermal distortion, so metal PBF needs supports that act as heat paths and anchors. Overhanging surfaces and thin sections are the usual places they are added.",
+   "board": "internal"
+  }
+ ]
+}

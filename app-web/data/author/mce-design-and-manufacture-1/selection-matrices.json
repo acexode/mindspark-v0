@@ -1,0 +1,433 @@
+{
+ "lessonTitle": "Selection Matrices: Weighted Decisions and Their Limits",
+ "estimatedMinutes": 25,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Three students argue for forty minutes about which desk-clamp concept to build. Each defends their own and none of them states what 'best' means. A weighted decision matrix would have forced them to agree on the criteria and their importance first, and the argument would have been about numbers rather than loyalty."
+  },
+  {
+   "type": "text",
+   "markdown": "Once several distinct concepts exist, the team must choose one transparently. A **weighted decision matrix** rates every concept against the same criteria, multiplies by criterion weights and adds up. It does not make the decision for you, but it makes the reasoning visible so that others can check and challenge it."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Weighted decision matrix",
+   "text": "A table with concepts in columns and criteria in rows. Each criterion has a **weight** $w_i$ (importance, with the weights adding to 1) and each concept gets a **score** $s_{ij}$ against it (for example 1 to 5, higher is better). The weighted total for concept $j$ is the sum of weight times score."
+  },
+  {
+   "type": "math",
+   "latex": "T_j=\\sum_{i=1}^{n} w_i\\,s_{ij}\\qquad \\sum_{i=1}^{n} w_i = 1",
+   "caption": "Weighted total T for concept j: criterion weights w_i (summing to 1) times scores s_ij, added over all n criteria."
+  },
+  {
+   "type": "text",
+   "markdown": "**Justifying weights.** Weights should come from the specification and the client's priorities, not from taste. A simple method is pairwise comparison: compare every pair of criteria, award a point to the more important one, count each criterion's points, add 1 so that none gets zero, and divide by the total. Record who decided and why, so the weights can be challenged."
+  },
+  {
+   "type": "worked_example",
+   "title": "Deriving weights by pairwise comparison",
+   "prompt": "For a desk monitor clamp the criteria are cost, stiffness, ease of installation, mass and appearance. In the 10 pairwise comparisons, cost wins 4, stiffness 3, ease 2, mass 1 and appearance 0. Find the weights.",
+   "steps": [
+    {
+     "text": "Add 1 to each count so that no criterion has zero weight: 5, 4, 3, 2, 1. The total is 15.",
+     "latex": "\\sum(\\text{wins}+1)=5+4+3+2+1=15"
+    },
+    {
+     "text": "Divide each by 15.",
+     "latex": "w=\\tfrac{5}{15},\\tfrac{4}{15},\\tfrac{3}{15},\\tfrac{2}{15},\\tfrac{1}{15}"
+    },
+    {
+     "text": "Round to two decimals so that they still sum to 1: 0.33, 0.27, 0.20, 0.13, 0.07.",
+     "latex": "0.33+0.27+0.20+0.13+0.07=1.00"
+    }
+   ],
+   "answer": "Weights: cost 0.33, stiffness 0.27, ease 0.20, mass 0.13, appearance 0.07."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Criterion",
+    "Weight",
+    "A: screw clamp",
+    "B: cam-lever clamp",
+    "C: through-desk bolt"
+   ],
+   "rows": [
+    [
+     "Cost",
+     "0.33",
+     "3",
+     "4",
+     "4"
+    ],
+    [
+     "Stiffness",
+     "0.27",
+     "5",
+     "3",
+     "4"
+    ],
+    [
+     "Ease of installation",
+     "0.20",
+     "2",
+     "5",
+     "3"
+    ],
+    [
+     "Mass",
+     "0.13",
+     "3",
+     "3",
+     "4"
+    ],
+    [
+     "Appearance",
+     "0.07",
+     "3",
+     "4",
+     "2"
+    ]
+   ],
+   "caption": "Scores from 1 (poor) to 5 (excellent)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Calculating weighted totals",
+   "prompt": "Using the matrix above, find the weighted total for each concept.",
+   "steps": [
+    {
+     "text": "Concept A: 0.33x3 + 0.27x5 + 0.20x2 + 0.13x3 + 0.07x3 = 0.99 + 1.35 + 0.40 + 0.39 + 0.21.",
+     "latex": "T_A=3.34"
+    },
+    {
+     "text": "Concept B: 0.33x4 + 0.27x3 + 0.20x5 + 0.13x3 + 0.07x4 = 1.32 + 0.81 + 1.00 + 0.39 + 0.28.",
+     "latex": "T_B=3.80"
+    },
+    {
+     "text": "Concept C: 0.33x4 + 0.27x4 + 0.20x3 + 0.13x4 + 0.07x2 = 1.32 + 1.08 + 0.60 + 0.52 + 0.14.",
+     "latex": "T_C=3.66"
+    },
+    {
+     "text": "Rank: B (3.80), then C (3.66), then A (3.34). The gap between B and C is only 0.14, so check how much the ranking depends on the weights.",
+     "latex": "T_B>T_C>T_A"
+    }
+   ],
+   "answer": "B ranks first with 3.80, but C is close behind."
+  },
+  {
+   "type": "text",
+   "markdown": "**Sensitivity analysis.** Change one weight at a time (rescaling the others so the weights still sum to 1) and find the value at which the ranking changes. The weight that flips the order with the smallest change is the **most sensitive weight**, and it is the one to discuss with the client."
+  },
+  {
+   "type": "worked_example",
+   "title": "Which weight is most sensitive?",
+   "prompt": "Between B and C, find how far the weight of ease of installation must fall for C to overtake B. Compare with the change needed in the stiffness weight (which would need to rise to 0.36).",
+   "steps": [
+    {
+     "text": "Score differences B minus C: cost 0, stiffness -1, ease +2, mass -1, appearance +2. Currently the weighted difference is 0.27(-1)+0.20(2)+0.13(-1)+0.07(2) = 0.14.",
+     "latex": "\\Delta=T_B-T_C=0.14"
+    },
+    {
+     "text": "If ease has weight x, the other weights are scaled by (1-x)/0.80. The other criteria contribute -0.27-0.13+0.14 = -0.26 at the original scale.",
+     "latex": "\\Delta(x)=2x-0.26\\,\\frac{1-x}{0.80}=2.325x-0.325"
+    },
+    {
+     "text": "Set the difference to zero: x = 0.325/2.325 = 0.14. So C overtakes B if the ease weight falls from 0.20 to about 0.14, a change of 0.06.",
+     "latex": "x\\approx0.14"
+    },
+    {
+     "text": "The same calculation for stiffness gives a tie at a weight of 0.36, a change of +0.09, so ease of installation is the more sensitive weight.",
+     "latex": "|0.20-0.14|=0.06<|0.27-0.36|=0.09"
+    }
+   ],
+   "answer": "Ease of installation is the most sensitive weight: a drop from 0.20 to 0.14 changes the winner."
+  },
+  {
+   "type": "text",
+   "markdown": "**Limitations in early design.** Scores at the concept stage are estimates and weights are judgements, so the totals look more precise than they are. A matrix also lets a strong score in one criterion compensate for a fatal weakness in another."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Scores are subjective and depend on who scores; use several people and justify each score.",
+    "Weights are judgements; use sensitivity analysis to see if they matter.",
+    "Strong scores can hide a fatal weakness: apply must-have criteria first and reject concepts that fail them.",
+    "Criteria that overlap (for example cost and number of parts) get counted twice.",
+    "Totals suggest false precision: a difference of 0.1 in 5 is within the noise.",
+    "A **Pugh matrix** compares each concept with a datum using +, 0 and - and suits early, low-information stages."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "The matrix informs, it does not decide",
+   "text": "If the ranking disagrees with the team's strong judgement, investigate the weights, the scores and any missing criterion. Do not simply defend the number, and do not adjust the numbers backwards until they give the wanted answer."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A weighted decision matrix multiplies criterion weights (summing to 1) by concept scores and adds them: T = sum of w times s.",
+    "Weights should be justified from the specification and client priorities, for example by pairwise comparison, and the most sensitive weight is the one whose smallest change alters the winner.",
+    "In early design the scores and weights are uncertain, so the matrix guides discussion and needs sensitivity checks and must-have screening."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A team's criteria weights are 0.35, 0.30, 0.20 and 0.20. What is wrong with this set?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The weights add up to 1.05 instead of 1"
+    },
+    {
+     "id": "b",
+     "text": "The weights are not all different"
+    },
+    {
+     "id": "c",
+     "text": "The first weight is too large"
+    },
+    {
+     "id": "d",
+     "text": "Weights must be whole numbers"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The weights add up to 1.05 instead of 1",
+   "distractorRationale": {
+    "b": "Weights can be equal if criteria are equally important.",
+    "c": "A large weight is allowed if it reflects the client's priority.",
+    "d": "Weights are normally fractions of 1."
+   },
+   "explanation": "Weights are fractions of the total importance and must add to 1 (or 100 %), otherwise the totals are scaled wrongly. Here $0.35+0.30+0.20+0.20=1.05$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which approach best justifies the weights in a decision matrix for a wheelchair-ramp design?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Derive them from the specification and client priorities, for example by pairwise comparison, and record the reasons"
+    },
+    {
+     "id": "b",
+     "text": "Let the team member with the most experience choose them privately"
+    },
+    {
+     "id": "c",
+     "text": "Give every criterion the same weight to avoid disagreement"
+    },
+    {
+     "id": "d",
+     "text": "Adjust them until the favourite concept wins"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Derive them from the specification and client priorities, for example by pairwise comparison, and record the reasons",
+   "distractorRationale": {
+    "b": "Private choices cannot be checked or challenged.",
+    "c": "Equal weights are a decision too and rarely reflect real priorities.",
+    "d": "This is working backwards and defeats the purpose."
+   },
+   "explanation": "The point of the matrix is transparency, so weights must be traceable to requirements and stakeholder priorities. Pairwise comparison with recorded reasons lets others check them.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a sensitivity analysis, what is the 'most sensitive weight'?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The weight whose smallest change reverses the ranking of the top concepts"
+    },
+    {
+     "id": "b",
+     "text": "The largest weight in the matrix"
+    },
+    {
+     "id": "c",
+     "text": "The weight of the cheapest criterion"
+    },
+    {
+     "id": "d",
+     "text": "The weight of the criterion with the highest scores"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The weight whose smallest change reverses the ranking of the top concepts",
+   "distractorRationale": {
+    "b": "The largest weight is not necessarily the one that flips the ranking.",
+    "c": "Cost is not special in this respect.",
+    "d": "Scores are separate from weights."
+   },
+   "explanation": "The ranking depends most strongly on the weight that needs the smallest change to alter the winner. That weight deserves most discussion with the client.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two concepts score 3.62 and 3.58 in a weighted matrix at the concept stage, where scores are rough estimates. What is the best conclusion?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The concepts are effectively tied, so check sensitivity and apply other evidence"
+    },
+    {
+     "id": "b",
+     "text": "The first concept is clearly better and the decision is final"
+    },
+    {
+     "id": "c",
+     "text": "The matrix has failed and should be discarded"
+    },
+    {
+     "id": "d",
+     "text": "The second concept should be chosen because its score is lower"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The concepts are effectively tied, so check sensitivity and apply other evidence",
+   "distractorRationale": {
+    "b": "A 0.04 difference is smaller than the uncertainty in the scores.",
+    "c": "The matrix is still useful; the difference is simply not decisive.",
+    "d": "A lower total is worse, not better."
+   },
+   "explanation": "Early-stage scores are estimates, so a small difference gives false precision. A sensitivity analysis and other considerations such as risk and feasibility should support the final choice.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement correctly describes a Pugh matrix?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Each concept is compared with a datum concept using +, 0 or - for each criterion"
+    },
+    {
+     "id": "b",
+     "text": "Each criterion is multiplied by a weight to give a total between 0 and 1"
+    },
+    {
+     "id": "c",
+     "text": "It requires accurate test data for every concept"
+    },
+    {
+     "id": "d",
+     "text": "It can only be used after detail design"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Each concept is compared with a datum concept using +, 0 or - for each criterion",
+   "distractorRationale": {
+    "b": "This describes a weighted decision matrix.",
+    "c": "A Pugh matrix is intended for early stages when little data exists.",
+    "d": "It is used at concept stage, not after detail design."
+   },
+   "explanation": "The Pugh matrix is a relative comparison against a reference design and uses simple symbols. It is well suited to early selection when numerical data are not available.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A concept is scored on three criteria: cost (weight 0.40, score 4), safety (weight 0.35, score 3) and mass (weight 0.25, score 5). What is its weighted total?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o2"
+   ],
+   "correctValue": 3.9,
+   "tolerance": 0.01,
+   "unit": "(score)",
+   "explanation": "The total is $0.40\\times4+0.35\\times3+0.25\\times5=1.60+1.05+1.25=3.90$. The weights add up to 1, so the total lies on the same 1 to 5 scale as the scores.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Four criteria are compared pairwise (6 comparisons). The most important criterion wins 3 comparisons. Using the lesson's method of adding 1 to each count and dividing by the total, what is its weight?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o1"
+   ],
+   "correctValue": 0.4,
+   "tolerance": 0.01,
+   "unit": "(weight)",
+   "explanation": "The wins plus 1 for that criterion is 4. The total of all counts is $6+4=10$, so the weight is $4/10=0.40$. Adding 1 to every count stops any criterion getting a zero weight.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Concept X scores 4 on cost and 2 on safety. Concept Y scores 2 on cost and 5 on safety. The weight of cost is w and the weight of safety is 1 minus w. At what cost weight w do the two concepts have equal totals?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o2"
+   ],
+   "correctValue": 0.6,
+   "tolerance": 0.01,
+   "unit": "(weight)",
+   "explanation": "X has total $4w+2(1-w)=2+2w$ and Y has $2w+5(1-w)=5-3w$. Setting them equal gives $5w=3$, so $w=0.60$. Above this cost weight X wins and below it Y wins.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A team must choose a mechanism for a bottle-opener aimed at users with weak grip. Describe how you would construct a weighted decision matrix: choose at least four criteria, show how you would justify their weights, describe how concepts are scored and totalled.",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o1"
+   ],
+   "markingGuide": [
+    "At least four relevant criteria derived from requirements, such as force required, cost, safety, size",
+    "Weights justified by client priorities or pairwise comparison and summing to 1",
+    "Scores on a common scale (for example 1 to 5) with justification for each score",
+    "Weighted total calculated as sum of weight times score and concepts ranked",
+    "Mentions checking the result, for example sensitivity or must-have criteria"
+   ],
+   "explanation": "A good answer makes each step traceable: criteria from the requirements, weights from a stated method, scores with reasons and a clear calculation. Checking sensitivity shows the result was not taken at face value.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain two limitations of a weighted decision matrix in early design and describe how each can be reduced.",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.concept-generation-selection.selection-matrices.o3"
+   ],
+   "markingGuide": [
+    "Scores and weights are subjective estimates leading to false precision",
+    "Reduce by justifying scores, using several scorers, or testing sensitivity to weights",
+    "A high score on one criterion can compensate for a fatal weakness in another",
+    "Reduce by applying must-have screening criteria first",
+    "Other valid limitation such as overlapping criteria or poorly defined concepts, with a mitigation"
+   ],
+   "explanation": "At early stages information is incomplete, so numbers imply more certainty than exists. Mitigations such as sensitivity analysis and must-have criteria keep the matrix as an aid to discussion rather than an oracle.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,320 @@
+{
+  "lessonTitle": "Freehand and Technical Sketching",
+  "estimatedMinutes": 40,
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A site engineer phones about a cracked pump-mount bracket. There is no CAD station nearby, so you have ten minutes and a pencil to show the fabricator what to make. A sketch that is proportioned, uses the right line types and carries the three or four dimensions that matter can be cut in steel that afternoon; a vague doodle costs a week."
+    },
+    {
+      "type": "text",
+      "markdown": "Sketching is the fastest way to turn an idea into something another engineer can check. It is not a poor relation of CAD: every solid model starts as a 2D profile, and the quality of that profile starts with a clear mental picture of the part. Three skills make a sketch useful:\n\n1. **Pictorial sketching** (isometric) to show what the part *looks like*.\n2. **Orthographic sketching** to show exact shape in flat views, using standard line types.\n3. **Annotation** with the few dimensions that actually drive the design.\n\nNo ruler is needed, but the sketch must be *proportioned*: if a hole is a third of the plate width, it should look like a third."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Isometric sketch",
+      "text": "An isometric sketch shows a 3D object with its three principal edge directions drawn at equal angles to the page. One axis is vertical and the other two are drawn at $30^\\circ$ above the horizontal, one to the right and one to the left. Lengths measured along these axes are drawn to the same scale. Lines parallel to an axis keep their direction; lines not parallel to an axis (inclined edges) cannot be measured directly and must be located from points on the axes."
+    },
+    {
+      "type": "math",
+      "latex": "\\text{overall width} = (a+b)\\cos 30^\\circ,\\qquad \\text{overall height} = c + (a+b)\\sin 30^\\circ",
+      "caption": "Bounding extents of an isometric sketch of a rectangular block with edge lengths a and b along the two inclined axes and c along the vertical axis (all drawn at the same scale, so a, b, c are drawn lengths in mm)."
+    },
+    {
+      "type": "worked_example",
+      "title": "Sizing the bounding box of an isometric sketch",
+      "prompt": "A rectangular block is 60 mm long (axis a), 40 mm deep (axis b) and 20 mm high (axis c). You sketch it as an isometric drawing at full size (1:1, lengths along the axes drawn at true length). What are the overall width and height of the sketch on the paper?",
+      "steps": [
+        {
+          "text": "Both inclined edges contribute to the horizontal spread, because one goes right and the other goes left from the front corner. The horizontal projection of an inclined edge of drawn length L is $L\\cos 30^\\circ$. Adding the two gives the width.",
+          "latex": "W = (60+40)\\cos 30^\\circ = 100\\times 0.8660 = 86.6\\ \\text{mm}"
+        },
+        {
+          "text": "Height: the vertical edge is drawn at full height, and the two inclined edges each rise $L\\sin 30^\\circ = L/2$ on the way to the far corner. The far top corner is the highest point, reached by travelling along both inclined axes, so the rise is $(a+b)/2$.",
+          "latex": "H = 20 + (60+40)\\sin 30^\\circ = 20 + 50 = 70\\ \\text{mm}"
+        },
+        {
+          "text": "Check against intuition: a block with a 100 mm combined base run is wider than it is tall when the part is only 20 mm high, which agrees with 86.6 mm against 70 mm."
+        }
+      ],
+      "answer": "Overall width 86.6 mm and overall height 70 mm. Draw a light 86.6 mm by 70 mm box first to check the sketch will fit and be proportioned."
+    },
+    {
+      "type": "text",
+      "markdown": "**Why $30^\\circ$, and why the scale looks wrong.** If a cube is turned so that its three edges from one corner are equally foreshortened, each edge appears shorter by a factor $\\cos 35.26^\\circ = \\sqrt{2/3} \\approx 0.8165$, and the axes appear $120^\\circ$ apart (so $30^\\circ$ from horizontal for the two inclined ones). That is the *true isometric projection*. Because every length shrinks by the same factor, engineers ignore the shrinkage and draw lengths at full size. This is an *isometric drawing*: it is about $1/0.8165 = 1.225$ times larger than the true projection but looks identical in shape. For sketching, always use the full-size version.\n\n**Circles become ellipses.** A circle lying on a face of the block is drawn as an ellipse whose *major axis is perpendicular to the axis normal to that face*. On a top face (normal is the vertical axis) the major axis is horizontal; on a side face the major axis is perpendicular to the inclined axis that is normal to that face. In a true isometric projection the minor axis is $0.577$ of the major axis. A practical method: draw a light isometric square of side equal to the circle diameter on the face, then sketch the ellipse tangent to the midpoints of its four sides."
+    },
+    {
+      "type": "table",
+      "headers": ["Quantity (circle of diameter d)", "True isometric projection", "Isometric drawing (full-size axes)"],
+      "rows": [
+        ["Scale applied to axis lengths", "$0.8165$", "$1$"],
+        ["Major axis of ellipse", "$d$", "$1.225\\,d$"],
+        ["Minor axis of ellipse", "$0.577\\,d$", "$0.707\\,d$"],
+        ["Minor/major ratio", "$0.577$", "$0.577$"],
+        ["Direction of major axis", "Perpendicular to axis normal to the face", "Perpendicular to axis normal to the face"]
+      ],
+      "caption": "Ellipse properties for a circle drawn on an isometric face. Values are rounded; the ratio is the same in both cases."
+    },
+    {
+      "type": "text",
+      "markdown": "**Orthographic sketching.** Isometric views are easy to read but poor for measuring, because inclined features are distorted. Orthographic projection instead shows the object in flat views looking straight along each principal direction: the *front view*, the *top (plan) view* and the *side view*. Each view shows two of the three dimensions (width, height, depth), and the views are aligned so that features line up between views: the front and top views share widths, the front and side views share heights.\n\nThere are two layouts. In **first-angle** projection the object sits between the viewer and the plane, so the top view is drawn *below* the front view and the right-side view is drawn on the *left* of it. In **third-angle** projection (used in the US and common in CAD) the plane sits between viewer and object, so the top view is drawn *above* the front view and the right-side view on the *right*. Always add the projection symbol, or the reader cannot tell which you used.\n\nA sketch is only readable if the line types carry meaning. The standard set is below."
+    },
+    {
+      "type": "table",
+      "headers": ["Line type", "Appearance", "Used for"],
+      "rows": [
+        ["Visible outline", "Thick, continuous", "Edges and outlines you can see in that view"],
+        ["Hidden detail", "Thin or medium, short dashes", "Edges behind a surface, such as the walls of a drilled hole seen from the side"],
+        ["Centre line", "Thin, long dash then short dash (chain)", "Axes of holes, shafts and symmetrical parts; hole centres"],
+        ["Dimension and projection lines", "Thin, continuous", "Extension lines, dimension lines, leaders"],
+        ["Construction line", "Very light, continuous", "Bounding boxes and guidelines; may be left faint on a sketch"]
+      ],
+      "caption": "Common line types for technical sketches. Thick versus thin is the main visual contrast, so make it obvious."
+    },
+    {
+      "type": "worked_example",
+      "title": "Orthographic views of a block with a vertical through-hole",
+      "prompt": "A block is 60 mm wide (left-right), 40 mm deep (front-back) and 20 mm high. A vertical through-hole of diameter 16 mm is drilled at the exact centre of the top face. Describe the three views in third-angle projection, giving the position of every line that is not an outer outline.",
+      "steps": [
+        {
+          "text": "Top view: a 60 mm by 40 mm rectangle in thick lines. The hole looks straight down the axis, so it appears as a true circle of diameter 16 mm (thick line), centred 30 mm from the left edge and 20 mm from the front edge, with a thin chain-line cross through its centre.",
+          "latex": "r = 16/2 = 8\\ \\text{mm}"
+        },
+        {
+          "text": "Front view: a 60 mm by 20 mm rectangle. The hole is hidden inside the solid, so its two walls appear as dashed lines running the full 20 mm height. They lie $8$ mm either side of the centre, i.e. at $30-8=22$ mm and $30+8=38$ mm from the left edge. A chain centre line is drawn between them at 30 mm, extending slightly beyond the top and bottom edges.",
+          "latex": "x_{\\text{walls}} = 30 \\pm 8 = 22\\ \\text{mm},\\ 38\\ \\text{mm}"
+        },
+        {
+          "text": "Right-side view: a 40 mm by 20 mm rectangle. The hole is centred on the 40 mm depth, so the dashed walls are at $20-8=12$ mm and $20+8=28$ mm from the left edge of this view, again with a chain centre line at 20 mm.",
+          "latex": "y_{\\text{walls}} = 20 \\pm 8 = 12\\ \\text{mm},\\ 28\\ \\text{mm}"
+        },
+        {
+          "text": "Alignment check: the dashed lines in the front view sit directly beneath the left and right extremes of the circle in the top view (22 mm and 38 mm), which confirms the views agree."
+        }
+      ],
+      "answer": "Top view: thick 60 x 40 rectangle with a thick 16 mm circle at its centre and a chain cross. Front view: 60 x 20 rectangle with dashed lines at 22 mm and 38 mm and a chain centre line at 30 mm. Side view: 40 x 20 rectangle with dashed lines at 12 mm and 28 mm and a chain centre line at 20 mm."
+    },
+    {
+      "type": "text",
+      "markdown": "**Annotating the sketch.** A concept sketch cannot carry every dimension, and it should not try. Ask: *which dimensions decide whether this part works?* These are the **driving (functional) dimensions**: the ones that set fit to a mating part, load path, clearance, or required stroke. Typical examples are bolt-hole pitch to match a housing, shaft height above a datum, overall envelope that must fit a space, and wall thickness for stiffness. Secondary details such as fillet radii can be a note (\"all fillets R3 typical\") or be left for later.\n\nGood practice: measure from a **datum** (a chosen edge or centre line) rather than chaining dimensions, so errors do not accumulate; give each dimension once only; place dimension lines outside the outline, using thin lines and arrowheads; and state units once, for example \"all dimensions in mm\"."
+    },
+    {
+      "type": "list",
+      "ordered": true,
+      "items": [
+        "Block out the overall envelope with light lines (bounding box), checking width:height:depth ratios by eye or by a pencil-length comparison.",
+        "Add the main features by cutting away or adding to the box: steps, slots, chamfers.",
+        "Locate holes and curved edges using light isometric squares or centre lines before sketching ellipses.",
+        "Darken the final outline in thick lines and keep construction lines faint.",
+        "Add orthographic views aligned with each other, using hidden and centre lines correctly.",
+        "Annotate the driving dimensions from a datum and add notes for general tolerances or typical radii."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Common sketching errors",
+      "text": "Do not measure inclined (non-axis) edges directly on an isometric sketch: their length is not drawn to the axis scale. Do not draw a circle on an isometric face as a circle; it must be an ellipse with its major axis perpendicular to the face normal. Do not omit hidden lines on an orthographic view where a feature is behind a surface, and never repeat the same dimension in two views."
+    },
+    {
+      "type": "check",
+      "questionId": "q001"
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "What a good sketch communicates",
+      "text": "Shape (isometric gives the picture, orthographic gives the exact outline), meaning (line types tell the reader what is visible, hidden or an axis) and intent (the annotated dimensions tell the reader which sizes must be held). If a reader can build the part from your sketch without asking questions, it has done its job."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Isometric sketches use a vertical axis and two axes at 30 degrees to the horizontal, with lengths along the axes drawn at the same scale; overall extents are (a+b)cos30 wide and c+(a+b)sin30 tall.",
+        "A circle on an isometric face becomes an ellipse (minor/major about 0.577) with its major axis perpendicular to the axis normal to that face.",
+        "Orthographic sketches use aligned views (third-angle: top above front, right-side to the right) and standard line types: thick visible, dashed hidden, chain centre, thin dimension.",
+        "Annotate the driving dimensions only, from a datum, once each, with units stated, and leave minor details to notes."
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "In a standard isometric sketch, at what angle to the horizontal are the two inclined axes drawn?",
+      "objectiveIds": ["ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o1"],
+      "options": [
+        {"id": "a", "text": "30°"},
+        {"id": "b", "text": "45°"},
+        {"id": "c", "text": "60°"},
+        {"id": "d", "text": "15°"}
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "30°",
+      "distractorRationale": {
+        "a": "Correct: the three isometric axes are 120° apart, so the inclined ones sit 30° above the horizontal.",
+        "b": "45° is the angle used in oblique or cabinet projection, not isometric.",
+        "c": "60° is the angle between an inclined axis and the vertical axis' perpendicular partner, a confusion with the 120° spacing; it is not measured from the horizontal.",
+        "d": "15° has no role in isometric construction."
+      },
+      "explanation": "The three isometric axes are equally spaced at 120° to each other. With one vertical, each of the other two lies 30° above the horizontal, one right and one left.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "On an orthographic sketch of a pump cover, an edge lies behind the front face and cannot be seen from the viewing direction. Which line type shows it?",
+      "objectiveIds": ["ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o2"],
+      "options": [
+        {"id": "a", "text": "Thick continuous line"},
+        {"id": "b", "text": "Thin or medium short-dashed line"},
+        {"id": "c", "text": "Thin chain line (long dash, short dash)"},
+        {"id": "d", "text": "Thin continuous line with arrowheads"}
+      ],
+      "correctOptionId": "b",
+      "correctOptionText": "Thin or medium short-dashed line",
+      "distractorRationale": {
+        "a": "A thick continuous line is for visible edges, so it would wrongly tell the reader the edge can be seen.",
+        "b": "Correct: hidden detail is shown with short dashes.",
+        "c": "Chain lines mark axes and centres of holes or symmetrical parts, not edges.",
+        "d": "Thin continuous lines with arrowheads are dimension lines."
+      },
+      "explanation": "Hidden edges are drawn with short dashes so that they read as present but not visible. Using the wrong style would mislead the reader about which features can be seen from the chosen viewpoint.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A through-hole is to be sketched on a side face of a block in isometric. The face's normal is the inclined axis rising to the right at 30° above the horizontal. How should the ellipse for the hole be oriented?",
+      "objectiveIds": ["ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o1"],
+      "options": [
+        {"id": "a", "text": "Major axis horizontal"},
+        {"id": "b", "text": "Major axis vertical"},
+        {"id": "c", "text": "Major axis perpendicular to that inclined axis (60° from horizontal, sloping up to the left)"},
+        {"id": "d", "text": "Major axis parallel to that inclined axis"}
+      ],
+      "correctOptionId": "c",
+      "correctOptionText": "Major axis perpendicular to that inclined axis (60° from horizontal, sloping up to the left)",
+      "distractorRationale": {
+        "a": "A horizontal major axis is correct only for faces whose normal is the vertical axis (top faces).",
+        "b": "A vertical major axis would suit a face whose normal is horizontal, which does not occur in isometric.",
+        "c": "Correct: the major axis is always perpendicular to the axis normal to the face.",
+        "d": "Parallel to the normal puts the narrow direction across the face, the reverse of the correct arrangement."
+      },
+      "explanation": "The circle lies in the face, and the face is viewed obliquely along its normal; the circle is foreshortened along the projection of the normal and keeps its full width perpendicular to it. So the major axis is perpendicular to the normal axis, i.e. at 30° + 90° = 120° measured from the positive horizontal, sloping up to the left at 60° from horizontal.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A student sketches a front view and a top view of a hinge bracket in first-angle projection. Where should the top view be placed relative to the front view?",
+      "objectiveIds": ["ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o2"],
+      "options": [
+        {"id": "a", "text": "Above the front view, aligned in width"},
+        {"id": "b", "text": "Below the front view, aligned in width"},
+        {"id": "c", "text": "To the right of the front view, aligned in height"},
+        {"id": "d", "text": "To the left of the front view, aligned in height"}
+      ],
+      "correctOptionId": "b",
+      "correctOptionText": "Below the front view, aligned in width",
+      "distractorRationale": {
+        "a": "Above is the third-angle position, the commonly confused alternative.",
+        "b": "Correct: in first angle the object is between viewer and plane, so the top view lands below the front view.",
+        "c": "Placing it beside the front view would align heights, but the top view shares widths with the front view, not heights.",
+        "d": "Left placement also aligns heights, and is where the right-side view goes in first angle, not the top view."
+      },
+      "explanation": "In first-angle projection the object sits between the viewer and the projection plane, which inverts the layout: the top view goes below the front view. The top and front views share the same width, so they must be aligned vertically (one directly under the other).",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "You are sketching a concept for a gearbox inspection cover that must bolt onto an existing housing. Which dimensions deserve annotation first on the sketch?",
+      "objectiveIds": ["ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o3"],
+      "options": [
+        {"id": "a", "text": "The corner fillet radii and the edge chamfers"},
+        {"id": "b", "text": "The bolt-hole positions measured from a datum, plus the overall envelope"},
+        {"id": "c", "text": "The line thickness and the scale of the isometric axes"},
+        {"id": "d", "text": "Every edge length, repeated in each view to be safe"}
+      ],
+      "correctOptionId": "b",
+      "correctOptionText": "The bolt-hole positions measured from a datum, plus the overall envelope",
+      "distractorRationale": {
+        "a": "Fillets and chamfers are secondary details that can be covered by a general note.",
+        "b": "Correct: hole positions determine fit to the housing, and the envelope determines whether it fits the space.",
+        "c": "Line weights are drawing conventions, not part dimensions.",
+        "d": "Repeating dimensions causes conflicts and clutter; each dimension should appear once."
+      },
+      "explanation": "The functional dimensions are those that decide whether the part mates and fits, here the hole pattern and the envelope. Measuring them from a datum prevents error build-up, and leaving minor features to notes keeps the sketch readable.",
+      "board": "internal"
+    },
+    {
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "You sketch a rectangular spacer block as an isometric drawing at full size (lengths along the axes drawn at true length). The block is 90 mm long along one inclined axis, 30 mm deep along the other inclined axis and 45 mm high. Taking the inclined axes at 30° to the horizontal, what is the overall horizontal width of the sketch on the paper, in mm?",
+      "objectiveIds": ["ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o1"],
+      "correctValue": 103.9,
+      "tolerance": 0.5,
+      "unit": "mm",
+      "explanation": "The two inclined edges run in opposite horizontal directions from the front corner, so the horizontal width is (90 + 30) cos 30° = 120 × 0.8660 = 103.9 mm. The vertical edge contributes nothing to the horizontal spread.",
+      "board": "internal"
+    },
+    {
+      "type": "numeric",
+      "difficulty": 1,
+      "stem": "A machined edge on a part is 150 mm long. In a true isometric projection every axis length is foreshortened by the factor cos 35.26° = sqrt(2/3) = 0.8165. How long, in mm, does this edge appear in the true projection if it lies along an isometric axis?",
+      "objectiveIds": ["ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o1"],
+      "correctValue": 122.5,
+      "tolerance": 0.5,
+      "unit": "mm",
+      "explanation": "In a true projection, axis lengths are multiplied by 0.8165, so 150 × 0.8165 = 122.5 mm. An isometric drawing (which ignores this foreshortening) would show the full 150 mm, which is why it looks about 1.225 times bigger.",
+      "board": "internal"
+    },
+    {
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "A flat mounting plate is 140 mm long. Its two bolt holes have their centres 25 mm in from the left end and 25 mm in from the right end, on the same centre line. On the concept sketch you annotate the functional dimension that must match the mating flange. What is the hole centre-to-centre distance, in mm?",
+      "objectiveIds": ["ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o3"],
+      "correctValue": 90,
+      "tolerance": 0.5,
+      "unit": "mm",
+      "explanation": "The centres are located at 25 mm and 140 - 25 = 115 mm from the left end, so the centre distance is 115 - 25 = 90 mm. This pitch is the functional dimension the sketch should show directly, rather than leaving it to be calculated from the two edge offsets.",
+      "board": "internal"
+    },
+    {
+      "type": "theory",
+      "difficulty": 3,
+      "stem": "A student must sketch, in third-angle projection, the front, top and right-side views of an L-shaped bracket: a 80 mm long by 30 mm deep base plate 10 mm thick, with a 30 mm deep by 10 mm thick upright rising 40 mm above the base at the left end (total height 50 mm), and a vertical through-hole of diameter 14 mm in the middle of the right half of the base plate. Describe how the views are arranged, which line type is used for each feature, and how the hole appears in each view.",
+      "objectiveIds": ["ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o2"],
+      "markingGuide": [
+        "Third-angle layout: top view above the front view, right-side view to the right of the front view, with widths aligned between top and front and heights aligned between front and side",
+        "Visible outlines of the L-shape drawn as thick continuous lines in all three views",
+        "In the top view the hole appears as a true circle of 14 mm diameter drawn thick, with a thin chain-line cross at its centre",
+        "In the front and side views the hole is hidden inside the base plate, so its walls are drawn as short-dashed lines 14 mm apart running through the 10 mm plate thickness",
+        "Centre lines for the hole drawn as thin chain lines extending slightly beyond the feature in each view",
+        "Mention of a projection symbol or note stating third angle, and thin construction lines used to align features between views"
+      ],
+      "explanation": "A good answer arranges the views by the third-angle rule, then assigns line types by visibility: the L outline is thick, the hole is seen as a circle only when looking along its axis, and elsewhere it is hidden and dashed. The marker looks for correct alignment between views and for centre lines, since these carry the information that a reader needs to find the hole.",
+      "board": "internal"
+    },
+    {
+      "type": "theory",
+      "difficulty": 3,
+      "stem": "A colleague gives you a rough isometric sketch of a lever for a hand-operated valve. The lever is a flat bar with a boss at one end and a slot at the other, and the sketch looks distorted, with the slot drawn as a circle and no dimensions shown. Explain, step by step, how you would redraw it so it is properly proportioned, and decide which dimensions you would annotate and why.",
+      "objectiveIds": [
+        "ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o1",
+        "ug.mce-engineering-drawing-cad.sketching-and-constraints.freehand-sketching.o3"
+      ],
+      "markingGuide": [
+        "Start from a light bounding box using a vertical axis and two axes at 30° to the horizontal, with lengths along the axes drawn at the same scale",
+        "Estimate proportions (length : width : thickness) by comparing features before committing, and build the boss and slot from the box rather than freehand outlines",
+        "Curved features drawn as ellipses on the correct face, with the major axis perpendicular to the face normal, located using light isometric squares or centre lines",
+        "Darken the final outline and keep construction lines faint",
+        "Annotate the driving dimensions: lever length (boss centre to slot centre), boss bore diameter, slot width and length, bar thickness, with reasons relating to fit with the valve spindle and required throw",
+        "Dimensions measured from a datum such as the boss centre line, each given once with units stated; minor radii left to a note"
+      ],
+      "explanation": "The answer should show a method rather than a result: envelope first, then features, then ellipses on faces with the right orientation, then line weights. Annotation should be chosen for function (how the lever engages the spindle and how far it throws), not for completeness, which is the difference between a concept sketch and a full manufacturing drawing.",
+      "board": "internal"
+    }
+  ]
+}

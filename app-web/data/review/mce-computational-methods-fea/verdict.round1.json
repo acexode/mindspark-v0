@@ -1,0 +1,97 @@
+{
+  "subjectId": "ug.mce-computational-methods-fea",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "Overall quality is high. I recomputed every numeric key and worked example independently in Python: finite-difference errors and ratios, the fin and rod tridiagonal solves and Gauss-Seidel sweeps, bar/truss assembly and reactions, the Hermite beam matrix and both cantilever FE solutions, consistent nodal loads, the furnace-wall and thermal-stress examples, CST B and D matrices (plane stress and plane strain), the Peterson Kt correlation, the tapered-bar and fillet convergence data, Richardson/GCI, the strain-gauge statistics, and the four-node-quad locking numbers (I re-ran a Q4 plane-stress code with 2x2 Gauss integration and reproduced 3.879, 4.063, 5.202 and 5.599 mm). All answer keys were correct and every MCQ has exactly one correct option; the 270-degree corner exponent 0.4555 (lambda = 0.5445, rounded to 0.456) is correct. No critical issues were found. The recurring problems are small: one incorrect error-bound statement, a unit slip, a few explanation wording or consistency problems (stale option reference, inconsistent reaction-balance tolerance, sign conventions for truncation error), and one worked example whose Tresca result contradicts its pass verdict. Confidence is high on the arithmetic and moderate on pedagogical level. This is an AI review only; the course still needs a subject-matter expert before any engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.discretisation-and-finite-differences.solving-discrete-systems",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Warning callout 'Residual is not error' states the error 'can be as large as kappa(A)||r||/||b|| times the relative residual'. The relative residual is already ||r||/||b||, so as written kappa multiplies it twice.",
+      "suggestedFix": "State the standard bound: relative error ||e||/||u|| <= kappa(A) * ||r||/||b||, i.e. the relative error can be up to kappa times the relative residual."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Two-element cantilever worked example: 'EI/L_e^3 = 3.2x10^5/0.216 = 1.4815x10^6 N/m^3'. EI is N m^2 and L^3 is m^3, so the unit is N/m, not N/m^3. The numbers and the solution (u = -0.001125, -0.003375, -0.0036, -0.0045) are correct.",
+      "suggestedFix": "Write the unit as N/m (stiffness per unit displacement)."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation",
+      "questionId": "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.q005",
+      "severity": "minor",
+      "category": "explanation",
+      "problem": "Explanation ends 'so the correct total is the first value', a positional reference to an option that goes stale if options are shuffled. The arithmetic (2.15 mm) and the key are correct.",
+      "suggestedFix": "Replace with 'so the deflection is 2.15 mm' and drop the positional wording."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation",
+      "questionId": "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.q006",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Explanation contains an unbraced negative exponent: '2.0\\times10^-7', which typesets as 10^- followed by 7. The key 131.25 kN/rad is correct.",
+      "suggestedFix": "Write 10^{-7}."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Sign convention for truncation error is inconsistent. Forward/backward errors are given as 'minus/plus h/2 f'''' (exact minus approximation), but the central error is given as '+h^2/6 f'''' and the second-difference error as '+h^2/12 f''''' (approximation minus exact), while the marking guide writes f'' = (...)/h^2 - h^2/12 f''''. With the stated definition (exact minus formula) the central and three-point errors are -h^2/6 f''' and -h^2/12 f''''.",
+      "suggestedFix": "Fix one convention (or quote error magnitudes) and apply it to all four formulas and the callout definition."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe",
+      "questionId": "ug.mce-computational-methods-fea.heat-conduction-fe.one-dimensional-heat-fe.q001",
+      "severity": "minor",
+      "category": "explanation",
+      "problem": "Explanation says the off-diagonals are negative 'because a hotter neighbour pushes heat out of the node'. A hotter neighbour pushes heat into the node; with Q defined as heat supplied from outside, a hotter neighbour reduces the external heat needed at this node, hence the negative sign. The key option is acceptable but its wording ('flow leaves the first node') has the same direction ambiguity.",
+      "suggestedFix": "Reword: a hotter neighbour supplies heat to the node, so less external heat input Q_i is needed for the same T_i; the coefficient is -kA/L."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Definition callout gives eps_th = alpha*DT*{1,1,0}^T 'in a plane problem'. This is correct for plane stress only; for plane strain (eps_z = 0) the in-plane thermal strain used with the plane-strain D is (1+nu)*alpha*DT.",
+      "suggestedFix": "Say 'for plane stress' and add a note that plane strain uses (1+nu)*alpha*DT in the in-plane components."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Reduced-integration paragraph says the one-layer strip 'can deform as a mechanism with enormous deflection, as the one-point test gave', but no one-point result is presented in the worked example. (My Q4 check confirms the one-point 10x1 stiffness is singular after clamping, so the claim is true but unsupported in the text.) In the same worked example 5.599 mm is described as '98 per cent, close to full convergence' against 5.714 mm, yet the shear-corrected reference is about 5.76 mm (97 per cent).",
+      "suggestedFix": "Either give the one-point result or remove the back-reference; compare the 40x8 result with the shear-corrected 5.76 mm (about 97 per cent)."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality",
+      "questionId": "ug.mce-computational-methods-fea.meshing-and-convergence.element-quality.q010",
+      "severity": "minor",
+      "category": "level",
+      "problem": "Marking guide requires 'element quality metrics (aspect ratio, skewness, Jacobian)', but the Jacobian check is never defined or taught in the lesson.",
+      "suggestedFix": "Add a one-line definition of the Jacobian/determinant check to the lesson (positive and nearly uniform over the element) or remove it from the marking guide."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.interpreting-results.reporting-fea-results",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Worked example computes Tresca = 250.6 MPa, above the allowable 236.7 MPa (MS = -0.06), but the answer says only 'the part passes with very little margin' on von Mises (228.0 MPa). The lesson itself says Tresca is the more conservative alternative, so the example is silent about a fail on that criterion.",
+      "suggestedFix": "State that the criterion is von Mises by choice and note that Tresca would give a negative margin (about -0.06) for this state, so the criterion must be stated."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.verification-and-validation.verification-methods",
+      "questionId": "ug.mce-computational-methods-fea.verification-and-validation.verification-methods.q002",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The reaction-balance tolerance is stated inconsistently. The lesson says agreement 'within about 0.1 to 1 per cent' is expected and flags above about 1 per cent, and the Reporting unit quotes 0.1 per cent. Q002 (79.2 vs 80.0 kN, 0.99 per cent) and Q006 (0.89 per cent) are marked as exceeding round-off and needing investigation, which sits inside the lesson's stated range.",
+      "suggestedFix": "Use one tolerance across units (linear static reactions should balance to well below 0.1 per cent when printed with enough digits) and align the lesson sentence with Q002 and Q006."
+    },
+    {
+      "subtopicId": "ug.mce-computational-methods-fea.verification-and-validation.verification-methods",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Bar-on-foundation example: the Richardson step uses unrounded differences (0.000924 and 0.000234, p = 1.982) that cannot be reproduced from the printed 5-digit values (0.28041, 0.28133, 0.28157 give p = 1.94, f_inf = 0.28165, error estimate 0.030 per cent). My consistent-spring FE reproduces the unrounded values (0.280407, 0.281331, 0.281565) and p = 1.98.",
+      "suggestedFix": "Quote f1, f2, f3 to 6 significant figures (0.280407, 0.281331, 0.281565) so students can reproduce p = 1.98."
+    }
+  ]
+}

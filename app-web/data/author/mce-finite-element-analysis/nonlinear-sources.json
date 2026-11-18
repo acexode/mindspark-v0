@@ -1,0 +1,422 @@
+{
+ "lessonTitle": "Sources of Nonlinearity and Newton-Raphson Iteration",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A plastic snap-fit clip, a rubber door seal and a bolted flange that opens a gap under load all fail the same assumption: a linear static analysis. Linear analysis says doubling the load doubles every displacement and stress. When that is false, the stiffness itself depends on the answer, and the equations must be solved iteratively."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why linear analysis fails.** A linear static analysis solves $\\mathbf K\\mathbf u=\\mathbf F$ with a constant stiffness matrix, because it assumes (i) small displacements and rotations, so equilibrium can be written on the undeformed shape, (ii) a linear stress-strain law, and (iii) fixed boundary conditions and load directions. Each assumption that breaks gives a different source of nonlinearity, and the first job is to recognise which one is present."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Source",
+    "Assumption violated",
+    "Typical examples",
+    "Stiffness depends on"
+   ],
+   "rows": [
+    [
+     "Geometric",
+     "Small displacements and rotations",
+     "Slender cantilever with large tip deflection, snap-through, buckling, cables, membranes (stress stiffening)",
+     "Current geometry and stress state"
+    ],
+    [
+     "Material",
+     "Linear elastic stress-strain law",
+     "Yielding (plasticity), rubber (hyperelasticity), creep, damage",
+     "Strain or stress level and history"
+    ],
+    [
+     "Boundary (contact)",
+     "Fixed constraints and loads",
+     "Gap closing, sliding with friction, follower pressure, changing supports",
+     "Contact status of the surfaces"
+    ]
+   ],
+   "caption": "The three sources of nonlinearity"
+  },
+  {
+   "type": "worked_example",
+   "title": "Is the linear assumption valid?",
+   "prompt": "A steel strip ($E=200$ GPa) of length $L=0.4$ m, width 25 mm and thickness 2 mm is clamped at one end and carries a tip load $P=10$ N. The material stays elastic. Decide which nonlinearity, if any, applies.",
+   "steps": [
+    {
+     "text": "Second moment of area: $I=bt^3/12=0.025(0.002)^3/12=1.667\\times10^{-11}$ m$^4$, so $EI=3.333$ N m$^2$."
+    },
+    {
+     "text": "The linear-theory tip deflection is $\\delta=PL^3/(3EI)=10(0.064)/(3\\times3.333)=0.064$ m, which is 16% of the length."
+    },
+    {
+     "text": "A deflection of more than a few percent of the length (a rotation of the tip of more than about 10 degrees) is a typical sign that equilibrium on the undeformed shape is no longer accurate. Here the deflection is large, so **geometric nonlinearity** applies even though the material is linear elastic."
+    },
+    {
+     "text": "The stresses are low, so the material is linear; the clamp is fixed, so there is no boundary nonlinearity. The analysis should be run with large-displacement (nonlinear geometry) enabled."
+    }
+   ],
+   "answer": "Geometric nonlinearity: linear-theory deflection is 16% of the length, too large for the small-displacement assumption."
+  },
+  {
+   "type": "text",
+   "markdown": "**Newton-Raphson iteration.** For a nonlinear problem the internal force $\\mathbf F_{int}(\\mathbf u)$ is not proportional to $\\mathbf u$. At a given load level $\\mathbf F_{ext}$ equilibrium requires the **residual** $\\mathbf R(\\mathbf u)=\\mathbf F_{ext}-\\mathbf F_{int}(\\mathbf u)$ to vanish. Starting from a guess $\\mathbf u_i$, linearise: $\\mathbf K_T(\\mathbf u_i)\\,\\Delta\\mathbf u=\\mathbf R(\\mathbf u_i)$ with the tangent stiffness $\\mathbf K_T=\\partial\\mathbf F_{int}/\\partial\\mathbf u$ (N/m), then update $\\mathbf u_{i+1}=\\mathbf u_i+\\Delta\\mathbf u$. Repeat until the residual is small enough. Near the solution the error roughly squares each iteration (quadratic convergence). The **modified** Newton method keeps the first $\\mathbf K_T$ to save factorisation time, at the cost of slower, linear convergence."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf R_i=\\mathbf F_{ext}-\\mathbf F_{int}(\\mathbf u_i),\\qquad\\mathbf K_T(\\mathbf u_i)\\,\\Delta\\mathbf u=\\mathbf R_i,\\qquad\\mathbf u_{i+1}=\\mathbf u_i+\\Delta\\mathbf u",
+   "caption": "Newton-Raphson iteration within a load increment"
+  },
+  {
+   "type": "worked_example",
+   "title": "Newton-Raphson on a hardening spring",
+   "prompt": "A spring with internal force $F_{int}=1000u+4000u^3$ (N, with $u$ in metres) carries $F_{ext}=800$ N. Solve for $u$ by Newton-Raphson starting from $u_0=0$. The tangent stiffness is $K_T=1000+12000u^2$.",
+   "steps": [
+    {
+     "text": "Iteration 1 at $u=0$: $F_{int}=0$, so $R=800$ N and $K_T=1000$ N/m. Then $\\Delta u=800/1000=0.8$ m and $u=0.8$ m. This overshoots because the tangent at zero is much softer than the real spring."
+    },
+    {
+     "text": "Iteration 2 at $u=0.8$: $F_{int}=1000(0.8)+4000(0.512)=2848$ N, so $R=-2048$ N; $K_T=1000+12000(0.64)=8680$ N/m; $\\Delta u=-0.2359$ m, giving $u=0.5641$ m."
+    },
+    {
+     "text": "Continue with $R_i$ and $K_T$ at each new $u$. After the overshoot the residual force falls rapidly: 481.891 N, 63.712 N, 1.737 N, 0.001 N in iterations 3 to 6."
+    },
+    {
+     "text": "The converged displacement is $u=0.44574$ m, where $1000u+4000u^3=800$ N. Quadratic convergence near the solution is visible: each correction is roughly the square of the one before."
+    }
+   ],
+   "answer": "u = 0.44574 m after about 7 iterations."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Iteration",
+    "$u_i$ (m)",
+    "$F_{int}$ (N)",
+    "$R$ (N)",
+    "$K_T$ (N/m)",
+    "$\\Delta u$ (m)"
+   ],
+   "rows": [
+    [
+     "1",
+     "0.0000",
+     "0.0",
+     "800.00",
+     "1000.0",
+     "0.8000"
+    ],
+    [
+     "2",
+     "0.8000",
+     "2848.0",
+     "-2048.00",
+     "8680.0",
+     "-0.2359"
+    ],
+    [
+     "3",
+     "0.5641",
+     "1281.9",
+     "-481.89",
+     "4817.9",
+     "-0.1000"
+    ],
+    [
+     "4",
+     "0.4640",
+     "863.7",
+     "-63.71",
+     "3583.9",
+     "-0.0178"
+    ],
+    [
+     "5",
+     "0.4463",
+     "801.7",
+     "-1.74",
+     "3389.7",
+     "-0.0005"
+    ]
+   ],
+   "caption": "First iterations of the Newton-Raphson solution"
+  },
+  {
+   "type": "text",
+   "markdown": "**Increments and convergence criteria in plasticity.** Plasticity is path dependent, so the load is applied in increments, each solved by Newton-Raphson, and the stress history is updated at the end of each increment. A large step that jumps from elastic to far into the plastic range gives the wrong plastic strain and may not converge. Good practice (typical guidance): make the first step small or locate first yield; use roughly 10 or more increments for the full load; let the solver cut the step in half after a failed convergence and enlarge it after rapid convergence (about 4 to 5 iterations or fewer); and near the limit load, where the structure softens, switch from load control to displacement or arc-length control. Convergence is judged by the **force residual norm** (for example below 0.5% of the reaction or applied force), the displacement correction norm (for example below 1% of the increment) and sometimes the energy norm; using more than one criterion avoids false convergence."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Classify the source: geometry (large deflection), material (yielding), boundary (contact).",
+    "Choose the load increment size from the strongest nonlinearity: small enough that each increment converges in a handful of iterations.",
+    "Set convergence tolerances on force residual and displacement correction, scaled to the problem.",
+    "Inspect the load-displacement curve; if the stiffness falls to zero, change to displacement or arc-length control."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "A converged solution is not necessarily a correct one",
+   "text": "Loose tolerances or one criterion alone can stop iterations while equilibrium is still far off. Check that reactions balance the applied load, and rerun with halved increments to see that the answer does not change."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Nonlinearity comes from geometry (large displacements), material (plasticity, hyperelasticity) or boundary conditions (contact and changing constraints).",
+    "Newton-Raphson solves $\\mathbf K_T\\Delta\\mathbf u=\\mathbf F_{ext}-\\mathbf F_{int}(\\mathbf u)$ repeatedly within each load increment; it converges quadratically near the solution.",
+    "Plasticity analyses need increments small enough to follow the path, with automatic cutting on failure.",
+    "Convergence criteria should use force residual and displacement correction together, scaled to the applied load."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A bracket analysis includes a gap of 0.5 mm between two parts that closes as the load increases, after which the parts push on each other. What type of nonlinearity is this?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Boundary (contact) nonlinearity"
+    },
+    {
+     "id": "b",
+     "text": "Material nonlinearity"
+    },
+    {
+     "id": "c",
+     "text": "Geometric nonlinearity only"
+    },
+    {
+     "id": "d",
+     "text": "It is linear, because the material is elastic"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Boundary (contact) nonlinearity",
+   "distractorRationale": {
+    "a": "Correct: the constraint on the part changes with the load, since the contact status switches from open to closed.",
+    "b": "The material law is unaffected; the change comes from the contact.",
+    "c": "Geometry changes are not the source here; the stiffness change comes from contact status.",
+    "d": "Elastic material does not make the problem linear if the contact conditions change."
+   },
+   "explanation": "Whenever the supports or contacts depend on the solution itself, the force-displacement relation is nonlinear even with linear elastic parts. Contact is the standard boundary nonlinearity.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A rubber seal compressed by 30% is modelled with a stress-strain law that is a curved function of stretch. Which source of nonlinearity is dominant?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Material nonlinearity (hyperelasticity)"
+    },
+    {
+     "id": "b",
+     "text": "Boundary nonlinearity only"
+    },
+    {
+     "id": "c",
+     "text": "None, because rubber deflections are small"
+    },
+    {
+     "id": "d",
+     "text": "Geometric nonlinearity cannot be present"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Material nonlinearity (hyperelasticity)",
+   "distractorRationale": {
+    "a": "Correct: the constitutive law itself is nonlinear in strain.",
+    "b": "A seal may involve contact as well, but the curved stress-strain response is a material effect.",
+    "c": "A 30% compression is large, so the small-strain assumption fails.",
+    "d": "Large strain also brings geometric nonlinearity, but the primary source named in the stem is the material law."
+   },
+   "explanation": "A nonlinear stress-strain curve is a material nonlinearity regardless of the contact or geometry. Large rubber deformations usually also need nonlinear geometry to be enabled.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel strip ($E=200$ GPa) of length 0.5 m, width 30 mm and thickness 3 mm is clamped at one end and loaded at the tip by 20 N. Using small-displacement beam theory $\\delta=PL^3/(3EI)$, find the predicted tip deflection as a percentage of the length. A value above a few percent suggests geometric nonlinearity.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o1"
+   ],
+   "correctValue": 12.346,
+   "tolerance": 0.2,
+   "unit": "%",
+   "explanation": "The second moment of area is $I=0.030(0.003)^3/12=6.75\\times10^{-11}$ m$^4$, so $EI=13.5$ N m$^2$. Then $\\delta=20(0.125)/(3\\times13.5)=0.0617$ m, which is 12.3% of the length, far above a few percent. Large-displacement analysis is therefore required.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A structure made of a perfectly linear elastic material can still require a nonlinear analysis if its displacements are large.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. Geometric nonlinearity arises from the changing geometry and the stress-stiffening or softening it causes, even when the stress-strain law is linear. A thin cantilever or a cable under transverse load are standard examples.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A nonlinear spring has $F_{int}=2000u+5000u^3$ (N, $u$ in m) and carries $F_{ext}=500$ N. At the current iterate $u=0.1$ m the tangent stiffness is $K_T=2000+15000u^2$. Perform one Newton-Raphson update and give the new displacement $u_{i+1}$ in mm.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o2"
+   ],
+   "correctValue": 237.21,
+   "tolerance": 1.0,
+   "unit": "mm",
+   "explanation": "At $u=0.1$: $F_{int}=200+5=205$ N, so $R=500-205=295$ N. $K_T=2000+15000(0.01)=2150$ N/m, so $\\Delta u=295/2150=0.1372$ m. The new displacement is $0.1+0.1372=0.2372$ m, i.e. 237.2 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement describes a full Newton-Raphson iteration within a load increment?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Compute the residual $\\mathbf F_{ext}-\\mathbf F_{int}$, solve $\\mathbf K_T\\Delta\\mathbf u=\\mathbf R$ with the current tangent, update $\\mathbf u$ and repeat until the residual is small"
+    },
+    {
+     "id": "b",
+     "text": "Solve $\\mathbf K\\mathbf u=\\mathbf F$ once with the initial stiffness"
+    },
+    {
+     "id": "c",
+     "text": "Solve with the tangent stiffness from the first iteration and never update it"
+    },
+    {
+     "id": "d",
+     "text": "Apply the whole load in one step and accept the first answer"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Compute the residual $\\mathbf F_{ext}-\\mathbf F_{int}$, solve $\\mathbf K_T\\Delta\\mathbf u=\\mathbf R$ with the current tangent, update $\\mathbf u$ and repeat until the residual is small",
+   "distractorRationale": {
+    "a": "Correct: linearise about the current state, correct the displacement, and iterate to restore equilibrium.",
+    "b": "This is a linear analysis and ignores the dependence of the internal force on the displacement.",
+    "c": "Keeping the first tangent defines the modified Newton method, which converges more slowly; it is not the full method.",
+    "d": "A single step provides no check that equilibrium has been satisfied."
+   },
+   "explanation": "Full Newton-Raphson recomputes the tangent stiffness at every iteration, giving quadratic convergence near the solution. Modified variants trade convergence rate for cheaper iterations.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A plasticity analysis has a reaction force of 120 kN at the supports. The force convergence criterion is that the residual norm must be below 0.5% of the reaction force. Find the residual tolerance in N.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o3"
+   ],
+   "correctValue": 600.0,
+   "tolerance": 5.0,
+   "unit": "N",
+   "explanation": "The tolerance is $0.005\\times120000=600$ N. Scaling the tolerance with the reaction force makes the criterion meaningful for loads of any size. A purely absolute tolerance could be far too tight or too loose.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A plastic analysis of a notched plate yields locally at 30% of the total load and then the structure softens strongly as the plastic zone spreads. Which strategy is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Use small increments after first yield, with automatic cutting on non-convergence, and switch to displacement or arc-length control near the limit load"
+    },
+    {
+     "id": "b",
+     "text": "Apply 100% of the load in a single increment to save time"
+    },
+    {
+     "id": "c",
+     "text": "Loosen the tolerance until the solution converges in one iteration"
+    },
+    {
+     "id": "d",
+     "text": "Replace the plastic material by a linear elastic material"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Use small increments after first yield, with automatic cutting on non-convergence, and switch to displacement or arc-length control near the limit load",
+   "distractorRationale": {
+    "a": "Correct: path dependence needs small steps after yield, and a softening response may need displacement or arc-length control.",
+    "b": "A single step cannot follow plastic strain accumulation and often fails to converge.",
+    "c": "Loose tolerances accept an unbalanced solution and give misleading plastic strains.",
+    "d": "This removes the physics that the analysis was intended to capture."
+   },
+   "explanation": "Plasticity depends on the load path, so increments must be small enough to follow it. Near the limit load the tangent stiffness approaches zero and load control becomes unstable.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe the Newton-Raphson method for a nonlinear static analysis, explaining the roles of the residual and the tangent stiffness, and why several iterations are needed per load increment. Compare it briefly with the modified Newton method.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o2"
+   ],
+   "markingGuide": [
+    "Residual $\\mathbf R=\\mathbf F_{ext}-\\mathbf F_{int}(\\mathbf u)$ measures the out-of-balance force",
+    "Linearise: solve $\\mathbf K_T\\Delta\\mathbf u=\\mathbf R$ with the tangent stiffness $\\partial\\mathbf F_{int}/\\partial\\mathbf u$ and update $\\mathbf u$",
+    "Because the true $\\mathbf F_{int}$ is nonlinear the update only approximately restores equilibrium, so repeat until the residual is below tolerance",
+    "Quadratic convergence near the solution",
+    "Modified Newton keeps the initial tangent: cheaper iterations (no refactorisation) but slower linear convergence and more iterations"
+   ],
+   "explanation": "Each iteration solves a linearised problem and the residual measures how far the result is from equilibrium. Repeating the process drives the residual to a tolerance.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A bolted steel bracket is loaded until local yielding occurs at a hole, and the flange faces separate and rub as the load increases. Identify the sources of nonlinearity, and propose a load increment strategy and convergence criteria.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o1",
+    "ug.mce-finite-element-analysis.nonlinear-contact.nonlinear-sources.o3"
+   ],
+   "markingGuide": [
+    "Material nonlinearity: yielding at the hole (elastic-plastic law)",
+    "Boundary nonlinearity: flange separation and frictional contact; possibly geometric nonlinearity if rotations are large",
+    "Load increments: start small, locate first yield, about 10 or more increments, automatic cutting after failed convergence, enlarge after fast convergence",
+    "Convergence criteria: force residual below about 0.5% of reaction force and displacement correction below about 1% of the increment, both satisfied",
+    "Verification: check reaction equilibrium, halve the increments to test independence, and monitor contact status chatter"
+   ],
+   "explanation": "Three sources of nonlinearity are present simultaneously. The load path, contact status changes and yield spread together require small, adaptive increments and robust, scaled convergence criteria.",
+   "board": "internal"
+  }
+ ]
+}

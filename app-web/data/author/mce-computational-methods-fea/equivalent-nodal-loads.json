@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Distributed Loads and Equivalent Nodal Loads on Beam Elements",
+ "estimatedMinutes": 38,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hoist beam carrying a uniformly spread plate load of 12 kN per metre cannot be loaded in an FE model by a pressure on the nodes: a beam element only accepts forces and moments at its nodes. Converting the spread load into the right nodal forces and moments is the job of consistent nodal loads, and getting it wrong shifts the computed bending moments."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** A distributed load $w(x)$ (N/m) has to be replaced by nodal forces $F$ (N) and moments $M$ (N m) that do the **same work** on every allowed displacement of the element. By the principle of virtual work, the equivalent load for each DOF is the load integrated against the corresponding shape function: the weight the element gives that DOF."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Consistent (work-equivalent) nodal loads",
+   "text": "For a beam element with shape functions $N_i(x)$ and a transverse load $q(x)$ (N/m, positive in the $+v$ direction), the equivalent nodal load vector is $\\mathbf{f}_{eq}=\\int_0^L \\mathbf{N}^T q(x)\\,\\mathrm{d}x$. For a uniform load $w$ acting downward over a length $L$, $q=-w$, and the integral gives the same vector as the fixed-end forces of a clamped-clamped beam, reversed in direction."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{f}_{eq}=\\begin{Bmatrix}F_1\\\\M_1\\\\F_2\\\\M_2\\end{Bmatrix}=\\begin{Bmatrix}-wL/2\\\\-wL^2/12\\\\-wL/2\\\\+wL^2/12\\end{Bmatrix}",
+   "caption": "Uniform downward load $w$ on an element of length $L$ ($v$ and forces positive upward, rotations and moments anticlockwise)"
+  },
+  {
+   "type": "text",
+   "markdown": "The shear forces are the intuitive half-and-half split of the total load $wL$. The moments are the surprise: they come from $\\int N_2\\,\\mathrm{d}x=L^2/12$ and $\\int N_4\\,\\mathrm{d}x=-L^2/12$, and they are equal and opposite. Replacing the load by $wL/2$ at each node alone is statically equivalent but not work-equivalent, and it leaves out the end moments, which changes the moment diagram inside the element."
+  },
+  {
+   "type": "worked_example",
+   "title": "Equivalent loads for a hoist-beam element",
+   "prompt": "A beam element of length $L=0.80$ m carries a uniform downward load $w=12$ kN/m. Find the consistent nodal load vector and check it against the total load and its moment.",
+   "steps": [
+    {
+     "text": "Total load $wL=12\\times0.80$ kN, split equally at the two nodes.",
+     "latex": "F_1=F_2=-\\frac{wL}{2}=-4.80\\ \\text{kN}"
+    },
+    {
+     "text": "Moment term $wL^2/12$ with $L$ in metres and $w$ in kN/m gives kN m.",
+     "latex": "M_1=-\\frac{wL^2}{12}=-0.640\\ \\text{kN m},\\quad M_2=+0.640\\ \\text{kN m}"
+    },
+    {
+     "text": "Check the resultant: the sum of the nodal forces equals the total load $-wL=-9.6$ kN, and the two end moments are equal and opposite so they add nothing to the force sum and no net moment is created by themselves.",
+     "latex": "F_1+F_2=-9.60\\ \\text{kN}"
+    }
+   ],
+   "answer": "$\\mathbf{f}_{eq}=\\{-4.80\\ \\text{kN},\\ -0.640\\ \\text{kN m},\\ -4.80\\ \\text{kN},\\ +0.640\\ \\text{kN m}\\}$."
+  },
+  {
+   "type": "text",
+   "markdown": "**Solving and recovering element forces.** Assemble $\\mathbf{K}$ as before, build the global load vector $\\mathbf{F}$ by adding each element's $\\mathbf{f}_{eq}$ (the contributions at a shared node add), apply the supports and solve $\\mathbf{K}\\mathbf{u}=\\mathbf{F}$. The element end forces and moments are then recovered from the element displacements $\\mathbf{u}_e$ by **subtracting the equivalent loads** that were used to apply the load."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{f}_{\\text{end}}=\\mathbf{k}_e\\mathbf{u}_e-\\mathbf{f}_{eq}",
+   "caption": "Recovery of element end shear forces and bending moments"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why subtract $\\mathbf{f}_{eq}$?",
+   "text": "The product $\\mathbf{k}\\mathbf{u}_e$ is the force the nodes exert due to deformation, but part of the load was supplied by the distributed load itself. The true internal end actions are what remains once the equivalent nodal load is removed; forgetting it gives wrong shears and moments even when the displacements are right."
+  },
+  {
+   "type": "worked_example",
+   "title": "Two-element cantilever under uniform load",
+   "prompt": "A steel cantilever of length $1.5$ m ($EI=8.0\\times10^{5}$ N m$^2$, from $E=200$ GPa and $I=4.0\\times10^{-6}$ m$^4$) is modelled with two equal elements ($L_e=0.75$ m) and carries a uniform downward load $w=6.0$ kN/m. Find the tip deflection and compare with the exact result; recover the root shear and moment.",
+   "steps": [
+    {
+     "text": "Equivalent load per element: $wL_e/2=2250$ N and $wL_e^2/12=281.25$ N m. At the middle node the two elements' contributions add: $F_2=-4500$ N while the moments $+281.25$ and $-281.25$ cancel.",
+     "latex": "\\mathbf{F}_{\\text{free}}=\\{-4500\\ \\text{N},\\ 0,\\ -2250\\ \\text{N},\\ +281.25\\ \\text{N m}\\}"
+    },
+    {
+     "text": "Clamp node 1, assemble the $4\\times4$ reduced stiffness and solve by Gauss elimination.",
+     "latex": "v_2=-0.001681,\\ \\theta_2=-0.003691,\\ v_3=-0.004746\\ \\text{m},\\ \\theta_3=-0.004219\\ \\text{rad}"
+    },
+    {
+     "text": "Exact cantilever solution under uniform load: tip deflection $wL^4/(8EI)$ and tip slope $wL^3/(6EI)$.",
+     "latex": "v_{tip}=-\\frac{(6000)(1.5)^4}{8(8.0\\times10^{5})}=-0.004746\\ \\text{m},\\quad \\theta_{tip}=-0.004219\\ \\text{rad}"
+    },
+    {
+     "text": "Recover the end actions of element 1 using $\\mathbf{f}_{end}=\\mathbf{k}_e\\mathbf{u}_e-\\mathbf{f}_{eq}$ with $\\mathbf{u}_e=\\{0,0,v_2,\\theta_2\\}$.",
+     "latex": "V_1=9000\\ \\text{N},\\quad M_1=6750\\ \\text{N m}"
+    },
+    {
+     "text": "Compare with statics: root shear equals the total load $wL=9000$ N and the root moment $wL^2/2=6750$ N m.",
+     "latex": "wL=9000\\ \\text{N},\\quad wL^2/2=6750\\ \\text{N m}"
+    }
+   ],
+   "answer": "Tip deflection is $-4.746$ mm, equal to the exact value; the recovered root shear and moment are 9000 N and 6750 N m, matching statics. The nodal values of a beam with consistent loads are exact, but the interior of each element is not: at the middle of element 2 the cubic gives -3.164 mm against the exact -3.170 mm."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Nodal value",
+    "Inside an element"
+   ],
+   "rows": [
+    [
+     "Deflection and slope",
+     "Exact for a prismatic beam with consistent loads",
+     "Cubic approximation to a quartic curve; small error"
+    ],
+    [
+     "Bending moment",
+     "Recovered end moments match statics",
+     "Moment varies linearly in the model; exact curve is quadratic"
+    ],
+    [
+     "Shear force",
+     "Recovered end shears match statics",
+     "Constant in the model; exact shear varies linearly"
+    ]
+   ],
+   "caption": "Accuracy of a beam FE solution with consistent nodal loads"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Equivalent load for each DOF: $\\int N_i\\,q\\,\\mathrm{d}x$; always positive upward in the same convention as the DOFs.",
+    "For a uniform load the end moments are $\\pm wL^2/12$ and the shears $wL/2$.",
+    "Recover element end actions with $\\mathbf{k}_e\\mathbf{u}_e-\\mathbf{f}_{eq}$, never from $\\mathbf{k}_e\\mathbf{u}_e$ alone.",
+    "Compare the tip deflection with the closed-form result, e.g. $wL^4/(8EI)$ for a cantilever under uniform load."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Putting the whole load $wL$ at the free node of a cantilever, or omitting the end moments, changes the answer: the tip deflection of a cantilever under a uniform load is $wL^4/(8EI)$ but under a tip force $wL$ it would be $wL^4/(3EI)$, nearly three times larger."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A uniform load $w$ on a beam element is replaced by consistent nodal loads: shears $wL/2$ and end moments $\\pm wL^2/12$ with opposite signs.",
+    "After solving, element end shear and moment are recovered from $\\mathbf{k}_e\\mathbf{u}_e-\\mathbf{f}_{eq}$ and checked against statics.",
+    "Nodal deflections of a prismatic beam with consistent loads match the exact cantilever result, e.g. $wL^4/(8EI)$ at the tip, although interior values are only approximate."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A beam element of length $0.50$ m carries a uniform downward load of $18$ kN/m. Compute the magnitude of the consistent nodal end moment $wL^2/12$ in kN m.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o1"
+   ],
+   "correctValue": 0.375,
+   "tolerance": 0.005,
+   "unit": "kN m",
+   "explanation": "The moment is $wL^2/12=18\\,000\\times0.25/12=375.0$ N m = 0.375 kN m. The two end moments are equal in magnitude and opposite in sense, with the nodal shears each carrying half of the 9 kN total.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A uniform downward load $w$ acts over a beam element of length $L$. Which statement about its consistent nodal loads is correct?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Each node gets a force $wL/2$ and the two nodes get equal and opposite moments of magnitude $wL^2/12$"
+    },
+    {
+     "id": "b",
+     "text": "Each node gets a force $wL/2$ and no moments"
+    },
+    {
+     "id": "c",
+     "text": "Each node gets a force $wL$ and a moment $wL^2/2$"
+    },
+    {
+     "id": "d",
+     "text": "Node 1 gets the full force $wL$ and node 2 gets nothing"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Each node gets a force $wL/2$ and the two nodes get equal and opposite moments of magnitude $wL^2/12$",
+   "distractorRationale": {
+    "b": "This is the lumped-force approximation: statically equivalent in force but not work-equivalent, since it omits the end moments.",
+    "c": "Doubles the force and uses the cantilever root moment, which is not an element load.",
+    "d": "An unequal split ignores the symmetry of a uniform load."
+   },
+   "explanation": "The work done by a uniform load on the shape functions gives $wL/2$ for the deflection DOFs and $\\pm wL^2/12$ for the rotation DOFs. The end moments are what make the cubic element reproduce the correct nodal rotations.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a beam model with consistent nodal loads, the displacements of the whole structure have been solved. What is the correct way to recover an element's end moments and shears?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Multiply the element stiffness matrix by its nodal displacements and subtract the equivalent nodal load vector"
+    },
+    {
+     "id": "b",
+     "text": "Multiply the element stiffness matrix by its nodal displacements only"
+    },
+    {
+     "id": "c",
+     "text": "Add the equivalent nodal load vector to the product of stiffness and displacements"
+    },
+    {
+     "id": "d",
+     "text": "Divide the nodal displacements by the element length"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Multiply the element stiffness matrix by its nodal displacements and subtract the equivalent nodal load vector",
+   "distractorRationale": {
+    "b": "Omits the correction, so shears and moments are wrong for any element carrying a distributed load.",
+    "c": "Wrong sign: the equivalent load was added to the load vector, so it must be taken out when recovering the internal actions.",
+    "d": "Not a force quantity; displacement gradients relate to rotation and strain, not to internal actions."
+   },
+   "explanation": "The force $\\mathbf{k}_e\\mathbf{u}_e$ equals the equivalent nodal load plus the true internal end actions, so subtracting $\\mathbf{f}_{eq}$ leaves the internal shears and moments. For an element without distributed load, $\\mathbf{f}_{eq}=\\mathbf{0}$ and the two recipes coincide.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a prismatic cantilever of length $L$ under uniform load $w$, modelled with consistent nodal loads, what is the exact tip deflection that the FE solution should reproduce at the nodes?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$wL^4/(8EI)$"
+    },
+    {
+     "id": "b",
+     "text": "$wL^4/(3EI)$"
+    },
+    {
+     "id": "c",
+     "text": "$wL^3/(6EI)$"
+    },
+    {
+     "id": "d",
+     "text": "$5wL^4/(384EI)$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$wL^4/(8EI)$",
+   "distractorRationale": {
+    "b": "This is the tip deflection when the total load $wL$ acts at the free end, which overestimates the true value.",
+    "c": "This is the tip slope (rad), not a deflection.",
+    "d": "This is the mid-span deflection of a simply supported beam under uniform load."
+   },
+   "explanation": "Integrating $EIv''''=-w$ with clamped-free conditions gives a tip deflection of $wL^4/(8EI)$. The two-element model with consistent loads matches this at the nodes because the cubic element is exact there for beams of constant $EI$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In an FE cantilever model with consistent loads, the nodal tip deflection matches $wL^4/(8EI)$ exactly, yet the deflection at the middle of an element differs slightly from the exact curve. What explains this?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The element deflection is a cubic whereas the exact deflection under uniform load is a quartic polynomial"
+    },
+    {
+     "id": "b",
+     "text": "The solver has a rounding error that grows with element length"
+    },
+    {
+     "id": "c",
+     "text": "The load was applied incorrectly at the nodes"
+    },
+    {
+     "id": "d",
+     "text": "The exact solution is not valid at points that are not nodes"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The element deflection is a cubic whereas the exact deflection under uniform load is a quartic polynomial",
+   "distractorRationale": {
+    "b": "Round-off is far too small to account for a systematic difference of this kind.",
+    "c": "Consistent loads are what make the nodal values exact; applying the load incorrectly would change nodal values too.",
+    "d": "The exact beam solution is valid at every point; the error is in the approximation."
+   },
+   "explanation": "Under a uniform load the exact deflection has an $x^4$ term, which a cubic cannot represent between nodes. The nodal values are exact for prismatic beams with consistent loads, so refining the mesh reduces only the interior error.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cantilever of length $2.0$ m with $EI=1.2\\times10^{5}$ N m$^2$ carries a uniform downward load of $3.0$ kN/m. Using the exact result that the FE model with consistent loads reproduces at the tip, find the tip deflection magnitude in mm.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o3"
+   ],
+   "correctValue": 50.0,
+   "tolerance": 0.5,
+   "unit": "mm",
+   "explanation": "The tip deflection is $wL^4/(8EI)=3000(2.0)^4/(8\\times1.2\\times10^5)=0.0500$ m = 50.0 mm. A two-element model with consistent nodal loads returns this value at the tip.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A single beam element of length $1.2$ m ($EI=8.0\\times10^{4}$ N m$^2$) is clamped at node 1 and carries a uniform downward load of $3.0$ kN/m. The solution gives $v_2=-9.72$ mm and $\\theta_2=-0.0108$ rad at node 2. Recover the bending moment acting at the clamped node, $M_1=\\mathbf{k}_e\\mathbf{u}_e-\\mathbf{f}_{eq}$ (second row), in N m.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o2"
+   ],
+   "correctValue": 2160.0000000000005,
+   "tolerance": 8.0,
+   "unit": "N m",
+   "explanation": "The second row of $\\mathbf{k}\\mathbf{u}$ is $(EI/L^2)(-6v_2+2L\\theta_2)=1800.0$ N m, and subtracting $f_{eq,2}=-wL^2/12=-360$ N m gives $M_1=2160.0$ N m. This equals the statics value $wL^2/2=2160$ N m.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two equal beam elements of length $L_e$ meet at an interior node and both carry the same uniform downward load $w$. What is the net equivalent load applied at the shared node in the global load vector?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A force $-wL_e$ and zero moment"
+    },
+    {
+     "id": "b",
+     "text": "A force $-wL_e/2$ and a moment $wL_e^2/12$"
+    },
+    {
+     "id": "c",
+     "text": "A force $-wL_e$ and a moment $-wL_e^2/6$"
+    },
+    {
+     "id": "d",
+     "text": "A force $-wL_e/2$ and zero moment"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A force $-wL_e$ and zero moment",
+   "distractorRationale": {
+    "b": "Counts only one element's contribution, so half of the load is lost.",
+    "c": "Adds the moments with the same sign, but one element contributes $-wL_e^2/12$ and the other $+wL_e^2/12$.",
+    "d": "Forgets that both elements contribute a force at the shared node."
+   },
+   "explanation": "Equivalent loads are added into the global vector at shared DOFs. The forces $-wL_e/2$ from each element add to $-wL_e$, while the moments $+wL_e^2/12$ (end of the left element) and $-wL_e^2/12$ (start of the right element) cancel.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive, using the shape functions, why a uniform load $w$ on a beam element produces equivalent nodal moments of $\\pm wL^2/12$ as well as forces $wL/2$, and state the sign convention you use.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o1"
+   ],
+   "markingGuide": [
+    "Virtual work: $\\mathbf{f}_{eq}=\\int_0^L\\mathbf{N}^Tq\\,\\mathrm{d}x$ with $q=-w$",
+    "$\\int N_1\\,\\mathrm{d}x=\\int N_3\\,\\mathrm{d}x=L/2$ gives forces $-wL/2$",
+    "$\\int N_2\\,\\mathrm{d}x=L^2/12$ and $\\int N_4\\,\\mathrm{d}x=-L^2/12$ give moments $-wL^2/12$ and $+wL^2/12$",
+    "States convention: $v$ and forces positive up, $\\theta$ and moments anticlockwise",
+    "Notes the moments are work-equivalent, not obtained from statics of a lumped load"
+   ],
+   "explanation": "The load is converted to nodal quantities by weighting it with each shape function, so that virtual work in the continuous and discrete models agree for every admissible displacement. The rotation shape functions integrate to non-zero areas of opposite sign, producing equal and opposite end moments.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A student models a cantilever under uniform load by placing the whole load $wL$ as a single force at the free node, and compares the tip deflection with the exact result. Explain what error occurs, give the factor between the two deflections, and describe how to correct the model.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.equivalent-nodal-loads.o3"
+   ],
+   "markingGuide": [
+    "Tip force $wL$ gives $wL\\cdot L^3/(3EI)=wL^4/(3EI)$",
+    "Exact for a uniform load is $wL^4/(8EI)$",
+    "Ratio $8/3\\approx2.67$: the lumped force overestimates the deflection (bending moment at the root is also $wL^2$ instead of $wL^2/2$)",
+    "Correct by using consistent nodal loads on each element ($wL_e/2$ and $\\pm wL_e^2/12$)",
+    "Check root shear and moment against statics after recovering with $\\mathbf{k}_e\\mathbf{u}_e-\\mathbf{f}_{eq}$"
+   ],
+   "explanation": "Concentrating the load at the tip raises the lever arm of the load from $L/2$ to $L$, doubling the root moment and increasing the deflection by $8/3$. Distributing it with consistent nodal loads restores the correct load path and recovers the closed-form deflection.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,359 @@
+{
+ "lessonTitle": "The LMTD Method for Heat Exchangers",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A refinery oil cooler works perfectly on the day it is commissioned, but a year later the oil leaves 15 K too hot. Nothing has broken: a thin film of scale on the tube walls has added thermal resistance and cut the overall heat transfer coefficient. Engineers allow for that in the design with a fouling resistance."
+  },
+  {
+   "type": "text",
+   "markdown": "A heat exchanger transfers heat between two fluids separated by a wall. The heat flow is written $q=UA\\Delta T_m$, where $A$ is the heat transfer area (m$^2$), $\\Delta T_m$ is a mean temperature difference between the fluids and $U$ is the **overall heat transfer coefficient** (W/m$^2$K). The difficulty is that the temperature difference between the fluids changes along the exchanger, so we need the right average."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Overall coefficient U",
+   "text": "$U$ is the reciprocal of the total thermal resistance per unit area between the two fluid streams. For a plane or thin wall of thickness $t$ and conductivity $k$: $1/U=1/h_i+R''_{f,i}+t/k+R''_{f,o}+1/h_o$, where $R''_f$ is a fouling resistance per unit area (m$^2$K/W) accounting for deposits. For a tube, $U$ must say whether it is referred to the inner or outer area."
+  },
+  {
+   "type": "worked_example",
+   "title": "Overall coefficient with fouling",
+   "prompt": "A shell-and-tube oil cooler has water inside thin steel tubes ($h_i=2500$ W/m$^2$K, fouling $R''_{f,i}=0.0002$ m$^2$K/W) and hot oil outside ($h_o=350$ W/m$^2$K, fouling $R''_{f,o}=0.0004$ m$^2$K/W). The wall is 2 mm of steel with $k=45$ W/m K (typical). Treating the wall as plane (the tube is thin so inner and outer areas are nearly equal), find the overall coefficient with and without fouling.",
+   "steps": [
+    {
+     "text": "The heat passes in series through five resistances per unit area: inside film, inside fouling, wall, outside fouling, outside film. Series resistances per unit area add.",
+     "latex": "\\frac{1}{U}=\\frac{1}{h_i}+R''_{f,i}+\\frac{t}{k}+R''_{f,o}+\\frac{1}{h_o}"
+    },
+    {
+     "text": "Values (m$^2$K/W): $1/h_i=0.00040$, $R''_{f,i}=0.0002$, $t/k=0.000044$, $R''_{f,o}=0.0004$, $1/h_o=0.00286$."
+    },
+    {
+     "text": "Sum: $1/U=0.00390$ m$^2$K/W, so $U=256.3$ W/m$^2$K."
+    },
+    {
+     "text": "Clean (no fouling): $1/U_c=0.00330$, so $U_c=302.9$ W/m$^2$K. Fouling reduces $U$ by 15%.",
+     "latex": "U_c=\\left(\\frac{1}{h_i}+\\frac{t}{k}+\\frac{1}{h_o}\\right)^{-1}"
+    }
+   ],
+   "answer": "$U\\approx256$ W/m$^2$K fouled versus 303 clean. The oil-side film dominates the resistance (since $h_o$ is smallest) and the fouling adds a further 15% of the total."
+  },
+  {
+   "type": "text",
+   "markdown": "Along a heat exchanger the local temperature difference $\\Delta T=T_h-T_c$ varies. Applying the energy balance to a differential element, $dq=U\\,dA\\,(T_h-T_c)$, and integrating with constant $U$ and constant specific heats gives the **log-mean temperature difference** (LMTD). The two end differences $\\Delta T_1$ and $\\Delta T_2$ depend on the flow arrangement."
+  },
+  {
+   "type": "math",
+   "latex": "q=UA\\,\\Delta T_{lm},\\qquad \\Delta T_{lm}=\\frac{\\Delta T_1-\\Delta T_2}{\\ln(\\Delta T_1/\\Delta T_2)}",
+   "caption": "LMTD for a single-pass exchanger with constant U and c_p, no losses to surroundings"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Arrangement",
+    "$\\Delta T_1$",
+    "$\\Delta T_2$",
+    "Characteristic"
+   ],
+   "rows": [
+    [
+     "Counterflow",
+     "$T_{h,i}-T_{c,o}$",
+     "$T_{h,o}-T_{c,i}$",
+     "Fluids enter at opposite ends; $T_{c,o}$ may exceed $T_{h,o}$"
+    ],
+    [
+     "Parallel flow",
+     "$T_{h,i}-T_{c,i}$",
+     "$T_{h,o}-T_{c,o}$",
+     "Fluids enter at the same end; $T_{c,o}$ cannot exceed $T_{h,o}$"
+    ]
+   ],
+   "caption": "End temperature differences for the LMTD (subscripts: h hot, c cold, i inlet, o outlet)"
+  },
+  {
+   "type": "text",
+   "markdown": "Because the log-mean is always less than the arithmetic mean (unless the two differences are equal, when $\\Delta T_{lm}=\\Delta T_1$), using the plain average would underestimate the required area. For the same four terminal temperatures, counterflow has the larger LMTD and therefore needs the smaller area."
+  },
+  {
+   "type": "worked_example",
+   "title": "Area of a counterflow oil cooler",
+   "prompt": "Oil ($\\dot m=1.2$ kg/s, $c_p=2100$ J/kg K, typical) is cooled from 150 $^\\circ$C to 90 $^\\circ$C by water entering at 25 $^\\circ$C and leaving at 55 $^\\circ$C. Using the fouled overall coefficient $U=256$ W/m$^2$K from the previous example, find the area needed for counterflow, and compare with parallel flow.",
+   "steps": [
+    {
+     "text": "Duty from the oil: $q=\\dot m c_p(T_{h,i}-T_{h,o})=1.2\\times2100\\times60=151.2$ kW. (The water capacity rate is then $q/30=5040$ W/K.)",
+     "latex": "q=\\dot m_hc_{p,h}(T_{h,i}-T_{h,o})"
+    },
+    {
+     "text": "Counterflow end differences: hot inlet faces cold outlet, so $\\Delta T_1=T_{h,i}-T_{c,o}=150-55=95$ K and hot outlet faces cold inlet, $\\Delta T_2=T_{h,o}-T_{c,i}=90-25=65$ K.",
+     "latex": "\\Delta T_1=T_{h,i}-T_{c,o},\\quad \\Delta T_2=T_{h,o}-T_{c,i}"
+    },
+    {
+     "text": "Log mean: $\\Delta T_{lm}=(95-65)/\\ln(95/65)=79.1$ K.",
+     "latex": "\\Delta T_{lm}=\\frac{\\Delta T_1-\\Delta T_2}{\\ln(\\Delta T_1/\\Delta T_2)}"
+    },
+    {
+     "text": "Area: $A=q/(U\\Delta T_{lm})=151200/(256.3\\times79.1)=7.46$ m$^2$.",
+     "latex": "A=\\frac{q}{U\\,\\Delta T_{lm}}"
+    },
+    {
+     "text": "Parallel flow, same terminal temperatures: $\\Delta T_1=150-25=125$ K, $\\Delta T_2=90-55=35$ K, $\\Delta T_{lm}=70.7$ K and $A=8.34$ m$^2$, which is 12% larger."
+    }
+   ],
+   "answer": "Counterflow needs $A\\approx7.5$ m$^2$; parallel flow would need about 8.3 m$^2$ because its log-mean difference is only 71 K."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Use an energy balance on the stream with known inlet and outlet temperatures: $q=\\dot mc_p\\Delta T$.",
+    "Find the missing outlet temperature from the other stream's energy balance, $q=C_c(T_{c,o}-T_{c,i})$.",
+    "Write $\\Delta T_1$ and $\\Delta T_2$ for the arrangement, then $\\Delta T_{lm}$.",
+    "Determine $U$ from the film coefficients, wall and fouling resistances.",
+    "Compute $A=q/(U\\Delta T_{lm})$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Do not mix up the pairings: in counterflow it is hot inlet with cold outlet. If $\\Delta T_1=\\Delta T_2$ the formula gives $0/0$ and the LMTD equals that common value. Do not add fouling resistances as $h$ values: they are resistances ($R''$) and add to $1/U$. LMTD for a multipass or cross-flow exchanger needs a correction factor (not covered here)."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Fouling margin",
+   "text": "The clean $U$ is optimistic. A design must use the fouled $U$, so the exchanger is oversized (more area) to keep its duty after deposits build up."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$q=UA\\Delta T_{lm}$ with $1/U=1/h_i+R''_{f,i}+t/k+R''_{f,o}+1/h_o$ (thin wall).",
+    "Counterflow: $\\Delta T_1=T_{h,i}-T_{c,o}$ and $\\Delta T_2=T_{h,o}-T_{c,i}$. Parallel: $\\Delta T_1=T_{h,i}-T_{c,i}$ and $\\Delta T_2=T_{h,o}-T_{c,o}$.",
+    "$\\Delta T_{lm}=(\\Delta T_1-\\Delta T_2)/\\ln(\\Delta T_1/\\Delta T_2)$; counterflow gives the larger value and smaller area.",
+    "Required area $A=q/(U\\Delta T_{lm})$; fouling raises the area needed."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a counterflow heat exchanger, the temperature differences used in the LMTD are",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\Delta T_1=T_{h,i}-T_{c,o}$ and $\\Delta T_2=T_{h,o}-T_{c,i}$"
+    },
+    {
+     "id": "b",
+     "text": "$\\Delta T_1=T_{h,i}-T_{c,i}$ and $\\Delta T_2=T_{h,o}-T_{c,o}$"
+    },
+    {
+     "id": "c",
+     "text": "$\\Delta T_1=T_{h,i}-T_{h,o}$ and $\\Delta T_2=T_{c,o}-T_{c,i}$"
+    },
+    {
+     "id": "d",
+     "text": "$\\Delta T_1=T_{h,o}-T_{c,o}$ and $\\Delta T_2=T_{h,i}-T_{c,i}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\Delta T_1=T_{h,i}-T_{c,o}$ and $\\Delta T_2=T_{h,o}-T_{c,i}$",
+   "distractorRationale": {
+    "b": "These are the end differences for parallel flow.",
+    "c": "These are temperature changes of each stream, not the difference between the streams at an end.",
+    "d": "These pair the wrong ends of the exchanger for counterflow."
+   },
+   "explanation": "In counterflow the hot fluid enters at the end where the cold fluid leaves, so that end has $T_{h,i}-T_{c,o}$; the other end has $T_{h,o}-T_{c,i}$. The pairs are always differences between the two streams at the same end of the exchanger.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "When fouling builds up on the tube surfaces of an exchanger, with the film coefficients unchanged, the overall coefficient $U$",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "increases, because the deposit is a good conductor"
+    },
+    {
+     "id": "b",
+     "text": "is unchanged, because it depends only on the film coefficients"
+    },
+    {
+     "id": "c",
+     "text": "increases, because the surface becomes rougher"
+    },
+    {
+     "id": "d",
+     "text": "decreases, because fouling adds a thermal resistance in series"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "decreases, because fouling adds a thermal resistance in series",
+   "distractorRationale": {
+    "a": "Deposits are usually poor conductors, and in any case they add a resistance.",
+    "b": "$U$ includes every series resistance, including fouling.",
+    "c": "Roughness may change $h$, but fouling resistance itself lowers $U$."
+   },
+   "explanation": "Fouling resistances $R''_f$ add to $1/U$, so $U$ falls and the exchanger delivers less duty for the same area and temperatures. Designers therefore apply a fouling allowance.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a parallel-flow exchanger, hot fluid cools from 120 $^\\circ$C to 70 $^\\circ$C while cold fluid heats from 20 $^\\circ$C to 60 $^\\circ$C. Find the log-mean temperature difference in K.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o2"
+   ],
+   "correctValue": 39.09,
+   "tolerance": 0.1,
+   "unit": "K",
+   "explanation": "For parallel flow, $\\Delta T_1=120-20=100$ K at the inlet end and $\\Delta T_2=70-60=10$ K at the outlet end. So $\\Delta T_{lm}=(100-10)/\\ln(100/10)=39.09$ K. The cold outlet (60 $^\\circ$C) is below the hot outlet (70 $^\\circ$C), as it must be in parallel flow.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Hot exhaust gas cools from 400 $^\\circ$C to 250 $^\\circ$C in a counterflow heat exchanger while water is heated from 30 $^\\circ$C to 90 $^\\circ$C. Find the log-mean temperature difference in K.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o2"
+   ],
+   "correctValue": 262.4,
+   "tolerance": 0.5,
+   "unit": "K",
+   "explanation": "Counterflow: $\\Delta T_1=T_{h,i}-T_{c,o}=400-90=310$ K and $\\Delta T_2=T_{h,o}-T_{c,i}=250-30=220$ K. $\\Delta T_{lm}=(310-220)/\\ln(310/220)=262.4$ K, slightly below the arithmetic mean of 265 K.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A thin-walled tube (wall resistance negligible) has an inside film coefficient of 1500 W/m$^2$K and an outside film coefficient of 800 W/m$^2$K. The fouling resistances are $R''_{f,i}=0.0003$ m$^2$K/W and $R''_{f,o}=0.0001$ m$^2$K/W. Find the overall coefficient $U$ in W/m$^2$K, treating inner and outer areas as equal.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o1"
+   ],
+   "correctValue": 431.7,
+   "tolerance": 2.0,
+   "unit": "W/m^2K",
+   "explanation": "$1/U=1/1500+0.0003+0.0001+1/800=0.000667+0.0003+0.0001+0.00125=0.002317$ m$^2$K/W, so $U=431.7$ W/m$^2$K. The outside film (0.00125) is the largest resistance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For the same terminal temperatures and the same $U$, which statement about LMTD and area is correct?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o2",
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Parallel flow has the larger LMTD and so needs a smaller area"
+    },
+    {
+     "id": "b",
+     "text": "Both arrangements have the same LMTD for the same terminal temperatures"
+    },
+    {
+     "id": "c",
+     "text": "Counterflow has the larger LMTD and so needs a smaller area than parallel flow"
+    },
+    {
+     "id": "d",
+     "text": "The area is independent of LMTD since $q$ is fixed"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Counterflow has the larger LMTD and so needs a smaller area than parallel flow",
+   "distractorRationale": {
+    "a": "It is the reverse: parallel flow has a small end difference at the outlet.",
+    "b": "The end differences are paired differently, so the LMTDs differ.",
+    "d": "$A=q/(U\\Delta T_{lm})$ depends directly on LMTD."
+   },
+   "explanation": "Counterflow keeps a more even temperature difference along the exchanger, so its log-mean is larger. Since $A=q/(U\\Delta T_{lm})$, a larger $\\Delta T_{lm}$ means a smaller area.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "If the two end temperature differences of an exchanger are equal, $\\Delta T_1=\\Delta T_2$, the LMTD formula is indeterminate ($0/0$) but the LMTD equals that common difference.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "As $\\Delta T_1\\to\\Delta T_2$, the limit of $(\\Delta T_1-\\Delta T_2)/\\ln(\\Delta T_1/\\Delta T_2)$ is $\\Delta T_1$ by L'Hopital's rule. This happens for a balanced counterflow exchanger with equal capacity rates, where the temperature difference is uniform along the length.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Define the overall heat transfer coefficient and explain why a fouling resistance is added to $1/U$ instead of being added to $h$. Say which area $U$ must be referred to for a tube.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o1"
+   ],
+   "markingGuide": [
+    "$U$ is the reciprocal of the sum of thermal resistances per unit area between the two fluids: $q=UA\\Delta T$.",
+    "Series resistances add; fouling is a layer in series with each film and the wall, so $R''_f$ adds to $1/U$ (it is not a convective coefficient).",
+    "A large fouling resistance lowers $U$, so more area is needed for the same duty.",
+    "For a tube $U$ must state the reference area (inner or outer), because $U_iA_i=U_oA_o$ for the same total resistance."
+   ],
+   "explanation": "The answer rests on the series-resistance picture. The reference-area point stops students from mixing inner and outer areas for tube exchangers.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why, for the same inlet and outlet temperatures, a counterflow exchanger needs less surface area than a parallel flow exchanger. State one limitation of parallel flow on outlet temperatures.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o2",
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o3"
+   ],
+   "markingGuide": [
+    "For fixed terminal temperatures the duty $q$ is fixed, and $A=q/(U\\Delta T_{lm})$.",
+    "In counterflow the end differences ($T_{h,i}-T_{c,o}$ and $T_{h,o}-T_{c,i}$) are more equal, giving a larger LMTD than parallel flow, whose outlet difference $T_{h,o}-T_{c,o}$ is small.",
+    "A larger LMTD gives a smaller $A$.",
+    "In parallel flow the cold outlet cannot exceed the hot outlet temperature, whereas counterflow allows it."
+   ],
+   "explanation": "The log-mean average is larger when the two end differences are closer. Parallel flow forces the streams to approach each other at the outlet, wasting driving force.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A counterflow exchanger heats 0.8 kg/s of water ($c_p=4180$ J/kg K) from 15 $^\\circ$C to 45 $^\\circ$C using hot water entering at 85 $^\\circ$C and leaving at 50 $^\\circ$C. The inside film coefficient is 3000 W/m$^2$K, the outside is 1500 W/m$^2$K, the stainless wall is 1.5 mm thick with $k=16$ W/m K and the total fouling resistance is 0.0003 m$^2$K/W (plane-wall approximation, equal areas). Find the required heat transfer area in m$^2$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o1",
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o2",
+    "ug.mce-heat-transfer.heat-exchangers.lmtd-method.o3"
+   ],
+   "correctValue": 3.73,
+   "tolerance": 0.1,
+   "unit": "m^2",
+   "explanation": "The duty is $q=0.8\\times4180\\times30=100320$ W. Resistances: $1/3000+1/1500+0.0015/16+0.0003=0.001394$, so $U=717.5$ W/m$^2$K. Counterflow differences are $85-45=40$ K and $50-15=35$ K, giving $\\Delta T_{lm}=37.44$ K. Then $A=q/(U\\Delta T_{lm})=100320/(717.5\\times37.44)=3.73$ m$^2$.",
+   "board": "internal"
+  }
+ ]
+}

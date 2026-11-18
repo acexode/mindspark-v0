@@ -1,0 +1,403 @@
+{
+ "lessonTitle": "Failure Modes and Effects Analysis: Ranking and Reducing Risk",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A gearbox on a packaging line runs for 14 months and then seizes on a Friday night. The post-mortem finds a hardened shaft seal that had been leaking for weeks, letting grease escape until the bearing ran dry. Every link in that chain could have been anticipated on paper before the gearbox was built, which is exactly what failure modes and effects analysis (FMEA) is for."
+  },
+  {
+   "type": "text",
+   "markdown": "**FMEA** is a structured, team-based method for anticipating how each part or function of a design could fail, what that would do to the user and the system, why it could happen, and how it would be noticed. Done during design, it is cheap: changing a drawing costs far less than recalling a product. The method is applied to a subsystem broken down into items, and for each item the team fills in one row per failure mode."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Failure mode, effect and cause",
+   "text": "A **failure mode** is the way an item stops performing its function (for example, a rod seal leaks externally). An **effect** is the consequence for the next higher level or the user (for example, loss of hydraulic pressure and oil on the floor). A **cause** is the reason the mode occurs, in terms of design, material, manufacturing or use (for example, a scored rod surface wearing the seal lip). Keeping the three distinct is the central skill of the method."
+  },
+  {
+   "type": "text",
+   "markdown": "**Ranking with ratings.** Each failure mode is rated on three scales, usually from 1 to 10 (typical industry practice; the exact meaning of each level is defined by the team before the analysis starts): **Severity** $S$ (how bad the effect is; 10 is a safety hazard without warning), **Occurrence** $O$ (how often the cause is expected to occur; 10 is almost certain) and **Detection** $D$ (how likely the current controls are to catch the failure or cause before the customer is affected; here 10 means that detection is almost impossible, so a high number is bad)."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathrm{RPN}=S\\times O\\times D",
+   "caption": "Risk priority number, from 1 to 1000 on three 1-10 scales. Higher means higher priority for action."
+  },
+  {
+   "type": "worked_example",
+   "title": "Ranking three failure modes of a gearbox output stage",
+   "prompt": "The team rates three modes: shaft seal lip wear (S = 7, O = 5, D = 4), bearing spalling by fatigue (S = 9, O = 3, D = 6) and flange bolt loosening (S = 8, O = 4, D = 3). Compute the RPNs and rank them.",
+   "steps": [
+    {
+     "text": "Seal lip wear: multiply the three ratings together.",
+     "latex": "\\mathrm{RPN}=7\\times5\\times4=140"
+    },
+    {
+     "text": "Bearing spalling: multiply severity, occurrence and detection.",
+     "latex": "\\mathrm{RPN}=9\\times3\\times6=162"
+    },
+    {
+     "text": "Flange bolt loosening: multiply severity, occurrence and detection.",
+     "latex": "\\mathrm{RPN}=8\\times4\\times3=96"
+    },
+    {
+     "text": "Rank from highest: bearing spalling (162), seal wear (140), bolt loosening (96)."
+    }
+   ],
+   "answer": "Bearing spalling has the highest priority with RPN 162."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Failure mode",
+    "Typical effect",
+    "Typical cause",
+    "Typical current control"
+   ],
+   "rows": [
+    [
+     "Seal lip wear",
+     "Grease loss, bearing starvation",
+     "Abrasive contamination, shaft surface roughness",
+     "Visual leak check at service"
+    ],
+    [
+     "Bearing spalling",
+     "Noise, seizure of shaft",
+     "Overload, lubricant film breakdown",
+     "Vibration check at service"
+    ],
+    [
+     "Bolt loosening",
+     "Flange leak, misalignment",
+     "Insufficient preload, vibration",
+     "Torque audit at assembly"
+    ],
+    [
+     "Spring fracture",
+     "Valve stuck open",
+     "Fatigue from stress range, corrosion",
+     "Proof test at manufacture"
+    ]
+   ],
+   "caption": "Typical rows of a mechanical FMEA worksheet."
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing and re-scoring actions.** Actions are ranked by RPN, but severity is always checked separately: a severity of 9 or 10 needs attention regardless of how small the product is. The three ratings respond to different kinds of action. A **design change** (larger fillet radius, better material, redundancy) lowers occurrence, and sometimes severity. **Better controls** (inspection, sensors, test) lower detection numbers. Only a design change that removes the effect or adds a safe-fail path lowers severity. After the action is implemented the ratings are re-estimated, and a new RPN is calculated to show the benefit."
+  },
+  {
+   "type": "worked_example",
+   "title": "Action and re-score for bearing spalling",
+   "prompt": "For bearing spalling (S = 9, O = 3, D = 6) the team adds a vibration sensor that gives early warning (detection improves from 6 to 3) and keeps the other ratings. Compute the new RPN and the percentage reduction.",
+   "steps": [
+    {
+     "text": "New RPN with $D=3$.",
+     "latex": "\\mathrm{RPN}_{\\mathrm{new}}=9\\times3\\times3=81"
+    },
+    {
+     "text": "Reduction relative to 162.",
+     "latex": "\\frac{162-81}{162}=0.50"
+    },
+    {
+     "text": "Note that severity is still 9: if the bearing does fail, the effect on the line is unchanged. A further design action (for example a larger bearing or better lubrication) would be needed to reduce occurrence."
+    }
+   ],
+   "answer": "New RPN is 81, a 50% reduction, achieved through detection only."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "List items and their functions.",
+    "For each item list failure modes, then effects, then causes.",
+    "Rate $S$, $O$, $D$ using a scale agreed in advance.",
+    "Compute RPN and rank; separately flag high-severity items.",
+    "Propose actions, assign owners, implement, then re-rate and recompute RPN."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "RPN has known weaknesses",
+   "text": "Multiplying three ordinal ratings can hide risk: a severity 10 item with $O=1$ and $D=2$ has an RPN of only 20, lower than a harmless item rated 5, 5, 5 (125). That is why severity is reviewed on its own, and why the RPN is a ranking aid rather than a measure of probability."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Write the failure mode in terms of function",
+   "text": "A good failure mode statement says what the item fails to do, not just what broke. 'Seal fails to retain lubricant' is better than 'seal broken', because it leads naturally to effects and causes."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "FMEA lists failure modes, their effects and their causes for each item in a subsystem.",
+    "$\\mathrm{RPN}=S\\times O\\times D$ on 1-10 scales ranks the modes; severity is also checked on its own.",
+    "Design changes mainly reduce occurrence, controls reduce detection numbers, and the new RPN is recomputed after the action to show benefit."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a hydraulic cylinder, an engineer writes: 'oil leaks along the piston rod.' In an FMEA row, how should this statement be classified?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A failure mode of the rod seal"
+    },
+    {
+     "id": "b",
+     "text": "A cause of the loss of pressure"
+    },
+    {
+     "id": "c",
+     "text": "A detection control"
+    },
+    {
+     "id": "d",
+     "text": "A severity rating"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A failure mode of the rod seal",
+   "distractorRationale": {
+    "a": "Correct: it describes the way the rod seal fails to perform its sealing function.",
+    "b": "The leak is the mode itself; a cause would be something like a scored rod.",
+    "c": "A control is a check or test to find the failure, not the failure itself.",
+    "d": "A rating is a number from a scale, not a description."
+   },
+   "explanation": "A failure mode is the manner in which the function is lost. Loss of pressure would be the effect of the leak, and a scored rod surface would be a cause.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A bolted cover flange loses clamp load in service. Which entry is a cause, rather than a mode or effect?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Insufficient tightening torque at assembly"
+    },
+    {
+     "id": "b",
+     "text": "Loss of clamp load"
+    },
+    {
+     "id": "c",
+     "text": "Oil leakage at the flange"
+    },
+    {
+     "id": "d",
+     "text": "Misalignment of the connected pump"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Insufficient tightening torque at assembly",
+   "distractorRationale": {
+    "a": "Correct: it explains why the mode occurs.",
+    "b": "This is the failure mode itself.",
+    "c": "This is an effect of the mode.",
+    "d": "This is another consequence of the lost clamping force, an effect."
+   },
+   "explanation": "A cause answers 'why did it happen', whereas a mode says 'how did the function fail' and an effect says 'what resulted'. Too little torque gives too little preload, which leads to loss of clamping.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Four failure modes are rated (S, O, D): (9, 2, 2), (5, 5, 5), (8, 4, 3) and (3, 8, 6). Which has the highest RPN?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The one rated (3, 8, 6) with an RPN of 144"
+    },
+    {
+     "id": "b",
+     "text": "The one rated (9, 2, 2) with an RPN of 36"
+    },
+    {
+     "id": "c",
+     "text": "The one rated (5, 5, 5) with an RPN of 125"
+    },
+    {
+     "id": "d",
+     "text": "The one rated (8, 4, 3) with an RPN of 96"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The one rated (3, 8, 6) with an RPN of 144",
+   "distractorRationale": {
+    "a": "Correct: $3\\times8\\times6=144$ is the largest product.",
+    "b": "This has the highest severity but the product is only 36.",
+    "c": "This gives 125, below 144.",
+    "d": "This gives 96, below 144."
+   },
+   "explanation": "RPN is the product of the three ratings, so the highest value is not necessarily the one with the highest severity. The products are 36, 125, 96 and 144.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A failure mode of a lifting hook latch has S = 10, O = 1, D = 2, so its RPN is 20, lower than many routine items. What is the correct way to treat it?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Review it anyway because of the top severity rating, regardless of the low RPN"
+    },
+    {
+     "id": "b",
+     "text": "Ignore it because an RPN of 20 is below any reasonable action threshold"
+    },
+    {
+     "id": "c",
+     "text": "Reduce its severity rating on paper to match the RPN"
+    },
+    {
+     "id": "d",
+     "text": "Double its detection rating so the RPN rises"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Review it anyway because of the top severity rating, regardless of the low RPN",
+   "distractorRationale": {
+    "a": "Correct: RPN can mask a catastrophic effect, so high severity is reviewed independently.",
+    "b": "The product hides a potentially lethal outcome.",
+    "c": "Altering a rating without a design change is not acceptable.",
+    "d": "Changing a rating to inflate the RPN is arbitrary and unjustified."
+   },
+   "explanation": "Multiplication lets low occurrence and detection numbers hide a hazard. Practitioners therefore look at severity as its own criterion and treat safety-critical effects as priorities.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A fatigue crack at a shaft shoulder is the top-ranked failure mode. Which action most directly reduces its occurrence rating?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Increase the shoulder fillet radius to lower the stress concentration"
+    },
+    {
+     "id": "b",
+     "text": "Add a visual inspection before dispatch"
+    },
+    {
+     "id": "c",
+     "text": "Add a note in the manual to check for cracks"
+    },
+    {
+     "id": "d",
+     "text": "Paint the shaft so that cracks are visible"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Increase the shoulder fillet radius to lower the stress concentration",
+   "distractorRationale": {
+    "a": "Correct: a larger fillet lowers the local stress and so makes cracking less likely.",
+    "b": "Inspection changes the chance of detection, not the chance of occurrence.",
+    "c": "A manual note affects detection or use, not the cause.",
+    "d": "Paint changes visibility only."
+   },
+   "explanation": "A design action that attacks the cause lowers occurrence. Inspection, notes and visibility improve only the detection rating, leaving the crack just as likely to form.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A failure mode of a conveyor roller bearing is rated severity 8, occurrence 6 and detection 4 on the usual 1-10 scales. Compute the risk priority number (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o2"
+   ],
+   "correctValue": 192,
+   "tolerance": 0.5,
+   "unit": "dimensionless",
+   "explanation": "The RPN is $8\\times6\\times4=192$. This number only has meaning as a ranking against other modes in the same analysis.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A spring-loaded relief valve has a failure mode rated S = 7, O = 6, D = 6 (RPN 252). The team adds a leak test on every valve before dispatch, which improves the detection rating to 2 while the other ratings are unchanged. Compute the new RPN (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o2",
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o3"
+   ],
+   "correctValue": 84,
+   "tolerance": 0.5,
+   "unit": "dimensionless",
+   "explanation": "The new RPN is $7\\times6\\times2=84$. Only detection changed, so the product is reduced in proportion to $D$: $2/6$ of the original.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A mode starts with S = 9, O = 5, D = 7. A redesign (stronger section) lowers occurrence to 2, and added instrumentation lowers detection to 4, with severity unchanged. Compute the percentage reduction in RPN, to one decimal place.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o3"
+   ],
+   "correctValue": 77.142857,
+   "tolerance": 0.2,
+   "unit": "%",
+   "explanation": "The original RPN is $9\\times5\\times7=315$ and the new value is $9\\times2\\times4=72$. The reduction is $(315-72)/315=0.771$, or 77.1%.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A folding hinge on a scooter stem locks with a spring-loaded latch and a clamp. For this hinge, produce a short FMEA listing at least three failure modes, and for each give an effect and a cause.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o1"
+   ],
+   "markingGuide": [
+    "Failure modes written in terms of lost function (for example latch fails to hold, clamp loses grip, hinge pin fractures)",
+    "An effect for each mode at user or system level (stem collapses, rider falls, rattle)",
+    "A plausible physical cause for each (spring fatigue, worn latch, overload or insufficient clamp preload)",
+    "Keeps mode, effect and cause distinct",
+    "Optional mention of a current control for each"
+   ],
+   "explanation": "A complete row separates what failed, what that did to the user, and why it happened. The effect of the latch not holding is serious, so it deserves a high severity rating.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Two failure modes of a lifting device are: A (S = 10, O = 3, D = 4) and B (S = 5, O = 5, D = 6). Compute both RPNs, say which you would address first and why, and propose one action for each with the rating that the action would change.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o2",
+    "ug.mce-machine-design-project.reliability-fmea.fmea.o3"
+   ],
+   "markingGuide": [
+    "RPN of A is $10\\times3\\times4=120$ and of B is $5\\times5\\times6=150$",
+    "Notes that B has the higher RPN but A has severity 10, so A is addressed first or in parallel",
+    "Action for A is a design change that reduces severity or occurrence (for example a redundant safety latch or larger section)",
+    "Action for B changes detection or occurrence (for example proof test or better material) with the rating named",
+    "Re-computes RPN after the action and shows the benefit"
+   ],
+   "explanation": "Ranking by RPN alone would put B first, but a severity of 10 means the consequence is potentially a safety hazard. Therefore the severity rating takes precedence, and actions must show a re-scored RPN.",
+   "board": "internal"
+  }
+ ]
+}

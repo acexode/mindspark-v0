@@ -1,0 +1,404 @@
+{
+ "lessonTitle": "Creep Design Methods: Larson-Miller and Creep Deflection",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A steam pipe is designed for 100 000 hours of service at 540 °C, but nobody can run a 100 000 h test before the plant is built. Engineers test hotter and shorter, say 1000 h at 650 °C, and convert the result. The Larson-Miller parameter is the standard way of doing that conversion."
+  },
+  {
+   "type": "text",
+   "markdown": "Creep rupture is thermally activated, so time and temperature trade off: a higher temperature gives the same damage in a shorter time. Larson and Miller proposed that, for a given material and stress, a single combination of temperature and rupture time is constant. Tests at high temperature and short times can then predict long-term lives at lower temperature."
+  },
+  {
+   "type": "math",
+   "latex": "P = T\\,(C + \\log_{10} t_r)",
+   "caption": "Larson-Miller parameter. $T$ = absolute temperature (K), $t_r$ = rupture time (hours), $C$ = material constant, about 20 for many steels (typical value; use the supplied value for a given alloy). $P$ depends on the stress: higher stress gives a lower $P$."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Using the parameter",
+   "text": "At a given stress the same $P$ applies for every combination of $T$ and $t_r$, so $T_1(C+\\log t_1)=T_2(C+\\log t_2)$. Hence rupture life $t_2=10^{P/T_2-C}$. Raising temperature at constant stress always shortens life."
+  },
+  {
+   "type": "worked_example",
+   "title": "Predicting rupture life at a different temperature",
+   "prompt": "A tube ruptured in 5000 h at 600 °C under a given stress. Using $C=20$, predict its rupture life at the same stress at 650 °C.",
+   "steps": [
+    {
+     "text": "Convert to kelvin: $T_1=873$ K, $T_2=923$ K. Compute $P$.",
+     "latex": "P = 873\\,(20+\\log_{10}5000) = 873\\times23.699 = 2.0689\\times10^{4}"
+    },
+    {
+     "text": "Solve for $\\log t_2$ at 923 K.",
+     "latex": "\\log_{10}t_2 = \\frac{2.0689\\times10^{4}}{923} - 20 = 2.415"
+    },
+    {
+     "text": "Convert back.",
+     "latex": "t_2 = 10^{2.415} = 260\\ \\text{h}"
+    },
+    {
+     "text": "Direction check: a 50 K rise at the same stress shortens life from 5000 h to a few hundred hours, as expected."
+    }
+   ],
+   "answer": "About 260 h at 650 °C."
+  },
+  {
+   "type": "text",
+   "markdown": "**Creep deflection.** In design we often need to know how much a component will stretch or sag in service. Where the stress is steady and secondary creep dominates, the strain is just the minimum creep rate times the time, and the extension of a member of length $L$ is strain times $L$. For a stress that changes (a beam, say) a more detailed calculation is needed, but the principle is the same."
+  },
+  {
+   "type": "math",
+   "latex": "\\varepsilon_c = \\dot\\varepsilon_s\\,t, \\qquad \\Delta L = \\varepsilon_c\\,L",
+   "caption": "Creep strain and extension of a uniformly stressed member in steady-state creep. Include only secondary creep; primary creep adds a small initial strain."
+  },
+  {
+   "type": "worked_example",
+   "title": "Extension of a hanger rod over the design life",
+   "prompt": "A 3 m hanger rod carries a steady tensile stress of 90 MPa at a temperature where Norton's law gives $\\dot\\varepsilon_s=B\\sigma^n$ with $B=1.7\\times10^{-21}$ s$^{-1}$MPa$^{-5}$ and $n=5$ (assumed). Find the extension in 25 years of continuous service (1 year = 8760 h).",
+   "steps": [
+    {
+     "text": "Strain rate.",
+     "latex": "\\dot\\varepsilon_s = 1.7\\times10^{-21}\\times90^5 = 1.7\\times10^{-21}\\times5.905\\times10^{9} = 1\\times10^{-11}\\ \\text{s}^{-1}"
+    },
+    {
+     "text": "Time in seconds: $25\\times8760\\times3600$.",
+     "latex": "t = 7.884\\times10^{8}\\ \\text{s}"
+    },
+    {
+     "text": "Creep strain.",
+     "latex": "\\varepsilon_c = 1\\times10^{-11}\\times7.884\\times10^{8} = 0.00791"
+    },
+    {
+     "text": "Extension.",
+     "latex": "\\Delta L = 0.00791\\times3000\\ \\text{mm} = 23.7\\ \\text{mm}"
+    }
+   ],
+   "answer": "About 23.7 mm over 25 years (0.79 percent strain)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Alloy class (typical)",
+    "Approximate maximum long-term service temperature",
+    "Notes"
+   ],
+   "rows": [
+    [
+     "Carbon and C-Mn steel",
+     "About 400 °C",
+     "Cheap; poor creep strength beyond this"
+    ],
+    [
+     "Low-alloy Cr-Mo steel",
+     "About 550 °C",
+     "Good strength and weldability"
+    ],
+    [
+     "9-12% Cr ferritic-martensitic steel",
+     "About 600 to 620 °C",
+     "Higher strength; used in modern steam plant"
+    ],
+    [
+     "Austenitic stainless steel",
+     "About 650 to 700 °C",
+     "Good creep and oxidation resistance; higher cost"
+    ],
+    [
+     "Nickel-base superalloy",
+     "Above 800 °C, blades to about 1000 °C",
+     "Highest creep strength; costly; used in gas turbines"
+    ]
+   ],
+   "caption": "Typical indicative ranges only; real limits depend on stress, life, environment and code. Check supplier and code data."
+  },
+  {
+   "type": "text",
+   "markdown": "**Selecting a material.** The design criterion is usually a stress for rupture (or for a specified creep strain) at the service temperature and life, read from rupture-stress against LMP curves or from tables. Choose the cheapest material that has an adequate allowable stress and also resists oxidation, can be welded and has adequate creep ductility, so that it deforms and warns before breaking."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "If service temperature is within the capability of a cheaper alloy, use it; otherwise move up the table.",
+    "Compare allowable stress at the same temperature and life (for example stress for rupture in 100 000 h).",
+    "Check creep ductility, oxidation resistance, weldability and cost, not strength alone."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not extrapolate blindly",
+   "text": "LMP extrapolation assumes that the same mechanism operates in the test and in service, and that $C$ is accurate. A change in mechanism (for example precipitate coarsening or an oxidation effect) can make very long-life predictions unconservative, so large extrapolations need a safety margin."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$P=T(C+\\log_{10}t_r)$ is constant at a given stress, so rupture life at another temperature is $t_2=10^{P/T_2-C}$ (temperature in kelvin).",
+    "In steady-state creep, strain is $\\dot\\varepsilon_s t$ and deflection is strain times length.",
+    "Select the material with adequate rupture strength at the service temperature and life, plus acceptable ductility, oxidation resistance and cost."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the Larson-Miller parameter $P=T(C+\\log_{10}t_r)$, which unit must be used for the temperature $T$?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Degrees Celsius"
+    },
+    {
+     "id": "b",
+     "text": "Degrees Fahrenheit"
+    },
+    {
+     "id": "c",
+     "text": "Kelvin"
+    },
+    {
+     "id": "d",
+     "text": "Any unit, as long as it is consistent"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Kelvin",
+   "distractorRationale": {
+    "a": "Celsius gives wrong ratios.",
+    "b": "Fahrenheit is not absolute.",
+    "c": "Correct: absolute temperature.",
+    "d": "The parameter requires an absolute scale."
+   },
+   "explanation": "The parameter represents the thermally activated nature of creep, which depends on absolute temperature. Using Celsius gives meaningless values because zero on that scale is arbitrary.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A gas-turbine blade must operate at about 900 °C under high stress for long periods. Which material class is the most appropriate?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Carbon steel"
+    },
+    {
+     "id": "b",
+     "text": "Low-alloy Cr-Mo steel"
+    },
+    {
+     "id": "c",
+     "text": "Nickel-base superalloy"
+    },
+    {
+     "id": "d",
+     "text": "Aluminium alloy"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Nickel-base superalloy",
+   "distractorRationale": {
+    "a": "Carbon steel is limited to about 400 °C.",
+    "b": "Cr-Mo steel is limited to about 550 °C.",
+    "c": "Correct: it retains creep strength above 800 °C.",
+    "d": "Aluminium melts around 660 °C."
+   },
+   "explanation": "Only nickel-base superalloys retain creep strength at these temperatures. The others are well beyond their useful range, either by rapid creep or by approaching the melting point.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a given stress, a component is operated 25 K hotter than the design temperature. According to the Larson-Miller approach, what happens to the rupture life?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is lengthened"
+    },
+    {
+     "id": "b",
+     "text": "It is shortened, because the same $P$ now corresponds to a smaller $\\log t_r$"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "It becomes infinite"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It is shortened, because the same $P$ now corresponds to a smaller $\\log t_r$",
+   "distractorRationale": {
+    "a": "Hotter material creeps faster.",
+    "b": "Correct: higher $T$ with the same $P$ requires a smaller $\\log t_r$.",
+    "c": "Temperature controls creep life strongly.",
+    "d": "No life is infinite."
+   },
+   "explanation": "At fixed stress $P=T(C+\\log t_r)$ is constant, so raising $T$ lowers $C+\\log t_r$ and hence the rupture time. A 25 K excursion can reduce life by a large factor.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A component creeps in steady state at a constant rate. If it is kept in service for twice the planned life, what happens to the creep extension?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases by a factor of 4"
+    },
+    {
+     "id": "b",
+     "text": "It stays the same"
+    },
+    {
+     "id": "c",
+     "text": "It doubles"
+    },
+    {
+     "id": "d",
+     "text": "It increases by $\\sqrt{2}$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It doubles",
+   "distractorRationale": {
+    "a": "That would need a quadratic time dependence.",
+    "b": "Creep strain accumulates with time.",
+    "c": "Correct: strain is rate times time.",
+    "d": "Steady creep is linear in time."
+   },
+   "explanation": "In secondary creep the strain rate is constant, so strain and extension are proportional to time. Doubling the service time therefore doubles the extension, until tertiary creep begins.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two alloys A and B are both acceptable on cost and weldability. At the service temperature, alloy A has a stress for 100 000 h rupture of 60 MPa and alloy B has 90 MPa; the design stress is 70 MPa. Which is the correct decision?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Choose A because it is weaker"
+    },
+    {
+     "id": "b",
+     "text": "Either, because both are acceptable"
+    },
+    {
+     "id": "c",
+     "text": "Neither, because creep is not relevant"
+    },
+    {
+     "id": "d",
+     "text": "Choose B, because A would rupture before 100 000 h at 70 MPa"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Choose B, because A would rupture before 100 000 h at 70 MPa",
+   "distractorRationale": {
+    "a": "Weaker is not better.",
+    "b": "A fails the 70 MPa requirement.",
+    "c": "Creep is the governing criterion here.",
+    "d": "Correct: allowable stress must exceed the design stress."
+   },
+   "explanation": "The design stress of 70 MPa exceeds the 60 MPa that alloy A can sustain for 100 000 h, so A would rupture early. Alloy B has 90 MPa, which gives margin.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A tube was tested to rupture in 20 000 h at 550 °C (823 K). Using $C=20$, compute the Larson-Miller parameter $P=T(C+\\log_{10}t_r)$.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o1"
+   ],
+   "correctValue": 19999.7,
+   "tolerance": 20.0,
+   "unit": "K (with t in hours)",
+   "explanation": "$\\log_{10}20000=4.301$, so $P=823\\times(20+4.301)=823\\times24.301=2\\times10^{4}$. Time must be in hours and temperature in kelvin.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 1.5 m steam-pipe support rod creeps in steady state at $2\\times10^{-11}$ s$^{-1}$. Find its total extension, in mm, over 10 years of continuous service (1 year = 8760 h).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o2"
+   ],
+   "correctValue": 9.4608,
+   "tolerance": 0.2,
+   "unit": "mm",
+   "explanation": "Time is $10\\times8760\\times3600=3.154\\times10^{8}$ s, so strain is $2\\times10^{-11}\\times3.154\\times10^{8}=0.00631$. Extension is $0.00631\\times1500=9.46$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A superheater tube ruptured after 800 h at 680 °C (953 K) at a given stress. Using the Larson-Miller approach with $C=20$, predict the rupture life in hours at the same stress at 620 °C (893 K).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o1"
+   ],
+   "correctValue": 27665.0,
+   "tolerance": 829.951,
+   "unit": "h",
+   "explanation": "$P=953\\times(20+\\log_{10}800)=953\\times22.903=2.1827\\times10^{4}$. Then $\\log_{10}t=P/893-20=4.442$, so $t=2.77\\times10^{4}$ h. The life is much longer at the lower temperature, as expected.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "List the factors you would consider when selecting a material for a pipe that will operate at 600 °C for 100 000 h, and explain why rupture strength alone is not sufficient.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o3"
+   ],
+   "markingGuide": [
+    "Allowable stress for rupture (and creep strain limit) at the service temperature and life",
+    "Creep ductility so that failure is preceded by deformation",
+    "Oxidation and corrosion resistance at temperature",
+    "Weldability, fabrication and thermal-fatigue behaviour",
+    "Cost and availability, balancing with the cheapest adequate class"
+   ],
+   "explanation": "Strength is necessary but components also fail by oxidation, brittle creep rupture or poor weld performance. The best material is the cheapest one that satisfies every criterion.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A tube ruptured in 10 000 h at 600 °C (873 K) at a given stress. The plant wishes to operate 25 K hotter (898 K) at the same stress. Using the Larson-Miller approach with $C=20$, estimate the rupture life at the higher temperature and comment on the consequence for the inspection and replacement plan.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o1",
+    "ug.mce-fracture-fatigue-failure.creep.creep-design.o3"
+   ],
+   "markingGuide": [
+    "Computes $P=873(20+\\log_{10}10000)=873\\times24=2.0952\\times10^{4}$",
+    "$\\log_{10}t=P/898-20=3.332$",
+    "Gets $t\\approx2147$ h, about 21 percent of the original life",
+    "Concludes that a 25 K increase shortens life greatly, so inspection intervals and replacement must be brought forward, or the temperature or stress should be kept down",
+    "Notes the assumption of constant stress and mechanism"
+   ],
+   "explanation": "With $P=2.0952\\times10^{4}$, the life at 898 K is $10^{P/898-20}\\approx2147$ h, only about a fifth of the original. A modest temperature increase therefore has a very large effect and requires an earlier inspection and replacement schedule.",
+   "board": "internal"
+  }
+ ]
+}

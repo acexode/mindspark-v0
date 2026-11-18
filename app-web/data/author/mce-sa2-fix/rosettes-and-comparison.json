@@ -1,0 +1,389 @@
+{
+ "lessonTitle": "Strain Rosettes and Comparison with Theory",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A strain gauge glued to the root of a bracket measures strain in just one direction, but the highest strain at that point may be in another direction altogether, and nobody knows which. Three gauges bonded together at known angles, a strain rosette, solve this: from three readings we recover the full strain state at the point, including the largest strain and the direction it acts in."
+  },
+  {
+   "type": "text",
+   "markdown": "The strain state at a point on a free surface (plane stress) has three independent components: $\\varepsilon_x$, $\\varepsilon_y$ and $\\gamma_{xy}$. One gauge measures one normal strain, so three gauges are needed. A **45-degree rectangular rosette** has gauges $a$, $b$, $c$ at $0^\\circ$, $45^\\circ$ and $90^\\circ$ measured **counter-clockwise** from the reference axis $x$ (the axis of gauge $a$). Writing the normal strain at angle $\\theta$ as $\\varepsilon(\\theta)=\\tfrac12(\\varepsilon_x+\\varepsilon_y)+\\tfrac12(\\varepsilon_x-\\varepsilon_y)\\cos2\\theta+\\tfrac12\\gamma_{xy}\\sin2\\theta$ and substituting the three angles gives the components directly."
+  },
+  {
+   "type": "math",
+   "latex": "\\varepsilon_x=\\varepsilon_a,\\qquad\\varepsilon_y=\\varepsilon_c,\\qquad\\gamma_{xy}=2\\varepsilon_b-\\varepsilon_a-\\varepsilon_c",
+   "caption": "Strain components from a 0-45-90 rectangular rosette"
+  },
+  {
+   "type": "math",
+   "latex": "\\varepsilon_{1,2}=\\frac{\\varepsilon_a+\\varepsilon_c}{2}\\pm\\frac{1}{\\sqrt2}\\sqrt{(\\varepsilon_a-\\varepsilon_b)^2+(\\varepsilon_b-\\varepsilon_c)^2},\\qquad\\tan2\\theta_p=\\frac{2\\varepsilon_b-\\varepsilon_a-\\varepsilon_c}{\\varepsilon_a-\\varepsilon_c}",
+   "caption": "Principal strains and the direction of $\\varepsilon_1$ measured counter-clockwise from gauge $a$ (use the two-argument arctangent to place $2\\theta_p$ in the correct quadrant)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Principal strains from a rectangular rosette",
+   "prompt": "A rosette gives $\\varepsilon_a=800$, $\\varepsilon_b=450$, $\\varepsilon_c=-100$ ($\\mu\\varepsilon$). Find the principal strains and the direction of the larger one.",
+   "steps": [
+    {
+     "text": "Shear strain.",
+     "latex": "\\gamma_{xy}=2(450)-800-(-100)=200\\ \\mu\\varepsilon"
+    },
+    {
+     "text": "Centre and radius of the strain circle (tensor shear strain $\\gamma/2$).",
+     "latex": "\\varepsilon_{avg}=350,\\quad R=\\sqrt{450^2+100^2}=461.0\\ \\mu\\varepsilon"
+    },
+    {
+     "text": "Principal strains.",
+     "latex": "\\varepsilon_1=811.0\\ \\mu\\varepsilon,\\quad\\varepsilon_2=-111.0\\ \\mu\\varepsilon"
+    },
+    {
+     "text": "Direction: $\\tan 2\\theta_p=\\gamma/(\\varepsilon_a-\\varepsilon_c)=200/900$, so $2\\theta_p=12.53^\\circ$.",
+     "latex": "\\theta_p=6.26^\\circ\\ \\text{counter-clockwise from gauge }a"
+    },
+    {
+     "text": "Check: evaluating $\\varepsilon(\\theta)$ at $\\theta_p$ returns 811.0 $\\mu\\varepsilon$, as expected for $\\varepsilon_1$."
+    }
+   ],
+   "answer": "$\\varepsilon_1\\approx811$ $\\mu\\varepsilon$ at $6.3^\\circ$ from gauge $a$; $\\varepsilon_2\\approx-111$ $\\mu\\varepsilon$ at $90^\\circ$ to it."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**From strain to stress.** Rosettes measure strain, not stress. For a free surface in plane stress ($\\sigma_3=0$), Hooke's law gives the principal stresses from the principal strains using both elastic constants, Young's modulus $E$ and Poisson's ratio $\\nu$. Note that $\\sigma_1\\neq E\\varepsilon_1$ unless $\\varepsilon_2=-\\nu\\varepsilon_1$ (the uniaxial stress case)."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_1=\\frac{E}{1-\\nu^2}\\left(\\varepsilon_1+\\nu\\varepsilon_2\\right),\\qquad\\sigma_2=\\frac{E}{1-\\nu^2}\\left(\\varepsilon_2+\\nu\\varepsilon_1\\right)",
+   "caption": "Principal stresses from principal strains, plane stress"
+  },
+  {
+   "type": "worked_example",
+   "title": "Principal stresses from the same rosette",
+   "prompt": "For the rosette above, take $E=200$ GPa (typical steel) and $\\nu=0.30$. Find the principal stresses.",
+   "steps": [
+    {
+     "text": "Modulus factor.",
+     "latex": "\\frac{E}{1-\\nu^2}=\\frac{200000}{1-0.09}=219780\\ \\text{MPa}"
+    },
+    {
+     "text": "Larger principal stress.",
+     "latex": "\\sigma_1=219780\\,(811.0\\times10^{-6}+0.3(-111.0\\times10^{-6}))=170.9\\ \\text{MPa}"
+    },
+    {
+     "text": "Smaller principal stress.",
+     "latex": "\\sigma_2=219780\\,(-111.0\\times10^{-6}+0.3(811.0\\times10^{-6}))=29.1\\ \\text{MPa}"
+    },
+    {
+     "text": "Compare with the naive $E\\varepsilon_1=162.2$ MPa, which underestimates $\\sigma_1$ (170.9 MPa) because it ignores the Poisson effect of the tensile $\\sigma_2$: since $\\varepsilon_1=(\\sigma_1-\\nu\\sigma_2)/E$, a positive $\\sigma_2$ reduces $\\varepsilon_1$, so $E\\varepsilon_1<\\sigma_1$."
+    }
+   ],
+   "answer": "$\\sigma_1\\approx171$ MPa and $\\sigma_2\\approx29$ MPa (both tensile)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Rosette",
+    "Gauge angles",
+    "Principal strains"
+   ],
+   "rows": [
+    [
+     "Rectangular",
+     "$0^\\circ,45^\\circ,90^\\circ$",
+     "$\\frac{\\varepsilon_a+\\varepsilon_c}{2}\\pm\\frac1{\\sqrt2}\\sqrt{(\\varepsilon_a-\\varepsilon_b)^2+(\\varepsilon_b-\\varepsilon_c)^2}$"
+    ],
+    [
+     "Delta",
+     "$0^\\circ,60^\\circ,120^\\circ$",
+     "$\\frac{\\varepsilon_a+\\varepsilon_b+\\varepsilon_c}{3}\\pm\\frac{\\sqrt2}{3}\\sqrt{(\\varepsilon_a-\\varepsilon_b)^2+(\\varepsilon_b-\\varepsilon_c)^2+(\\varepsilon_c-\\varepsilon_a)^2}$"
+    ]
+   ],
+   "caption": "Common rosettes"
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparing a rosette result with theory for a pressurised cylinder",
+   "prompt": "A thin steel cylinder (mean $D=300$ mm, $t=3.0$ mm, $E=200$ GPa, $\\nu=0.30$) carries $p=3.0$ MPa. Theory gives $\\sigma_h=pD/2t$ and $\\sigma_L=\\sigma_h/2$. A rosette with gauge $a$ along the axis and gauge $c$ circumferential reads $\\varepsilon_a=162$, $\\varepsilon_b=395$, $\\varepsilon_c=618$ ($\\mu\\varepsilon$). Compare the measured and theoretical principal stresses.",
+   "steps": [
+    {
+     "text": "Theory.",
+     "latex": "\\sigma_h=\\frac{3.0\\times300}{2\\times3.0}=150\\ \\text{MPa},\\quad\\sigma_L=75\\ \\text{MPa}"
+    },
+    {
+     "text": "Measured principal strains, with $\\gamma_{xy}=2(395)-162-618=10$ $\\mu\\varepsilon$ (nearly zero, so the gauge axes are close to principal directions).",
+     "latex": "\\varepsilon_1=618.1,\\quad\\varepsilon_2=161.9\\ \\mu\\varepsilon"
+    },
+    {
+     "text": "Measured principal stresses.",
+     "latex": "\\sigma_1=146.5\\ \\text{MPa},\\quad\\sigma_2=76.3\\ \\text{MPa}"
+    },
+    {
+     "text": "Differences from theory.",
+     "latex": "\\frac{146.5-150}{150}=-2.3\\%,\\quad\\frac{76.3-75}{75}=+1.8\\%"
+    }
+   ],
+   "answer": "Measured $\\sigma_1\\approx146.5$ MPa vs 150 MPa (-2.3%), $\\sigma_2\\approx76.3$ MPa vs 75 MPa (+1.8%): good agreement for a first experiment."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why theory and experiment differ.** Typical sources of discrepancy are: gauge misalignment (a few degrees mixes the strain components), **transverse sensitivity** of the gauges, uncertainty in $E$ and $\\nu$ (which are typical values, not specimen values), errors in the applied load or pressure reading, finite wall thickness (the thin-wall formula neglects the radial stress and thickness variation), local stress concentration or residual stress at the gauge, temperature drift, gauge-factor and bridge calibration errors, and the averaging of strain over the gauge area. A difference of a few percent is normal; a larger one suggests a mistake or an invalid assumption."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Convert the three readings to $\\varepsilon_x$, $\\varepsilon_y$, $\\gamma_{xy}$ or use the principal-strain formula directly.",
+    "Find the principal direction with a quadrant-aware arctangent.",
+    "Convert to stresses with $E$ and $\\nu$ (plane stress).",
+    "Compare with the theoretical stress, quote the percentage difference and list plausible causes."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Angle sign convention",
+   "text": "Gauge angles and $\\theta_p$ are measured counter-clockwise from gauge $a$. A rosette with gauges numbered clockwise gives a reversed sign for $\\gamma_{xy}$ and the angle; always check how the gauges are labelled."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why three gauges",
+   "text": "A point on a free surface has three unknown strain components. One gauge gives one equation, so a minimum of three independent directions is needed, and the redundancy of a fourth gauge would provide a check."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A 0-45-90 rosette gives $\\varepsilon_x=\\varepsilon_a$, $\\varepsilon_y=\\varepsilon_c$ and $\\gamma_{xy}=2\\varepsilon_b-\\varepsilon_a-\\varepsilon_c$; principal strains and direction follow from the strain circle.",
+    "Principal stresses require both elastic constants: $\\sigma_1=E(\\varepsilon_1+\\nu\\varepsilon_2)/(1-\\nu^2)$, not $E\\varepsilon_1$.",
+    "Compare the measured stresses with theory, expressing the difference as a percentage of the theoretical value.",
+    "Discrepancies arise from misalignment, transverse sensitivity, elastic constant and load uncertainty, and model assumptions."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 0-45-90 rectangular rosette has gauge $a$ along the $x$ axis, $b$ at $45^\\circ$ counter-clockwise and $c$ along the $y$ axis. Which expression gives the shear strain $\\gamma_{xy}$?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\gamma_{xy}=2\\varepsilon_b-\\varepsilon_a-\\varepsilon_c$"
+    },
+    {
+     "id": "b",
+     "text": "$\\gamma_{xy}=\\varepsilon_a-\\varepsilon_c$"
+    },
+    {
+     "id": "c",
+     "text": "$\\gamma_{xy}=\\varepsilon_b-\\varepsilon_a-\\varepsilon_c$"
+    },
+    {
+     "id": "d",
+     "text": "$\\gamma_{xy}=\\varepsilon_a+\\varepsilon_c-2\\varepsilon_b$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\gamma_{xy}=2\\varepsilon_b-\\varepsilon_a-\\varepsilon_c$",
+   "distractorRationale": {
+    "a": "Correct: from $\\varepsilon(45^\\circ)=\\tfrac12(\\varepsilon_x+\\varepsilon_y)+\\tfrac12\\gamma_{xy}$.",
+    "b": "This is twice the radius-like difference of normal strains; it contains no information about $\\varepsilon_b$.",
+    "c": "Misses the factor 2 on $\\varepsilon_b$.",
+    "d": "This has the opposite sign."
+   },
+   "explanation": "Setting $\\theta=45^\\circ$ in the transformation equation gives $\\varepsilon_b=\\tfrac12(\\varepsilon_a+\\varepsilon_c)+\\tfrac12\\gamma_{xy}$. Rearranging gives $\\gamma_{xy}=2\\varepsilon_b-\\varepsilon_a-\\varepsilon_c$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A rosette gives $\\varepsilon_a=500$, $\\varepsilon_b=-60$, $\\varepsilon_c=-300$ ($\\mu\\varepsilon$), gauges at $0^\\circ,45^\\circ,90^\\circ$ counter-clockwise. What is $\\gamma_{xy}$ in microradians?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$+320$"
+    },
+    {
+     "id": "b",
+     "text": "$-120$"
+    },
+    {
+     "id": "c",
+     "text": "$-320$"
+    },
+    {
+     "id": "d",
+     "text": "$-920$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$-320$",
+   "distractorRationale": {
+    "a": "Right magnitude but wrong sign, from reversing the order of subtraction.",
+    "b": "Only the $2\\varepsilon_b$ term; the other two terms were omitted.",
+    "c": "Correct: $2(-60)-500-(-300)=-320$.",
+    "d": "Takes the $\\varepsilon_c$ term with the wrong sign, giving $2\\varepsilon_b-\\varepsilon_a+\\varepsilon_c$."
+   },
+   "explanation": "Substituting directly: $2\\varepsilon_b=-120$, then $-120-500+300=-320$ $\\mu$rad. The negative sign is meaningful because it tells us the principal axes are rotated clockwise from the gauge axes.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A rectangular rosette gives $\\varepsilon_a=700$, $\\varepsilon_b=300$, $\\varepsilon_c=-150$ ($\\mu\\varepsilon$). Calculate the larger principal strain in microstrain.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o1"
+   ],
+   "correctValue": 700.734659,
+   "tolerance": 2,
+   "unit": "microstrain",
+   "explanation": "$\\varepsilon_1=(\\varepsilon_a+\\varepsilon_c)/2+\\frac1{\\sqrt2}\\sqrt{(\\varepsilon_a-\\varepsilon_b)^2+(\\varepsilon_b-\\varepsilon_c)^2}=275+\\frac1{\\sqrt2}\\sqrt{400^2+450^2}=700.7$ $\\mu\\varepsilon$. The smaller one is $-150.7$ $\\mu\\varepsilon$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A rectangular rosette (gauges at $0^\\circ,45^\\circ,90^\\circ$ counter-clockwise) reads $\\varepsilon_a=400$, $\\varepsilon_b=700$, $\\varepsilon_c=100$ ($\\mu\\varepsilon$). Find the angle $\\theta_p$ in degrees, counter-clockwise from gauge $a$, to the direction of the larger principal strain.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o1"
+   ],
+   "correctValue": 35.782526,
+   "tolerance": 0.3,
+   "unit": "degrees",
+   "explanation": "$\\gamma_{xy}=2(700)-400-100=900$ $\\mu$rad and $\\varepsilon_a-\\varepsilon_c=300$, so $\\tan2\\theta_p=900/300=3$ and $2\\theta_p=71.57^\\circ$ (first quadrant since both are positive). Hence $\\theta_p=35.78^\\circ$, with $\\varepsilon_1=724.3$ $\\mu\\varepsilon$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The principal strains at a point on a steel plate surface are $\\varepsilon_1=900$ and $\\varepsilon_2=-120$ ($\\mu\\varepsilon$), with $E=205$ GPa and $\\nu=0.29$ (typical). Assuming plane stress, find the larger principal stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o2"
+   ],
+   "correctValue": 193.652145,
+   "tolerance": 0.3,
+   "unit": "MPa",
+   "explanation": "$\\sigma_1=\\frac{E}{1-\\nu^2}(\\varepsilon_1+\\nu\\varepsilon_2)=\\frac{205000}{0.9159}(900-34.8)\\times10^{-6}=193.7$ MPa. Using $E\\varepsilon_1$ alone would give 184.5 MPa, which is too low in this case.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A steel surface has principal strains $\\varepsilon_1=500$ and $\\varepsilon_2=200$ ($\\mu\\varepsilon$), with $E=200$ GPa and $\\nu=0.30$. The larger principal stress under plane stress is closest to",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "123 MPa"
+    },
+    {
+     "id": "b",
+     "text": "100 MPa"
+    },
+    {
+     "id": "c",
+     "text": "154 MPa"
+    },
+    {
+     "id": "d",
+     "text": "97 MPa"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "123 MPa",
+   "distractorRationale": {
+    "a": "Correct: $\\frac{200000}{0.91}(500+0.3\\times200)\\times10^{-6}=123.1$ MPa.",
+    "b": "This is $E\\varepsilon_1$, which ignores the contribution of $\\varepsilon_2$ through the Poisson effect.",
+    "c": "Uses the modulus factor $E/(1-\\nu^2)$ but adds $\\varepsilon_2$ without multiplying by $\\nu$.",
+    "d": "Subtracts the Poisson contribution, using $\\varepsilon_1-\\nu\\varepsilon_2$ with the wrong sign."
+   },
+   "explanation": "In biaxial tension the second strain adds to the stress through $\\nu\\varepsilon_2$ in the numerator, and the modulus factor $E/(1-\\nu^2)$ is 219.8 GPa. So $\\sigma_1=219780\\times(500+60)\\times10^{-6}=123.1$ MPa, not 100 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A rosette on a pressurised steel cylinder ($E=200$ GPa, $\\nu=0.30$) with gauge $a$ axial and gauge $c$ circumferential reads $\\varepsilon_a=165$, $\\varepsilon_b=380$, $\\varepsilon_c=610$ ($\\mu\\varepsilon$). The theoretical hoop stress is 150 MPa. Find the percentage difference $(\\sigma_{1,exp}-150)/150\\times100$ of the experimental larger principal stress from theory, as a signed percentage.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o2",
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o3"
+   ],
+   "correctValue": -3.357002,
+   "tolerance": 0.3,
+   "unit": "percent",
+   "explanation": "$\\gamma_{xy}=2(380)-165-610=-15$ $\\mu$rad, giving $\\varepsilon_1=610.1$ and $\\varepsilon_2=164.9$ $\\mu\\varepsilon$. Then $\\sigma_1=219780(\\varepsilon_1+0.3\\varepsilon_2)=145.0$ MPa, so the difference is $-3.4$% of the theoretical hoop stress.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "An experimenter finds that principal stresses measured with a rosette on a loaded component differ from the theoretical prediction by 8%. List and explain at least four possible reasons for the discrepancy and say how each could be checked.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o3"
+   ],
+   "markingGuide": [
+    "Gauge misalignment or mis-bonding: angle errors mix strain components; check with a photograph or repeat with a re-bonded rosette.",
+    "Transverse sensitivity of the gauges: correct with the manufacturer's value.",
+    "Uncertainty in $E$ and $\\nu$ (typical values used): measure them by a tensile test of the same material.",
+    "Load or pressure uncertainty and friction or off-centre loading: calibrate the load cell or pressure transducer.",
+    "Model assumptions in the theory (thin-wall, uniform stress, ideal boundary conditions) and local stress gradients or concentrations at the gauge position.",
+    "Temperature drift and calibration of the bridge/amplifier: use compensated bridges and check calibration."
+   ],
+   "explanation": "The percentage difference is a combination of measurement errors and errors in the theoretical model. Isolating them requires independent checks, for example a calibration specimen with a known stress, repeat tests, and an estimate of the uncertainty of each input.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A rosette with gauges at $0^\\circ,45^\\circ,90^\\circ$ (counter-clockwise) on an aluminium surface ($E=70$ GPa, $\\nu=0.33$) reads $\\varepsilon_a=-200$, $\\varepsilon_b=100$, $\\varepsilon_c=500$ ($\\mu\\varepsilon$). Find the principal strains, the direction of the larger one and the principal stresses.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o1",
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o2"
+   ],
+   "markingGuide": [
+    "$\\gamma_{xy}=2(100)-(-200)-500=-100$ $\\mu$rad.",
+    "Centre $=150$ $\\mu\\varepsilon$; $R=\\sqrt{350^2+50^2}=353.6$ $\\mu\\varepsilon$.",
+    "$\\varepsilon_1=503.6$ $\\mu\\varepsilon$ and $\\varepsilon_2=-203.6$ $\\mu\\varepsilon$.",
+    "$2\\theta_p=\\mathrm{atan2}(\\gamma,\\varepsilon_a-\\varepsilon_c)=\\mathrm{atan2}(-100,-700)=-171.9^\\circ$, so $\\theta_p=-85.9^\\circ$ (equivalently $94.1^\\circ$ counter-clockwise): the larger strain lies almost along gauge $c$.",
+    "$\\sigma_1=\\frac{70000}{1-0.33^2}(\\varepsilon_1+0.33\\varepsilon_2)=34.3$ MPa and $\\sigma_2=-2.9$ MPa.",
+    "Quadrant check: the quadrant-aware arctangent matters because both arguments are negative."
+   ],
+   "explanation": "The rosette fixes all three strain components. Placing $2\\theta_p$ in the correct (third) quadrant identifies which of the two axes at $\\theta_p$ and $\\theta_p+90^\\circ$ carries the larger strain. Both principal stresses use both elastic constants.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: for a biaxial strain state in plane stress, the larger principal stress equals $E\\varepsilon_1$, so only Young's modulus is needed.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The correct relation is $\\sigma_1=E(\\varepsilon_1+\\nu\\varepsilon_2)/(1-\\nu^2)$, which involves Poisson's ratio and the second principal strain. $\\sigma_1=E\\varepsilon_1$ holds only in uniaxial stress, where $\\varepsilon_2=-\\nu\\varepsilon_1$.",
+   "board": "internal"
+  }
+ ]
+}

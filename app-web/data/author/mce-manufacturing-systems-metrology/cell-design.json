@@ -1,0 +1,417 @@
+{
+ "lessonTitle": "Manufacturing Cell Design: Cycle Time, Utilisation and Bottlenecks",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A robot stands between a pallet of forged blanks and a vertical lathe. The lathe cuts for 40 seconds, the robot spends another 25 seconds picking, moving, swapping and placing, and the plant manager asks one question: how many parts will this cell make in a shift, and is the machine busy enough to justify its cost? The answer comes from adding the right times, and from knowing which of them can overlap."
+  },
+  {
+   "type": "text",
+   "markdown": "A **manufacturing cell** groups machines, a handling device (often a robot) and inspection or buffer positions so that parts flow through with little waiting. Three quantities describe whether a cell works: its **cycle time**, the **utilisation** of its machines against demand, and its **bottleneck**, the station that limits output."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Cycle time of a cell",
+   "text": "The cycle time $T_c$ is the time between the completion of one part and the next at steady state. It is built from component times: machining time, load and unload time, robot travel and any inspection. A component that happens while the machine is cutting is **external time** and adds nothing as long as it is shorter than the cut; a component that needs the machine stopped is **internal time** and does add to it. Assumptions: steady state, no breakdowns, one part per cycle."
+  },
+  {
+   "type": "math",
+   "latex": "T_c=T_{\\text{internal}}+\\max\\!\\left(T_{\\text{machine}},\\;T_{\\text{external}}\\right)",
+   "caption": "T_internal: machine idle for load/unload (s); T_machine: cutting time (s); T_external: robot work done while the machine cuts (s). The robot's external work is hidden whenever it is shorter than the cut; if it is longer, it paces the cell instead."
+  },
+  {
+   "type": "worked_example",
+   "title": "Cycle time of a robot-tended lathe",
+   "prompt": "The lathe cuts for 40 s. The robot picks a blank from the pallet (6 s), moves to the lathe (3 s), swaps the finished part for the blank while the machine waits (9 s), moves to the outfeed (3 s) and places the part (4 s). The pick, travel and place happen while the lathe cuts the previous part. Find $T_c$ and the hourly output.",
+   "steps": [
+    {
+     "text": "Identify internal time: the machine is stopped only during the swap.",
+     "latex": "T_{\\text{internal}}=9\\ \\text{s}"
+    },
+    {
+     "text": "External robot work done during the cut is $6+3+3+4=16$ s, which is less than the 40 s cut, so it adds nothing to the cycle.",
+     "latex": "T_{\\text{external}}=16\\ \\text{s}<40\\ \\text{s}"
+    },
+    {
+     "text": "Cycle time is the swap time plus the cutting time.",
+     "latex": "T_c=9+40=49\\ \\text{s}"
+    },
+    {
+     "text": "Hourly output is 3600 s divided by the cycle time.",
+     "latex": "\\frac{3600}{49}=73.5\\ \\text{parts/h}"
+    }
+   ],
+   "answer": "$T_c=49$ s, about 73 parts per hour. If nothing overlapped, the cycle would be $6+3+9+40+3+4=65$ s and output would fall to about 55 parts per hour."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Utilisation",
+   "text": "Machine utilisation is the fraction of available time the machine is needed to meet demand: $U=D\\,T_c/T_{\\text{avail}}$, where $D$ is the number of parts required in the period, $T_c$ the cycle time per part (s) and $T_{\\text{avail}}$ the available production time in the same period (s), after deducting breaks and planned stops. If $U>1$ one machine cannot meet demand."
+  },
+  {
+   "type": "worked_example",
+   "title": "Utilisation for a daily demand",
+   "prompt": "The cell above must supply $D=900$ parts per day. It is staffed for 14 hours per day of available time. Find the utilisation.",
+   "steps": [
+    {
+     "text": "Convert available time to seconds.",
+     "latex": "T_{\\text{avail}}=14\\times3600=50400\\ \\text{s}"
+    },
+    {
+     "text": "Machine time needed to make the whole daily demand.",
+     "latex": "D\\,T_c=900\\times49=44100\\ \\text{s}"
+    },
+    {
+     "text": "Divide the required time by the available time to get utilisation.",
+     "latex": "U=\\frac{44100}{50400}=0.875"
+    }
+   ],
+   "answer": "$U=87.5\\%$: the cell can meet demand with 12.5% spare time for faults and changeovers."
+  },
+  {
+   "type": "text",
+   "markdown": "**Bottleneck.** In a serial line each part passes through every station in turn. The output rate of the line is set by the station with the longest time per part, because every other station must wait for it (or is starved of work). Speeding up a station that is not the bottleneck adds no output; only reducing the bottleneck time, or sharing its work in parallel, does."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Station",
+    "Time per part (s)",
+    "Utilisation relative to the bottleneck"
+   ],
+   "rows": [
+    [
+     "1 Cut-off saw",
+     "38",
+     "73.1%"
+    ],
+    [
+     "2 CNC turning",
+     "52",
+     "100% (bottleneck)"
+    ],
+    [
+     "3 Milling",
+     "45",
+     "86.5%"
+    ],
+    [
+     "4 Deburr and wash",
+     "49",
+     "94.2%"
+    ]
+   ],
+   "caption": "Four-station serial line: the longest station time fixes the line rate."
+  },
+  {
+   "type": "worked_example",
+   "title": "Bottleneck and line rate",
+   "prompt": "For the line in the table, find the bottleneck, the output rate and the effect of cutting the saw time from 38 s to 30 s.",
+   "steps": [
+    {
+     "text": "The bottleneck is the longest time.",
+     "latex": "T_b=\\max(38,52,45,49)=52\\ \\text{s (station 2)}"
+    },
+    {
+     "text": "Line output is the reciprocal of the bottleneck time.",
+     "latex": "\\text{rate}=\\frac{3600}{52}=69.2\\ \\text{parts/h}"
+    },
+    {
+     "text": "The saw is not the bottleneck, so speeding it up leaves the maximum time at 52 s.",
+     "latex": "\\text{rate}=\\frac{3600}{52}=69.2\\ \\text{parts/h (unchanged)}"
+    }
+   ],
+   "answer": "Station 2 is the bottleneck with a rate of 69.2 parts per hour. Improving the saw changes nothing."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Overlap external work with the cut to shorten the cycle.",
+    "Check $U\\le1$ before committing; leave margin for breakdowns and changeovers (many plants aim for 80 to 90%).",
+    "Number of machines needed is at least $D\\,T_c/T_{\\text{avail}}$, rounded up.",
+    "Balance the line toward the bottleneck, not toward the fastest station."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Utilisation is not the goal",
+   "text": "Running the bottleneck at 100% is desirable, but pushing every station to 100% creates queues and inventory because variation has no slack to absorb it."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Cell cycle time is the internal (machine-stopped) time plus the longer of the cutting time and the robot's external work.",
+    "Utilisation is demand times cycle time divided by available time; above 100% one machine is not enough.",
+    "The bottleneck station, with the longest time per part, sets the line rate; improving other stations does not raise output."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A robot-tended milling machine cuts for 35 s. The robot's pick, travel and place work takes 12 s and is done while the machine cuts; the swap of finished and new part while the machine waits takes 7 s. Find the cycle time in seconds per part.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o1"
+   ],
+   "correctValue": 42,
+   "tolerance": 0.5,
+   "unit": "s per part",
+   "explanation": "The 12 s of robot work is shorter than the 35 s cut, so it is hidden. Only the 7 s swap adds to the machine's time, giving $T_c=7+35=42$ s per part.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cell has a cycle time of 38 s per part. Demand is 1100 parts per day. The cell runs two shifts of 8 hours, and each shift loses 45 minutes to breaks and planned maintenance. Find the machine utilisation as a percentage.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o2"
+   ],
+   "correctValue": 80.1,
+   "tolerance": 0.5,
+   "unit": "per cent",
+   "explanation": "Available time per shift is $8-0.75=7.25$ h, so two shifts give $14.5\\times3600=52200$ s. Required time is $1100\\times38=41800$ s, so $U=41800/52200=0.801$, that is 80.1%.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Five stations in a serial line have times per part of 34 s, 41 s, 47 s, 39 s and 44 s. Find the maximum output rate of the line in parts per hour.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o3"
+   ],
+   "correctValue": 76.6,
+   "tolerance": 0.3,
+   "unit": "parts per hour",
+   "explanation": "The slowest station, 47 s, is the bottleneck and sets the line rate. Output is $3600/47=76.6$ parts per hour.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which station is the bottleneck in a serial line with station times 28 s, 36 s, 31 s and 33 s, and what happens to line output if the 31 s station is improved to 25 s?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The 36 s station is the bottleneck, and output does not change"
+    },
+    {
+     "id": "b",
+     "text": "The 28 s station is the bottleneck, and output rises"
+    },
+    {
+     "id": "c",
+     "text": "The 31 s station is the bottleneck, and output rises because it was improved"
+    },
+    {
+     "id": "d",
+     "text": "The 36 s station is the bottleneck, and output rises by 6 s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The 36 s station is the bottleneck, and output does not change",
+   "distractorRationale": {
+    "a": "The slowest station (36 s) fixes the rate, and improving a faster station leaves it unchanged.",
+    "b": "The bottleneck is the slowest station, not the fastest.",
+    "c": "The 31 s station is faster than the slowest station, so it does not limit output.",
+    "d": "Output depends on the bottleneck time, which is unchanged at 36 s."
+   },
+   "explanation": "Throughput equals the reciprocal of the longest station time. Reducing a non-bottleneck station creates no extra output because the bottleneck still sets the pace.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cell must make 1500 parts in a 16 hour day. The machine cycle time is 45 s. What is the correct conclusion?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "One machine is enough, with utilisation of about 117%"
+    },
+    {
+     "id": "b",
+     "text": "One machine is enough, because 45 s is less than a minute"
+    },
+    {
+     "id": "c",
+     "text": "One machine is not enough, because the utilisation would be about 117%"
+    },
+    {
+     "id": "d",
+     "text": "Two machines are needed because utilisation is 58%"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "One machine is not enough, because the utilisation would be about 117%",
+   "distractorRationale": {
+    "a": "A utilisation above 100% means demand needs more time than is available.",
+    "b": "Cycle time alone does not show feasibility; it must be multiplied by demand.",
+    "c": "$U=1500\\times45/(16\\times3600)=67500/57600=1.17$, which exceeds 1.",
+    "d": "58% is not what the calculation gives; the demand needs 18.75 hours on a single machine."
+   },
+   "explanation": "The workload is 67 500 s but only 57 600 s are available on one machine. A second machine or longer working time is needed, and with two machines utilisation would be about 59% each.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A robot's external work (pick, travel, place) takes 50 s, but the machine cuts for only 30 s. Which statement about the cycle is correct?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The robot becomes the limit, so the machine waits and the cycle is the swap time plus 50 s"
+    },
+    {
+     "id": "b",
+     "text": "The cycle is still the swap plus the 30 s cut, because external work never matters"
+    },
+    {
+     "id": "c",
+     "text": "The cycle equals the cut time, 30 s"
+    },
+    {
+     "id": "d",
+     "text": "The cycle equals 30 s plus 50 s, because every time adds"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The robot becomes the limit, so the machine waits and the cycle is the swap time plus 50 s",
+   "distractorRationale": {
+    "a": "External work longer than the cut cannot be hidden, so the robot paces the cell.",
+    "b": "External work hides only if it is shorter than the cutting time; here it is longer.",
+    "c": "The machine cannot complete a part every 30 s if the robot needs 50 s to serve it.",
+    "d": "The robot work overlaps the cut, so only the longer of the two adds to the cycle, not their sum."
+   },
+   "explanation": "A robot task that is longer than the machine's cut leaves the machine idle waiting. The cycle is then the swap time plus 50 s, not the swap time plus 30 s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A serial line has a bottleneck of 52 s and a second station of 49 s. Management wants 5% more output without adding a machine. Which action gives the increase?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o3",
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Reduce the 49 s station to 40 s"
+    },
+    {
+     "id": "b",
+     "text": "Increase work-in-process inventory before the bottleneck"
+    },
+    {
+     "id": "c",
+     "text": "Increase the 49 s station's utilisation to 100%"
+    },
+    {
+     "id": "d",
+     "text": "Reduce the bottleneck time to about 49 s, for example by offloading some of its work"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Reduce the bottleneck time to about 49 s, for example by offloading some of its work",
+   "distractorRationale": {
+    "a": "Output stays at the bottleneck's rate; the 49 s station would still not be the limit.",
+    "b": "Inventory does not change the bottleneck's cycle time and it raises costs.",
+    "c": "Higher utilisation of a non-bottleneck cannot raise line output.",
+    "d": "A 5% higher rate needs a bottleneck time of $52/1.05=49.5$ s or less, so the bottleneck's own time must fall."
+   },
+   "explanation": "Only the bottleneck sets throughput. To raise output by 5%, its time per part must fall to about 49.5 s or less, after which the 49 s station becomes the next limit.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A plant must make 1800 housings per day on identical machines, each with a cycle time of 95 s. Each machine has 7.5 hours of available time per day. Assuming parts can be shared evenly among machines, what is the minimum number of machines and the utilisation of each?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "6 machines, each at about 106% utilisation"
+    },
+    {
+     "id": "b",
+     "text": "7 machines, each at about 90% utilisation"
+    },
+    {
+     "id": "c",
+     "text": "6 machines, because 6.33 rounds down"
+    },
+    {
+     "id": "d",
+     "text": "8 machines, each at about 79% utilisation"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "7 machines, each at about 90% utilisation",
+   "distractorRationale": {
+    "a": "Six machines would need more time than they have; utilisation above 100% is not feasible.",
+    "b": "The workload is $1800\\times95/27000=6.33$ machine-equivalents, so 7 machines are needed with $6.33/7=0.905$ utilisation each.",
+    "c": "The workload of 6.33 machine-days must be rounded up, not down.",
+    "d": "The question asks for the minimum number of machines; 7 machines are enough at about 90% each."
+   },
+   "explanation": "The total time required is 171 000 s against 27 000 s per machine, which needs 6.33 machines. Rounding up to 7 machines gives each a utilisation of about 90.5%.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A designer proposes a robotic cell where the robot picks a blank while the machine is cutting. Explain the distinction between internal and external time, and show with the numbers cut 28 s, swap 6 s, pick-travel-place 18 s how the cycle time is found. State the change that occurs if the external robot work grows to 40 s.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o1"
+   ],
+   "markingGuide": [
+    "Defines internal time as machine stopped, external as done during the cut",
+    "Cycle = 6 + 28 = 34 s when the external 18 s is shorter than the 28 s cut",
+    "External time is hidden inside machining time",
+    "With 40 s of external work, the machine waits: external time exceeds the cut by 12 s",
+    "New cycle is 6 + 40 = 46 s (the robot paces the cell)",
+    "Concludes the robot becomes the limiting resource"
+   ],
+   "explanation": "Only the machine-stopped time plus the longer of the cut and the robot's external work sets the cycle. With the numbers given $T_c=6+28=34$ s, but once the robot needs 40 s the cell cycle rises to 46 s because the machine must wait.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A serial line has stations with times 40 s, 55 s, 48 s and 51 s. Demand requires 70 parts per hour. Determine whether the line meets demand, identify the bottleneck and the utilisation of the other stations relative to it, and propose one action that would meet demand.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o2",
+    "ug.mce-manufacturing-systems-metrology.automation.cell-design.o3"
+   ],
+   "markingGuide": [
+    "Bottleneck is 55 s; line rate is $3600/55=65.5$ parts per hour",
+    "Demand of 70 parts per hour is not met",
+    "Takt-equivalent time for 70 per hour is $3600/70=51.4$ s; the 55 s station exceeds it",
+    "Relative utilisation 40/55=72.7%, 48/55=87.3%, 51/55=92.7%",
+    "Action: shorten the bottleneck below 51.4 s (or duplicate it, or offload work)",
+    "Notes the 51 s station is the next constraint after the fix"
+   ],
+   "explanation": "The line's maximum rate is $3600/55=65.5$ parts per hour, which is below the 70 required. Only a bottleneck time below $3600/70=51.4$ s (or a second machine in parallel) meets demand, and the 51 s station then sets the new limit.",
+   "board": "internal"
+  }
+ ]
+}

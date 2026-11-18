@@ -1,0 +1,382 @@
+{
+ "lessonTitle": "Collector Performance: Hottel-Whillier Equation and Storage Sizing",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 2 m$^2$ flat-plate collector on a school roof heats water to 45 $^\\circ$C on a mild morning and delivers 880 W. The same collector, feeding a 90 $^\\circ$C process loop on a cold day, delivers far less, and close to nothing as its temperature approaches stagnation, although the sun is just as bright. The difference is the heat the collector loses to the air, and the relation that captures it is the Hottel-Whillier equation."
+  },
+  {
+   "type": "text",
+   "markdown": "A flat-plate collector absorbs solar radiation on a plate, transfers heat to a fluid flowing through tubes, and loses heat to the surroundings through the cover and edges. The **useful heat gain** $Q_u$ (W) is the absorbed energy minus the loss. The absorbed flux per unit area is $S=(\\tau\\alpha)G_T$, where $G_T$ (W/m$^2$) is the total irradiance on the collector plane and $(\\tau\\alpha)$ is the product of cover transmittance and absorber absorptance. The loss is $U_L(T_p-T_a)$, with $U_L$ (W/m$^2$K) the overall loss coefficient and $T_p$ the mean plate temperature."
+  },
+  {
+   "type": "text",
+   "markdown": "Plate temperature is not known in advance, so the Hottel-Whillier formulation replaces it by the fluid inlet temperature $T_i$ and a **heat removal factor** $F_R$: the ratio of the actual useful gain to the gain if the whole plate were at the inlet fluid temperature. $F_R$ is below one (typically 0.7 to 0.9) because the fluid warms as it travels."
+  },
+  {
+   "type": "math",
+   "latex": "Q_u=F_RA_c\\left[(\\tau\\alpha)G_T-U_L\\,(T_i-T_a)\\right],\\qquad \\eta=\\frac{Q_u}{A_cG_T}=F_R(\\tau\\alpha)-F_RU_L\\frac{T_i-T_a}{G_T}",
+   "caption": "$A_c$ collector area (m$^2$); $T_i$ inlet fluid temperature; $T_a$ ambient temperature; $\\eta$ instantaneous efficiency"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Reading the efficiency equation",
+   "text": "The efficiency is a straight line in $(T_i-T_a)/G_T$. The intercept $F_R(\\tau\\alpha)$ is the optical efficiency at zero temperature difference and the slope $-F_RU_L$ is the thermal loss. Efficiency falls as the operating temperature difference rises and as the irradiance falls, because the loss term is divided by $G_T$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Useful gain and efficiency",
+   "prompt": "A collector of area 2.0 m$^2$ has $F_R=0.85$, $(\\tau\\alpha)=0.82$ and $U_L=5.5$ W/m$^2$K (typical). Irradiance on the plane is 800 W/m$^2$, inlet temperature 45 $^\\circ$C, ambient 20 $^\\circ$C. Find $Q_u$ and $\\eta$.",
+   "steps": [
+    {
+     "text": "Absorbed flux.",
+     "latex": "S=(\\tau\\alpha)G_T=0.82\\times800=656\\ \\mathrm{W/m^2}"
+    },
+    {
+     "text": "Loss flux at $\\Delta T=25$ K.",
+     "latex": "U_L(T_i-T_a)=5.5\\times25=137.5\\ \\mathrm{W/m^2}"
+    },
+    {
+     "text": "Useful gain.",
+     "latex": "Q_u=0.85\\times2.0\\times(656-137.5)=881\\ \\mathrm{W}"
+    },
+    {
+     "text": "Efficiency.",
+     "latex": "\\eta=\\frac{881}{2.0\\times800}=0.551"
+    }
+   ],
+   "answer": "$Q_u\\approx881$ W and $\\eta\\approx0.55$. Check: $0.85\\times0.82-0.85\\times5.5\\times25/800=0.551$, matching."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Operating condition",
+    "$(T_i-T_a)/G_T$ (m$^2$K/W)",
+    "Efficiency trend",
+    "Typical application"
+   ],
+   "rows": [
+    [
+     "Low-temperature heating",
+     "0 to 0.02",
+     "Close to optical efficiency",
+     "Pool heating, preheating"
+    ],
+    [
+     "Domestic hot water",
+     "0.03 to 0.06",
+     "Moderate",
+     "Flat plates with selective coating"
+    ],
+    [
+     "Process heat",
+     "0.08 and above",
+     "Low, falls to zero",
+     "Evacuated tubes or concentrators"
+    ],
+    [
+     "Stagnation",
+     "Where $\\eta=0$",
+     "Zero useful heat",
+     "No flow, plate at maximum temperature"
+    ]
+   ],
+   "caption": "Efficiency falls along the straight line as the temperature difference grows and as $G_T$ falls."
+  },
+  {
+   "type": "text",
+   "markdown": "A collector only helps if the energy is stored until needed. Hot water demand rarely coincides with sunshine, so a tank stores the day's solar heat for the evening. To size it, start with the daily demand: the volume $V_d$ of hot water used per day, the supply temperature $T_{use}$, and the mains temperature $T_{mains}$. The daily energy is $E=\\rho V_d c_p(T_{use}-T_{mains})$ with $\\rho\\approx1000$ kg/m$^3$ and $c_p\\approx4180$ J/kg K for water. The tank is stored hotter than the use temperature and mixed with cold water, so the stored volume is smaller than the use volume, but standing losses and stratification require an allowance."
+  },
+  {
+   "type": "math",
+   "latex": "V_{tank}=\\frac{E}{\\rho c_p\\,(T_{store}-T_{mains})}\\times(1+f),\\qquad A_c=\\frac{E}{\\bar\\eta\\,H}",
+   "caption": "$T_{store}$ tank temperature; $f$ allowance for losses and mixing; $\\bar\\eta$ mean daily collector efficiency; $H$ daily irradiation on the collector plane (J/m$^2$)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Sizing a tank and collector for a daily demand",
+   "prompt": "A household uses 250 L/day of hot water at 45 $^\\circ$C from mains water at 10 $^\\circ$C. The tank is kept at 60 $^\\circ$C and a 25 % allowance is added. The mean daily efficiency is 0.45 and the daily irradiation is 18 MJ/m$^2$. Find the tank volume and collector area for full solar supply.",
+   "steps": [
+    {
+     "text": "Daily energy.",
+     "latex": "E=250\\times4180\\times35=36.58\\ \\mathrm{MJ}\\ (10.2\\ \\mathrm{kWh})"
+    },
+    {
+     "text": "Hot volume stored at 60 $^\\circ$C that supplies this energy from 10 $^\\circ$C.",
+     "latex": "V=\\frac{36.58\\times10^6}{1000\\times4180\\times50}=0.175\\ \\mathrm{m^3}=175\\ \\mathrm{L}"
+    },
+    {
+     "text": "Add 25 % allowance.",
+     "latex": "V_{tank}=1.25\\times175=219\\ \\mathrm{L}"
+    },
+    {
+     "text": "Collector area to deliver the energy.",
+     "latex": "A_c=\\frac{36.58}{0.45\\times18}=4.5\\ \\mathrm{m^2}"
+    }
+   ],
+   "answer": "A tank of about 219 L (a 220 L unit would be chosen) and about 4.5 m$^2$ of collector give full supply on an average day; in practice the area would be smaller because the solar fraction is below 100 %."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Raise $T_i$ and the loss term grows, so $Q_u$ and $\\eta$ both fall.",
+    "Increase $G_T$ and the efficiency improves because the fixed loss is spread over more incident energy.",
+    "A double glazing or selective coating raises $F_R(\\tau\\alpha)$ and/or reduces $U_L$.",
+    "Tank volume is commonly 50 to 100 litres per square metre of collector in domestic systems."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Efficiency depends on the test conditions",
+   "text": "A quoted efficiency refers to specified $G_T$, $T_i$ and $T_a$. Compare collectors at the operating point of your system, not at the peak, since two collectors with the same intercept can differ strongly at high $\\Delta T$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The Hottel-Whillier equation $Q_u=F_RA_c[(\\tau\\alpha)G_T-U_L(T_i-T_a)]$ gives useful heat in terms of inlet temperature.",
+    "Efficiency is linear in $(T_i-T_a)/G_T$ with intercept $F_R(\\tau\\alpha)$ and slope $-F_RU_L$.",
+    "Higher operating temperature or lower irradiance reduces efficiency, reaching zero at stagnation.",
+    "A tank is sized from the daily demand energy $E=\\rho V_dc_p\\Delta T$, the storage temperature and an allowance for losses."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A collector of area 3.0 m^2 has F_R = 0.78, transmittance-absorptance product 0.75 and loss coefficient U_L = 4.0 W/m^2 K. With irradiance 700 W/m^2 on the plane, inlet fluid temperature 50 degrees Celsius and ambient 15 degrees Celsius, find the useful heat gain in W using the Hottel-Whillier equation.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o1"
+   ],
+   "correctValue": 900.9,
+   "tolerance": 15.0,
+   "unit": "W",
+   "explanation": "The absorbed flux is 0.75 x 700 = 525 W/m^2 and the loss flux is 4.0 x 35 = 140 W/m^2. Then Qu = 0.78 x 3.0 x (525-140) = 901 W, corresponding to an efficiency of 0.43.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A collector has the efficiency equation eta = 0.72 - 6.0 (Ti - Ta)/G, with G in W/m^2. Find the efficiency, as a fraction, when the irradiance is 900 W/m^2 and the inlet temperature exceeds ambient by 40 K.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o2"
+   ],
+   "correctValue": 0.453333,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "The loss term is 6.0 x 40/900 = 0.267, so the efficiency is 0.72 - 0.267 = 0.453. About 45 percent of the incident solar energy becomes useful heat at this operating point.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "For the same collector, eta = 0.72 - 6.0 (Ti - Ta)/G, at what temperature difference (Ti - Ta) in K does the efficiency fall to zero when the irradiance is 1000 W/m^2?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o2",
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o1"
+   ],
+   "correctValue": 120.0,
+   "tolerance": 1.5,
+   "unit": "K",
+   "explanation": "Setting eta = 0 gives (Ti - Ta)/G = 0.72/6.0 = 0.12 m^2K/W, so Ti - Ta = 0.12 x 1000 = 120 K. Beyond this difference the collector loses more than it absorbs, which is why high-temperature applications need low-loss collectors.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A hot-water cylinder is to supply 300 litres per day, heated from 12 degrees Celsius to 52 degrees Celsius. Taking water density 1000 kg/m^3 and specific heat 4180 J/kg K, find the daily energy required in kWh.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o3"
+   ],
+   "correctValue": 13.9333,
+   "tolerance": 0.2,
+   "unit": "kWh",
+   "explanation": "The mass is 300 kg and the temperature rise 40 K, so E = 300 x 4180 x 40 = 50.16 MJ. Dividing by 3.6 MJ/kWh gives 13.93 kWh per day.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A workshop needs 180 litres per day of water heated through 40 K (use density 1000 kg/m$^3$ and specific heat 4180 J/kg K). The mean daily collector efficiency is 0.38 and the daily irradiation on the collector plane is 16 MJ/m$^2$. What collector area would supply the whole demand?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o3",
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 5.0 m$^2$"
+    },
+    {
+     "id": "b",
+     "text": "About 3.0 m$^2$"
+    },
+    {
+     "id": "c",
+     "text": "About 1.9 m$^2$"
+    },
+    {
+     "id": "d",
+     "text": "About 1.4 m$^2$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About 5.0 m$^2$",
+   "distractorRationale": {
+    "b": "This divides by the loss fraction (1 - 0.38) instead of by the efficiency.",
+    "c": "This ignores the collector efficiency, assuming all the irradiation becomes useful heat.",
+    "d": "This mixes units: it divides the energy in kWh by an irradiation value in MJ."
+   },
+   "explanation": "The daily energy is $180\\times4180\\times40=30.10$ MJ. Useful energy per square metre is $0.38\\times16=6.08$ MJ/m$^2$, so the area is $30.10/6.08=4.95$ m$^2$. Because the efficiency is below one, the area is larger than the simple ratio of demand to irradiation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "At fixed irradiance and ambient temperature, the fluid inlet temperature to a flat-plate collector is raised from 30 to 60 degrees Celsius. Using the Hottel-Whillier equation, what happens to the useful heat gain?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It rises, because the water carries more energy out"
+    },
+    {
+     "id": "b",
+     "text": "It falls, because the loss term $U_L(T_i-T_a)$ increases"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged, because the absorbed flux depends only on irradiance"
+    },
+    {
+     "id": "d",
+     "text": "It rises, because $F_R$ increases with temperature"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It falls, because the loss term $U_L(T_i-T_a)$ increases",
+   "distractorRationale": {
+    "a": "The energy carried out is the useful gain itself; higher inlet temperature raises plate losses and reduces it.",
+    "c": "The absorbed flux is fixed, but the loss subtracted from it is not.",
+    "d": "$F_R$ is a property of the collector design and flow rate; it does not rise with $T_i$."
+   },
+   "explanation": "With $S$ constant, the bracket $S-U_L(T_i-T_a)$ shrinks as $T_i$ rises, so $Q_u$ drops. In the example numbers with $F_R=0.85$ and $A_c=2$ m$^2$ the gain falls from about 1020 W at 30 degrees Celsius to 740 W at 60 degrees Celsius.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What does the heat removal factor $F_R$ represent in the Hottel-Whillier equation?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The ratio of actual useful heat gain to the gain that would occur if the whole absorber were at the fluid inlet temperature"
+    },
+    {
+     "id": "b",
+     "text": "The fraction of incident radiation transmitted by the cover"
+    },
+    {
+     "id": "c",
+     "text": "The ratio of useful heat gain to the incident solar energy"
+    },
+    {
+     "id": "d",
+     "text": "The fraction of absorbed energy lost to the surroundings"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The ratio of actual useful heat gain to the gain that would occur if the whole absorber were at the fluid inlet temperature",
+   "distractorRationale": {
+    "b": "That is the transmittance $\\tau$.",
+    "c": "That is the efficiency $\\eta$, not $F_R$.",
+    "d": "Losses are described by $U_L$, not by $F_R$."
+   },
+   "explanation": "Because the fluid warms along its path, the plate is hotter than the inlet fluid and loses more than at inlet temperature, so the real gain is lower. $F_R$ is the factor that corrects for this and lets the equation use the known inlet temperature.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two days have the same ambient temperature and the same inlet water temperature. On a hazy day the irradiance on a collector is half that of a clear day. What happens to the instantaneous efficiency?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It decreases, because the loss term is divided by a smaller irradiance"
+    },
+    {
+     "id": "b",
+     "text": "It increases, because there is less heat to lose"
+    },
+    {
+     "id": "c",
+     "text": "It stays the same, because efficiency is a property of the collector"
+    },
+    {
+     "id": "d",
+     "text": "It doubles, because there is half the irradiance"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It decreases, because the loss term is divided by a smaller irradiance",
+   "distractorRationale": {
+    "b": "The loss flux is unchanged at fixed temperatures, while the absorbed flux halves.",
+    "c": "Efficiency depends on $(T_i-T_a)/G_T$, so it varies with irradiance.",
+    "d": "Efficiency is a ratio, and the loss term makes the dependence non-linear."
+   },
+   "explanation": "In $\\eta=F_R(\\tau\\alpha)-F_RU_L(T_i-T_a)/G_T$, halving $G_T$ doubles the subtracted term, so $\\eta$ falls. Weak sunshine therefore penalises a hot collector disproportionately.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A household requires 200 litres per day of water at 50 degrees Celsius from mains at 10 degrees Celsius. Describe how you would size a solar storage tank and say why the tank is normally larger than the volume computed from the energy alone.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o3"
+   ],
+   "markingGuide": [
+    "Daily energy $E=\\rho V c_p\\Delta T$ with $\\Delta T=40$ K giving about 33.4 MJ (9.3 kWh)",
+    "Choose a storage temperature (e.g. 60 degrees Celsius) and compute the stored volume from $E/(\\rho c_p(T_{store}-T_{mains}))$",
+    "Add an allowance for standing heat loss, stratification and mixing",
+    "Considers matching to collector area so the tank can absorb a day of solar gain without overheating",
+    "States that the tank should also cover cloudy-day autonomy or an auxiliary heater if needed"
+   ],
+   "explanation": "The daily energy requirement sets the minimum stored volume, but real tanks lose heat, mix, and must buffer between collection and use. An allowance of 20 to 50 percent is therefore usual.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why the efficiency of a flat-plate collector decreases as the operating temperature difference increases, and discuss why an evacuated-tube collector is preferred for process heat at 100 degrees Celsius above ambient.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o2",
+    "ug.mce-advanced-heat-transfer.solar-thermal.collector-performance.o1"
+   ],
+   "markingGuide": [
+    "The efficiency is $F_R(\\tau\\alpha)-F_RU_L(T_i-T_a)/G_T$ so the loss term grows with $T_i-T_a$",
+    "Losses by convection and radiation from the plate increase with its temperature",
+    "Efficiency reaches zero at stagnation when loss equals absorbed flux",
+    "Evacuated tubes remove convective loss, giving much lower $U_L$ (often under 2 W/m$^2$K)",
+    "Therefore at large $\\Delta T$ the evacuated tube retains useful efficiency while the flat plate has fallen to a low value"
+   ],
+   "explanation": "The efficiency line has a negative slope proportional to the loss coefficient. A collector with a much smaller $U_L$ maintains efficiency over a wider temperature range, which is why evacuated tubes are used for process heat.",
+   "board": "internal"
+  }
+ ]
+}

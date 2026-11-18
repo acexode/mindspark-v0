@@ -1,0 +1,415 @@
+{
+ "lessonTitle": "Ladder Logic: Contacts, Coils and Latching",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hydraulic press may only close when the operator has a hand on each of two buttons, and it must stop instantly if either button is released. Writing that rule as ladder logic takes three symbols and one rung, and it is the model for almost every interlock in industry."
+  },
+  {
+   "type": "text",
+   "markdown": "**Ladder logic** is a PLC programming language that looks like the relay wiring diagrams it replaced. Two vertical power rails run left and right; each **rung** is a horizontal path of **contacts** (conditions) ending in a **coil** (output). If a continuous path of true contacts exists from the left rail to the coil, the coil is energised. The PLC evaluates rungs from top to bottom once per scan."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Symbol",
+    "Name",
+    "Passes power when",
+    "Boolean meaning"
+   ],
+   "rows": [
+    [
+     "--| |--",
+     "Normally open (examine if closed)",
+     "Its bit is 1",
+     "The variable itself"
+    ],
+    [
+     "--|/|--",
+     "Normally closed (examine if open)",
+     "Its bit is 0",
+     "NOT the variable"
+    ],
+    [
+     "--( )--",
+     "Output coil",
+     "Sets its bit to the rung result",
+     "Output = rung condition"
+    ],
+    [
+     "Series contacts",
+     "Contacts in a row",
+     "All are passing",
+     "AND"
+    ],
+    [
+     "Parallel branches",
+     "Contacts side by side",
+     "Any branch passes",
+     "OR"
+    ]
+   ],
+   "caption": "Basic ladder elements and their Boolean equivalents"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Contacts test bits, not wires",
+   "text": "A ladder contact examines the bit in PLC memory. The symbol --| |-- is true when the bit is 1, whatever the physical button looks like. A stop button wired normally closed gives bit 1 when released, so the program tests it with --| |-- and it opens the rung only when pressed."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{Alarm}=(\\text{HighTemp}\\cdot\\overline{\\text{Override}})+\\text{HighPressure}",
+   "caption": "Boolean expression used in the next worked example"
+  },
+  {
+   "type": "worked_example",
+   "title": "Translating a Boolean requirement",
+   "prompt": "An alarm must sound if the temperature is high and the override switch is not active, or whenever pressure is high. Draw the rung.",
+   "steps": [
+    {
+     "text": "Identify the structure: AND of HighTemp and NOT Override, OR-ed with HighPressure.",
+     "latex": "\\text{Alarm}=(\\text{HighTemp}\\cdot\\overline{\\text{Override}})+\\text{HighPressure}"
+    },
+    {
+     "text": "Series branch (top): normally open HighTemp followed by normally closed Override."
+    },
+    {
+     "text": "Parallel branch (bottom): normally open HighPressure, joined to the top branch before and after, so either path can power the coil."
+    },
+    {
+     "text": "End the rung with the output coil Alarm. Check with a test case: HighTemp = 1 and Override = 1 and HighPressure = 0 blocks the top path and the bottom is open, so Alarm = 0, matching the expression."
+    }
+   ],
+   "answer": "Rung: [HighTemp NO] in series with [Override NC], in parallel with [HighPressure NO], driving coil (Alarm)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Start-stop latching (seal-in).** A momentary Start button should keep a motor running after it is released. The rung puts a normally open contact of the motor's own output coil in parallel with Start. Once the coil is on, the parallel contact closes and holds the rung true. The **Stop** and **E-stop** contacts are placed in series ahead of the branch so that opening either breaks the path and drops the seal-in."
+  },
+  {
+   "type": "worked_example",
+   "title": "Start-stop circuit with emergency stop",
+   "prompt": "Design a rung for motor Q0.0 using Start I0.0 (normally open pushbutton), Stop I0.1 and E-stop I0.2 (both normally closed field contacts). Trace the sequence.",
+   "steps": [
+    {
+     "text": "Rung text: [I0.1 NO symbol]--[I0.2 NO symbol]--+--[I0.0 NO]--+--(Q0.0). A second branch [Q0.0 NO] sits in parallel with I0.0. The Stop and E-stop use NO symbols because their NC field contacts give bit 1 when not pressed."
+    },
+    {
+     "text": "Press Start: I0.0 = 1, the path I0.1, I0.2 then Start is complete, so Q0.0 energises."
+    },
+    {
+     "text": "Release Start: the seal-in contact Q0.0 is now closed, keeping the path complete, so the motor keeps running."
+    },
+    {
+     "text": "Press Stop or E-stop: the NC contact opens, bit becomes 0, the series path is broken, Q0.0 drops, and the seal-in opens. Releasing the button does not restart the motor."
+    },
+    {
+     "text": "Wire break: a broken wire to Stop looks like the button pressed (bit 0) so the motor stops. This fail-safe behaviour is why stop devices are wired normally closed."
+    }
+   ],
+   "answer": "The seal-in branch latches the motor on; a normally closed Stop or E-stop opens the rung, and a broken wire also stops the motor."
+  },
+  {
+   "type": "text",
+   "markdown": "**Timers.** A PLC **on-delay timer (TON)** has a preset (PRE) and an accumulated value. While its enable rung is true, the timer counts in units of its time base; when accumulated time reaches the preset the **done bit (DN)** turns on. If the rung goes false, the timer resets. Delay = preset count multiplied by time base. To sequence two outputs: energise the first, use it to enable a TON, and use the timer's DN bit to energise the second."
+  },
+  {
+   "type": "worked_example",
+   "title": "Sequencing two outputs with a delay",
+   "prompt": "Conveyor 1 (Q0.1) must start when Run is on, and Conveyor 2 (Q0.2) must start 8 s later. The timer base is 0.1 s. Specify the logic.",
+   "steps": [
+    {
+     "text": "Rung 1: [Run NO]--(Q0.1)."
+    },
+    {
+     "text": "Preset: $8\\ \\text{s}/0.1\\ \\text{s}=80$ counts. Rung 2: [Q0.1 NO]--TON T1, PRE = 80, base 0.1 s.",
+     "latex": "PRE=\\frac{8}{0.1}=80"
+    },
+    {
+     "text": "Rung 3: [T1.DN NO]--(Q0.2). Conveyor 2 starts when the timer is done."
+    },
+    {
+     "text": "If Run is released, Q0.1 drops, the timer resets, DN goes false and Q0.2 stops with it, so the sequence restarts cleanly."
+    }
+   ],
+   "answer": "TON with PRE = 80 at 0.1 s base gives an 8 s delay between the two conveyors, and both stop when Run is removed."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Never rely on software alone for emergency stop",
+   "text": "Ladder logic can implement stop and interlock logic, but the hard-wired E-stop circuit must remove power regardless of what the program does. Use safety-rated devices for protection of people."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Series contacts implement AND, parallel branches implement OR, and a normally closed symbol implements NOT.",
+    "A seal-in contact of the output coil in parallel with Start latches the motor; Stop and E-stop go in series ahead of it.",
+    "Stop and E-stop are wired normally closed so a broken wire stops the machine, and are programmed with a NO symbol testing a bit that is 1 when healthy.",
+    "A TON delays by preset times time base; its done bit sequences a second output."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In ladder logic, two contacts placed in series in one rung implement which Boolean operation?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "OR"
+    },
+    {
+     "id": "b",
+     "text": "AND"
+    },
+    {
+     "id": "c",
+     "text": "NOT"
+    },
+    {
+     "id": "d",
+     "text": "XOR"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "AND",
+   "distractorRationale": {
+    "a": "OR requires parallel branches.",
+    "b": "Correct: all contacts must pass.",
+    "c": "NOT is implemented by a normally closed contact.",
+    "d": "XOR needs a combination of branches and is not what two series contacts do."
+   },
+   "explanation": "Power can flow only if every contact in the path is passing, so the output is on only when both inputs are true. That is the AND operation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A normally closed (--|/|--) contact in a rung referencing bit I0.3 passes power under which condition?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "When bit I0.3 is 1"
+    },
+    {
+     "id": "b",
+     "text": "When bit I0.3 is 0"
+    },
+    {
+     "id": "c",
+     "text": "Only when the physical wire to I0.3 is cut"
+    },
+    {
+     "id": "d",
+     "text": "Only when the PLC is in program mode"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "When bit I0.3 is 0",
+   "distractorRationale": {
+    "a": "That describes the normally open symbol.",
+    "b": "Correct: it passes when the bit is false.",
+    "c": "The contact tests the memory bit, which may or may not be a cut wire.",
+    "d": "PLC mode does not define the contact logic."
+   },
+   "explanation": "A normally closed contact examines whether its bit is off. It passes power when the bit is 0, which provides logical NOT.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which circuit implements the Boolean expression $Y=(A+B)\\cdot\\overline{C}$?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A and B in series, in parallel with a normally closed C, driving Y"
+    },
+    {
+     "id": "b",
+     "text": "A and B in parallel, in series with a normally closed C, driving Y"
+    },
+    {
+     "id": "c",
+     "text": "A and B in parallel, in series with a normally open C, driving Y"
+    },
+    {
+     "id": "d",
+     "text": "A, B and C all in series with normally open contacts, driving Y"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "A and B in parallel, in series with a normally closed C, driving Y",
+   "distractorRationale": {
+    "a": "This gives AB + NOT C, a different function.",
+    "b": "Correct: parallel for OR, then series NC for AND NOT.",
+    "c": "A normally open C would require C to be true, not false.",
+    "d": "This gives A AND B AND C."
+   },
+   "explanation": "The OR of A and B is two parallel branches, and the AND with NOT C is a normally closed contact placed in series with that block. The output Y is on when A or B is true and C is false.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a start-stop rung, what is the purpose of the normally open contact of the motor's output coil placed in parallel with the Start pushbutton?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It stops the motor when Start is pressed twice"
+    },
+    {
+     "id": "b",
+     "text": "It keeps the rung true after Start is released, latching the motor on"
+    },
+    {
+     "id": "c",
+     "text": "It limits the motor speed"
+    },
+    {
+     "id": "d",
+     "text": "It resets the timer"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It keeps the rung true after Start is released, latching the motor on",
+   "distractorRationale": {
+    "a": "It has no counting function for presses.",
+    "b": "Correct: this is the seal-in or holding contact.",
+    "c": "Speed is not related to contact logic.",
+    "d": "No timer is involved in a basic latch."
+   },
+   "explanation": "Once the coil is energised, its own contact closes and provides a second path around the Start contact. The rung therefore stays true after Start is released until the Stop path opens.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A Stop pushbutton has a normally closed field contact wired to input I0.1, so the input bit is 1 when the button is released. Which program contact on I0.1 gives a correct start-stop circuit?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A normally open symbol (--| |--), because it passes when the bit is 1"
+    },
+    {
+     "id": "b",
+     "text": "A normally closed symbol (--|/|--), because the button is normally closed"
+    },
+    {
+     "id": "c",
+     "text": "Either symbol, because the choice makes no difference"
+    },
+    {
+     "id": "d",
+     "text": "No contact is needed because the hardware stops the motor"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A normally open symbol (--| |--), because it passes when the bit is 1",
+   "distractorRationale": {
+    "a": "Correct: test for bit equals 1 as the healthy state.",
+    "b": "A normally closed symbol would need the bit to be 0, so the motor could not run unless Stop was pressed.",
+    "c": "The two symbols give opposite behaviour.",
+    "d": "The program must open the rung; relying on hardware alone is not the design."
+   },
+   "explanation": "The program tests the bit, and the bit is 1 when the stop button is released, so the rung must pass when the bit is 1; that is the normally open symbol. When Stop is pressed the bit becomes 0 and the path opens.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A TON timer has a preset (PRE) of 150 counts with a time base of 0.1 s. How long, in seconds, is the delay?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o3"
+   ],
+   "correctValue": 15,
+   "tolerance": 0.1,
+   "unit": "seconds",
+   "explanation": "The delay equals the preset times the time base: $150\\times0.1=15$ s. The done bit turns on once the accumulated value reaches 150.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "For the function $Y=(A+B)\\cdot\\overline{C}$ with three Boolean inputs, for how many of the 8 possible input combinations is Y equal to 1?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o1"
+   ],
+   "correctValue": 3,
+   "tolerance": 0.1,
+   "unit": "combinations",
+   "explanation": "C must be 0, and then A or B must be 1. With A and B there are 3 combinations out of 4 where $A+B=1$, so Y is 1 for 3 combinations.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Four conveyors start in sequence. Conveyor 2 starts when timer T1 (preset 250, time base 0.01 s) is done after conveyor 1 starts. Conveyor 3 starts when T2 (preset 400, base 0.01 s) is done after conveyor 2 starts. Conveyor 4 starts when T3 (preset 75, base 0.1 s) is done after conveyor 3 starts. Ignoring scan time, how long after conveyor 1 starts does conveyor 4 start, in seconds?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o3"
+   ],
+   "correctValue": 14,
+   "tolerance": 0.1,
+   "unit": "seconds",
+   "explanation": "The delays are $250\\times0.01=2.5$ s, $400\\times0.01=4.0$ s and $75\\times0.1=7.5$ s, and each timer starts only when the previous conveyor is running, so they add. The total is $2.5+4.0+7.5=14.0$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how a start-stop latching rung with an emergency stop works. Describe the roles of the seal-in contact and the Stop and E-stop contacts, and explain why stop devices are wired normally closed.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o2"
+   ],
+   "markingGuide": [
+    "Start provides a momentary path; the output coil's contact in parallel seals the rung in (2 marks)",
+    "Stop and E-stop contacts are in series ahead of the branch so opening either drops the output (2 marks)",
+    "Releasing Stop does not restart the motor because the seal-in has been broken (1 mark)",
+    "Normally closed field contacts mean a broken wire or lost supply looks like a stop, so the machine fails safe (2 marks)",
+    "Mentions that the E-stop should also be hard-wired to remove power independent of the PLC (1 mark)"
+   ],
+   "explanation": "The seal-in holds the output on after Start is released; the series stop contacts break it. Wiring stop devices normally closed ensures a wire fault stops the motor.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Specify ladder logic for two pumps. Pump A must run while Run is on, Pump B must start 5 s after Pump A starts (timer base 0.1 s), and both must stop immediately when a normally closed Stop button opens or when Pump A's overload contact trips. Pump B must never run without Pump A. Describe every rung.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o2",
+    "ug.mce-mechatronics-instrumentation.plc-basics.ladder-logic.o3"
+   ],
+   "markingGuide": [
+    "Rung 1: Stop (NO symbol of NC wiring) and Overload (NO symbol of healthy contact) in series with Run, driving Pump A (2 marks)",
+    "Rung 2: Pump A contact enables a TON with PRE = 50 at 0.1 s base (2 marks)",
+    "Rung 3: timer done bit in series with Pump A contact, driving Pump B (2 marks)",
+    "Explains that if Stop or overload drops Pump A, the timer resets and Pump B drops, so B never runs without A (2 marks)",
+    "Mentions fail-safe wiring or a hard-wired E-stop in addition (1 mark)"
+   ],
+   "explanation": "A timer enabled by Pump A with PRE = 50 and a done bit in series with Pump A gives a 5 s delay and guarantees Pump B cannot run without Pump A.",
+   "board": "internal"
+  }
+ ]
+}

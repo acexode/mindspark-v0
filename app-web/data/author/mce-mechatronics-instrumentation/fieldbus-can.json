@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "CAN and Industrial Networks",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A modern car has dozens of electronic units, yet the engine controller, brake controller and dashboard share just one twisted pair. When the brake unit and the dashboard both want to speak in the same microsecond, the bus must pick a winner without losing or corrupting either message."
+  },
+  {
+   "type": "text",
+   "markdown": "The **Controller Area Network (CAN)** is a multi-master serial bus. Any node may transmit when the bus is idle, and messages are identified by an **identifier** (ID), not by a destination address. Every node hears every frame and decides by ID whether to use it. Data travel as a differential voltage on a twisted pair, which rejects common-mode noise, so CAN suits vehicles and machines."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Dominant and recessive bits",
+   "text": "A CAN bus behaves like a wired AND. A logical 0 is **dominant**: if any node sends 0, the bus is 0. A logical 1 is **recessive**: the bus is 1 only if all transmitters send 1. Each transmitter monitors the bus while it sends."
+  },
+  {
+   "type": "text",
+   "markdown": "**Arbitration.** Transmitters begin together at the start-of-frame bit and send their identifiers most significant bit first. A node that sends a recessive 1 but reads a dominant 0 knows another node has higher priority, stops sending and becomes a receiver. The winner continues undisturbed, so no frame is destroyed and no time is wasted. **A lower numerical ID therefore means higher priority.** Losers retry when the bus is next idle."
+  },
+  {
+   "type": "worked_example",
+   "title": "Arbitration between two nodes",
+   "prompt": "Node A sends the 11-bit ID 0x2A0 and node B sends 0x2B0 at the same moment. Which wins, and where does the loser drop out?",
+   "steps": [
+    {
+     "text": "Write both IDs in binary, most significant bit first.",
+     "latex": "A=01010100000,\\quad B=01010110000"
+    },
+    {
+     "text": "Compare bit by bit. The first six bits are identical (010101). At the seventh bit A sends 0 and B sends 1.",
+     "latex": "\\text{bit 7: } A=0\\ (\\text{dominant}),\\ B=1\\ (\\text{recessive})"
+    },
+    {
+     "text": "The bus carries the dominant 0. B reads 0 while sending 1, so B stops transmitting and listens."
+    },
+    {
+     "text": "A reaches the end of its ID unaffected and completes its frame. It also has the lower numeric value, 672 against 688."
+    }
+   ],
+   "answer": "Node A (0x2A0) wins; node B loses at the seventh identifier bit and retransmits after A's frame."
+  },
+  {
+   "type": "text",
+   "markdown": "**Frame length and bus load.** A standard data frame with $n$ data bytes needs about $47+8n$ bits including the 3-bit interframe space, so an 8-byte frame is 111 bits. Bit stuffing inserts an opposite bit after five equal bits, adding up to about $\\lfloor(34+8n-1)/4\\rfloor$ bits, giving a worst case of 135 bits for 8 bytes. **Bus load** is the fraction of time the bus is occupied."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{Load}=\\frac{\\sum_i f_i\\,N_i}{R_{bit}}",
+   "caption": "Bus load: f_i message rate (Hz), N_i bits per frame, R_bit bit rate (bit/s)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Estimating bus load",
+   "prompt": "At 500 kbit/s a node sends an 8-byte message every 10 ms, a 4-byte message every 20 ms and a 2-byte message every 100 ms. Estimate the bus load.",
+   "steps": [
+    {
+     "text": "Frame sizes without stuffing: $47+8n$.",
+     "latex": "N_8=111,\\ N_4=79,\\ N_2=63\\ \\text{bits}"
+    },
+    {
+     "text": "Bits per second: rates are 100, 50 and 10 Hz.",
+     "latex": "100\\times111+50\\times79+10\\times63=15\\,680\\ \\text{bit/s}"
+    },
+    {
+     "text": "Divide by the bit rate.",
+     "latex": "\\frac{15\\,680}{500\\,000}=3.14\\%"
+    },
+    {
+     "text": "With worst-case stuffing the frames are 135, 95 and 75 bits, giving 19 000 bit/s.",
+     "latex": "\\frac{19\\,000}{500\\,000}=3.8\\%"
+    }
+   ],
+   "answer": "About 3.1 percent nominal and 3.8 percent worst case, a very lightly loaded bus."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Standard",
+    "Signalling",
+    "Typical reach (label: typical)",
+    "Addressing / priority",
+    "Noise immunity"
+   ],
+   "rows": [
+    [
+     "RS-232",
+     "Single-ended, point to point",
+     "About 15 m",
+     "None",
+     "Poor"
+    ],
+    [
+     "RS-485",
+     "Differential, multi-drop",
+     "Up to about 1200 m at low rate",
+     "Master and polling by software",
+     "Good"
+    ],
+    [
+     "CAN",
+     "Differential, multi-master",
+     "About 40 m at 1 Mbit/s, about 1 km at 50 kbit/s",
+     "ID priority arbitration",
+     "Good"
+    ],
+    [
+     "I2C",
+     "Open-drain, on-board",
+     "Under 1 m",
+     "7-bit address",
+     "Poor"
+    ]
+   ],
+   "caption": "Choosing a link for a long, noisy industrial run"
+  },
+  {
+   "type": "text",
+   "markdown": "**Selecting a standard.** A long run in an electrically noisy plant needs a differential twisted pair, because noise couples equally into both conductors and cancels. Bit rate must be lowered as length grows, because the bit time must exceed the round-trip propagation delay (about 5 ns per metre for typical cable). Choose CAN when you need prioritised, multi-master messaging with built-in error detection (CRC), and RS-485 for simple master-slave polling."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Priority is fixed by the ID",
+   "text": "Arbitration is deterministic. The highest-priority message is never delayed by lower ones, apart from the frame already in progress, which is why safety-critical messages get the lowest IDs. Two nodes must never send the same ID at once."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not run CAN near saturation",
+   "text": "At high load the lowest-priority messages wait behind many higher-priority frames. A common design target is to stay well below about half the bus capacity; this is a typical guideline, not a rule."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "CAN arbitration is bitwise and non-destructive: dominant 0 beats recessive 1, so the lower ID wins and the loser retries.",
+    "A standard 8-byte frame is about 111 bits, up to about 135 with bit stuffing.",
+    "Bus load is the sum of rate times frame bits, divided by the bit rate.",
+    "Long noisy links need differential twisted-pair signalling and a bit rate reduced for the cable length."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Two CAN nodes start transmitting at the same instant, one with identifier 0x100 and the other with 0x200. Which node wins arbitration?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The node with ID 0x200, because it has the larger ID"
+    },
+    {
+     "id": "b",
+     "text": "The node that started its message first, by a few nanoseconds"
+    },
+    {
+     "id": "c",
+     "text": "The node with ID 0x100, because the lower ID reaches a dominant bit first"
+    },
+    {
+     "id": "d",
+     "text": "Neither; both frames are corrupted and both retry"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The node with ID 0x100, because the lower ID reaches a dominant bit first",
+   "distractorRationale": {
+    "a": "A larger ID means lower priority, not higher.",
+    "b": "Arbitration does not depend on start time because nodes synchronise on the start-of-frame edge.",
+    "c": "Correct: the numerically lower ID wins.",
+    "d": "Arbitration is non-destructive, so the winner's frame survives intact."
+   },
+   "explanation": "The IDs 0x100 and 0x200 first differ at the second identifier bit, where 0x100 sends a dominant 0 and 0x200 sends a recessive 1. The dominant bit wins, so the lower ID has higher priority.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does a CAN node do when it sends a recessive bit during the ID field but reads a dominant bit on the bus?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It stops transmitting, becomes a receiver and retries when the bus is idle"
+    },
+    {
+     "id": "b",
+     "text": "It continues transmitting and raises an error flag"
+    },
+    {
+     "id": "c",
+     "text": "It doubles its bit rate to overtake the other node"
+    },
+    {
+     "id": "d",
+     "text": "It sends the frame again immediately without waiting"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It stops transmitting, becomes a receiver and retries when the bus is idle",
+   "distractorRationale": {
+    "a": "Correct: it loses arbitration and listens.",
+    "b": "Continuing would corrupt the winner's frame, which arbitration is designed to avoid.",
+    "c": "The bit rate is fixed for all nodes.",
+    "d": "Retrying immediately would collide again; the node waits for the end of the winner's frame."
+   },
+   "explanation": "Reading a dominant bit while sending a recessive one means a higher-priority node is also transmitting. The loser stops at once so the winner's frame is unharmed, and retries after the bus is idle.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the purpose of bit stuffing in CAN?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It encrypts the message so other nodes cannot read it"
+    },
+    {
+     "id": "b",
+     "text": "It increases the priority of long messages"
+    },
+    {
+     "id": "c",
+     "text": "It guarantees enough signal edges for receivers to stay synchronised, at the cost of longer frames"
+    },
+    {
+     "id": "d",
+     "text": "It removes the need for a CRC"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It guarantees enough signal edges for receivers to stay synchronised, at the cost of longer frames",
+   "distractorRationale": {
+    "a": "Stuffing is not encryption.",
+    "b": "Priority comes only from the identifier.",
+    "c": "Correct: extra edges keep synchronisation.",
+    "d": "The CRC is a separate error-detection field and is still required."
+   },
+   "explanation": "After five identical bits the transmitter inserts a bit of opposite value, forcing an edge that keeps receiver clocks locked. The stuff bits lengthen the frame by up to about 20 percent.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 1 Mbit/s CAN bus is extended from 20 m to 600 m, keeping the same cable and nodes. What must change?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Raise the bit rate to compensate for attenuation"
+    },
+    {
+     "id": "b",
+     "text": "Nothing, because differential signalling removes length limits"
+    },
+    {
+     "id": "c",
+     "text": "Use single-ended wiring to reduce capacitance"
+    },
+    {
+     "id": "d",
+     "text": "Lower the bit rate, because the bit time must exceed the round-trip propagation delay"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Lower the bit rate, because the bit time must exceed the round-trip propagation delay",
+   "distractorRationale": {
+    "a": "A higher rate shortens the bit time and makes the timing problem worse.",
+    "b": "Differential signalling helps noise, not propagation delay.",
+    "c": "Single-ended wiring is more noise-sensitive and does not help.",
+    "d": "Correct: bit time must exceed round-trip delay."
+   },
+   "explanation": "Arbitration requires all nodes to see the same bit within one bit time, so the bit period must exceed the round-trip delay along the bus. For hundreds of metres, a rate of the order of 100 kbit/s or less is typical.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why should the average load on a CAN bus be kept well below saturation?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The CRC fails when more than 50 percent of the bandwidth is used"
+    },
+    {
+     "id": "b",
+     "text": "Low-priority messages are delayed behind frames of higher priority, so latency grows quickly as load approaches saturation"
+    },
+    {
+     "id": "c",
+     "text": "CAN nodes overheat at high load"
+    },
+    {
+     "id": "d",
+     "text": "Arbitration stops working above a threshold load"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Low-priority messages are delayed behind frames of higher priority, so latency grows quickly as load approaches saturation",
+   "distractorRationale": {
+    "a": "The CRC does not depend on load.",
+    "b": "Correct: latency of low-priority frames grows.",
+    "c": "Node temperature is not the issue here.",
+    "d": "Arbitration is a bit-level mechanism that works at any load."
+   },
+   "explanation": "A message waits for the current frame and for all pending higher-ID frames, so its worst-case latency rises sharply with load. Arbitration itself continues to work, but low-priority messages can be starved.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A standard CAN frame with 8 data bytes is 111 bits long without stuffing. How long does it occupy a 250 kbit/s bus, in microseconds?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o2"
+   ],
+   "correctValue": 444,
+   "tolerance": 2,
+   "unit": "microseconds",
+   "explanation": "The frame time is $111/250\\,000=444$ microseconds. Each bit lasts 4 microseconds at this rate.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "At 125 kbit/s a node sends an 8-byte frame at 50 Hz (111 bits), a 6-byte frame at 20 Hz (95 bits) and a 1-byte frame at 200 Hz (55 bits). Ignoring bit stuffing, calculate the bus load in percent.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o2"
+   ],
+   "correctValue": 14.76,
+   "tolerance": 0.2,
+   "unit": "percent",
+   "explanation": "The traffic is $50\\times111+20\\times95+200\\times55=5550+1900+11\\,000=18\\,450$ bit/s. Dividing by 125 000 gives 14.76 percent.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "At 500 kbit/s, a low-priority message is ready just after another frame started. Five higher-priority 8-byte frames are also queued. Assume every frame is the worst-case 135 bits. How long, in milliseconds, before the low-priority message can start sending (worst-case waiting time)?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o1",
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o2"
+   ],
+   "correctValue": 1.62,
+   "tolerance": 0.02,
+   "unit": "ms",
+   "explanation": "The frame in progress plus five queued higher-priority frames make six frames of 135 bits, 810 bits in total. At 500 kbit/s this is $810/500\\,000=1.62$ ms, because arbitration always grants the bus to higher IDs first.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Three nodes begin to transmit simultaneously with 11-bit identifiers 0x3C5, 0x3C1 and 0x3C9 (binary 01111000101, 01111000001 and 01111001001). Explain step by step how arbitration resolves this, naming the winner and the bit at which each loser drops out.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o1"
+   ],
+   "markingGuide": [
+    "States dominant 0 overrides recessive 1 and IDs are sent most significant bit first (1 mark)",
+    "Notes all three agree up to the seventh bit (1 mark)",
+    "0x3C9 sends 1 at the eighth ID bit while the others send 0, so it loses there (2 marks)",
+    "0x3C5 sends 1 at the ninth bit while 0x3C1 sends 0, so 0x3C5 loses there (2 marks)",
+    "Names 0x3C1 as the winner, which completes its frame, and notes losers retry later (2 marks)"
+   ],
+   "explanation": "Bit by bit comparison removes 0x3C9 at the eighth ID bit and 0x3C5 at the ninth, leaving 0x3C1, the numerically lowest ID, as the winner.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A conveyor line 400 m long carries 20 sensors and a safety-stop message in an electrically noisy plant with large motor drives. Choose and justify a communication standard. Address wiring, noise immunity, bit rate and message priority.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o1",
+    "ug.mce-mechatronics-instrumentation.communication-buses.fieldbus-can.o3"
+   ],
+   "markingGuide": [
+    "Selects a differential twisted-pair bus such as CAN or RS-485, not RS-232 or I2C (2 marks)",
+    "Explains that differential signalling cancels common-mode noise from drives, and mentions shielded twisted pair and termination (2 marks)",
+    "Reduces the bit rate for a 400 m run, because bit time must exceed round-trip propagation delay; typical value is about 125 kbit/s or less (2 marks)",
+    "Justifies CAN for multi-master messaging with ID priority, assigning the safety-stop the lowest ID (2 marks)",
+    "Mentions CRC and automatic error handling, or an alternative of RS-485 with master polling and its drawback in latency (1 mark)"
+   ],
+   "explanation": "A shielded differential pair at reduced bit rate suits the 400 m run, and CAN adds priority arbitration so the stop message is never delayed by sensor traffic.",
+   "board": "internal"
+  }
+ ]
+}

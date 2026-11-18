@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Two Degree of Freedom Systems: Frequencies and Mode Shapes",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A two-storey frame is shaken by a passing train. The upper floor sways more than the lower one at one frequency, and at a higher frequency the two floors sway in opposite directions. A frame with two lumped masses has exactly two such patterns, and finding them is an eigenvalue problem."
+  },
+  {
+   "type": "text",
+   "markdown": "A system whose configuration needs two independent coordinates has **two degrees of freedom**. Take two masses $m_1$ and $m_2$ (kg) with displacements $x_1$ and $x_2$ (m), joined by springs so that the motion of one affects the other: the equations are **coupled**. We seek the **normal modes**: special motions in which both masses oscillate at the same frequency $\\omega$ (rad/s) with a fixed ratio of amplitudes, passing through equilibrium at the same instant. Each mode has a natural frequency $\\omega_i$ and a **mode shape** $\\boldsymbol\\varphi_i$, the vector of amplitude ratios."
+  },
+  {
+   "type": "text",
+   "markdown": "**Assembling the equations.** Consider a chain: wall, spring $k_1$, mass $m_1$, spring $k_2$, mass $m_2$, spring $k_3$, wall. Free-body diagrams, with $x_1,x_2$ positive to the right, give $m_1\\ddot{x}_1=-k_1x_1-k_2(x_1-x_2)$ and $m_2\\ddot{x}_2=-k_2(x_2-x_1)-k_3x_2$. In matrix form $\\mathbf{M}\\ddot{\\mathbf{x}}+\\mathbf{K}\\mathbf{x}=\\mathbf{0}$. The stiffness matrix collects the springs: the diagonal entry for a mass is the sum of the springs attached to it, and each off-diagonal entry is minus the stiffness of the spring joining the two masses."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{M}=\\begin{bmatrix}m_1&0\\\\0&m_2\\end{bmatrix},\\qquad \\mathbf{K}=\\begin{bmatrix}k_1+k_2&-k_2\\\\-k_2&k_2+k_3\\end{bmatrix}",
+   "caption": "Mass and stiffness matrices (kg and N/m)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "The eigenproblem",
+   "text": "Try $\\mathbf{x}=\\boldsymbol\\varphi\\cos\\omega t$. Then $(\\mathbf{K}-\\omega^2\\mathbf{M})\\boldsymbol\\varphi=\\mathbf{0}$. A non-zero $\\boldsymbol\\varphi$ exists only if $\\det(\\mathbf{K}-\\omega^2\\mathbf{M})=0$, the **frequency equation**, a quadratic in $\\omega^2$ with two roots $\\omega_1^2<\\omega_2^2$. Substituting each root back into either row gives the amplitude ratio $X_2/X_1$; only the ratio is determined, the overall size is arbitrary."
+  },
+  {
+   "type": "math",
+   "latex": "\\det\\begin{bmatrix}k_1+k_2-m_1\\omega^2&-k_2\\\\-k_2&k_2+k_3-m_2\\omega^2\\end{bmatrix}=0,\\qquad \\frac{X_2}{X_1}=\\frac{k_1+k_2-m_1\\omega^2}{k_2}",
+   "caption": "Frequency equation and mode-shape ratio"
+  },
+  {
+   "type": "worked_example",
+   "title": "A symmetric two-mass chain",
+   "prompt": "Two equal masses of 3 kg are connected: a spring of 800 N/m joins each mass to a wall (k1 = k3), and a coupling spring of 400 N/m (k2) joins the masses. Find the natural frequencies and mode shapes.",
+   "steps": [
+    {
+     "text": "Assemble the matrices.",
+     "latex": "\\mathbf{M}=\\mathrm{diag}(3,3),\\quad \\mathbf{K}=\\begin{bmatrix}1200&-400\\\\-400&1200\\end{bmatrix}"
+    },
+    {
+     "text": "For equal masses and symmetric springs, add and subtract the two equations. Adding gives a motion with x1 = x2 (the middle spring is not stretched); subtracting gives x1 = -x2 (the middle spring is stretched by 2 x1).",
+     "latex": "\\omega_1^2=\\frac{k_1}{m}=266.67,\\quad \\omega_2^2=\\frac{k_1+2k_2}{m}=533.33"
+    },
+    {
+     "text": "Natural frequencies.",
+     "latex": "\\omega_1=16.33\\ \\text{rad/s}\\ (2.60\\ \\text{Hz}),\\quad \\omega_2=23.09\\ \\text{rad/s}\\ (3.68\\ \\text{Hz})"
+    },
+    {
+     "text": "Mode shapes from the ratio formula: ratio = (k1 + k2 - m w^2)/k2.",
+     "latex": "\\boldsymbol\\varphi_1=[1,\\ 1]^T\\ \\text{(in phase)},\\quad \\boldsymbol\\varphi_2=[1,\\ -1]^T\\ \\text{(out of phase)}"
+    }
+   ],
+   "answer": "omega_1 = 16.33 rad/s with the masses moving together, omega_2 = 23.09 rad/s with the masses moving in opposition."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Mode",
+    "Shape",
+    "Middle (coupling) spring",
+    "Node",
+    "Frequency (symmetric chain)"
+   ],
+   "rows": [
+    [
+     "First",
+     "In phase: $x_1=x_2$",
+     "Not stretched, so $k_2$ does not matter",
+     "None between the masses",
+     "$\\sqrt{k_1/m}$"
+    ],
+    [
+     "Second",
+     "Out of phase: $x_1=-x_2$",
+     "Stretched by $2x_1$, so it adds stiffness",
+     "At the midpoint of the coupling spring",
+     "$\\sqrt{(k_1+2k_2)/m}$"
+    ]
+   ],
+   "caption": "The two modes of a symmetric two-mass chain"
+  },
+  {
+   "type": "text",
+   "markdown": "**Sketching mode shapes.** Draw each mass displaced by an amount proportional to its entry in $\\boldsymbol\\varphi_i$. A mode is **in phase** when both entries have the same sign (the masses move in the same direction) and **out of phase** when the signs differ (opposite directions). For a chain with one end fixed and the other free, the first mode has all entries of one sign and the second mode has one sign change, so the number of sign changes equals the mode number minus one. A sign change indicates a node, a point that stays at rest."
+  },
+  {
+   "type": "worked_example",
+   "title": "A two-storey frame",
+   "prompt": "A shear building has floor masses m1 = 4000 kg and m2 = 2000 kg. The lower columns have stiffness k1 = 8.0 x 10^6 N/m (ground to floor 1) and the upper columns k2 = 4.0 x 10^6 N/m (floor 1 to floor 2). Find the natural frequencies and mode shapes.",
+   "steps": [
+    {
+     "text": "Assemble the matrices (the structure is a chain with a fixed base and a free top).",
+     "latex": "\\mathbf{K}=\\begin{bmatrix}12&-4\\\\-4&4\\end{bmatrix}\\times10^6\\ \\text{N/m},\\quad \\mathbf{M}=\\mathrm{diag}(4000,2000)"
+    },
+    {
+     "text": "Frequency equation: expand the determinant as a quadratic in lambda = omega squared.",
+     "latex": "m_1m_2\\lambda^2-[(k_1+k_2)m_2+k_2m_1]\\lambda+k_1k_2=0\\Rightarrow\\lambda=1000.0,\\ 4000.0\\ \\text{rad}^2/\\text{s}^2"
+    },
+    {
+     "text": "Natural frequencies.",
+     "latex": "\\omega_1=31.62\\ \\text{rad/s}\\ (5.03\\ \\text{Hz}),\\quad \\omega_2=63.25\\ \\text{rad/s}\\ (10.07\\ \\text{Hz})"
+    },
+    {
+     "text": "Amplitude ratio X2/X1 = (k1 + k2 - m1 lambda)/k2 for each root.",
+     "latex": "\\boldsymbol\\varphi_1=[1,\\ 2.000]^T,\\quad \\boldsymbol\\varphi_2=[1,\\ -1.000]^T"
+    }
+   ],
+   "answer": "omega_1 = 31.62 rad/s (5.03 Hz) with floors in phase and the top floor moving 2.00 times the lower; omega_2 = 63.25 rad/s (10.07 Hz) with the floors out of phase (ratio -1.00), and a node between them."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Draw a free-body diagram for each mass and write Newton's law; collect terms into $\\mathbf{M}\\ddot{\\mathbf{x}}+\\mathbf{K}\\mathbf{x}=\\mathbf{0}$.",
+    "Set $\\det(\\mathbf{K}-\\omega^2\\mathbf{M})=0$ and solve the quadratic for $\\omega^2$.",
+    "For each root, find $X_2/X_1$ from one row of $(\\mathbf{K}-\\omega^2\\mathbf{M})\\boldsymbol\\varphi=\\mathbf{0}$.",
+    "Sketch the shapes: same sign is in phase, opposite sign is out of phase; check against the physical picture."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Checks on a two-DOF answer",
+   "text": "The lowest frequency lies below both $\\sqrt{K_{11}/m_1}$ and $\\sqrt{K_{22}/m_2}$ and the highest lies above both; the first mode of a fixed-free chain has no sign change; a symmetric system has modes $[1,1]$ and $[1,-1]$. Substituting the numbers back into the second row of $(\\mathbf{K}-\\omega^2\\mathbf{M})\\boldsymbol\\varphi=\\mathbf{0}$ gives a quick check of the ratio."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Only the ratio is defined",
+   "text": "A mode shape can be scaled by any non-zero constant, including a negative one. Do not report a unique amplitude unless a normalisation, such as unity at mass 1, is stated. Frequencies are in rad/s (or Hz after dividing by $2\\pi$)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A two-DOF system has two natural frequencies and two mode shapes, found from $\\det(\\mathbf{K}-\\omega^2\\mathbf{M})=0$.",
+    "$\\mathbf{K}$ has the sum of attached springs on the diagonal and minus the coupling spring off the diagonal; $\\mathbf{M}$ is diagonal for lumped masses.",
+    "The amplitude ratio follows from $X_2/X_1=(k_1+k_2-m_1\\omega^2)/k_2$ and the shapes are defined only up to a scale factor.",
+    "The first mode is typically in phase, the second out of phase, with a node between the masses."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A chain consists of a wall, a spring k1, a mass m1, a spring k2, a mass m2, with the right-hand end of m2 free. The stiffness matrix is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "[[k1 + k2, -k2], [-k2, k2]]"
+    },
+    {
+     "id": "b",
+     "text": "[[k1, -k2], [-k2, k2]]"
+    },
+    {
+     "id": "c",
+     "text": "[[k1 + k2, k2], [k2, k2]]"
+    },
+    {
+     "id": "d",
+     "text": "[[k1, 0], [0, k2]]"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "[[k1 + k2, -k2], [-k2, k2]]",
+   "distractorRationale": {
+    "a": "Correct: Mass m1 is attached to springs k1 and k2, so K11 = k1 + k2; mass m2 is attached only to k2, so K22 = k2.",
+    "b": "The first diagonal entry must include both springs attached to m1.",
+    "c": "Off-diagonal terms are minus the coupling stiffness, since stretching the coupling spring pulls the masses together.",
+    "d": "A diagonal matrix would describe uncoupled masses, but the coupling spring ties them together."
+   },
+   "explanation": "Mass m1 is attached to springs k1 and k2, so K11 = k1 + k2; mass m2 is attached only to k2, so K22 = k2. The coupling spring gives K12 = K21 = -k2.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two equal masses of 2 kg are each attached to a wall by a 600 N/m spring and to each other by a 300 N/m spring. Find the higher natural frequency in rad/s.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o2"
+   ],
+   "correctValue": 24.4949,
+   "tolerance": 0.244949,
+   "unit": "rad/s",
+   "explanation": "The higher mode is out of phase, so the coupling spring is stretched by twice the displacement of one mass and adds stiffness: omega_2^2 = (k_1 + 2 k_2)/m = (600 + 600)/2 = 600. Hence omega_2 = 24.49 rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the lower of the two normal modes of a symmetric two-mass chain (equal masses, equal end springs, a coupling spring in the middle), the masses",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "move in opposite directions, and the coupling spring is stretched"
+    },
+    {
+     "id": "b",
+     "text": "move in the same direction, and the coupling spring is not stretched"
+    },
+    {
+     "id": "c",
+     "text": "move in the same direction, and the coupling spring is stretched most"
+    },
+    {
+     "id": "d",
+     "text": "stay at rest, because the coupling spring holds them"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "move in the same direction, and the coupling spring is not stretched",
+   "distractorRationale": {
+    "a": "That describes the higher mode.",
+    "b": "Correct: In the lower mode x1 = x2, so the coupling spring keeps its length and only the end springs act: omega_1^2 = k_1/m.",
+    "c": "If both masses move equally in the same direction the distance between them does not change.",
+    "d": "Both masses move in every mode."
+   },
+   "explanation": "In the lower mode x1 = x2, so the coupling spring keeps its length and only the end springs act: omega_1^2 = k_1/m. In the higher mode the masses move oppositely and the coupling spring stretches, which stiffens the mode and raises its frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two masses of 1 kg each are connected in a chain: a wall, a 100 N/m spring, mass 1, a 100 N/m spring, mass 2, with the far end of mass 2 free. The frequency equation is lambda^2 - 3 (k/m) lambda + (k/m)^2 = 0 with lambda = omega^2. Find the lower natural frequency in rad/s.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o2"
+   ],
+   "correctValue": 6.18034,
+   "tolerance": 0.0618034,
+   "unit": "rad/s",
+   "explanation": "With k/m = 100 the roots are lambda = (3 +/- sqrt(5))/2 x 100, that is 38.20 and 261.80. The lower one gives omega_1 = sqrt(38.20) = 6.180 rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A two-mass system has M = diag(3, 1) kg and K = [[1200, -300], [-300, 300]] N/m. The lower natural frequency satisfies omega^2 = 169.72 rad^2/s^2. Find the amplitude ratio X2/X1 for that mode (dimensionless; use the first row of (K - omega^2 M) phi = 0).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o2",
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o3"
+   ],
+   "correctValue": 2.30278,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "The first row gives (K11 - m1 omega^2) X1 + K12 X2 = 0, so X2/X1 = (K11 - m1 omega^2)/300 = (1200 - 3 x 169.72)/300 = 2.303. The positive sign shows the masses move in phase, with mass 2 moving more.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the higher natural mode of a two-mass chain that is fixed at one end and free at the other, the two masses",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "move in the same direction, with the mass at the free end moving less"
+    },
+    {
+     "id": "b",
+     "text": "move in opposite directions, with no node"
+    },
+    {
+     "id": "c",
+     "text": "move in opposite directions, with a node (point of zero displacement) somewhere between them"
+    },
+    {
+     "id": "d",
+     "text": "both stay at rest"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "move in opposite directions, with a node (point of zero displacement) somewhere between them",
+   "distractorRationale": {
+    "a": "The second mode of this chain has one sign change.",
+    "b": "Opposite motion means the displacement passes through zero somewhere between them, so there is a node.",
+    "c": "Correct: The higher mode of the chain has one sign change in its shape, so the masses move oppositely.",
+    "d": "Every mode has both masses moving."
+   },
+   "explanation": "The higher mode of the chain has one sign change in its shape, so the masses move oppositely. A sign change implies that the displacement passes through zero between the masses, which is the node.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how you would find the natural frequencies and mode shapes of a two-mass spring system, starting from the physical system, and say how the mode shapes would be sketched and interpreted.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o1",
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o2",
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o3"
+   ],
+   "markingGuide": [
+    "Free-body diagrams and Newton's law for each mass to give M x'' + K x = 0 with M diagonal and K symmetric",
+    "Assume x = phi cos(omega t): (K - omega^2 M) phi = 0",
+    "Non-trivial solution requires det(K - omega^2 M) = 0, a quadratic in omega^2 with two roots",
+    "Substitute each root into a row to obtain X2/X1 (only the ratio is determined)",
+    "Sketch each mass displaced in proportion to its entry; same sign means in phase, opposite sign means out of phase, a sign change implies a node",
+    "Check: lowest frequency below both sqrt(K11/m1) and sqrt(K22/m2), highest above both"
+   ],
+   "explanation": "The eigenproblem converts the coupled differential equations into an algebraic problem for omega^2 and the amplitude ratios. Interpreting the signs of the ratios gives the pictorial mode shapes.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement about the mode shape of a two-degree-of-freedom system is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Both amplitudes are fixed in metres by the stiffness matrix"
+    },
+    {
+     "id": "b",
+     "text": "The shape depends on the initial displacement"
+    },
+    {
+     "id": "c",
+     "text": "The amplitudes must sum to one"
+    },
+    {
+     "id": "d",
+     "text": "Only the ratio of the two amplitudes is determined, so the vector can be multiplied by any non-zero constant"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Only the ratio of the two amplitudes is determined, so the vector can be multiplied by any non-zero constant",
+   "distractorRationale": {
+    "a": "The homogeneous equations give only ratios, not absolute sizes.",
+    "b": "The shape is a property of the system; the initial conditions determine how much of each mode is excited.",
+    "c": "Any normalisation may be used; unit amplitude at one mass is a common choice, not a requirement.",
+    "d": "Correct: The equations (K - omega^2 M) phi = 0 are homogeneous, so if phi is a solution so is any multiple of it."
+   },
+   "explanation": "The equations (K - omega^2 M) phi = 0 are homogeneous, so if phi is a solution so is any multiple of it. Absolute amplitudes come from initial conditions, whereas the shape is a property of the system.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "For the symmetric chain with equal masses m, end springs k and a coupling spring kc, show that the natural frequencies are sqrt(k/m) and sqrt((k + 2 kc)/m), describe the two modes, and explain how increasing the coupling stiffness changes each frequency.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o1",
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o2",
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o3"
+   ],
+   "markingGuide": [
+    "Equations: m x1'' = -k x1 - kc (x1 - x2), m x2'' = -k x2 - kc (x2 - x1)",
+    "Adding: m (x1 + x2)'' = -k (x1 + x2), so omega1^2 = k/m with x1 = x2",
+    "Subtracting: m (x1 - x2)'' = -(k + 2 kc)(x1 - x2), so omega2^2 = (k + 2 kc)/m with x1 = -x2",
+    "In the in-phase mode the coupling spring is not stretched; in the out-of-phase mode it is stretched by 2 x1 and adds stiffness",
+    "Increasing kc raises the higher frequency, leaves the lower unchanged",
+    "The frequencies move further apart: the modes split as coupling strengthens"
+   ],
+   "explanation": "Adding and subtracting the two equations decouples them into the sum and difference coordinates. The coupling spring enters only the out-of-phase mode, so it raises only the higher frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "In a normal mode of a two-degree-of-freedom system, both masses oscillate at the same frequency and pass through their equilibrium positions at the same instant.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.two-dof.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A normal mode is a synchronous motion: every coordinate varies as cos(omega t) with the same omega, so the displacement ratio is fixed. The masses therefore reach equilibrium together, with the mode shape giving their relative amplitudes.",
+   "board": "internal"
+  }
+ ]
+}

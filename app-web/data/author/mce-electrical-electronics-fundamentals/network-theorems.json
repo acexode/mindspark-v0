@@ -1,0 +1,407 @@
+{
+ "lessonTitle": "Network Theorems",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A battery-powered rover has a sensor board hanging off a resistor network inside its power rail. Rather than re-solve the whole network each time you plug in a different load, you can replace everything the load sees with one ideal source and one resistor. That shortcut, the Thevenin equivalent, also tells you the load that extracts the most power."
+  },
+  {
+   "type": "text",
+   "markdown": "Ohm's and Kirchhoff's laws are enough to solve any resistive network, but they can lead to many simultaneous equations. **Nodal analysis** organises the work systematically: choose a reference node (0 V), label the other node voltages, and write Kirchhoff's current law (KCL) at each. Because currents are expressed through node voltages with $i=\\Delta v/R$, the unknowns are voltages and the number of equations is the number of non-reference nodes."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Nodal analysis recipe",
+   "text": "1. Pick a reference (ground) node. 2. Label the voltage of every other node. 3. At each unknown node write: sum of currents leaving through resistors $=$ current sources entering, with each resistor current $=(v_{node}-v_{other})/R$. 4. Solve the linear equations. In matrix form $\\mathbf G\\mathbf v=\\mathbf i$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Nodal analysis of a three-node circuit",
+   "prompt": "Netlist: a 12 V source in series with R1 = 2 k$\\Omega$ feeds node A; R2 = 3 k$\\Omega$ connects A to ground; R3 = 1 k$\\Omega$ connects A to node B; R4 = 6 k$\\Omega$ connects B to ground. Find $V_A$ and $V_B$.",
+   "steps": [
+    {
+     "text": "KCL at A (currents in mA, resistances in k$\\Omega$): the sum leaving through R1 (toward the source), R2 and R3 is zero.",
+     "latex": "\\frac{V_A-12}{2}+\\frac{V_A}{3}+\\frac{V_A-V_B}{1}=0"
+    },
+    {
+     "text": "KCL at B: current from A through R3 equals the current to ground in R4.",
+     "latex": "\\frac{V_B-V_A}{1}+\\frac{V_B}{6}=0\\ \\Rightarrow\\ V_B=\\tfrac{6}{7}V_A"
+    },
+    {
+     "text": "Substitute into the A equation: $\\left(\\tfrac12+\\tfrac13+1-\\tfrac67\\right)V_A=6$.",
+     "latex": "\\frac{41}{42}V_A=6\\ \\Rightarrow\\ V_A=6.146\\ \\mathrm{V},\\quad V_B=\\tfrac67(6.146)=5.268\\ \\mathrm{V}"
+    },
+    {
+     "text": "Check: source current $(12-6.146)/2=2.927$ mA equals $6.146/3+0.878=2.927$ mA."
+    }
+   ],
+   "answer": "V_A = 6.15 V and V_B = 5.27 V; the source supplies 2.93 mA, so KCL is satisfied at both nodes."
+  },
+  {
+   "type": "text",
+   "markdown": "**Thevenin's theorem.** Any linear two-terminal network containing resistors and independent sources behaves, as seen from its terminals, like a single voltage source $V_{th}$ in series with a single resistance $R_{th}$. $V_{th}$ is the **open-circuit voltage** at the terminals. $R_{th}$ is the resistance seen into the terminals with all independent sources **deactivated** (voltage sources replaced by shorts, current sources by open circuits). Equivalently $R_{th}=V_{th}/I_{sc}$, where $I_{sc}$ is the short-circuit current."
+  },
+  {
+   "type": "math",
+   "latex": "V_{th}=V_{oc},\\qquad R_{th}=\\frac{V_{oc}}{I_{sc}},\\qquad I_{load}=\\frac{V_{th}}{R_{th}+R_L}",
+   "caption": "Thevenin equivalent and the load current it predicts"
+  },
+  {
+   "type": "worked_example",
+   "title": "Thevenin equivalent",
+   "prompt": "A 9.0 V source is in series with a 6 k$\\Omega$ resistor; a 3 k$\\Omega$ resistor connects from the far end of the 6 k$\\Omega$ resistor to the lower rail. The load is connected across the 3 k$\\Omega$ resistor (terminals a, b). Find $V_{th}$ and $R_{th}$.",
+   "steps": [
+    {
+     "text": "Open-circuit voltage: a voltage divider.",
+     "latex": "V_{th}=9.0\\times\\frac{3}{6+3}=3.0\\ \\mathrm{V}"
+    },
+    {
+     "text": "Deactivate the source (short it): the two resistors are then in parallel as seen from a-b.",
+     "latex": "R_{th}=6\\parallel3=\\frac{6\\times3}{6+3}=2.0\\ \\mathrm{k\\Omega}"
+    }
+   ],
+   "answer": "V_th = 3.0 V in series with R_th = 2.0 kohm. A 4 kohm load would then draw 3.0/(2+4) = 0.50 mA."
+  },
+  {
+   "type": "text",
+   "markdown": "**Maximum power transfer.** A load $R_L$ on a Thevenin source receives $P_L=I^2R_L=V_{th}^2R_L/(R_{th}+R_L)^2$. This is zero for $R_L=0$ and for $R_L\\to\\infty$, so it has a maximum in between, found by setting $dP_L/dR_L=0$, which gives $R_L=R_{th}$. At that point half of the power is lost inside the source network, so the efficiency is 50 %."
+  },
+  {
+   "type": "math",
+   "latex": "R_L=R_{th},\\qquad P_{max}=\\frac{V_{th}^{2}}{4R_{th}}",
+   "caption": "Matched load and the maximum power it receives"
+  },
+  {
+   "type": "worked_example",
+   "title": "Matched load",
+   "prompt": "For the equivalent found above ($V_{th}=3.0$ V, $R_{th}=2.0$ k$\\Omega$), find the load for maximum power and the power delivered.",
+   "steps": [
+    {
+     "text": "Match the load to the Thevenin resistance.",
+     "latex": "R_L=R_{th}=2.0\\ \\mathrm{k\\Omega}"
+    },
+    {
+     "text": "Insert into the maximum power expression.",
+     "latex": "P_{max}=\\frac{3.0^2}{4\\times2000}=1.125\\ \\mathrm{mW}"
+    }
+   ],
+   "answer": "R_L = 2.0 kohm gives P_max = 1.125 mW. Any other load receives less."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "Best used when",
+    "Unknowns",
+    "Caution"
+   ],
+   "rows": [
+    [
+     "Nodal analysis",
+     "Many parallel branches, current sources",
+     "Node voltages",
+     "Choose the reference node first"
+    ],
+    [
+     "Superposition",
+     "Several independent sources, simple network",
+     "One source at a time",
+     "Deactivate other sources correctly; do not superpose power"
+    ],
+    [
+     "Thevenin equivalent",
+     "Load changes while the network is fixed",
+     "$V_{th}$, $R_{th}$",
+     "Remove the load before finding $V_{oc}$"
+    ]
+   ],
+   "caption": "Choosing an analysis method for linear resistive networks"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Voltage source off: replace with a short; current source off: replace with an open circuit.",
+    "$R_{th}$ cannot be found with a live source in place.",
+    "Maximum power transfer is 50 % efficient, so it is used for signal matching, not for power distribution.",
+    "Superposition applies to voltages and currents (linear), never directly to power."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Max power versus max efficiency",
+   "text": "Matching $R_L=R_{th}$ maximises power in the load, but the source network dissipates as much as the load. Power systems use $R_L\\gg R_{th}$ for high efficiency."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Nodal analysis writes KCL at each non-reference node using $i=\\Delta v/R$ and solves for node voltages.",
+    "A Thevenin equivalent has $V_{th}=V_{oc}$ and $R_{th}$ from deactivated sources (or $V_{oc}/I_{sc}$).",
+    "Maximum power transfer occurs at $R_L=R_{th}$, giving $P_{max}=V_{th}^2/4R_{th}$ at 50 % efficiency."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 12 V source is in series with R1 = 4 k$\\Omega$ feeding the terminals; R2 = 12 k$\\Omega$ is connected across the terminals. What is the Thevenin resistance seen at the terminals?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3 k$\\Omega$"
+    },
+    {
+     "id": "b",
+     "text": "16 k$\\Omega$"
+    },
+    {
+     "id": "c",
+     "text": "8 k$\\Omega$"
+    },
+    {
+     "id": "d",
+     "text": "4 k$\\Omega$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "3 k$\\Omega$",
+   "distractorRationale": {
+    "a": "Correct: with the source shorted, 4k and 12k are in parallel: 48/16 = 3 k.",
+    "b": "Wrong: this adds them in series.",
+    "c": "Wrong: this is the average, not the parallel combination.",
+    "d": "Wrong: this ignores R2 in parallel."
+   },
+   "explanation": "To find $R_{th}$, short the voltage source. Then R1 and R2 are in parallel from the terminals: $4\\times12/(4+12)=3$ k$\\Omega$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A source with Thevenin resistance 50 ohm drives an adjustable load. Which load resistance receives the most power?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "50 ohm"
+    },
+    {
+     "id": "b",
+     "text": "0 ohm"
+    },
+    {
+     "id": "c",
+     "text": "Infinity"
+    },
+    {
+     "id": "d",
+     "text": "25 ohm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "50 ohm",
+   "distractorRationale": {
+    "a": "Correct: maximum power occurs when R_L = R_th.",
+    "b": "Wrong: a short circuit has zero voltage and so delivers zero power to the load.",
+    "c": "Wrong: an open circuit has zero current and so delivers zero power.",
+    "d": "Wrong: half of R_th gives lower power than the match."
+   },
+   "explanation": "$P_L=V_{th}^2R_L/(R_{th}+R_L)^2$ is zero at $R_L=0$ and $R_L\\to\\infty$ and is maximal at $R_L=R_{th}$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "At node X, a 5 V source is connected through 1 k$\\Omega$, a 2 k$\\Omega$ resistor goes from X to ground and nothing else connects. Which is the correct KCL equation (mA, k$\\Omega$)?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "(V_X - 5)/1 + V_X/2 = 0"
+    },
+    {
+     "id": "b",
+     "text": "(5 - V_X)/1 - V_X/2 = 5"
+    },
+    {
+     "id": "c",
+     "text": "(V_X + 5)/1 + V_X/2 = 0"
+    },
+    {
+     "id": "d",
+     "text": "V_X/1 + V_X/2 = 0"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "(V_X - 5)/1 + V_X/2 = 0",
+   "distractorRationale": {
+    "a": "Correct: current leaving X toward the source plus current to ground equals zero.",
+    "b": "Wrong: this equation is not balanced; the right-hand side is arbitrary.",
+    "c": "Wrong: sign error; the source voltage should be subtracted.",
+    "d": "Wrong: omits the source entirely."
+   },
+   "explanation": "Summing the currents leaving X through each resistor: toward the source $(V_X-5)/1$ and to ground $V_X/2$. Setting the sum to zero gives $V_X=3.33$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 20 V source in series with 10 k$\\Omega$ feeds terminals; a 40 k$\\Omega$ resistor is across the terminals. What are $V_{th}$ and $R_{th}$?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "16 V and 8 k$\\Omega$"
+    },
+    {
+     "id": "b",
+     "text": "20 V and 10 k$\\Omega$"
+    },
+    {
+     "id": "c",
+     "text": "16 V and 50 k$\\Omega$"
+    },
+    {
+     "id": "d",
+     "text": "4 V and 8 k$\\Omega$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "16 V and 8 k$\\Omega$",
+   "distractorRationale": {
+    "a": "Correct: V_th = 20 x 40/50 = 16 V; R_th = 10 || 40 = 8 k.",
+    "b": "Wrong: this ignores the divider and the parallel resistor.",
+    "c": "Wrong: right V_th but series sum used for R_th.",
+    "d": "Wrong: 4 V is the drop across the 10 k, not the open-circuit voltage."
+   },
+   "explanation": "The open-circuit voltage is the divider output $20\\times40/(10+40)=16$ V. With the source shorted, $10\\parallel40=8$ k$\\Omega$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "At maximum power transfer from a Thevenin source into a matched load, what is the power efficiency (load power divided by total source power)?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "50 %"
+    },
+    {
+     "id": "b",
+     "text": "100 %"
+    },
+    {
+     "id": "c",
+     "text": "25 %"
+    },
+    {
+     "id": "d",
+     "text": "75 %"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "50 %",
+   "distractorRationale": {
+    "a": "Correct: the same current flows in R_th and R_L = R_th, so each dissipates half.",
+    "b": "Wrong: that would need R_th = 0.",
+    "c": "Wrong: 25 % is the ratio of P_max to the short-circuit power, not efficiency.",
+    "d": "Wrong: 75 % would need R_L = 3 R_th."
+   },
+   "explanation": "With $R_L=R_{th}$ the same current flows through both, so the power splits equally: the load gets 50 % of the total.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Node A is fed by a 3.0 mA current source (into the node). A 2 k$\\Omega$ resistor connects A to ground, a 4 k$\\Omega$ resistor connects A to node B, and a 4 k$\\Omega$ resistor connects B to ground. Using nodal analysis, find $V_B$ in volts.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o1"
+   ],
+   "correctValue": 2.4,
+   "tolerance": 0.02,
+   "unit": "V",
+   "explanation": "At B: $(V_B-V_A)/4+V_B/4=0$ gives $V_B=V_A/2$. At A: $3=V_A/2+(V_A-V_B)/4=V_A/2+V_A/8=0.625V_A$, so $V_A=4.8$ V and $V_B=2.4$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 5.0 mA current source is in parallel with a 4 k$\\Omega$ resistor. A 2 k$\\Omega$ resistor in series connects this combination to terminal a (b is the bottom rail). A 6 k$\\Omega$ load is then connected across a-b. Using the Thevenin equivalent ($V_{th}=20$ V, $R_{th}=6$ k$\\Omega$), find the load current in mA.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o2"
+   ],
+   "correctValue": 1.667,
+   "tolerance": 0.01,
+   "unit": "mA",
+   "explanation": "With the load removed no current flows in the 2 k$\\Omega$, so $V_{oc}=5\\times4=20$ V. With the current source open, $R_{th}=4+2=6$ k$\\Omega$. The load current is $20/(6+6)=1.667$ mA.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 36 V source is in series with 30 ohm, feeding terminals a-b. A 90 ohm resistor is connected across a-b. What is the maximum power, in watts, that can be delivered to a load connected to a-b (with the load chosen optimally)?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o2",
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o3"
+   ],
+   "correctValue": 8.1,
+   "tolerance": 0.1,
+   "unit": "W",
+   "explanation": "$V_{th}=36\\times90/120=27$ V and $R_{th}=30\\parallel90=22.5$ ohm. The optimal load is 22.5 ohm, giving $P_{max}=27^2/(4\\times22.5)=8.1$ W.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe two ways to determine the Thevenin resistance of a linear network with only independent sources, and state what $V_{th}$ is.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o2"
+   ],
+   "markingGuide": [
+    "V_th is the open-circuit voltage across the terminals",
+    "Method 1: deactivate independent sources (voltage sources short, current sources open) and find the resistance looking into the terminals",
+    "Method 2: find the short-circuit current I_sc and use R_th = V_oc/I_sc",
+    "States the load must be removed when finding V_oc",
+    "Notes sources must not be left active when using method 1"
+   ],
+   "explanation": "$V_{th}$ is the open-circuit voltage at the terminals with the load removed. $R_{th}$ can be found either by turning off all independent sources (shorting voltage sources, opening current sources) and finding the resistance seen into the terminals, or by dividing the open-circuit voltage by the short-circuit current, $R_{th}=V_{oc}/I_{sc}$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Prove that the power delivered to a load $R_L$ from a Thevenin source ($V_{th}$, $R_{th}$) is maximum when $R_L=R_{th}$, and find the maximum power.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.circuit-laws-dc.network-theorems.o3"
+   ],
+   "markingGuide": [
+    "Writes P = V_th^2 R_L / (R_th + R_L)^2",
+    "Differentiates with respect to R_L",
+    "Sets dP/dR_L = 0 giving (R_th + R_L) - 2 R_L = 0",
+    "Concludes R_L = R_th",
+    "Substitutes to find P_max = V_th^2 / (4 R_th)"
+   ],
+   "explanation": "The load power is $P=V_{th}^2R_L/(R_{th}+R_L)^2$. Differentiating, $dP/dR_L=V_{th}^2[(R_{th}+R_L)-2R_L]/(R_{th}+R_L)^3$, which is zero when $R_L=R_{th}$. Substituting gives $P_{max}=V_{th}^2R_{th}/(2R_{th})^2=V_{th}^2/(4R_{th})$.",
+   "board": "internal"
+  }
+ ]
+}

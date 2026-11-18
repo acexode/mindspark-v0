@@ -1,0 +1,363 @@
+{
+ "lessonTitle": "Branching and Loops",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A cooling-water line must be sized differently depending on whether the flow is smooth or turbulent, and the design spreadsheet recalculates hundreds of pipe sections. A program decides each case with a single conditional, and sums long series with a loop that knows when to stop."
+  },
+  {
+   "type": "text",
+   "markdown": "A program normally runs its statements in order. **Branching** (`if`, `elif`, `else`) lets it choose between blocks of code depending on a condition that is `True` or `False`. **Loops** repeat a block: a `for` loop runs a known number of times, and a `while` loop repeats as long as a condition holds. Engineering programs use branching to classify cases and `while` loops to iterate until a result is accurate enough."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Reynolds number",
+   "text": "The Reynolds number $Re$ is a dimensionless ratio of inertial to viscous effects in a flow. For flow in a circular pipe of diameter $D$, it is $Re=\\rho V D/\\mu$, where $\\rho$ is density (kg/m^3), $V$ is mean velocity (m/s) and $\\mu$ is dynamic viscosity (Pa s). Typical engineering thresholds: laminar for $Re<2300$, turbulent for $Re>4000$, and a transitional range between."
+  },
+  {
+   "type": "math",
+   "latex": "Re=\\frac{\\rho\\,V\\,D}{\\mu}",
+   "caption": "Reynolds number for pipe flow (dimensionless). The thresholds 2300 and 4000 are typical values, not exact limits."
+  },
+  {
+   "type": "worked_example",
+   "title": "Classifying a flow",
+   "prompt": "Water ($\\rho=998$ kg/m^3, $\\mu=1.0\\times10^{-3}$ Pa s) flows at $V=0.5$ m/s in a pipe of diameter $D=0.05$ m. Classify the flow and show the branching rule.",
+   "steps": [
+    {
+     "text": "Compute $Re=\\rho V D/\\mu=998\\times0.5\\times0.05/10^{-3}$. The numerator is $24.95$ and dividing by $10^{-3}$ gives $24\\,950$.",
+     "latex": "Re=\\frac{998\\times0.5\\times0.05}{1.0\\times10^{-3}}=24\\,950"
+    },
+    {
+     "text": "Write the conditional in order from the smallest threshold: `if Re < 2300:` laminar; `elif Re <= 4000:` transitional; `else:` turbulent."
+    },
+    {
+     "text": "Evaluate it: $24\\,950<2300$ is False, $24\\,950\\le4000$ is False, so the `else` branch runs."
+    },
+    {
+     "text": "Sanity check: velocities of order 0.5 m/s in a 50 mm water pipe are normally turbulent, so $Re\\sim10^{4}$ is physically sensible."
+    }
+   ],
+   "answer": "Re = 24 950, so the flow is turbulent."
+  },
+  {
+   "type": "text",
+   "markdown": "Python tests `elif` branches **in order** and runs only the first one whose condition is true, so the order of the tests matters. A `for` loop uses `range(start, stop)`, which runs from `start` up to but **not including** `stop`. A `while` loop re-tests its condition before every pass; if the condition never becomes false the program loops forever, so something inside the loop must change the quantity being tested."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Loop type",
+    "Use when",
+    "Typical engineering task",
+    "Risk"
+   ],
+   "rows": [
+    [
+     "`for k in range(n)`",
+     "The number of passes is known",
+     "Summing $n$ measurements; stepping through time steps",
+     "Off-by-one errors in the range"
+    ],
+    [
+     "`while cond:`",
+     "The number of passes depends on the data",
+     "Adding series terms until they are below a tolerance",
+     "Infinite loop if the condition never fails"
+    ]
+   ],
+   "caption": "Choosing between for and while."
+  },
+  {
+   "type": "worked_example",
+   "title": "Accumulating a sum to a tolerance",
+   "prompt": "Estimate $e=\\sum_{k=0}^{\\infty}1/k!$ by adding terms until a term is smaller than $10^{-3}$. Trace the loop and report the sum.",
+   "steps": [
+    {
+     "text": "Initialise `total = 0.0`, `term = 1.0` (the $k=0$ term) and `k = 0`. The loop is `while term >= 1e-3:` then `total += term`, `k += 1`, `term = term / k`. Dividing by $k$ turns $1/(k-1)!$ into $1/k!$.",
+     "latex": "t_k=\\frac{t_{k-1}}{k}"
+    },
+    {
+     "text": "Pass 1: total=1, k=1, term=1. Pass 2: total=2, k=2, term=0.5. Pass 3: total=2.5, k=3, term=0.16667. Pass 4: total=2.66667, k=4, term=0.041667."
+    },
+    {
+     "text": "Pass 5: total=2.70833, k=5, term=0.008333. Pass 6: total=2.71667, k=6, term=0.001389. Pass 7: total=2.71806, k=7, term=0.000198."
+    },
+    {
+     "text": "The next test, $0.000198\\ge10^{-3}$, is False, so the loop stops. The exact value is 2.71828, so the error is $2.3\\times10^{-4}$, smaller than the last term added."
+    }
+   ],
+   "answer": "total = 2.71806 after 7 passes (true value 2.71828)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Tracing** means writing down the value of every variable after each pass, exactly as the computer would. It is the fastest way to find a logic error, because you compare your hand values to what you expect. A trace table with one row per pass keeps the work organised."
+  },
+  {
+   "type": "worked_example",
+   "title": "Tracing a loop by hand",
+   "prompt": "Trace `s = 0` then `for i in range(1, 5): if i % 2 == 0: s += i else: s -= 1`, where `%` gives the remainder. Find the final `s`.",
+   "steps": [
+    {
+     "text": "`range(1, 5)` gives $i=1,2,3,4$ (5 is excluded)."
+    },
+    {
+     "text": "i=1: odd, so `s = 0 - 1 = -1`. i=2: even, so `s = -1 + 2 = 1`."
+    },
+    {
+     "text": "i=3: odd, so `s = 1 - 1 = 0`. i=4: even, so `s = 0 + 4 = 4`."
+    }
+   ],
+   "answer": "s = 4."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Test the most restrictive condition first, or order the `elif` tests so each branch is reachable.",
+    "Use `while` for tolerance-driven loops and add a maximum-iteration guard.",
+    "Make sure a variable in the `while` condition changes inside the loop.",
+    "Check whether the stopping test happens before or after the last term is added.",
+    "Trace small cases by hand before trusting the code."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common loop bugs",
+   "text": "An off-by-one error comes from forgetting that `range(1, 5)` ends at 4. An infinite loop occurs when the tested variable is never updated. Also, a threshold like $Re=2300$ is a typical engineering convention, not a physical constant, so flows with $Re$ between 2300 and 4000 should be reported as transitional rather than forced into one class."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "if/elif/else chooses one branch; elif tests are evaluated in order, so order matters.",
+    "Pipe flow is classified from Re = rho V D / mu: typically laminar below 2300, turbulent above 4000, transitional between.",
+    "A while loop accumulating terms must update the tested quantity and should have a maximum-iteration guard.",
+    "Tracing variables pass by pass is how you check loop logic by hand."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Air in a small duct has a computed Reynolds number of 1800. Using the typical thresholds (laminar below 2300, turbulent above 4000), how is the flow classified?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Transitional"
+    },
+    {
+     "id": "b",
+     "text": "It cannot be classified without the friction factor"
+    },
+    {
+     "id": "c",
+     "text": "Laminar"
+    },
+    {
+     "id": "d",
+     "text": "Turbulent"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Laminar",
+   "distractorRationale": {
+    "c": "Correct: Re is below 2300.",
+    "a": "Transitional flow is typically between about 2300 and 4000.",
+    "d": "Turbulent flow is typically above 4000.",
+    "b": "The friction factor is computed after classifying the flow; it is not needed to classify it."
+   },
+   "explanation": "Since 1800 is below the typical laminar limit of 2300, the flow is classified as laminar. The classification depends only on Re, so no friction factor is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A lubricating oil ($\\rho=870$ kg/m^3, $\\mu=0.080$ Pa s) flows at $V=1.2$ m/s in a pipe of diameter $D=0.025$ m. Compute the Reynolds number (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o2"
+   ],
+   "correctValue": 326.25,
+   "tolerance": 1,
+   "unit": "dimensionless",
+   "explanation": "Re = rho V D / mu = 870 x 1.2 x 0.025 / 0.080 = 26.1 / 0.080 = 326.25. This is far below 2300, so the flow is laminar.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A program contains `if Re < 2300: print('laminar')`, `elif Re < 4000: print('transitional')`, `else: print('turbulent')`. What does it print for `Re = 3000`?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "turbulent"
+    },
+    {
+     "id": "b",
+     "text": "laminar"
+    },
+    {
+     "id": "c",
+     "text": "laminar and transitional"
+    },
+    {
+     "id": "d",
+     "text": "transitional"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "transitional",
+   "distractorRationale": {
+    "d": "Correct: the second test is the first one that is True.",
+    "b": "The first condition is False for 3000.",
+    "a": "The else branch is reached only if both tests fail.",
+    "c": "Only one branch of an if/elif/else chain runs."
+   },
+   "explanation": "Re = 3000 fails the first test (3000 < 2300 is False), passes the second (3000 < 4000), so the transitional branch runs. Once a branch runs, the remaining elif and else are skipped.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Water ($\\rho=1000$ kg/m^3, $\\mu=1.0\\times10^{-3}$ Pa s) flows in a tube of diameter $D=0.020$ m. What is the largest mean velocity, in m/s, for which the flow is still laminar by the typical rule $Re\\le2300$?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o2"
+   ],
+   "correctValue": 0.115,
+   "tolerance": 0.002,
+   "unit": "m/s",
+   "explanation": "Rearrange Re = rho V D / mu to V = Re mu / (rho D) = 2300 x 1.0e-3 / (1000 x 0.020) = 2.3 / 20 = 0.115 m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What are the final values of `x` and `n` after this code runs? `x = 10`, `n = 0`, then `while x > 2:` with the body `x = x - 3` and `n += 1`.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "x = 1, n = 3"
+    },
+    {
+     "id": "b",
+     "text": "x = 2, n = 3"
+    },
+    {
+     "id": "c",
+     "text": "x = 1, n = 4"
+    },
+    {
+     "id": "d",
+     "text": "x = 4, n = 2"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "x = 1, n = 3",
+   "distractorRationale": {
+    "a": "Correct: three passes are made.",
+    "d": "This stops one pass early, when x is still above 2.",
+    "b": "The loop stops when x > 2 fails, which gives x = 1 not 2.",
+    "c": "Counts a fourth pass that never occurs because 1 > 2 is False."
+   },
+   "explanation": "Pass 1: x=7, n=1. Pass 2: x=4, n=2. Pass 3: x=1, n=3. The test 1 > 2 is False, so the loop ends with x = 1 and n = 3.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Trace `total = 0`, then `for i in range(1, 4):` containing `for j in range(i):` with the body `total += i * j`. What is the final value of `total`?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o3"
+   ],
+   "correctValue": 11,
+   "tolerance": 0.1,
+   "unit": "dimensionless",
+   "explanation": "For i=1, j=0 only: adds 0. For i=2, j=0,1: adds 0 and 2. For i=3, j=0,1,2: adds 0, 3 and 6. The total is 0 + 2 + 9 = 11.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A decay series is summed with `total = 0.0`, `term = 1.0`, `while term >= 0.05:` body `total += term` then `term *= 0.6`. What is `total` when the loop ends?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o1"
+   ],
+   "correctValue": 2.38336,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "The terms added are 1, 0.6, 0.36, 0.216, 0.1296 and 0.07776, since the next term 0.046656 is below 0.05 and stops the loop. Their sum is 2.38336, which is below the infinite sum 1/(1-0.6) = 2.5.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Write pseudocode or Python for a loop that sums the series $\\sum_{k=0}^{\\infty} x^k/k!$ for $x=0.5$ until the latest term is below $10^{-6}$. Explain what causes an infinite loop in such code and how you guard against it.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o1"
+   ],
+   "markingGuide": [
+    "Initialises total, term (=1 for k=0) and counter k before the loop",
+    "Loop condition tests the size of the term, e.g. while abs(term) >= 1e-6",
+    "Body adds term to total, increments k and updates term = term * x / k",
+    "Identifies infinite-loop causes: the term or counter never updated, or a condition that cannot become false",
+    "Adds a maximum-iteration guard (e.g. break or raise an error after a set number of passes)"
+   ],
+   "explanation": "The series is accumulated with a running term so that factorials need not be recomputed. A tolerance test on the term controls termination, and an iteration limit protects against logic errors.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "In Python, `for i in range(1, 5):` executes the loop body with i = 1, 2, 3, 4 and does not execute it for i = 5.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "range(start, stop) includes start but excludes stop. Forgetting this is the most common off-by-one error when tracing loops.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A flow has $Re=3000$. Explain why a program that only has the two branches `if Re < 2300: laminar else: turbulent` is poor engineering practice, and show how you would restructure the conditional.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.variables-and-control-flow.branching-and-loops.o2"
+   ],
+   "markingGuide": [
+    "Two branches force a transitional flow into either laminar or turbulent, misrepresenting the physics",
+    "Thresholds 2300 and 4000 are typical, not exact, so the intermediate range should be flagged",
+    "Restructure with if Re < 2300 / elif Re <= 4000 / else, giving three outcomes",
+    "Order of tests matters since only the first true branch runs"
+   ],
+   "explanation": "A rigid binary rule hides the uncertainty near the transition. Using three ordered branches reports transitional flow honestly, so downstream friction-factor choices can be handled carefully.",
+   "board": "internal"
+  }
+ ]
+}

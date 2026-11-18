@@ -1,0 +1,371 @@
+{
+ "lessonTitle": "The Torsion Formula",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The drive shaft of a car carries engine torque to the wheels without bending, yet it can fail by twisting. Its designer needs to know how large the shear stress at the surface becomes and how many degrees the shaft winds up under torque, because both limit how much torque the shaft can safely carry."
+  },
+  {
+   "type": "text",
+   "markdown": "When a **torque** $T$ (N m) acts about the axis of a circular shaft, each cross-section rotates relative to its neighbour. For a shaft of circular section (solid or hollow), plane sections remain plane and radial lines remain straight, so the shear strain is proportional to the distance $r$ from the axis: $\\gamma = r\\,\\phi/L$, where $\\phi$ is the angle of twist (radians) over length $L$. With Hooke's law in shear, $\\tau = G\\gamma$, the shear stress also grows linearly with $r$: zero at the axis, maximum at the outer surface."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Polar second moment of area",
+   "text": "The **polar second moment of area** $J=\\int r^2\\,dA$ measures the section's resistance to twisting. For a solid circle $J=\\pi d^4/32$; for a hollow circle $J=\\pi\\left(d_o^4-d_i^4\\right)/32$. Units: mm$^4$ or m$^4$."
+  },
+  {
+   "type": "math",
+   "latex": "\\tau=\\frac{T\\,r}{J},\\qquad \\tau_{\\max}=\\frac{T\\,c}{J},\\qquad \\phi=\\frac{T\\,L}{G\\,J}",
+   "caption": "Valid for circular shafts, linear elastic, constant $T$ and $J$ over length $L$; $c$ = outer radius, $G$ = shear modulus."
+  },
+  {
+   "type": "worked_example",
+   "title": "Maximum shear stress in a solid shaft",
+   "prompt": "A solid steel shaft of diameter 40 mm transmits a torque of 600 N m. Find the maximum shear stress.",
+   "steps": [
+    {
+     "text": "Polar second moment of area.",
+     "latex": "J=\\frac{\\pi(40)^4}{32}=2.513\\times10^{5}\\ \\text{mm}^4"
+    },
+    {
+     "text": "Convert the torque to N mm and use c = 20 mm.",
+     "latex": "\\tau_{\\max}=\\frac{600\\,000\\times 20}{2.513\\times10^{5}}=47.7\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The maximum shear stress is 47.7 MPa at the surface; at the centre it is zero."
+  },
+  {
+   "type": "worked_example",
+   "title": "Hollow shaft",
+   "prompt": "A hollow shaft has outer diameter 60 mm and inner diameter 40 mm and carries a torque of 1.5 kN m. Find the maximum shear stress and the stress at the inner surface.",
+   "steps": [
+    {
+     "text": "J for the hollow section.",
+     "latex": "J=\\frac{\\pi(60^4-40^4)}{32}=1.021\\times10^{6}\\ \\text{mm}^4"
+    },
+    {
+     "text": "Outer surface, c = 30 mm, T = 1.5e6 N mm.",
+     "latex": "\\tau_{\\max}=\\frac{1.5\\times10^{6}\\times 30}{1.021\\times10^{6}}=44.1\\ \\text{MPa}"
+    },
+    {
+     "text": "Inner surface, r = 20 mm: stress scales linearly with radius.",
+     "latex": "\\tau_i=44.1\\times\\frac{20}{30}=29.4\\ \\text{MPa}"
+    }
+   ],
+   "answer": "tau_max = 44.1 MPa at the outer surface and 29.4 MPa at the inner surface."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Solid shaft (diameter $d$)",
+    "Hollow shaft ($d_o$, $d_i$)"
+   ],
+   "rows": [
+    [
+     "$J$",
+     "$\\pi d^4/32$",
+     "$\\pi(d_o^4-d_i^4)/32$"
+    ],
+    [
+     "$\\tau_{\\max}$",
+     "$16T/(\\pi d^3)$",
+     "$16T d_o/\\left[\\pi(d_o^4-d_i^4)\\right]$"
+    ],
+    [
+     "Stress at axis",
+     "0",
+     "not present (no material)"
+    ],
+    [
+     "Torque capacity $T=\\tau_{\\text{allow}}J/c$",
+     "$\\pi d^3\\tau_{\\text{allow}}/16$",
+     "$\\pi(d_o^4-d_i^4)\\tau_{\\text{allow}}/(16 d_o)$"
+    ]
+   ],
+   "caption": "Formulas for solid and hollow circular shafts"
+  },
+  {
+   "type": "text",
+   "markdown": "**Angle of twist.** Integrating $d\\phi = T\\,dx/(GJ)$ along a uniform shaft gives $\\phi = TL/(GJ)$. The product $GJ$ is the **torsional rigidity**. Twist is often limited by design, for example to a few degrees per metre, even when strength is adequate. **Torque capacity** reverses the stress formula: for an allowable shear stress $\\tau_{\\text{allow}}$ the largest permitted torque is $T=\\tau_{\\text{allow}}J/c$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Twist and torque capacity",
+   "prompt": "(a) A steel shaft (G = 80 GPa) of diameter 30 mm and length 1.2 m carries 400 N m. Find the angle of twist. (b) A solid 50 mm shaft has allowable shear stress 60 MPa; find its torque capacity.",
+   "steps": [
+    {
+     "text": "(a) J = pi(30)^4/32 = 7.952e4 mm^4. Use consistent units: N mm, mm, MPa.",
+     "latex": "\\phi=\\frac{TL}{GJ}=\\frac{400\\,000\\times1200}{80\\,000\\times 7.952\\times10^{4}}=0.0755\\ \\text{rad}=4.32^\\circ"
+    },
+    {
+     "text": "(b) J = pi(50)^4/32 = 6.136e5 mm^4 and c = 25 mm.",
+     "latex": "T=\\frac{\\tau_{\\text{allow}}J}{c}=\\frac{60\\times 6.136\\times10^{5}}{25}=1.473\\times10^{6}\\ \\text{N mm}"
+    }
+   ],
+   "answer": "(a) The shaft twists 0.0755 rad (4.32 degrees). (b) The capacity is about 1.47 kN m."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Circular sections only",
+   "text": "The formulas $\\tau=Tr/J$ and $\\phi=TL/(GJ)$ are for circular sections. Non-circular sections warp and need different methods. Do not use the shaft's diameter in place of the radius, and keep units consistent (N mm with mm$^4$ and MPa)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Shear stress in a circular shaft is tau = T r/J: linear in radius, zero at the axis and maximum at the surface.",
+    "Angle of twist is phi = T L/(G J), where GJ is the torsional rigidity.",
+    "Torque capacity for an allowable shear stress is T = tau_allow J / c."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a solid circular shaft under pure torque, where is the shear stress largest?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "At the centre"
+    },
+    {
+     "id": "b",
+     "text": "At the outer surface"
+    },
+    {
+     "id": "c",
+     "text": "Midway between centre and surface"
+    },
+    {
+     "id": "d",
+     "text": "It is uniform across the section"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "At the outer surface",
+   "distractorRationale": {
+    "a": "Stress is zero at the axis, where r = 0.",
+    "b": "Correct: tau = T r/J is largest where r is largest.",
+    "c": "Stress at mid-radius is half the maximum.",
+    "d": "Uniform stress would require strain to be independent of radius."
+   },
+   "explanation": "Shear strain varies linearly with radial distance from the axis, and so does shear stress. The maximum therefore occurs at the surface, where r = c.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A solid shaft's diameter is doubled while the same torque is carried. By what factor does the maximum shear stress change?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It becomes 1/8"
+    },
+    {
+     "id": "b",
+     "text": "It becomes 1/4"
+    },
+    {
+     "id": "c",
+     "text": "It becomes 1/16"
+    },
+    {
+     "id": "d",
+     "text": "It is halved"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It becomes 1/8",
+   "distractorRationale": {
+    "a": "Correct: tau_max = 16T/(pi d^3) and 2^3 = 8.",
+    "b": "Uses d^2, the area scaling, instead of d^3.",
+    "c": "Uses d^4 which is the scaling of J alone, not of tau_max.",
+    "d": "Assumes stress inversely proportional to diameter."
+   },
+   "explanation": "Since J is proportional to d^4 and c to d, tau_max = Tc/J is proportional to 1/d^3. Doubling d divides the stress by 8.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two shafts of the same material and length carry the same torque. Shaft B has a diameter 1.5 times that of shaft A. The angle of twist of B compared with A is about:",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.67 times"
+    },
+    {
+     "id": "b",
+     "text": "0.44 times"
+    },
+    {
+     "id": "c",
+     "text": "0.20 times"
+    },
+    {
+     "id": "d",
+     "text": "0.30 times"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "0.20 times",
+   "distractorRationale": {
+    "a": "Uses 1/d, ignoring that J is proportional to d^4.",
+    "b": "Uses 1/d^2.",
+    "c": "Correct: phi proportional to 1/d^4, so 1/1.5^4 = 0.198.",
+    "d": "Uses 1/d^3, the stress scaling."
+   },
+   "explanation": "Twist is phi = TL/(GJ) with J proportional to d^4. Raising 1.5 to the fourth power gives 5.06, so B twists 1/5.06, about 0.20, times as much.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A solid shaft has its diameter increased by 20 percent. If the allowable shear stress is unchanged, by what factor does its torque capacity increase?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.73"
+    },
+    {
+     "id": "b",
+     "text": "1.20"
+    },
+    {
+     "id": "c",
+     "text": "1.44"
+    },
+    {
+     "id": "d",
+     "text": "2.07"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "1.73",
+   "distractorRationale": {
+    "a": "Correct: T proportional to d^3, 1.2^3 = 1.728.",
+    "b": "Assumes capacity grows in proportion to diameter.",
+    "c": "Uses d^2.",
+    "d": "Uses d^4, appropriate for stiffness J not strength."
+   },
+   "explanation": "Torque capacity is T = tau_allow pi d^3/16, so it scales as d^3. A 20 percent increase gives 1.2^3 = 1.73 times the capacity.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: in a solid circular shaft in pure torsion, the shear stress varies linearly with radius from zero at the axis.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "From tau = T r/J, stress is proportional to r. This follows from the assumption that plane sections remain plane so strain is proportional to radius.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A solid shaft of diameter 50 mm carries a torque of 2.0 kN m. Find the maximum shear stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o1"
+   ],
+   "correctValue": 81.49,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "tau_max = 16T/(pi d^3) = 16 x 2.0e6/(pi x 50^3) = 81.5 MPa, using T in N mm and d in mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A brass shaft (G = 39 GPa) has diameter 25 mm and length 0.9 m. It carries a torque of 150 N m. Find the angle of twist in degrees.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o2"
+   ],
+   "correctValue": 5.17,
+   "tolerance": 0.05,
+   "unit": "degrees",
+   "explanation": "J = pi(25)^4/32 = 3.835e4 mm^4. phi = 150 000 x 900/(39 000 x 38 350) = 0.0903 rad = 5.17 degrees.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A hollow shaft has outer diameter 80 mm and inner diameter 60 mm. The allowable shear stress is 50 MPa. Find the maximum torque it can carry in kN m.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o3"
+   ],
+   "correctValue": 3.436,
+   "tolerance": 0.03,
+   "unit": "kN m",
+   "explanation": "J = pi(80^4 - 60^4)/32 = 2.749e6 mm^4. T = tau J/c = 50 x 2.749e6/40 = 3.436e6 N mm = 3.44 kN m.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "State the assumptions behind the torsion formula tau = T r/J and explain why the shear stress in a solid circular shaft is zero at its centre.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o1"
+   ],
+   "markingGuide": [
+    "Circular cross-section (solid or hollow) of uniform diameter",
+    "Plane sections remain plane and radii stay straight",
+    "Linear elastic material obeying tau = G gamma",
+    "Small twist and a torque applied about the axis",
+    "Strain proportional to radius, so stress is proportional to radius and zero at r = 0"
+   ],
+   "explanation": "The kinematic assumption gives gamma = r phi/L, and Hooke's law converts this to stress. At the axis r is zero, so there is no shear strain or stress there.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the angle-of-twist formula phi = T L/(G J) for a uniform circular shaft, starting from the shear strain at radius r.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.torsion-formula.o2"
+   ],
+   "markingGuide": [
+    "Shear strain gamma = r phi/L from geometry of the twisted element",
+    "Hooke's law tau = G gamma = G r phi/L",
+    "Torque from integrating tau r dA over the section: T = (G phi/L) integral of r^2 dA",
+    "Identifies the integral as J, so T = G J phi/L",
+    "Rearranges to phi = TL/(GJ)"
+   ],
+   "explanation": "Equating the torque from the stress distribution to the applied torque links the twist angle to T. Rearranging gives the torsional rigidity GJ relating torque and twist per unit length.",
+   "board": "internal"
+  }
+ ]
+}

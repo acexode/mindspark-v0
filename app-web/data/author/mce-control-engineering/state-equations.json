@@ -1,0 +1,402 @@
+{
+ "lessonTitle": "State Equations from Physical Systems",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A robot-arm joint is modelled in the lab as a mass on a spring and damper, and the same engineer must also model the motor's electrical circuit and a three-stage filter. Three different physical domains, three different differential equations, yet one tool reduces all of them to a common form: $\\dot x=Ax+Bu$. Learning to choose states is the skill that lets every later technique (stability, control design, simulation) apply to any plant."
+  },
+  {
+   "type": "text",
+   "markdown": "A **state** is a variable that stores energy or memory in the system; together the $n$ states summarise everything about the past needed to predict the future when the input is known. For a linear time-invariant system the **state-space model** is"
+  },
+  {
+   "type": "math",
+   "latex": "\\dot x=Ax+Bu,\\qquad y=Cx+Du",
+   "caption": "State equation and output equation. $x$: state vector ($n$), $u$: input, $y$: output; $A$, $B$, $C$, $D$ are constant matrices."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Choosing states",
+   "text": "The number of states equals the number of independent energy-storage elements (equivalently, the order of the differential equation). Typical choices are position and velocity for a mass, capacitor voltage and inductor current for an electrical circuit, temperature for a thermal capacity and level or pressure for a fluid store. A valid state set must be independent: no state may be computable from the others by an algebraic relation, and the inputs are never states."
+  },
+  {
+   "type": "worked_example",
+   "title": "Mass-spring-damper",
+   "prompt": "A mass $m=2$ kg is attached to a spring ($k=40$ N/m) and a damper ($c=6$ N s/m) and driven by a force $F$ (N). The output is the position $x$. Write $A$, $B$, $C$, $D$.",
+   "steps": [
+    {
+     "text": "Newton's second law gives the second-order ODE.",
+     "latex": "m\\ddot x+c\\dot x+kx=F"
+    },
+    {
+     "text": "Choose states $x_1=x$ (position) and $x_2=\\dot x$ (velocity). Then $\\dot x_1=x_2$ exactly, and solving the ODE for $\\ddot x$ gives $\\dot x_2$.",
+     "latex": "\\dot x_1=x_2,\\quad\\dot x_2=-\\tfrac{40}{2}x_1-\\tfrac{6}{2}x_2+\\tfrac{1}{2}F=-20x_1-3x_2+0.5F"
+    },
+    {
+     "text": "Read off the matrices. The output is the first state and has no direct feed-through from $F$.",
+     "latex": "A=\\begin{bmatrix}0&1\\\\-20&-3\\end{bmatrix},\\ B=\\begin{bmatrix}0\\\\1/2\\end{bmatrix},\\ C=[1\\;\\;0],\\ D=0"
+    }
+   ],
+   "answer": "$A=\\begin{bmatrix}0&1\\\\-20&-3\\end{bmatrix}$, $B=[0\\;\\;0.5]^T$, $C=[1\\;\\;0]$, $D=0$."
+  },
+  {
+   "type": "text",
+   "markdown": "**Electrical circuits.** Capacitors store energy $\\tfrac12Cv_C^2$ and inductors $\\tfrac12Li_L^2$, so the natural states are $v_C$ and $i_L$. Write Kirchhoff's voltage law around loops that contain an inductor, giving $\\dot i_L$, and Kirchhoff's current law at nodes that contain a capacitor, giving $\\dot v_C$. Resistor voltages and currents are *not* states: $v_R=Ri$ is an algebraic function of a state."
+  },
+  {
+   "type": "worked_example",
+   "title": "Series RLC circuit",
+   "prompt": "A source $v_{in}$ drives a series loop of $R=10$ ohm, $L=0.5$ H and $C=0.01$ F. The output is the capacitor voltage. Choose states and write the model.",
+   "steps": [
+    {
+     "text": "Energy stores: the inductor (current $i$) and the capacitor (voltage $v_C$), so $n=2$ and $x=[i\\;\\;v_C]^T$.",
+     "latex": "x=\\begin{bmatrix}i\\\\v_C\\end{bmatrix}"
+    },
+    {
+     "text": "KVL around the loop: $v_{in}=Ri+L\\dot i+v_C$, so $\\dot i$ is",
+     "latex": "\\dot i=-\\tfrac{R}{L}i-\\tfrac{1}{L}v_C+\\tfrac{1}{L}v_{in}=-20i-2v_C+2v_{in}"
+    },
+    {
+     "text": "The capacitor current is $i=C\\dot v_C$, so $\\dot v_C$ is",
+     "latex": "\\dot v_C=\\tfrac{1}{C}i=100\\,i"
+    },
+    {
+     "text": "Assemble the matrices with output $y=v_C$.",
+     "latex": "A=\\begin{bmatrix}-20&-2\\\\100&0\\end{bmatrix},\\ B=\\begin{bmatrix}2\\\\0\\end{bmatrix},\\ C=[0\\;\\;1],\\ D=0"
+    }
+   ],
+   "answer": "$A=\\begin{bmatrix}-20&-2\\\\100&0\\end{bmatrix}$, $B=[2\\;\\;0]^T$, $C=[0\\;\\;1]$, $D=0$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Domain",
+    "Energy store",
+    "Typical state variable",
+    "Rate of change from"
+   ],
+   "rows": [
+    [
+     "Mechanical translation",
+     "Mass (kinetic), spring (potential)",
+     "Velocity, displacement",
+     "Newton's second law, spring relation"
+    ],
+    [
+     "Electrical",
+     "Inductor, capacitor",
+     "Inductor current, capacitor voltage",
+     "KVL and KCL"
+    ],
+    [
+     "Thermal",
+     "Thermal capacitance",
+     "Temperature",
+     "Heat balance"
+    ],
+    [
+     "Fluid",
+     "Tank volume",
+     "Level or pressure",
+     "Mass (volume) balance"
+    ]
+   ],
+   "caption": "Choosing states from energy stores in different domains."
+  },
+  {
+   "type": "text",
+   "markdown": "**Higher-order ODEs.** For $y^{(n)}+a_{n-1}y^{(n-1)}+\\cdots+a_0y=b\\,u$ (no derivatives of the input), choose the *phase variables* $x_1=y$, $x_2=\\dot y,\\dots,x_n=y^{(n-1)}$. Then $\\dot x_i=x_{i+1}$ for $i<n$, and the last equation is the ODE solved for $y^{(n)}$."
+  },
+  {
+   "type": "math",
+   "latex": "A=\\begin{bmatrix}0&1&\\cdots&0\\\\\\vdots&&\\ddots&\\vdots\\\\0&0&\\cdots&1\\\\-a_0&-a_1&\\cdots&-a_{n-1}\\end{bmatrix},\\quad B=\\begin{bmatrix}0\\\\\\vdots\\\\0\\\\b\\end{bmatrix},\\quad C=[1\\;\\;0\\;\\cdots\\;0]",
+   "caption": "Phase-variable (companion) form."
+  },
+  {
+   "type": "worked_example",
+   "title": "Third-order ODE",
+   "prompt": "Convert $\\dddot y+5\\ddot y+8\\dot y+4y=3u$ to state form.",
+   "steps": [
+    {
+     "text": "Phase variables:",
+     "latex": "x_1=y,\\quad x_2=\\dot y,\\quad x_3=\\ddot y"
+    },
+    {
+     "text": "The first two equations are identities; the third is the ODE solved for $\\dddot y=\\dot x_3$.",
+     "latex": "\\dot x_1=x_2,\\quad\\dot x_2=x_3,\\quad\\dot x_3=-4x_1-8x_2-5x_3+3u"
+    },
+    {
+     "text": "Read off the matrices. As a check, $\\det(sI-A)=s^3+5s^2+8s+4=(s+1)(s+2)^2$, so the poles are $-1,-2,-2$.",
+     "latex": "A=\\begin{bmatrix}0&1&0\\\\0&0&1\\\\-4&-8&-5\\end{bmatrix},\\ B=[0\\;\\;0\\;\\;3]^T,\\ C=[1\\;\\;0\\;\\;0]"
+    }
+   ],
+   "answer": "Companion-form model with poles at $-1$, $-2$, $-2$, the roots of the characteristic polynomial."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "State models are not unique",
+   "text": "Any invertible change of variables $x=Tz$ gives an equally valid model $(T^{-1}AT,\\;T^{-1}B,\\;CT,\\;D)$ with the same input-output behaviour and the same eigenvalues. Different state choices (for example position and velocity, or position and momentum) are all correct; choose the one whose entries are physically meaningful and measurable."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Typical state-selection mistakes",
+   "text": "Including the input as a state, choosing a resistor voltage as a state (it is $Ri$, not independent), choosing more states than energy stores, or forgetting to divide by the mass or inertia when solving for the acceleration. Always check that the number of states equals the ODE order."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The number of states equals the number of independent energy stores, and the model has the form $\\dot x=Ax+Bu$, $y=Cx+Du$.",
+    "For a mass-spring-damper, take $x=[\\text{position},\\text{velocity}]$ giving $A=\\begin{bmatrix}0&1\\\\-k/m&-c/m\\end{bmatrix}$ and $B=[0\\;\\;1/m]^T$; for an RLC circuit, use inductor current and capacitor voltage.",
+    "An $n$th-order ODE becomes $n$ first-order equations by choosing $y,\\dot y,\\dots,y^{(n-1)}$ as states."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How many state variables does a mass-spring-damper system with one mass need?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Two: position and velocity"
+    },
+    {
+     "id": "b",
+     "text": "One: position only"
+    },
+    {
+     "id": "c",
+     "text": "Three: position, velocity and force"
+    },
+    {
+     "id": "d",
+     "text": "Four: one for each parameter $m,c,k$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Two: position and velocity",
+   "distractorRationale": {
+    "a": "There are two independent energy stores, spring and mass, matching the second-order ODE.",
+    "b": "The ODE is second order, so one state is not enough to predict future motion.",
+    "c": "The force is an input, not a state, so it is not counted.",
+    "d": "Parameters are constants, not states."
+   },
+   "explanation": "The model is second order, so two independent initial conditions (position and velocity) fix the motion. The force is an input and the parameters are constants, so neither is a state.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which pair is the natural state set for a series RLC circuit?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Resistor voltage and inductor current"
+    },
+    {
+     "id": "b",
+     "text": "Inductor current and capacitor voltage"
+    },
+    {
+     "id": "c",
+     "text": "Source voltage and capacitor voltage"
+    },
+    {
+     "id": "d",
+     "text": "Resistor voltage and inductor voltage"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Inductor current and capacitor voltage",
+   "distractorRationale": {
+    "a": "The resistor voltage is $Ri$, which is an algebraic function of the current.",
+    "b": "Each stores energy and is independent.",
+    "c": "The source voltage is an input and cannot be a state.",
+    "d": "Neither is a state of an energy store, and the capacitor voltage is not captured."
+   },
+   "explanation": "States correspond to energy storage: $i_L$ for the inductor and $v_C$ for the capacitor. Resistor voltage depends algebraically on current, and the source voltage is an input.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A mass $m=5$ kg with damper $c=10$ N s/m and spring $k=20$ N/m has states position and velocity. What is $A$?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\begin{bmatrix}0&1\\\\-20&-10\\end{bmatrix}$"
+    },
+    {
+     "id": "b",
+     "text": "$\\begin{bmatrix}0&1\\\\4&2\\end{bmatrix}$"
+    },
+    {
+     "id": "c",
+     "text": "$\\begin{bmatrix}0&1\\\\-4&-2\\end{bmatrix}$"
+    },
+    {
+     "id": "d",
+     "text": "$\\begin{bmatrix}0&-4\\\\1&-2\\end{bmatrix}$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$\\begin{bmatrix}0&1\\\\-4&-2\\end{bmatrix}$",
+   "distractorRationale": {
+    "a": "This forgets to divide by the mass.",
+    "b": "The signs are wrong: spring and damper forces oppose the motion.",
+    "c": "The bottom row is $-k/m=-4$ and $-c/m=-2$.",
+    "d": "This swaps the position-velocity coupling: $\\dot x_1=x_2$ belongs in the top row."
+   },
+   "explanation": "Solving $m\\ddot x+c\\dot x+kx=F$ for $\\ddot x$ gives $\\dot x_2=-(k/m)x_1-(c/m)x_2+F/m$, i.e. $-4x_1-2x_2$ here. The first row is the kinematic identity $\\dot x_1=x_2$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A circuit contains two capacitors, one inductor and several resistors, with no loops of capacitors only and no inductor-only cutsets. How many state variables does a minimal model need?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Two: resistors do not count but only one capacitor does"
+    },
+    {
+     "id": "b",
+     "text": "Four: one per capacitor, inductor and resistor group"
+    },
+    {
+     "id": "c",
+     "text": "Five: one for each element in the circuit"
+    },
+    {
+     "id": "d",
+     "text": "Three: the two capacitor voltages and the inductor current"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Three: the two capacitor voltages and the inductor current",
+   "distractorRationale": {
+    "a": "Every independent capacitor adds its own voltage state.",
+    "b": "Resistors store no energy and add no states.",
+    "c": "Counting all elements, including resistors, overcounts the states.",
+    "d": "Each independent energy store contributes one state."
+   },
+   "explanation": "The order equals the number of independent energy stores, here two capacitors and one inductor, giving the states $v_{C1}$, $v_{C2}$ and $i_L$. Resistors only dissipate energy and are algebraic relations between states.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: a given linear system has a single unique state-space representation.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Any invertible change of state variables $x=Tz$ gives another valid model with the same transfer function and eigenvalues. For example, using position and momentum instead of position and velocity gives different matrices for the same physical system.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A mass $m=4$ kg, damper $c=12$ N s/m, spring $k=64$ N/m has states position and velocity. What is the entry $A_{22}$ (in s$^{-1}$)?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o1"
+   ],
+   "correctValue": -3.0,
+   "tolerance": 0.01,
+   "unit": "s^-1",
+   "explanation": "The bottom row of $A$ is $[-k/m\\;\\;-c/m]=[-16\\;\\;-3]$, so $A_{22}=-c/m=-12/4=-3$ s$^{-1}$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A series RLC circuit has $R=8$ ohm, $L=0.2$ H, $C=0.005$ F with states $[i\\;\\;v_C]^T$. What is the entry $A_{11}$ (in s$^{-1}$)?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o2"
+   ],
+   "correctValue": -40.0,
+   "tolerance": 0.01,
+   "unit": "s^-1",
+   "explanation": "KVL gives $\\dot i=-(R/L)i-(1/L)v_C+(1/L)v_{in}$, so $A_{11}=-R/L=-8/0.2=-40$ s$^{-1}$. The other entries are $A_{12}=-1/L=-5$, $A_{21}=1/C=200$ and $A_{22}=0$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A system obeys $\\dddot y+9\\ddot y+26\\dot y+24y=48u$ and is written in phase-variable form with $x=[y\\;\\;\\dot y\\;\\;\\ddot y]^T$. For a constant input $u=1$, find the steady-state output $y$ (units of $y$).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o3"
+   ],
+   "correctValue": 2.0,
+   "tolerance": 0.01,
+   "unit": "units of y",
+   "explanation": "At steady state all derivatives vanish, so $24y=48u$, i.e. $y=2$. Equivalently $x_{ss}=-A^{-1}Bu$ has first component $48/24=2$ because the last row of $A$ is $[-24\\;-26\\;-9]$ and $\\dot x_3=0$ forces $-24x_1+48=0$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A cart of mass 2 kg moves on a track with a spring of stiffness 10 N/m and a viscous damper of 4 N s/m, driven by a force $F$. The measured output is the cart velocity. Choose states and give $A$, $B$, $C$, $D$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o1"
+   ],
+   "markingGuide": [
+    "Chooses states $x_1=$ position and $x_2=$ velocity (two energy stores).",
+    "Writes $\\dot x_1=x_2$ and $\\dot x_2=-(k/m)x_1-(c/m)x_2+F/m=-5x_1-2x_2+0.5F$.",
+    "Gives $A=\\begin{bmatrix}0&1\\\\-5&-2\\end{bmatrix}$ and $B=[0\\;\\;0.5]^T$.",
+    "Gives $C=[0\\;\\;1]$ and $D=0$ because the output is the velocity state."
+   ],
+   "explanation": "With position and velocity as states, $\\dot x_2=(F-kx_1-cx_2)/m=-5x_1-2x_2+0.5F$. The output is the velocity, $y=x_2$, so $C=[0\\;1]$, and there is no direct term, so $D=0$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "An armature-controlled DC motor has armature resistance $R=2$ ohm, inductance $L=0.5$ H, back-emf and torque constants $K_e=K_t=0.1$ (SI), rotor inertia $J=0.02$ kg m$^2$ and viscous friction $b=0.01$ N m s/rad. The input is armature voltage $v$ and the output is shaft speed $\\omega$. Select states and derive $A$, $B$, $C$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-space-models.state-equations.o2",
+    "ug.mce-control-engineering.state-space-models.state-equations.o1"
+   ],
+   "markingGuide": [
+    "Identifies the two energy stores: inductor current $i$ and rotor kinetic energy (speed $\\omega$), so $x=[i\\;\\;\\omega]^T$.",
+    "Electrical equation: $L\\dot i=v-Ri-K_e\\omega$, giving $\\dot i=-4i-0.2\\omega+2v$.",
+    "Mechanical equation: $J\\dot\\omega=K_ti-b\\omega$, giving $\\dot\\omega=5i-0.5\\omega$.",
+    "States $A=\\begin{bmatrix}-4&-0.2\\\\5&-0.5\\end{bmatrix}$, $B=[2\\;\\;0]^T$, $C=[0\\;\\;1]$, $D=0$."
+   ],
+   "explanation": "The two energy stores are the inductor current and the rotor speed. KVL gives $\\dot i=(v-Ri-K_e\\omega)/L=-4i-0.2\\omega+2v$, and torque balance gives $\\dot\\omega=(K_ti-b\\omega)/J=5i-0.5\\omega$, so $A=\\begin{bmatrix}-4&-0.2\\\\5&-0.5\\end{bmatrix}$ and $B=[2\\;0]^T$.",
+   "board": "internal"
+  }
+ ]
+}

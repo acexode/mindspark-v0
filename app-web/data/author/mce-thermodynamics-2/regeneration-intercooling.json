@@ -1,0 +1,418 @@
+{
+ "lessonTitle": "Gas Turbine Enhancements: Regeneration, Intercooling, Reheat and Combined Cycles",
+ "estimatedMinutes": 28,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 400 MW gas turbine exhausts air at roughly 550 °C, hot enough to boil water. Dumping that heat to the atmosphere through a stack wastes more than half the fuel energy. Plant designers recover it in three ways: pre-heat the compressed air in a regenerator, cool the air between compressor stages and reheat it between turbine stages, or boil steam for a second power cycle. This unit examines each."
+  },
+  {
+   "type": "text",
+   "markdown": "The simple Brayton cycle has a low thermal efficiency, typically 30 to 40% for an industrial machine, because the turbine exhaust is hot. Three modifications raise either efficiency or net work (or both): **regeneration**, **intercooling with reheat**, and **combined cycles**."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Regenerator effectiveness",
+   "text": "A regenerator is a counterflow heat exchanger that transfers heat from the turbine exhaust (state 4) to the compressed air (state 2) before the combustor. Effectiveness $\\varepsilon$ is the ratio of the actual heat transfer to the maximum possible, which would raise the air to the exhaust temperature $T_4$. With constant $c_p$, $\\varepsilon = (T_5 - T_2)/(T_4 - T_2)$, where $T_5$ is the air temperature entering the combustor."
+  },
+  {
+   "type": "math",
+   "latex": "\\varepsilon = \\frac{h_5 - h_2}{h_4 - h_2} \\approx \\frac{T_5 - T_2}{T_4 - T_2} \\qquad q_{in} = c_p\\,(T_3 - T_5) \\qquad \\text{fuel saving} = \\frac{c_p(T_5 - T_2)}{c_p(T_3 - T_2)}",
+   "caption": "Fuel saving is the reduction in heat input relative to the cycle without a regenerator; the net work is unchanged."
+  },
+  {
+   "type": "worked_example",
+   "title": "Regenerator in a real gas turbine",
+   "prompt": "A gas turbine takes air at $T_1 = 300$ K, pressure ratio 8, $\\eta_C = 0.82$, turbine entry $T_3 = 1300$ K and $\\eta_T = 0.88$. A regenerator of effectiveness 0.75 is added. Use $k = 1.4$, $c_p = 1.005$ kJ/(kg K). Find the fuel saving and the thermal efficiency with and without regeneration.",
+   "steps": [
+    {
+     "text": "Compressor and turbine exit temperatures.",
+     "latex": "T_2 = 596.9\\ \\mathrm{K},\\quad T_4 = 787.5\\ \\mathrm{K}"
+    },
+    {
+     "text": "Regenerator outlet (air) temperature from $\\varepsilon$; note $T_4 > T_2$, so the exhaust can heat the air.",
+     "latex": "T_5 = T_2 + 0.75(T_4 - T_2) = 739.9\\ \\mathrm{K}"
+    },
+    {
+     "text": "Heat input with and without regenerator.",
+     "latex": "q_{in,0} = 1.005(1300 - 596.9) = 706.6,\\quad q_{in,reg} = 1.005(1300 - 739.9) = 562.9\\ \\mathrm{kJ/kg}"
+    },
+    {
+     "text": "Net work is unchanged: $w_{net} = 515.0 - 298.4$.",
+     "latex": "w_{net} = 216.7\\ \\mathrm{kJ/kg}"
+    },
+    {
+     "text": "Efficiencies.",
+     "latex": "\\eta_0 = 216.7/706.6 = 0.3066,\\quad \\eta_{reg} = 216.7/562.9 = 0.3849"
+    }
+   ],
+   "answer": "Fuel saving = 20.3%; thermal efficiency rises from 30.7% to 38.5%."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "A regenerator only helps when the turbine exhaust is hotter than the compressor exit ($T_4 > T_2$). At very high pressure ratios $T_2$ approaches $T_4$ and the regenerator becomes useless or even harmful. Regeneration therefore suits modest pressure ratios, such as small and recuperated microturbines."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Intercooling and reheat",
+   "text": "Compressor work per kg is proportional to the inlet temperature of each stage, so cooling the air between two stages (**intercooling**) lowers compressor work. Turbine work is proportional to the inlet temperature of each stage, so reheating the gas between turbine stages (**reheat**, a second combustor) raises turbine work. With equal stage pressure ratios $\\sqrt{r_p}$ and full intercooling back to $T_1$ the compressor work is least."
+  },
+  {
+   "type": "worked_example",
+   "title": "Ideal intercooling and reheat",
+   "prompt": "An ideal cycle has $T_1 = 300$ K, $T_3 = 1300$ K and overall pressure ratio 12. Compare the single-stage cycle with a two-stage compression (intercooled to 300 K) and a two-stage expansion (reheated to 1300 K), each stage with ratio $\\sqrt{12}$. Use $k = 1.4$, $c_p = 1.005$ kJ/(kg K).",
+   "steps": [
+    {
+     "text": "Single-stage works.",
+     "latex": "w_c = 311.7,\\ w_t = 664.1,\\ w_{net} = 352.4\\ \\mathrm{kJ/kg}"
+    },
+    {
+     "text": "Two-stage works with equal ratios.",
+     "latex": "w_c = 2(1.005)(300)[(\\sqrt{12})^{0.2857}-1] = 257.0,\\quad w_t = 2(1.005)(1300)[1-(\\sqrt{12})^{-0.2857}] = 780.8"
+    },
+    {
+     "text": "Net work with intercooling and reheat.",
+     "latex": "w_{net} = 780.8 - 257.0 = 523.8\\ \\mathrm{kJ/kg}"
+    },
+    {
+     "text": "Thermal efficiency: heat is now added in two combustors.",
+     "latex": "\\eta_1 = 0.5083,\\quad \\eta_2 = 0.4135"
+    }
+   ],
+   "answer": "Net work rises from 352.4 to 523.8 kJ/kg (about 49% more), but without a regenerator the thermal efficiency falls from 50.8% to 41.3%."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Modification",
+    "Net work",
+    "Thermal efficiency",
+    "Typical use"
+   ],
+   "rows": [
+    [
+     "Regeneration",
+     "Unchanged",
+     "Increases (lower fuel use)",
+     "Small recuperated gas turbines at low pressure ratio"
+    ],
+    [
+     "Intercooling (alone)",
+     "Increases",
+     "Usually falls (more heat needed)",
+     "Combined with regeneration"
+    ],
+    [
+     "Reheat (alone)",
+     "Increases",
+     "Usually falls",
+     "Combined with regeneration; some large industrial turbines"
+    ],
+    [
+     "Intercooling + reheat + regeneration",
+     "Increases",
+     "Increases",
+     "Approaches the Ericsson cycle"
+    ],
+    [
+     "Combined cycle",
+     "Large increase",
+     "Large increase (50 to 60% plausible)",
+     "Large power stations"
+    ]
+   ],
+   "caption": "Effects of cycle enhancements on a simple Brayton cycle."
+  },
+  {
+   "type": "text",
+   "markdown": "A **combined cycle** uses the hot gas-turbine exhaust as the heat source of a steam (Rankine) cycle through a heat-recovery steam generator (HRSG). The gas turbine is the topping cycle, which receives heat at a very high temperature, and the Rankine cycle is the bottoming cycle, which rejects heat at a very low temperature. Together the mean heat-addition temperature is high and the heat-rejection temperature is low."
+  },
+  {
+   "type": "math",
+   "latex": "\\eta_{cc} \\approx \\eta_g + f\\,\\eta_s\\,(1 - \\eta_g)",
+   "caption": "$\\eta_g$ = gas-turbine efficiency; $\\eta_s$ = steam-cycle efficiency; $f$ = fraction of the exhaust heat actually delivered to the steam cycle (stack and HRSG losses). Typical $f$ about 0.7 to 0.85."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Do not apply $\\eta_g + \\eta_s$: the steam cycle only receives the exhaust heat $(1-\\eta_g)Q_{in}$, not the original heat input. Do not use a regenerator when $T_4 \\le T_2$. Use effectiveness with temperatures in kelvin differences, which equals those in degrees Celsius."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Regenerator effectiveness $\\varepsilon = (T_5 - T_2)/(T_4 - T_2)$; fuel saving $= \\varepsilon(T_4 - T_2)/(T_3 - T_2)$.",
+    "Intercooling lowers compressor work and reheat raises turbine work, so net work rises.",
+    "Without regeneration, intercooling and reheat usually lower efficiency; with it they help.",
+    "Combined cycles use gas-turbine exhaust to power a steam cycle, so $\\eta_{cc}$ exceeds either cycle alone."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The effectiveness of a gas turbine regenerator is defined as",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "the heat added in the combustor divided by the heat in the exhaust"
+    },
+    {
+     "id": "b",
+     "text": "the ratio of turbine work to compressor work"
+    },
+    {
+     "id": "c",
+     "text": "the actual temperature rise of the compressed air divided by the maximum possible rise, $T_4 - T_2$"
+    },
+    {
+     "id": "d",
+     "text": "the temperature of the exhaust divided by the turbine inlet temperature"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "the actual temperature rise of the compressed air divided by the maximum possible rise, $T_4 - T_2$",
+   "distractorRationale": {
+    "a": "Not a regenerator definition.",
+    "b": "This is the work ratio, unrelated to the regenerator.",
+    "c": "Correct.",
+    "d": "This is not a heat-exchanger effectiveness."
+   },
+   "explanation": "Maximum heat recovery would raise the air to the exhaust temperature $T_4$, so $\\varepsilon = (T_5 - T_2)/(T_4 - T_2)$. An effectiveness of 1 would require an infinitely large counterflow exchanger.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How does intercooling between compressor stages affect the net work output of a gas turbine at fixed turbine-entry temperature?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It reduces compressor work and so increases the net work"
+    },
+    {
+     "id": "b",
+     "text": "It increases compressor work and so reduces net work"
+    },
+    {
+     "id": "c",
+     "text": "It has no effect on work because the pressure ratio is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "It increases turbine work directly"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It reduces compressor work and so increases the net work",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Cooler air is denser and takes less work to compress.",
+    "c": "Work depends on inlet temperature at each stage.",
+    "d": "Turbine work depends on the turbine inlet temperature."
+   },
+   "explanation": "Compressor work per kg is proportional to the inlet temperature at each stage. Cooling the air between stages lowers the work of the second stage, and turbine output is not affected, so net work rises.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Where is reheat applied in a gas turbine and what does it do?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Between compressor stages, to lower the air temperature"
+    },
+    {
+     "id": "b",
+     "text": "After the condenser, to dry the exhaust"
+    },
+    {
+     "id": "c",
+     "text": "Before the compressor, to raise the inlet temperature"
+    },
+    {
+     "id": "d",
+     "text": "Between turbine stages, heating the gas again to a high temperature to raise turbine work"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Between turbine stages, heating the gas again to a high temperature to raise turbine work",
+   "distractorRationale": {
+    "a": "That is intercooling, not reheat.",
+    "b": "A gas turbine has no condenser.",
+    "c": "Raising compressor inlet temperature raises compressor work.",
+    "d": "Correct."
+   },
+   "explanation": "Turbine work is proportional to the inlet temperature of each stage. A second combustor between the high- and low-pressure turbines brings the gas back to a high temperature and so adds work.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does a combined-cycle plant have a higher efficiency than the gas turbine or the steam cycle alone?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The steam cycle supplies extra fuel to the gas turbine"
+    },
+    {
+     "id": "b",
+     "text": "The gas turbine receives heat at a very high temperature and its hot exhaust supplies the steam cycle, which rejects heat at a low temperature"
+    },
+    {
+     "id": "c",
+     "text": "The steam cycle removes the need for a compressor"
+    },
+    {
+     "id": "d",
+     "text": "Heat is created in the heat-recovery boiler"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The gas turbine receives heat at a very high temperature and its hot exhaust supplies the steam cycle, which rejects heat at a low temperature",
+   "distractorRationale": {
+    "a": "The steam cycle does not supply fuel.",
+    "b": "Correct.",
+    "c": "The compressor is still needed in the gas turbine.",
+    "d": "Heat cannot be created; waste heat is recovered."
+   },
+   "explanation": "The topping cycle's exhaust heat would otherwise be rejected, and the bottoming cycle converts a portion of it to work. Together the mean heat-addition temperature is high and the heat-rejection temperature is low, increasing efficiency.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer considers adding a regenerator to a gas turbine with a very high pressure ratio, where the compressor exit temperature is 700 K and the turbine exit temperature is 690 K. What is the likely result?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A large fuel saving, because high pressure ratios favour regeneration"
+    },
+    {
+     "id": "b",
+     "text": "A moderate fuel saving, because the exhaust is still hot"
+    },
+    {
+     "id": "c",
+     "text": "No benefit, because the exhaust is not hotter than the compressed air"
+    },
+    {
+     "id": "d",
+     "text": "An increase in net work"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "No benefit, because the exhaust is not hotter than the compressed air",
+   "distractorRationale": {
+    "a": "High pressure ratios do the opposite.",
+    "b": "The exhaust is cooler than the compressed air, so heat flows the wrong way.",
+    "c": "Correct.",
+    "d": "A regenerator does not change net work."
+   },
+   "explanation": "Heat flows only from hot to cold, so a regenerator needs $T_4 > T_2$. With 690 K exhaust and 700 K compressed air nothing can be recovered; the regenerator is useful at moderate pressure ratios.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "In a regenerative gas turbine the compressed air leaves the compressor at 480 K and the turbine exhaust is at 720 K. The air enters the combustor at 630 K. Calculate the regenerator effectiveness (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o1"
+   ],
+   "correctValue": 0.625,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "$\\varepsilon = (T_5 - T_2)/(T_4 - T_2) = (630 - 480)/(720 - 480) = 150/240 = 0.625$. The result is quoted in dimensionless and is of a physically reasonable magnitude.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A gas turbine has compressor exit temperature 520 K, turbine exit 800 K and turbine entry 1250 K. A regenerator with effectiveness 0.70 is fitted. Assuming constant $c_p$, calculate the percentage reduction in fuel (heat) input.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o1"
+   ],
+   "correctValue": 26.8493,
+   "tolerance": 0.3,
+   "unit": "%",
+   "explanation": "Air entering the combustor is at $T_5 = 520 + 0.70(800 - 520) = 716$ K. Heat input falls from $c_p(1250 - 520)$ to $c_p(1250 - 716)$, so the saving is $(716 - 520)/(1250 - 520) = 196/730 = 0.2685$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Air enters a compressor at 290 K and is compressed to a total pressure ratio of 9. Compare a single stage with a two-stage compression with equal pressure ratios and intercooling back to 290 K (ideal, isentropic stages, $k = 1.4$, $c_p = 1.005$ kJ/(kg K)). By how much does intercooling reduce the compressor work, in kJ/kg?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o2"
+   ],
+   "correctValue": 39.6278,
+   "tolerance": 1.0,
+   "unit": "kJ/kg",
+   "explanation": "Single stage: $w = 1.005\\times290\\times(9^{0.2857}-1) = 254.6$ kJ/kg. Two stages each of ratio 3: $w = 2\\times1.005\\times290\\times(3^{0.2857}-1) = 214.9$ kJ/kg. The saving is 39.6 kJ/kg.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A gas turbine has an efficiency of 38% and sends 75% of its exhaust heat to a steam cycle of efficiency 34%. (a) Estimate the combined-cycle efficiency. (b) Explain, in terms of heat-addition and heat-rejection temperatures, why the combined efficiency exceeds both individual efficiencies.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o3"
+   ],
+   "markingGuide": [
+    "Uses $\\eta_{cc} = \\eta_g + f\\eta_s(1-\\eta_g)$",
+    "Exhaust heat is $(1 - 0.38) = 0.62$ of the fuel heat",
+    "Steam cycle output $= 0.75\\times0.34\\times0.62 = 0.1581$ of fuel heat",
+    "Combined efficiency $\\approx 0.538$ (about 54%)",
+    "The gas turbine adds heat at a very high temperature (topping cycle)",
+    "The steam cycle rejects heat near ambient temperature (bottoming cycle)",
+    "Waste heat of one cycle is the heat input of the other"
+   ],
+   "explanation": "The combined cycle efficiency is $0.38 + 0.75\\times0.34\\times0.62 = 0.538$. It beats both cycles because it spans a wider temperature range: heat enters at the gas-turbine temperature and leaves at the steam condenser temperature.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why intercooling and reheat each raise the net work of a gas turbine but, without a regenerator, tend to lower the thermal efficiency. Explain how adding a regenerator removes this penalty.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o1",
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.regeneration-intercooling.o2"
+   ],
+   "markingGuide": [
+    "Compressor work per kg is proportional to inlet temperature, so intercooling lowers compressor work",
+    "Turbine work per kg is proportional to inlet temperature, so reheat raises turbine work",
+    "Both therefore raise net work",
+    "Intercooling lowers the compressor exit temperature, so more heat is needed in the combustor",
+    "Reheat requires extra heat in a second combustor, and the extra heat is converted to work at a lower marginal efficiency than the base cycle",
+    "Without regeneration, the extra heat input rises faster than the net work, so efficiency falls",
+    "With a regenerator, the hotter turbine exhaust (from reheat) heats the compressed air, which is cooler (after intercooling), increasing recovered heat and fuel saving",
+    "Hence combined, efficiency rises"
+   ],
+   "explanation": "Intercooling and reheat raise net work by reducing compressor work and increasing turbine work. They also increase heat input, so efficiency drops unless a regenerator uses the hotter exhaust to pre-heat the cooler compressor discharge.",
+   "board": "internal"
+  }
+ ]
+}

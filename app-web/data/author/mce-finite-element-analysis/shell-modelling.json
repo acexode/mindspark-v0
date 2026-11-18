@@ -1,0 +1,415 @@
+{
+ "lessonTitle": "Shell Modelling Practice",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A beverage can, an aircraft fuselage skin and a car body panel all carry load while being only a fraction of a millimetre to a few millimetres thick. Meshing them with solid elements would need dozens of layers of tiny bricks. Shell elements instead describe the part by its mid-surface and a thickness number, which is how almost every thin-walled structure is modelled in practice."
+  },
+  {
+   "type": "text",
+   "markdown": "**Mid-surface idealisation.** A thin-walled part has one dimension, the thickness $t$ (m), much smaller than the other two. A **mid-surface model** replaces it with a surface lying half way through the thickness, meshed with shell elements; the thickness is stored as an element property, not as geometry. A part qualifies when $t$ is small relative to its smallest in-plane dimension or radius of curvature (a typical guide is $t/R\\lesssim1/20$ for the shell to behave as thin). For plates of varying thickness, assign each face its own thickness, and where two plates meet, extend or trim the mid-surfaces so they intersect along the junction; a gap or overlap creates a spurious flexible or rigid zone."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Shell element",
+   "text": "A shell element is a flat or curved surface element that carries both **membrane** (in-plane) stiffness and **bending** (out-of-plane) stiffness. Each node typically has six degrees of freedom: three translations $(u_x,u_y,u_z)$ and three rotations $(\\theta_x,\\theta_y,\\theta_z)$. The rotation about the local normal is the **drilling** degree of freedom, which has no true stiffness in a smooth shell and is given a small artificial stiffness by the solver."
+  },
+  {
+   "type": "text",
+   "markdown": "**Membrane versus bending behaviour.** In a membrane state the stress is uniform through the thickness, and loads are resisted by in-plane forces. In a bending state the stress varies linearly through the thickness and is much larger for the same load. Closed curved shapes under pressure are efficient because they carry loads by membrane action. For a thin cylinder (mid-surface radius $R$, internal pressure $p$): hoop stress $\\sigma_\\theta=pR/t$ and axial stress $\\sigma_x=pR/(2t)$; for a thin sphere both equal $pR/(2t)$. Bending appears at discontinuities such as end caps, flanges, ring stiffeners, supports and point loads. In a cylinder the bending disturbance decays over a distance of about $\\pi/\\beta=2.44\\sqrt{Rt}$ (for $\\nu=0.3$), so the mesh must have several elements in this length."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_\\theta=\\frac{pR}{t},\\qquad\\sigma_x=\\frac{pR}{2t},\\qquad\\ell_b=\\frac{\\pi}{\\beta}=\\frac{\\pi\\sqrt{Rt}}{[3(1-\\nu^2)]^{1/4}}\\approx2.44\\sqrt{Rt}",
+   "caption": "Thin-cylinder membrane stresses (Pa) and the edge-bending decay length (m)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Cylinder with end constraint",
+   "prompt": "A cylindrical pressure vessel has mid-surface radius $R=0.5$ m and wall thickness $t=5$ mm. The internal pressure is $p=1.2$ MPa. Find the membrane stresses and the length over which end-bending effects must be meshed.",
+   "steps": [
+    {
+     "text": "Hoop stress: $\\sigma_\\theta=pR/t=(1.2\\times10^{6})(0.5)/0.005=120$ MPa.",
+     "latex": "\\sigma_\\theta=\\frac{pR}{t}=120\\ \\text{MPa}"
+    },
+    {
+     "text": "Axial stress: $\\sigma_x=pR/(2t)=60$ MPa, half the hoop value.",
+     "latex": "\\sigma_x=\\frac{pR}{2t}=60\\ \\text{MPa}"
+    },
+    {
+     "text": "Bending decay length near a fixed end or a stiff ring: $\\ell_b\\approx2.44\\sqrt{Rt}=2.44\\sqrt{0.5\\times0.005}=0.1222$ m, about 122 mm."
+    },
+    {
+     "text": "Mesh recommendation: put at least three or four elements along this length near the discontinuity; away from it the membrane solution is smooth and a coarse mesh suffices."
+    }
+   ],
+   "answer": "Hoop 120 MPa, axial 60 MPa; edge bending extends about 122 mm from the constraint."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Membrane-dominated",
+    "Bending-dominated"
+   ],
+   "rows": [
+    [
+     "Stress through thickness",
+     "Nearly uniform",
+     "Linear, zero at mid-surface, extreme at faces"
+    ],
+    [
+     "Typical situations",
+     "Pressurised sphere or cylinder away from supports",
+     "Flat panel under lateral pressure, point loads, junctions, supports"
+    ],
+    [
+     "Relative efficiency",
+     "High: stress $\\sim pR/t$",
+     "Low: stress $\\sim pa^2/t^2$"
+    ],
+    [
+     "Mesh need",
+     "Coarse mesh is adequate",
+     "Refine where bending gradients occur"
+    ]
+   ],
+   "caption": "Two load-carrying mechanisms of a shell"
+  },
+  {
+   "type": "worked_example",
+   "title": "Curvature changes the mechanism",
+   "prompt": "A circular panel of radius $a=0.4$ m and thickness $t=4$ mm carries a pressure $p=0.1$ MPa. Compare (i) a flat clamped plate, whose maximum radial bending stress at the edge is $0.75\\,pa^2/t^2$, with (ii) a spherical dome of radius $R_s=0.8$ m, whose membrane stress is $pR_s/(2t)$. Use a linear small-deflection estimate for both.",
+   "steps": [
+    {
+     "text": "Flat plate: $\\sigma=0.75(0.1\\times10^{6})(0.4)^2/(0.004)^2=750$ MPa.",
+     "latex": "\\sigma_{plate}=0.75\\frac{pa^2}{t^2}=750\\ \\text{MPa}"
+    },
+    {
+     "text": "Dome: $\\sigma=pR_s/(2t)=(0.1\\times10^{6})(0.8)/(0.008)=10$ MPa.",
+     "latex": "\\sigma_{dome}=\\frac{pR_s}{2t}=10\\ \\text{MPa}"
+    },
+    {
+     "text": "Ratio: $750/10=75$. The flat plate would exceed yield and deflect nonlinearly, while the curved dome carries the load with a modest membrane stress."
+    },
+    {
+     "text": "The lesson for modelling: predict the load path first. For the dome a coarse shell mesh captures the membrane state, whereas the flat plate needs a refined, possibly nonlinear, bending model."
+    }
+   ],
+   "answer": "Plate about 750 MPa (bending) versus dome 10 MPa (membrane): curvature gives a factor of about 75."
+  },
+  {
+   "type": "text",
+   "markdown": "**Joining shells to beams and solids.** Shell and beam nodes have six degrees of freedom, but solid (brick or tetrahedron) nodes have only three translations and no rotations. A shell edge attached directly to a solid face therefore cannot transfer a bending moment: it acts as a hinge. To connect them, extend the shell into the solid, or tie the shell edge to the solid surface with a shell-to-solid coupling (a multi-point constraint, MPC). A shell joined to a beam node needs a rigid link so that, for small rotations, the shell node displacement equals the beam node displacement plus $\\boldsymbol\\theta\\times\\mathbf r$, where $\\mathbf r$ is the offset (m). For a planar rotation $\\theta_z$ and a shell node at distance $r_x$ along $x$ the vertical displacement is $v=\\theta_zr_x$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Element type",
+    "Degrees of freedom per node",
+    "Transfers moments?",
+    "Note at joints"
+   ],
+   "rows": [
+    [
+     "Solid (3D)",
+     "3 translations",
+     "No",
+     "Needs shell extension or MPC for shell edges"
+    ],
+    [
+     "Shell",
+     "3 translations + 3 rotations",
+     "Yes",
+     "Drilling rotation has artificial stiffness"
+    ],
+    [
+     "Beam",
+     "3 translations + 3 rotations",
+     "Yes",
+     "Tie to shell edges with rigid link or MPC"
+    ],
+    [
+     "Truss / bar",
+     "3 translations",
+     "No",
+     "Pin-jointed only"
+    ]
+   ],
+   "caption": "Degrees of freedom of common element types (typical formulations)"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Extract the mid-surface and assign thickness (and offset) to each face.",
+    "Ensure mid-surfaces intersect cleanly at junctions.",
+    "Predict whether each region is membrane- or bending-dominated and refine where bending gradients occur.",
+    "At shell-to-beam or shell-to-solid joints, check that all six degrees of freedom are transferred (or deliberately released) and that rotations are not left free."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Drilling singularities",
+   "text": "In a flat region where all shell elements are coplanar, the rotation about the surface normal may have no stiffness at all, giving a singular matrix. Some solvers add a small artificial drilling stiffness automatically; others require you to constrain that rotation. Always check how your solver treats it."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A thin-walled part is modelled by its mid-surface plus a thickness property; junction surfaces must intersect.",
+    "Membrane action carries load efficiently (for example $\\sigma=pR/(2t)$ in a sphere); bending dominates at discontinuities, supports and under lateral loads on flat panels.",
+    "Edge bending in a cylinder extends about $2.44\\sqrt{Rt}$, which sets the mesh refinement zone.",
+    "Shell and beam nodes carry rotations, solid nodes do not: joints need extension, MPC or rigid links so moments are transmitted correctly."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Where should the mid-surface for a shell model of a uniform-thickness sheet-metal part be placed, and how is the thickness represented?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Half-way through the thickness, with the thickness assigned as an element property"
+    },
+    {
+     "id": "b",
+     "text": "On the outer face, with the thickness ignored"
+    },
+    {
+     "id": "c",
+     "text": "On the inner face, with solid elements added to represent the thickness"
+    },
+    {
+     "id": "d",
+     "text": "Anywhere, with the thickness created as extra geometry"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Half-way through the thickness, with the thickness assigned as an element property",
+   "distractorRationale": {
+    "a": "Correct: the mid-surface is the plane of symmetry through the thickness, and thickness is a property of the shell element.",
+    "b": "Placing the surface on a face introduces an offset unless the shell element is given that offset, and ignoring thickness removes stiffness.",
+    "c": "Adding solid elements defeats the purpose of using shells.",
+    "d": "Thickness is not meshed as geometry; shifting the surface without an offset changes bending stiffness and distances."
+   },
+   "explanation": "A shell element samples stresses through a thickness given as a property. Putting the surface at mid-thickness keeps the neutral surface and the junction geometry consistent.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which load case is carried mainly by membrane action in a thin-walled structure?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Internal pressure in a thin sphere away from its supports"
+    },
+    {
+     "id": "b",
+     "text": "A point load applied normal to the middle of a flat panel"
+    },
+    {
+     "id": "c",
+     "text": "A transverse pressure on a flat plate"
+    },
+    {
+     "id": "d",
+     "text": "A moment applied at a ring stiffener on a cylinder"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Internal pressure in a thin sphere away from its supports",
+   "distractorRationale": {
+    "a": "Correct: a closed, doubly curved shell resists pressure through in-plane forces with nearly uniform stress.",
+    "b": "A normal point load on a flat panel can only be resisted by bending, because there is no curvature to carry it in-plane.",
+    "c": "Lateral pressure on a flat plate is also resisted by bending.",
+    "d": "A moment at a ring forces local bending in the shell wall."
+   },
+   "explanation": "Curved shapes can balance normal loads by in-plane forces, so stress is about $pR/(2t)$, with no through-thickness variation. Flat panels, supports and point loads necessarily involve bending.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A thin shell is structurally efficient when its load is carried mainly by membrane stress, because the stress is then nearly uniform through the thickness.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. Membrane stress uses the whole thickness equally, so material is stressed uniformly. In bending only the outer fibres reach the peak stress, wasting the inner material.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A shell edge is attached directly to the nodes on a face of a solid (brick) mesh, with no further treatment, and the shell edge carries a bending moment. What happens?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The joint behaves as a hinge for that moment, because the solid nodes have no rotational degrees of freedom to receive it"
+    },
+    {
+     "id": "b",
+     "text": "The moment is transmitted perfectly"
+    },
+    {
+     "id": "c",
+     "text": "The solver reports a negative Jacobian"
+    },
+    {
+     "id": "d",
+     "text": "The shell stiffness doubles"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The joint behaves as a hinge for that moment, because the solid nodes have no rotational degrees of freedom to receive it",
+   "distractorRationale": {
+    "a": "Correct: a moment needs a rotational degree of freedom at the receiving node, and solid nodes have only translations.",
+    "b": "Without rotational degrees of freedom there is no way to carry the moment fully.",
+    "c": "The Jacobian depends on element geometry, not on connection type.",
+    "d": "Connectivity does not scale stiffness; the shell simply lacks a rotational restraint."
+   },
+   "explanation": "Three-translation nodes cannot resist rotation of the shell edge, so the connection is moment-free. Extend the shell into the solid or use a shell-to-solid coupling that distributes the moment as forces.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A model contains a large flat region meshed with coplanar shell elements, and the solver reports a singular stiffness matrix with a zero-energy rotation about the surface normal at every node of that region. What is the most appropriate response?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Check how the solver handles the drilling rotation: add the artificial drilling stiffness or constrain rotation about the normal"
+    },
+    {
+     "id": "b",
+     "text": "Replace all shell elements by trusses"
+    },
+    {
+     "id": "c",
+     "text": "Increase the thickness by a factor of ten"
+    },
+    {
+     "id": "d",
+     "text": "Remove all rotational degrees of freedom from the beams in the model"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Check how the solver handles the drilling rotation: add the artificial drilling stiffness or constrain rotation about the normal",
+   "distractorRationale": {
+    "a": "Correct: the drilling rotation has no true stiffness in a flat shell, so it must be stabilised or constrained.",
+    "b": "Trusses would remove bending behaviour entirely.",
+    "c": "Thickness changes the real stiffness but does not create stiffness for the drilling rotation.",
+    "d": "Removing beam rotations would introduce more mechanisms elsewhere."
+   },
+   "explanation": "Coplanar shell elements provide no stiffness against rotation about their common normal. Solvers add a small artificial drilling stiffness, or the analyst constrains that rotation, to remove the singularity without affecting the physical results.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cylindrical tank has mid-surface radius $R=0.35$ m and wall thickness $t=6$ mm and is subject to an internal pressure $p=2.4$ MPa. Using the thin-wall membrane formula, find the hoop stress away from the ends in MPa.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o2"
+   ],
+   "correctValue": 140.0,
+   "tolerance": 1.0,
+   "unit": "MPa",
+   "explanation": "The hoop membrane stress is $\\sigma_\\theta=pR/t=(2.4\\times10^{6})(0.35)/0.006=1.4\\times10^{8}$ Pa, i.e. 140 MPa. This is valid away from the ends and supports, where bending is negligible.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A thin cylindrical shell has mid-surface radius $R=0.9$ m and thickness $t=9$ mm and is clamped at one end. Using the approximate edge-bending decay length $\\ell_b=2.44\\sqrt{Rt}$, find the length over which the mesh should be refined near the clamp, in mm.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o2"
+   ],
+   "correctValue": 219.96,
+   "tolerance": 3.0,
+   "unit": "mm",
+   "explanation": "Compute $Rt=0.9\\times0.009=0.0081$ m$^2$, so $\\sqrt{Rt}=0.09$ m. Then $\\ell_b=2.44\\times0.09=0.2196$ m, about 220 mm. The refined zone should include several elements over this length.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A shell edge node lies 0.25 m along $x$ from a beam node. The beam node rotates by $\\theta_z=0.004$ rad (counter-clockwise, small) with no translation. If the shell node is tied to the beam by a rigid link, find the resulting vertical displacement of the shell node in mm.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o3"
+   ],
+   "correctValue": 1.0,
+   "tolerance": 0.02,
+   "unit": "mm",
+   "explanation": "For a rigid link and small rotations, $v=\\theta_zr_x=0.004\\times0.25=1.0\\times10^{-3}$ m, i.e. 1.0 mm in the $+y$ direction. This shows why the rotational degree of freedom of the beam must be tied to the shell: ignoring it leaves the shell edge undisplaced.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why a thin pressurised cylinder is analysed mostly as a membrane, yet shell elements must be refined near its end caps and supports. Include the size of the refinement zone and the relation to the mid-surface radius and thickness.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o2"
+   ],
+   "markingGuide": [
+    "Away from discontinuities stresses are membrane: hoop $pR/t$ and axial $pR/(2t)$, uniform through thickness",
+    "At end caps, flanges and supports, geometry or stiffness changes force bending (edge effect)",
+    "Bending disturbance decays over about $\\pi/\\beta\\approx2.44\\sqrt{Rt}$",
+    "Mesh needs several elements within that length, a coarse mesh elsewhere",
+    "Use of the membrane result as a hand check for the model remote from the discontinuity"
+   ],
+   "explanation": "Membrane theory fails where deformation is constrained, so local bending stresses appear. Their decay length depends on $\\sqrt{Rt}$, which sets how fine the mesh must be.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A welded steel box girder (thin plates) with stiffening bars is to be modelled with shell and beam elements, and attached to a solid casting at one end. Describe how you would create the mid-surface model, assign thickness, and treat the connections to ensure that rotations are properly constrained.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o1",
+    "ug.mce-finite-element-analysis.plates-shells.shell-modelling.o3"
+   ],
+   "markingGuide": [
+    "Extract mid-surfaces of each plate, assign thickness as a property, extend or trim so adjacent mid-surfaces intersect at the welds",
+    "Represent stiffening bars with beam elements, offsets from the shell surface or tied by rigid links so eccentricity is correct",
+    "At beam-to-shell nodes ensure all six degrees of freedom are coupled (or release deliberately)",
+    "Shell-to-solid joint: solid nodes lack rotations, so extend the shell into the solid or use shell-to-solid coupling (MPC)",
+    "Check coplanar regions for drilling stabilisation and verify support reactions and moment equilibrium"
+   ],
+   "explanation": "The model is built from mid-surfaces and thicknesses, with careful junction geometry and with every transition between element types checked for rotational continuity. Moment equilibrium at joints is the key check.",
+   "board": "internal"
+  }
+ ]
+}

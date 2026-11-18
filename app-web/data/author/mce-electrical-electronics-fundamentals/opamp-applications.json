@@ -1,0 +1,392 @@
+{
+ "lessonTitle": "Op-Amp Applications",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A test rig blends a load-cell signal and a position-sensor signal into one weighted measurement, filters out motor noise above a kilohertz, and rejects the 50 Hz hum that the long sensor cable picks up. Three small op-amp circuits, each built from a handful of resistors and one capacitor, do all of it before the signal reaches the ADC."
+  },
+  {
+   "type": "text",
+   "markdown": "The ideal op-amp rules (no input current; $v_+=v_-$ under negative feedback) analyse every circuit here. The circuits are all variations on the inverting and non-inverting amplifiers of the previous unit, with extra inputs or a capacitor in the feedback path."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Summing (inverting) amplifier",
+   "text": "Several sources $v_1,v_2,\\dots$ connect through resistors $R_1,R_2,\\dots$ to the inverting node; the feedback resistor $R_f$ connects output to that node and the $(+)$ input is grounded. Each input sees its own gain $-R_f/R_k$ and the contributions add."
+  },
+  {
+   "type": "math",
+   "latex": "v_o=-R_f\\left(\\frac{v_1}{R_1}+\\frac{v_2}{R_2}+\\cdots\\right)",
+   "caption": "Summing amplifier: because the inverting node is a virtual ground, each input current v_k/R_k adds in R_f independently"
+  },
+  {
+   "type": "worked_example",
+   "title": "Summing two sensor signals",
+   "prompt": "Combine sensor 1 with weight 2 and sensor 2 with weight 0.5 (output inverted), using $R_f=100$ k$\\Omega$. Choose $R_1$, $R_2$ and find the output for $v_1=0.30$ V and $v_2=1.20$ V.",
+   "steps": [
+    {
+     "text": "The weights are $R_f/R_k$, so $R_k=R_f/\\text{weight}$.",
+     "latex": "R_1=\\frac{100}{2}=50\\ \\mathrm{k\\Omega},\\qquad R_2=\\frac{100}{0.5}=200\\ \\mathrm{k\\Omega}"
+    },
+    {
+     "text": "Insert the inputs.",
+     "latex": "v_o=-100\\left(\\frac{0.30}{50}+\\frac{1.20}{200}\\right)=-100(0.006+0.006)=-1.20\\ \\mathrm{V}"
+    }
+   ],
+   "answer": "R_1 = 50 kohm, R_2 = 200 kohm; v_o = -1.20 V. Each sensor contributes -0.60 V."
+  },
+  {
+   "type": "text",
+   "markdown": "**Active low-pass filter.** Place a capacitor $C$ in parallel with the feedback resistor $R_f$ of an inverting amplifier. At low frequency the capacitor is an open circuit and the gain is $-R_f/R_{in}$. As frequency rises, $C$ offers a lower impedance $1/(j\\omega C)$ in parallel with $R_f$, so the gain falls. The **cut-off frequency** $f_c$ is where the gain magnitude has fallen to $1/\\sqrt2$ (-3 dB) of its low-frequency value, and the filter has a single pole: the gain falls by about 20 dB per decade above $f_c$."
+  },
+  {
+   "type": "math",
+   "latex": "f_c=\\frac{1}{2\\pi R_fC},\\qquad |G(f)|=\\frac{R_f/R_{in}}{\\sqrt{1+(f/f_c)^{2}}}",
+   "caption": "First-order active low-pass filter, inverting configuration"
+  },
+  {
+   "type": "worked_example",
+   "title": "Cut-off frequency",
+   "prompt": "An inverting low-pass stage has $R_{in}=5.0$ k$\\Omega$, $R_f=15$ k$\\Omega$ and $C=10$ nF across $R_f$. Find the DC gain, $f_c$ and the gain magnitude at $f_c$.",
+   "steps": [
+    {
+     "text": "DC gain.",
+     "latex": "G_0=-\\frac{R_f}{R_{in}}=-\\frac{15}{5.0}=-3.0"
+    },
+    {
+     "text": "Cut-off frequency from the feedback network.",
+     "latex": "f_c=\\frac{1}{2\\pi(15\\times10^{3})(10\\times10^{-9})}=1061\\ \\mathrm{Hz}"
+    },
+    {
+     "text": "At $f_c$ the gain magnitude is down by $\\sqrt2$.",
+     "latex": "|G(f_c)|=\\frac{3.0}{\\sqrt2}=2.12"
+    }
+   ],
+   "answer": "DC gain -3.0, f_c = 1.06 kHz, and |G| = 2.12 at f_c. Note that f_c depends on R_f and C but not on R_in."
+  },
+  {
+   "type": "text",
+   "markdown": "**Difference amplifier.** A signal sensor often has two output wires, and noise (mains hum, ground shifts) appears equally on both. The wanted signal is their **difference** $v_d=v_2-v_1$; the unwanted noise is the **common-mode** voltage $v_{cm}=(v_1+v_2)/2$. A difference amplifier uses $R_1$ from $v_1$ to the inverting input, $R_2$ in feedback, $R_3$ from $v_2$ to the non-inverting input and $R_4$ from that input to ground. If $R_2/R_1=R_4/R_3$, the output is $v_o=(R_2/R_1)(v_2-v_1)$: the common-mode term cancels exactly."
+  },
+  {
+   "type": "math",
+   "latex": "v_o=\\frac{R_2}{R_1}\\left(v_2-v_1\\right)\\ \\ \\text{when}\\ \\ \\frac{R_2}{R_1}=\\frac{R_4}{R_3}",
+   "caption": "Difference amplifier with matched resistor ratios"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Circuit",
+    "Output",
+    "Key design quantity",
+    "Typical use"
+   ],
+   "rows": [
+    [
+     "Summing amplifier",
+     "$-R_f\\sum v_k/R_k$",
+     "Weights $R_f/R_k$",
+     "Mixing sensors, offset adjust"
+    ],
+    [
+     "Active low-pass",
+     "$-(R_f/R_{in})/(1+jf/f_c)$",
+     "$f_c=1/(2\\pi R_fC)$",
+     "Anti-aliasing before an ADC"
+    ],
+    [
+     "Difference amplifier",
+     "$(R_2/R_1)(v_2-v_1)$",
+     "Matched ratios $R_2/R_1=R_4/R_3$",
+     "Bridge sensors, long cables"
+    ]
+   ],
+   "caption": "Three op-amp building blocks"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Every input of a summing amplifier is isolated by the virtual ground; inputs do not interact.",
+    "The filter's $f_c$ is set by $R_f C$, and its pass-band gain by $R_f/R_{in}$; they can be set independently.",
+    "Resistor mismatch of 1 % in a difference amplifier can leave a common-mode gain of order 1 % of the signal gain.",
+    "The common-mode rejection ratio (CMRR) is the ratio of differential gain to common-mode gain; higher is better."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Matched resistors give common-mode rejection",
+   "text": "A difference amplifier rejects common-mode noise only if $R_2/R_1=R_4/R_3$ closely. Use 0.1 % resistors or an integrated instrumentation amplifier for demanding sensors."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Summing amplifier: $v_o=-R_f\\sum v_k/R_k$; choose $R_k=R_f/\\text{weight}$.",
+    "Active low-pass: $f_c=1/(2\\pi R_fC)$, pass-band gain $-R_f/R_{in}$, gain $1/\\sqrt2$ of that at $f_c$.",
+    "Difference amplifier: $v_o=(R_2/R_1)(v_2-v_1)$ and common-mode voltage cancels when the ratios match."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A summing amplifier has $R_1=R_2=R_f=10$ k$\\Omega$. The inputs are 1.0 V and 2.0 V. What is the output?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "-3.0 V"
+    },
+    {
+     "id": "b",
+     "text": "+3.0 V"
+    },
+    {
+     "id": "c",
+     "text": "-1.5 V"
+    },
+    {
+     "id": "d",
+     "text": "-2.0 V"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "-3.0 V",
+   "distractorRationale": {
+    "a": "Correct: -(1 + 2) = -3.0 V.",
+    "b": "Wrong: this drops the inversion.",
+    "c": "Wrong: this averages the inputs, which a summer does not do.",
+    "d": "Wrong: this ignores the 1.0 V input."
+   },
+   "explanation": "With all resistors equal each input has gain $-1$ and the outputs add: $v_o=-(1.0+2.0)=-3.0$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An inverting low-pass filter has $R_f=1.6$ k$\\Omega$ in parallel with $C=100$ nF. What is its cut-off frequency?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "995 Hz"
+    },
+    {
+     "id": "b",
+     "text": "6250 Hz"
+    },
+    {
+     "id": "c",
+     "text": "159 Hz"
+    },
+    {
+     "id": "d",
+     "text": "1990 Hz"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "995 Hz",
+   "distractorRationale": {
+    "a": "Correct: 1/(2 pi x 1600 x 1e-7) = 995 Hz.",
+    "b": "Wrong: 1/(RC) = 6250 rad/s, not hertz, leaving out 2 pi.",
+    "c": "Wrong: this uses 10 k instead of 1.6 k.",
+    "d": "Wrong: a factor-of-two slip."
+   },
+   "explanation": "$f_c=1/(2\\pi R_fC)=1/(2\\pi\\times1600\\times10^{-7})=995$ Hz. The input resistor does not enter the cut-off frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is a common-mode signal?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A voltage that appears equally on both inputs of a differential amplifier"
+    },
+    {
+     "id": "b",
+     "text": "The voltage difference between the two inputs"
+    },
+    {
+     "id": "c",
+     "text": "The supply voltage"
+    },
+    {
+     "id": "d",
+     "text": "The output offset"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A voltage that appears equally on both inputs of a differential amplifier",
+   "distractorRationale": {
+    "a": "Correct: it is the same on both inputs, e.g. mains hum on both wires.",
+    "b": "Wrong: this is the differential (wanted) signal.",
+    "c": "Wrong: the supply is not an input signal.",
+    "d": "Wrong: offset is an output error, not an input signal type."
+   },
+   "explanation": "A common-mode voltage is the part shared by both inputs, such as noise picked up equally by a twin-wire cable. An ideal difference amplifier responds only to the difference.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Using $R_f=30$ k$\\Omega$, which input resistors give $v_o=-(3v_1+2v_2)$ in a summing amplifier?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$R_1=10$ k$\\Omega$, $R_2=15$ k$\\Omega$"
+    },
+    {
+     "id": "b",
+     "text": "$R_1=90$ k$\\Omega$, $R_2=60$ k$\\Omega$"
+    },
+    {
+     "id": "c",
+     "text": "$R_1=3$ k$\\Omega$, $R_2=2$ k$\\Omega$"
+    },
+    {
+     "id": "d",
+     "text": "$R_1=15$ k$\\Omega$, $R_2=10$ k$\\Omega$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$R_1=10$ k$\\Omega$, $R_2=15$ k$\\Omega$",
+   "distractorRationale": {
+    "a": "Correct: R_1 = 30/3 = 10 k, R_2 = 30/2 = 15 k.",
+    "b": "Wrong: this multiplies R_f by the weights.",
+    "c": "Wrong: this uses the weights as kilohm values.",
+    "d": "Wrong: this swaps the two resistors, giving weights 2 and 3."
+   },
+   "explanation": "The gain for each input is $R_f/R_k$, so $R_k=R_f/\\text{weight}$: $30/3=10$ k$\\Omega$ for input 1 and $30/2=15$ k$\\Omega$ for input 2.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a difference amplifier, why must $R_2/R_1=R_4/R_3$ be maintained closely?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Otherwise a part of the common-mode input appears at the output"
+    },
+    {
+     "id": "b",
+     "text": "Otherwise the op-amp would saturate for all inputs"
+    },
+    {
+     "id": "c",
+     "text": "Otherwise the input current becomes infinite"
+    },
+    {
+     "id": "d",
+     "text": "Otherwise the differential gain becomes zero"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Otherwise a part of the common-mode input appears at the output",
+   "distractorRationale": {
+    "a": "Correct: mismatch makes the two input paths gain differently, so common-mode voltage leaks through.",
+    "b": "Wrong: saturation depends on signal levels and gain, not ratio matching.",
+    "c": "Wrong: the ideal op-amp input current is zero regardless.",
+    "d": "Wrong: differential gain is not zero for a mismatch; rejection is the problem."
+   },
+   "explanation": "Cancellation depends on both inputs experiencing equal gain to the common-mode voltage. Mismatched ratios give unequal gains, leaving a residual common-mode term at the output.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A summing amplifier has $R_f=47$ k$\\Omega$, $R_1=22$ k$\\Omega$ and $R_2=10$ k$\\Omega$. The inputs are $v_1=0.50$ V and $v_2=0.20$ V. What is the output voltage in volts?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o1"
+   ],
+   "correctValue": -2.008,
+   "tolerance": 0.02,
+   "unit": "V",
+   "explanation": "$v_o=-47(0.50/22+0.20/10)=-47(0.02273+0.02000)=-2.008$ V. Each term is an input current in mA that flows through $R_f$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An active low-pass filter has a 33 k$\\Omega$ feedback resistor in parallel with a 4.7 nF capacitor. What is the cut-off frequency in hertz?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o2"
+   ],
+   "correctValue": 1026,
+   "tolerance": 10,
+   "unit": "Hz",
+   "explanation": "$R_fC=33\\times10^3\\times4.7\\times10^{-9}=1.551\\times10^{-4}$ s, so $f_c=1/(2\\pi\\times1.551\\times10^{-4})=1026$ Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An inverting low-pass stage has $R_{in}=10$ k$\\Omega$, $R_f=100$ k$\\Omega$ and $C=1.0$ nF across $R_f$. What is the magnitude of its gain at 8.0 kHz?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o2"
+   ],
+   "correctValue": 1.95,
+   "tolerance": 0.03,
+   "unit": "(dimensionless)",
+   "explanation": "DC gain magnitude is $100/10=10$. $f_c=1/(2\\pi\\times10^5\\times10^{-9})=1592$ Hz. At 8 kHz, $|G|=10/\\sqrt{1+(8000/1592)^2}=10/\\sqrt{26.3}=1.95$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A strain-gauge bridge is connected to an amplifier by a 10 m twin cable running beside a motor. Explain how a difference amplifier removes the mains pick-up and what limits how well it does so.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o3"
+   ],
+   "markingGuide": [
+    "Pick-up appears equally on both wires: a common-mode signal",
+    "The bridge signal appears as a difference between the wires",
+    "Difference amplifier output depends on v2 - v1 so the common-mode part cancels",
+    "Cancellation requires matched resistor ratios R2/R1 = R4/R3",
+    "Mismatch or finite CMRR leaves a residual common-mode error; use precise resistors or an instrumentation amplifier"
+   ],
+   "explanation": "Noise from the motor and mains couples equally into both cable wires, so it is a common-mode voltage, while the bridge signal appears as the difference between them. A difference amplifier outputs $(R_2/R_1)(v_2-v_1)$, so the common-mode part cancels provided $R_2/R_1=R_4/R_3$. Resistor mismatch and finite CMRR leave a small residual error.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Design a summing amplifier (using $R_f=100$ k$\\Omega$) with $v_o=-(0.5v_1+2v_2)$. Give $R_1$ and $R_2$, find the output for $v_1=4.0$ V and $v_2=0.50$ V, and explain why the two inputs do not interfere with each other.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.opamp-applications.o1"
+   ],
+   "markingGuide": [
+    "R_1 = R_f/0.5 = 200 k",
+    "R_2 = R_f/2 = 50 k",
+    "Output = -(0.5 x 4.0 + 2 x 0.5) = -3.0 V",
+    "The inverting node is a virtual ground, so each input current is v_k/R_k independent of the other source",
+    "The input currents add at the node and flow through R_f"
+   ],
+   "explanation": "Each weight is $R_f/R_k$, so $R_1=100/0.5=200$ k$\\Omega$ and $R_2=100/2=50$ k$\\Omega$. The output is $-(0.5\\times4.0+2\\times0.5)=-3.0$ V. The inverting node is held at virtual ground by feedback, so each source drives only its own resistor with current $v_k/R_k$, and these currents simply add in $R_f$.",
+   "board": "internal"
+  }
+ ]
+}

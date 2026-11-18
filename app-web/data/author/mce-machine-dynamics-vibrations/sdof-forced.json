@@ -1,0 +1,400 @@
+{
+ "lessonTitle": "Harmonic Forced Response of an SDOF System",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A lab shaker bolted to a small sensor bracket is swept slowly upward in frequency at a constant force. At low frequency the bracket barely moves, at one frequency it blurs, and above that it almost stops again. Harmonic forced response explains each stage."
+  },
+  {
+   "type": "text",
+   "markdown": "Apply a sinusoidal force $F(t)=F_0\\sin\\omega t$ (N) to a mass $m$ (kg) with spring $k$ (N/m) and viscous damper $c$ (N s/m). The equation of motion is $m\\ddot{x}+c\\dot{x}+kx=F_0\\sin\\omega t$. The transient part of the solution decays away; what remains is the **steady-state response** $x(t)=X\\sin(\\omega t-\\varphi)$ at the forcing frequency $\\omega$ (rad/s), with amplitude $X$ (m) and a phase lag $\\varphi$ behind the force. Define the frequency ratio $r=\\omega/\\omega_n$, where $\\omega_n=\\sqrt{k/m}$ (rad/s), and the damping ratio $\\zeta=c/(2\\sqrt{km})$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Dynamic magnification factor",
+   "text": "The dynamic magnification factor $M$ is the steady-state amplitude divided by the static deflection $F_0/k$ that the same force amplitude would cause if applied slowly. It is dimensionless, depends only on $r$ and $\\zeta$, and tells you how much the dynamics amplify (or reduce) the static response."
+  },
+  {
+   "type": "math",
+   "latex": "M=\\frac{X}{F_0/k}=\\frac{1}{\\sqrt{(1-r^2)^2+(2\\zeta r)^2}},\\qquad \\tan\\varphi=\\frac{2\\zeta r}{1-r^2}",
+   "caption": "Amplitude and phase of the steady-state response (phase lag of displacement behind force)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Reading the formulas.** Three regimes appear. For $r\\ll1$ the spring dominates: $M\\to1$ and the mass simply follows the force in phase ($\\varphi\\to0^\\circ$). At $r=1$ the spring force and inertia force cancel, so the damper alone balances the applied force: $M=1/(2\\zeta)$ and $\\varphi=90^\\circ$ exactly. For $r\\gg1$ inertia dominates: $M\\to1/r^2$, which is small, and the response lags by nearly $180^\\circ$, meaning the mass moves opposite to the force. For $\\zeta<1/\\sqrt2$ the maximum of $M$ occurs slightly below resonance, at $r=\\sqrt{1-2\\zeta^2}$, but for small damping this is almost $r=1$. Raising $\\zeta$ lowers $M$ at every $r$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Amplitude below resonance",
+   "prompt": "A 40 kg machine element on a spring of stiffness 64000 N/m has a damper giving a damping ratio of 0.08. A force of amplitude 500 N acts at 36 rad/s. Find the steady-state amplitude and the phase lag.",
+   "steps": [
+    {
+     "text": "Natural frequency and frequency ratio.",
+     "latex": "\\omega_n=\\sqrt{64000/40}=40.0\\ \\text{rad/s},\\quad r=36/40.0=0.900"
+    },
+    {
+     "text": "Dynamic magnification factor from the formula.",
+     "latex": "M=1/\\sqrt{(1-0.900^2)^2+(2\\times0.08\\times0.900)^2}=4.195"
+    },
+    {
+     "text": "Static deflection and amplitude.",
+     "latex": "X=M\\,F_0/k=4.195\\times500/64000=32.77\\ \\text{mm}"
+    },
+    {
+     "text": "Phase lag from the arctangent. Because r is less than 1 the denominator 1 - r^2 is positive, so the angle lies between 0 and 90 degrees.",
+     "latex": "\\varphi=\\arctan\\frac{2\\times0.08\\times0.900}{1-0.900^2}=37.2^\\circ"
+    }
+   ],
+   "answer": "X = 32.77 mm (magnification 4.19), displacement lags force by 37.2 degrees."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Regime",
+    "Frequency ratio",
+    "Magnification $M$",
+    "Phase lag $\\varphi$",
+    "Dominant term"
+   ],
+   "rows": [
+    [
+     "Below resonance",
+     "$r\\ll1$",
+     "$\\approx1$",
+     "$\\approx0^\\circ$",
+     "Stiffness"
+    ],
+    [
+     "At resonance",
+     "$r=1$",
+     "$1/(2\\zeta)$",
+     "$90^\\circ$",
+     "Damping"
+    ],
+    [
+     "Above resonance",
+     "$r\\gg1$",
+     "$\\approx1/r^2$",
+     "$\\to180^\\circ$",
+     "Inertia"
+    ]
+   ],
+   "caption": "Regimes of harmonic forced response"
+  },
+  {
+   "type": "worked_example",
+   "title": "Amplitude above resonance",
+   "prompt": "A 15 kg platform on springs totalling 135000 N/m, with damping ratio 0.05, is driven by a 60 N amplitude force at 25 Hz. Find the amplitude and phase lag.",
+   "steps": [
+    {
+     "text": "Convert the forcing frequency to rad/s and find the natural frequency.",
+     "latex": "\\omega=157.08\\ \\text{rad/s},\\ \\omega_n=\\sqrt{135000/15}=94.87\\ \\text{rad/s}"
+    },
+    {
+     "text": "Frequency ratio.",
+     "latex": "r=157.08/94.87=1.656"
+    },
+    {
+     "text": "Magnification factor. Here r exceeds 1, so (1 - r^2) is negative and is squared inside the root.",
+     "latex": "M=1/\\sqrt{(1-1.656^2)^2+(2\\times0.05\\times1.656)^2}=0.572"
+    },
+    {
+     "text": "Amplitude from the static deflection F0/k.",
+     "latex": "X=0.572\\times60/135000=0.254\\ \\text{mm}"
+    },
+    {
+     "text": "Phase: the arctangent of a positive numerator over a negative denominator lies between 90 and 180 degrees (use atan2).",
+     "latex": "\\varphi=174.6^\\circ"
+    }
+   ],
+   "answer": "X = 0.254 mm, which is below the static deflection of 0.444 mm; the lag is 174.6 degrees, close to opposition."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Compute $\\omega_n=\\sqrt{k/m}$ in rad/s and convert any forcing frequency in Hz with $\\omega=2\\pi f$.",
+    "Form $r=\\omega/\\omega_n$ and $\\zeta=c/(2\\sqrt{km})$.",
+    "Evaluate $M$, then $X=MF_0/k$.",
+    "Find $\\varphi$ with the two-argument arctangent so that it falls between $0^\\circ$ and $180^\\circ$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Resonance is damping-limited",
+   "text": "With no damping the formula predicts infinite amplitude at $r=1$. Real systems are bounded because the damper dissipates the energy the force puts in each cycle; at resonance the whole force amplitude is balanced by the damper force, $F_0=c\\omega_nX$. A response peak that looks wide and low signals heavy damping; a tall narrow one signals light damping."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Phase sign convention",
+   "text": "Here $\\varphi$ is the lag of displacement behind force: the displacement peak occurs $\\varphi/\\omega$ seconds after the force peak. Velocity leads displacement by $90^\\circ$, so at resonance the velocity is exactly in phase with the force, which is why maximum power is absorbed there."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Steady-state response to $F_0\\sin\\omega t$ is $X\\sin(\\omega t-\\varphi)$ with $X=MF_0/k$ and $M=1/\\sqrt{(1-r^2)^2+(2\\zeta r)^2}$.",
+    "At resonance $M=1/(2\\zeta)$ and the phase lag is exactly $90^\\circ$; the amplitude is limited only by damping.",
+    "Below resonance the response is in phase with the force ($\\varphi\\to0^\\circ$); above resonance it lags by nearly $180^\\circ$ and the amplitude falls as $1/r^2$.",
+    "Increasing damping reduces amplitude at every frequency ratio, with the greatest effect near resonance."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A harmonic force of constant amplitude acts at a frequency far below the natural frequency of a damped spring-mass system. The steady-state amplitude is approximately",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o2",
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "the static deflection F0/k, with the response in phase with the force"
+    },
+    {
+     "id": "b",
+     "text": "F0/(c times the forcing frequency), with a 90 degree lag"
+    },
+    {
+     "id": "c",
+     "text": "zero, because the mass cannot respond at low frequency"
+    },
+    {
+     "id": "d",
+     "text": "several times F0/k, because damping amplifies at low frequency"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "the static deflection F0/k, with the response in phase with the force",
+   "distractorRationale": {
+    "a": "Correct: For r much less than 1, the stiffness term dominates and M tends to 1, so X tends to F0/k.",
+    "b": "That is the resonant balance of force against damping, not the low-frequency limit.",
+    "c": "At low frequency the mass follows the force almost statically; it does not stay still.",
+    "d": "M tends to 1, not to a large value, when r is small."
+   },
+   "explanation": "For r much less than 1, the stiffness term dominates and M tends to 1, so X tends to F0/k. The phase lag also tends to zero, so the mass follows the force.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A system with a damping ratio of 0.1 is driven harmonically at a frequency ratio of 0.5. Find the dynamic magnification factor (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o2"
+   ],
+   "correctValue": 1.32164,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "Using M = 1/sqrt((1 - r^2)^2 + (2 zeta r)^2) with r = 0.5 and zeta = 0.1: (1 - 0.25)^2 = 0.5625 and (2 x 0.1 x 0.5)^2 = 0.01, so M = 1/sqrt(0.5725) = 1.322.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 5 kg mass sits on a spring of stiffness 20000 N/m in parallel with a viscous damper of 60 N s/m. A harmonic force of amplitude 150 N acts at 70 rad/s. Find the steady-state displacement amplitude in millimetres.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o1",
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o2"
+   ],
+   "correctValue": 24.3685,
+   "tolerance": 0.48737,
+   "unit": "mm",
+   "explanation": "omega_n = sqrt(20000/5) = 63.2 rad/s, so r = 1.107. The critical damping is 2 sqrt(km) = 632.5 N s/m, giving zeta = 0.0949. Then M = 3.249 and X = M F0/k = 24.369 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A damped spring-mass system is driven exactly at its undamped natural frequency by a force of any amplitude. The phase lag of the displacement behind the force is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0 degrees, since the system is at resonance"
+    },
+    {
+     "id": "b",
+     "text": "180 degrees, since inertia and stiffness cancel"
+    },
+    {
+     "id": "c",
+     "text": "It depends on the damping ratio, being larger for heavier damping"
+    },
+    {
+     "id": "d",
+     "text": "90 degrees, whatever the damping ratio"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "90 degrees, whatever the damping ratio",
+   "distractorRationale": {
+    "a": "The in-phase condition holds only far below resonance.",
+    "b": "The 180 degree lag is approached only far above resonance.",
+    "c": "At r = 1 the numerator is 2 zeta and the denominator 1 - r^2 is zero, so the angle is 90 degrees for every zeta.",
+    "d": "Correct: At r = 1 the denominator 1 - r^2 vanishes, so tan(phi) is infinite and phi is 90 degrees for any damping ratio."
+   },
+   "explanation": "At r = 1 the denominator 1 - r^2 vanishes, so tan(phi) is infinite and phi is 90 degrees for any damping ratio. The spring and inertia forces cancel and the damper force is in balance with the applied force.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A motor-driven table is run at a frequency about three times its natural frequency. Compared with the force, the table displacement lags by about",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o3",
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "10 degrees, so the table moves almost with the force"
+    },
+    {
+     "id": "b",
+     "text": "170 to 180 degrees, so the table moves almost opposite to the force"
+    },
+    {
+     "id": "c",
+     "text": "90 degrees, since the system is still near resonance"
+    },
+    {
+     "id": "d",
+     "text": "0 degrees, since inertia forces vanish at high speed"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "170 to 180 degrees, so the table moves almost opposite to the force",
+   "distractorRationale": {
+    "a": "That is the low-frequency behaviour, not the behaviour well above resonance.",
+    "b": "Correct: For r = 3 with light damping, (1 - r^2) = -8 is large and negative, so tan(phi) is small and negative and phi is just below 180 degrees.",
+    "c": "The 90 degree lag occurs only at r = 1.",
+    "d": "Inertia force grows as frequency squared; it dominates at high frequency."
+   },
+   "explanation": "For r = 3 with light damping, (1 - r^2) = -8 is large and negative, so tan(phi) is small and negative and phi is just below 180 degrees. Inertia dominates, so the displacement is in near-opposition to the force and the magnification is only about 1/8.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A student claims that because the formula gives infinite magnification at r = 1, a real machine on springs excited at its natural frequency will always fail catastrophically. Evaluate the claim, referring to damping, the value of the magnification and the phase at resonance.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o2",
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o3"
+   ],
+   "markingGuide": [
+    "With damping, M at r = 1 is 1/(2 zeta), which is finite",
+    "Lightly damped systems (zeta about 0.01 to 0.05) give M of 10 to 50, large but bounded",
+    "The amplitude is limited because the damper balances the force: F0 = c omega_n X at resonance",
+    "The phase lag at resonance is 90 degrees, so velocity is in phase with force and power input is a maximum",
+    "Infinite amplitude only arises in the undamped idealisation, and real systems also stop being linear at large amplitude",
+    "Whether failure occurs depends on whether the stress at amplitude M F0/k exceeds the limit, and on duration"
+   ],
+   "explanation": "Damping bounds the resonant response at 1/(2 zeta) times the static deflection. Failure depends on the resulting stress and duration rather than on the infinite value of an undamped model.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 10 kg mass on a 40000 N/m spring is driven at its undamped natural frequency by a force of amplitude 240 N. The measured steady-state amplitude is 15 mm. Assuming viscous damping, find the damper coefficient in N s/m.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o1",
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o2"
+   ],
+   "correctValue": 252.982,
+   "tolerance": 5.05964,
+   "unit": "N s/m",
+   "explanation": "The static deflection is F0/k = 6 mm, so the magnification at resonance is 15/6 = 2.5. Since M = 1/(2 zeta) at r = 1, zeta = 0.200. The damper coefficient is c = 2 zeta sqrt(km) = 253.0 N s/m.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A system has a damping ratio of 0.2. The forcing frequency that produces the largest displacement amplitude, as a fraction of the undamped natural frequency, is about",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.000"
+    },
+    {
+     "id": "b",
+     "text": "0.980"
+    },
+    {
+     "id": "c",
+     "text": "0.959"
+    },
+    {
+     "id": "d",
+     "text": "1.039"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "0.959",
+   "distractorRationale": {
+    "a": "That is the frequency of maximum response only for zero damping.",
+    "b": "That is the damped natural frequency of free vibration, which is not where forced displacement peaks.",
+    "c": "Correct: Differentiating M with respect to r shows the maximum at r = sqrt(1 - 2 zeta^2) for zeta below 0.707.",
+    "d": "The peak lies below the natural frequency, not above it."
+   },
+   "explanation": "Differentiating M with respect to r shows the maximum at r = sqrt(1 - 2 zeta^2) for zeta below 0.707. With zeta = 0.2 this is sqrt(1 - 0.08) = 0.959.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe the steady-state response of a damped spring-mass-damper system to harmonic force as the forcing frequency is swept from far below to far above the natural frequency. Include amplitude and phase in each of the three regimes, and say which element of the system dominates in each.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o1",
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o2",
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o3"
+   ],
+   "markingGuide": [
+    "Below resonance: stiffness-controlled, M tends to 1, X about F0/k, phase lag near 0 degrees",
+    "At resonance: damping-controlled, M = 1/(2 zeta), phase lag exactly 90 degrees",
+    "Above resonance: inertia-controlled, M tends to 1/r^2, amplitude falls, phase lag tends to 180 degrees",
+    "Peak amplitude occurs near r = 1 (at sqrt(1 - 2 zeta^2) for zeta < 0.707)",
+    "Phase passes through 90 degrees near resonance, more sharply for light damping",
+    "Increasing damping lowers M at every r"
+   ],
+   "explanation": "The three regimes follow from which of the stiffness, damping and inertia terms dominates the denominator of the magnification factor. The phase rises from zero through 90 degrees to nearly 180 degrees.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Increasing the damping ratio of a harmonically forced SDOF system, with force amplitude fixed, lowers the steady-state amplitude at every forcing frequency.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-forced.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "In the denominator (1 - r^2)^2 + (2 zeta r)^2, the second term grows with zeta for every r greater than 0, so M falls at all frequencies. The reduction is greatest near resonance, where the damping term is the only one remaining.",
+   "board": "internal"
+  }
+ ]
+}

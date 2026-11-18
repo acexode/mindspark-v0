@@ -1,0 +1,390 @@
+{
+ "lessonTitle": "Validation: Is the Model the Right Model?",
+ "estimatedMinutes": 38,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bracket model that passes every verification check predicts a strain of 438 microstrain where the strain gauge on the test rig reads 412. Is a difference of 6 per cent a success or a failure? The answer depends on how good the gauge is, how well the load was known and how much of the 6 per cent comes from the model itself. Validation puts numbers on that judgement."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** **Verification** asks whether the equations are solved correctly; **validation** asks whether they are the right equations: does the model, with its material, geometry and loading assumptions, predict what the real structure does? Validation therefore needs measurements. Its outcome is not a yes or a no but a quantified difference, interpreted against the uncertainty of the test and of the model inputs."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Verification and validation",
+   "text": "Verification: 'solving the equations right' (comparison with exact or benchmark solutions of the same mathematical model, mesh convergence). Validation: 'solving the right equations' (comparison of the verified model's predictions with independent physical measurements, within a stated uncertainty). Verification should be done first, because a validation difference cannot be interpreted if numerical error is unknown."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Activity",
+    "Example",
+    "Compared against",
+    "Category"
+   ],
+   "rows": [
+    [
+     "Cantilever tip deflection vs $PL^3/(3EI)$ for the idealised model",
+     "FE and beam theory share all assumptions",
+     "Analytical solution",
+     "Verification"
+    ],
+    [
+     "Halve the element size and track the peak stress",
+     "Mesh convergence study",
+     "Finer-mesh results",
+     "Verification"
+    ],
+    [
+     "Sum of reactions equals applied load",
+     "Equilibrium check",
+     "Statics",
+     "Verification"
+    ],
+    [
+     "FE strain at a gauge location vs strain-gauge reading on a loaded bracket",
+     "Does the model represent the test article?",
+     "Experiment",
+     "Validation"
+    ],
+    [
+     "Predicted first natural frequency vs impact-hammer test",
+     "Does the model represent the real stiffness and mass?",
+     "Experiment",
+     "Validation"
+    ]
+   ],
+   "caption": "Examples of verification and validation"
+  },
+  {
+   "type": "text",
+   "markdown": "**Comparing with strain-gauge data.** Strain gauges measure the strain at a point in the gauge direction. To compare, extract the FE strain at the same location, in the same direction, averaged over the gauge area (a gauge covers a few millimetres, not a node). Use the same load, which should be measured by a load cell. Tabulate the **difference** $\\Delta=\\varepsilon_{FE}-\\varepsilon_{test}$ and the **relative difference** $\\Delta/\\varepsilon_{test}$ for each gauge. A summary statistic is the **root-mean-square error** $\\sqrt{\\tfrac1n\\sum\\Delta_i^2}$, and the slope of a regression line of $\\varepsilon_{FE}$ against $\\varepsilon_{test}$ (forced through the origin) tells you whether the model is systematically too stiff (slope below 1) or too flexible (slope above 1)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparing four strain gauges",
+   "prompt": "A bracket is loaded by a measured 10.0 kN and four gauges give strains of 412, 365, 288 and 190 microstrain ($\\mu\\varepsilon$). The verified FE model at the same load predicts 438, 351, 301 and 205 $\\mu\\varepsilon$ at the gauge positions. Quantify the agreement.",
+   "steps": [
+    {
+     "text": "Differences $\\Delta=\\varepsilon_{FE}-\\varepsilon_{test}$ (microstrain).",
+     "latex": "\\Delta=26,\\ -14,\\ 13,\\ 15\\ \\mu\\varepsilon"
+    },
+    {
+     "text": "Relative differences $\\Delta/\\varepsilon_{test}$.",
+     "latex": "6.3\\%,\\ -3.8\\%,\\ 4.5\\%,\\ 7.9\\%"
+    },
+    {
+     "text": "Root-mean-square error and its value as a percentage of the mean test strain ($\\bar\\varepsilon_{test}=313.75\\ \\mu\\varepsilon$).",
+     "latex": "\\text{RMS}=\\sqrt{\\frac{\\sum\\Delta^2}{4}}=17.8\\ \\mu\\varepsilon=5.7\\%"
+    },
+    {
+     "text": "Regression slope through the origin: $\\sum\\varepsilon_{test}\\varepsilon_{FE}/\\sum\\varepsilon_{test}^2$.",
+     "latex": "\\text{slope}=1.029"
+    }
+   ],
+   "answer": "Differences range from -3.8 to +7.9 per cent with an RMS error of 5.7 per cent of the mean strain, and the slope of 1.029 shows the model predicts slightly higher strains overall. Three of the four gauges are over-predicted, which suggests a systematic cause, not random scatter."
+  },
+  {
+   "type": "text",
+   "markdown": "**Interpreting the difference.** A difference is meaningful only relative to the uncertainty of the comparison. Typical independent contributions are the gauge and amplifier calibration, the load measurement, the knowledge of the modulus, and the numerical (discretisation) error from the verification study. If they are independent, the **combined standard uncertainty** is the root-sum-square, $u=\\sqrt{\\sum u_i^2}$. The model is considered consistent with the experiment at a gauge when $|\\Delta|/\\varepsilon_{test}$ is no larger than a multiple (often 1 to 2) of $u$, otherwise the model, or the test, needs further investigation."
+  },
+  {
+   "type": "worked_example",
+   "title": "Uncertainty budget",
+   "prompt": "For the four-gauge comparison, the standard uncertainties are: strain gauge and acquisition 2.0 per cent, load measurement 1.0 per cent, Young's modulus of the material 3.0 per cent, discretisation error from the mesh study 1.5 per cent. Decide at which gauges the model agrees with the test within the combined uncertainty.",
+   "steps": [
+    {
+     "text": "Combine the independent contributions by root-sum-square.",
+     "latex": "u=\\sqrt{2.0^2+1.0^2+3.0^2+1.5^2}=\\sqrt{16.25}=4.03\\%"
+    },
+    {
+     "text": "Compare each relative difference with $u$.",
+     "latex": "|{6.3}|,\\ |{-3.8}|,\\ |{4.5}|,\\ |{7.9}|\\ \\text{vs}\\ 4.0\\%"
+    },
+    {
+     "text": "Gauge 2 (3.8 per cent) lies within $u$; gauge 3 (4.5 per cent) is slightly outside $u$ but inside $1.5u$; gauges 1 and 4 (6.3 and 7.9 per cent) exceed even $1.5u$.",
+     "latex": "1.5u=6.0\\%"
+    }
+   ],
+   "answer": "Only gauge 2 is within the combined uncertainty of 4.0 per cent, so the model is not validated at the stated level. The over-prediction at three gauges points to a systematic modelling issue (for example, boundary-condition stiffness, load introduction or thickness) that should be investigated before claiming agreement."
+  },
+  {
+   "type": "text",
+   "markdown": "**Assumptions that most limit validity.** A model is valid only within the assumptions on which it is built. The three groups that usually matter most are: **material** (the elastic modulus and yield strength of the actual batch differ from handbook values by several per cent; non-linearity, plasticity, anisotropy, residual stress, temperature dependence), **geometry** (as-built dimensions and tolerances, welds, fillet radii, holes and surface condition are idealised; the CAD model is not the part) and **loading and boundary conditions** (the real load path, bolt preload, friction, support flexibility and the point of load application differ from a perfect pin or clamp). In practice the boundary conditions are often the largest source of disagreement."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Do verification first: a validation difference is uninterpretable if numerical error is unknown.",
+    "Compare like with like: same load, same location, same direction, same averaging area as the gauge.",
+    "Use data not used to tune the model; if you adjust a parameter (for example stiffness of a support) to fit the test, you need a second test to validate.",
+    "Report the difference with an uncertainty, and state the range of conditions over which the model is validated."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Validation is for a purpose",
+   "text": "A model is validated for an intended use. A model that predicts strains within 5 per cent at the working load may still be invalid for predicting failure, where plasticity, damage or contact change the physics. State the domain of validity with the result."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Tuning is not validating",
+   "text": "Adjusting E, a support stiffness or a friction coefficient until the FE strains match the test makes the model fit that test, but proves nothing about prediction. Use the tuned model on an independent load case to see whether it validates."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Verification asks whether the equations are solved right; validation asks whether they are the right equations, by comparing with independent measurements.",
+    "Compare FE strains with gauge readings at the same location, direction and load, and quantify the agreement with relative differences, RMS error and regression slope.",
+    "Interpret differences against the combined uncertainty (root-sum-square of independent contributions) and examine the material, geometry and loading assumptions that most limit validity."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which activity is validation rather than verification?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Comparing the predicted first natural frequency of a machine frame with an impact-hammer measurement on the real frame"
+    },
+    {
+     "id": "b",
+     "text": "Checking that the reactions balance the applied loads"
+    },
+    {
+     "id": "c",
+     "text": "Halving the element size to see if the peak stress changes"
+    },
+    {
+     "id": "d",
+     "text": "Comparing an FE cantilever deflection with $PL^3/(3EI)$ for the same idealised cantilever"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Comparing the predicted first natural frequency of a machine frame with an impact-hammer measurement on the real frame",
+   "distractorRationale": {
+    "b": "This tests whether equations are solved correctly (equilibrium), which is verification.",
+    "c": "This is a mesh convergence study, a verification activity.",
+    "d": "This compares with an exact solution of the same model, i.e. verification."
+   },
+   "explanation": "Validation requires independent physical data, here a measured natural frequency, to test whether the assumptions about stiffness, mass and supports represent the real frame. The other options compare the numerical solution with mathematics, not reality.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why should verification be completed before validation?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A validation difference cannot be interpreted unless the numerical error of the model is known"
+    },
+    {
+     "id": "b",
+     "text": "Validation is cheaper than verification"
+    },
+    {
+     "id": "c",
+     "text": "Verification replaces the need for experiments"
+    },
+    {
+     "id": "d",
+     "text": "Validation data are only available after the model has converged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A validation difference cannot be interpreted unless the numerical error of the model is known",
+   "distractorRationale": {
+    "b": "Cost is not the logic; validation needs physical tests, which are usually more expensive.",
+    "c": "Verification cannot replace experiments; it tests numerics, not reality.",
+    "d": "The availability of validation data is unrelated to the convergence of the model."
+   },
+   "explanation": "Unknown discretisation or solver error confounds the comparison with experiment. Verifying first isolates the modelling assumptions as the remaining source of any difference.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The relative differences between FE and test strains at six gauges are all between +4 and +6 per cent, with a combined uncertainty of 2 per cent. What is the most reasonable conclusion?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A systematic discrepancy exists and should be investigated (for example modulus, boundary conditions or load introduction)"
+    },
+    {
+     "id": "b",
+     "text": "The differences are random scatter and can be ignored"
+    },
+    {
+     "id": "c",
+     "text": "The model is validated because all differences are below 10 per cent"
+    },
+    {
+     "id": "d",
+     "text": "The strain gauges must be faulty"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A systematic discrepancy exists and should be investigated (for example modulus, boundary conditions or load introduction)",
+   "distractorRationale": {
+    "b": "Random scatter would show both signs; all differences share one sign and exceed $u$.",
+    "c": "A fixed 10 per cent limit is not the criterion; the comparison must use the uncertainty of the data.",
+    "d": "Gauge faults would have to affect all gauges in the same direction, which is unlikely; first check the model assumptions and the load."
+   },
+   "explanation": "Random errors average out across gauges, whereas a common bias suggests a model assumption (stiffness of the supports, material modulus, the way the load is applied) is off. The differences, at two to three times the combined uncertainty, are too big to attribute to measurement noise.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which assumption group is usually the largest source of disagreement between a bracket model and a bolted test rig?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Boundary conditions and load introduction, such as bolt preload, support stiffness and friction"
+    },
+    {
+     "id": "b",
+     "text": "The number of significant figures in the output file"
+    },
+    {
+     "id": "c",
+     "text": "The colour map used in the post-processor"
+    },
+    {
+     "id": "d",
+     "text": "The brand of the solver"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Boundary conditions and load introduction, such as bolt preload, support stiffness and friction",
+   "distractorRationale": {
+    "b": "Output precision is not a modelling assumption.",
+    "c": "Post-processing colours do not change the solution.",
+    "d": "Different solvers give the same answer for the same verified model."
+   },
+   "explanation": "Idealised pins and clamps seldom match real fixtures. Bolt preload, contact and compliance in the rig alter the load path and therefore the strains, so boundary conditions are a prime suspect when predictions differ from measurements.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "If the parameters of a model are adjusted until it reproduces one test result, the model has been validated by that test.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Tuning forces agreement with the data used, so that test can no longer discriminate between a correct and an incorrect model. Validation requires comparison with independent data, for example a different load case, after the adjustment.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "At a gauge location the test strain is 524 microstrain and the FE strain at the same load is 497 microstrain. Compute the relative difference $(\\varepsilon_{FE}-\\varepsilon_{test})/\\varepsilon_{test}$ as a percentage.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o2"
+   ],
+   "correctValue": -5.152671755725191,
+   "tolerance": 0.05,
+   "unit": "percent",
+   "explanation": "The difference is $497-524=-27$ microstrain, so the relative difference is $-27/524=-0.0515$, i.e. -5.15 per cent. The negative sign means the FE model under-predicts the measured strain.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The standard uncertainties in a strain comparison are 2.5 per cent (gauge), 1.5 per cent (load cell) and 2.0 per cent (modulus). Assuming they are independent, compute the combined standard uncertainty by root-sum-square, in per cent.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o2"
+   ],
+   "correctValue": 3.5355339059327378,
+   "tolerance": 0.02,
+   "unit": "percent",
+   "explanation": "$u=\\sqrt{2.5^2+1.5^2+2.0^2}=\\sqrt{6.25+2.25+4.00}=\\sqrt{12.5}=3.54$ per cent. Independent uncertainties add in quadrature, not linearly: simple addition would give 6.0 per cent.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The FE model gives a uniaxial stress of 85 MPa at a gauge location in a steel part ($E=205$ GPa). Compute the strain that the gauge should read for comparison, in microstrain.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o2"
+   ],
+   "correctValue": 414.6341463414634,
+   "tolerance": 1.0,
+   "unit": "microstrain",
+   "explanation": "The strain is $\\sigma/E=85/205\\,000=0.0004146$, i.e. 414.6 microstrain. Comparing strain with strain avoids the extra uncertainty of converting the measured strain to stress through an assumed modulus.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Distinguish verification from validation and give one example of each for a pressure-vessel nozzle model.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o1"
+   ],
+   "markingGuide": [
+    "Verification: solving the equations correctly (comparison with exact solutions of the same model, equilibrium, mesh convergence)",
+    "Validation: comparing the model with independent physical measurements to see whether the model is the right one",
+    "Example verification: mesh convergence of the peak nozzle stress, or comparing a simplified geometry with a closed-form solution",
+    "Example validation: comparing predicted strains with strain gauges at the nozzle during a hydrostatic test",
+    "Verification should precede validation; a verified model can still be invalid"
+   ],
+   "explanation": "The two activities answer different questions: numerical correctness versus physical fidelity. A mesh study can show the stress is converged, but only a measurement can show that the assumed boundary conditions and material model represent the real vessel.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A validation test on a bolted bracket shows FE strains 5 to 8 per cent above measured strains at three of four gauges, with a combined uncertainty of 4 per cent. Describe how you would investigate the discrepancy, naming specific assumptions about material, geometry and loading that you would examine.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o2",
+    "ug.mce-computational-methods-fea.verification-and-validation.validation-methods.o3"
+   ],
+   "markingGuide": [
+    "Confirm verification status (mesh independence, reactions) so the difference is not numerical",
+    "Material: measure or obtain batch-specific $E$; check plasticity or nonlinearity at the test load",
+    "Geometry: measure as-built dimensions (thickness, fillet radius), gauge position and orientation, weld or hole details",
+    "Loading and boundary conditions: load introduction point and direction, bolt preload, friction and support flexibility, and whether the test load was measured accurately",
+    "Update the model with the measured data (not just tuning), and validate on an independent load case"
+   ],
+   "explanation": "A common-sign difference larger than the uncertainty indicates a systematic modelling difference. The investigation should proceed from the cheapest checks (gauge location and load) to the more detailed ones (material and boundary conditions), updating inputs with measurements rather than tuning to fit.",
+   "board": "internal"
+  }
+ ]
+}

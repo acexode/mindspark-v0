@@ -1,0 +1,405 @@
+{
+ "lessonTitle": "Beam Element Formulation: Hermite Shape Functions and the Cantilever",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A robot arm link, a machine-tool spindle and a bicycle fork all carry load mainly by bending, and a bar element cannot represent that: it has no way to describe a rotating cross-section. The beam element adds the slope at each node as an unknown, and with only two elements it reproduces the textbook cantilever deflection of $PL^3/(3EI)$ exactly."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** In Euler-Bernoulli beam theory plane sections stay plane and perpendicular to the neutral axis, so the slope of the deflection curve equals the section rotation: $\\theta=\\mathrm{d}v/\\mathrm{d}x$. The curvature is $v''$ and the bending moment is $M=EIv''$, with $E$ the Young's modulus (Pa) and $I$ the second moment of area (m$^4$). Because the strain energy contains $v''$ squared, the displacement field must have continuous *slope* as well as continuous deflection between elements."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Degrees of freedom of the two-node beam element",
+   "text": "Each node has two DOFs: the transverse deflection $v$ (m) and the rotation $\\theta=\\mathrm{d}v/\\mathrm{d}x$ (rad). The element has four DOFs, ordered $\\mathbf{u}=\\{v_1,\\ \\theta_1,\\ v_2,\\ \\theta_2\\}^T$, with matching nodal loads: transverse forces and moments $\\{F_1,\\ M_1,\\ F_2,\\ M_2\\}^T$. Axial deformation is ignored (pure bending, small deflections)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Interpolation.** Four nodal quantities determine a cubic polynomial $v(x)=a_0+a_1x+a_2x^2+a_3x^3$ uniquely. Solving for the coefficients in terms of the nodal values, with $\\xi=x/L$ and element length $L$, gives the **Hermite cubic shape functions**: the weights that multiply each nodal DOF."
+  },
+  {
+   "type": "math",
+   "latex": "v(x)=N_1v_1+N_2\\theta_1+N_3v_2+N_4\\theta_2,\\quad N_1=1-3\\xi^2+2\\xi^3,\\ N_2=L(\\xi-2\\xi^2+\\xi^3),\\ N_3=3\\xi^2-2\\xi^3,\\ N_4=L(-\\xi^2+\\xi^3)",
+   "caption": "Hermite shape functions, $\\xi=x/L$"
+  },
+  {
+   "type": "text",
+   "markdown": "Check the properties: $N_1=1$ and $N_3=0$ at node 1 ($\\xi=0$), and the reverse at node 2, so deflection is interpolated at the nodes. $N_2$ and $N_4$ vanish at both nodes and have unit slope at node 1 and node 2 respectively, so they carry the rotation DOFs. $N_1+N_3=1$ for all $\\xi$, so a rigid-body translation is reproduced exactly."
+  },
+  {
+   "type": "worked_example",
+   "title": "Deflection inside an element",
+   "prompt": "An element of length $L=0.50$ m has nodal values $v_1=0$, $\\theta_1=0$, $v_2=4.0$ mm and $\\theta_2=0.012$ rad. Find the deflection at mid-length.",
+   "steps": [
+    {
+     "text": "At mid-length $\\xi=0.5$. Evaluate the four shape functions.",
+     "latex": "N_1=0.5000,\\ N_2=0.0625\\,\\text{m},\\ N_3=0.5000,\\ N_4=-0.0625\\,\\text{m}"
+    },
+    {
+     "text": "Because $v_1=\\theta_1=0$ only $N_3$ and $N_4$ contribute. Work in mm: $v_2=4.0$ mm.",
+     "latex": "v=N_3v_2+N_4\\theta_2=(0.5000)(4.0\\ \\text{mm})+(-0.0625\\ \\text{m})(0.012\\ \\text{rad})"
+    },
+    {
+     "text": "Evaluate each term: the first is 2.0 mm; the second is $(-0.0625\\ \\text{m})(0.012\\ \\text{rad})=-0.75\\times10^{-3}$ m = $-0.75$ mm.",
+     "latex": "v=2.000-0.750=1.250\\ \\text{mm}"
+    }
+   ],
+   "answer": "$v(L/2)=1.25$ mm. The end slope 0.012 rad is steeper than the chord slope $4.0/500=0.008$ rad, so the curve lies below the straight-line value of 2.0 mm at mid-length."
+  },
+  {
+   "type": "text",
+   "markdown": "**Element stiffness matrix.** Substituting $v''$ from the shape functions into $k_{ij}=\\int_0^L EI\\,N_i''N_j''\\,\\mathrm{d}x$ gives the symmetric matrix below, for constant $EI$. Its entries are forces or moments for unit displacements or rotations: for example $4EI/L$ is the moment needed at node 1 per unit rotation at node 1 with the far node clamped, and $2EI/L$ is the moment carried over to the clamped far node (carry-over factor one half)."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{k}=\\frac{EI}{L^3}\\begin{bmatrix}12&6L&-12&6L\\\\6L&4L^2&-6L&2L^2\\\\-12&-6L&12&-6L\\\\6L&2L^2&-6L&4L^2\\end{bmatrix}",
+   "caption": "Euler-Bernoulli beam element stiffness matrix"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Element",
+    "DOFs per node",
+    "Nodal unknowns",
+    "Interpolation",
+    "Continuity between elements"
+   ],
+   "rows": [
+    [
+     "Bar",
+     "1",
+     "$u$",
+     "Linear",
+     "$C^0$ (displacement)"
+    ],
+    [
+     "2D truss",
+     "2",
+     "$u,v$",
+     "Linear along the axis",
+     "$C^0$"
+    ],
+    [
+     "Euler-Bernoulli beam",
+     "2",
+     "$v,\\theta$",
+     "Cubic (Hermite)",
+     "$C^1$ (deflection and slope)"
+    ]
+   ],
+   "caption": "Comparison of simple line elements"
+  },
+  {
+   "type": "worked_example",
+   "title": "Two-element cantilever",
+   "prompt": "A steel cantilever of total length $1.2$ m is modelled with two equal elements ($L_e=0.6$ m). $E=200$ GPa, $I=1.6\\times10^{-6}$ m$^4$, so $EI=3.2\\times10^{5}$ N m$^2$. A tip load $P=2000$ N acts downward at the free end. Find the tip deflection and compare it with $PL^3/(3EI)$.",
+   "steps": [
+    {
+     "text": "Each element has $EI/L_e^3=3.2\\times10^{5}/0.216=1.4815\\times10^{6}$ N/m times the template matrix. Assemble the $6\\times6$ global matrix with DOFs $(v_1,\\theta_1,v_2,\\theta_2,v_3,\\theta_3)$; the entries at node 2 are summed from both elements.",
+     "latex": "K_{33}=\\frac{EI}{L_e^3}(12+12),\\quad K_{44}=\\frac{EI}{L_e^3}\\,(4+4)L_e^2"
+    },
+    {
+     "text": "Clamp node 1: $v_1=\\theta_1=0$, delete rows and columns 1 and 2. The reduced matrix, in units of $EI/L_e^3$ with $L_e=0.6$ m inserted into the $6L$ and $L^2$ entries, is:",
+     "latex": "\\mathbf{K}_{ff}=\\frac{EI}{L_e^3}\\begin{bmatrix}24.000&0.000&-12.000&3.600\\\\0.000&2.880&-3.600&0.720\\\\-12.000&-3.600&12.000&-3.600\\\\3.600&0.720&-3.600&1.440\\end{bmatrix}"
+    },
+    {
+     "text": "Load vector for $(v_2,\\theta_2,v_3,\\theta_3)$: only the tip force acts, $\\{0,\\ 0,\\ -2000,\\ 0\\}$ (N, N m). Solve by Gauss elimination.",
+     "latex": "\\mathbf{u}=\\{-0.001125\\ \\text{m},\\ -0.003375\\ \\text{rad},\\ -0.003600\\ \\text{m},\\ -0.004500\\ \\text{rad}\\}"
+    },
+    {
+     "text": "Exact (Euler-Bernoulli) tip deflection.",
+     "latex": "v_{\\text{tip}}=-\\frac{PL^3}{3EI}=-\\frac{(2000)(1.2)^3}{3(3.2\\times10^{5})}=-0.003600\\ \\text{m}"
+    }
+   ],
+   "answer": "The tip deflection is $-3.600$ mm, identical to the exact -3.600 mm. The match is exact because the cubic shape functions can represent the exact cubic deflection of a cantilever with a tip load."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Beam elements use two DOFs per node; a cantilever clamp removes both $v$ and $\\theta$ at the root.",
+    "The Hermite shape functions give continuity of deflection and slope between elements ($C^1$).",
+    "The stiffness matrix is symmetric and singular until at least two constraints (translation and rotation) are applied.",
+    "Nodal moments and forces are in N m and N, rotations in rad, deflections in m: keep SI throughout."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Units of the rotation columns",
+   "text": "The columns multiplying $\\theta$ have units of length times those of $v$, so mixed entries such as $6L$ and $4L^2$ are not typos. Mixing mm for $L$ and N m for moments is the usual source of results that are wrong by powers of 10."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why a cubic?",
+   "text": "Four DOFs fix four polynomial coefficients. A cubic can reproduce rigid translation, rigid rotation and constant curvature (pure bending), and it is the exact solution of $EIv''''=0$, i.e. a beam with loads only at nodes. That is why few elements suffice for nodal loads."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The two-node Euler-Bernoulli beam element has four DOFs $(v_1,\\theta_1,v_2,\\theta_2)$ and a cubic displacement field interpolated by Hermite shape functions.",
+    "Its $4\\times4$ stiffness matrix is $(EI/L^3)$ times the pattern with entries $12$, $6L$, $4L^2$, $2L^2$; assembling elements sums contributions at shared nodes.",
+    "A cantilever with a tip load is reproduced exactly by two elements once the root deflection and rotation are clamped and the reduced system is solved."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A beam model has 3 two-node Euler-Bernoulli elements in a chain, giving 4 nodes, and the left end is clamped. How many unknown nodal DOFs remain to be solved?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o1",
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "6"
+    },
+    {
+     "id": "b",
+     "text": "8"
+    },
+    {
+     "id": "c",
+     "text": "4"
+    },
+    {
+     "id": "d",
+     "text": "3"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "6",
+   "distractorRationale": {
+    "b": "This is the total before constraints are removed.",
+    "c": "Counts one DOF per node, which is the bar-element count.",
+    "d": "Counts the elements, not the DOFs."
+   },
+   "explanation": "Each node carries a deflection and a rotation, so four nodes give eight DOFs. The clamp fixes both at node 1, leaving $8-2=6$ unknowns.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "At node 1 ($\\xi=0$) which pair of values describes the cubic shape function $N_2=L(\\xi-2\\xi^2+\\xi^3)$ and its slope with respect to $x$?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$N_2=0$ and slope $1$"
+    },
+    {
+     "id": "b",
+     "text": "$N_2=1$ and slope $0$"
+    },
+    {
+     "id": "c",
+     "text": "$N_2=0$ and slope $0$"
+    },
+    {
+     "id": "d",
+     "text": "$N_2=L$ and slope $1$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$N_2=0$ and slope $1$",
+   "distractorRationale": {
+    "b": "That describes $N_1$, which multiplies the deflection $v_1$.",
+    "c": "This describes neither function at node 1; $N_2$ must have unit slope so that it can represent a rotation of the node.",
+    "d": "$N_2$ vanishes at the node, and $L$ is a length scale, not a value of the function."
+   },
+   "explanation": "The rotation shape function must leave the deflection at the node unchanged (zero value) but produce slope $\\theta_1$, so its slope at node 1 is one. Differentiating, $\\mathrm{d}N_2/\\mathrm{d}\\xi=L(1-4\\xi+3\\xi^2)=L$ at $\\xi=0$, and dividing by $L$ gives unit slope with respect to $x$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does the beam element need rotations as nodal DOFs, unlike the bar element?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The energy involves the second derivative of deflection, so slope as well as deflection must be continuous between elements"
+    },
+    {
+     "id": "b",
+     "text": "Because beams are always loaded by moments at the nodes"
+    },
+    {
+     "id": "c",
+     "text": "Because the cubic polynomial has exactly four nodes"
+    },
+    {
+     "id": "d",
+     "text": "Because rotations are needed to make the stiffness matrix symmetric"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The energy involves the second derivative of deflection, so slope as well as deflection must be continuous between elements",
+   "distractorRationale": {
+    "b": "Beam elements work equally with pure transverse loads; moments at nodes are not required.",
+    "c": "The element has two nodes; four is the number of DOFs and polynomial coefficients.",
+    "d": "Symmetry follows from the energy form and does not depend on having rotation DOFs."
+   },
+   "explanation": "Because the curvature $v''$ appears in the energy, jumps in slope between neighbouring elements would give infinite curvature at the node. Using slope as a nodal DOF and sharing it between elements enforces $C^1$ continuity.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A two-node beam element of length $L$ has its far node clamped. A unit rotation is imposed at the near node while the near deflection is held at zero. Which moments act at the near and far node?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$4EI/L$ at the near node and $2EI/L$ at the far node"
+    },
+    {
+     "id": "b",
+     "text": "$2EI/L$ at the near node and $4EI/L$ at the far node"
+    },
+    {
+     "id": "c",
+     "text": "$6EI/L^2$ at both nodes"
+    },
+    {
+     "id": "d",
+     "text": "$12EI/L^3$ at the near node and zero at the far node"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$4EI/L$ at the near node and $2EI/L$ at the far node",
+   "distractorRationale": {
+    "b": "The two moments are reversed; the loaded node always needs the larger moment.",
+    "c": "$6EI/L^2$ is the shear-rotation coupling term for forces, not the moment pair.",
+    "d": "$12EI/L^3$ is the transverse force stiffness, which does not apply to a pure rotation."
+   },
+   "explanation": "Column 2 of the stiffness matrix is the force pattern for $\\theta_1=1$: shear $6EI/L^2$, moment $4EI/L$ at the near node, shear $-6EI/L^2$ and moment $2EI/L$ at the far node. The far-node moment is half the near-node moment, the classical carry-over factor.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An element of length $0.40$ m has nodal values $v_1=1.0$ mm, $\\theta_1=0.002$ rad, $v_2=3.0$ mm and $\\theta_2=-0.001$ rad. Evaluating the Hermite interpolation at mid-length, what is the deflection?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2.15 mm"
+    },
+    {
+     "id": "b",
+     "text": "2.00 mm"
+    },
+    {
+     "id": "c",
+     "text": "2.05 mm"
+    },
+    {
+     "id": "d",
+     "text": "2.10 mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "2.15 mm",
+   "distractorRationale": {
+    "b": "This is the straight-line average of the end deflections and ignores the end rotations.",
+    "c": "Reverses the sign of the $\\theta_2$ contribution (0.10 - 0.05), so the result is too low.",
+    "d": "Includes the effect of $\\theta_1$ but forgets that of $\\theta_2$."
+   },
+   "explanation": "At $\\xi=0.5$: $N_1=N_3=0.5$, $N_2=L/8=0.05$ m and $N_4=-L/8=-0.05$ m. Then $v=0.5(1.0)+(0.05)(0.002)(1000)+0.5(3.0)+(-0.05)(-0.001)(1000)=0.5+0.1+1.5+0.05=2.15$ mm, so the correct total is 2.15 mm; the rotations add 0.15 mm to the average of 2.0 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "For a two-node beam element with $E=70$ GPa, $I=2.0\\times10^{-7}$ m$^4$ and $L=0.80$ m, compute the stiffness entry $k_{12}=6EI/L^2$ (force at node 1 per unit rotation at node 1) in kN per rad.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o1"
+   ],
+   "correctValue": 131.24999999999997,
+   "tolerance": 0.5,
+   "unit": "kN/rad",
+   "explanation": "With $EI=70\\times10^9\\times2.0\\times10^-7=14\\,000$ N m$^2$, the entry is $6(14\\,000)/0.64=131\\,250$ N/rad = 131.25 kN/rad. It is the shear force needed at node 1 to hold zero deflection while a unit rotation is imposed there.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A single beam element of length $L=0.50$ m has $v_1=1.0$ mm, $\\theta_1=0$, $v_2=5.0$ mm and $\\theta_2=0$. Using the Hermite shape functions, find the deflection at $x=L/4$ in mm.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o2"
+   ],
+   "correctValue": 1.625,
+   "tolerance": 0.005,
+   "unit": "mm",
+   "explanation": "At $\\xi=0.25$: $N_1=1-3(0.0625)+2(0.015625)=0.84375$ and $N_3=3(0.0625)-2(0.015625)=0.15625$, so $v=0.84375(1.0)+0.15625(5.0)=1.6250$ mm. With zero end rotations the cubic is an S-curve, so this differs from the straight-line value 2.0 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cantilever of length 2.0 m with $EI=5.0\\times10^{4}$ N m$^2$ carries a 500 N tip load. It is modelled with two equal beam elements, clamped at one end. Give the magnitude of the computed tip deflection in mm.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o3"
+   ],
+   "correctValue": 26.666666666666668,
+   "tolerance": 0.1,
+   "unit": "mm",
+   "explanation": "Cubic Hermite elements reproduce the exact cantilever solution for a nodal tip load, so the FE result equals $PL^3/(3EI)=500(8)/(3\\times5.0\\times10^4)=0.02667$ m = 26.67 mm. The result would be the same with one element or ten.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the two-node Euler-Bernoulli beam element uses a cubic interpolation of the deflection, and show how the shape function for $\\theta_1$ is constrained at the two nodes.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o1",
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o2"
+   ],
+   "markingGuide": [
+    "Four nodal DOFs $(v_1,\\theta_1,v_2,\\theta_2)$ require four polynomial coefficients: a cubic",
+    "The nodal values of $v$ and $v'=\\theta$ are imposed as four conditions at $x=0$ and $x=L$",
+    "$N_2$ is zero at both nodes, has unit slope at node 1 and zero slope at node 2",
+    "Cubic reproduces rigid motion and constant curvature and gives continuity of $v$ and $v'$ between elements"
+   ],
+   "explanation": "The number of nodal DOFs fixes the polynomial order, and the Hermite conditions make each shape function equal one DOF's unit value while the other three are zero. This gives the $C^1$ continuity needed for the curvature-based energy.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe, in order, how you would assemble and solve a two-element cantilever beam model with a transverse tip load, and state what you would check on the result.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.beam-elements.beam-element-formulation.o3"
+   ],
+   "markingGuide": [
+    "Compute the element matrices $(EI/L^3)[\\ldots]$ with element length and $EI$ in SI units",
+    "Assemble the $6\\times6$ global matrix summing the contributions at the shared middle node",
+    "Apply the clamp at the root: delete the $v$ and $\\theta$ rows and columns",
+    "Form the load vector (tip force at the $v$ DOF of the free node) and solve the $4\\times4$ system",
+    "Recover deflections and rotations; check the tip deflection against $PL^3/(3EI)$ and the reaction force and moment against statics"
+   ],
+   "explanation": "The procedure is the same as for bars but with two DOFs per node, so the unknowns are deflections and rotations. For a nodal tip load the FE tip deflection is the exact value, which makes the check a strong test of the assembly, the units and the boundary conditions.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,419 @@
+{
+ "lessonTitle": "Bode Plots: Asymptotic Sketching and Resonant Peaks",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A technician bolts an accelerometer to a pump housing and sweeps a shaker from 1 Hz to 1 kHz. The recorded gain is plotted not on a linear axis but in decibels against frequency on a logarithmic axis, because on that picture the response of a whole chain of filters, structures and sensors becomes a sum of straight-line segments she can sketch by hand in a minute."
+  },
+  {
+   "type": "text",
+   "markdown": "A **Bode plot** has two panels that share a logarithmic frequency axis (rad/s, or Hz if stated). The upper panel shows magnitude $|G(j\\omega)|$ in decibels; the lower panel shows phase $\\angle G(j\\omega)$ in degrees. The log axis turns products of factors into sums, and the decibel turns products of magnitudes into sums of dB values. We study only linear time-invariant systems with the steady-state sinusoidal response $G(j\\omega)$ obtained by replacing $s$ by $j\\omega$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Decibel",
+   "text": "The gain of a transfer function in decibels is $|G|_{\\text{dB}}=20\\log_{10}|G(j\\omega)|$. The factor 20 (not 10) is used because $|G|$ is an amplitude ratio, and power goes as amplitude squared. A decade is a factor of 10 in frequency; an octave is a factor of 2."
+  },
+  {
+   "type": "math",
+   "latex": "|G|_{\\text{dB}}=20\\log_{10}|G|,\\qquad |G|=10^{|G|_{\\text{dB}}/20}",
+   "caption": "Conversion both ways. A linear gain of 2 is 6.02 dB; 10 is 20 dB; 0.1 is -20 dB; 1 is 0 dB; $1/\\sqrt{2}$ is -3.01 dB."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Linear gain",
+    "Decibels",
+    "Comment"
+   ],
+   "rows": [
+    [
+     "$0.1$",
+     "$-20$ dB",
+     "One decade down"
+    ],
+    [
+     "$0.5$",
+     "$-6.02$ dB",
+     "Halving the amplitude"
+    ],
+    [
+     "$0.707\\ (1/\\sqrt2)$",
+     "$-3.01$ dB",
+     "Half-power point, corner frequency of a first-order lag"
+    ],
+    [
+     "$1$",
+     "$0$ dB",
+     "Output amplitude equals input amplitude"
+    ],
+    [
+     "$2$",
+     "$6.02$ dB",
+     "Doubling the amplitude"
+    ],
+    [
+     "$10$",
+     "$20$ dB",
+     "One decade up"
+    ],
+    [
+     "$100$",
+     "$40$ dB",
+     "Two decades up"
+    ]
+   ],
+   "caption": "Decibel landmarks (20 log10 of the amplitude ratio)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Asymptotic rules for simple factors.** Write the transfer function in time-constant form, $G(s)=K\\prod(1+s/z_i)/\\prod(1+s/p_i)$, with corner (break) frequencies $p_i$ and $z_i$ in rad/s. The magnitude is $20\\log_{10}K$ at low frequency. Each simple pole $1/(1+s/p)$ bends the magnitude line down by 20 dB per decade at $\\omega=p$, and its phase moves from $0^\\circ$ through $-45^\\circ$ at $\\omega=p$ to $-90^\\circ$. A simple zero does the opposite. Asymptotes are exact far from the corners and at the corner the true curve is 3 dB below the asymptotes for a single pole."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{first-order pole: }\\;|G|_{\\text{dB}}=-10\\log_{10}\\!\\left[1+\\left(\\frac{\\omega}{p}\\right)^{2}\\right],\\qquad \\angle G=-\\tan^{-1}(\\omega/p)",
+   "caption": "Exact magnitude and phase of a first-order lag."
+  },
+  {
+   "type": "worked_example",
+   "title": "Two simple poles",
+   "prompt": "Sketch the asymptotic Bode magnitude and phase for $G(s)=\\dfrac{20}{(1+s/2)(1+s/50)}$ with $\\omega$ in rad/s. Find the dB value of the asymptotes at $\\omega=500$ rad/s.",
+   "steps": [
+    {
+     "text": "Low-frequency gain: $K=20$, so the line starts flat at $20\\log_{10}20=26.02$ dB (slope 0 dB/dec).",
+     "latex": "20\\log_{10}20=26.02\\ \\text{dB}"
+    },
+    {
+     "text": "First corner at $\\omega=2$ rad/s: slope becomes $-20$ dB/dec. At $\\omega=50$ rad/s the asymptote has fallen by $20\\log_{10}(50/2)=27.96$ dB, to $26.02-27.96=-1.94$ dB.",
+     "latex": "26.02-20\\log_{10}\\frac{50}{2}=-1.94\\ \\text{dB}"
+    },
+    {
+     "text": "Second corner at $\\omega=50$ rad/s: slope becomes $-40$ dB/dec. From 50 to 500 rad/s is one decade, so we lose a further 40 dB.",
+     "latex": "-1.94-40=-41.94\\ \\text{dB at }500\\ \\text{rad/s}"
+    },
+    {
+     "text": "Phase asymptotes: $0^\\circ$ at low frequency, $-45^\\circ$ at $\\omega=2$ (first pole), about $-90^\\circ$ between the corners, $-135^\\circ$ at $\\omega=50$, tending to $-180^\\circ$. The exact values at 2 and 500 rad/s are $-47.3^\\circ$ and $-174.1^\\circ$.",
+     "latex": "\\angle G\\to 0^\\circ\\to-90^\\circ\\to-180^\\circ"
+    }
+   ],
+   "answer": "The magnitude asymptote is flat at 26.02 dB up to 2 rad/s, falls at -20 dB/dec to -1.94 dB at 50 rad/s, then falls at -40 dB/dec, reaching -41.94 dB at 500 rad/s; the exact curve is within 3 dB of this everywhere (about 3 dB below at each corner)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Underdamped second-order factor.** For $G(s)=\\dfrac{\\omega_n^2}{s^2+2\\zeta\\omega_n s+\\omega_n^2}$ the asymptotes are flat (0 dB) below $\\omega_n$ and fall at $-40$ dB/dec above it, with the phase going from $0^\\circ$ through $-90^\\circ$ at $\\omega_n$ to $-180^\\circ$. When the damping ratio $\\zeta<1/\\sqrt2\\approx0.707$ the true magnitude rises into a **resonant peak** above the asymptote near $\\omega_n$. Differentiating $|G(j\\omega)|$ shows that the peak occurs at $\\omega_r=\\omega_n\\sqrt{1-2\\zeta^2}$ and has height $M_r=1/(2\\zeta\\sqrt{1-\\zeta^2})$. The smaller the damping, the taller and narrower the peak and the steeper the phase drop."
+  },
+  {
+   "type": "math",
+   "latex": "\\omega_r=\\omega_n\\sqrt{1-2\\zeta^2},\\qquad M_r=\\frac{1}{2\\zeta\\sqrt{1-\\zeta^2}},\\qquad M_{r,\\text{dB}}=20\\log_{10}M_r",
+   "caption": "Valid for $0<\\zeta<0.707$; for larger $\\zeta$ there is no peak above the DC gain."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading a resonant peak",
+   "prompt": "A mounting has transfer function (displacement per unit force, normalised to unit DC gain) with $\\omega_n=40$ rad/s and damping ratio $\\zeta=0.2$. Find the resonant frequency, the peak magnitude in dB, and the slope of the asymptote above $\\omega_n$.",
+   "steps": [
+    {
+     "text": "Check the peak exists: $\\zeta=0.2<0.707$, so $\\omega_r$ is real.",
+     "latex": "1-2\\zeta^2=1-2(0.04)=0.92"
+    },
+    {
+     "text": "Resonant frequency: $\\omega_r=40\\sqrt{0.92}=38.37$ rad/s (slightly below $\\omega_n$).",
+     "latex": "\\omega_r=40\\sqrt{0.92}=38.37\\ \\text{rad/s}"
+    },
+    {
+     "text": "Peak magnitude: $M_r=1/(2\\times0.2\\times\\sqrt{0.96})=1/(0.4\\times0.9798)=2.552$.",
+     "latex": "M_r=2.552"
+    },
+    {
+     "text": "Convert to dB: $20\\log_{10}2.552=8.14$ dB above the 0 dB DC level.",
+     "latex": "M_{r,\\text{dB}}=8.14\\ \\text{dB}"
+    },
+    {
+     "text": "Above $\\omega_n$ the asymptote falls at $-40$ dB/dec because there are two poles.",
+     "latex": "\\text{slope}=-40\\ \\text{dB/dec}"
+    }
+   ],
+   "answer": "$\\omega_r\\approx38.4$ rad/s, $M_r=2.55$ (8.14 dB), asymptotic slope $-40$ dB/dec above 40 rad/s."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Rewrite $G(s)$ in time-constant form and list each corner frequency in rad/s.",
+    "Draw the low-frequency magnitude from $20\\log_{10}K$ (and a $-20$ dB/dec line from the origin per integrator).",
+    "Change the slope by $-20$ dB/dec at each pole corner and $+20$ dB/dec at each zero corner ($\\mp40$ for a second-order pair).",
+    "Sketch the phase by $-90^\\circ$ per pole and $+90^\\circ$ per zero, passing through half that value at the corner.",
+    "Add a resonant peak of $M_r$ at $\\omega_r$ for any lightly damped complex pair."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Do not mix hertz and rad/s: a corner at 10 Hz is $2\\pi\\times10=62.8$ rad/s. Use 20 log10 for amplitudes (10 log10 only for power ratios). The asymptote and the true curve differ by 3 dB at a simple corner, but at the corner of an underdamped second-order factor the error is $20\\log_{10}\\big(1/(2\\zeta)\\big)$, about 14 dB for $\\zeta=0.2$ and 20 dB for $\\zeta=0.1$."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why Bode plots work",
+   "text": "Because $\\log|G_1G_2|=\\log|G_1|+\\log|G_2|$ and $\\angle G_1G_2=\\angle G_1+\\angle G_2$, the plot of a product is the sum of the plots of its factors. A system with many poles and zeros is therefore built by adding straight-line segments."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Gain in decibels is $20\\log_{10}|G|$; $\\pm20$ dB is a factor 10, and $\\pm6$ dB is roughly a factor 2.",
+    "Asymptotic magnitude slopes change by $-20$ dB/dec at each simple pole and $+20$ dB/dec at each simple zero; the phase changes by $-90^\\circ$ per pole.",
+    "An underdamped pair ($\\zeta<0.707$) produces a peak $M_r=1/(2\\zeta\\sqrt{1-\\zeta^2})$ at $\\omega_r=\\omega_n\\sqrt{1-2\\zeta^2}$.",
+    "Always check units of frequency: rad/s versus Hz differ by $2\\pi$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A vibration sensor amplifier has a linear voltage gain of $0.05$ at 200 Hz. What is this gain in decibels?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$-26.0$ dB"
+    },
+    {
+     "id": "b",
+     "text": "$+26.0$ dB"
+    },
+    {
+     "id": "c",
+     "text": "$-13.0$ dB"
+    },
+    {
+     "id": "d",
+     "text": "$-0.05$ dB"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$-26.0$ dB",
+   "distractorRationale": {
+    "a": "Correct: $20\\log_{10}0.05=-26.02$ dB.",
+    "b": "Sign error: gains below 1 are negative in dB.",
+    "c": "This uses $10\\log_{10}$ (a power-ratio formula) instead of $20\\log_{10}$ for an amplitude ratio.",
+    "d": "The linear value was reported as if it were already in dB."
+   },
+   "explanation": "Decibels are $20\\log_{10}$ of the amplitude ratio, so $20\\log_{10}0.05=20\\times(-1.301)=-26.02$ dB. Since $0.05=1/20$ and $20=10\\times2$, the result is $-20-6=-26$ dB, a check by landmarks.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A sensor chain has a measured gain of $12.6$ dB at 50 Hz. Find the corresponding linear amplitude ratio (output amplitude divided by input amplitude, dimensionless).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o3"
+   ],
+   "correctValue": 4.27,
+   "tolerance": 0.03,
+   "unit": "dimensionless",
+   "explanation": "Invert the definition: $|G|=10^{12.6/20}=10^{0.63}=4.27$. A check: 12 dB is a factor of about 4 and 6 dB a factor of 2, so 12.6 dB is slightly above 4.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A transfer function is $G(s)=\\dfrac{50}{(s+5)(s+20)(s+200)}$ with $s$ in rad/s. What is the asymptotic magnitude slope and the asymptotic phase for frequencies far above 200 rad/s?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$-20$ dB/dec and $-90^\\circ$"
+    },
+    {
+     "id": "b",
+     "text": "$-40$ dB/dec and $-180^\\circ$"
+    },
+    {
+     "id": "c",
+     "text": "$-60$ dB/dec and $-270^\\circ$"
+    },
+    {
+     "id": "d",
+     "text": "$-60$ dB/dec and $-180^\\circ$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$-60$ dB/dec and $-270^\\circ$",
+   "distractorRationale": {
+    "a": "That is the slope after only the first corner at 5 rad/s.",
+    "b": "That is the slope and phase between the second and third corners (two poles active).",
+    "c": "Correct: three simple poles each contribute $-20$ dB/dec and $-90^\\circ$, so $-60$ dB/dec and $-270^\\circ$.",
+    "d": "The slope counts three poles but the phase counts only two; each pole contributes equally to both."
+   },
+   "explanation": "Each simple pole adds $-20$ dB/dec to the magnitude slope and $-90^\\circ$ to the phase once the frequency is well above its corner. With corners at 5, 20 and 200 rad/s, all three are active above 200 rad/s, giving $-60$ dB/dec and $-270^\\circ$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A loop transfer function is $G(s)=\\dfrac{10}{(1+s/20)(1+s/100)}$ with $s$ in rad/s. Using straight-line (asymptotic) approximations, find the magnitude at $\\omega=400$ rad/s in dB.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o1"
+   ],
+   "correctValue": -18.06,
+   "tolerance": 0.2,
+   "unit": "dB",
+   "explanation": "The low-frequency gain is $20\\log_{10}10=20$ dB. From 20 to 400 rad/s the first pole gives $-20\\log_{10}(400/20)=-26.02$ dB, and from 100 to 400 rad/s the second gives $-20\\log_{10}(400/100)=-12.04$ dB. The total is $20-26.02-12.04=-18.06$ dB.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A lightly damped second-order mode has damping ratio $\\zeta=0.25$ and unit DC gain. Find the height of its resonant peak above the 0 dB level in dB.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o2"
+   ],
+   "correctValue": 6.3,
+   "tolerance": 0.1,
+   "unit": "dB",
+   "explanation": "The peak magnitude is $M_r=1/(2\\zeta\\sqrt{1-\\zeta^2})=1/(0.5\\times0.9682)=2.066$. In decibels $20\\log_{10}2.066=6.30$ dB. This is valid because $\\zeta=0.25$ is below $0.707$, so a peak exists.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A structure behaves as a second-order system with $\\omega_n=120$ rad/s and $\\zeta=0.3$. At approximately what frequency does the Bode magnitude peak?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$120$ rad/s"
+    },
+    {
+     "id": "b",
+     "text": "$108.7$ rad/s"
+    },
+    {
+     "id": "c",
+     "text": "$100.4$ rad/s"
+    },
+    {
+     "id": "d",
+     "text": "$114.5$ rad/s"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$108.7$ rad/s",
+   "distractorRationale": {
+    "a": "The peak is not at $\\omega_n$ for a damped system; that is the corner of the asymptotes.",
+    "b": "Correct: $\\omega_r=120\\sqrt{1-2(0.09)}=120\\sqrt{0.82}=108.7$ rad/s.",
+    "c": "This uses $\\sqrt{1-2\\zeta}$ instead of $\\sqrt{1-2\\zeta^2}$, forgetting to square the damping ratio.",
+    "d": "This is the damped natural frequency $\\omega_n\\sqrt{1-\\zeta^2}$, which applies to the time response, not the Bode peak."
+   },
+   "explanation": "The magnitude peak is at $\\omega_r=\\omega_n\\sqrt{1-2\\zeta^2}$, obtained by setting the derivative of $|G(j\\omega)|$ to zero. With $\\zeta=0.3$ this gives $120\\times0.9055=108.7$ rad/s, slightly below the damped natural frequency of 114.5 rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A second-order system with unit DC gain and damping ratio $\\zeta=0.8$ shows a resonant peak above 0 dB in its Bode magnitude plot.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "A magnitude peak above the DC level exists only for $\\zeta<1/\\sqrt2\\approx0.707$, because $1-2\\zeta^2$ must be positive. For $\\zeta=0.8$ the magnitude decreases monotonically from 0 dB.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A first-order lag $G(s)=1/(1+s/10)$ is driven by a sinusoid at 100 rad/s. What is its phase shift?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$-84.3^\\circ$"
+    },
+    {
+     "id": "b",
+     "text": "$-5.7^\\circ$"
+    },
+    {
+     "id": "c",
+     "text": "$-45^\\circ$"
+    },
+    {
+     "id": "d",
+     "text": "$-90^\\circ$ exactly"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$-84.3^\\circ$",
+   "distractorRationale": {
+    "a": "Correct: $-\\tan^{-1}(100/10)=-\\tan^{-1}10=-84.3^\\circ$.",
+    "b": "This is $-\\tan^{-1}(0.1)$, which inverts the ratio $\\omega/p$.",
+    "c": "That is the phase at the corner $\\omega=p=10$ rad/s only.",
+    "d": "The asymptote is $-90^\\circ$, but the actual phase is $-84.3^\\circ$ at one decade above the corner."
+   },
+   "explanation": "The phase is $-\\tan^{-1}(\\omega/p)$ with $\\omega/p=10$, which is $-84.3^\\circ$. It is within $6^\\circ$ of the $-90^\\circ$ asymptote one decade above the corner, which is why the asymptotic sketch is useful.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain how to sketch the asymptotic magnitude and phase Bode plots for $G(s)=\\dfrac{K}{(1+s/p_1)(1+s/p_2)}$ with $p_2>p_1>0$. State the slopes, the phase values at the corners, and the maximum error between the true magnitude curve and the asymptotes.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o1"
+   ],
+   "markingGuide": [
+    "Starts at the low-frequency level $20\\log_{10}K$ with zero slope",
+    "Slope becomes $-20$ dB/dec at $p_1$ and $-40$ dB/dec at $p_2$",
+    "Phase goes from $0^\\circ$ to $-90^\\circ$ to $-180^\\circ$ with $-45^\\circ$ at $p_1$ (and about $-135^\\circ$ at $p_2$ if the corners are well separated)",
+    "States that the true curve is 3 dB below the asymptote at a simple corner (when corners are well separated)",
+    "Mentions the log frequency axis and the use of rad/s"
+   ],
+   "explanation": "The logarithmic form lets each factor be drawn separately and added. A good answer also mentions that each corner frequency is the reciprocal of a time constant, $p=1/\\tau$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "An underdamped second-order system has measured peak magnitude of 10 dB above its DC gain on the Bode plot. Explain how you would estimate the damping ratio, why the peak frequency differs from the natural frequency, and what happens to the peak as the damping is increased.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o2",
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots.o3"
+   ],
+   "markingGuide": [
+    "Converts 10 dB to a linear ratio: $M_r=10^{10/20}=3.16$",
+    "Uses $M_r=1/(2\\zeta\\sqrt{1-\\zeta^2})$ to solve for $\\zeta$ (about $0.16$)",
+    "States that the peak occurs at $\\omega_r=\\omega_n\\sqrt{1-2\\zeta^2}$, slightly below $\\omega_n$",
+    "States that increasing damping lowers and broadens the peak and that it vanishes at $\\zeta=0.707$",
+    "Uses $20\\log_{10}$ and a log axis consistently"
+   ],
+   "explanation": "Solving $2\\zeta\\sqrt{1-\\zeta^2}=1/3.162=0.316$ gives $\\zeta^2(1-\\zeta^2)=0.025$, hence $\\zeta=0.16$. The peak frequency shifts below $\\omega_n$ because the magnitude derivative vanishes before the undamped resonance for finite damping.",
+   "board": "internal"
+  }
+ ]
+}

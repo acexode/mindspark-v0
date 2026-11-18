@@ -1,0 +1,399 @@
+{
+ "lessonTitle": "Test Execution and Evaluation: Data, Discrepancies and Design Feedback",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A prototype lifting frame is load-tested and the dial gauge reads 2.45 mm of deflection. The analysis predicted 2.10 mm and the requirement is at most 2.50 mm. Is the frame acceptable? Without the units of the gauge, its calibration status and its uncertainty, the number 2.45 means nothing: a reading of 2.45 plus or minus 0.20 mm could not show the requirement is met, while plus or minus 0.05 mm just about could."
+  },
+  {
+   "type": "text",
+   "markdown": "Testing closes the design loop. A prototype is built from the design, measured against the requirements and then compared with the predictions that justified the design. The result is either confidence, or a reason to change something. To do that well three skills are needed: recording data so that others can trust it, comparing measurement with prediction and explaining the difference, and turning the findings into design changes and an updated requirements trace."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "A complete test record",
+   "text": "Every measured value is recorded with its **unit**, its **uncertainty** (the interval within which the true value is believed to lie), the **instrument** used with its identifier and **calibration reference** (certificate number and date, so the measurement is traceable to a standard), the **conditions** (load, temperature, date, operator, specimen identifier) and the **test procedure** followed. Raw readings are kept, not only the processed results."
+  },
+  {
+   "type": "text",
+   "markdown": "**Uncertainty.** Each source of uncertainty (instrument calibration accuracy, resolution, repeatability across trials, alignment) is estimated as a plus-or-minus value. For independent sources the combined uncertainty is found in quadrature, in the same way as statistical tolerances. A result is then reported as value $\\pm$ uncertainty, with the units."
+  },
+  {
+   "type": "math",
+   "latex": "u_c=\\sqrt{u_1^2+u_2^2+\\dots+u_n^2}",
+   "caption": "Combined uncertainty u_c of independent contributions u_1 ... u_n, in the units of the measured quantity."
+  },
+  {
+   "type": "worked_example",
+   "title": "Recording a deflection measurement",
+   "prompt": "A dial gauge has a calibration accuracy of $\\pm0.03$ mm. Repeat trials show a scatter (repeatability) of $\\pm0.04$ mm. The mean reading is 2.45 mm. Report the result and decide whether the requirement of at most 2.50 mm is met.",
+   "steps": [
+    {
+     "text": "Combined uncertainty (assumed independent).",
+     "latex": "u_c=\\sqrt{0.03^2+0.04^2}=0.05\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Report: deflection $=2.45\\pm0.05$ mm, with the gauge identifier, certificate and date, load of 10 kN and room temperature."
+    },
+    {
+     "text": "Upper bound: $2.45+0.05=2.50$ mm, exactly equal to the limit. The requirement is met only with zero margin; this should be reported as marginal."
+    }
+   ],
+   "answer": "Result $2.45\\pm0.05$ mm; the 2.50 mm requirement is just met within uncertainty, with no margin."
+  },
+  {
+   "type": "text",
+   "markdown": "**Measured against predicted.** Compute the difference, normally as a percentage of the prediction, and compare it with the combined uncertainty of the measurement and the stated accuracy of the model. If the difference is within the uncertainties, the prediction is supported. If it is larger, the discrepancy is real and has a cause, which must be sought among: wrong assumptions in the model (boundary conditions, load path, material properties taken as typical), manufacturing deviations from the drawing, test set-up effects (support flexibility, misalignment, friction) and measurement errors. Each candidate cause should be checked, ideally by a further measurement, not simply assumed."
+  },
+  {
+   "type": "math",
+   "latex": "\\varepsilon=\\frac{X_{\\mathrm{measured}}-X_{\\mathrm{predicted}}}{X_{\\mathrm{predicted}}}\\times100\\%",
+   "caption": "Percentage difference between a measured and a predicted quantity; a positive value means the measurement is above the prediction."
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparing with the prediction",
+   "prompt": "For the frame above the predicted deflection is 2.10 mm and the measured value is $2.45\\pm0.05$ mm. Quantify the difference and decide whether it is explained by the measurement uncertainty.",
+   "steps": [
+    {
+     "text": "Express the difference between measured and predicted as a percentage of the prediction.",
+     "latex": "\\varepsilon=\\frac{2.45-2.10}{2.10}\\times100=16.7\\%"
+    },
+    {
+     "text": "Absolute difference: $0.35$ mm, which is seven times the uncertainty of 0.05 mm, so it is a real discrepancy and not noise."
+    },
+    {
+     "text": "Plausible causes: the model assumed a rigid fixed base but the test rig base flexes; the welded section is slightly smaller than drawn; the material modulus is lower than the typical value used. The rig base can be checked by measuring its own movement with a second gauge."
+    }
+   ],
+   "answer": "The measured deflection is 16.7% above the prediction, a genuine discrepancy to be explained."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Finding",
+    "Likely action",
+    "Update to requirements trace"
+   ],
+   "rows": [
+    [
+     "Requirement met with margin",
+     "None; record evidence",
+     "Status verified, reference to test report"
+    ],
+    [
+     "Requirement met but marginal",
+     "Consider stiffening or tighter control; repeat test",
+     "Status verified with note on margin"
+    ],
+    [
+     "Requirement not met",
+     "Design change, then retest",
+     "Status open; change reference and retest planned"
+    ],
+    [
+     "Model disagrees with test",
+     "Correct model assumptions and re-predict",
+     "Update analysis evidence and note change"
+    ]
+   ],
+   "caption": "From test results to design actions."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Record every measurement with unit, uncertainty, instrument, calibration reference and conditions.",
+    "Compare measurement with prediction as a percentage and relative to the uncertainty.",
+    "List and check the candidate causes of any real discrepancy.",
+    "Recommend design or process changes tied to the evidence.",
+    "Revise the requirements trace to show the new evidence, status and any retest."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Close the loop in writing",
+   "text": "The trace is updated with the test result, the date and the report number. If the design changes, the earlier evidence no longer applies and a retest is recorded."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not change the requirement to fit the result",
+   "text": "If a test fails, altering the requirement to a value the prototype meets hides the problem. A requirement may be changed only through the agreed change process with the customer, and the reason is recorded."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A test record gives each value with unit, uncertainty, instrument and calibration reference; independent uncertainties combine in quadrature.",
+    "Measured and predicted values are compared as a percentage and against the uncertainty; a difference larger than the uncertainty has a cause to be found.",
+    "Recommendations are based on the evidence, and the requirements trace is updated with the result, status and any retest."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of the following test entries is complete enough to be traceable?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "'Torque 48.2 N m, uncertainty plus or minus 0.6 N m, transducer T-14, calibration certificate dated 12 March, ambient 21 degrees C, test procedure TP-3'"
+    },
+    {
+     "id": "b",
+     "text": "'Torque about 48'"
+    },
+    {
+     "id": "c",
+     "text": "'Torque fine'"
+    },
+    {
+     "id": "d",
+     "text": "'Torque 48.2'"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "'Torque 48.2 N m, uncertainty plus or minus 0.6 N m, transducer T-14, calibration certificate dated 12 March, ambient 21 degrees C, test procedure TP-3'",
+   "distractorRationale": {
+    "a": "Correct: it has value, unit, uncertainty, instrument, calibration and conditions.",
+    "b": "No unit or uncertainty.",
+    "c": "No value, unit or uncertainty.",
+    "d": "No unit, uncertainty or instrument."
+   },
+   "explanation": "A test record must allow another person to judge and repeat the measurement. Without uncertainty and calibration the result cannot be trusted or compared.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why is the calibration reference of an instrument recorded with a measurement?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It links the measurement to a standard, so the instrument's accuracy and the validity of the result are known"
+    },
+    {
+     "id": "b",
+     "text": "It makes the instrument more accurate"
+    },
+    {
+     "id": "c",
+     "text": "It reduces the number of readings needed"
+    },
+    {
+     "id": "d",
+     "text": "It is required only for electronic instruments"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It links the measurement to a standard, so the instrument's accuracy and the validity of the result are known",
+   "distractorRationale": {
+    "a": "Correct: traceability supports the stated uncertainty.",
+    "b": "Recording does not change accuracy.",
+    "c": "Repeat readings are still needed for repeatability.",
+    "d": "All instruments need a calibration status."
+   },
+   "explanation": "Calibration shows the instrument has been checked against a reference. Recording its reference lets a reader trust the stated accuracy.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two independent uncertainty sources of $\\pm0.12$ mm and $\\pm0.16$ mm affect one reading. How should they normally be combined?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "In quadrature, giving $\\pm0.20$ mm"
+    },
+    {
+     "id": "b",
+     "text": "By adding them, giving $\\pm0.28$ mm"
+    },
+    {
+     "id": "c",
+     "text": "By averaging them, giving $\\pm0.14$ mm"
+    },
+    {
+     "id": "d",
+     "text": "By taking the smaller one"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "In quadrature, giving $\\pm0.20$ mm",
+   "distractorRationale": {
+    "a": "Correct: independent contributions add as the root of the sum of squares.",
+    "b": "Adding is the conservative worst case, not the usual treatment of independent sources.",
+    "c": "Averaging underestimates the combined uncertainty.",
+    "d": "Ignoring one source understates the uncertainty."
+   },
+   "explanation": "For independent random errors, quadrature gives $\\sqrt{0.12^2+0.16^2}=0.20$ mm. Linear addition would be over-cautious unless the errors are correlated.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A test gives a natural frequency 12% below prediction, and the measurement uncertainty is about 1%. What is the best next step?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Investigate the model assumptions, the manufactured part and the test set-up for causes of the real discrepancy"
+    },
+    {
+     "id": "b",
+     "text": "Ignore it because the uncertainty is small"
+    },
+    {
+     "id": "c",
+     "text": "Scale the measured value to equal the prediction"
+    },
+    {
+     "id": "d",
+     "text": "Reduce the prediction by 12% without any investigation"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Investigate the model assumptions, the manufactured part and the test set-up for causes of the real discrepancy",
+   "distractorRationale": {
+    "a": "Correct: a discrepancy larger than the uncertainty has a physical cause to find.",
+    "b": "A small uncertainty makes the discrepancy more significant, not less.",
+    "c": "Adjusting data to match the prediction is not acceptable.",
+    "d": "Changing the model without a cause just hides the problem."
+   },
+   "explanation": "The difference is far larger than the measurement uncertainty, so it is real. Common causes are boundary conditions, geometry and material values differing from those assumed.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A prototype fails a requirement in test. Which response is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Propose a design change, retest, and record the status of the requirement in the trace"
+    },
+    {
+     "id": "b",
+     "text": "Change the requirement to what the prototype achieved without telling anyone"
+    },
+    {
+     "id": "c",
+     "text": "Remove the failed test from the report"
+    },
+    {
+     "id": "d",
+     "text": "Declare the requirement met because the model predicted it"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Propose a design change, retest, and record the status of the requirement in the trace",
+   "distractorRationale": {
+    "a": "Correct: findings lead to a design change and an updated trace with a retest.",
+    "b": "Unilaterally changing a requirement hides a failure.",
+    "c": "Hiding results defeats the purpose of testing.",
+    "d": "Predictions do not override measurements."
+   },
+   "explanation": "A failed test is information. The response is a documented change followed by a retest, with the trace showing the requirement as open until it is verified.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A prototype's first natural frequency is predicted as 85 Hz and measured as 79 Hz. Compute the percentage difference of the measurement relative to the prediction (negative if lower).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o2"
+   ],
+   "correctValue": -7.058824,
+   "tolerance": 0.1,
+   "unit": "%",
+   "explanation": "The difference is $(79-85)/85\\times100=-7.06\\%$. The measured frequency is about 7% below the prediction, which suggests that the real structure is less stiff or heavier than the model.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A force transducer has a calibration uncertainty of $\\pm0.3$ N and a repeatability of $\\pm0.4$ N, which are independent. What is the combined uncertainty in N?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o1"
+   ],
+   "correctValue": 0.5,
+   "tolerance": 0.01,
+   "unit": "N",
+   "explanation": "The combined uncertainty is $\\sqrt{0.3^2+0.4^2}=\\sqrt{0.25}=0.5$ N. This is the value to quote with the reading.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A motor housing must have a temperature rise of at most 40 K. A test gives a temperature rise of 38 K with a combined uncertainty of $\\pm3$ K. Find the margin to the limit, in K, using the upper bound of the measurement (negative if the limit may be exceeded).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o3"
+   ],
+   "correctValue": -1,
+   "tolerance": 0.1,
+   "unit": "K",
+   "explanation": "The upper bound is $38+3=41$ K, so the margin is $40-41=-1$ K. The requirement cannot be declared met with confidence and a retest or design improvement is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Design a data recording sheet for a bending test on a prototype bracket, listing the fields you would include, and explain how you would decide whether the measured deflection agrees with the predicted value.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o1",
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o2"
+   ],
+   "markingGuide": [
+    "Fields: specimen ID, date, operator, procedure number, ambient conditions",
+    "Load applied with unit and its uncertainty, instrument ID and calibration reference",
+    "Deflection readings with unit, resolution and repeated trials",
+    "Combined uncertainty from calibration and repeatability",
+    "Percentage difference from the prediction compared with the uncertainty",
+    "If beyond uncertainty, list candidate causes such as boundary conditions, dimensions, material values"
+   ],
+   "explanation": "The sheet should contain everything needed to repeat the test and to judge the result. The comparison with prediction must consider the measurement uncertainty before any conclusion is drawn.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A prototype's measured stiffness is 12% lower than predicted and misses the requirement. Explain how you would investigate the cause, what design changes you might recommend, and how you would revise the requirements trace and retest plan.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o2",
+    "ug.mce-machine-design-project.prototype-testing.test-evaluation.o3"
+   ],
+   "markingGuide": [
+    "Checks: rig stiffness or support compliance, measured dimensions against drawing, material modulus, model boundary conditions",
+    "Verification of measurement uncertainty and calibration",
+    "Recommended changes such as increase section, add rib, shorten span, with the effect estimated",
+    "Update model and prediction after finding cause",
+    "Trace updated: requirement status open, change reference, retest date and expected evidence",
+    "Does not change the requirement without the agreed change process"
+   ],
+   "explanation": "The investigation separates measurement, model and manufacture causes before any design change is chosen. The trace is revised so that the old evidence is superseded and the retest is planned.",
+   "board": "internal"
+  }
+ ]
+}

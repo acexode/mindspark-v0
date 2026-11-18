@@ -1,0 +1,417 @@
+{
+ "lessonTitle": "Frequency Response: Gain, Phase and Bandwidth of a First-Order System",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hydraulic test rig is commanded to move a specimen sinusoidally, 2 mm in amplitude, and the engineer raises the command frequency step by step. At 1 Hz the piston follows almost perfectly. At 10 Hz it moves only half as far and arrives about one-sixth of a cycle ($60^\\circ$) late, as a first-order lag would give. Frequency response is the tool that predicts exactly how much the amplitude shrinks and how far the phase lags at every frequency."
+  },
+  {
+   "type": "text",
+   "markdown": "If a stable linear system with transfer function $G(s)$ is driven by $u(t)=A\\sin\\omega t$, then after the transient dies out the output is a sinusoid of the **same frequency**: $y_{ss}(t)=A\\,|G(j\\omega)|\\sin\\big(\\omega t+\\angle G(j\\omega)\\big)$. The complex number $G(j\\omega)$, obtained by substituting $s=j\\omega$ with $\\omega$ in rad/s, therefore gives the amplitude ratio and phase shift directly. This holds only for stable systems, because for an unstable one the transient never decays."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Frequency response",
+   "text": "The frequency response of $G(s)$ is $G(j\\omega)$. Its magnitude $|G(j\\omega)|$ is the ratio of output amplitude to input amplitude in steady state; its argument $\\angle G(j\\omega)$ is the phase of the output relative to the input (negative means the output lags). Frequency in Hz is $f=\\omega/2\\pi$."
+  },
+  {
+   "type": "text",
+   "markdown": "**First-order system.** For $G(s)=\\dfrac{K}{\\tau s+1}$ we have $G(j\\omega)=\\dfrac{K}{1+j\\omega\\tau}$. Rationalising, the magnitude is $K/\\sqrt{1+(\\omega\\tau)^2}$ and the phase is $-\\tan^{-1}(\\omega\\tau)$. At low frequency ($\\omega\\tau\\ll1$) the system passes the input with gain $K$ and almost no lag; at high frequency ($\\omega\\tau\\gg1$) the amplitude falls as $1/\\omega$ and the lag approaches $90^\\circ$. The transition happens near $\\omega=1/\\tau$."
+  },
+  {
+   "type": "math",
+   "latex": "|G(j\\omega)|=\\frac{K}{\\sqrt{1+(\\omega\\tau)^2}},\\qquad \\angle G(j\\omega)=-\\tan^{-1}(\\omega\\tau)",
+   "caption": "Steady-state amplitude ratio and phase of a first-order lag ($\\omega$ in rad/s, $\\tau$ in s)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Amplitude and phase of the output",
+   "prompt": "A first-order sensor with $K=3$ and $\\tau=0.05$ s is driven by $u(t)=2\\sin(30t)$ (30 rad/s). Find the steady-state output.",
+   "steps": [
+    {
+     "text": "Compute the product $\\omega\\tau=30\\times0.05=1.5$.",
+     "latex": "\\omega\\tau=1.5"
+    },
+    {
+     "text": "Gain: $|G|=3/\\sqrt{1+1.5^2}=3/\\sqrt{3.25}=3/1.8028=1.664$.",
+     "latex": "|G(j30)|=\\frac{3}{\\sqrt{3.25}}=1.664"
+    },
+    {
+     "text": "Output amplitude is input amplitude times gain: $2\\times1.664=3.328$.",
+     "latex": "A_{out}=2\\times1.664=3.328"
+    },
+    {
+     "text": "Phase: $-\\tan^{-1}(1.5)=-56.31^\\circ$ (the output lags).",
+     "latex": "\\phi=-\\tan^{-1}(1.5)=-56.31^\\circ"
+    }
+   ],
+   "answer": "$y_{ss}(t)=3.33\\sin(30t-56.3^\\circ)$: amplitude 3.33 and a lag of $56.3^\\circ$ (equivalent to a time delay of $0.98/30=0.033$ s)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Corner frequency and bandwidth",
+   "text": "The **corner (break) frequency** of $K/(\\tau s+1)$ is $\\omega_c=1/\\tau$ rad/s, equivalently $f_c=1/(2\\pi\\tau)$ Hz. There the gain is $K/\\sqrt2$ (down 3.01 dB) and the phase is $-45^\\circ$. The **bandwidth** $\\omega_b$ is the frequency up to which the system passes inputs with gain within 3 dB of its low-frequency value; for a first-order system $\\omega_b=\\omega_c=1/\\tau$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$\\omega\\tau$",
+    "Gain ratio $|G|/K$",
+    "Gain (dB)",
+    "Phase"
+   ],
+   "rows": [
+    [
+     "0.1",
+     "0.995",
+     "-0.04",
+     "$-5.7^\\circ$"
+    ],
+    [
+     "0.5",
+     "0.894",
+     "-0.97",
+     "$-26.6^\\circ$"
+    ],
+    [
+     "1 (corner)",
+     "0.707",
+     "-3.01",
+     "$-45.0^\\circ$"
+    ],
+    [
+     "2",
+     "0.447",
+     "-6.99",
+     "$-63.4^\\circ$"
+    ],
+    [
+     "5",
+     "0.196",
+     "-14.15",
+     "$-78.7^\\circ$"
+    ],
+    [
+     "10",
+     "0.100",
+     "-20.04",
+     "$-84.3^\\circ$"
+    ]
+   ],
+   "caption": "Frequency response of a first-order lag normalised by its corner frequency"
+  },
+  {
+   "type": "text",
+   "markdown": "**Bandwidth and speed of response.** A system with a wide bandwidth can follow rapidly varying inputs, so it also reacts quickly to steps. For the first-order case $\\omega_b=1/\\tau$, so the 10-90% rise time $t_r=\\tau\\ln9\\approx2.2\\tau=2.2/\\omega_b$. In hertz, $t_r\\approx0.35/f_b$. Doubling the bandwidth halves every time scale. The price is that a wide-bandwidth system also passes more high-frequency measurement noise."
+  },
+  {
+   "type": "worked_example",
+   "title": "Corner, bandwidth and rise time",
+   "prompt": "A sensor has transfer function $G(s)=\\dfrac{40}{s+8}$ ($s$ in rad/s). Find its DC gain, corner frequency in rad/s and Hz, time constant, and the 10-90% rise time.",
+   "steps": [
+    {
+     "text": "Put the transfer function in time-constant form by dividing top and bottom by 8: $G(s)=\\dfrac{5}{0.125s+1}$.",
+     "latex": "G(s)=\\frac{40/8}{s/8+1}=\\frac{5}{0.125s+1}"
+    },
+    {
+     "text": "Read off $K=5$ and $\\tau=0.125$ s. The corner frequency is $1/\\tau=8$ rad/s.",
+     "latex": "\\omega_c=\\frac{1}{0.125}=8\\ \\text{rad/s}"
+    },
+    {
+     "text": "Convert to hertz: $f_c=8/(2\\pi)=1.273$ Hz.",
+     "latex": "f_c=\\frac{8}{2\\pi}=1.273\\ \\text{Hz}"
+    },
+    {
+     "text": "Rise time: $t_r=\\tau\\ln9=0.125\\times2.197=0.275$ s.",
+     "latex": "t_r=0.125\\times2.197=0.275\\ \\text{s}"
+    }
+   ],
+   "answer": "$K=5$, $\\tau=0.125$ s, $\\omega_c=\\omega_b=8$ rad/s ($1.27$ Hz), 10-90% rise time $0.275$ s. At 8 rad/s the gain is $5/\\sqrt2=3.54$."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Replace $s$ by $j\\omega$ and write $G(j\\omega)$ in the form $K/(1+j\\omega\\tau)$.",
+    "Compute $\\omega\\tau$ with $\\omega$ in rad/s (convert from Hz with $\\omega=2\\pi f$).",
+    "Magnitude: $K/\\sqrt{1+(\\omega\\tau)^2}$; phase: $-\\tan^{-1}(\\omega\\tau)$.",
+    "Output amplitude is the input amplitude times the magnitude; the output is shifted by the phase.",
+    "Locate $\\omega_c=1/\\tau$ and use it to judge bandwidth and speed of response."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Using hertz where rad/s is required is the most common error: $\\omega=2\\pi f$. The frequency response describes the steady-state response only, and the phase is for the sinusoidal output relative to the input, not a delay in seconds (the time delay is $|\\phi|/\\omega$ with $\\phi$ in radians). Do not use the -3 dB point of the DC gain as $K/2$: the amplitude is $0.707K$."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Bandwidth is speed",
+   "text": "For a first-order system corner frequency, bandwidth and $1/\\tau$ are the same number. Larger bandwidth means smaller time constant, shorter rise time, and also more noise passed. When you need to compare sensors or actuators, compare $\\omega_b$ or $f_b$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "For a stable system and input $A\\sin\\omega t$, the steady-state output is $A|G(j\\omega)|\\sin(\\omega t+\\angle G(j\\omega))$.",
+    "A first-order lag has magnitude $K/\\sqrt{1+(\\omega\\tau)^2}$ and phase $-\\tan^{-1}(\\omega\\tau)$.",
+    "The corner frequency is $1/\\tau$ rad/s ($1/(2\\pi\\tau)$ Hz); there the gain is 0.707 of DC and the phase is $-45^\\circ$.",
+    "Bandwidth is inversely proportional to the time constant, and the 10-90% rise time is $2.2/\\omega_b$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A first-order positioning stage has transfer function $G(s)=\\dfrac{2}{0.2s+1}$ (dimensionless gain, $\\tau$ in s). A sinusoidal command $5\\sin(10t)$ mm is applied, where $t$ is in s. Find the steady-state amplitude of the output in mm.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o1"
+   ],
+   "correctValue": 4.47,
+   "tolerance": 0.03,
+   "unit": "mm",
+   "explanation": "With $\\omega=10$ rad/s and $\\tau=0.2$ s, $\\omega\\tau=2$. The gain is $2/\\sqrt{1+4}=0.894$, so the output amplitude is $5\\times0.894=4.47$ mm. The result is valid in steady state because the pole at $-5$ rad/s is stable.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A pressure transducer behaves as $G(s)=\\dfrac{10}{0.01s+1}$. A pressure oscillation at 150 rad/s is applied. Find the steady-state phase shift of the output relative to the input in degrees (give a negative number for a lag).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o1"
+   ],
+   "correctValue": -56.3,
+   "tolerance": 0.5,
+   "unit": "deg",
+   "explanation": "The product $\\omega\\tau=150\\times0.01=1.5$. The phase is $-\\tan^{-1}(1.5)=-56.3^\\circ$, a lag, because the output of a first-order lag always trails the input. The magnitude at this frequency would be $10/\\sqrt{3.25}=5.55$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A sensor is modelled as $G(s)=\\dfrac{25}{s+40}$ with $s$ in rad/s. What is its corner frequency?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$40$ rad/s, which is $6.37$ Hz"
+    },
+    {
+     "id": "b",
+     "text": "$25$ rad/s, which is $3.98$ Hz"
+    },
+    {
+     "id": "c",
+     "text": "$40$ Hz, which is $251$ rad/s"
+    },
+    {
+     "id": "d",
+     "text": "$0.625$ rad/s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$40$ rad/s, which is $6.37$ Hz",
+   "distractorRationale": {
+    "a": "Correct: the pole is at $s=-40$, so $\\omega_c=40$ rad/s and $f_c=40/2\\pi=6.37$ Hz.",
+    "b": "The numerator 25 is part of the DC gain $25/40$; it does not set the corner.",
+    "c": "The units are mixed up: 40 is in rad/s, not Hz.",
+    "d": "This is the DC gain $25/40$, not a frequency."
+   },
+   "explanation": "In time-constant form $G(s)=0.625/(0.025s+1)$, so $\\tau=0.025$ s and $\\omega_c=1/\\tau=40$ rad/s. Converting to hertz divides by $2\\pi$ to give 6.37 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A first-order system has DC gain 1 and is driven at exactly its corner frequency, $\\omega=1/\\tau$. Which pair gives the steady-state amplitude ratio and phase?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o1",
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$0.707$ and $-45^\\circ$"
+    },
+    {
+     "id": "b",
+     "text": "$0.5$ and $-45^\\circ$"
+    },
+    {
+     "id": "c",
+     "text": "$0.707$ and $-90^\\circ$"
+    },
+    {
+     "id": "d",
+     "text": "$1.0$ and $-45^\\circ$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$0.707$ and $-45^\\circ$",
+   "distractorRationale": {
+    "a": "Correct: $1/\\sqrt{1+1}=0.707$ and $-\\tan^{-1}(1)=-45^\\circ$.",
+    "b": "The amplitude is $1/\\sqrt2$, not 1/2: the 3 dB point is not the half-amplitude point.",
+    "c": "$-90^\\circ$ is the high-frequency limit; at the corner the phase is half that.",
+    "d": "A first-order lag always attenuates at the corner; unit gain applies only at low frequency."
+   },
+   "explanation": "At $\\omega\\tau=1$ the magnitude is $1/\\sqrt2=0.707$ (down 3.01 dB) and the phase is $-45^\\circ$. These two values define the corner frequency in practice.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A first-order system has time constant $\\tau$. By how many decibels is the steady-state gain below its DC value when it is driven at $\\omega=10/\\tau$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o1",
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$-20.0$ dB"
+    },
+    {
+     "id": "b",
+     "text": "$-3.0$ dB"
+    },
+    {
+     "id": "c",
+     "text": "$-10.0$ dB"
+    },
+    {
+     "id": "d",
+     "text": "$-40.0$ dB"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$-20.0$ dB",
+   "distractorRationale": {
+    "a": "Correct: $-10\\log_{10}(1+100)=-20.04$ dB, essentially one decade of roll-off at $-20$ dB/dec.",
+    "b": "That is the loss at the corner, $\\omega=1/\\tau$.",
+    "c": "This uses the wrong decibel formula or counts half a decade.",
+    "d": "$-40$ dB per decade is the slope of a second-order system, not first order."
+   },
+   "explanation": "The magnitude is $1/\\sqrt{1+100}=0.0995$, which is $20\\log_{10}0.0995=-20.04$ dB. A decade above the corner a first-order lag falls at $-20$ dB per decade.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A fast-response temperature probe is specified as first-order with a bandwidth (the -3 dB frequency) of 4 Hz. Estimate its 10-90 percent step-response rise time in seconds, using $t_r=\\tau\\ln 9$ where $\\tau=1/(2\\pi f_b)$.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o2",
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o3"
+   ],
+   "correctValue": 0.0874,
+   "tolerance": 0.003,
+   "unit": "s",
+   "explanation": "The time constant is $\\tau=1/(2\\pi\\times4)=0.0398$ s. The rise time is $\\tau\\ln9=0.0398\\times2.197=0.0874$ s, which agrees with the rule of thumb $0.35/f_b=0.0875$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Sensor A has a bandwidth of 2 Hz and sensor B has a bandwidth of 8 Hz. Both are first-order. Which statement about their step responses is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "B has a time constant four times smaller than A"
+    },
+    {
+     "id": "b",
+     "text": "B has a time constant four times larger than A"
+    },
+    {
+     "id": "c",
+     "text": "B has a time constant equal to A but a higher gain"
+    },
+    {
+     "id": "d",
+     "text": "Bandwidth does not affect the step response"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "B has a time constant four times smaller than A",
+   "distractorRationale": {
+    "a": "Correct: $\\tau=1/(2\\pi f_b)$, so quadrupling the bandwidth divides $\\tau$ by four.",
+    "b": "The relation is inverse: a larger bandwidth means a smaller time constant.",
+    "c": "Gain and bandwidth are independent; the question concerns speed, and speed follows from $\\tau$.",
+    "d": "Bandwidth and rise time are directly related, $t_r\\approx0.35/f_b$."
+   },
+   "explanation": "For a first-order system bandwidth and time constant are reciprocal, $\\tau=1/\\omega_b$. B therefore has $\\tau_B=\\tau_A/4$ and a rise time four times shorter, so it tracks fast changes better but also passes more noise.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "When a stable first-order system is driven by a steady sinusoid, the steady-state output has a different frequency from the input, because the system attenuates the amplitude.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "A linear time-invariant system cannot create new frequencies. The steady-state output has the same frequency as the input, with a changed amplitude and phase given by $|G(j\\omega)|$ and $\\angle G(j\\omega)$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the steady-state amplitude ratio and phase of $G(s)=K/(\\tau s+1)$ for a sinusoidal input $A\\sin\\omega t$. State how the result changes for $\\omega\\tau\\ll1$ and $\\omega\\tau\\gg1$, and give the corner frequency in rad/s.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o1",
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o2"
+   ],
+   "markingGuide": [
+    "Substitutes $s=j\\omega$ to get $K/(1+j\\omega\\tau)$",
+    "Magnitude $K/\\sqrt{1+(\\omega\\tau)^2}$ and phase $-\\tan^{-1}(\\omega\\tau)$",
+    "Output has same frequency; amplitude is $A|G|$ with the phase added",
+    "Low frequency: gain about $K$, lag about $0^\\circ$; high frequency: gain falls like $K/(\\omega\\tau)$, lag tends to $-90^\\circ$",
+    "Corner frequency $1/\\tau$ rad/s with gain $0.707K$ and phase $-45^\\circ$"
+   ],
+   "explanation": "The derivation follows from rationalising the complex gain. A good answer ties the corner frequency to the pole location $-1/\\tau$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Two linear actuators have first-order dynamics with the same DC gain. Actuator X has a corner frequency of 3 Hz and actuator Y has 12 Hz. Compare their time constants, rise times and ability to follow a 5 Hz sinusoidal command, and give one disadvantage of the larger bandwidth.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o2",
+    "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response.o3"
+   ],
+   "markingGuide": [
+    "Computes $\\tau=1/(2\\pi f_c)$: X about $0.053$ s and Y about $0.013$ s (Y four times faster)",
+    "Rise time $\\approx0.35/f_b$: X about $0.117$ s, Y about $0.029$ s",
+    "At 5 Hz X has $\\omega\\tau=5/3=1.67$, gain about $0.51$, phase about $-59^\\circ$; Y has $5/12=0.42$, gain about $0.92$, phase about $-22.6^\\circ$",
+    "Concludes Y tracks the 5 Hz command much better",
+    "States that a wider bandwidth passes more high-frequency noise or demands more actuator effort"
+   ],
+   "explanation": "Because $\\omega\\tau=f/f_c$ for a first-order lag, frequency ratios are all that is needed for the gain and phase. The gains are $1/\\sqrt{1+1.667^2}=0.51$ and $1/\\sqrt{1+0.4167^2}=0.92$, which shows why bandwidth is the natural measure of speed.",
+   "board": "internal"
+  }
+ ]
+}

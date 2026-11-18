@@ -1,0 +1,402 @@
+{
+ "lessonTitle": "Stepper and Servo Motors",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A desktop 3D printer moves its print head to within a fraction of a millimetre with no position sensor at all, while a robot arm lifting varying loads cannot afford to trust a motor to simply obey. The difference is the choice between a stepper motor that counts steps open-loop and a servo that measures and corrects its own position."
+  },
+  {
+   "type": "text",
+   "markdown": "A **stepper motor** turns in discrete, repeatable increments. Each pulse sent to the driver advances the shaft by one **step angle** $\\theta_s$. Common motors have 200 full steps per revolution ($\\theta_s=1.8^\\circ$). Positioning is **open-loop**: the controller counts pulses and assumes the rotor followed. A **servo** system adds a position sensor (an encoder or potentiometer) and compares the measured position with the command, driving the motor to reduce the error. This is **closed-loop** control."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Step angle and steps for a rotation",
+   "text": "Step angle $\\theta_s=360^\\circ/N_{rev}$ where $N_{rev}$ is steps per revolution. With **microstepping** by a factor $m$ (the driver splits each full step into $m$ current levels), the effective step is $\\theta_s/m$. The number of steps for a rotation $\\Delta\\theta$ is $n=\\Delta\\theta/(\\theta_s/m)$."
+  },
+  {
+   "type": "math",
+   "latex": "\\theta_s=\\frac{360^{\\circ}}{N_{rev}},\\qquad n=\\frac{\\Delta\\theta}{\\theta_s/m},\\qquad f_{step}=\\frac{n_{rev/s}\\,N_{rev}\\,m}{1}",
+   "caption": "Step angle, steps for a rotation, and the pulse frequency needed for a given shaft speed in rev/s"
+  },
+  {
+   "type": "worked_example",
+   "title": "Counting steps",
+   "prompt": "A 1.8 degree stepper is driven in half-step mode (m = 2). How many pulses rotate the shaft by 135 degrees, and how many pulses per second give 10 rev/s?",
+   "steps": [
+    {
+     "text": "Effective step.",
+     "latex": "\\frac{1.8}{2}=0.9^\\circ"
+    },
+    {
+     "text": "Steps for 135 degrees.",
+     "latex": "n=\\frac{135}{0.9}=150"
+    },
+    {
+     "text": "Pulse rate for 10 rev/s: $200\\times2=400$ pulses per revolution.",
+     "latex": "f=10\\times400=4000\\ \\mathrm{pulses/s}"
+    }
+   ],
+   "answer": "150 pulses rotate the shaft 135 degrees; 4000 pulses/s gives 10 rev/s (600 rpm)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why open-loop works, and when it does not.** A stepper holds position because the rotor locks onto the magnetic field of the energised windings. As long as the load torque stays below the motor's **pull-out torque** at the commanded speed, every pulse produces exactly one step. If the torque or acceleration demand is exceeded the rotor **skips steps**, and because there is no feedback the controller never knows. A servo motor can use its full torque and speed range because the feedback corrects any error, but it needs a sensor, a controller and tuning."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Open-loop stepper",
+    "Closed-loop servo"
+   ],
+   "rows": [
+    [
+     "Feedback",
+     "None (counts pulses)",
+     "Encoder or potentiometer"
+    ],
+    [
+     "Cost and complexity",
+     "Low; no tuning",
+     "Higher; sensor and tuning"
+    ],
+    [
+     "Risk",
+     "Lost steps if overloaded, undetected",
+     "Error is detected and corrected"
+    ],
+    [
+     "Torque at high speed",
+     "Falls quickly with speed",
+     "Maintained over the speed range"
+    ],
+    [
+     "Holding at rest",
+     "Strong holding torque; may buzz",
+     "Holds by active control"
+    ],
+    [
+     "Typical use",
+     "Printers, indexing tables with known light loads",
+     "Robot joints, machine tools with variable loads"
+    ]
+   ],
+   "caption": "Choosing between stepper and servo positioning"
+  },
+  {
+   "type": "text",
+   "markdown": "**Gear ratio selection.** Motors are often fast with low torque, whereas machines need slow, strong motion. A gearbox with ratio $G$ (motor turns per output turn, $G>1$ for reduction) and efficiency $\\eta$ trades speed for torque. Power is conserved apart from losses, so torque is multiplied by $G\\eta$ and speed is divided by $G$."
+  },
+  {
+   "type": "math",
+   "latex": "T_{out}=G\\,\\eta\\,T_{motor},\\qquad \\omega_{out}=\\frac{\\omega_{motor}}{G},\\qquad P_{out}=\\eta\\,P_{motor}",
+   "caption": "Gearbox with ratio G and efficiency eta"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a gear ratio",
+   "prompt": "A motor delivers 0.10 N m continuously and can run up to 3000 rpm. A mechanism needs 2.0 N m at 30 rpm. The gearbox efficiency is 0.80. Find the minimum ratio and check the speed.",
+   "steps": [
+    {
+     "text": "Torque requirement.",
+     "latex": "G\\ge\\frac{T_{load}}{\\eta\\,T_{motor}}=\\frac{2.0}{0.80\\times0.10}=25"
+    },
+    {
+     "text": "Pick a standard ratio 30:1 and check the output torque.",
+     "latex": "T_{out}=30\\times0.80\\times0.10=2.4\\ \\mathrm{N\\,m}\\ \\ge\\ 2.0"
+    },
+    {
+     "text": "Motor speed needed to give 30 rpm at the output.",
+     "latex": "n_{motor}=30\\times30=900\\ \\mathrm{rpm}\\ \\le\\ 3000\\ \\mathrm{rpm}"
+    }
+   ],
+   "answer": "A 30:1 gearbox supplies 2.4 N m at the output and needs only 900 rpm from the motor, so both torque and speed requirements are met with margin."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Higher microstepping gives finer motion and smoother running but does not increase accuracy or holding torque by the same factor.",
+    "Choose a motor whose pull-out torque exceeds the load with a margin (often 30 to 50 %).",
+    "Gear reduction multiplies torque and reduces speed, and also reduces the load inertia seen by the motor by $G^2$.",
+    "Backlash in a gearbox adds positioning error that an open-loop stepper cannot detect."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not trust open-loop where a stall is dangerous",
+   "text": "If a lost step could cause a crash or injury (a gantry hitting its end stop, a clamp not closing), add feedback or a limit switch, or use a servo."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Step angle $=360^\\circ/N_{rev}$; with microstepping $m$, steps for a rotation $=\\Delta\\theta/(\\theta_s/m)$.",
+    "Stepper: open-loop, simple, can silently lose steps; servo: closed-loop, corrects errors, needs a sensor and tuning.",
+    "A gearbox gives $T_{out}=G\\eta T_{motor}$ and $\\omega_{out}=\\omega_{motor}/G$; choose $G$ to meet the load torque and speed."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A stepper motor has a step angle of 7.5 degrees. How many full steps make one revolution?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "48"
+    },
+    {
+     "id": "b",
+     "text": "24"
+    },
+    {
+     "id": "c",
+     "text": "96"
+    },
+    {
+     "id": "d",
+     "text": "7.5"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "48",
+   "distractorRationale": {
+    "a": "Correct: 360/7.5 = 48 steps.",
+    "b": "Wrong: 24 corresponds to 15 degrees per step.",
+    "c": "Wrong: 96 corresponds to 3.75 degrees per step.",
+    "d": "Wrong: this confuses the step angle with the step count."
+   },
+   "explanation": "Steps per revolution $=360^\\circ/\\theta_s=360/7.5=48$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the main risk of using an open-loop stepper motor for positioning?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The motor can skip steps under overload without the controller knowing"
+    },
+    {
+     "id": "b",
+     "text": "It cannot hold position at rest"
+    },
+    {
+     "id": "c",
+     "text": "It requires an encoder to run"
+    },
+    {
+     "id": "d",
+     "text": "It cannot rotate slowly"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The motor can skip steps under overload without the controller knowing",
+   "distractorRationale": {
+    "a": "Correct: with no feedback, lost steps are invisible.",
+    "b": "Wrong: steppers have strong holding torque when energised.",
+    "c": "Wrong: no sensor is required in open-loop operation.",
+    "d": "Wrong: steppers are excellent at low-speed motion."
+   },
+   "explanation": "Without feedback the controller assumes every commanded pulse became one step. If the load torque exceeds the pull-out torque the rotor misses steps and the recorded position becomes wrong.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A gearbox with a 10:1 reduction (ignoring losses) is placed between a motor and its load. What happens at the output shaft compared with the motor?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Speed is 10 times lower and torque is 10 times higher"
+    },
+    {
+     "id": "b",
+     "text": "Speed is 10 times higher and torque is 10 times lower"
+    },
+    {
+     "id": "c",
+     "text": "Both speed and torque are 10 times higher"
+    },
+    {
+     "id": "d",
+     "text": "Both are unchanged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Speed is 10 times lower and torque is 10 times higher",
+   "distractorRationale": {
+    "a": "Correct: power is conserved, so a speed reduction gives a proportional torque increase.",
+    "b": "Wrong: this describes a 1:10 speed-increasing gearbox.",
+    "c": "Wrong: that would multiply power by 100.",
+    "d": "Wrong: gearing changes both."
+   },
+   "explanation": "For an ideal gearbox $T_{out}=GT_{motor}$ and $\\omega_{out}=\\omega_{motor}/G$ so the product (power) is unchanged.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 1.8 degree stepper is driven with 1/8 microstepping. How many pulses are needed to rotate the shaft by 90 degrees?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "400"
+    },
+    {
+     "id": "b",
+     "text": "50"
+    },
+    {
+     "id": "c",
+     "text": "800"
+    },
+    {
+     "id": "d",
+     "text": "100"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "400",
+   "distractorRationale": {
+    "a": "Correct: effective step 0.225 degrees; 90/0.225 = 400.",
+    "b": "Wrong: 50 full steps would be needed without microstepping.",
+    "c": "Wrong: this doubles the correct count.",
+    "d": "Wrong: this uses 1/2 microstepping."
+   },
+   "explanation": "The effective step is $1.8/8=0.225^\\circ$, so $n=90/0.225=400$ pulses.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which application is best served by an open-loop stepper rather than a closed-loop servo?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A light, fixed-load indexing table in a low-cost labelling machine"
+    },
+    {
+     "id": "b",
+     "text": "A robot joint whose load varies and must hold position against disturbance"
+    },
+    {
+     "id": "c",
+     "text": "A machine tool spindle axis cutting hard material"
+    },
+    {
+     "id": "d",
+     "text": "A gimbal that must correct for unpredictable vibration"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A light, fixed-load indexing table in a low-cost labelling machine",
+   "distractorRationale": {
+    "a": "Correct: known light loads fit stepper open-loop control and save cost.",
+    "b": "Wrong: variable loads risk lost steps; a servo corrects them.",
+    "c": "Wrong: cutting forces vary and may exceed pull-out torque, so feedback is needed.",
+    "d": "Wrong: disturbance rejection needs feedback."
+   },
+   "explanation": "Open-loop stepping is acceptable when the load torque is known, constant and well below the pull-out torque. Variable or disturbing loads need feedback.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 1.8 degree stepper is driven with 1/16 microstepping and receives 275 pulses. Through what angle (in degrees) does the shaft turn?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o1"
+   ],
+   "correctValue": 30.9,
+   "tolerance": 0.1,
+   "unit": "degrees",
+   "explanation": "The effective step is $1.8/16=0.1125^\\circ$, so $275\\times0.1125=30.9^\\circ$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A mechanism needs 1.5 N m. The motor provides 0.12 N m, and the gearbox efficiency is 0.85. What is the minimum gear reduction ratio?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o3"
+   ],
+   "correctValue": 14.7,
+   "tolerance": 0.1,
+   "unit": "(ratio)",
+   "explanation": "$G\\ge T_{load}/(\\eta T_{motor})=1.5/(0.85\\times0.12)=14.7$. Choose the next standard ratio, such as 15:1 or 16:1.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A motor produces 0.090 N m at 4000 rpm and drives a load through a 40:1 gearbox of efficiency 0.90. What is the mechanical power at the output shaft, in watts?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o3"
+   ],
+   "correctValue": 33.9,
+   "tolerance": 0.3,
+   "unit": "W",
+   "explanation": "Motor power is $P=T\\omega=0.090\\times(4000\\times2\\pi/60)=37.7$ W. The output power is $0.90\\times37.7=33.9$ W. The output torque is $40\\times0.9\\times0.09=3.24$ N m at 100 rpm, which gives the same 33.9 W.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare open-loop stepper and closed-loop servo positioning for a gantry that carries tools of varying mass and must never lose position. State which you would choose and why.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o2"
+   ],
+   "markingGuide": [
+    "Stepper: open-loop, counts pulses, no feedback, cheaper and simpler",
+    "Stepper can skip steps if the load exceeds pull-out torque and the loss is undetected",
+    "Servo: encoder feedback compares actual with commanded position and corrects error",
+    "Servo maintains torque over a wider speed range and handles variable loads",
+    "Chooses servo (or a stepper with encoder feedback) for variable load and no-loss requirement, accepting higher cost"
+   ],
+   "explanation": "A stepper counts pulses without feedback, which is simple and cheap but can silently lose steps if the varying tool mass pushes the torque beyond pull-out. A servo measures position and corrects any error, so it keeps accuracy under variable load at higher cost and with tuning effort. For a gantry that must not lose position, the servo is the better choice.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A 1.8 degree stepper at 1/4 microstepping drives a lead screw of 4.0 mm pitch directly. Calculate the number of pulses to move 25 mm, and the pulse frequency needed for a speed of 50 mm/s. State what limits how fast the pulse rate can be raised in practice.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.actuators.stepper-and-servo.o1"
+   ],
+   "markingGuide": [
+    "Pulses per rev = 200 x 4 = 800",
+    "Revolutions for 25 mm = 25/4 = 6.25, so pulses = 6.25 x 800 = 5000",
+    "Speed 50 mm/s = 12.5 rev/s",
+    "Pulse frequency = 12.5 x 800 = 10000 pulses/s (10 kHz)",
+    "Limit: pull-out torque falls with speed, so load torque and acceleration must stay within the motor's torque-speed curve or steps are lost"
+   ],
+   "explanation": "There are $200\\times4=800$ pulses per revolution, and 25 mm requires $25/4=6.25$ revolutions, so $6.25\\times800=5000$ pulses. A speed of 50 mm/s is $12.5$ rev/s, requiring $12.5\\times800=10{,}000$ pulses per second. In practice the available torque falls as speed rises, so the load and acceleration must stay inside the torque-speed curve or the motor will skip steps.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Creep Behaviour: Stages, Power Law and Arrhenius Dependence",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A superheater tube in a coal-fired boiler runs at 550 °C and about 60 MPa hoop stress for twenty years. It is never overloaded, but each year its diameter grows by a fraction of a percent until a bulge appears and the tube ruptures. Metals deform slowly under steady load when they are hot, and the rate depends sharply on both stress and temperature."
+  },
+  {
+   "type": "text",
+   "markdown": "**Creep** is time-dependent plastic deformation under constant stress. It becomes significant above roughly $0.4$ of the absolute melting temperature $T_m$ (about 0.3 to 0.4 in some alloys). A creep test holds a specimen at constant load and temperature and records strain against time. The curve has three stages and ends in rupture."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Stage",
+    "Strain rate",
+    "Dominant mechanism",
+    "Appearance on strain-time curve"
+   ],
+   "rows": [
+    [
+     "Primary",
+     "Decreasing",
+     "Work hardening outpaces recovery",
+     "Curve flattens, concave downward"
+    ],
+    [
+     "Secondary (steady state)",
+     "Constant, minimum",
+     "Hardening and thermal recovery balance",
+     "Nearly straight line; most of the life"
+    ],
+    [
+     "Tertiary",
+     "Increasing",
+     "Necking, cavity formation, grain boundary sliding, microstructure degradation",
+     "Curve steepens until rupture"
+    ]
+   ],
+   "caption": "The minimum (secondary) creep rate is the main design parameter."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Minimum creep rate",
+   "text": "The minimum creep rate $\\dot\\varepsilon_s$ is the slope of the strain-time curve in stage II (units 1/s or %/h). It is the quantity used to estimate how fast a component deforms in service."
+  },
+  {
+   "type": "math",
+   "latex": "\\dot\\varepsilon_s = B\\,\\sigma^{n}",
+   "caption": "Norton's power law at fixed temperature. $\\sigma$ is the stress (MPa); $B$ and $n$ are constants of the material and temperature; $n$ is typically 3 to 8 for metals in the dislocation creep regime."
+  },
+  {
+   "type": "text",
+   "markdown": "Creep is thermally activated: atoms and dislocations need thermal energy to climb or diffuse. This gives an **Arrhenius** temperature dependence, in which the rate depends on $\\exp(-Q/RT)$. Combining it with Norton's law gives the standard form."
+  },
+  {
+   "type": "math",
+   "latex": "\\dot\\varepsilon_s = A\\,\\sigma^{n}\\exp\\left(-\\frac{Q}{R\\,T}\\right)",
+   "caption": "$Q$ = activation energy for creep (J/mol), $R=8.314$ J/(mol K), $T$ = absolute temperature (K), $A$ = material constant."
+  },
+  {
+   "type": "worked_example",
+   "title": "Minimum creep rate at a given stress and temperature",
+   "prompt": "A material has (assumed) $A=0.1$ s$^{-1}$MPa$^{-5}$, $n=5$ and $Q=300$ kJ/mol. Find $\\dot\\varepsilon_s$ at $\\sigma = 80$ MPa and $T = 550\\,^\\circ$C.",
+   "steps": [
+    {
+     "text": "Convert to kelvin.",
+     "latex": "T = 550+273 = 823\\ \\text{K}"
+    },
+    {
+     "text": "Compute the exponential factor.",
+     "latex": "\\exp\\left(-\\frac{300000}{8.314\\times823}\\right) = \\exp(-43.84) = 9.09\\times10^{-20}"
+    },
+    {
+     "text": "Compute $\\sigma^n = 80^5 = 3.277\\times10^{9}$ and multiply.",
+     "latex": "\\dot\\varepsilon_s = 0.1\\times3.277\\times10^{9}\\times9.09\\times10^{-20} = 2.98\\times10^{-11}\\ \\text{s}^{-1}"
+    },
+    {
+     "text": "Convert to percent per 1000 h: multiply by $3.6\\times10^{6}$ s per 1000 h, and by 100 percent.",
+     "latex": "\\dot\\varepsilon_s = 0.0107\\ \\%\\ \\text{per 1000 h}"
+    }
+   ],
+   "answer": "About 2.98\\times10^{-11} per second, i.e. 0.0107 percent per 1000 h."
+  },
+  {
+   "type": "worked_example",
+   "title": "The effect of temperature and stress",
+   "prompt": "For the same material, (a) by what factor does the rate increase when the temperature is raised from 800 K to 850 K at constant stress? (b) by what factor when the stress is doubled at constant temperature?",
+   "steps": [
+    {
+     "text": "(a) Ratio of the Arrhenius factors.",
+     "latex": "\\frac{\\dot\\varepsilon_{850}}{\\dot\\varepsilon_{800}} = \\exp\\left[\\frac{Q}{R}\\left(\\frac{1}{800}-\\frac{1}{850}\\right)\\right] = \\exp(2.653) = 14.2"
+    },
+    {
+     "text": "(b) Power-law factor.",
+     "latex": "\\frac{\\dot\\varepsilon(2\\sigma)}{\\dot\\varepsilon(\\sigma)} = 2^{5} = 32"
+    },
+    {
+     "text": "Both factors are greater than one: hotter or more heavily loaded material creeps faster."
+    }
+   ],
+   "answer": "A 50 K rise multiplies the rate about 14.2 times; doubling the stress multiplies it 32 times."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Finding Q from data",
+   "text": "Taking logarithms, $\\ln\\dot\\varepsilon_s=\\ln(A\\sigma^n)-Q/(RT)$. A plot of $\\ln\\dot\\varepsilon_s$ against $1/T$ at fixed stress is a straight line of slope $-Q/R$; a plot of $\\ln\\dot\\varepsilon_s$ against $\\ln\\sigma$ at fixed temperature has slope $n$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Primary creep is brief; secondary creep sets the rate used in design; tertiary creep signals imminent rupture.",
+    "Doubling the stress raises the rate by $2^n$; with $n=5$ that is a factor of 32.",
+    "A small temperature rise raises the rate by a large factor because of the exponential, which is why metal temperature control matters."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Absolute temperature",
+   "text": "Always use kelvin in the exponential. Using degrees Celsius gives meaningless results, because the exponent depends on $1/T$ with $T$ measured from absolute zero."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The creep curve has primary (decreasing rate), secondary (constant minimum rate) and tertiary (accelerating) stages.",
+    "$\\dot\\varepsilon_s=B\\sigma^n$ at fixed temperature (Norton), and $\\dot\\varepsilon_s=A\\sigma^n e^{-Q/RT}$ in general.",
+    "The Arrhenius dependence makes creep extremely sensitive to temperature; use kelvin and ratios to compare conditions."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which stage of the creep curve shows an approximately constant strain rate and takes most of the life?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Primary"
+    },
+    {
+     "id": "b",
+     "text": "Secondary (steady state)"
+    },
+    {
+     "id": "c",
+     "text": "Tertiary"
+    },
+    {
+     "id": "d",
+     "text": "Instantaneous elastic loading"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Secondary (steady state)",
+   "distractorRationale": {
+    "a": "Primary has a decreasing rate.",
+    "b": "Correct: hardening and recovery balance.",
+    "c": "Tertiary has an increasing rate.",
+    "d": "Elastic loading is not part of creep strain."
+   },
+   "explanation": "In stage II work hardening is balanced by thermal recovery, so the strain rate is constant at its minimum. This stage usually occupies most of the time to rupture.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What happens to the strain rate in tertiary creep?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It decreases to zero"
+    },
+    {
+     "id": "b",
+     "text": "It increases until rupture, due to necking and internal cavities"
+    },
+    {
+     "id": "c",
+     "text": "It stays constant"
+    },
+    {
+     "id": "d",
+     "text": "It becomes negative"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It increases until rupture, due to necking and internal cavities",
+   "distractorRationale": {
+    "a": "Rates fall in primary creep, not tertiary.",
+    "b": "Correct: damage accelerates the rate.",
+    "c": "Constant is secondary creep.",
+    "d": "Creep strain does not recover."
+   },
+   "explanation": "In stage III the effective section reduces by necking and cavitation, raising the stress and accelerating the strain rate. The stage ends in rupture.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A component's metal temperature rises by 30 K with the stress unchanged. What is the effect on the minimum creep rate?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It rises by a large factor, following an Arrhenius dependence"
+    },
+    {
+     "id": "b",
+     "text": "It rises by exactly 30 percent"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "It falls because the metal softens"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It rises by a large factor, following an Arrhenius dependence",
+   "distractorRationale": {
+    "a": "Correct: the rate depends on $\\exp(-Q/RT)$.",
+    "b": "The dependence is exponential, not linear.",
+    "c": "Temperature strongly affects creep.",
+    "d": "The rate increases with temperature."
+   },
+   "explanation": "Creep is thermally activated, so the rate contains $\\exp(-Q/RT)$. A modest rise in $T$ changes the exponent considerably and multiplies the rate by a large factor.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A material obeys $\\dot\\varepsilon_s\\propto\\sigma^{4}$. If the stress is doubled at the same temperature, by what factor does the minimum creep rate increase?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "8"
+    },
+    {
+     "id": "b",
+     "text": "4"
+    },
+    {
+     "id": "c",
+     "text": "16"
+    },
+    {
+     "id": "d",
+     "text": "2"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "16",
+   "distractorRationale": {
+    "a": "That would be $n=3$.",
+    "b": "That would be $n=2$.",
+    "c": "Correct: $2^4=16$.",
+    "d": "That would be $n=1$."
+   },
+   "explanation": "With Norton's law $\\dot\\varepsilon_s\\propto\\sigma^n$, doubling $\\sigma$ multiplies the rate by $2^n$. For $n=4$ this is a factor of 16.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "On a plot of $\\ln\\dot\\varepsilon_s$ against $1/T$ at constant stress, what does the slope represent?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$-Q/R$, the activation energy divided by the gas constant"
+    },
+    {
+     "id": "b",
+     "text": "The stress exponent $n$"
+    },
+    {
+     "id": "c",
+     "text": "The melting temperature"
+    },
+    {
+     "id": "d",
+     "text": "The creep rupture life"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$-Q/R$, the activation energy divided by the gas constant",
+   "distractorRationale": {
+    "a": "Correct: $\\ln\\dot\\varepsilon_s=\\text{const}-Q/(RT)$.",
+    "b": "$n$ is the slope against $\\ln\\sigma$.",
+    "c": "Melting temperature is unrelated to the slope.",
+    "d": "Rupture life is a separate quantity."
+   },
+   "explanation": "Taking logs of the Arrhenius term gives a straight line in $1/T$ with slope $-Q/R$. This allows $Q$ to be found from measured rates at different temperatures.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A steel at a fixed temperature follows $\\dot\\varepsilon_s=B\\sigma^n$ with $B=1\\times10^{-18}$ s$^{-1}$MPa$^{-4}$ and $n=4$ (assumed). Find the minimum creep rate at $\\sigma=150$ MPa in percent per 1000 h. (1000 h $=3.6\\times10^{6}$ s.)",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o2"
+   ],
+   "correctValue": 0.18225,
+   "tolerance": 0.005,
+   "unit": "% per 1000 h",
+   "explanation": "$150^4=5.062\\times10^{8}$, so $\\dot\\varepsilon_s=10^{-18}\\times5.062\\times10^{8}=5.06\\times10^{-10}$ s$^{-1}$. Multiplying by $3.6\\times10^{6}$ s and by 100 percent gives 0.182 percent per 1000 h.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A creep-resistant steel has $Q=250$ kJ/mol. By what factor does the minimum creep rate increase when the temperature rises from 700 K to 750 K at constant stress? Use $R = 8.314$ J/(mol K).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o3"
+   ],
+   "correctValue": 17.5278,
+   "tolerance": 0.4,
+   "unit": "dimensionless",
+   "explanation": "The ratio is $\\exp[(Q/R)(1/700-1/750)]=\\exp[30072\\times9.524\\times10^{-5}]=\\exp(2.864)=17.5$. A 50 K rise therefore multiplies the rate by about 18.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A material has $n=5$ and $Q=280$ kJ/mol. At 60 MPa and 800 K it creeps at a certain rate. Find the factor by which the rate increases at 75 MPa and 830 K. Use $R = 8.314$ J/(mol K).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o2",
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o3"
+   ],
+   "correctValue": 13.9757,
+   "tolerance": 0.5,
+   "unit": "dimensionless",
+   "explanation": "Stress factor: $(75/60)^5=3.052$. Temperature factor: $\\exp[(280000/8.314)(1/800-1/830)]=4.58$. The product is 14, because the two effects multiply.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Sketch in words the strain-time curve of a constant-load creep test and explain the physical origin of the three stages.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o1"
+   ],
+   "markingGuide": [
+    "Instantaneous elastic strain on loading, followed by the three stages",
+    "Primary: strain rate decreases as work hardening exceeds recovery",
+    "Secondary: constant minimum rate as hardening and thermal recovery balance; most of the life",
+    "Tertiary: rate increases due to necking, cavitation and microstructural damage, ending in rupture",
+    "States that the minimum creep rate is the design parameter"
+   ],
+   "explanation": "The shape follows the competition between hardening and recovery, plus damage late in life. The constant secondary rate is the quantity used in design.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Creep rates measured at constant stress are $2.0\\times10^{-9}$ s$^{-1}$ at 750 K and $3.5\\times10^{-8}$ s$^{-1}$ at 800 K. (a) Determine the activation energy $Q$. (b) Predict the rate at 850 K at the same stress. State the assumption involved.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o3",
+    "ug.mce-fracture-fatigue-failure.creep.creep-behaviour.o2"
+   ],
+   "markingGuide": [
+    "Uses $\\ln(\\dot\\varepsilon_2/\\dot\\varepsilon_1)=(Q/R)(1/T_1-1/T_2)$",
+    "$Q\\approx286$ kJ/mol",
+    "Predicts the 850 K rate by the same Arrhenius law as about 4.37\\times10^{-7} s$^{-1}$",
+    "States the assumption that the same mechanism and $Q$ apply across the range (power-law creep), and that the temperatures are in kelvin"
+   ],
+   "explanation": "Taking the ratio of the two rates removes $A\\sigma^n$ and leaves $Q=R\\ln(r_2/r_1)/(1/T_1-1/T_2)\\approx286$ kJ/mol. Extrapolating to 850 K with this activation energy gives about 4.37\\times10^{-7} s$^{-1}$, assuming the same creep mechanism.",
+   "board": "internal"
+  }
+ ]
+}

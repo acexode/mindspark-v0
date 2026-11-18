@@ -1,0 +1,413 @@
+{
+ "lessonTitle": "Debugging Strategies",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A deflection script that worked yesterday now crashes with a wall of red text, and the engineer who wrote it has gone home. Professionals do not guess: they read the error, shrink the problem until the fault is obvious, and keep a test that proves it stays fixed. This unit teaches that routine."
+  },
+  {
+   "type": "text",
+   "markdown": "A **bug** is any difference between what a program does and what you intended. Bugs come in two kinds. A **crash** (exception) stops the program and prints a message. A **silent error** lets the program finish but gives a wrong number, and it is the more dangerous kind, because nothing warns you. Debugging is a method for finding the cause of either kind, not a matter of luck."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Traceback",
+   "text": "A traceback is the report Python prints when an exception is raised. It lists the chain of function calls, oldest first, and ends with the exception type and message. The **last** `File` line shows where the exception was actually raised; the lines above show how the program got there."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Exception",
+    "Typical cause",
+    "Example"
+   ],
+   "rows": [
+    [
+     "`NameError`",
+     "Misspelled or undefined variable",
+     "Writing `i` when the variable is `I`"
+    ],
+    [
+     "`TypeError`",
+     "Operation on incompatible types",
+     "Adding a number to a string read from a file"
+    ],
+    [
+     "`IndexError`",
+     "Index beyond the array length",
+     "`x[5]` for an array of 5 elements (valid: 0 to 4)"
+    ],
+    [
+     "`ZeroDivisionError`",
+     "Denominator is exactly 0",
+     "Dividing by a computed area of 0"
+    ],
+    [
+     "`ValueError`",
+     "Right type, impossible value",
+     "`math.sqrt(-4.0)`"
+    ]
+   ],
+   "caption": "Common exceptions and what they usually mean."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading a traceback",
+   "prompt": "A script prints the traceback below. Find the line at fault and the cause.\n\nTraceback (most recent call last):\n  File \"beam.py\", line 12, in <module>\n    d = deflection(w, L, E, I)\n  File \"beam.py\", line 6, in deflection\n    return 5 * w * L**4 / (384 * E * i)\nNameError: name 'i' is not defined",
+   "steps": [
+    {
+     "text": "Read the last line first: `NameError: name 'i' is not defined`. The program used a name that has not been created."
+    },
+    {
+     "text": "The last `File` line gives the location of the raise: line 6 in `deflection`. Line 12 is only the call that led there."
+    },
+    {
+     "text": "On line 6 the expression uses lowercase `i`, whereas the function parameter is the capital `I` (second moment of area). Python names are case sensitive, so `i` is undefined."
+    },
+    {
+     "text": "Fix: replace `i` with `I`. The fix is confirmed by rerunning; a new exception would point to the next fault."
+    }
+   ],
+   "answer": "Line 6 of beam.py: the lowercase name i should be the parameter I."
+  },
+  {
+   "type": "text",
+   "markdown": "A silent error gives no traceback, so you must expose the program's internal state. **Print debugging** means printing intermediate values with labels and units, then comparing each to a quick hand estimate. The first intermediate value that disagrees with your expectation lies just after the fault."
+  },
+  {
+   "type": "worked_example",
+   "title": "Localising a silent error",
+   "prompt": "A cantilever tip deflection $\\delta=PL^3/(3EI)$ is coded for $P=1000$ N, $L=2.0$ m, $E=200$ GPa, with a rectangular section $b=0.05$ m, $h=0.10$ m where $I=bh^3/12$. The program prints 5.3e-4 m but a hand check expects 3.2e-3 m. Find the fault.",
+   "steps": [
+    {
+     "text": "Hand check: $I=0.05\\times0.1^3/12=4.17\\times10^{-6}$ m^4, so $\\delta=1000\\times8/(3\\times2\\times10^{11}\\times4.17\\times10^{-6})=3.2\\times10^{-3}$ m.",
+     "latex": "\\delta=\\frac{1000\\times2^3}{3\\times200\\times10^{9}\\times4.17\\times10^{-6}}=3.2\\times10^{-3}\\ \\text{m}"
+    },
+    {
+     "text": "Add labelled prints: `print('I =', I)` gives `I = 2.5e-05`. The expected value is 4.17e-6, so the fault is at or before the line computing I. Printing `P`, `L`, `E` shows correct values."
+    },
+    {
+     "text": "Inspect the line: `I = b * h**3 / 2`. The divisor should be 12. With the typo, $I=0.05\\times10^{-3}/2=2.5\\times10^{-5}$, which matches the printed value."
+    },
+    {
+     "text": "After correcting to `/ 12` the program prints 3.2e-3 m, agreeing with the hand check."
+    }
+   ],
+   "answer": "The line I = b*h**3/2 should divide by 12; the corrected output is 3.2e-3 m."
+  },
+  {
+   "type": "text",
+   "markdown": "When a large program fails, shrink it. A **minimal reproducible example** (MRE) is the smallest piece of code that still shows the same error. Copy the script, delete code unrelated to the failure, replace large data files by 3 to 5 numbers, and rerun after every deletion. If the error disappears, the last deleted part was involved. The MRE usually makes the cause obvious, and it is also what you send to a colleague or an online forum."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Divide and conquer",
+   "text": "If a pipeline has $N$ stages and exactly one is faulty, print the data at the halfway point. A correct value means the fault is downstream; a wrong value means it is upstream. Repeating this finds the fault in at most $\\lceil\\log_2 N\\rceil$ checks."
+  },
+  {
+   "type": "text",
+   "markdown": "A **test** is a small program that checks a function against an answer you computed independently, usually by hand. Use `assert condition`, which raises an `AssertionError` if the condition is false. Because computed floats carry rounding error, compare with a tolerance rather than `==`."
+  },
+  {
+   "type": "math",
+   "latex": "\\left|\\,x_{\\text{computed}}-x_{\\text{expected}}\\right|\\le \\varepsilon",
+   "caption": "A test passes if the computed value differs from the hand value by no more than a tolerance epsilon, chosen from the digits of the hand value."
+  },
+  {
+   "type": "worked_example",
+   "title": "Writing a test from a hand calculation",
+   "prompt": "A function `pipe_area(d)` returns the cross-sectional area $A=\\pi d^2/4$ (m^2) for diameter $d$ (m). Write a test using a case you can calculate by hand.",
+   "steps": [
+    {
+     "text": "Choose a convenient input: $d=0.10$ m. Hand calculation: $A=\\pi(0.10)^2/4=\\pi\\times0.01/4=7.854\\times10^{-3}$ m^2.",
+     "latex": "A=\\frac{\\pi(0.10)^2}{4}=7.854\\times10^{-3}\\ \\text{m}^2"
+    },
+    {
+     "text": "The hand value has 4 significant figures, so a tolerance of $10^{-6}$ m^2 (well inside the last digit) is suitable."
+    },
+    {
+     "text": "Write: `assert abs(pipe_area(0.10) - 7.854e-3) < 1e-6`. Add a second case such as `d = 0.0` expecting 0, which tests an edge."
+    },
+    {
+     "text": "Run the test after every edit. If a future change alters the formula, the assertion fails immediately."
+    }
+   ],
+   "answer": "assert abs(pipe_area(0.10) - 7.854e-3) < 1e-6"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Read the traceback from the bottom: exception type, message, then the last File line.",
+    "Print labelled intermediate values and compare each with a hand estimate.",
+    "Reduce the failing program to a minimal reproducible example.",
+    "Change one thing at a time and rerun after each change.",
+    "Keep tests that compare against hand-calculated values, with a tolerance."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "What not to do",
+   "text": "Do not change code at random until the output looks right: you may hide the fault instead of fixing it. A program that runs without error is not necessarily correct, and a test written by running your own function and copying its output proves nothing, because the expected value must come from an independent calculation."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The last File line of a traceback shows where the exception was raised; the message names the type of fault.",
+    "Print labelled intermediate values and compare with hand estimates to localise silent errors.",
+    "A minimal reproducible example removes everything not needed to reproduce the error.",
+    "A test asserts that a function matches an independent hand calculation within a tolerance."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A run stops with `TypeError: unsupported operand type(s) for +: 'float' and 'str'` on a line that adds a measured force to a running total. What is the most likely cause?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The array index is outside the valid range"
+    },
+    {
+     "id": "b",
+     "text": "A variable name was misspelled"
+    },
+    {
+     "id": "c",
+     "text": "The running total was not initialised to zero"
+    },
+    {
+     "id": "d",
+     "text": "The force value was read from a file as text and was not converted to a number"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The force value was read from a file as text and was not converted to a number",
+   "distractorRationale": {
+    "d": "Correct: the string type is the clue.",
+    "c": "A missing initialisation would give a NameError, not a TypeError about types.",
+    "a": "An index error would be an IndexError.",
+    "b": "A misspelling would give a NameError."
+   },
+   "explanation": "A float plus a string means one operand is text. Values read from a text file arrive as strings, so they must be converted with float() before arithmetic.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The traceback ends:\n  File \"run.py\", line 20, in <module>\n    out = solve(data)\n  File \"run.py\", line 11, in solve\n    return step(x) / n\n  File \"run.py\", line 5, in step\n    return x[3]\nIndexError: list index out of range\nWhere was the exception raised, and what is the likely cause?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Line 20; the call to solve is invalid"
+    },
+    {
+     "id": "b",
+     "text": "Line 5 in step; the sequence x has fewer than 4 elements"
+    },
+    {
+     "id": "c",
+     "text": "Line 11 in solve; n is zero"
+    },
+    {
+     "id": "d",
+     "text": "Line 5 in step; the name x is undefined"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Line 5 in step; the sequence x has fewer than 4 elements",
+   "distractorRationale": {
+    "b": "Correct: the last File line and the IndexError type point to a too-short sequence.",
+    "a": "The first lines show only the call chain, not the location of the raise.",
+    "c": "A zero n would give ZeroDivisionError, and it would be raised on line 11, not as IndexError.",
+    "d": "An undefined name would give NameError."
+   },
+   "explanation": "The last File line, line 5 in step, is where the IndexError was raised. Index 3 requires at least four elements, so the list passed in was too short; lines 20 and 11 only show the calls that led there.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A student codes the area of a circular hole as `A = math.pi * d**2 / 4` with `d = 40`, intending 40 mm but forgetting to convert to metres. The result prints as 1256.6. The expected area is $1.2566\\times10^{-3}$ m^2. By what factor is the printed value larger than expected?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o1"
+   ],
+   "correctValue": 1000000,
+   "tolerance": 1000,
+   "unit": "dimensionless",
+   "explanation": "The printed 1256.6 corresponds to d in millimetres (area in mm^2), whereas the expected value is in m^2. The ratio is 1256.6 / 1.2566e-3 = 1.0e6, which equals (1000)^2, the square of the length-unit factor, and a printed check like this exposes the missing conversion.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the first thing to do when asked to produce a minimal reproducible example of a failing 300-line script?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Rewrite the script from scratch in a different language"
+    },
+    {
+     "id": "b",
+     "text": "Remove code unrelated to the failure and rerun after each removal to confirm the error persists"
+    },
+    {
+     "id": "c",
+     "text": "Add more print statements throughout the script"
+    },
+    {
+     "id": "d",
+     "text": "Increase the tolerance in all comparisons"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Remove code unrelated to the failure and rerun after each removal to confirm the error persists",
+   "distractorRationale": {
+    "b": "Correct: shrink while preserving the failure.",
+    "c": "Prints help localise a fault but do not shrink the program.",
+    "a": "Rewriting changes the code and may remove the fault rather than explain it.",
+    "d": "Tolerances relate to tests, not to reproducing an error."
+   },
+   "explanation": "A minimal example is produced by successively deleting what is not needed while checking that the same error still occurs. This isolates the cause and gives a short program others can run.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A 200-line script that processes a sensor file crashes with an IndexError after about a minute. Describe how you would reduce it to a minimal reproducible example and why this helps.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o2"
+   ],
+   "markingGuide": [
+    "Work on a copy and remove or comment out parts not needed for the error, rerunning after each change",
+    "Replace the large data file with a few hand-written values that still trigger the error",
+    "Stop when removing any further line makes the error disappear or change",
+    "Identifies that the remaining few lines show the cause directly (e.g. an index beyond array length)",
+    "Explains the benefit: faster runs, easier reasoning, and a shareable example for help"
+   ],
+   "explanation": "Each deletion either keeps the error, showing the code was irrelevant, or removes it, showing the code mattered. The result is short enough to reason about and quick to run repeatedly.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "You are writing a test for a function that returns the hoop stress of a thin-walled sphere, $\\sigma=pd/(4t)$. For internal pressure $p=1.5$ MPa, diameter $d=2.0$ m and wall thickness $t=0.015$ m, what hand-calculated expected value in MPa should the test assert?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o3"
+   ],
+   "correctValue": 50,
+   "tolerance": 0.1,
+   "unit": "MPa",
+   "explanation": "Substitute directly: sigma = 1.5 x 2.0 / (4 x 0.015) = 3.0 / 0.06 = 50 MPa. Because p is in MPa and the ratio d/t is dimensionless, the stress is in MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which is the best way to test that `f(x)` returns a value matching a hand-calculated result of 0.3125?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "`assert f(x) is not None`"
+    },
+    {
+     "id": "b",
+     "text": "`assert f(x) == 0.3125`"
+    },
+    {
+     "id": "c",
+     "text": "`print(f(x))` and check by eye"
+    },
+    {
+     "id": "d",
+     "text": "`assert abs(f(x) - 0.3125) < 1e-6`"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "`assert abs(f(x) - 0.3125) < 1e-6`",
+   "distractorRationale": {
+    "d": "Correct: compares with an independent value using a tolerance.",
+    "b": "Exact equality of floats may fail because of rounding even when the code is right.",
+    "a": "This passes for any wrong number, so it does not test accuracy.",
+    "c": "Printing is not an automated test and relies on memory and attention."
+   },
+   "explanation": "A tolerance test passes for rounding-level differences and fails for real errors, and it can be run automatically. Exact equality is fragile for floats, a not-None check proves nothing about correctness, and eyeballing is not repeatable.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "If a program runs to the end without raising any exception, the numerical result it prints can be assumed to be correct.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Silent errors such as wrong formulae, unit mistakes or off-by-one indices do not raise exceptions. Only checks against independent values, such as hand calculations, reveal them.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A function that should return 5.0 for a hand-calculated test case returns 7.2, and no error message is printed. Describe a systematic procedure to locate the fault, including how you decide where to look.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o1",
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o3"
+   ],
+   "markingGuide": [
+    "Recognises this is a silent logic error, so there is no traceback to read",
+    "Breaks the calculation into stages and prints labelled intermediate values",
+    "Compares each intermediate value with a hand calculation of the same stage",
+    "Locates the first stage where code and hand value disagree; the fault lies at or just before it",
+    "Fixes one thing, reruns the test, and keeps the test for the future"
+   ],
+   "explanation": "Intermediate checkpoints turn an unknown fault into a search over a short sequence of stages. The first disagreement bounds the fault, and the retained test guards against regression.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A data-processing pipeline has 64 stages in sequence and exactly one of them corrupts the data. By printing the data after the middle stage of the current range each time, what is the maximum number of printouts needed to identify the faulty stage?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.debugging-strategies.o2"
+   ],
+   "correctValue": 6,
+   "tolerance": 0.5,
+   "unit": "printouts",
+   "explanation": "Each print halves the number of candidate stages, so the maximum needed is ceil(log2 64) = 6. Starting from 64: 32, 16, 8, 4, 2, 1 candidates after six checks.",
+   "board": "internal"
+  }
+ ]
+}

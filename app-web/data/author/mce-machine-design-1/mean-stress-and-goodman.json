@@ -1,0 +1,427 @@
+{
+ "lessonTitle": "Mean Stress and the Goodman Criterion",
+ "estimatedMinutes": 60,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A ship's propeller shaft, an aircraft wing spar and a bridge hanger can all see the same swing in stress each cycle, but they do not last the same time, because one is also held under a large steady tension. A constant offset to the stress shortens fatigue life, and the Goodman diagram is how we account for it."
+  },
+  {
+   "type": "text",
+   "markdown": "The S-N curve and endurance limit (previous unit) describe fatigue under **fully reversed** stress, which swings equally above and below zero. Real machine parts usually carry a steady component as well, for example a belt-tension pre-load or the self-weight of a rotor. Any cyclic stress can be described by its **alternating (amplitude) stress** $\\sigma_a$ and its **mean stress** $\\sigma_m$. A positive (tensile) mean stress opens cracks and reduces the alternating stress that the part can tolerate."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_a=\\frac{\\sigma_{max}-\\sigma_{min}}{2},\\qquad \\sigma_m=\\frac{\\sigma_{max}+\\sigma_{min}}{2}",
+   "caption": "Alternating and mean stress of a cyclic stress between sigma_min and sigma_max (MPa)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Goodman criterion",
+   "text": "The modified Goodman line on a $\\sigma_a$ versus $\\sigma_m$ diagram is the straight line joining the endurance limit $S_e$ on the $\\sigma_a$ axis (zero mean stress) to the ultimate tensile strength $S_{ut}$ on the $\\sigma_m$ axis (zero alternating stress). A stress state $(\\sigma_m,\\sigma_a)$ that lies below the line is predicted to have infinite life; one above it is not. In Shigley notation the factor of safety against fatigue is $n_f$ with $\\sigma_a/S_e+\\sigma_m/S_{ut}=1/n_f$."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\sigma_a}{S_e}+\\frac{\\sigma_m}{S_{ut}}=\\frac{1}{n_f},\\qquad \\text{Soderberg: }\\frac{\\sigma_a}{S_e}+\\frac{\\sigma_m}{S_y}=\\frac{1}{n_f},\\qquad \\text{Gerber: }n_f\\frac{\\sigma_a}{S_e}+\\left(\\frac{n_f\\sigma_m}{S_{ut}}\\right)^2=1",
+   "caption": "Three common mean-stress criteria for a tensile mean stress; S_e is the corrected endurance limit of the component"
+  },
+  {
+   "type": "worked_example",
+   "title": "Goodman factor of safety for a cycling load",
+   "prompt": "A steel component (typical $S_{ut}=600$ MPa, $S_y=420$ MPa, corrected endurance limit $S_e=250$ MPa) sees a stress cycling between $\\sigma_{max}=240$ MPa and $\\sigma_{min}=-40$ MPa. Find the factor of safety with the Goodman, Soderberg and Gerber criteria.",
+   "steps": [
+    {
+     "text": "Alternating and mean stress.",
+     "latex": "\\sigma_a=\\frac{240-(-40)}{2}=140\\ \\text{MPa},\\qquad \\sigma_m=\\frac{240+(-40)}{2}=100\\ \\text{MPa}"
+    },
+    {
+     "text": "Goodman line: add the two ratios and invert.",
+     "latex": "\\frac{1}{n_f}=\\frac{140}{250}+\\frac{100}{600}=0.7267\\ \\Rightarrow\\ n_f=1.38"
+    },
+    {
+     "text": "Soderberg line, using the yield strength in place of $S_{ut}$ (more conservative).",
+     "latex": "\\frac{1}{n_f}=\\frac{140}{250}+\\frac{100}{420}=0.7981\\ \\Rightarrow\\ n_f=1.25"
+    },
+    {
+     "text": "Gerber parabola, solved for $n_f$ (the other root is not physical).",
+     "latex": "n_f=\\frac{1}{2}\\left(\\frac{S_{ut}}{\\sigma_m}\\right)^2\\frac{\\sigma_a}{S_e}\\left[-1+\\sqrt{1+\\left(\\frac{2\\sigma_mS_e}{S_{ut}\\sigma_a}\\right)^2}\\right]=1.65"
+    }
+   ],
+   "answer": "Goodman gives $n_f=1.38$, Soderberg $n_f=1.25$ (most conservative) and Gerber $n_f=1.65$ (closest to typical test data for ductile steel)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Criterion",
+    "Equation (infinite life)",
+    "Character"
+   ],
+   "rows": [
+    [
+     "Soderberg",
+     "$\\sigma_a/S_e+\\sigma_m/S_y=1$",
+     "Very conservative; also guards against yielding"
+    ],
+    [
+     "Modified Goodman",
+     "$\\sigma_a/S_e+\\sigma_m/S_{ut}=1$",
+     "Conservative for ductile steels; widely used for design, and fits brittle behaviour"
+    ],
+    [
+     "Gerber",
+     "$\\sigma_a/S_e+(\\sigma_m/S_{ut})^2=1$",
+     "Fits test data for ductile materials, less conservative"
+    ],
+    [
+     "Langer (yield) line",
+     "$\\sigma_a+\\sigma_m=S_y$",
+     "First-cycle yielding check, should be added to any fatigue line"
+    ]
+   ],
+   "caption": "Mean-stress criteria on the $\\sigma_a$-$\\sigma_m$ diagram"
+  },
+  {
+   "type": "text",
+   "markdown": "**Reading the Goodman diagram.** Plot the operating point $(\\sigma_m,\\sigma_a)$. If it lies below the Goodman line and the Langer yield line it is in the safe zone. The load line from the origin through the point (slope $\\sigma_a/\\sigma_m$, if the ratio of alternating to mean stress remains constant as the load scales) meets the Goodman line at the failure point, and the factor of safety is the ratio of the distance to that intersection to the distance to the operating point. For a **compressive** mean stress the Goodman line is not extended; the common approach is to use $\\sigma_a\\le S_e$ with no benefit from compression (a conservative assumption)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Is this point safe?",
+   "prompt": "Using the same material ($S_e=250$ MPa, $S_{ut}=600$ MPa, $S_y=420$ MPa), a different part operates at $\\sigma_m=180$ MPa and $\\sigma_a=120$ MPa. Locate it relative to the Goodman line, find the factor of safety assuming the load ratio $\\sigma_a/\\sigma_m$ stays constant, and check yield.",
+   "steps": [
+    {
+     "text": "Goodman line height at $\\sigma_m=180$ MPa.",
+     "latex": "\\sigma_{a,line}=250\\left(1-\\frac{180}{600}\\right)=175\\ \\text{MPa}"
+    },
+    {
+     "text": "The operating point has $\\sigma_a=120$ MPa, which is below 175 MPa, so it is in the safe zone.",
+     "latex": "120<175"
+    },
+    {
+     "text": "Load-line slope and the intersection with the Goodman line (the failure point has the same ratio $r=\\sigma_a/\\sigma_m$).",
+     "latex": "r=\\frac{120}{180}=0.667,\\qquad S_a=\\frac{1}{1/S_e+1/(rS_{ut})}=\\frac{1}{1/250+1/(0.667\\times600)}=153.8\\ \\text{MPa}"
+    },
+    {
+     "text": "Factor of safety is the ratio of failure amplitude to operating amplitude; then the yield check, $\\sigma_a+\\sigma_m$ against $S_y$.",
+     "latex": "n_f=\\frac{153.8}{120}=1.28,\\qquad \\sigma_a+\\sigma_m=300<420\\ \\text{MPa}"
+    }
+   ],
+   "answer": "The point is inside the safe zone with $n_f=1.28$, and the Langer yield check is satisfied (yield factor 1.40)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Variable-amplitude loading: Miner's rule.** When the stress amplitude changes in blocks, each block uses up a fraction of the fatigue life. If $n_i$ cycles are applied at a completely reversed stress level (or equivalent) $\\sigma_i$ for which the S-N curve gives life $N_i$, the damage fraction is $n_i/N_i$. Miner's linear damage rule predicts failure when the sum of all fractions reaches 1. Here the life at stress $S$ comes from the S-N line $S=aN^b$ (the previous unit), so $N=(S/a)^{1/b}$."
+  },
+  {
+   "type": "math",
+   "latex": "D=\\sum_i\\frac{n_i}{N_i}\\quad(\\text{failure when }D=1),\\qquad N=\\left(\\frac{S}{a}\\right)^{1/b},\\quad a=\\frac{(fS_{ut})^2}{S_e},\\ b=-\\frac13\\log_{10}\\frac{fS_{ut}}{S_e}",
+   "caption": "Palmgren-Miner cumulative damage; the S-N line in the finite-life range between 10^3 and 10^6 cycles"
+  },
+  {
+   "type": "worked_example",
+   "title": "Cumulative damage under three load levels",
+   "prompt": "Take the same steel with $S_e=250$ MPa, $S_{ut}=600$ MPa and $f=0.9$, so $a=1166.4$ MPa and $b=-0.1115$. A part is cycled fully reversed for 4000 cycles at 300 MPa, 60000 cycles at 260 MPa and 2 million cycles at 230 MPa. Estimate the damage and the number of repeats of the block to failure.",
+   "steps": [
+    {
+     "text": "Lives from the S-N line, $N=(S/a)^{1/b}$.",
+     "latex": "N_{300}=1.95e+05,\\qquad N_{260}=7.03e+05\\ \\text{cycles}"
+    },
+    {
+     "text": "The 230 MPa stress is below the endurance limit of 250 MPa, so it adds no damage in the basic rule (a conservative treatment would extend the sloping line).",
+     "latex": "\\frac{n_3}{N_3}\\approx0"
+    },
+    {
+     "text": "Damage fractions of the first two blocks.",
+     "latex": "\\frac{4000}{1.95e+05}=0.021,\\qquad \\frac{60000}{7.03e+05}=0.085"
+    },
+    {
+     "text": "Total damage per block and number of repeats to reach $D=1$.",
+     "latex": "D=0.021+0.085=0.106,\\qquad \\frac{1}{D}=9.4\\ \\text{blocks}"
+    }
+   ],
+   "answer": "The damage per block is about 0.11, so the part is predicted to fail after about 9.4 repeats of the block."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Miner's rule ignores the order of loading: a high-then-low sequence is usually more damaging than low-then-high, so the true sum at failure ranges from about 0.7 to 2.",
+    "It is a linear, empirical rule; it is used with a safety margin.",
+    "Cycles below the endurance limit may do damage once cracks have started, so a conservative analysis extends the S-N line below $S_e$.",
+    "Mean stress must be converted to an equivalent fully reversed stress before using the S-N line, for example $\\sigma_{rev}=\\sigma_a/(1-\\sigma_m/S_{ut})$ (Goodman)."
+   ]
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Any cycle is described by $\\sigma_a$ and $\\sigma_m$; tensile mean stress reduces the allowable alternating stress.",
+    "Goodman: $\\sigma_a/S_e+\\sigma_m/S_{ut}=1/n_f$; Soderberg uses $S_y$ and is more conservative; Gerber is a parabola that fits ductile data better; add a yield check.",
+    "A point is safe if it lies below the Goodman line; the factor of safety follows from the load line through the origin.",
+    "Miner's rule sums $n_i/N_i$ and predicts failure at $D=1$, but ignores load sequence and interaction effects."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "On a Goodman diagram, which two points are joined by the Goodman line?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The endurance limit on the alternating-stress axis and the ultimate tensile strength on the mean-stress axis"
+    },
+    {
+     "id": "b",
+     "text": "The yield strength on both axes"
+    },
+    {
+     "id": "c",
+     "text": "The endurance limit on the mean-stress axis and the yield strength on the alternating-stress axis"
+    },
+    {
+     "id": "d",
+     "text": "The origin and the ultimate tensile strength"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The endurance limit on the alternating-stress axis and the ultimate tensile strength on the mean-stress axis",
+   "distractorRationale": {
+    "a": "Correct: the line runs from (0, Se) to (Sut, 0).",
+    "b": "Joining the yield strengths gives the Langer line.",
+    "c": "Soderberg joins Se with the yield strength on the mean axis, and the axes are the other way round here.",
+    "d": "The Goodman line does not pass through the origin."
+   },
+   "explanation": "At zero mean stress the allowable amplitude is the endurance limit, and at zero amplitude the allowable mean stress is the tensile strength. The straight line between these two points is the Goodman line.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A steel component has $S_e=200$ MPa and $S_{ut}=500$ MPa. It operates at $\\sigma_a=90$ MPa and $\\sigma_m=300$ MPa. What does the Goodman criterion predict?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o1",
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The point lies above the Goodman line ($n_f\\approx0.95$), so fatigue failure is predicted"
+    },
+    {
+     "id": "b",
+     "text": "The point lies below the line and $n_f\\approx1.5$"
+    },
+    {
+     "id": "c",
+     "text": "The point lies exactly on the line"
+    },
+    {
+     "id": "d",
+     "text": "The criterion cannot be applied because the mean stress is larger than the amplitude"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The point lies above the Goodman line ($n_f\\approx0.95$), so fatigue failure is predicted",
+   "distractorRationale": {
+    "a": "Correct: 90/200 + 300/500 = 0.45 + 0.60 = 1.05, so n_f = 0.95.",
+    "b": "Unsafe is predicted, not a factor of 1.5.",
+    "c": "The sum is 1.05, not 1.0.",
+    "d": "The criterion applies for any tensile mean stress below Sut."
+   },
+   "explanation": "The Goodman sum is $\\sigma_a/S_e+\\sigma_m/S_{ut}=0.45+0.60=1.05$, which is greater than 1, so the point lies outside the safe zone. The factor of safety is therefore $n_f=1/1.05=0.95$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which of the three criteria (Soderberg, Goodman, Gerber) is the most conservative for a ductile steel with $S_y<S_{ut}$, and why?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Soderberg, because it uses the yield strength instead of the tensile strength for the mean-stress intercept"
+    },
+    {
+     "id": "b",
+     "text": "Gerber, because it is a parabola"
+    },
+    {
+     "id": "c",
+     "text": "Goodman, because it is a straight line"
+    },
+    {
+     "id": "d",
+     "text": "All three give the same result"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Soderberg, because it uses the yield strength instead of the tensile strength for the mean-stress intercept",
+   "distractorRationale": {
+    "a": "Correct: the line to the smaller intercept lies lowest.",
+    "b": "The Gerber parabola bulges above the straight line, so it is least conservative.",
+    "c": "Goodman lies above Soderberg when Sy < Sut.",
+    "d": "They differ unless Sy = Sut."
+   },
+   "explanation": "Soderberg's line ends at $S_y$ rather than $S_{ut}$ on the mean-stress axis, so it lies below Goodman's. Gerber's parabola bulges above both, which is why it matches data best but is least conservative.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A part has been cycled at one stress level for 40 per cent of its life at that level. A second level has a life of $2\\times10^5$ cycles. According to Miner's rule, how many cycles at the second level will cause failure?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$1.2\\times10^5$ cycles"
+    },
+    {
+     "id": "b",
+     "text": "$8\\times10^4$ cycles"
+    },
+    {
+     "id": "c",
+     "text": "$2\\times10^5$ cycles"
+    },
+    {
+     "id": "d",
+     "text": "$3.3\\times10^5$ cycles"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$1.2\\times10^5$ cycles",
+   "distractorRationale": {
+    "a": "Correct: remaining damage 0.6 x 2e5 = 1.2e5.",
+    "b": "8e4 is only 0.4 x 2e5, the damage already used.",
+    "c": "2e5 ignores the first block.",
+    "d": "3.3e5 divides rather than multiplies."
+   },
+   "explanation": "The first block uses $D_1=0.4$ of the life, so the second block can use $1-0.4=0.6$. The corresponding cycles are $0.6\\times2\\times10^5=1.2\\times10^5$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a part with a compressive mean stress, the usual conservative design assumption in a Goodman analysis is that:",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The compressive mean stress gives no benefit, so the limit remains $\\sigma_a\\le S_e$"
+    },
+    {
+     "id": "b",
+     "text": "The Goodman line is extended to negative $\\sigma_m$ with a positive slope"
+    },
+    {
+     "id": "c",
+     "text": "Fatigue failure is impossible"
+    },
+    {
+     "id": "d",
+     "text": "The endurance limit doubles"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The compressive mean stress gives no benefit, so the limit remains $\\sigma_a\\le S_e$",
+   "distractorRationale": {
+    "a": "Correct: the horizontal line at Se is used for sigma_m below zero.",
+    "b": "Extending the line would grant an unproven benefit.",
+    "c": "Compression does not make fatigue impossible.",
+    "d": "The endurance limit does not double."
+   },
+   "explanation": "Test data show little benefit from a compressive mean stress, so the allowable amplitude is simply the endurance limit. This avoids over-estimating the life.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A shaft material has $S_e=210$ MPa and $S_{ut}=520$ MPa. The load gives $\\sigma_a=80$ MPa and $\\sigma_m=120$ MPa. Find the Goodman factor of safety (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o1"
+   ],
+   "correctValue": 1.634731,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "The Goodman sum is $80/210+120/520=0.3810+0.2308=0.6117$. The factor of safety is its reciprocal, $n_f=1.63$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A component has $S_e=230$ MPa and $S_{ut}=550$ MPa and operates with a mean stress of 200 MPa. Using the Goodman line, find the largest alternating stress amplitude in MPa that gives a factor of safety of exactly 1.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o1",
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o2"
+   ],
+   "correctValue": 146.363636,
+   "tolerance": 1.0,
+   "unit": "MPa",
+   "explanation": "On the Goodman line $\\sigma_a=S_e(1-\\sigma_m/S_{ut})=230\\times(1-200/550)=146.4$ MPa. Any larger amplitude at this mean stress is predicted to fail.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A part sees a repeating loading block of three fully reversed stress levels. The S-N life at each level is: 60 000 cycles at level 1 (15 000 cycles per block), 1.6 million cycles at level 2 (200 000 cycles per block) and 400 000 cycles at level 3 (80 000 cycles per block). Using Miner's rule, how many blocks (repeats of the whole block) are needed to cause failure?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o3"
+   ],
+   "correctValue": 1.73913,
+   "tolerance": 0.03,
+   "unit": "blocks",
+   "explanation": "The damage fractions per block are $15000/60000=0.250$, $200000/1.6\\times10^6=0.125$ and $80000/400000=0.200$, so $D=0.575$ per block. Failure occurs when the sum reaches 1, so the number of repeats is $1/0.575=1.74$ blocks.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain, with a sketch description of the $\\sigma_a$-$\\sigma_m$ diagram, how the Goodman criterion is used to find a factor of safety for a component with a tensile mean stress, and why a yield (Langer) check is also needed.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o1",
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o2"
+   ],
+   "markingGuide": [
+    "Axes: $\\sigma_m$ horizontal, $\\sigma_a$ vertical; Goodman line from $(0,S_e)$ to $(S_{ut},0)$.",
+    "Operating point from $\\sigma_a=(\\sigma_{max}-\\sigma_{min})/2$ and $\\sigma_m=(\\sigma_{max}+\\sigma_{min})/2$; points below the line are predicted safe for infinite life.",
+    "Factor of safety from $\\sigma_a/S_e+\\sigma_m/S_{ut}=1/n_f$, equivalent to scaling both stresses along the load line to the Goodman line.",
+    "Langer line $\\sigma_a+\\sigma_m=S_y$ guards against yielding in the first cycle, which the Goodman line (ending at $S_{ut}$) does not.",
+    "The endurance limit $S_e$ must be the corrected value for the actual component (surface, size, loading, temperature, reliability)."
+   ],
+   "explanation": "The Goodman line captures the loss of allowable amplitude with mean stress, and the yield check handles the case where the combined stress exceeds yield before fatigue becomes the issue. Both checks are needed for a safe design.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "State Miner's rule and explain the assumptions on which it rests. Describe three reasons why it may give inaccurate life predictions in a real machine, and say how a designer should allow for them.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman.o3"
+   ],
+   "markingGuide": [
+    "Rule: $D=\\sum n_i/N_i$, failure at $D=1$, where $N_i$ is the life at stress level $i$ from the S-N curve.",
+    "Assumes damage accumulates linearly, independent of the order of loading, and that cycles at each level do the same damage whatever came before.",
+    "Sequence effects: high-then-low blocks tend to give $D<1$ at failure, low-then-high $D>1$.",
+    "Cycles below the endurance limit may become damaging once a crack has formed, and the rule ignores the effect of mean stress and overloads (residual stresses) unless an equivalent reversed stress is used.",
+    "Scatter in S-N data and spectrum: use a design value of the sum below 1 (for example 0.5 to 0.7), conservative life estimates, and testing or inspection for critical parts."
+   ],
+   "explanation": "Miner's rule is a useful first approximation that is easy to use. The designer allows for its limits by applying margins to the damage sum and by testing.",
+   "board": "internal"
+  }
+ ]
+}

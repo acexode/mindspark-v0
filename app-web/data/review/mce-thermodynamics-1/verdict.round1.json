@@ -1,0 +1,66 @@
+{
+  "subjectId": "ug.mce-thermodynamics-1",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "Overall quality is high. I independently recomputed every numeric key and worked example (ideal gas, boundary work, first law, steady-flow devices, entropy, isentropic efficiency, Carnot, COP, Rankine, Brayton) in Python and all agree with the keys within tolerance; all claimed engines or refrigerators are physically consistent (efficiency below Carnot, positive entropy generation). Saturated-steam values (vf, vg at 100, 150, 200, 500 kPa and 150 C; 10 kPa hf, hfg, sf, sfg, sg; 3 MPa and 4 MPa 400 C; Tsat 99.6 and 179.9 C) match standard tables, with only small entropy deviations at 1 MPa flagged minor. The one substantive error is the Brayton back-work-ratio explanation (T1/T3 versus T2/T3), plus minor wording issues. No literal unicode escapes, control or tab characters, '[object Object]' or non-ASCII text found. This is an AI review only: the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-thermodynamics-1.introduction-to-power-cycles.brayton-intro",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Lesson text says 'The compressor needs a fraction $T_1/T_3$ of the turbine work (ideal case, constant $c_p$)'. This is wrong and contradicts the formula that follows (w_c/w_t = (T1/T3) r_p^((k-1)/k)) and the worked example (T1/T3 = 0.25 but back work ratio = 0.453).",
+      "suggestedFix": "Say the fraction is (T1/T3) r_p^((k-1)/k) = T2/T3, i.e. the ratio of compressor-exit to turbine-inlet temperature. The sentence 'the turbine produces more, but not hugely more' is acceptable once the correct ratio is stated."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-1.introduction-to-power-cycles.brayton-intro",
+      "questionId": "ug.mce-thermodynamics-1.introduction-to-power-cycles.brayton-intro.q009",
+      "severity": "major",
+      "category": "explanation",
+      "problem": "Marking guide says the turbine work is larger 'only by factor T3/T1' and the explanation says the turbine produces more work 'in proportion to T3/T1'. For equal pressure ratio w_t/w_c = T3/T2 = T3/(T1 r_p^((k-1)/k)), not T3/T1. It also conflicts with the marking guide's own formula (T1/T3) r_p^((k-1)/k).",
+      "suggestedFix": "Replace with: for the same pressure ratio, turbine work scales with T3 and compressor work with T1, so w_c/w_t = (T1/T3) r_p^((k-1)/k); the turbine work exceeds the compressor work by the factor T3/T2."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-1.introduction-to-power-cycles.brayton-intro",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Hook states 'more than half of the turbine's shaft work is eaten by the compressor', but both worked examples give back work ratios of 45.3 % and 42.1 %, and the warning callout says real values are 40 to 60 %.",
+      "suggestedFix": "Say 'roughly 40 to 60 percent' or 'a large fraction (often about half)'."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-1.ideal-gas-and-property-tables.steam-tables",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Superheated steam at 1 MPa: entropy values s = 6.9265 (250 C) and 7.1246 kJ/(kg K) (300 C) differ slightly from the standard IAPWS/Cengel table values (about 6.9246 and 7.1228). The enthalpies 2942.6, 3051.2, 3157.7 match. Labelled 'approximate', so impact is small. Unverified from memory; recommend a table check.",
+      "suggestedFix": "Use 6.9246 and 7.1228 (interpolated s at 280 C about 7.043), or keep the 'approximate' label."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-1.ideal-gas-and-property-tables.steam-tables",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Paragraph on heating a rigid vessel ends 'This is why the volume-based quality is not the same as the quality by mass.' This does not follow from the preceding critical-volume argument, and 'volume-based quality' is undefined.",
+      "suggestedFix": "Delete the sentence or move the volume-fraction versus mass-fraction point to the warning callout that follows."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-1.work-and-heat.boundary-work",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Worked polytropic example: p2 = 600(0.25)^1.3 evaluates to 98.96 kPa; the text rounds to 99.0 kPa and W = 13.61 kJ (exact value 13.61). Fine, but the shown (0.25)^1.3 = 0.1649 then 600 x 0.1649 = 98.9 is slightly inconsistent with '99.0'.",
+      "suggestedFix": "Show p2 as 98.96 kPa (about 99.0) or state the rounding."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-1.systems-and-properties.systems-and-state",
+      "questionId": "ug.mce-thermodynamics-1.systems-and-properties.systems-and-state.q009",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "q009(a) calls the system 'a sealed car tyre being inflated by a pump', which is contradictory (sealed vs mass entering). The marking guide then resolves it by saying the tyre is a control volume while being inflated.",
+      "suggestedFix": "Reword to 'a car tyre while it is being inflated through its valve' and keep the 'closed once the valve is shut' note."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-1.second-law.second-law-statements",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Lesson text: 'a hot cup of coffee never cools by pushing heat into a warm room and then spontaneously becomes hotter' is garbled. The intended example is that a coffee cup never spontaneously gets hotter by drawing heat from a cooler room.",
+      "suggestedFix": "Rewrite: 'a cup of coffee in a cooler room never gets hotter by drawing heat from the room, even though that would conserve energy.'"
+    }
+  ]
+}

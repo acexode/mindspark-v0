@@ -1,0 +1,395 @@
+{
+ "lessonTitle": "Finite-Difference Approximations: Derivatives, Truncation Error and Boundary Value Problems",
+ "estimatedMinutes": 38,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A lift manufacturer logs the car position every 0.1 s and wants acceleration for a ride-comfort check. No formula for the position is available, only a column of numbers, so velocity and acceleration have to come from differences between neighbouring samples. How accurate those differences are, and how that accuracy changes with the sampling interval, is exactly what finite-difference approximation quantifies."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** A derivative is a limit of a ratio of differences. If we stop before the limit, using a small but finite step $h$ (the grid spacing, in the units of $x$), the ratio is an **approximation** whose error shrinks as $h\\to0$. A continuous problem, an ordinary differential equation on an interval, is then replaced by algebraic equations for the function values at grid points $x_i=x_0+ih$. This is the simplest way of discretising a problem; finite elements, which come later, discretise differently."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Truncation error and order of accuracy",
+   "text": "The **truncation error** is the difference between the exact derivative and its difference formula, caused by neglecting higher-order terms of the Taylor series. A formula has **order $p$** if its truncation error is proportional to $h^p$, written $O(h^p)$. Halving $h$ divides the error of a first-order formula by 2, and of a second-order formula by 4, provided $h$ is small enough for the leading term to dominate."
+  },
+  {
+   "type": "text",
+   "markdown": "**Taylor series.** For a smooth function, $f(x+h)=f+hf'+\\tfrac{h^2}{2}f''+\\tfrac{h^3}{6}f'''+O(h^4)$ and $f(x-h)=f-hf'+\\tfrac{h^2}{2}f''-\\tfrac{h^3}{6}f'''+O(h^4)$, with all derivatives evaluated at $x$. Rearranging the first expansion gives the **forward difference**; the second gives the **backward difference**; subtracting the two expansions cancels the even terms and gives the **central difference**:"
+  },
+  {
+   "type": "math",
+   "latex": "f'\\approx\\frac{f_{i+1}-f_i}{h}\\ \\ (\\text{forward}),\\qquad f'\\approx\\frac{f_i-f_{i-1}}{h}\\ \\ (\\text{backward}),\\qquad f'\\approx\\frac{f_{i+1}-f_{i-1}}{2h}\\ \\ (\\text{central})",
+   "caption": "First-derivative formulas with $f_i=f(x_i)$"
+  },
+  {
+   "type": "text",
+   "markdown": "The forward and backward differences carry an error $\\mp\\tfrac{h}{2}f''+O(h^2)$, so they are **first order**. In the central difference the $h^2$ terms cancel, leaving an error $\\tfrac{h^2}{6}f'''+O(h^4)$, so it is **second order**. **Second derivative:** adding the two expansions instead cancels the odd terms and the first derivative, leaving $f_{i+1}+f_{i-1}=2f_i+h^2f''+\\tfrac{h^4}{12}f''''+\\ldots$."
+  },
+  {
+   "type": "math",
+   "latex": "f''\\approx\\frac{f_{i+1}-2f_i+f_{i-1}}{h^2},\\qquad \\text{error}=\\frac{h^2}{12}f''''+O(h^4)",
+   "caption": "Central second-difference (three-point) formula: second-order accurate"
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparing difference formulas",
+   "prompt": "Approximate the derivative of $f(x)=\\sin x$ at $x=1$ (radians) using the three first-derivative formulas and the second-derivative formula with $h=0.10$ and $h=0.05$. The exact values are $f'=\\cos1=0.54030$ and $f''=-\\sin1=-0.84147$.",
+   "steps": [
+    {
+     "text": "Forward, backward and central differences with $h=0.10$.",
+     "latex": "\\text{fwd}=0.49736,\\ \\text{bwd}=0.58144,\\ \\text{cen}=0.53940"
+    },
+    {
+     "text": "Errors for $h=0.10$ against $0.54030$.",
+     "latex": "E_{fwd}=0.04294,\\ E_{bwd}=0.04114,\\ E_{cen}=0.00090"
+    },
+    {
+     "text": "Repeat with $h=0.05$: the errors fall by the factors predicted by their order.",
+     "latex": "E_{fwd}=0.02126,\\ E_{bwd}=0.02081,\\ E_{cen}=0.00023"
+    },
+    {
+     "text": "Ratios of error at $h=0.10$ to error at $h=0.05$.",
+     "latex": "\\frac{E_{fwd}(0.10)}{E_{fwd}(0.05)}=2.02,\\quad \\frac{E_{cen}(0.10)}{E_{cen}(0.05)}=4.00"
+    },
+    {
+     "text": "Second derivative by the three-point formula: values and error.",
+     "latex": "f''_{h=0.10}=-0.84077\\ (E=0.00070),\\quad f''_{h=0.05}=-0.84130\\ (E=0.00018)"
+    }
+   ],
+   "answer": "Forward and backward errors halve (ratios about 2), the central difference error quarters (ratio about 4.0), confirming orders 1 and 2. The second-difference error also falls by about 4.0 when $h$ is halved."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Formula",
+    "Expression",
+    "Order",
+    "Notes"
+   ],
+   "rows": [
+    [
+     "Forward",
+     "$(f_{i+1}-f_i)/h$",
+     "1",
+     "Uses points ahead; useful at the left boundary"
+    ],
+    [
+     "Backward",
+     "$(f_i-f_{i-1})/h$",
+     "1",
+     "Uses points behind; useful at the right boundary"
+    ],
+    [
+     "Central, first derivative",
+     "$(f_{i+1}-f_{i-1})/(2h)$",
+     "2",
+     "Interior points; most accurate of the three"
+    ],
+    [
+     "Central, second derivative",
+     "$(f_{i+1}-2f_i+f_{i-1})/h^2$",
+     "2",
+     "Basis of diffusion and beam equations"
+    ]
+   ],
+   "caption": "Summary of finite-difference formulas on a uniform grid"
+  },
+  {
+   "type": "text",
+   "markdown": "**Discretising a boundary value problem.** Divide $0\\le x\\le L$ into $n$ equal intervals, $h=L/n$, with nodes $x_0,\\dots,x_n$. At each interior node replace $u''$ by the three-point formula. Known (Dirichlet) boundary values $u_0$ and $u_n$ are moved to the right-hand side of the first and last equations. The result is a tridiagonal linear system $\\mathbf{A}\\mathbf{u}=\\mathbf{b}$ for the unknown interior values."
+  },
+  {
+   "type": "worked_example",
+   "title": "Heat conduction in a rod with internal heat generation",
+   "prompt": "A rod of length $L=0.10$ m has $k=50$ W/(m K) and uniform heat generation $q=2.0\\times10^{5}$ W/m$^3$. The ends are held at $T(0)=100$ degrees Celsius and $T(L)=20$ degrees Celsius. Steady conduction obeys $T''=-q/k$. Solve with $n=4$ intervals and compare with the exact solution.",
+   "steps": [
+    {
+     "text": "Grid spacing and source term: $T''=-q/k=-4000$ K/m$^2$ and $h=0.025$ m.",
+     "latex": "h=0.025\\ \\text{m},\\quad -\\frac{q}{k}h^2=-2.500\\ \\text{K}"
+    },
+    {
+     "text": "At interior node $i$ the equation is $T_{i-1}-2T_i+T_{i+1}=-qh^2/k=-2.5$. The known end values move to the right-hand side.",
+     "latex": "\\begin{bmatrix}-2&1&0\\\\1&-2&1\\\\0&1&-2\\end{bmatrix}\\begin{Bmatrix}T_1\\\\T_2\\\\T_3\\end{Bmatrix}=\\begin{Bmatrix}-102.50\\\\-2.50\\\\-22.50\\end{Bmatrix}"
+    },
+    {
+     "text": "Solve the tridiagonal system by Gauss elimination (Thomas algorithm).",
+     "latex": "T_1=83.750,\\quad T_2=65.000,\\quad T_3=43.750\\ \\text{degrees Celsius}"
+    },
+    {
+     "text": "Exact solution: $T=100-600x-2000x^2$ (satisfies both ends and $T''=-4000$). Evaluate at the grid points.",
+     "latex": "T(0.025)=83.750,\\ T(0.050)=65.000,\\ T(0.075)=43.750"
+    }
+   ],
+   "answer": "$T_1=83.75$, $T_2=65.00$, $T_3=43.75$ degrees Celsius, identical to the exact values at the nodes. The three-point formula has error proportional to $f''''$, which is zero for a quadratic, so the nodal values are exact."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Use central differences at interior points: second-order accuracy for the same effort.",
+    "At boundary points with only one-sided data use forward or backward differences, accepting first-order accuracy (or use longer one-sided formulas).",
+    "Dirichlet boundary values enter the right-hand side of the first and last interior equations.",
+    "Check order by halving $h$ and watching the error ratio: about 2 for first order, about 4 for second order."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Step size is a balance",
+   "text": "Truncation error falls as $h$ decreases, but with measured data or finite-precision arithmetic, subtraction of nearly equal numbers amplifies noise: the second derivative divides by $h^2$. Very small $h$ can therefore make the result worse. In a model with exact inputs, accuracy improves until round-off takes over."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Taylor series give the forward, backward ($O(h)$) and central ($O(h^2)$) differences for $f'$ and the three-point second difference $(f_{i+1}-2f_i+f_{i-1})/h^2$ with error $\\frac{h^2}{12}f''''$.",
+    "The order of accuracy can be verified numerically: halving $h$ cuts a first-order error by 2 and a second-order error by 4.",
+    "A boundary value problem on a uniform grid becomes a tridiagonal system for the interior values, with Dirichlet end values on the right-hand side."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the order of accuracy of the backward difference $(f_i-f_{i-1})/h$ approximating $f'(x_i)$?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "First order, $O(h)$"
+    },
+    {
+     "id": "b",
+     "text": "Second order, $O(h^2)$"
+    },
+    {
+     "id": "c",
+     "text": "Zero order, it does not converge"
+    },
+    {
+     "id": "d",
+     "text": "Third order, $O(h^3)$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "First order, $O(h)$",
+   "distractorRationale": {
+    "b": "Second order belongs to the central difference, where the $h$ term cancels.",
+    "c": "The formula converges to the derivative as $h\\to0$.",
+    "d": "No standard two-point formula has third-order accuracy."
+   },
+   "explanation": "Expanding $f(x-h)$ gives $f_{i-1}=f_i-hf'+\\tfrac{h^2}{2}f''-\\ldots$, so $(f_i-f_{i-1})/h=f'-\\tfrac h2f''+\\ldots$. The leading error is proportional to $h$, so the formula is first order.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which expression is the central-difference approximation to the second derivative $f''(x_i)$ on a uniform grid of spacing $h$?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$(f_{i+1}-2f_i+f_{i-1})/h^2$"
+    },
+    {
+     "id": "b",
+     "text": "$(f_{i+1}-f_{i-1})/(2h)$"
+    },
+    {
+     "id": "c",
+     "text": "$(f_{i+1}-2f_i+f_{i-1})/h$"
+    },
+    {
+     "id": "d",
+     "text": "$(f_{i+1}+2f_i+f_{i-1})/h^2$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$(f_{i+1}-2f_i+f_{i-1})/h^2$",
+   "distractorRationale": {
+    "b": "This is the central first derivative.",
+    "c": "The denominator must be $h^2$ because the numerator has dimensions of a second difference.",
+    "d": "The signs must be $1,-2,1$ so that constants and linear functions give zero."
+   },
+   "explanation": "Adding the expansions gives $f_{i+1}+f_{i-1}=2f_i+h^2f''+O(h^4)$. Dividing by $h^2$ gives the three-point formula, which is exact for any quadratic and has $O(h^2)$ error.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A central-difference estimate of $f'$ has an error of $8.0\\times10^{-4}$ with $h=0.20$. Assuming $h$ is small enough for the leading term to dominate, what error do you expect with $h=0.10$?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$2.0\\times10^{-4}$"
+    },
+    {
+     "id": "b",
+     "text": "$4.0\\times10^{-4}$"
+    },
+    {
+     "id": "c",
+     "text": "$1.6\\times10^{-3}$"
+    },
+    {
+     "id": "d",
+     "text": "$8.0\\times10^{-5}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$2.0\\times10^{-4}$",
+   "distractorRationale": {
+    "b": "This would be first-order behaviour, a factor of 2.",
+    "c": "The error would increase for a larger step, not a smaller one.",
+    "d": "This would require a factor of 10, which needs third-order accuracy or a tenfold smaller step."
+   },
+   "explanation": "The central difference has error proportional to $h^2$, so halving $h$ divides the error by $2^2=4$, giving $2.0\\times10^{-4}$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the finite-difference discretisation of $u''=g(x)$ on $0\\le x\\le L$ with prescribed end values $u(0)=a$ and $u(L)=b$, how do the known values enter the matrix equation?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "They are moved to the right-hand side of the first and last interior equations"
+    },
+    {
+     "id": "b",
+     "text": "They are placed on the main diagonal of the matrix"
+    },
+    {
+     "id": "c",
+     "text": "They are treated as unknowns to be solved"
+    },
+    {
+     "id": "d",
+     "text": "They are ignored because the interior equations do not involve them"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "They are moved to the right-hand side of the first and last interior equations",
+   "distractorRationale": {
+    "b": "The diagonal contains the coefficients $-2$, not boundary values.",
+    "c": "Dirichlet values are known; they are not unknowns.",
+    "d": "The first and last interior equations do involve the neighbouring boundary values."
+   },
+   "explanation": "At the first interior node the equation is $u_0-2u_1+u_2=h^2g_1$. Since $u_0=a$ is known, $a$ is moved across, so the right-hand side becomes $h^2g_1-a$. The end values never appear in the matrix.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "For a function whose fourth derivative is zero everywhere (any cubic polynomial), the three-point second-difference formula gives the exact second derivative at every grid point.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The leading truncation error of the formula is $\\frac{h^2}{12}f''''$, and higher terms contain fifth and higher derivatives. All of these vanish for a polynomial of degree three or less, so the formula is exact.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A thermocouple log shows a furnace temperature of 55.0 degrees Celsius at $t=10$ s and 58.6 degrees Celsius at $t=12$ s. Estimate the heating rate at $t=10$ s with a forward difference, in K/s.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o2"
+   ],
+   "correctValue": 1.8000000000000007,
+   "tolerance": 0.01,
+   "unit": "K/s",
+   "explanation": "The forward difference is $(T_{i+1}-T_i)/h=(58.6-55.0)/2=1.80$ K/s. It is first-order accurate and best interpreted as the rate at the middle of the interval.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The measured deflection of a beam at stations spaced 0.20 m apart is 0, 1.5 and 4.0 mm at $x=0$, 0.20 and 0.40 m. Estimate the second derivative $y''$ at $x=0.20$ m using the three-point formula, in m$^{-1}$.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o1"
+   ],
+   "correctValue": 0.025,
+   "tolerance": 0.002,
+   "unit": "1/m",
+   "explanation": "$y''\\approx(y_{i+1}-2y_i+y_{i-1})/h^2=(4.0-3.0+0)\\times10^{-3}/0.04=0.0250$ m$^{-1}$ (curvature). With the data in metres the result is in 1/m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Solve $-u''=10\\sin(\\pi x)$ on $0\\le x\\le1$ with $u(0)=u(1)=0$ by finite differences using $h=0.5$ (one interior node at $x=0.5$). Give $u(0.5)$.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o3"
+   ],
+   "correctValue": 1.25,
+   "tolerance": 0.01,
+   "unit": "(dimensionless)",
+   "explanation": "The equation at the interior node is $(2u_1-u_0-u_2)/h^2=10\\sin(\\pi/2)=10$, so $2u_1/0.25=10$ and $u_1=1.25$. The exact solution $10\\sin(\\pi x)/\\pi^2$ gives 1.0132 at $x=0.5$, so this very coarse grid has an error of about 23 per cent.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the central-difference approximation of the second derivative from Taylor series and state its order of accuracy and the leading error term.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o1",
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o2"
+   ],
+   "markingGuide": [
+    "Writes $f(x\\pm h)=f\\pm hf'+\\tfrac{h^2}{2}f''\\pm\\tfrac{h^3}{6}f'''+\\tfrac{h^4}{24}f''''+\\ldots$",
+    "Adds the two expansions: odd terms cancel, $f_{i+1}+f_{i-1}=2f_i+h^2f''+\\tfrac{h^4}{12}f''''+\\ldots$",
+    "Rearranges to $f''=(f_{i+1}-2f_i+f_{i-1})/h^2-\\tfrac{h^2}{12}f''''$",
+    "States error $O(h^2)$, leading term $\\tfrac{h^2}{12}f''''$, so second order"
+   ],
+   "explanation": "Adding the expansions about $x$ cancels all odd-order terms, so the first derivative disappears and the remaining terms start at $h^2f''$. Dividing by $h^2$ gives the formula with a truncation error of order $h^2$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe how you would discretise the boundary value problem $T''=-q/k$ on $0\\le x\\le L$ with $T(0)$ and $T(L)$ prescribed, using $n$ intervals. Describe the matrix structure, and explain how you would show numerically that the scheme is second-order accurate.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.discretisation-and-finite-differences.finite-difference-approximations.o3"
+   ],
+   "markingGuide": [
+    "Uniform grid $h=L/n$, nodes $x_i=ih$, unknowns $T_1,\\dots,T_{n-1}$",
+    "Interior equations $T_{i-1}-2T_i+T_{i+1}=-qh^2/k$",
+    "Boundary values moved to the right-hand side of the first and last equations",
+    "Tridiagonal system with $-2$ on the diagonal and $1$ off-diagonals; solved by Gauss elimination/Thomas algorithm",
+    "Compute the error at a fixed point for several $h$ (e.g. halving); an error ratio of about 4 per halving confirms second order"
+   ],
+   "explanation": "The discrete equations come from replacing $T''$ by the three-point formula at each interior node, giving a sparse tridiagonal system. Convergence is verified by comparing against the exact solution (or the finest grid) and checking the error scales as $h^2$.",
+   "board": "internal"
+  }
+ ]
+}

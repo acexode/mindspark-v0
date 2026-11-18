@@ -1,0 +1,73 @@
+{
+  "subjectId": "ug.mce-system-dynamics-control-1",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "This is a high-quality course. Every numeric key and worked example was recomputed independently in Python: Routh arrays and root counts, root-locus breakaways, centroids and crossings, PM/GM and the zeta/PM/overshoot table, Bode values, Ziegler-Nichols formulas (the unit states Kp=0.6Ku, Ti=Pu/2, Td=Pu/8, which is correct), partial fractions, and the physical models and ODEs. All of these are correct. The Euler/RK4 table and the 16.6/35.1/2.6 percent overshoot and 5.74/13.78/3.16 s settling figures were re-simulated and reproduce. The only substantive problems are two root-locus statements about how added zeros and poles move the asymptote centroid, one in a lesson and one in an explanation. The rest are minor wording or precision points. The string scan found no tabs or control characters, no non-Latin garbling, no format placeholders, no e+06 numbers, and no stale option-letter references. This is an AI review only: the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Lesson says a left-half-plane zero 'moves the centroid to the left'. This is not general: adding a zero z changes the centroid by (sigma_old - z)/(n-m), so it moves left only if the zero lies to the right of the old centroid. The unit's own q010 (centroid -1.667 to -1.5 after adding a zero at -2) and root-locus-design q006 (centroid unchanged at -2) contradict it.",
+      "suggestedFix": "Replace with: the new centroid is (sum p - sum z)/(n-m) and shifts left only when the zero lies to the right of the old centroid. The reliable effect of a left-half-plane zero is one fewer asymptote and branches pulled toward the zero."
+    },
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.root-locus.root-locus-design",
+      "severity": "major",
+      "category": "explanation",
+      "problem": "Explanation says extra open-loop poles 'move the asymptote centroid to the right'. Adding a pole p changes the centroid by (p - sigma_old)/(n-m+1), so it can move left. The lesson's own pole-versus-zero example adds a pole at -4 to poles 0,-2 and the centroid goes from -1 to -2, i.e. left. The key (a) is right, but the stated reason is false and contradicts the lesson.",
+      "suggestedFix": "Justify the key by the larger pole excess: more asymptotes, with steeper angles (+-60 and 180 degrees, or +-45 degrees and so on) that head into the right half-plane, which lowers the maximum stable gain. Drop the claim about the centroid moving right.",
+      "questionId": "ug.mce-system-dynamics-control-1.root-locus.root-locus-design.q007"
+    },
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.root-locus.root-locus-rules",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Zero-example step: '[-6,-4] (three poles and zero to the right, an odd count)'. To the right of that segment lie two poles (0 and -4) and one zero (-1), three in total. 'Three poles and zero' reads as four and looks like an even count.",
+      "suggestedFix": "Write 'two poles (0 and -4) and one zero (-1) to the right, three in total, an odd count'."
+    },
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.pid-control.pid-actions",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Windup lesson and worked example say the command 'remains above the limit' until the integral has been unwound to zero, and give 20 s as the extra overshoot time. The command u = Kp*e + Ki*I falls below the limit as soon as Ki*I + Kp*e < u_max, which happens before I reaches zero. The 20 s is an upper bound on the integral reaching zero, not the time the actuator stays saturated. The key for q007, which asks only when the integral returns to zero, is correct (12/0.6 = 20).",
+      "suggestedFix": "Say the integral must unwind enough for Ki*I + Kp*e to drop below u_max (at most 20 s here), and present the 20 s as an upper-bound estimate. The wording of q007 can stay."
+    },
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.frequency-response-and-bode.frequency-response",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Hook: at 10 Hz the piston 'moves only half as far and arrives a quarter-cycle late'. For a first-order lag, which is what the unit teaches, gain 0.5 means a phase of -60 degrees (one sixth of a cycle), not -90.",
+      "suggestedFix": "Say 'about a sixth of a cycle late', or drop the phase detail."
+    },
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Common-slips callout says the asymptote and true curve differ 'by 20log10(Mr) at a resonant corner'. At omega_n the exact magnitude is 1/(2 zeta); Mr is the height of the peak, which sits at omega_r.",
+      "suggestedFix": "Say the true curve is 20log10(1/(2 zeta)) above the asymptote at omega_n, and the peak is 20log10(Mr) above the DC level."
+    },
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "q006 explanation uses 'dF/dv = 2cv_0' but the question defines F = 0.8 v^2 and never defines c. The key (8 N s/m) is correct.",
+      "suggestedFix": "Write 'dF/dv = 2(0.8)(5) = 8 N s/m', or define F = c v^2 with c = 0.8.",
+      "questionId": "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.q006"
+    },
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Common-slips callout says that without the back-emf term 'the motor looks like a pure integrator'. With b non-zero and L neglected the model is still first-order (tau = J/b); it is an integrator only when b = 0.",
+      "suggestedFix": "Say 'forgetting back-emf makes the motor far too slow (tau = J/b) or an integrator if b = 0, and removes the electrical damping K^2/R'."
+    },
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.simulation.simulating-linear-systems",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Table lists the theoretical first peak as 1.1632. exp(-pi*0.5/sqrt(0.75)) = 0.16303, so the theoretical peak is 1.1630. All other table entries reproduce on re-run (RK4 1.163/1.162, Euler 1.169/1.196/1.422).",
+      "suggestedFix": "Change 1.1632 to 1.1630."
+    }
+  ]
+}

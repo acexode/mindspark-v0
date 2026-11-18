@@ -1,0 +1,402 @@
+{
+ "lessonTitle": "Modules and Libraries",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Your thermal-analysis script has grown to 800 lines, the density function is copied into three other scripts, and a bug fixed in one copy is still live in the others. Splitting the shared code into a module, and calling well-tested library routines for standard numerical tasks, is how engineering teams keep programs correct as they grow."
+  },
+  {
+   "type": "text",
+   "markdown": "A **module** is a Python file that defines functions, constants or classes that other files can reuse. A **library** (or package) is a collection of modules, such as NumPy for arrays and SciPy for numerical algorithms. Both are loaded with `import`. Using them means each calculation is written, tested and corrected in one place."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Module and import",
+   "text": "If a file `thermolib.py` defines functions, another script in the same folder can write `import thermolib` and call `thermolib.f(x)`, or `from thermolib import f` and call `f(x)`, or `import thermolib as tl` and call `tl.f(x)`. Python executes the module file the first time it is imported, so top-level statements in a module should only define things, not run calculations or print results."
+  },
+  {
+   "type": "worked_example",
+   "title": "Building and importing a module",
+   "prompt": "Create a module `thermolib.py` containing a temperature conversion and an ideal-gas density function, and use it from a separate script to find the density of air at 101 325 Pa and 25 C. Take $R=287.05$ J/(kg K).",
+   "steps": [
+    {
+     "text": "Write `thermolib.py`: `def celsius_to_kelvin(t_c): return t_c + 273.15` and `def ideal_gas_density(p, t_k, r=287.05): return p / (r * t_k)`. Each function has a docstring stating units: p in Pa, t_k in K, result in kg/m^3."
+    },
+    {
+     "text": "Guard any test code: `if __name__ == '__main__': print(ideal_gas_density(101325, 300))`. The block runs only when the file is executed directly, not when it is imported."
+    },
+    {
+     "text": "In `analysis.py` write `import thermolib as tl`, then `T = tl.celsius_to_kelvin(25)` giving 298.15 K and `rho = tl.ideal_gas_density(101325, T)`.",
+     "latex": "\\rho=\\frac{p}{R\\,T}=\\frac{101\\,325}{287.05\\times298.15}"
+    },
+    {
+     "text": "Evaluate: the denominator is $287.05\\times298.15=85\\,584$, so $\\rho=101\\,325/85\\,584=1.184$ kg/m^3, a sensible value for air at room temperature."
+    }
+   ],
+   "answer": "rho = 1.184 kg/m^3, computed by functions imported from thermolib."
+  },
+  {
+   "type": "text",
+   "markdown": "Rewriting standard algorithms is slow and error-prone. Libraries supply routines that have been tested for decades, handle awkward cases, and are often much faster. Typical engineering tasks and the routines that solve them:"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Task",
+    "Routine (Python)",
+    "Returns",
+    "Pitfall"
+   ],
+   "rows": [
+    [
+     "Definite integral",
+     "`scipy.integrate.quad(f, a, b)`",
+     "tuple `(value, error_estimate)`",
+     "Using the tuple as if it were a number"
+    ],
+    [
+     "Root in a bracket",
+     "`scipy.optimize.brentq(f, a, b)`",
+     "the root (float)",
+     "Needs a sign change between a and b"
+    ],
+    [
+     "Polynomial fit",
+     "`np.polyfit(x, y, deg)`",
+     "coefficients, highest power first",
+     "Reversing the coefficient order"
+    ],
+    [
+     "Angle of a vector",
+     "`np.arctan2(y, x)`",
+     "angle in radians, in $(-\\pi,\\pi]$",
+     "Argument order is y then x"
+    ],
+    [
+     "Linear interpolation",
+     "`np.interp(x, xp, fp)`",
+     "interpolated value(s)",
+     "`xp` must be increasing"
+    ]
+   ],
+   "caption": "Library routines and their traps. Always confirm in the documentation."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading documentation before calling",
+   "prompt": "The documentation of `numpy.arctan2(y, x)` states that it returns the angle in radians of the point $(x,y)$ measured from the positive $x$-axis. Find the direction angle of a force with components $F_x=3$ N and $F_y=4$ N, in degrees.",
+   "steps": [
+    {
+     "text": "Read the signature: the **first** argument is $y$ (the vertical component) and the second is $x$. So the call is `np.arctan2(4, 3)`, not `np.arctan2(3, 4)`."
+    },
+    {
+     "text": "Read the return value: angle in **radians**. `np.arctan2(4, 3)` returns 0.9273 rad.",
+     "latex": "\\theta=\\arctan\\!\\left(\\frac{4}{3}\\right)=0.9273\\ \\text{rad}"
+    },
+    {
+     "text": "Convert to degrees: $0.9273\\times180/\\pi=53.13$ degrees.",
+     "latex": "\\theta=0.9273\\times\\frac{180}{\\pi}=53.13^{\\circ}"
+    },
+    {
+     "text": "Wrong order check: `np.arctan2(3, 4)` gives 0.6435 rad (36.87 degrees), the angle from the vertical, which would silently misdirect the force."
+    }
+   ],
+   "answer": "53.13 degrees (0.9273 rad)."
+  },
+  {
+   "type": "text",
+   "markdown": "When you meet an unfamiliar routine, read its documentation for four things: the **argument order** and names, the **units** or angle convention it expects, what it **returns** (a number, an array, or a tuple), and when it **raises an error** (for example a root-finder that requires a sign change). Then test the call on a case with a known answer before using it on real data."
+  },
+  {
+   "type": "worked_example",
+   "title": "Using a returned tuple",
+   "prompt": "Compute the work $W=\\int_0^{0.1}F(x)\\,dx$ for a nonlinear spring with $F=1500x+2\\times10^4x^3$ N, $x$ in metres, using `quad`.",
+   "steps": [
+    {
+     "text": "The documentation says `quad(func, a, b)` returns `(y, abserr)`. So the code is `W, err = quad(lambda x: 1500*x + 2e4*x**3, 0, 0.1)`, which unpacks the tuple."
+    },
+    {
+     "text": "Analytic check: $W=750x^2+5000x^4$ evaluated at 0.1 gives $750(0.01)+5000(10^{-4})=7.5+0.5=8.0$ J.",
+     "latex": "W=\\left[750x^{2}+5000x^{4}\\right]_0^{0.1}=8.0\\ \\text{J}"
+    },
+    {
+     "text": "The library returns `W = 8.0` with `err` of order $10^{-13}$ J, agreeing with the hand value. The error estimate tells you how much to trust the result."
+    }
+   ],
+   "answer": "W = 8.0 J, with a negligible error estimate."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Put reusable functions in a module; keep top-level code definitions only.",
+    "Use `if __name__ == '__main__':` for self-tests that should not run on import.",
+    "Import with `import module as alias` to avoid name clashes.",
+    "Prefer library routines for standard tasks, but verify with a known case.",
+    "Read the docs for argument order, units, return values and errors."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Library calls fail silently when misread",
+   "text": "A wrong argument order, a degrees-versus-radians mix-up or an ignored tuple return does not always raise an error. Also avoid `from module import *`, which can overwrite your own names without warning. Name your module files so they do not shadow standard ones (a file called `numpy.py` breaks `import numpy`)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A module is a .py file of reusable definitions; import it with import, from-import or an alias.",
+    "Guard self-tests with if __name__ == '__main__': so they do not run on import.",
+    "Library routines (quad, brentq, polyfit, interp, arctan2) are tested and efficient, but verify them on a known case.",
+    "Read documentation for argument order, units, return type and error conditions before use."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A file `fluidlib.py` in the same folder defines `reynolds(rho, v, d, mu)`. Which script line correctly calls it?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "`import reynolds` then `reynolds(998, 0.5, 0.05, 1e-3)`"
+    },
+    {
+     "id": "b",
+     "text": "`fluidlib(reynolds, 998, 0.5, 0.05, 1e-3)`"
+    },
+    {
+     "id": "c",
+     "text": "`import fluidlib.py` then `reynolds(998, 0.5, 0.05, 1e-3)`"
+    },
+    {
+     "id": "d",
+     "text": "`import fluidlib` then `fluidlib.reynolds(998, 0.5, 0.05, 1e-3)`"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "`import fluidlib` then `fluidlib.reynolds(998, 0.5, 0.05, 1e-3)`",
+   "distractorRationale": {
+    "d": "Correct: import the module, call through its name.",
+    "a": "`reynolds` is a function inside the module, not a module itself.",
+    "c": "The .py extension must not be included in an import statement.",
+    "b": "This is not valid import or call syntax."
+   },
+   "explanation": "A module is imported by its file name without the .py extension, and its functions are accessed through the module name (or imported by name with from-import). The other forms import a module that does not exist or use invalid syntax.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A module contains a test block under `if __name__ == '__main__':` that prints a result. What happens when another script runs `import thatmodule`?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The import fails with an error"
+    },
+    {
+     "id": "b",
+     "text": "The test block runs once and prints"
+    },
+    {
+     "id": "c",
+     "text": "The test block runs every time a function is called"
+    },
+    {
+     "id": "d",
+     "text": "The test block does not run"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The test block does not run",
+   "distractorRationale": {
+    "d": "Correct: the guard prevents execution on import.",
+    "b": "That would happen without the guard, for unguarded top-level code.",
+    "c": "The block is not tied to function calls.",
+    "a": "Imports work normally; the guard only controls the test block."
+   },
+   "explanation": "When a module is imported, its __name__ is the module's name, not '__main__', so the guarded block is skipped. The block runs only when the file itself is executed directly.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Statements at the top level of a module (outside any function) are executed when the module is first imported.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Importing a module runs its file from top to bottom once, which is why definitions are placed at the top level but calculations and printing should be guarded. Later imports reuse the already loaded module.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which is the strongest reason to call a library routine for a standard task such as numerical integration instead of writing your own?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is already tested on many cases, handles edge cases and is usually faster, though you should still check it against a known result"
+    },
+    {
+     "id": "b",
+     "text": "It is guaranteed to be correct for any inputs, so no checking is needed"
+    },
+    {
+     "id": "c",
+     "text": "It always produces exact answers"
+    },
+    {
+     "id": "d",
+     "text": "It avoids the need to understand the problem"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is already tested on many cases, handles edge cases and is usually faster, though you should still check it against a known result",
+   "distractorRationale": {
+    "a": "Correct: reliability plus the need for a known-case check.",
+    "b": "No routine is correct for every input; misuse is still possible.",
+    "d": "You must still understand the problem to choose and call the routine correctly.",
+    "c": "Numerical routines give approximations with an error estimate, not exact results."
+   },
+   "explanation": "Library routines are widely tested and optimised, which makes errors less likely. They can still be misused, so confirm the call on a case with a known answer.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Using `scipy.integrate.quad`, the work done by a force $F(x)=300x^2$ N (x in metres) over the distance $x=0$ to $x=0.5$ m is the first entry of the returned tuple. What is its value in joules?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o2"
+   ],
+   "correctValue": 12.5,
+   "tolerance": 0.05,
+   "unit": "J",
+   "explanation": "The first entry is the integral, W = integral of 300 x^2 dx from 0 to 0.5 = 100 x^3 evaluated at 0.5 = 100 x 0.125 = 12.5 J. The second entry of the tuple is only the error estimate.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A documentation page states that `np.arctan2(y, x)` returns the angle in radians. A vector has components $x=-5$ m and $y=12$ m. What value, in radians, does `np.arctan2(12, -5)` return?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o3"
+   ],
+   "correctValue": 1.9656,
+   "tolerance": 0.002,
+   "unit": "rad",
+   "explanation": "arctan2 uses the signs of both arguments to find the correct quadrant. The point (-5, 12) is in the second quadrant, so the angle is pi - arctan(12/5) = 3.1416 - 1.1760 = 1.9656 rad (112.6 degrees).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "The documentation of `np.polyfit(x, y, 2)` says the coefficients are returned with the highest power first. A fit returns `[1.5, -2.0, 0.5]`. Evaluate the fitted quadratic at $x=2$.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o3"
+   ],
+   "correctValue": 2.5,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "With the highest power first the model is y = 1.5 x^2 - 2.0 x + 0.5. At x = 2, y = 1.5(4) - 4 + 0.5 = 2.5; reading the order backwards would give 0.5(4) - 4 + 1.5 = -0.5.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The documentation of `scipy.integrate.quad` says it returns `(y, abserr)`. A student writes `area = quad(f, 0, 1)` and then `print(2 * area)`. What is the problem and the fix?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "`quad` returns an array of coefficients"
+    },
+    {
+     "id": "b",
+     "text": "`area` is a tuple, so use `area = quad(f, 0, 1)[0]` (or unpack `area, err = ...`)"
+    },
+    {
+     "id": "c",
+     "text": "There is no problem; the code is correct"
+    },
+    {
+     "id": "d",
+     "text": "`quad` returns a string, so convert with float()"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "`area` is a tuple, so use `area = quad(f, 0, 1)[0]` (or unpack `area, err = ...`)",
+   "distractorRationale": {
+    "b": "Correct: extract the first element of the tuple.",
+    "d": "The returned object is a tuple of numbers, not a string.",
+    "a": "Coefficients are returned by polyfit, not quad.",
+    "c": "2 * tuple repeats the tuple, which is not the intended arithmetic."
+   },
+   "explanation": "A tuple multiplied by 2 is repeated (the tuple is doubled) rather than multiplied numerically, so the program gives a nonsense result without an obvious crash. Selecting the first element or unpacking gives the integral value.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "You find an unfamiliar routine `heat_loss(area, delta_T, h)` in a colleague's library. Describe what you would check in its documentation and how you would verify the routine before using it in a design calculation.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o3"
+   ],
+   "markingGuide": [
+    "Argument order and names: area, delta_T, h, and whether the call uses keywords",
+    "Units expected: area in m^2, delta_T in K (or C), h in W/(m^2 K)",
+    "Return value: type, units (W) and whether it is a scalar, array or tuple",
+    "Conditions that raise errors or invalid inputs (e.g. negative area)",
+    "Verify with a hand-calculated case such as q = h A delta_T with simple numbers, within a tolerance"
+   ],
+   "explanation": "Misreading order or units causes silent errors, so each item should be read, not assumed. A hand-calculated test confirms the routine does what you think it does.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how you would organise four related functions (two unit converters and two property calculations) into a reusable module, and why a self-test guard and docstrings matter.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.modules-and-libraries.o1"
+   ],
+   "markingGuide": [
+    "Place the functions in one file with a descriptive name (e.g. unitlib.py) in a location Python can find",
+    "Import in another script using import unitlib (optionally as an alias) and call through the module name",
+    "Use docstrings to state arguments, units and return values",
+    "Put test or demonstration code under if __name__ == '__main__': so it does not run on import",
+    "Benefits: one tested copy, fixes apply everywhere, no duplication, avoids name clashes"
+   ],
+   "explanation": "A module centralises code so a correction is made once. The guard keeps tests from running unexpectedly on import, and docstrings record units so later users call the functions correctly.",
+   "board": "internal"
+  }
+ ]
+}

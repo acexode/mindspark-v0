@@ -1,0 +1,428 @@
+{
+ "lessonTitle": "Toughness, Temperature and Material Selection",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A welded steel storage tank that held for decades in summer cracked in a single run on a very cold night, at a stress below half of its yield strength. The steel had not changed; the temperature had pushed it across the ductile-to-brittle transition."
+  },
+  {
+   "type": "text",
+   "markdown": "Body-centred cubic (BCC) metals such as ferritic and carbon steels have a strongly temperature-dependent yield strength. Cooling raises the yield strength steeply, but the stress needed to split atomic planes by **cleavage** barely changes. Above a certain temperature the metal yields first and fractures in a ductile way, absorbing a lot of energy. Below it, the cleavage stress is reached before yield and the fracture is brittle and cheap in energy. The range where behaviour changes is the **ductile-to-brittle transition**."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Crystal structure",
+    "Example metals",
+    "Transition behaviour"
+   ],
+   "rows": [
+    [
+     "BCC",
+     "Carbon and low-alloy steels, ferritic stainless",
+     "Sharp transition; brittle below the transition temperature"
+    ],
+    [
+     "FCC",
+     "Aluminium, copper, austenitic stainless steel, nickel",
+     "No transition; tough down to very low temperature"
+    ],
+    [
+     "HCP",
+     "Titanium alloys, magnesium (varies)",
+     "Mixed; usually less sharp"
+    ]
+   ],
+   "caption": "Qualitative; exact transition temperatures depend on composition, grain size and heat treatment."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Ductile-to-brittle transition",
+   "text": "The ductile-to-brittle transition temperature (DBTT) is the temperature range where a BCC metal changes from high-energy ductile fracture (microvoid coalescence, fibrous surface) to low-energy cleavage fracture (flat, bright facets). It is usually located with Charpy impact tests that record absorbed energy against temperature."
+  },
+  {
+   "type": "text",
+   "markdown": "**Effect of strain rate and temperature.** Raising the strain rate has the same effect as lowering the temperature: the yield strength goes up while the cleavage stress does not, so the transition moves to a higher temperature. A thick section, a sharp notch or a weld all increase constraint and push the transition up as well. A structure that is safe under slow loading at 0 °C can fail by cleavage under impact at the same temperature."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Condition",
+    "Effect on yield strength",
+    "Fracture tendency"
+   ],
+   "rows": [
+    [
+     "Lower temperature",
+     "Increases (BCC)",
+     "More brittle, cleavage"
+    ],
+    [
+     "Higher strain rate",
+     "Increases",
+     "More brittle, cleavage"
+    ],
+    [
+     "Higher constraint (thick, notched)",
+     "Triaxial stress raises effective yield",
+     "More brittle"
+    ]
+   ]
+  },
+  {
+   "type": "text",
+   "markdown": "**Selecting a material for a fail-safe design.** A fail-safe component must tolerate a crack large enough to be found before it grows to critical size. The tolerable crack size at a design stress is given below. A strong but brittle alloy may carry a high stress but tolerates only tiny cracks; a tougher alloy tolerates larger ones. We therefore compare materials using both yield strength (to set the allowable stress) and $K_{Ic}$ (to set the allowable crack)."
+  },
+  {
+   "type": "math",
+   "latex": "a_c = \\frac{1}{\\pi}\\left(\\frac{K_{Ic}}{Y\\,\\sigma_d}\\right)^2 \\qquad \\sigma_d = f\\,\\sigma_{ys}",
+   "caption": "Critical crack half-length at design stress $\\sigma_d$, taken here as a fraction $f$ of yield; $Y=1$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparing two alloys at the same stress",
+   "prompt": "At a design stress of 400 MPa, compare the critical half-length of a typical high-strength steel ($K_{Ic}=60$ MPa$\\sqrt{\\text{m}}$) and a typical aluminium 7075-T6 ($K_{Ic}=29$ MPa$\\sqrt{\\text{m}}$, $\\sigma_{ys}=500$ MPa). Take $Y=1$.",
+   "steps": [
+    {
+     "text": "Steel: $a_c = \\frac1\\pi(60/400)^2$.",
+     "latex": "a_c = \\frac{0.0225}{\\pi} = 0.00716\\ \\text{m} = 7.16\\ \\text{mm}"
+    },
+    {
+     "text": "Aluminium: $a_c = \\frac1\\pi(29/400)^2$.",
+     "latex": "a_c = \\frac{0.005256}{\\pi} = 0.00167\\ \\text{m} = 1.67\\ \\text{mm}"
+    },
+    {
+     "text": "The stress is below the aluminium yield strength of 500 MPa, so the comparison is meaningful; the steel tolerates a flaw about four times longer, because $a_c\\propto K_{Ic}^2$ and $(60/29)^2\\approx4.3$."
+    }
+   ],
+   "answer": "Steel about 7.16 mm; aluminium about 1.67 mm half-length."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Material (typical values)",
+    "$\\sigma_{ys}$ (MPa)",
+    "$K_{Ic}$ (MPa$\\sqrt{\\text{m}}$)",
+    "Design stress $0.5\\sigma_{ys}$ (MPa)",
+    "$a_c$ half-length (mm)"
+   ],
+   "rows": [
+    [
+     "High-strength steel (tempered low)",
+     "1500",
+     "60",
+     "750",
+     "2.04"
+    ],
+    [
+     "Ti-6Al-4V",
+     "900",
+     "60",
+     "450",
+     "5.66"
+    ],
+    [
+     "Aluminium 7075-T6",
+     "500",
+     "29",
+     "250",
+     "4.28"
+    ]
+   ],
+   "caption": "Typical room-temperature values for comparison only; real data depend on heat treatment and product form."
+  },
+  {
+   "type": "worked_example",
+   "title": "Does a candidate meet a minimum flaw size?",
+   "prompt": "A fail-safe design requires tolerating a central through crack of half-length 4 mm at 300 MPa ($Y=1$). What minimum toughness is needed, and which of the typical high-strength steel ($K_{Ic}=60$) and aluminium 7075-T6 ($K_{Ic}=29$) qualifies?",
+   "steps": [
+    {
+     "text": "Required toughness: $K_{req} = \\sigma\\sqrt{\\pi a}$ with $a = 0.004$ m.",
+     "latex": "K_{req} = 300\\sqrt{\\pi\\times0.004} = 300\\times0.1121 = 33.6\\ \\text{MPa}\\sqrt{\\text{m}}"
+    },
+    {
+     "text": "Compare with the candidates: the steel has 60, above 33.6. The aluminium has 29, below it, so a 4 mm flaw would be critical at 300 MPa."
+    },
+    {
+     "text": "Both alloys have yield strengths above 300 MPa, so only toughness discriminates."
+    }
+   ],
+   "answer": "Required $K_{Ic}\\ge33.6$ MPa sqrt(m); the steel qualifies, the aluminium does not."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Toughness data belong to a temperature",
+   "text": "A $K_{Ic}$ or Charpy value for a BCC steel is valid only at the temperature where it was measured. Selecting a steel on room-temperature toughness for a cold service, or for impact loading, can be unconservative."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "BCC steels show a ductile-to-brittle transition because yield strength rises steeply on cooling while the cleavage stress does not; FCC metals do not.",
+    "Lower temperature, higher strain rate and higher constraint all move behaviour toward brittle cleavage.",
+    "For fail-safe selection, use yield strength to set the allowable stress and $K_{Ic}$ to set the critical crack size $a_c=(1/\\pi)(K_{Ic}/(Y\\sigma_d))^2$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of the following metals is LEAST likely to show a sharp ductile-to-brittle transition on cooling?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Carbon steel (body-centred cubic)"
+    },
+    {
+     "id": "b",
+     "text": "Aluminium (face-centred cubic)"
+    },
+    {
+     "id": "c",
+     "text": "Ferritic stainless steel (body-centred cubic)"
+    },
+    {
+     "id": "d",
+     "text": "Low-alloy structural steel (body-centred cubic)"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Aluminium (face-centred cubic)",
+   "distractorRationale": {
+    "a": "BCC carbon steels show a sharp transition.",
+    "b": "Correct: FCC metals remain ductile at low temperature.",
+    "c": "BCC ferritic stainless also has a transition.",
+    "d": "BCC low-alloy steels have a transition."
+   },
+   "explanation": "The transition arises because the yield strength of BCC metals rises steeply on cooling while the cleavage stress barely changes. FCC metals such as aluminium do not have this strong temperature dependence of yield strength, so they remain ductile.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A steel part that is tough under slow loading at 5 °C is struck by a rapid impact at the same temperature. What is the effect of the higher strain rate?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It raises the transition temperature, making cleavage more likely"
+    },
+    {
+     "id": "b",
+     "text": "It lowers the transition temperature, making the steel tougher"
+    },
+    {
+     "id": "c",
+     "text": "It has no effect on fracture mode"
+    },
+    {
+     "id": "d",
+     "text": "It converts cleavage fracture into ductile fracture"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It raises the transition temperature, making cleavage more likely",
+   "distractorRationale": {
+    "a": "Correct: high strain rate acts like lower temperature.",
+    "b": "The effect goes in the opposite direction.",
+    "c": "Strain rate does shift the transition.",
+    "d": "That reverses the true trend."
+   },
+   "explanation": "High strain rate raises the yield strength without raising the cleavage stress, so the crossover happens at a higher temperature. The same steel can therefore fail by cleavage under impact even though it is ductile when loaded slowly.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "On a fracture surface from a cold-service steel, which feature indicates cleavage rather than ductile fracture?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Fibrous, dull surface with dimples"
+    },
+    {
+     "id": "b",
+     "text": "A cup-and-cone profile with necking"
+    },
+    {
+     "id": "c",
+     "text": "Flat, bright, granular facets with little deformation"
+    },
+    {
+     "id": "d",
+     "text": "Large shear lips"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Flat, bright, granular facets with little deformation",
+   "distractorRationale": {
+    "a": "Fibrous dimples indicate microvoid coalescence.",
+    "b": "Cup-and-cone is a ductile tensile signature.",
+    "c": "Correct: cleavage facets reflect light and show little plasticity.",
+    "d": "Shear lips indicate ductile tearing."
+   },
+   "explanation": "Cleavage splits atomic planes with very little plastic work, leaving flat bright facets. Ductile fracture leaves a dull fibrous surface with dimples, necking or shear lips.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two materials are at the same design stress and have the same geometry factor. Material X has $K_{Ic}=90$ MPa$\\sqrt{\\text{m}}$ and material Y has $K_{Ic}=45$ MPa$\\sqrt{\\text{m}}$. How do their critical crack sizes compare?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "X tolerates a crack twice as large as Y"
+    },
+    {
+     "id": "b",
+     "text": "X tolerates a crack four times as large as Y"
+    },
+    {
+     "id": "c",
+     "text": "They tolerate cracks of the same size"
+    },
+    {
+     "id": "d",
+     "text": "X tolerates a crack one quarter as large as Y"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "X tolerates a crack four times as large as Y",
+   "distractorRationale": {
+    "a": "That treats $a_c$ as linear in $K_{Ic}$.",
+    "b": "Correct: $a_c\\propto K^2$ and $2^2=4$.",
+    "c": "$a_c$ depends on $K_{Ic}$.",
+    "d": "That reverses the trend."
+   },
+   "explanation": "At fixed stress, $a_c=(1/\\pi)(K_{Ic}/\\sigma)^2$ is proportional to $K_{Ic}^2$. A toughness twice as large therefore gives a tolerable crack four times larger.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A ship plate steel with a transition around $-10$ °C is used in an Arctic service at $-40$ °C. Which conclusion is the most reasonable?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It remains fully ductile because lower temperature always improves toughness"
+    },
+    {
+     "id": "b",
+     "text": "Temperature has no effect on BCC steel toughness"
+    },
+    {
+     "id": "c",
+     "text": "It is operating in the brittle regime where fracture can occur by cleavage at low stress, so a lower-transition steel or higher toughness grade is needed"
+    },
+    {
+     "id": "d",
+     "text": "It is safe because cleavage needs temperatures above 100 °C"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It is operating in the brittle regime where fracture can occur by cleavage at low stress, so a lower-transition steel or higher toughness grade is needed",
+   "distractorRationale": {
+    "a": "Cooling lowers the toughness of BCC steels.",
+    "b": "Temperature has a large effect.",
+    "c": "Correct: service lies below the transition.",
+    "d": "That is the opposite of the real trend."
+   },
+   "explanation": "At $-40$ °C the steel is below its transition so cleavage becomes possible at stresses well below yield. The designer should choose a steel whose transition lies comfortably below the minimum service temperature.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A titanium alloy has $K_{Ic}=70$ MPa$\\sqrt{\\text{m}}$ (assumed). It is designed to carry 420 MPa with a central crack ($Y=1$). Find the critical half-length in mm.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o2"
+   ],
+   "correctValue": 8.84194,
+   "tolerance": 0.2,
+   "unit": "mm",
+   "explanation": "$a_c=(1/\\pi)(70/420)^2=(1/\\pi)(0.1667)^2=0.008842$ m, which is 8.84 mm. This is a half-length because the crack is central.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A fail-safe design must tolerate a central crack of half-length 5 mm at 350 MPa ($Y=1$). What minimum toughness $K_{Ic}$, in MPa$\\sqrt{\\text{m}}$, must the selected material have?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o2"
+   ],
+   "correctValue": 43.866,
+   "tolerance": 0.3,
+   "unit": "MPa sqrt(m)",
+   "explanation": "$K_{req}=\\sigma\\sqrt{\\pi a}=350\\times\\sqrt{\\pi\\times0.005}=350\\times0.1253=43.87$ MPa$\\sqrt{\\text{m}}$. Any candidate below this would reach the critical state at the stated flaw size.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Alloy T has $\\sigma_{ys}=1000$ MPa and $K_{Ic}=95$ MPa$\\sqrt{\\text{m}}$ (assumed values). It is to be used at a design stress equal to 60 percent of yield, with $Y=1$. Find the critical half-length in mm.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o2"
+   ],
+   "correctValue": 7.97985,
+   "tolerance": 0.2,
+   "unit": "mm",
+   "explanation": "The design stress is $0.6\\times1000=600$ MPa. Then $a_c=(1/\\pi)(95/600)^2=0.00798$ m, which is 7.98 mm. Setting the stress as a fraction of yield links strength and toughness in one number.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the origin of the ductile-to-brittle transition in body-centred cubic steels, and say why it does not appear in face-centred cubic metals such as aluminium.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o1"
+   ],
+   "markingGuide": [
+    "BCC yield strength increases strongly as temperature falls (and with strain rate)",
+    "The cleavage fracture stress is only weakly temperature dependent",
+    "Above the crossover, yielding happens first giving ductile fracture; below it, cleavage occurs before yield giving low-energy brittle fracture",
+    "FCC metals have weak temperature dependence of yield strength, so cleavage is not reached first and they stay ductile"
+   ],
+   "explanation": "Fracture mode is decided by whichever of yield or cleavage is reached first. In BCC metals the yield stress rises quickly on cooling and crosses the nearly constant cleavage stress, producing the transition. FCC metals lack this steep yield temperature dependence.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A cold-service frame must tolerate a crack of detectable size at a design stress of 500 MPa. Candidate P (typical values): $\\sigma_{ys}=1100$ MPa, $K_{Ic}=85$ MPa$\\sqrt{\\text{m}}$. Candidate Q: $\\sigma_{ys}=1600$ MPa, $K_{Ic}=45$ MPa$\\sqrt{\\text{m}}$. Both are valid at the service temperature. Compute the critical half-length for each ($Y=1$) and recommend one for a fail-safe design, discussing the trade-off.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o2",
+    "ug.mce-fracture-fatigue-failure.toughness.toughness-selection.o3"
+   ],
+   "markingGuide": [
+    "Computes $a_c=(1/\\pi)(K_{Ic}/\\sigma)^2$ for P and Q",
+    "P: about 9.2 mm half-length",
+    "Q: about 2.58 mm half-length",
+    "Recommends P because it tolerates a flaw about 3.6 times larger, easier to detect and so more fail-safe",
+    "Notes Q is stronger and could carry more stress or allow lighter section, but only with a much smaller tolerable flaw, and that toughness must be checked at the service temperature and loading rate"
+   ],
+   "explanation": "The tolerable half-length is 9.2 mm for P and 2.58 mm for Q at 500 MPa, so P is the better fail-safe choice. Alloy Q's higher strength does not help if it cannot tolerate flaws large enough to be found, and the toughness must apply at the service temperature.",
+   "board": "internal"
+  }
+ ]
+}

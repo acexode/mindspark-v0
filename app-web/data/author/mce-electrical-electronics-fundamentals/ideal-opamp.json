@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "The Ideal Op-Amp",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A strain-gauge bridge on a crane hook produces only a few millivolts, far too little for a data logger. A single op-amp and two resistors turn that signal into a clean, scaled voltage whose gain is fixed to within a fraction of a percent by the resistor ratio, regardless of how the amplifier chip itself varies from batch to batch."
+  },
+  {
+   "type": "text",
+   "markdown": "An **operational amplifier** (op-amp) is a high-gain differential amplifier with two inputs, the non-inverting input $(+)$ and the inverting input $(-)$, and one output. Its output is $v_o=A\\,(v_+-v_-)$, where the open-loop gain $A$ is very large (typically $10^5$ or more) but poorly controlled. It is therefore never used bare for linear amplification; it is used with **negative feedback**, which makes the overall gain depend only on the external resistors."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Ideal op-amp rules (with negative feedback)",
+   "text": "1. The inputs draw no current (infinite input impedance): $i_+=i_-=0$. 2. The feedback forces the two input voltages to be equal: $v_+=v_-$ (the **virtual short**), provided the output is not saturated. 3. The output can supply whatever current is needed, up to the supply limits."
+  },
+  {
+   "type": "text",
+   "markdown": "Rule 2 follows from rearranging $v_o=A(v_+-v_-)$: since $v_o$ is finite (limited by the supplies, say $\\pm12$ V) and $A$ is huge, the difference $v_+-v_-=v_o/A$ is a few microvolts at most, and is taken as zero. Rule 1 follows from the very large input resistance of the input transistors. These two rules are enough to analyse nearly every op-amp circuit."
+  },
+  {
+   "type": "text",
+   "markdown": "**Inverting amplifier.** The input source drives the inverting node through $R_{in}$, the feedback resistor $R_f$ connects the output back to that node, and the $(+)$ input is grounded. By the virtual short the $(-)$ node is at 0 V (a 'virtual ground'), so the input current is $v_{in}/R_{in}$. That current cannot enter the op-amp (rule 1), so it flows through $R_f$, giving $v_o=-R_f\\,v_{in}/R_{in}$."
+  },
+  {
+   "type": "math",
+   "latex": "G_{inv}=\\frac{v_o}{v_{in}}=-\\frac{R_f}{R_{in}},\\qquad G_{non}=\\frac{v_o}{v_{in}}=1+\\frac{R_f}{R_g}",
+   "caption": "Closed-loop gain of the inverting and non-inverting amplifiers (ideal op-amp)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Inverting amplifier",
+   "prompt": "An inverting amplifier uses $R_{in}=10$ k$\\Omega$ and $R_f=47$ k$\\Omega$. The input is +0.20 V. Find the gain and the output voltage.",
+   "steps": [
+    {
+     "text": "Virtual ground puts 0 V at the inverting node, so the input current is:",
+     "latex": "i=\\frac{0.20-0}{10\\times10^{3}}=20\\ \\mu\\mathrm{A}"
+    },
+    {
+     "text": "The same current flows through $R_f$ (no current enters the op-amp), so:",
+     "latex": "v_o=0-iR_f=-(20\\times10^{-6})(47\\times10^{3})=-0.94\\ \\mathrm{V}"
+    },
+    {
+     "text": "Gain.",
+     "latex": "G=-\\frac{47}{10}=-4.7"
+    }
+   ],
+   "answer": "Gain -4.7; the output is -0.94 V. The sign inversion is a 180 degree phase shift."
+  },
+  {
+   "type": "text",
+   "markdown": "**Non-inverting amplifier.** The input source drives the $(+)$ input directly. A voltage divider $R_f$, $R_g$ from the output to ground feeds a fraction $\\beta=R_g/(R_g+R_f)$ of the output back to the $(-)$ input. The virtual short forces $v_-=v_{in}$, so $v_o\\beta=v_{in}$, giving the gain $1/\\beta=1+R_f/R_g$. Its input resistance is essentially infinite, which makes it ideal for high-impedance sensors; the gain is never below 1."
+  },
+  {
+   "type": "worked_example",
+   "title": "Non-inverting amplifier design",
+   "prompt": "Design a non-inverting amplifier with gain 10 from a 0.25 V input, with $R_g=10$ k$\\Omega$. Find $R_f$ and the output.",
+   "steps": [
+    {
+     "text": "Rearrange the gain equation.",
+     "latex": "R_f=(G-1)R_g=(10-1)\\times10\\ \\mathrm{k\\Omega}=90\\ \\mathrm{k\\Omega}"
+    },
+    {
+     "text": "Check the gain with the chosen standard values (90 k is not E12; use 91 k).",
+     "latex": "G=1+\\frac{91}{10}=10.1"
+    },
+    {
+     "text": "Output for 0.25 V.",
+     "latex": "v_o=10.1\\times0.25=2.53\\ \\mathrm{V}"
+    }
+   ],
+   "answer": "Use $R_f=91$ k$\\Omega$ (nearest standard value) for a gain of 10.1 and an output of 2.53 V, comfortably inside a +/-12 V supply."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Inverting",
+    "Non-inverting"
+   ],
+   "rows": [
+    [
+     "Gain",
+     "$-R_f/R_{in}$",
+     "$1+R_f/R_g$"
+    ],
+    [
+     "Minimum magnitude of gain",
+     "Any (can be below 1)",
+     "1 (voltage follower when $R_f=0$)"
+    ],
+    [
+     "Input resistance",
+     "$R_{in}$ (finite)",
+     "Very large (ideal: infinite)"
+    ],
+    [
+     "Phase",
+     "Inverted",
+     "In phase"
+    ],
+    [
+     "Input node",
+     "Virtual ground",
+     "Follows input"
+    ]
+   ],
+   "caption": "Comparison of the two basic amplifiers"
+  },
+  {
+   "type": "text",
+   "markdown": "**Role of feedback.** With a finite open-loop gain $A$ and feedback fraction $\\beta$, the closed-loop gain of the non-inverting stage is $G=A/(1+A\\beta)$. When $A\\beta\\gg1$ this becomes $G\\approx1/\\beta$, independent of $A$. Negative feedback therefore trades the huge, unpredictable gain $A$ for a smaller, precise gain set by resistor ratios; it also reduces distortion and widens the bandwidth. If the output were connected to the $(+)$ input instead (positive feedback), any small difference would be amplified further and the output would saturate at a supply rail."
+  },
+  {
+   "type": "math",
+   "latex": "G=\\frac{A}{1+A\\beta}\\xrightarrow{A\\beta\\gg1}\\frac{1}{\\beta},\\qquad \\beta=\\frac{R_g}{R_g+R_f}",
+   "caption": "Closed-loop gain with finite open-loop gain, non-inverting configuration"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Gain is set by the resistors",
+   "text": "Use the two ideal rules, write one current equation at the inverting node, and solve. The result depends only on resistor ratios, so use stable, matched resistors (1 % or better) for precision."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Ideal rules: no input current and $v_+=v_-$ under negative feedback.",
+    "Inverting gain $-R_f/R_{in}$; non-inverting gain $1+R_f/R_g$; choose resistor values to meet a gain.",
+    "Negative feedback makes $G\\approx1/\\beta$ independent of the open-loop gain $A$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An inverting amplifier has $R_{in}=4.7$ k$\\Omega$ and $R_f=47$ k$\\Omega$. What is its gain?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "-10"
+    },
+    {
+     "id": "b",
+     "text": "+10"
+    },
+    {
+     "id": "c",
+     "text": "-11"
+    },
+    {
+     "id": "d",
+     "text": "-0.1"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "-10",
+   "distractorRationale": {
+    "a": "Correct: -47/4.7 = -10.",
+    "b": "Wrong: this drops the inversion sign.",
+    "c": "Wrong: -11 would be the (incorrect) -(1 + Rf/Rin).",
+    "d": "Wrong: this inverts the ratio."
+   },
+   "explanation": "The inverting gain is $-R_f/R_{in}=-47/4.7=-10$. The negative sign means the output is inverted relative to the input.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A non-inverting amplifier has $R_f=20$ k$\\Omega$ and $R_g=5$ k$\\Omega$. What is its gain?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "5"
+    },
+    {
+     "id": "b",
+     "text": "4"
+    },
+    {
+     "id": "c",
+     "text": "-4"
+    },
+    {
+     "id": "d",
+     "text": "0.25"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "5",
+   "distractorRationale": {
+    "a": "Correct: 1 + 20/5 = 5.",
+    "b": "Wrong: 4 is Rf/Rg and forgets the added 1.",
+    "c": "Wrong: this is the inverting form.",
+    "d": "Wrong: this inverts the ratio."
+   },
+   "explanation": "The non-inverting gain is $1+R_f/R_g=1+20/5=5$. The '1' arises because the input voltage appears at the inverting node and the output must exceed it by the divider fraction.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does negative feedback achieve in an op-amp amplifier?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It makes the closed-loop gain depend mainly on external resistor ratios rather than on the open-loop gain"
+    },
+    {
+     "id": "b",
+     "text": "It increases the open-loop gain"
+    },
+    {
+     "id": "c",
+     "text": "It makes the output independent of the input"
+    },
+    {
+     "id": "d",
+     "text": "It removes the need for a power supply"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It makes the closed-loop gain depend mainly on external resistor ratios rather than on the open-loop gain",
+   "distractorRationale": {
+    "a": "Correct: with A large, G is approximately 1/beta.",
+    "b": "Wrong: feedback reduces the overall gain from A to about 1/beta.",
+    "c": "Wrong: the output still follows the input, at the gain set by the resistors.",
+    "d": "Wrong: the op-amp still needs supply rails."
+   },
+   "explanation": "Negative feedback returns a fraction $\\beta$ of the output to the inverting input, forcing the closed-loop gain to $\\approx1/\\beta$. The huge but uncertain $A$ drops out of the result.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An inverting amplifier with $R_{in}=2.2$ k$\\Omega$ must have a gain of -25. Which value of $R_f$ is needed?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "55 k$\\Omega$"
+    },
+    {
+     "id": "b",
+     "text": "88 $\\Omega$"
+    },
+    {
+     "id": "c",
+     "text": "52.8 k$\\Omega$"
+    },
+    {
+     "id": "d",
+     "text": "57.2 k$\\Omega$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "55 k$\\Omega$",
+   "distractorRationale": {
+    "a": "Correct: R_f = 25 x 2.2 k = 55 k.",
+    "b": "Wrong: this divides 2.2 k by 25.",
+    "c": "Wrong: this uses (G - 1) x R_in, the non-inverting formula.",
+    "d": "Wrong: this uses (G + 1) x R_in."
+   },
+   "explanation": "The inverting gain is $-R_f/R_{in}$, so $R_f=25\\times2.2=55$ k$\\Omega$. The non-inverting form would need $(G-1)R_g$, which is a different circuit.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement about input resistance is correct for ideal single op-amp amplifiers?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Inverting: input resistance equals R_in; non-inverting: very large"
+    },
+    {
+     "id": "b",
+     "text": "Both are very large"
+    },
+    {
+     "id": "c",
+     "text": "Inverting: very large; non-inverting: equals R_g"
+    },
+    {
+     "id": "d",
+     "text": "Both equal the feedback resistor R_f"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Inverting: input resistance equals R_in; non-inverting: very large",
+   "distractorRationale": {
+    "a": "Correct: the inverting node is a virtual ground, so the source sees R_in; the (+) input draws no current.",
+    "b": "Wrong: the inverting source drives current into R_in.",
+    "c": "Wrong: reversed; the inverting source sees R_in.",
+    "d": "Wrong: R_f is not directly the source load in either circuit."
+   },
+   "explanation": "In the inverting amplifier the source drives $R_{in}$ with the other end at virtual ground, so it supplies current $v_{in}/R_{in}$. In the non-inverting circuit the source connects only to the op-amp input, which draws no current.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An inverting amplifier has $R_{in}=15$ k$\\Omega$ and $R_f=68$ k$\\Omega$. The input voltage is -0.35 V. What is the output voltage in volts?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o1"
+   ],
+   "correctValue": 1.587,
+   "tolerance": 0.01,
+   "unit": "V",
+   "explanation": "The gain is $-68/15=-4.533$. Output $=-4.533\\times(-0.35)=+1.587$ V. The two negative signs make the output positive.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A non-inverting amplifier with $R_g=2.2$ k$\\Omega$ is to have a gain of 21. What value of $R_f$ is needed, in k$\\Omega$?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o2"
+   ],
+   "correctValue": 44,
+   "tolerance": 0.5,
+   "unit": "kOhm",
+   "explanation": "From $G=1+R_f/R_g$, $R_f=(G-1)R_g=20\\times2.2=44$ k$\\Omega$. A standard 43 k$\\Omega$ (1 %) would give gain 20.5.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A non-inverting amplifier has $R_f=99$ k$\\Omega$ and $R_g=1.0$ k$\\Omega$ (ideal gain 100). The op-amp's actual open-loop gain is only $A=1000$. Using $G=A/(1+A\\beta)$ with $\\beta=R_g/(R_g+R_f)$, find the actual closed-loop gain.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o1",
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o3"
+   ],
+   "correctValue": 90.9,
+   "tolerance": 0.2,
+   "unit": "(dimensionless)",
+   "explanation": "$\\beta=1/(1+99)=0.01$, so $A\\beta=10$ and $G=1000/(1+10)=90.9$. The ideal value of 100 is only approached when $A\\beta\\gg1$; here the gain is about 9 % low.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Using the ideal op-amp rules, derive the gain of the inverting amplifier from first principles.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o1"
+   ],
+   "markingGuide": [
+    "States virtual short: v_- = v_+ = 0 (virtual ground)",
+    "Input current i = v_in/R_in",
+    "No current enters the op-amp input, so the same current flows through R_f",
+    "v_o = 0 - i R_f = -(R_f/R_in) v_in",
+    "Concludes gain = -R_f/R_in"
+   ],
+   "explanation": "With the $(+)$ input grounded and the virtual short, the inverting node is at 0 V. The input current is $v_{in}/R_{in}$, and since the op-amp draws no input current it all flows through $R_f$. The output is thus $v_o=0-iR_f=-(R_f/R_{in})v_{in}$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why an op-amp amplifier uses negative rather than positive feedback, and why with negative feedback the closed-loop gain is almost independent of the op-amp's open-loop gain.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.operational-amplifiers.ideal-opamp.o3"
+   ],
+   "markingGuide": [
+    "Negative feedback returns a fraction beta of the output to the inverting input",
+    "Any difference v_+ - v_- is reduced because the output moves to oppose it (self-correcting)",
+    "Closed-loop gain G = A/(1+A beta) approaches 1/beta when A beta is much greater than 1",
+    "So gain depends on the resistor ratio, not on A which varies with temperature and batch",
+    "Positive feedback amplifies the difference further, driving the output to saturate (unstable for linear amplification)"
+   ],
+   "explanation": "With negative feedback, if the output rises too far the fed-back signal reduces the differential input and pulls the output back, so the circuit settles where $v_+\\approx v_-$. Algebraically $G=A/(1+A\\beta)\\to1/\\beta$ for large $A\\beta$, so the gain depends on resistor values, not on $A$. Positive feedback would amplify any small imbalance and drive the output into saturation.",
+   "board": "internal"
+  }
+ ]
+}

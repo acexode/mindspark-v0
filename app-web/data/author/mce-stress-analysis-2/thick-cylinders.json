@@ -1,0 +1,365 @@
+{
+ "lessonTitle": "Thick-Walled Cylinders and Shrink Fits",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A diesel injection pipe, a gun barrel and a hydraulic press cylinder all run at pressures of 100 MPa or more, and their walls are almost as thick as their bores. The thin-wall formula treats the stress as uniform across the wall; at these pressures it is dangerously wrong, because the inner surface carries far more stress than the outer."
+  },
+  {
+   "type": "text",
+   "markdown": "In a **thick-walled cylinder** (typically $t/D>1/20$) the hoop stress $\\sigma_\\theta$ and radial stress $\\sigma_r$ vary with radius $r$. Take inner radius $a$, outer radius $b$, internal pressure $p_i$ and external pressure $p_o$ (all in MPa and mm). Assumptions: long cylinder, plane sections remain plane, linear-elastic isotropic material, axisymmetric loading. Solving the equilibrium and compatibility equations gives the **Lame equations** with two constants $A$ and $B$ fixed by the boundary conditions $\\sigma_r(a)=-p_i$ and $\\sigma_r(b)=-p_o$ (compression negative)."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_r=A-\\frac{B}{r^2},\\qquad \\sigma_\\theta=A+\\frac{B}{r^2}",
+   "caption": "Lame equations (radial and hoop stress at radius r)"
+  },
+  {
+   "type": "math",
+   "latex": "A=\\frac{p_ia^2-p_ob^2}{b^2-a^2},\\qquad B=\\frac{(p_i-p_o)\\,a^2b^2}{b^2-a^2}",
+   "caption": "Constants from the boundary conditions. For a closed-end cylinder the axial stress is \\sigma_z = A, uniform through the wall"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why the inner surface is critical",
+   "text": "With internal pressure only, $B>0$, so $\\sigma_\\theta=A+B/r^2$ decreases monotonically as $r$ grows. The maximum hoop stress is therefore at $r=a$ and exceeds the thin-wall mean value, while the radial stress runs from $-p_i$ to $0$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Lame stresses in a pressurised cylinder",
+   "prompt": "A cylinder has inner radius $a=50$ mm and outer radius $b=100$ mm and carries internal pressure $p_i=80$ MPa with a free outer surface ($p_o=0$). Find the hoop and radial stresses at the inner and outer surfaces.",
+   "steps": [
+    {
+     "text": "Constants.",
+     "latex": "A=\\frac{80(50)^2}{100^2-50^2}=26.667\\ \\text{MPa},\\quad B=\\frac{80(50^2)(100^2)}{100^2-50^2}=266667\\ \\text{MPa mm}^2"
+    },
+    {
+     "text": "Inner surface $r=50$ mm.",
+     "latex": "\\sigma_\\theta=26.667+\\frac{266667}{2500}=133.33\\ \\text{MPa},\\quad\\sigma_r=26.667-106.667=-80\\ \\text{MPa}"
+    },
+    {
+     "text": "Outer surface $r=100$ mm.",
+     "latex": "\\sigma_\\theta=26.667+\\frac{266667}{10000}=53.33\\ \\text{MPa},\\quad\\sigma_r=26.667-26.667=0"
+    },
+    {
+     "text": "Check: the radial boundary conditions are satisfied ($-80$ at the bore, $0$ at the outside) and the hoop stress falls from 133 to 53 MPa across the wall."
+    }
+   ],
+   "answer": "Inner: $\\sigma_\\theta=133.3$ MPa, $\\sigma_r=-80$ MPa. Outer: $\\sigma_\\theta=53.3$ MPa, $\\sigma_r=0$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Compound cylinders.** One way to reduce the peak inner stress is to shrink an outer tube onto an inner tube. A radial **interference** $\\delta$ between the inner radius of the outer tube and the outer radius of the inner tube creates an **interface pressure** $p_c$ at radius $c$. The inner tube (radii $a$, $c$) is compressed and the outer tube (radii $c$, $b$) is stretched, so the working pressure then starts from a pre-compressed inner bore. For two tubes of the same material and unconstrained ends, compatibility requires that the sum of the radial displacements of the two tubes at $r=c$ equals $\\delta$."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta=\\frac{p_c\\,c}{E}\\left[\\frac{b^2+c^2}{b^2-c^2}+\\frac{c^2+a^2}{c^2-a^2}\\right]",
+   "caption": "Shrink-fit compatibility, same material in both tubes (E in MPa, lengths in mm); the Poisson terms cancel"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Thin-wall formula",
+    "Thick-wall (Lame)"
+   ],
+   "rows": [
+    [
+     "Hoop stress",
+     "$pD/2t$, uniform",
+     "$A+B/r^2$, varies, peak at bore"
+    ],
+    [
+     "Radial stress",
+     "Neglected",
+     "$A-B/r^2$, from $-p_i$ to $-p_o$"
+    ],
+    [
+     "Valid when",
+     "$t/D\\lesssim1/20$",
+     "Any thickness (linear-elastic)"
+    ],
+    [
+     "Use for shrink fit",
+     "Not applicable",
+     "Needed for interface pressure"
+    ]
+   ],
+   "caption": "Thin-wall versus thick-wall analysis"
+  },
+  {
+   "type": "worked_example",
+   "title": "Interface pressure of a shrink-fit compound cylinder",
+   "prompt": "Two steel tubes ($E=200$ GPa, same material) form a compound cylinder with inner bore radius $a=40$ mm, interface radius $c=60$ mm and outer radius $b=80$ mm. The radial interference is $\\delta=0.03$ mm. Find the interface pressure and the resulting hoop stresses at the interface before any working pressure is applied. Assume open ends.",
+   "steps": [
+    {
+     "text": "Evaluate the bracket in the compatibility equation.",
+     "latex": "k=\\frac{80^2+60^2}{80^2-60^2}+\\frac{60^2+40^2}{60^2-40^2}=3.5714+2.6000=6.1714"
+    },
+    {
+     "text": "Solve for $p_c$.",
+     "latex": "p_c=\\frac{\\delta E}{c\\,k}=\\frac{0.03\\times200000}{60\\times6.1714}=16.20\\ \\text{MPa}"
+    },
+    {
+     "text": "Inner tube sits under external pressure $p_c$: its hoop stress at the interface is compressive, and at the bore it is larger in magnitude.",
+     "latex": "\\sigma_\\theta(c)=-p_c\\frac{c^2+a^2}{c^2-a^2}=-42.1\\ \\text{MPa},\\quad\\sigma_\\theta(a)=-\\frac{2p_cc^2}{c^2-a^2}=-58.3\\ \\text{MPa}"
+    },
+    {
+     "text": "Outer tube under internal pressure $p_c$: hoop stress is tensile, largest at its own inner surface.",
+     "latex": "\\sigma_\\theta(c)=p_c\\frac{b^2+c^2}{b^2-c^2}=57.9\\ \\text{MPa}"
+    }
+   ],
+   "answer": "$p_c\\approx16.2$ MPa. The bore starts at $-58.3$ MPa hoop stress, which offsets part of the tension from the working pressure."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common mistakes",
+   "text": "Do not use the thin-wall formula on a thick cylinder. Do not forget that $\\sigma_r$ is compressive for internal pressure, and use the radial (not diametral) interference in the shrink-fit equation: a diametral interference must be halved."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Write $a$, $b$, $p_i$, $p_o$ and compute $A$ and $B$ first.",
+    "Evaluate $\\sigma_\\theta$ and $\\sigma_r$ at the radii of interest; check boundary conditions.",
+    "For compound cylinders, find $p_c$ from compatibility, then analyse each tube separately with Lame.",
+    "Superpose the working-pressure stresses on the shrink-fit stresses."
+   ]
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Thick cylinders have non-uniform hoop and radial stresses: $\\sigma_\\theta=A+B/r^2$ and $\\sigma_r=A-B/r^2$.",
+    "The constants follow from $\\sigma_r(a)=-p_i$ and $\\sigma_r(b)=-p_o$; the axial stress of a closed-end cylinder is $A$.",
+    "With internal pressure, hoop stress is greatest at the inner surface because $B>0$ makes $B/r^2$ decrease outward.",
+    "A shrink fit produces an interface pressure from $\\delta=\\frac{p_cc}{E}[\\ldots]$ and pre-compresses the inner tube, reducing peak working stress."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a thick-walled cylinder loaded by internal pressure alone, the maximum hoop stress occurs at the",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "inner surface, because $B/r^2$ decreases as $r$ increases"
+    },
+    {
+     "id": "b",
+     "text": "outer surface, because the circumference is greatest there"
+    },
+    {
+     "id": "c",
+     "text": "mid-wall, where the radial stress is zero"
+    },
+    {
+     "id": "d",
+     "text": "inner surface, because the radial stress is zero there"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "inner surface, because $B/r^2$ decreases as $r$ increases",
+   "distractorRationale": {
+    "a": "Correct: with $B>0$ the term $B/r^2$ is largest at $r=a$.",
+    "b": "Circumference is larger at the outer surface but the stress does not follow circumference; the Lame result shows the opposite.",
+    "c": "The hoop stress profile is monotonic, with no mid-wall maximum.",
+    "d": "The radial stress at the inner surface is $-p_i$, not zero; the free surface with zero radial stress is the outer one."
+   },
+   "explanation": "The Lame hoop stress is $\\sigma_\\theta=A+B/r^2$ with $B=(p_i-p_o)a^2b^2/(b^2-a^2)>0$ when $p_i>p_o$. A decreasing function of $r$ attains its maximum at the smallest $r$, which is the bore.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A thick cylinder has inner radius 30 mm and outer radius 60 mm, internal pressure 50 MPa and a free outer surface. Using the Lame equations, calculate the hoop stress at the inner surface in MPa.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o1"
+   ],
+   "correctValue": 83.333333,
+   "tolerance": 0.2,
+   "unit": "MPa",
+   "explanation": "$A=50(900)/(3600-900)=16.667$ MPa and $B=50(900)(3600)/2700=60000$ MPa mm$^2$. At $r=30$ mm, $\\sigma_\\theta=16.667+60000/900=83.33$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A thick cylinder with inner radius 40 mm and outer radius 80 mm carries an internal pressure of 100 MPa and has a free outer surface. Find the radial stress in MPa at radius $r=60$ mm (give the signed value; compression is negative).",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o1"
+   ],
+   "correctValue": -25.925926,
+   "tolerance": 0.1,
+   "unit": "MPa",
+   "explanation": "$A=100(1600)/(6400-1600)=33.333$ and $B=100(1600)(6400)/4800=213333$. At $r=60$ mm, $\\sigma_r=A-B/3600=-25.93$ MPa. The hoop stress there is $92.59$ MPa, so $\\sigma_\\theta+\\sigma_r=2A$ as expected.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A closed-end thick cylinder has inner radius 20 mm, outer radius 40 mm, and internal pressure 90 MPa with a free outer surface. The axial stress, assumed uniform and equal to the Lame constant $A$, is",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "90 MPa"
+    },
+    {
+     "id": "b",
+     "text": "30 MPa"
+    },
+    {
+     "id": "c",
+     "text": "60 MPa"
+    },
+    {
+     "id": "d",
+     "text": "15 MPa"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "30 MPa",
+   "distractorRationale": {
+    "a": "This is the internal pressure itself, not an axial wall stress.",
+    "b": "Correct: $A=90(400)/(1600-400)=30$ MPa.",
+    "c": "Doubles the correct value, perhaps by borrowing the hoop-style factor of 2.",
+    "d": "Halves the correct value, perhaps confusing $A$ with $A/2$."
+   },
+   "explanation": "The axial force from pressure on the closed end is $p_i\\pi a^2$, carried by the wall area $\\pi(b^2-a^2)$. So $\\sigma_z=p_ia^2/(b^2-a^2)=30$ MPa, which equals $A$ when $p_o=0$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A compound cylinder is formed from two steel tubes ($E=200$ GPa for both). The inner tube has bore radius 25 mm, the interface radius is 50 mm and the outer radius is 75 mm. The radial interference is 0.02 mm. Calculate the interface pressure in MPa. Assume open ends.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o2"
+   ],
+   "correctValue": 18.75,
+   "tolerance": 0.3,
+   "unit": "MPa",
+   "explanation": "The bracket is $(75^2+50^2)/(75^2-50^2)+(50^2+25^2)/(50^2-25^2)=4.2667$. Then $p_c=\\delta E/(c\\,k)=0.02\\times200000/(50\\times4.2667)=18.75$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer doubles the radial interference in a shrink-fit compound cylinder, with all radii and materials unchanged. The interface pressure",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "doubles, since $p_c$ is directly proportional to $\\delta$"
+    },
+    {
+     "id": "b",
+     "text": "quadruples"
+    },
+    {
+     "id": "c",
+     "text": "is unchanged, since it depends only on the radii"
+    },
+    {
+     "id": "d",
+     "text": "halves"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "doubles, since $p_c$ is directly proportional to $\\delta$",
+   "distractorRationale": {
+    "a": "Correct: the compatibility equation is linear in $\\delta$ and $p_c$.",
+    "b": "The relationship is linear in an elastic analysis, not quadratic.",
+    "c": "Pressure depends on interference as well as radii.",
+    "d": "This inverts the relationship; more interference means more squeeze."
+   },
+   "explanation": "The compatibility relation $\\delta=(p_cc/E)\\,k$ has geometry-only $k$, so $p_c=\\delta E/(ck)$ scales linearly with $\\delta$. Doubling $\\delta$ doubles $p_c$ and all the resulting stresses, as long as the response stays elastic.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the maximum hoop stress in a thick-walled cylinder under internal pressure occurs at the inner surface, and why the thin-wall formula $pD/2t$ underestimates that peak.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o3"
+   ],
+   "markingGuide": [
+    "Lame hoop stress $\\sigma_\\theta=A+B/r^2$ with $B=(p_i-p_o)a^2b^2/(b^2-a^2)>0$ for $p_i>p_o$.",
+    "$B/r^2$ decreases with $r$, so the peak is at $r=a$.",
+    "Physically the inner layers must stretch more circumferentially to accommodate the same radial displacement pattern; the outer layers are restrained by the inner and carry less strain.",
+    "The thin-wall formula gives the mean hoop stress, assuming it is uniform across the wall.",
+    "Because the true distribution falls from inner to outer, the peak at the bore exceeds the mean, and the gap grows as $t/a$ increases."
+   ],
+   "explanation": "The compatibility of radial and hoop strains forces the hoop strain to be largest at the bore, since the circumferential strain is $u/r$ and $u$ varies slowly across the wall. The mean-value thin-wall formula hides this concentration.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A cylinder has inner radius 50 mm and outer radius 100 mm, with an internal pressure of 60 MPa and an external pressure of 20 MPa. Using the Lame equations, calculate the hoop stress at the inner surface in MPa (signed; tension is positive).",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o1"
+   ],
+   "correctValue": 46.666667,
+   "tolerance": 0.2,
+   "unit": "MPa",
+   "explanation": "$A=(60\\times2500-20\\times10000)/7500=-6.667$ MPa and $B=(60-20)(2500)(10000)/7500=133333$ MPa mm$^2$. At $r=50$ mm, $\\sigma_\\theta=-6.667+133333/2500=46.67$ MPa. Check: $\\sigma_r=A-B/2500=-60$ MPa, matching $-p_i$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A compound steel cylinder ($E=200$ GPa for both tubes) has bore radius 30 mm, interface radius 50 mm and outer radius 70 mm. The radial interference is 0.04 mm. Find the interface pressure and the hoop stress at the bore caused by the shrink fit alone, and explain how this helps when the cylinder is later pressurised. Assume open ends.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o2",
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o3"
+   ],
+   "markingGuide": [
+    "Bracket $k=(70^2+50^2)/(70^2-50^2)+(50^2+30^2)/(50^2-30^2)=5.2083$.",
+    "Interface pressure $p_c=\\delta E/(ck)=0.04\\times200000/(50\\times5.2083)=30.72$ MPa.",
+    "Inner tube hoop stress at the bore $=-2p_cc^2/(c^2-a^2)=-96.0$ MPa (compressive).",
+    "Working internal pressure adds a tensile Lame hoop stress at the bore; the pre-compression cancels part of it.",
+    "This lowers the peak stress and spreads load more evenly between the tubes, allowing a higher working pressure for the same peak stress."
+   ],
+   "explanation": "The shrink fit puts the inner tube in compression and the outer tube in tension. Superposing the working-pressure stresses (largest tension at the bore) onto this reduces the net maximum hoop stress, so the cylinder uses its material more evenly.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: for a thick cylinder with internal pressure and a free outer surface, the radial stress is compressive at every radius within the wall.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The radial stress is $A-B/r^2$, which rises from $-p_i$ at the bore to $0$ at the free outer surface. It never becomes tensile because $A-B/r^2<0$ for every $r<b$.",
+   "board": "internal"
+  }
+ ]
+}

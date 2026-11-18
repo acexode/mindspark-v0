@@ -1,0 +1,387 @@
+{
+ "lessonTitle": "Vibration Transducers and Their Limits",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A condition-monitoring engineer bolts one sensor to a gearbox and gets clean data to 5 kHz. She slips a magnet under the same sensor for convenience and the readings above 3 kHz suddenly look too large. Understanding what a vibration transducer really is, a tiny mass-spring system inside a case, explains both the useful band and the effect of mounting."
+  },
+  {
+   "type": "text",
+   "markdown": "Most vibration sensors are **seismic instruments**: a small mass $m$ on a spring $k$ with damping $c$ inside a case that is fixed to the vibrating body. When the body (the base) moves with displacement $y=Y\\sin\\omega t$, the mass lags behind and the sensor measures the **relative** displacement $z$ between mass and case. The case equation of motion is $m\\ddot{z}+c\\dot{z}+kz=m\\omega^2Y\\sin\\omega t$, so the relative amplitude is $Z=Y\\,r^2/\\sqrt{(1-r^2)^2+(2\\zeta r)^2}$, where $r=\\omega/\\omega_n$ is the ratio of the vibration frequency to the instrument's natural frequency $\\omega_n=\\sqrt{k/m}$ (rad/s). The ratio $r$ decides what the instrument measures."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{Z}{Y}=\\frac{r^2}{\\sqrt{(1-r^2)^2+(2\\zeta r)^2}},\\qquad \\frac{Z}{\\omega^2Y}=\\frac{1}{\\omega_n^2}\\cdot\\frac{1}{\\sqrt{(1-r^2)^2+(2\\zeta r)^2}}",
+   "caption": "Relative displacement versus base displacement, and versus base acceleration amplitude omega^2 Y"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "How the natural frequency sets the useful band",
+   "text": "If $r\\gg1$ (vibration far above $\\omega_n$), $Z/Y\\to1$: the mass stays still in space and the relative motion equals the base displacement. This is a **vibrometer** (low natural frequency, measures displacement). If $r\\ll1$ (vibration far below $\\omega_n$), $Z\\approx\\omega^2Y/\\omega_n^2$: the relative displacement is proportional to the base acceleration amplitude. This is an **accelerometer** (high natural frequency, measures acceleration). The factor $1/\\sqrt{(1-r^2)^2+(2\\zeta r)^2}$ is the error: it is 1 at low $r$ and grows near resonance."
+  },
+  {
+   "type": "worked_example",
+   "title": "Bandwidth of an accelerometer",
+   "prompt": "A piezoelectric accelerometer has a mounted natural frequency of 25 kHz and damping ratio 0.02. Find the frequency up to which the amplitude error stays within 5 per cent, and the error at one fifth of the natural frequency.",
+   "steps": [
+    {
+     "text": "The amplitude ratio relative to the ideal low-frequency response is 1/sqrt((1 - r^2)^2 + (2 zeta r)^2). Neglecting the small damping term, a 5 per cent rise means 1/(1 - r^2) = 1.05.",
+     "latex": "r^2=1-\\frac{1}{1.05}=0.0476,\\quad r=0.218"
+    },
+    {
+     "text": "Frequency limit.",
+     "latex": "f_{max}=r\\,f_n=0.218\\times25\\ \\text{kHz}=5.46\\ \\text{kHz}"
+    },
+    {
+     "text": "Error at r = 0.2 including damping.",
+     "latex": "M=\\frac{1}{\\sqrt{(1-0.04)^2+(2\\times0.02\\times0.2)^2}}=1.0416\\ \\Rightarrow\\ 4.2\\%\\ \\text{high}"
+    }
+   ],
+   "answer": "Within 5 per cent up to about 5.5 kHz (r = 0.22); at one fifth of the natural frequency the error is about 4.2 per cent. The common rule of thumb is to use an accelerometer up to roughly one fifth to one third of its mounted resonance: the amplitude error is then about 4.2 per cent at r = 1/5 and about 12.5 per cent at r = 1/3 (1/(1 - r^2) = 1.042 and 1.125), so the one-third limit suits only a tolerance of about 12 per cent."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Transducer",
+    "Measures",
+    "Useful range (typical)",
+    "Strengths and limits"
+   ],
+   "rows": [
+    [
+     "Piezoelectric accelerometer",
+     "Acceleration",
+     "About 1 Hz to 10 kHz or more",
+     "Wide band, rugged, wide amplitude range; no response to steady (DC) acceleration"
+    ],
+    [
+     "Piezoresistive or capacitive (MEMS) accelerometer",
+     "Acceleration",
+     "DC to a few kHz",
+     "Responds to steady acceleration and very low frequencies; lower upper limit"
+    ],
+    [
+     "Seismic velocity or displacement pickup (low $f_n$)",
+     "Velocity or displacement",
+     "From about $3f_n$ upward",
+     "Good for low-frequency, large-amplitude motion; bulky, low-frequency cut-off"
+    ],
+    [
+     "Non-contact eddy-current probe",
+     "Shaft displacement",
+     "DC to tens of kHz",
+     "No contact, no mass loading; target surface and gap matter"
+    ]
+   ],
+   "caption": "Choosing a transducer by frequency range and amplitude (typical ranges)"
+  },
+  {
+   "type": "worked_example",
+   "title": "A seismic vibrometer",
+   "prompt": "A seismic instrument has a natural frequency of 4 Hz and negligible damping. Find the ratio of its output (relative displacement) to the true base displacement when measuring vibration at 40 Hz and at 8 Hz.",
+   "steps": [
+    {
+     "text": "Frequency ratios.",
+     "latex": "r=40/4=10.0,\\quad r=8/4=2.0"
+    },
+    {
+     "text": "Undamped formula Z/Y = r^2/|1 - r^2|.",
+     "latex": "\\frac{Z}{Y}\\Big|_{40\\,\\text{Hz}}=\\frac{100}{99}=1.010,\\quad \\frac{Z}{Y}\\Big|_{8\\,\\text{Hz}}=\\frac{4}{3}=1.333"
+    }
+   ],
+   "answer": "At 40 Hz (r = 10) the reading is 1.010 of the true displacement (0.5 per cent error). At 8 Hz (r = 2) it is 1.33 times the truth, a 33 per cent error: a vibrometer needs the vibration well above its natural frequency."
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing a sensor.** Match the sensor to the signal in three ways. (1) Frequency range: the highest frequency must stay a fraction of the mounted resonance, and the lowest above the sensor's low-frequency cut-off (or use a DC-response type). (2) Amplitude: sensitivity $S$ (mV per g, with $g=9.81$ m/s$^2$) times the acceleration gives the output voltage; a high-sensitivity sensor saturates at large accelerations, so shock measurements need low sensitivity and a large range. (3) Environment and mass loading: a sensor whose mass is a noticeable fraction of the structure mass changes the very vibration it measures."
+  },
+  {
+   "type": "text",
+   "markdown": "**Mounting.** The sensor's quoted resonance applies when it is rigidly attached. Every mounting method adds a spring (the joint) in series with the sensor, lowering the **mounted resonance** and therefore the usable band. Typical order: a stud on a flat, clean surface gives close to the full bandwidth (for example 10 kHz or more); adhesive is nearly as good if thin and stiff; a magnet reduces the usable range to a few kHz; a hand-held probe is limited to roughly 1 kHz. Joint stiffness, surface finish and cable strain all matter."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "State the frequency range and the amplitude (in g or m/s$^2$) of the signal.",
+    "Choose the sensor type (piezoelectric, MEMS, non-contact) so the range includes DC if needed.",
+    "Keep the highest frequency at or below about one fifth of the mounted resonance for about 4 per cent error, or one third for about 12.5 per cent error.",
+    "Choose the mounting (stud, adhesive, magnet) that preserves the needed bandwidth, and check mass loading."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Trade-off between bandwidth and sensitivity",
+   "text": "For a seismic accelerometer the output is proportional to $1/\\omega_n^2$: a stiffer, higher-frequency design has a wider usable band but gives less relative displacement for a given acceleration, and therefore lower sensitivity. Designers trade one against the other."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Mounting changes the answer",
+   "text": "A magnet or hand-held probe can create a resonance within the band of interest. Readings near that resonance are amplified and cannot be trusted. Always quote and check the mounted resonance, not only the data-sheet value."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A seismic transducer outputs relative displacement $Z$; for $r\\ll1$ it measures acceleration, for $r\\gg1$ it measures displacement.",
+    "An accelerometer is used well below its mounted natural frequency, typically up to one fifth of it (about 4 per cent error) or one third (about 12.5 per cent error).",
+    "Select the sensor by frequency range, amplitude range (sensitivity times acceleration) and need for DC response.",
+    "Mounting adds compliance and lowers the usable bandwidth: stud is best, adhesive close, magnet lower, hand-held probe poorest."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A seismic accelerometer gives output proportional to acceleration when the vibration frequency is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "well below the instrument's natural frequency"
+    },
+    {
+     "id": "b",
+     "text": "well above the instrument's natural frequency"
+    },
+    {
+     "id": "c",
+     "text": "exactly equal to the instrument's natural frequency"
+    },
+    {
+     "id": "d",
+     "text": "independent of the instrument's natural frequency"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "well below the instrument's natural frequency",
+   "distractorRationale": {
+    "a": "Correct: For r much less than 1, the relative displacement is approximately omega^2 Y/omega_n^2, which is proportional to base acceleration.",
+    "b": "Well above the natural frequency the instrument measures displacement.",
+    "c": "At the natural frequency the response is amplified and phase shifted, so the calibration fails.",
+    "d": "The ratio of the frequency to the natural frequency determines what is measured."
+   },
+   "explanation": "For r much less than 1, the relative displacement is approximately omega^2 Y/omega_n^2, which is proportional to base acceleration. This is why accelerometers are designed with a high natural frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A seismic instrument measures the displacement of a vibrating machine accurately when the machine frequency is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "much less than the natural frequency, so that the mass follows the base"
+    },
+    {
+     "id": "b",
+     "text": "much greater than the instrument's natural frequency, so that the mass stays nearly still in space"
+    },
+    {
+     "id": "c",
+     "text": "close to the natural frequency, where the response is largest"
+    },
+    {
+     "id": "d",
+     "text": "equal to half the natural frequency"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "much greater than the instrument's natural frequency, so that the mass stays nearly still in space",
+   "distractorRationale": {
+    "a": "Well below the natural frequency the instrument measures acceleration.",
+    "b": "Correct: For r much greater than 1, Z/Y approaches 1: the seismic mass stays almost stationary and the relative motion equals the base displacement.",
+    "c": "Near the natural frequency the response is amplified by 1/(2 zeta) and so is inaccurate.",
+    "d": "At r = 0.5 the ratio is 0.33, so the reading is a poor guide to the displacement."
+   },
+   "explanation": "For r much greater than 1, Z/Y approaches 1: the seismic mass stays almost stationary and the relative motion equals the base displacement. A vibrometer therefore has a low natural frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An accelerometer with a damping ratio of 0.02 is used at a frequency equal to 0.25 times its natural frequency. By what percentage does the measured amplitude exceed the true amplitude? Use the amplitude factor 1/sqrt((1 - r^2)^2 + (2 zeta r)^2).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o2"
+   ],
+   "correctValue": 6.6606,
+   "tolerance": 0.1,
+   "unit": "%",
+   "explanation": "At r = 0.25: (1 - r^2)^2 = 0.8789 and (2 zeta r)^2 = 0.0001, so the factor is 1/sqrt(0.8790) = 1.0666. The reading is therefore 6.66 per cent too high.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An undamped accelerometer has a mounted natural frequency of 30 kHz. Using the amplitude factor 1/(1 - r^2), find the highest frequency in kHz at which the amplitude error is no more than 5 per cent.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o1",
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o3"
+   ],
+   "correctValue": 6.54654,
+   "tolerance": 0.130931,
+   "unit": "kHz",
+   "explanation": "Setting 1/(1 - r^2) = 1.05 gives r^2 = 1 - 1/1.05 = 0.0476, so r = 0.2182. The frequency is 0.2182 x 30 kHz = 6.55 kHz.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The same accelerometer is attached to a gearbox in four ways. Which gives the widest usable frequency range, and why?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A hand-held probe, because it can be placed anywhere"
+    },
+    {
+     "id": "b",
+     "text": "A magnet, because it is the most convenient"
+    },
+    {
+     "id": "c",
+     "text": "Stud mounting on a flat, clean surface, because the stiff joint keeps the mounted resonance close to the sensor's own"
+    },
+    {
+     "id": "d",
+     "text": "They all give the same range, since the sensor is identical"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Stud mounting on a flat, clean surface, because the stiff joint keeps the mounted resonance close to the sensor's own",
+   "distractorRationale": {
+    "a": "The probe adds the most compliance and gives the lowest mounted resonance.",
+    "b": "A magnet adds compliance and reduces the usable range to a few kHz (typical).",
+    "c": "Correct: The mounting joint is a spring in series with the sensor and lowers the mounted resonance.",
+    "d": "The joint stiffness changes the mounted resonance, so the range depends on the method."
+   },
+   "explanation": "The mounting joint is a spring in series with the sensor and lowers the mounted resonance. A stiff stud joint preserves most of the sensor's own resonance and therefore its bandwidth, while a hand-held probe is the most compliant.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A seismic vibrometer has a natural frequency of 5 Hz and a damping ratio of 0.1. It is used to measure vibration at 12 Hz. Find the ratio of the indicated amplitude to the true displacement amplitude (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o2"
+   ],
+   "correctValue": 1.20398,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "The frequency ratio is 12/5 = 2.4. Z/Y = r^2/sqrt((1 - r^2)^2 + (2 zeta r)^2) = 5.76/sqrt(22.6576 + 0.2304) = 1.204. The reading is therefore 20 per cent above the true amplitude.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A slowly varying structure must be monitored from 0 Hz (including steady tilt) to 100 Hz with an acceleration amplitude up to 2 g. Which transducer type is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A piezoelectric accelerometer, since it has the widest bandwidth"
+    },
+    {
+     "id": "b",
+     "text": "A hand-held seismic probe"
+    },
+    {
+     "id": "c",
+     "text": "A microphone"
+    },
+    {
+     "id": "d",
+     "text": "A DC-response MEMS (capacitive or piezoresistive) accelerometer"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "A DC-response MEMS (capacitive or piezoresistive) accelerometer",
+   "distractorRationale": {
+    "a": "Piezoelectric sensors typically have a low-frequency cut-off near 1 Hz and cannot measure a steady tilt or very slow change.",
+    "b": "A hand-held probe cannot hold a fixed reading and has poor accuracy.",
+    "c": "A microphone measures sound pressure in air, not structural acceleration.",
+    "d": "Correct: Piezoelectric sensors give no output for a steady acceleration and roll off at very low frequency."
+   },
+   "explanation": "Piezoelectric sensors give no output for a steady acceleration and roll off at very low frequency. A DC-response MEMS accelerometer covers 0 to 100 Hz with room for 2 g amplitude.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how the natural frequency of a seismic instrument determines whether it indicates displacement, velocity or acceleration, and the frequency range in which each use is valid.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o2"
+   ],
+   "markingGuide": [
+    "Relative displacement Z = Y r^2/sqrt((1 - r^2)^2 + (2 zeta r)^2) with r = omega/omega_n",
+    "For r much greater than 1, Z/Y approaches 1: the mass is stationary, so the instrument measures displacement (vibrometer, low natural frequency)",
+    "For r much less than 1, Z = omega^2 Y/omega_n^2: proportional to acceleration (accelerometer, high natural frequency)",
+    "Output must be integrated or differentiated for velocity",
+    "Near r = 1 the output is amplified by about 1/(2 zeta) and phase-shifted, so measurements are inaccurate there",
+    "Typical rule: accelerometer up to one fifth of its natural frequency (about 4.2 per cent amplitude error) to one third (about 12.5 per cent); vibrometer above about three times its natural frequency",
+    "Damping around 0.7 widens the flat band of an accelerometer"
+   ],
+   "explanation": "The two limits of the relative-displacement formula correspond to the instrument types. The natural frequency fixes the boundary of the valid band.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A gearbox casing is to be monitored up to 6 kHz with a piezoelectric accelerometer whose data-sheet resonance is 30 kHz. Describe how the choice of mounting method affects the accuracy of the high-frequency data, and what you would do to ensure reliable measurements.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o3",
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o1"
+   ],
+   "markingGuide": [
+    "Mounting joint is a spring in series with the sensor, lowering the mounted resonance",
+    "Stud mounting on a flat clean surface preserves a high resonance; adhesive is close; magnet lowers it to a few kHz; hand-held probe to about 1 kHz (typical values)",
+    "Amplitude error rises as the frequency approaches the mounted resonance: for 6 kHz to stay within about 5 per cent the mounted resonance should be at least about 27.5 kHz (r = 0.218)",
+    "With a magnet or probe the resonance may fall inside the band and give false peaks",
+    "Use stud or thin adhesive for high-frequency work, ensure flat clean surface, correct torque and cable strain relief",
+    "Check mass loading and verify with a calibrator or a back-to-back reference sensor"
+   ],
+   "explanation": "A softer mounting lowers the mounted resonance and so lowers the usable bandwidth. To measure up to 6 kHz with small error, the sensor should be stud or adhesive mounted so that the resonance stays well above that range.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A seismic accelerometer designed with a higher natural frequency has a wider usable frequency range but gives less relative displacement, and so lower sensitivity, for a given acceleration.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o1",
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.transducers.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "For frequencies well below the natural frequency the relative displacement is omega^2 Y/omega_n^2, so raising omega_n reduces the response for a given acceleration. The upper limit of the usable band rises in proportion to omega_n, so bandwidth is traded against sensitivity.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,434 @@
+{
+ "lessonTitle": "Mesh Convergence and Error Estimation",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bracket analysis on Monday reports a peak stress of 230 MPa; the same model on Tuesday, with a finer mesh, reports 310 MPa, and on Wednesday 420 MPa. Which number should the design be signed off against? Mesh convergence studies answer that question: they show whether the answer is a property of the structure or an accident of the mesh."
+  },
+  {
+   "type": "text",
+   "markdown": "**Discretisation error.** A finite element solution differs from the exact solution of the mathematical model because the mesh cannot represent the true field. For smooth problems with elements of size $h$ (m) and polynomial order $p$ the displacement error falls as $h^{p+1}$ and the stress error as $h^{p}$. A solution is **mesh-converged** when further refinement changes the result of interest by less than the accuracy you need."
+  },
+  {
+   "type": "text",
+   "markdown": "**Carrying out a convergence study.** (1) Choose the **key result** that matters for the decision: for example the maximum von Mises stress at a location, the tip displacement, a reaction force or a natural frequency. (2) Build at least three meshes with a constant refinement ratio $r$ (typically $r=2$ in element size), refining particularly where gradients are large. (3) Solve and record the key result against the number of elements or degrees of freedom. (4) Plot the result against element count (or $h$) and check that the curve flattens; stop when the change between meshes is below the target (a common target is 2 to 5% for stress). (5) Keep all other settings fixed, including the loads and the element type."
+  },
+  {
+   "type": "worked_example",
+   "title": "A mesh convergence table",
+   "prompt": "A plate with a smooth fillet is solved with five meshes. The maximum von Mises stress in the fillet is recorded (hypothetical values). Find the percentage changes and decide whether the 2% criterion is met.",
+   "steps": [
+    {
+     "text": "The meshes have 4, 8, 16, 32 and 64 elements along the fillet, with maximum stresses 142.0, 158.0, 163.0, 164.6 and 165.0 MPa."
+    },
+    {
+     "text": "Percentage change from the previous mesh: $(158-142)/142=11.27\\%$, $(163-158)/158=3.16\\%$, $(164.6-163)/163=0.98\\%$ and $(165-164.6)/164.6=0.24\\%$."
+    },
+    {
+     "text": "The change falls below 2% at the 32-element mesh and below 0.3% at 64. The curve is flattening, so the stress is converging towards about 165 MPa."
+    },
+    {
+     "text": "Accept the 32-element mesh ($(165.0-164.6)/165.0=0.24\\%$ from the finest result) for this smooth feature, and apply the same element size to similar geometry elsewhere."
+    }
+   ],
+   "answer": "Changes of 11.27%, 3.16%, 0.98% and 0.24%: the 2% criterion is met from the 32-element mesh onward."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Elements along fillet",
+    "Max stress (MPa)",
+    "Change from previous mesh"
+   ],
+   "rows": [
+    [
+     "4",
+     "142.0",
+     "-"
+    ],
+    [
+     "8",
+     "158.0",
+     "11.3%"
+    ],
+    [
+     "16",
+     "163.0",
+     "3.2%"
+    ],
+    [
+     "32",
+     "164.6",
+     "1.0%"
+    ],
+    [
+     "64",
+     "165.0",
+     "0.2%"
+    ]
+   ],
+   "caption": "Convergence of peak stress at a smooth fillet (hypothetical data)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Singularities.** Some points in a model have a theoretically infinite stress: a sharp re-entrant corner, a point load, a point support, a crack tip, or the junction of two materials at a sharp edge. In the mathematical model the stress $\\sigma\\sim r^{\\lambda-1}$ rises without bound as the distance $r$ to the point tends to zero. For a 270 degree re-entrant corner $\\lambda\\approx0.5445$ (a standard result for a 2D elastic corner), so each halving of the element size raises the computed peak by a factor $2^{1-\\lambda}\\approx1.37$. The computed stress then **never converges**; it reflects the mesh, not the structure. Displacements, reaction forces and total strain energy still converge, because they are integrals of the field."
+  },
+  {
+   "type": "worked_example",
+   "title": "Recognising a singularity",
+   "prompt": "A sharp internal corner in a bracket gives peak von Mises stresses of 210, 288 and 395 MPa on three meshes, with element size halved each time. Test whether the stress is converging.",
+   "steps": [
+    {
+     "text": "Ratios of successive values: $288/210=1.371$ and $395/288=1.372$."
+    },
+    {
+     "text": "The ratios are constant at about 1.37 instead of approaching 1, which is the signature of a power-law singularity: it matches $2^{1-\\lambda}$ with $\\lambda=0.5445$."
+    },
+    {
+     "text": "Predict the next mesh: $395\\times1.37\\approx542$ MPa, so refinement can never settle on a value."
+    },
+    {
+     "text": "Remedy: model the real fillet radius, or evaluate the stress at a fixed distance from the corner, or judge the corner by a stress-intensity or fatigue method, and use converged measures (displacement, reaction) elsewhere."
+    }
+   ],
+   "answer": "Stress is not converging (ratio 1.37 per halving); the corner is singular, so use a fillet radius or a stress at a fixed distance."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Singular?",
+    "What converges",
+    "Treatment"
+   ],
+   "rows": [
+    [
+     "Sharp re-entrant corner",
+     "Yes, $\\sigma\\sim r^{\\lambda-1}$",
+     "Displacement, energy, reactions",
+     "Add real fillet radius or use stress at a distance"
+    ],
+    [
+     "Point load on a solid",
+     "Yes",
+     "Displacements away from the point",
+     "Distribute the load over a patch"
+    ],
+    [
+     "Point constraint on a solid",
+     "Yes (reaction)",
+     "Displacements elsewhere",
+     "Constrain over an area"
+    ],
+    [
+     "Smooth fillet or hole",
+     "No",
+     "Stress and displacement",
+     "Convergence study"
+    ]
+   ],
+   "caption": "What converges at singular and regular features"
+  },
+  {
+   "type": "text",
+   "markdown": "**Richardson extrapolation and error bounds.** If the error follows $f(h)\\approx f_{exact}+Ch^{p}$ then three meshes with a constant ratio $r=h_2/h_1$ give the observed order $p=\\ln\\left[(f_3-f_2)/(f_2-f_1)\\right]/\\ln r$, where $f_1$ is the finest-mesh value. The extrapolated estimate of the exact value is $f_{ext}=f_1+(f_1-f_2)/(r^{p}-1)$, and the grid convergence index (GCI) with a safety factor $F_s=1.25$ is $\\mathrm{GCI}=F_s|\\varepsilon|/(r^{p}-1)$ with $\\varepsilon=(f_1-f_2)/f_1$. An element-based **error estimator** (for example the jump in stress across element edges, or an energy-norm estimate) provides a local measure and shows where to refine."
+  },
+  {
+   "type": "math",
+   "latex": "p=\\frac{\\ln\\left[(f_3-f_2)/(f_2-f_1)\\right]}{\\ln r},\\qquad f_{ext}=f_1+\\frac{f_1-f_2}{r^{p}-1},\\qquad\\mathrm{GCI}=\\frac{1.25\\,|f_1-f_2|/|f_1|}{r^{p}-1}",
+   "caption": "Richardson extrapolation; $f_1$ finest, $f_3$ coarsest mesh, constant refinement ratio $r$"
+  },
+  {
+   "type": "worked_example",
+   "title": "Extrapolating tip deflection",
+   "prompt": "Tip deflections (mm) from three meshes with element sizes 40, 20 and 10 mm are $f_3=9.20$, $f_2=9.80$ and $f_1=9.95$ (hypothetical). Find the observed order, the extrapolated value and the GCI.",
+   "steps": [
+    {
+     "text": "The refinement ratio is $r=2$ and $(f_3-f_2)/(f_2-f_1)=(9.20-9.80)/(9.80-9.95)$, whose magnitude is $0.60/0.15=4.0$ (both differences have the same sign pattern, so the sequence is monotone)."
+    },
+    {
+     "text": "Observed order: $p=\\ln4/\\ln2=2$, consistent with the second-order error expected from linear elements for displacement."
+    },
+    {
+     "text": "Extrapolated value: $f_{ext}=9.95+(9.95-9.80)/(2^{2}-1)=9.95+0.05=10$ mm."
+    },
+    {
+     "text": "GCI: $\\varepsilon=0.15/9.95=0.01508$, so $\\mathrm{GCI}=1.25(0.01508)/3=0.00628$, about 0.63%. The finest mesh is therefore within roughly 0.6% of the converged value."
+    }
+   ],
+   "answer": "p = 2, extrapolated deflection about 10 mm, GCI about 0.63%."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Select the key result and the location it refers to.",
+    "Run at least three systematically refined meshes and plot the result against element count.",
+    "Check for singularities: a result that keeps rising with refinement is not converged.",
+    "Use Richardson extrapolation or an error estimator to quantify the remaining error, and report it."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not chase a singular peak",
+   "text": "Refining mesh until a stress at a sharp corner or a point load looks converged is impossible, and a very fine mesh simply gives a larger meaningless number. Compare designs using converged measures, or model the real geometry."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A convergence study tracks a chosen key result on at least three systematically refined meshes and stops when the change is below the target accuracy.",
+    "Stress at singularities (sharp re-entrant corners, point loads and supports) never converges, whereas displacements, reactions and energy do.",
+    "Richardson extrapolation with constant ratio $r$ gives the observed order $p$, an extrapolated value and, with the GCI, an error bound.",
+    "Error estimators show where to refine; local refinement is more efficient than uniform refinement."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the correct basic procedure for a mesh convergence study?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Solve with a sequence of systematically refined meshes and plot the key result against element count or degrees of freedom until it levels off"
+    },
+    {
+     "id": "b",
+     "text": "Solve once with the finest mesh the computer can handle"
+    },
+    {
+     "id": "c",
+     "text": "Solve with a coarse mesh and multiply the result by a safety factor"
+    },
+    {
+     "id": "d",
+     "text": "Compare the results of two different element types on the same mesh"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Solve with a sequence of systematically refined meshes and plot the key result against element count or degrees of freedom until it levels off",
+   "distractorRationale": {
+    "a": "Correct: convergence is shown by the trend of the result as the mesh is refined.",
+    "b": "One run provides no information about whether the result changes with the mesh.",
+    "c": "A safety factor cannot replace evidence that the discretisation error is small.",
+    "d": "Different element types on one mesh do not demonstrate convergence with refinement."
+   },
+   "explanation": "The goal is to show that the answer is insensitive to the mesh. This requires at least three meshes and a plot of the key result against mesh density.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a convergence study of a bracket, which result is the most appropriate to monitor?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The quantity the design decision depends on, such as peak stress at a smooth feature, tip displacement or a reaction force"
+    },
+    {
+     "id": "b",
+     "text": "The number of nodes in the model"
+    },
+    {
+     "id": "c",
+     "text": "The run time of the analysis"
+    },
+    {
+     "id": "d",
+     "text": "The maximum stress anywhere in the model, including at point supports"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The quantity the design decision depends on, such as peak stress at a smooth feature, tip displacement or a reaction force",
+   "distractorRationale": {
+    "a": "Correct: the study must show convergence of the output that will actually be used.",
+    "b": "Node count is a measure of the mesh, not a result.",
+    "c": "Run time says nothing about accuracy.",
+    "d": "The global maximum may lie at a singularity and never converge."
+   },
+   "explanation": "Different outputs converge at different rates: displacements converge fastest, stresses more slowly. The quantity monitored must be the one that supports the decision, evaluated away from singularities.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A point load applied to a single node of a solid element mesh creates a stress singularity: the computed stress under the load increases without limit as the mesh is refined.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. A force concentrated at a point on a continuum has infinite stress in the mathematical model, so refinement samples ever closer to the singularity and the stress keeps growing. The load should be spread over a realistic contact patch.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A sharp internal corner in a bracket gives computed peak stresses that rise by about 35 to 40% each time the mesh is refined. What is the correct interpretation and action?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The corner is a stress singularity: model the real fillet radius or evaluate stress at a fixed distance, and do not use the peak value"
+    },
+    {
+     "id": "b",
+     "text": "The mesh is converging, so continue refining until the increases stop"
+    },
+    {
+     "id": "c",
+     "text": "The material is yielding, so the elastic analysis is invalid everywhere"
+    },
+    {
+     "id": "d",
+     "text": "The solver has a bug and the results must be discarded"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The corner is a stress singularity: model the real fillet radius or evaluate stress at a fixed distance, and do not use the peak value",
+   "distractorRationale": {
+    "a": "Correct: constant growth per refinement is the signature of a power-law singularity.",
+    "b": "The value will never stop increasing for a perfectly sharp corner.",
+    "c": "Yielding is a different issue and does not explain a mesh-dependent linear elastic peak.",
+    "d": "The behaviour is a property of the mathematical model, not a software error."
+   },
+   "explanation": "The theoretical stress at a sharp re-entrant corner is infinite, so each halving raises the computed value by a fixed factor. Replacing the corner by the real radius makes the problem convergent.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A sharp notch gives computed peak stresses of 150, 206 and 282 MPa on three successive meshes, each with the element size halved. Assuming the growth factor stays constant, predict the peak stress on the next mesh in MPa.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o2"
+   ],
+   "correctValue": 386.0,
+   "tolerance": 5.0,
+   "unit": "MPa",
+   "explanation": "The growth ratios are $206/150=1.373$ and $282/206=1.369$, a constant factor characteristic of a singularity. The next value is $282\\times1.369=386$ MPa. Since it keeps growing, the peak stress is not a usable design value.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A displacement result converges as $f(h)=f_{exact}+Ch^{p}$. Three meshes with sizes 8, 4 and 2 mm give $f_3=2.640$, $f_2=2.790$ and $f_1=2.835$ mm (hypothetical). Find the observed order of convergence $p$.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o3"
+   ],
+   "correctValue": 1.737,
+   "tolerance": 0.03,
+   "unit": "dimensionless",
+   "explanation": "With $r=2$: $(f_3-f_2)/(f_2-f_1)=(-0.150)/(-0.045)=3.333$, since both differences are negative. Then $p=\\ln3.333/\\ln2=1.737$. A value somewhat below 2 is plausible for a linear element where geometry or loading cause slower convergence.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two meshes with element size ratio $r=2$ give a stress of 96.0 MPa (coarse) and 99.0 MPa (fine). Assuming second-order convergence ($p=2$), use Richardson extrapolation $f_{ext}=f_1+(f_1-f_2)/(r^p-1)$ to estimate the converged stress in MPa, where $f_1$ is the fine and $f_2$ the coarse value.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o3"
+   ],
+   "correctValue": 100.0,
+   "tolerance": 0.1,
+   "unit": "MPa",
+   "explanation": "The difference is $f_1-f_2=3.0$ MPa and $r^p-1=3$. So $f_{ext}=99.0+3.0/3=100.0$ MPa. The fine-mesh value is about 1% below the extrapolated value.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a post-processing check, the nodal stresses of a displacement-based model show large jumps between adjacent elements at a particular fillet. What does this indicate?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The discretisation error there is large, so the mesh should be refined in that region"
+    },
+    {
+     "id": "b",
+     "text": "The stress field is exact at that location"
+    },
+    {
+     "id": "c",
+     "text": "The mesh is too fine"
+    },
+    {
+     "id": "d",
+     "text": "The material has changed phase"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The discretisation error there is large, so the mesh should be refined in that region",
+   "distractorRationale": {
+    "a": "Correct: displacement-based stress is discontinuous between elements, and large jumps measure the local error.",
+    "b": "Exact solutions have continuous stress across element boundaries, so jumps indicate error.",
+    "c": "A too-fine mesh produces small jumps, not large ones.",
+    "d": "Material state changes are unrelated to inter-element stress jumps."
+   },
+   "explanation": "The exact stress is continuous across interior boundaries, while the FE stress is not. The size of the jump is a simple error indicator used to drive local refinement.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why the peak stress at a sharp re-entrant corner does not converge with mesh refinement, while the displacement of the structure does. Describe how you would obtain a meaningful result for the corner.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o2"
+   ],
+   "markingGuide": [
+    "Mathematical model: stress $\\sim r^{\\lambda-1}$ with $\\lambda<1$, so it is infinite at the corner",
+    "Refinement samples closer to the singularity so the computed peak grows without bound (about 1.37 per halving for a 270 degree corner)",
+    "Displacement, reactions and strain energy are integrals of the field and are finite, so they converge",
+    "Remedy: model the actual fillet radius, or take stress at a fixed distance from the corner",
+    "Alternative: use a fracture-mechanics or notch-stress method, and report the converged measure used for the decision"
+   ],
+   "explanation": "The singularity is a feature of the idealised geometry. Integral quantities remain finite, so they converge, while the peak value depends on the mesh.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Design a mesh convergence study for the tip deflection and the maximum stress at a smooth fillet of a cantilever bracket, and explain how you would use Richardson extrapolation and a GCI to report the discretisation error.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o1",
+    "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.o3"
+   ],
+   "markingGuide": [
+    "Key results: tip deflection and fillet stress (not singular points), same loads and element type on all meshes",
+    "At least three meshes with constant ratio $r=2$, refined at the fillet, plotted against element count",
+    "Observed order from $p=\\ln[(f_3-f_2)/(f_2-f_1)]/\\ln r$ and compare with the theoretical order",
+    "Extrapolated value $f_{ext}=f_1+(f_1-f_2)/(r^p-1)$ and GCI $=1.25|\\varepsilon|/(r^p-1)$",
+    "Report finest-mesh value with the error bound, and check that the changes meet the stated criterion (for example below 2%)"
+   ],
+   "explanation": "A convergence study is a systematic series of meshes with a quantified error. Richardson extrapolation and GCI turn the sequence into an estimate of the converged value and an error band.",
+   "board": "internal"
+  }
+ ]
+}

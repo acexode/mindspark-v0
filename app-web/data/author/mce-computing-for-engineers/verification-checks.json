@@ -1,0 +1,411 @@
+{
+ "lessonTitle": "Verification and Sanity Checks",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A heater-sizing script prints a required power of 5.2e8 W for a small workshop. Nothing crashed, and the code looks right, yet a quick comparison with a 3 kW kettle shows the answer is some 170 000 times too large. Verification is the habit of checking a computed answer against something you already know before anybody relies on it."
+  },
+  {
+   "type": "text",
+   "markdown": "**Verification** asks whether the program solves its equations correctly: 'am I solving the equations right?'. **Validation** asks whether the equations describe reality: 'am I solving the right equations?'. This unit concerns verification. Because a program can run perfectly and still be wrong, an engineer builds in independent checks, each of which catches a different kind of mistake."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Check",
+    "What you do",
+    "Catches",
+    "Cannot catch"
+   ],
+   "rows": [
+    [
+     "Closed-form comparison",
+     "Run the code on a simplified case with a known exact answer",
+     "Coding errors, wrong formulas, wrong signs",
+     "Errors that only appear in the complicated case"
+    ],
+    [
+     "Dimensional analysis",
+     "Confirm both sides of each formula have the same units",
+     "Missing or inverted terms, unit mix-ups",
+     "Dimensionless factors such as 2 or $\\pi$"
+    ],
+    [
+     "Limiting cases",
+     "Set a parameter to 0 or $\\infty$ and see if the answer behaves",
+     "Wrong trends and signs",
+     "Errors at intermediate values"
+    ],
+    [
+     "Order of magnitude",
+     "Compare with a quick estimate or a known device",
+     "Factors of 10, 1000, $10^6$",
+     "Errors of a few percent"
+    ],
+    [
+     "Convergence study",
+     "Refine the step size and watch the answer settle",
+     "Discretisation error, wrong order of accuracy",
+     "Errors in the underlying model"
+    ]
+   ],
+   "caption": "Complementary verification checks. No single check is enough."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Closed-form check",
+   "text": "Choose a special case of your problem for which an exact formula exists (for instance, laminar flow, zero damping, a uniform load) and confirm that the program reproduces it to within round-off or the known numerical error. Agreement shows the code solves the equations correctly in that case; it does not show the model describes the real system."
+  },
+  {
+   "type": "worked_example",
+   "title": "Verifying a pipe-pressure-drop function",
+   "prompt": "A function returns the pressure drop $\\Delta p=f\\,(L/D)\\,\\tfrac12\\rho v^2$ with $f=64/Re$ for laminar flow. Verify it against the Hagen-Poiseuille result $\\Delta p=32\\mu Lv/D^2$ for oil with $\\rho=900$ kg/m^3, $\\mu=0.10$ Pa s, $L=5$ m, $D=0.02$ m, $v=0.5$ m/s.",
+   "steps": [
+    {
+     "text": "Reynolds number: $Re=\\rho vD/\\mu=900\\times0.5\\times0.02/0.10=90$, which is laminar, so $f=64/90=0.7111$.",
+     "latex": "Re=\\frac{900(0.5)(0.02)}{0.10}=90,\\quad f=0.7111"
+    },
+    {
+     "text": "Function value: $\\Delta p=0.7111\\times(5/0.02)\\times0.5\\times900\\times0.5^2=0.7111\\times250\\times112.5=20\\,000$ Pa.",
+     "latex": "\\Delta p=0.7111\\times250\\times112.5=2.00\\times10^{4}\\ \\text{Pa}"
+    },
+    {
+     "text": "Closed form: $\\Delta p=32(0.10)(5)(0.5)/(0.02)^2=8/0.0004=20\\,000$ Pa. The two agree, so the function is correct in the laminar case.",
+     "latex": "\\Delta p=\\frac{32\\mu Lv}{D^{2}}=2.00\\times10^{4}\\ \\text{Pa}"
+    },
+    {
+     "text": "Note what is not tested: the turbulent friction-factor branch is untested, so another check (for example against a Moody-chart value) is still needed."
+    }
+   ],
+   "answer": "Both give 20.0 kPa, so the laminar branch is verified."
+  },
+  {
+   "type": "text",
+   "markdown": "**Dimensional consistency** is the cheapest check of all. Every term added or equated must have the same dimensions (mass M, length L, time T), and the argument of a sine, exponential or logarithm must be dimensionless. Dimensions are not stored in code, so you must check them yourself, line by line."
+  },
+  {
+   "type": "worked_example",
+   "title": "Checking dimensions in code",
+   "prompt": "Check whether the lines `P = rho * g * h * Q` (hydraulic power) and `T = 2*np.pi*np.sqrt(g/L)` (pendulum period) are dimensionally consistent, with $\\rho$ in kg/m^3, $g$ in m/s^2, $h$ and $L$ in m, $Q$ in m^3/s.",
+   "steps": [
+    {
+     "text": "First line: $\\rho gh Q$ has units $\\frac{\\text{kg}}{\\text{m}^3}\\cdot\\frac{\\text{m}}{\\text{s}^2}\\cdot\\text{m}\\cdot\\frac{\\text{m}^3}{\\text{s}}=\\frac{\\text{kg m}^2}{\\text{s}^3}$, which is the watt. The line is consistent for a power.",
+     "latex": "[\\rho g h Q]=\\mathrm{M\\,L^{2}\\,T^{-3}}=\\text{W}"
+    },
+    {
+     "text": "Second line: $\\sqrt{g/L}$ has units $\\sqrt{(\\text{m/s}^2)/\\text{m}}=\\text{s}^{-1}$, so the line gives a quantity in s^-1, not a time. It is dimensionally wrong; the correct form is $T=2\\pi\\sqrt{L/g}$, which has units of seconds.",
+     "latex": "T=2\\pi\\sqrt{L/g}"
+    },
+    {
+     "text": "Limitation: a line such as `f = 0.5*np.sqrt(k/m)` for natural frequency has the right units (s^-1) yet is wrong by a factor $\\pi$ if the intended result is in Hz, where $f=\\tfrac{1}{2\\pi}\\sqrt{k/m}$. Dimensional analysis cannot detect missing dimensionless constants, so combine it with a closed-form check."
+    }
+   ],
+   "answer": "P line is consistent; the pendulum line is not (it has units of 1/s)."
+  },
+  {
+   "type": "text",
+   "markdown": "A **convergence study** checks that the numerical error shrinks as it should when the step size $h$ is reduced. Compute the result $y$ for step sizes $h$, $h/2$ and $h/4$. If the method has order $p$ and the exact answer is unknown, the **observed order** follows from the successive differences:"
+  },
+  {
+   "type": "math",
+   "latex": "p\\approx\\log_2\\!\\left(\\frac{y_{h}-y_{h/2}}{y_{h/2}-y_{h/4}}\\right),\\qquad y_{\\text{exact}}\\approx y_{h/2}+\\frac{y_{h/2}-y_{h}}{2^{p}-1}",
+   "caption": "Observed order of accuracy from three refinements, and Richardson extrapolation to estimate the exact value."
+  },
+  {
+   "type": "worked_example",
+   "title": "A step-size convergence study",
+   "prompt": "A beam finite-element code gives tip deflections (mm) of $5.480$ for element size $h=0.5$ m, $5.600$ for $h=0.25$ m and $5.630$ for $h=0.125$ m. Find the observed order and an extrapolated deflection.",
+   "steps": [
+    {
+     "text": "Successive differences: $y_h-y_{h/2}=5.480-5.600=-0.120$ and $y_{h/2}-y_{h/4}=5.600-5.630=-0.030$.",
+     "latex": "-0.120,\\quad -0.030"
+    },
+    {
+     "text": "Ratio: $(-0.120)/(-0.030)=4.0$, so $p=\\log_2 4=2.0$. The code is second order, as expected for this element.",
+     "latex": "p=\\log_2 4=2.0"
+    },
+    {
+     "text": "Extrapolate: $y_{\\text{exact}}\\approx5.630+(5.630-5.600)/(2^2-1)=5.630+0.010=5.640$ mm.",
+     "latex": "y_{\\text{exact}}\\approx5.630+\\frac{0.030}{3}=5.640\\ \\text{mm}"
+    },
+    {
+     "text": "Estimated error of the finest result: about $0.010$ mm, or $0.18$ percent. If $p$ had come out near 1 or 0, we would suspect a bug or that the mesh is too coarse to be in the asymptotic range."
+    }
+   ],
+   "answer": "Observed order 2.0 and extrapolated deflection 5.640 mm."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Write down a closed-form test case before running the code on the real problem.",
+    "Check units of every formula, and remember the check cannot find dimensionless-factor errors.",
+    "Estimate the answer to an order of magnitude before computing.",
+    "Refine the step size at least twice and compute the observed order.",
+    "Record what each check did and did not show."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Agreement is evidence, not proof",
+   "text": "A check passing does not prove the code is right everywhere, and two wrong calculations can agree by coincidence. Do not tune your code until it matches the check: if a check fails, find the cause. Also remember that verification cannot tell you whether the physics model is adequate; that is the job of validation against experiments."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Verification tests whether the code solves the equations correctly; validation tests whether the equations match reality.",
+    "Closed-form comparison on a simplified case, dimensional checks, limiting cases and order-of-magnitude estimates catch different errors.",
+    "Dimensional analysis cannot detect missing dimensionless constants such as 2 or pi.",
+    "A convergence study gives the observed order p = log2[(y_h - y_h/2)/(y_h/2 - y_h/4)], which should match the method's theoretical order."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A code computes the midspan deflection of a simply supported beam under a central point load $P=5$ kN, length $L=2.0$ m, $E=200$ GPa and $I=8.0\\times10^{-6}$ m^4. Using the closed-form result $\\delta=PL^3/(48EI)$ as the verification target, what value in millimetres should the code reproduce?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o1"
+   ],
+   "correctValue": 0.521,
+   "tolerance": 0.005,
+   "unit": "mm",
+   "explanation": "Substituting in SI units, delta = 5000 x 2.0^3 / (48 x 200e9 x 8.0e-6) = 40 000 / 7.68e7 = 5.208e-4 m = 0.521 mm. A correct code should agree with this to within its numerical error.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A beam code reproduces the closed-form midspan deflection of 0.521 mm to four digits for a uniform simply supported beam. What does this agreement show?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The code solves the equations correctly for this simple case, but does not prove the model matches a real beam"
+    },
+    {
+     "id": "b",
+     "text": "The code is correct for every loading and support condition"
+    },
+    {
+     "id": "c",
+     "text": "The model is validated against real structures"
+    },
+    {
+     "id": "d",
+     "text": "The answer must be accurate to 4 digits for every mesh"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The code solves the equations correctly for this simple case, but does not prove the model matches a real beam",
+   "distractorRationale": {
+    "a": "Correct: verification of the implementation in one case.",
+    "c": "Validation requires comparison with experimental data.",
+    "b": "One test case cannot prove correctness for all conditions.",
+    "d": "The closed form applies to this simple case only and says nothing about other meshes."
+   },
+   "explanation": "Comparison with an exact solution verifies the implementation in the tested special case. It does not test other loadings, and it says nothing about whether the beam model describes a real structure, which needs validation against measurements.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of the following lines, with $v$ in m/s, $t$ in s, $x$ in m and $m$ in kg, cannot represent an acceleration?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "`a = 2 * x / t**2`"
+    },
+    {
+     "id": "b",
+     "text": "`a = v * t`"
+    },
+    {
+     "id": "c",
+     "text": "`a = v / t`"
+    },
+    {
+     "id": "d",
+     "text": "`a = F / m` with F in N"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "`a = v * t`",
+   "distractorRationale": {
+    "b": "Correct: v*t has units of length.",
+    "c": "v/t is m/s^2, so it is consistent.",
+    "a": "2x/t^2 is m/s^2, so it is consistent.",
+    "d": "N/kg = m/s^2, so it is consistent."
+   },
+   "explanation": "Velocity times time has units m, which is a length, not an acceleration (m/s^2). The others have units m/s^2: v/t gives m/s^2, 2x/t^2 gives m/s^2 and F/m gives N/kg = m/s^2.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Fan power depends on air density $\\rho$ (kg/m^3), rotational speed $N$ (s^-1) and impeller diameter $D$ (m) as $P\\propto\\rho N^bD^c$. Using dimensional analysis with $P$ in W (kg m^2 s^-3), find the exponent $c$.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o2"
+   ],
+   "correctValue": 5,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "Matching mass gives exponent 1 for rho. Time requires -b = -3, so b = 3. Length requires -3 + c = 2, so c = 5. Hence P is proportional to rho N^3 D^5.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A student codes the natural frequency of a mass-spring system as `f = np.sqrt(k/m)` and intends the result in hertz. A dimensional check shows the units are s^-1. What is the limitation of this check?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It only works for velocities"
+    },
+    {
+     "id": "b",
+     "text": "It shows the formula is dimensionally wrong"
+    },
+    {
+     "id": "c",
+     "text": "It cannot detect the missing factor 1/(2 pi) between rad/s and Hz"
+    },
+    {
+     "id": "d",
+     "text": "It proves the formula is right"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It cannot detect the missing factor 1/(2 pi) between rad/s and Hz",
+   "distractorRationale": {
+    "c": "Correct: dimensionless factors are invisible to the check.",
+    "d": "Passing a dimensional check does not prove correctness.",
+    "a": "Dimensional analysis works for all quantities.",
+    "b": "The units are consistent; the issue is a missing dimensionless factor."
+   },
+   "explanation": "sqrt(k/m) has units of s^-1, so a dimensional check passes. But the numerical value is the angular frequency in rad/s, and the missing 1/(2 pi) factor is dimensionless, so the check cannot reveal it.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A numerical method gives $y=3.20$ for step $h=0.2$, $y=3.35$ for $h=0.1$ and $y=3.425$ for $h=0.05$. Compute the observed order of accuracy $p=\\log_2[(y_h-y_{h/2})/(y_{h/2}-y_{h/4})]$.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o3"
+   ],
+   "correctValue": 1,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "The differences are 3.20 - 3.35 = -0.15 and 3.35 - 3.425 = -0.075. Their ratio is 2.0, so p = log2(2) = 1, indicating a first-order method such as explicit Euler.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Tip-displacement results of a second-order scheme are $1.0480$ mm for $h=0.2$ and $1.0120$ mm for $h=0.1$. Which is the best Richardson-extrapolated estimate of the exact value?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.012 mm"
+    },
+    {
+     "id": "b",
+     "text": "1.030 mm"
+    },
+    {
+     "id": "c",
+     "text": "0.976 mm"
+    },
+    {
+     "id": "d",
+     "text": "1.000 mm"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "1.000 mm",
+   "distractorRationale": {
+    "d": "Correct: apply the correction with 2^p - 1 = 3.",
+    "a": "This is the finest result with no extrapolation.",
+    "c": "This applies the correction with divisor 1 instead of 3 (1.0120 - 0.0360).",
+    "b": "This moves the estimate in the wrong direction."
+   },
+   "explanation": "With p = 2, the extrapolation is y_{h/2} + (y_{h/2} - y_h)/(2^2 - 1) = 1.0120 + (1.0120 - 1.0480)/3 = 1.0120 - 0.0120 = 1.000 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "If a program reproduces a closed-form solution for one simplified test case, it is guaranteed to be correct for every other case.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "A closed-form test verifies only the parts of the code exercised by that case. Other branches, such as turbulent flow or different boundary conditions, can still contain errors, so several complementary checks are used.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A workshop heater calculation prints a required power of $5.2\\times10^{8}$ W. List the sanity checks you would apply to find out whether it is credible and explain what each could reveal.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o2"
+   ],
+   "markingGuide": [
+    "Order-of-magnitude comparison: a workshop needs kilowatts, so 520 MW is implausible, indicating a unit or factor error",
+    "Dimensional check of the formula lines (for example W versus kW, J versus kWh)",
+    "Limiting case: with zero temperature difference the power should be zero",
+    "Closed-form or hand calculation with simple round numbers",
+    "Checks for units conversions (hours to seconds, mm to m) as a likely source of a 10^3 or 10^6 error"
+   ],
+   "explanation": "A result that is many orders of magnitude from familiar devices signals an error even though the code runs. Dimensional and limiting-case checks then locate which line is at fault.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe how to carry out a step-size convergence study for a numerical solver when the exact answer is unknown. Explain how to compute the observed order, what you would conclude if it differs from the theoretical order, and what you would report.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.debugging-and-verification.verification-checks.o3"
+   ],
+   "markingGuide": [
+    "Run with h, h/2 and h/4 (at least three levels) and record the quantity of interest",
+    "Compute successive differences and p = log2[(y_h - y_h/2)/(y_h/2 - y_h/4)]",
+    "Compare p with the theoretical order (e.g. 1 for Euler, 2 for trapezoid, 4 for RK4)",
+    "If p differs: possible bug, non-smooth solution, step sizes too coarse (not in the asymptotic range) or round-off",
+    "Report the finest result with an error estimate (e.g. Richardson extrapolation) and the step sizes used"
+   ],
+   "explanation": "Observed order close to theory is strong evidence that the code and the discretisation are consistent. A mismatch is a diagnostic, pointing to a coding error or to a resolution that is still too coarse.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,410 @@
+{
+ "lessonTitle": "The S-N Approach: Endurance, Mean Stress and Miner's Rule",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A rotating shaft in a gearbox sees a bending stress that reverses direction with every turn, one cycle per revolution. At 1500 rpm it accumulates over two million cycles in a day. The stress is far below yield, yet the shaft can still fail after weeks of service. The S-N approach predicts when."
+  },
+  {
+   "type": "text",
+   "markdown": "In the **stress-life (S-N) approach** a smooth specimen is cycled at constant stress amplitude $\\sigma_a$ until it breaks; the number of cycles $N$ is recorded. Repeating at several amplitudes gives the S-N curve, with $\\sigma_a$ against $N$ on logarithmic axes. In the high-cycle range the curve is nearly straight, so life follows a power law called **Basquin's relation**."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_a = A\\,N^{b}",
+   "caption": "Basquin's relation. $\\sigma_a$ is the stress amplitude (MPa), $N$ the cycles to failure, $A$ the fatigue strength coefficient (MPa) and $b<0$ the fatigue strength exponent (typically about $-0.05$ to $-0.12$ for metals)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Endurance limit",
+   "text": "Many steels show a stress amplitude $S_e$ below which no failure is observed up to about $10^6$ to $10^7$ cycles; this is the endurance limit (fully reversed loading, smooth specimen). Aluminium alloys have no true limit, so a fatigue strength at a stated life, such as $5\\times10^{8}$ cycles, is quoted instead."
+  },
+  {
+   "type": "worked_example",
+   "title": "Fit Basquin's law and find a life",
+   "prompt": "A steel (assumed typical values) has $S_u=600$ MPa and endurance limit $S_e=250$ MPa at $10^{6}$ cycles. Take the S-N line through $\\sigma_a=0.9S_u=540$ MPa at $10^{3}$ cycles and $250$ MPa at $10^{6}$ cycles. Find $b$, $A$, and the life at $\\sigma_a=350$ MPa.",
+   "steps": [
+    {
+     "text": "Slope between the two points, per decade of life.",
+     "latex": "b = \\frac{\\log(250/540)}{\\log(10^{6}/10^{3})} = \\frac{-0.3345}{3} = -0.1115"
+    },
+    {
+     "text": "Then $A = 540/(10^{3})^{b}$.",
+     "latex": "A = 540\\times10^{0.3345} = 1166\\ \\text{MPa}"
+    },
+    {
+     "text": "Life at 350 MPa: $N=(\\sigma_a/A)^{1/b}$.",
+     "latex": "N = \\left(\\frac{350}{1166}\\right)^{1/(-0.1115)} = 4.89\\times10^{4}\\ \\text{cycles}"
+    },
+    {
+     "text": "Direction check: 350 MPa is above 250 MPa, so the life must be below $10^6$. It is."
+    }
+   ],
+   "answer": "$b\\approx-0.111$, $A\\approx1166$ MPa, and $N\\approx4.89\\times10^{4}$ cycles at 350 MPa."
+  },
+  {
+   "type": "text",
+   "markdown": "**Mean stress.** S-N data are usually for fully reversed loading ($\\sigma_m=0$). A tensile mean stress $\\sigma_m$ shortens life at a given amplitude, so the allowable amplitude is lower. Two classical corrections relate the amplitude $\\sigma_a$ at mean $\\sigma_m$ to the equivalent fully reversed amplitude $\\sigma_{ar}$ that goes into the S-N curve."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{Goodman: } \\sigma_{ar} = \\frac{\\sigma_a}{1-\\sigma_m/S_u} \\qquad \\text{Gerber: } \\sigma_{ar} = \\frac{\\sigma_a}{1-(\\sigma_m/S_u)^2}",
+   "caption": "Both valid for tensile mean stress ($0\\le\\sigma_m<S_u$). $S_u$ is the ultimate tensile strength."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Model",
+    "Shape in the $\\sigma_a$-$\\sigma_m$ diagram",
+    "Character"
+   ],
+   "rows": [
+    [
+     "Goodman",
+     "Straight line from $S_e$ to $S_u$",
+     "Conservative; common in design"
+    ],
+    [
+     "Gerber",
+     "Parabola from $S_e$ to $S_u$",
+     "Fits ductile metal data better; less conservative"
+    ]
+   ],
+   "caption": "For the same $\\sigma_a$ and $\\sigma_m$, Goodman gives a larger equivalent amplitude than Gerber."
+  },
+  {
+   "type": "worked_example",
+   "title": "Mean stress correction and life",
+   "prompt": "Using the steel above ($S_u=600$ MPa, $A=1166$ MPa, $b=-0.1115$), a component carries $\\sigma_a=280$ MPa with $\\sigma_m=100$ MPa. Use Goodman to find the equivalent amplitude and the life.",
+   "steps": [
+    {
+     "text": "Equivalent fully reversed amplitude.",
+     "latex": "\\sigma_{ar} = \\frac{280}{1-100/600} = \\frac{280}{0.8333} = 336\\ \\text{MPa}"
+    },
+    {
+     "text": "Life from Basquin.",
+     "latex": "N = \\left(\\frac{336}{1166}\\right)^{1/b} = 7.05\\times10^{4}\\ \\text{cycles}"
+    },
+    {
+     "text": "Direction check: the mean stress raised the effective amplitude from 280 to 336 MPa, so life is shorter than for 280 MPa fully reversed, which would be 3.62\\times10^{5} cycles."
+    }
+   ],
+   "answer": "$\\sigma_{ar}\\approx336$ MPa and life about 7.05\\times10^{4} cycles."
+  },
+  {
+   "type": "text",
+   "markdown": "**Cumulative damage: Miner's rule.** When the amplitude changes, each block of $n_i$ cycles at amplitude $\\sigma_i$ uses a fraction $n_i/N_i$ of the life, where $N_i$ is the life at that amplitude. Failure is predicted when the fractions sum to one."
+  },
+  {
+   "type": "math",
+   "latex": "D = \\sum_i \\frac{n_i}{N_i}, \\qquad \\text{failure when } D = 1",
+   "caption": "Palmgren-Miner linear damage rule. It ignores load sequence, so it is only approximate (real failure often occurs at $D$ between 0.5 and 2)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Damage from a loading block",
+   "prompt": "With the same S-N curve (fully reversed), one loading block has $10^{3}$ cycles at 400 MPa, $10^{4}$ cycles at 330 MPa and $5\\times10^{4}$ cycles at 280 MPa. Find the damage per block and the number of blocks to failure.",
+   "steps": [
+    {
+     "text": "Lives at each amplitude from Basquin: $N_1=1.48\\times10^{4}$, $N_2=8.29\\times10^{4}$, $N_3=3.62\\times10^{5}$ cycles.",
+     "latex": "N_i = (\\sigma_i/A)^{1/b}"
+    },
+    {
+     "text": "Fractions.",
+     "latex": "D = \\frac{10^{3}}{1.48\\times10^{4}} + \\frac{10^{4}}{8.29\\times10^{4}} + \\frac{5\\times10^{4}}{3.62\\times10^{5}} = 0.0678 + 0.121 + 0.138 = 0.327"
+    },
+    {
+     "text": "Blocks to failure: $1/D$.",
+     "latex": "N_{blocks} = \\frac{1}{0.327} = 3.06"
+    }
+   ],
+   "answer": "Damage per block is about 0.327, so failure is predicted after about 3.06 blocks."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Higher stress amplitude gives shorter life; a small increase in amplitude has a large effect, because $N\\propto\\sigma_a^{1/b}$ with $1/b\\approx-9$ to $-10$.",
+    "A tensile mean stress lowers the allowable amplitude; compressive mean stress is beneficial and the corrections above are not applied to it.",
+    "Amplitudes below the endurance limit are normally assumed to cause no damage in Miner's sum, but this is unconservative if larger cycles have already formed a crack."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Scatter and surface effects",
+   "text": "Real S-N data scatter widely, and the curve above is for a smooth, polished specimen. Surface finish, size, notches and environment reduce the usable endurance limit, so design uses reduced values and safety factors."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Basquin: $\\sigma_a=AN^{b}$ with $b<0$; below the endurance limit steels have effectively infinite life.",
+    "Tensile mean stress is converted to an equivalent reversed amplitude by Goodman ($1-\\sigma_m/S_u$) or Gerber ($1-(\\sigma_m/S_u)^2$).",
+    "Miner's rule: $D=\\sum n_i/N_i$, failure at $D\\approx1$; sequence effects make it approximate."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does an S-N curve show?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The strain at fracture at each temperature"
+    },
+    {
+     "id": "b",
+     "text": "The number of cycles to failure at each constant stress amplitude"
+    },
+    {
+     "id": "c",
+     "text": "The crack growth rate at each stress intensity range"
+    },
+    {
+     "id": "d",
+     "text": "The creep strain at each time"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The number of cycles to failure at each constant stress amplitude",
+   "distractorRationale": {
+    "a": "That would be a different material test.",
+    "b": "Correct: stress amplitude against cycles to failure.",
+    "c": "That is the Paris curve.",
+    "d": "That is a creep curve."
+   },
+   "explanation": "An S-N curve plots stress amplitude against the cycles to failure for constant-amplitude tests. Reading across at a given amplitude gives the life.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "According to Miner's rule, when is failure predicted?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "When any one block has $n_i=N_i/2$"
+    },
+    {
+     "id": "b",
+     "text": "When the mean stress exceeds the yield strength"
+    },
+    {
+     "id": "c",
+     "text": "When the sum of all cycles reaches $10^6$"
+    },
+    {
+     "id": "d",
+     "text": "When the sum of $n_i/N_i$ over all stress blocks reaches 1"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "When the sum of $n_i/N_i$ over all stress blocks reaches 1",
+   "distractorRationale": {
+    "a": "No such half-life rule exists.",
+    "b": "Mean stress is not the criterion.",
+    "c": "A fixed cycle count is not used.",
+    "d": "Correct: cumulative damage fraction reaches one."
+   },
+   "explanation": "Each block uses a fraction $n_i/N_i$ of the life at its amplitude. Failure is predicted when these fractions add up to one, so $D=\\sum n_i/N_i=1$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For the same $\\sigma_a$ and tensile $\\sigma_m$, how does the Goodman correction compare with Gerber?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Goodman gives a smaller equivalent amplitude, so it is less conservative"
+    },
+    {
+     "id": "b",
+     "text": "They give identical results"
+    },
+    {
+     "id": "c",
+     "text": "Goodman applies only to compressive mean stress"
+    },
+    {
+     "id": "d",
+     "text": "Goodman gives a larger equivalent amplitude, so it is more conservative"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Goodman gives a larger equivalent amplitude, so it is more conservative",
+   "distractorRationale": {
+    "a": "That reverses the comparison.",
+    "b": "They only agree at zero mean stress.",
+    "c": "Both are for tensile mean stress.",
+    "d": "Correct: $1-\\sigma_m/S_u<1-(\\sigma_m/S_u)^2$."
+   },
+   "explanation": "Since $\\sigma_m/S_u<1$, the term $(\\sigma_m/S_u)^2$ is smaller than $\\sigma_m/S_u$. The Goodman denominator is therefore smaller, giving a bigger equivalent amplitude and a shorter predicted life.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A steel has Basquin exponent $b=-0.1$. If the stress amplitude is increased by 10 percent, to what fraction does the life fall?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 0.9 of the original life"
+    },
+    {
+     "id": "b",
+     "text": "About 0.5 of the original life"
+    },
+    {
+     "id": "c",
+     "text": "About 0.39 of the original life"
+    },
+    {
+     "id": "d",
+     "text": "About 0.1 of the original life"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "About 0.39 of the original life",
+   "distractorRationale": {
+    "a": "That would be a linear relation.",
+    "b": "A $10\\%$ rise does not halve the life exactly with $b=-0.1$.",
+    "c": "Correct: $1.1^{-10}\\approx0.386$.",
+    "d": "That is far too large a drop."
+   },
+   "explanation": "Life varies as $\\sigma_a^{1/b}=\\sigma_a^{-10}$. A factor of 1.1 in amplitude gives $1.1^{-10}=0.386$, so a 10 percent rise in stress cuts the life by about 60 percent.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which statement is a known limitation of Miner's linear damage rule?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It cannot be used with more than two stress levels"
+    },
+    {
+     "id": "b",
+     "text": "It requires stresses above yield"
+    },
+    {
+     "id": "c",
+     "text": "It gives life in units of stress"
+    },
+    {
+     "id": "d",
+     "text": "It ignores the order of the loading blocks, although high-low and low-high sequences can give different lives"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It ignores the order of the loading blocks, although high-low and low-high sequences can give different lives",
+   "distractorRationale": {
+    "a": "It works for any number of blocks.",
+    "b": "It is for high-cycle stresses below yield.",
+    "c": "It gives life or damage.",
+    "d": "Correct: sequence effects are neglected."
+   },
+   "explanation": "Miner's rule simply adds fractions of life, so it cannot tell whether high stress cycles came first or last. Test data show that sequence matters, which is why $D$ at failure is often not exactly 1.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A component is cycled for $2\\times10^{4}$ cycles at an amplitude where the life is $1\\times10^{5}$ cycles and then for $3\\times10^{5}$ cycles at an amplitude where the life is $1\\times10^{6}$ cycles. Find the Miner damage $D$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o3"
+   ],
+   "correctValue": 0.5,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "$D=2\\times10^{4}/10^{5}+3\\times10^{5}/10^{6}=0.2+0.3=0.5$. Half of the life is consumed, so the part is predicted to survive a repeat of the same sequence once.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A shaft sees $\\sigma_a = 180$ MPa with tensile mean stress $\\sigma_m=150$ MPa; the material has $S_u=500$ MPa. Using Goodman, find the equivalent fully reversed amplitude in MPa.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o2"
+   ],
+   "correctValue": 257.143,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "$\\sigma_{ar}=180/(1-150/500)=180/0.7=257.1$ MPa. This is higher than the actual amplitude because the tensile mean stress is damaging.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A steel has $S_u=560$ MPa and the fully reversed S-N relation $\\sigma_a=1000\\,N^{-0.1}$ (MPa, cycles; assumed). It carries $\\sigma_a=220$ MPa with $\\sigma_m=120$ MPa. Using Goodman, estimate the life in cycles.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o1",
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o2"
+   ],
+   "correctValue": 337613.0,
+   "tolerance": 6752.27,
+   "unit": "cycles",
+   "explanation": "Goodman gives $\\sigma_{ar}=220/(1-120/560)=280$ MPa. Then $N=(\\sigma_{ar}/1000)^{1/(-0.1)}=(0.28)^{-10}=3.38\\times10^{5}$ cycles. The mean-stress correction must be applied before entering the S-N curve.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how a tensile mean stress affects fatigue life, and compare the Goodman and Gerber corrections.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o2"
+   ],
+   "markingGuide": [
+    "Tensile mean stress reduces life or the allowable amplitude at a given $\\sigma_a$",
+    "Equivalent fully reversed amplitude: Goodman $\\sigma_a/(1-\\sigma_m/S_u)$",
+    "Gerber $\\sigma_a/(1-(\\sigma_m/S_u)^2)$",
+    "Goodman is more conservative, Gerber fits ductile metal data better",
+    "Compressive mean stress is beneficial and is not corrected this way"
+   ],
+   "explanation": "A tensile mean stress holds the crack open and speeds damage, so the same amplitude gives a shorter life. Goodman uses a straight line to $S_u$ and Gerber a parabola, with Goodman being the more conservative choice.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A part has S-N relation $\\sigma_a=1050N^{-0.1}$ (MPa, assumed) with endurance limit 240 MPa. In one duty cycle it sees $3\\times10^{3}$ cycles at 380 MPa, $1.5\\times10^{4}$ cycles at 320 MPa and $2\\times10^{6}$ cycles at 200 MPa (all fully reversed). Compute the Miner damage per duty cycle, state how the 200 MPa cycles are treated, and estimate the number of duty cycles to failure.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o3",
+    "ug.mce-fracture-fatigue-failure.stress-life-strain-life.s-n-approach.o1"
+   ],
+   "markingGuide": [
+    "Computes $N$ at 380 MPa as $(380/1050)^{-10}\\approx2.59\\times10^{4}$ and at 320 MPa as $\\approx1.45\\times10^{5}$",
+    "Damage fractions of 0.116 and 0.104",
+    "States that 200 MPa is below the endurance limit and contributes no damage in this simple treatment",
+    "Total damage about 0.219 per duty cycle",
+    "Blocks to failure $=1/D\\approx4.56$, noting that Miner's rule is approximate"
+   ],
+   "explanation": "The two high-amplitude blocks give 0.116 and 0.104 fractional damage, while the 200 MPa cycles are below the endurance limit and are ignored. The total is 0.219 per duty cycle, so failure is predicted after about 4.56 duty cycles.",
+   "board": "internal"
+  }
+ ]
+}

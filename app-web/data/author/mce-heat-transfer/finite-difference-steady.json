@@ -1,0 +1,427 @@
+{
+ "lessonTitle": "Finite-Difference Steady Conduction",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A turbine blade is cooled by air passing through internal channels, and its cross-section has no tidy closed-form temperature solution. Engineers divide the metal into a grid of small cells and write one algebraic equation per cell: the temperature field emerges from solving them all."
+  },
+  {
+   "type": "text",
+   "markdown": "Analytical solutions exist only for simple shapes and boundary conditions. The **finite-difference method** replaces the continuous temperature field by temperatures at discrete nodes, and replaces derivatives by differences. Each node represents a small region, and an **energy balance on that region** yields an algebraic equation in the node temperature and those of its neighbours."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Nodal network and interior node",
+   "text": "A grid of nodes spaced $\\Delta x$ and $\\Delta y$ apart is labelled $(m,n)$. For steady two-dimensional conduction without heat generation and constant $k$, Laplace's equation $\\partial^2T/\\partial x^2+\\partial^2T/\\partial y^2=0$ is approximated by central differences. With $\\Delta x=\\Delta y$, the interior node temperature equals the average of its four neighbours."
+  },
+  {
+   "type": "math",
+   "latex": "T_{m,n}=\\frac{1}{4}\\left(T_{m+1,n}+T_{m-1,n}+T_{m,n+1}+T_{m,n-1}\\right)\\quad\\Longleftrightarrow\\quad T_{m+1,n}+T_{m-1,n}+T_{m,n+1}+T_{m,n-1}-4T_{m,n}=0",
+   "caption": "Interior node, 2-D, steady, no generation, equal grid spacing; in 1-D, T_{m-1} - 2T_m + T_{m+1} = 0"
+  },
+  {
+   "type": "text",
+   "markdown": "The energy-balance view makes boundary nodes easy. For any node, the sum of heat flows into the node's control volume equals zero (steady, no generation). Heat flow between adjacent nodes is $kA\\,\\Delta T/\\Delta$ with $A$ the area of the control-volume face. At a surface cooled by convection to fluid at $T_\\infty$, the node is a half-cell, and the convection term is $hA(T_\\infty-T)$."
+  },
+  {
+   "type": "math",
+   "latex": "2T_{m-1,n}+T_{m,n+1}+T_{m,n-1}+2Bi\\,T_\\infty-2(Bi+2)T_{m,n}=0,\\qquad Bi=\\frac{h\\,\\Delta x}{k}",
+   "caption": "Node on a plane convective surface, 2-D, no generation (the 1-D version is T_{m-1} + Bi T_inf - (Bi+1) T_m = 0); for an insulated surface set Bi = 0"
+  },
+  {
+   "type": "worked_example",
+   "title": "Node on a convective boundary",
+   "prompt": "The surface of a plane wall ($k=20$ W/m K, typical) is cooled by air at 20 $^\\circ$C with $h=100$ W/m$^2$K. The grid spacing is $\\Delta x=\\Delta y=0.02$ m. A surface node has an interior neighbour at 80 $^\\circ$C (directly inward), and two neighbours along the surface at 76 $^\\circ$C and 78 $^\\circ$C. There is no generation. Find the surface node temperature.",
+   "steps": [
+    {
+     "text": "Take a control volume around the surface node: it is a half-cell, with width $\\Delta x/2$ normal to the surface and height $\\Delta y$. Steady state requires conduction in from the interior and from the two lateral neighbours to equal convection out.",
+     "latex": "\\sum q_{in}=0"
+    },
+    {
+     "text": "Conduction from the interior: $k\\,\\Delta y\\,(T_{in}-T)/\\Delta x$. Along the surface, each lateral neighbour supplies $k(\\Delta x/2)(T_{lat}-T)/\\Delta y$. Convection out: $h\\,\\Delta y\\,(T-T_\\infty)$. With $\\Delta x=\\Delta y$ and dividing by $k$ the balance becomes the standard form.",
+     "latex": "2T_{in}+T_a+T_b+2Bi\\,T_\\infty-2(Bi+2)T=0,\\quad Bi=\\frac{h\\Delta x}{k}"
+    },
+    {
+     "text": "Compute $Bi=h\\Delta x/k=100\\times0.02/20=0.10$."
+    },
+    {
+     "text": "Solve: $T=\\dfrac{2T_{in}+T_a+T_b+2Bi\\,T_\\infty}{2(Bi+2)}=\\dfrac{2(80)+76+78+2(0.1)(20)}{2(2.1)}=318.0/4.2=75.71$ $^\\circ$C."
+    }
+   ],
+   "answer": "The surface node is at about 75.7 $^\\circ$C, a little below its inner neighbour because heat is lost by convection."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Node type",
+    "Nodal equation ($\\Delta x=\\Delta y$, no generation)",
+    "Note"
+   ],
+   "rows": [
+    [
+     "Interior (2-D)",
+     "$T_{m+1,n}+T_{m-1,n}+T_{m,n+1}+T_{m,n-1}-4T_{m,n}=0$",
+     "Average of four neighbours"
+    ],
+    [
+     "Plane convective surface",
+     "$2T_{m-1,n}+T_{m,n+1}+T_{m,n-1}+2Bi\\,T_\\infty-2(Bi+2)T_{m,n}=0$",
+     "$Bi=h\\Delta x/k$"
+    ],
+    [
+     "Plane insulated surface",
+     "$2T_{m-1,n}+T_{m,n+1}+T_{m,n-1}-4T_{m,n}=0$",
+     "The case $Bi=0$"
+    ],
+    [
+     "Interior (1-D)",
+     "$T_{m-1}-2T_m+T_{m+1}=0$",
+     "With generation add $\\dot q\\Delta x^2/k$"
+    ]
+   ],
+   "caption": "Finite-difference nodal equations for steady conduction"
+  },
+  {
+   "type": "text",
+   "markdown": "Writing one equation per unknown node gives a set of simultaneous linear equations. For large grids direct solution is expensive, so we use **iteration**. In **Gauss-Seidel** iteration, each equation is rearranged to give its own node temperature in terms of the others; the nodes are swept in order and each new value is used immediately in the following equations. Iteration stops when successive sweeps change no temperature by more than a tolerance. Convergence is guaranteed when each equation is diagonally dominant, which the standard nodal equations satisfy (with $Bi\\ge0$)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Gauss-Seidel solution of a four-node grid",
+   "prompt": "A square plate is modelled with four interior nodes in a 2x2 arrangement: node 1 (top left), 2 (top right), 3 (bottom left), 4 (bottom right), on a grid with $\\Delta x=\\Delta y$. The top edge is held at 300 $^\\circ$C and the left, right and bottom edges at 100 $^\\circ$C. There is no heat generation. Write the nodal equations and solve by Gauss-Seidel iteration starting from 100 $^\\circ$C everywhere.",
+   "steps": [
+    {
+     "text": "Each node has four neighbours, so each equation is $T=\\tfrac14\\sum T_{neighbours}$. Node 1 touches the top edge (300) and the left edge (100); node 2 the top edge (300) and the right edge (100); nodes 3 and 4 touch the bottom edge (100) and the left or right edge (100).",
+     "latex": "T_{m,n}=\\tfrac14\\left(T_{m+1,n}+T_{m-1,n}+T_{m,n+1}+T_{m,n-1}\\right)"
+    },
+    {
+     "text": "The four equations are $4T_1=400+T_2+T_3$, $4T_2=400+T_1+T_4$, $4T_3=200+T_1+T_4$, $4T_4=200+T_2+T_3$. Gauss-Seidel solves each in turn for its own unknown, using the newest values immediately.",
+     "latex": "T_1^{(k+1)}=\\tfrac14\\left(400+T_2^{(k)}+T_3^{(k)}\\right),\\;T_2^{(k+1)}=\\tfrac14\\left(400+T_1^{(k+1)}+T_4^{(k)}\\right),\\ldots"
+    },
+    {
+     "text": "Iteration 1: $T_1=(400+100+100)/4=150.00$; $T_2=(400+150.00+100)/4=162.50$; $T_3=(200+150.00+100)/4=112.500$; $T_4=(200+162.50+112.500)/4=118.750$."
+    },
+    {
+     "text": "Iteration 2 gives $(168.75,171.88,121.88,123.44)$ and iteration 5 gives $(174.90,174.95,124.95,124.98)$; the values approach the exact solution."
+    },
+    {
+     "text": "Check against the exact solution: by symmetry $T_1=T_2=a$ and $T_3=T_4=b$, so $3a-b=400$ and $3b-a=200$, giving $a=175$ and $b=125$. Substituting into the equations confirms them."
+    }
+   ],
+   "answer": "Exact (converged) temperatures: $T_1=T_2=175$ $^\\circ$C and $T_3=T_4=125$ $^\\circ$C. Gauss-Seidel approaches these within about 0.1 K after five sweeps."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Sweep $k$",
+    "$T_1$",
+    "$T_2$",
+    "$T_3$",
+    "$T_4$"
+   ],
+   "rows": [
+    [
+     "1",
+     "150.00",
+     "162.50",
+     "112.50",
+     "118.75"
+    ],
+    [
+     "2",
+     "168.75",
+     "171.88",
+     "121.88",
+     "123.44"
+    ],
+    [
+     "3",
+     "173.44",
+     "174.22",
+     "124.22",
+     "124.61"
+    ],
+    [
+     "4",
+     "174.61",
+     "174.80",
+     "124.80",
+     "124.90"
+    ],
+    [
+     "5",
+     "174.90",
+     "174.95",
+     "124.95",
+     "124.98"
+    ]
+   ],
+   "caption": "Gauss-Seidel iterates for the four-node example (starting at 100 $^\\circ$C); the exact solution is 175, 175, 125, 125"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Sketch the grid, label the nodes and mark the boundary conditions.",
+    "Write one energy-balance equation per unknown node, with the correct form for interior, convective or insulated nodes.",
+    "Rearrange each equation for its own node temperature.",
+    "Guess initial temperatures and sweep through the nodes, using updated values as soon as they exist.",
+    "Repeat until the largest change in one sweep is below the required tolerance."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Corners, spacing and units",
+   "text": "Use $Bi=h\\Delta x/k$ with $\\Delta x$ in metres. A convective node is a half-cell, so the factors 2 appear in the equation. Do not use the interior-node equation for a surface node, and remember that corner nodes need their own equations (a quarter-cell). Using old rather than updated values is Jacobi iteration, which converges more slowly."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why the average works",
+   "text": "An interior node equation says the temperature is the average of its neighbours: Laplace's equation has no local maxima or minima, so the temperature at a point always lies between its neighbours. A convective node sits between the interior temperature and the fluid temperature."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Interior node (equal spacing, no generation): $T_{m,n}$ is the average of the four neighbours.",
+    "Convective plane surface node: $2T_{m-1,n}+T_{m,n+1}+T_{m,n-1}+2BiT_\\infty-2(Bi+2)T_{m,n}=0$ with $Bi=h\\Delta x/k$.",
+    "Write the nodal equations from an energy balance on the node's control volume.",
+    "Gauss-Seidel iteration solves the set by repeated sweeps, using the latest values immediately."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A node in the interior of a two-dimensional grid with $\\Delta x=\\Delta y$ has neighbours at 82.5, 64.0, 71.5 and 90.0 $^\\circ$C. With steady conduction, constant $k$ and no heat generation, the node temperature is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "72.4 $^\\circ$C"
+    },
+    {
+     "id": "b",
+     "text": "77.0 $^\\circ$C"
+    },
+    {
+     "id": "c",
+     "text": "90.0 $^\\circ$C"
+    },
+    {
+     "id": "d",
+     "text": "308.0 $^\\circ$C"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "77.0 $^\\circ$C",
+   "distractorRationale": {
+    "a": "This weights the neighbours incorrectly or leaves one out.",
+    "c": "This takes the maximum neighbour; the node must be the average.",
+    "d": "This is the sum of the neighbours; it was not divided by 4."
+   },
+   "explanation": "For equal spacing the node temperature is the mean of the four neighbours, $(82.5+64.0+71.5+90.0)/4=77.0$ $^\\circ$C. This result follows from the finite-difference form of Laplace's equation.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how the interior nodal equation is obtained from an energy balance on a control volume around a node, and show that it reduces to the average of the four neighbours when $\\Delta x=\\Delta y$. State the assumptions.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o1"
+   ],
+   "markingGuide": [
+    "Control volume of size $\\Delta x\\times\\Delta y$ per unit depth around node $(m,n)$.",
+    "Steady state with no generation: sum of conduction heat flows from the four neighbours is zero, $k\\Delta y(T_{m-1,n}-T)/\\Delta x+k\\Delta y(T_{m+1,n}-T)/\\Delta x+k\\Delta x(T_{m,n-1}-T)/\\Delta y+k\\Delta x(T_{m,n+1}-T)/\\Delta y=0$.",
+    "With $\\Delta x=\\Delta y$ the factors cancel to give $T_{m+1,n}+T_{m-1,n}+T_{m,n+1}+T_{m,n-1}-4T_{m,n}=0$, i.e. $T$ is the mean of the neighbours.",
+    "Assumptions: constant $k$, steady state, no generation, equal grid spacing, linear temperature variation between nodes."
+   ],
+   "explanation": "The finite-difference equation can be obtained either from Taylor series or from a heat balance; the balance is more flexible for boundaries. The average property reflects that Laplace's equation has no interior extrema.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A node on a plane insulated surface (heat flux zero, $Bi=0$) has an inward neighbour at 90 $^\\circ$C and two lateral neighbours along the surface at 84 $^\\circ$C and 86 $^\\circ$C. With $\\Delta x=\\Delta y$ and no generation, the node temperature is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "87.5 $^\\circ$C"
+    },
+    {
+     "id": "b",
+     "text": "86.7 $^\\circ$C"
+    },
+    {
+     "id": "c",
+     "text": "65.0 $^\\circ$C"
+    },
+    {
+     "id": "d",
+     "text": "90.0 $^\\circ$C"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "87.5 $^\\circ$C",
+   "distractorRationale": {
+    "b": "This is the simple average of the three neighbours; the interior neighbour carries double weight.",
+    "c": "This divides the plain sum of the three neighbours by 4, ignoring the factor 2 on the inward neighbour.",
+    "d": "This copies the inward neighbour; the lateral neighbours must also contribute."
+   },
+   "explanation": "Setting $Bi=0$ in the convective node equation gives $T=(2T_{m-1,n}+T_{m,n+1}+T_{m,n-1})/4=(180+84+86)/4=87.5$ $^\\circ$C. The inward neighbour counts twice because the half-cell is fed through its full face from the interior, which is equivalent to a mirror image across the adiabatic surface.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A convective surface node on a plane wall has grid spacing $\\Delta x=\\Delta y=0.03$ m, $k=15$ W/m K, $h=60$ W/m$^2$K and fluid temperature 25 $^\\circ$C. Its inward neighbour is at 140 $^\\circ$C, and its two neighbours along the surface are at 132 $^\\circ$C and 128 $^\\circ$C. Find the temperature of the surface node in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o2"
+   ],
+   "correctValue": 128.77,
+   "tolerance": 0.1,
+   "unit": "degC",
+   "explanation": "$Bi=h\\Delta x/k=60\\times0.03/15=0.12$. Then $T=[2(140)+132+128+2(0.12)(25)]/[2(0.12+2)]=(546.0)/4.24=128.77$ $^\\circ$C.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The correct nodal equation for a node on a plane surface exposed to convection (fluid at $T_\\infty$), with $\\Delta x=\\Delta y$ and no generation, where $m-1$ is the interior neighbour, is",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$T_{m+1,n}+T_{m-1,n}+T_{m,n+1}+T_{m,n-1}-4T_{m,n}=0$"
+    },
+    {
+     "id": "b",
+     "text": "$T_{m-1,n}+T_{m,n+1}+T_{m,n-1}+Bi\\,T_\\infty-(Bi+3)T_{m,n}=0$"
+    },
+    {
+     "id": "c",
+     "text": "$2T_{m-1,n}+T_{m,n+1}+T_{m,n-1}+2Bi\\,T_\\infty-2(Bi+2)T_{m,n}=0$"
+    },
+    {
+     "id": "d",
+     "text": "$2T_{m-1,n}+T_{m,n+1}+T_{m,n-1}-2(Bi+2)T_{m,n}=0$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$2T_{m-1,n}+T_{m,n+1}+T_{m,n-1}+2Bi\\,T_\\infty-2(Bi+2)T_{m,n}=0$",
+   "distractorRationale": {
+    "a": "This is the interior node equation; a surface node has no outer neighbour.",
+    "b": "This ignores that the surface node is a half-cell: the interior conduction term has weight 2.",
+    "d": "This omits the convective source term $2Bi\\,T_\\infty$."
+   },
+   "explanation": "The half-cell has twice the conduction weighting from the interior neighbour (width $\\Delta y$, length $\\Delta x$) compared with each lateral neighbour (width $\\Delta x/2$), which accounts for the factor 2. The convective term adds $2BiT_\\infty$ and $2Bi\\,T$ to the equation.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Four nodes satisfy $4T_1-T_2-T_3=200$, $-T_1+4T_2-T_4=150$, $-T_1+4T_3-T_4=100$ and $-T_2-T_3+4T_4=50$. Starting with all temperatures at 0, perform one Gauss-Seidel sweep in the order 1, 2, 3, 4, using updated values immediately. Find $T_4$ after the first sweep in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o3"
+   ],
+   "correctValue": 34.375,
+   "tolerance": 0.01,
+   "unit": "degC",
+   "explanation": "Sweep 1: $T_1=(200+0+0)/4=50$; $T_2=(150+50+0)/4=50$; $T_3=(100+50+0)/4=37.5$; $T_4=(50+50+37.5)/4=34.375$. Each step uses the values already updated in this sweep, which is what distinguishes Gauss-Seidel from Jacobi.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Three interior nodes in a one-dimensional wall with uniform heat generation satisfy $T_i=\\tfrac12(T_{i-1}+T_{i+1}+8)$, with both end nodes fixed at 50 $^\\circ$C (units consistent). Starting with all interior nodes at 50 $^\\circ$C, perform two Gauss-Seidel sweeps in the order 1, 2, 3. Find $T_3$ after the second sweep in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o3"
+   ],
+   "correctValue": 59.5,
+   "tolerance": 0.01,
+   "unit": "degC",
+   "explanation": "Sweep 1: $T_1=(50+50+8)/2=54$; $T_2=(54+50+8)/2=56$; $T_3=(56+50+8)/2=57$. Sweep 2: $T_1=(50+56+8)/2=57$; $T_2=(57+57+8)/2=61$; $T_3=(61+50+8)/2=59.5$. The converged symmetric solution is $62, 66, 62$, so after two sweeps the iteration is still approaching it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What distinguishes Gauss-Seidel iteration from Jacobi iteration for nodal equations?",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Gauss-Seidel solves the equations exactly in one sweep"
+    },
+    {
+     "id": "b",
+     "text": "Gauss-Seidel uses only the values from the previous sweep for all nodes"
+    },
+    {
+     "id": "c",
+     "text": "Gauss-Seidel requires the equations to be nonlinear"
+    },
+    {
+     "id": "d",
+     "text": "Gauss-Seidel uses the newest available node temperatures within the same sweep"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Gauss-Seidel uses the newest available node temperatures within the same sweep",
+   "distractorRationale": {
+    "a": "It is an iterative method needing several sweeps.",
+    "b": "That describes Jacobi iteration.",
+    "c": "The nodal equations here are linear; the method applies to linear sets."
+   },
+   "explanation": "In Gauss-Seidel each updated temperature is used straight away in the following equations of the same sweep, which usually converges about twice as fast as Jacobi. Both converge for diagonally dominant systems.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the nodal equation for a node on a plane surface with convection by an energy balance on a half-cell control volume (equal grid spacing, no generation). Explain the effect of the Biot number $Bi=h\\Delta x/k$ on the surface node temperature, including the limit $Bi\\to0$ and $Bi\\to\\infty$.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o2"
+   ],
+   "markingGuide": [
+    "Control volume: half-cell of height $\\Delta y$ and width $\\Delta x/2$ around the surface node.",
+    "Heat flows in: from the interior neighbour $k\\Delta y(T_{m-1,n}-T)/\\Delta x$, from the two lateral neighbours $k(\\Delta x/2)(T_{m,n\\pm1}-T)/\\Delta y$ each, and out by convection $h\\Delta y(T-T_\\infty)$.",
+    "Summing to zero with $\\Delta x=\\Delta y$ and multiplying by 2/k gives $2T_{m-1,n}+T_{m,n+1}+T_{m,n-1}+2BiT_\\infty-2(Bi+2)T=0$.",
+    "$Bi\\to0$ gives the insulated surface node (no convective term), $Bi\\to\\infty$ forces $T\\to T_\\infty$ (the surface takes the fluid temperature)."
+   ],
+   "explanation": "The derivation follows exactly the approach used for interior nodes, except for the half-cell area and the convection term. The limits check the equation: zero Biot number recovers the adiabatic boundary, a very large Biot number a fixed-temperature boundary.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A one-dimensional plane wall is modelled with node 0 held at 200 $^\\circ$C, an interior node 1, and a surface node 2 convecting to fluid at 20 $^\\circ$C with $Bi=h\\Delta x/k=0.5$. Using $T_1=\\tfrac12(T_0+T_2)$ and the one-dimensional convective surface equation $T_1+Bi\\,T_\\infty-(Bi+1)T_2=0$, find $T_2$ in $^\\circ$C.",
+   "objectiveIds": [
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o2",
+    "ug.mce-heat-transfer.numerical-conduction.finite-difference-steady.o3"
+   ],
+   "correctValue": 110.0,
+   "tolerance": 0.05,
+   "unit": "degC",
+   "explanation": "From the surface equation $T_2=(T_1+0.5\\times20)/1.5=(T_1+10)/1.5$. Substituting $T_1=(200+T_2)/2$ gives $1.5T_2=100+T_2/2+10$, so $T_2=110$ $^\\circ$C, and then $T_1=155$ $^\\circ$C. Check: $155+10-1.5\\times110=0$.",
+   "board": "internal"
+  }
+ ]
+}

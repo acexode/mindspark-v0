@@ -1,0 +1,416 @@
+{
+ "lessonTitle": "Writing Functions",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A design spreadsheet recalculates the second moment of area of a rectangular beam in forty different cells. One cell has the depth squared instead of cubed, and nobody notices until a bridge bearing is mis-sized. Write the formula once as a function, test it once, and call it everywhere: this is the basic discipline of reliable engineering code."
+  },
+  {
+   "type": "text",
+   "markdown": "A **function** packages a calculation under a name. You define it once with `def`, give it **parameters** (the names of its inputs), and it hands back a result with `return`. When you **call** it with **arguments** (actual values), the body runs and the returned value replaces the call. Functions make code shorter, testable and reusable, and each one should do a single, clearly named job."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Function anatomy",
+   "text": "`def name(p1, p2, p3=default):` starts the definition; the indented block is the body; `return value` ends the function and sends `value` back to the caller. Parameters with a default value are optional. A **docstring**, a string on the first line of the body, states what the function does, the units of its inputs and its return value."
+  },
+  {
+   "type": "math",
+   "latex": "I=\\frac{b\\,h^{3}}{12}",
+   "caption": "Second moment of area about the centroidal axis parallel to the width, for a rectangle of width b and depth h (in the plane of bending). Units: m^4 when b and h are in m."
+  },
+  {
+   "type": "worked_example",
+   "title": "Writing the second-moment function",
+   "prompt": "Write a function that returns $I=bh^3/12$ for a rectangular section, and use it for $b=0.12$ m and $h=0.30$ m.",
+   "steps": [
+    {
+     "text": "Define it: `def second_moment_rect(b, h):` with the docstring `'Second moment of area (m^4) of a rectangle, b = width (m), h = depth (m).'`."
+    },
+    {
+     "text": "Body: `return b * h**3 / 12`. The power binds tighter than the product and the division, so this is $bh^3/12$ as intended.",
+     "latex": "I=\\frac{b\\,h^{3}}{12}"
+    },
+    {
+     "text": "Call it: `I = second_moment_rect(0.12, 0.30)`. Evaluate by hand to check: $h^3=0.027$ m^3, so $I=0.12\\times0.027/12=2.7\\times10^{-4}$ m^4.",
+     "latex": "I=\\frac{0.12\\times0.027}{12}=2.7\\times10^{-4}\\ \\text{m}^4"
+    },
+    {
+     "text": "Because the function **returns** the value, the caller can use it in later calculations, for example `sigma = M * (h/2) / I`. A function that only `print`s its answer would give `None` to the caller."
+    }
+   ],
+   "answer": "I = 2.7e-4 m^4, returned by second_moment_rect(0.12, 0.30)."
+  },
+  {
+   "type": "text",
+   "markdown": "Every variable lives in a **scope**. A variable created inside a function is **local**: it exists only while the function runs and is invisible outside. A variable created at the top level of a script is **global** and can be *read* inside functions. If a function assigns to a name, Python treats that name as local to the function throughout its body, even if a global of the same name exists."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Concept",
+    "Meaning",
+    "Example"
+   ],
+   "rows": [
+    [
+     "Parameter",
+     "Name for an input in the definition",
+     "`def area(d):` has parameter `d`"
+    ],
+    [
+     "Argument",
+     "Value passed at the call",
+     "`area(0.05)` passes 0.05"
+    ],
+    [
+     "Local variable",
+     "Created inside the function; disappears on return",
+     "`x = 2*d` inside `area`"
+    ],
+    [
+     "Global variable",
+     "Created at top level; can be read inside functions",
+     "`g = 9.81` at the top of the script"
+    ],
+    [
+     "Return value",
+     "What the call evaluates to",
+     "`return 3.14 * d**2 / 4`"
+    ]
+   ],
+   "caption": "Terms used with functions."
+  },
+  {
+   "type": "worked_example",
+   "title": "Explaining a scope bug",
+   "prompt": "Explain the output and the error in the code below.\n\nrho = 998\ndef mass(V):\n    rho = 7850\n    return rho * V\nprint(mass(0.01), rho)\n\ndef add(m):\n    total = total + m",
+   "steps": [
+    {
+     "text": "In `mass`, the assignment `rho = 7850` creates a **local** variable that shadows the global `rho = 998`. The function returns $7850\\times0.01=78.5$."
+    },
+    {
+     "text": "The global `rho` is unchanged, so `print(mass(0.01), rho)` prints `78.5 998`. The mass uses the steel density, not the water density, which may not be what the programmer intended."
+    },
+    {
+     "text": "In `add`, the assignment makes `total` local for the entire body, so the right-hand side reads a local variable before it has a value. Python raises `UnboundLocalError`."
+    },
+    {
+     "text": "Fix: pass the quantities as parameters and return the result, e.g. `def add(total, m): return total + m`. Avoid `global` except in rare cases; relying on globals makes functions hard to test."
+    }
+   ],
+   "answer": "mass() uses its local rho and prints 78.5 998; add() raises UnboundLocalError because total is local but unassigned."
+  },
+  {
+   "type": "text",
+   "markdown": "**Input checks** make a function fail loudly when it is given physically impossible arguments, instead of returning a plausible-looking wrong answer. A negative width, a zero diameter or a temperature below absolute zero should raise an error. The standard way is `raise ValueError('message')`, with a message that names the offending argument and its units. Checking at the top of the function keeps the calculation itself clean."
+  },
+  {
+   "type": "worked_example",
+   "title": "Adding input checks",
+   "prompt": "Add checks to `second_moment_rect(b, h)` so that nonpositive dimensions are rejected, and decide what should happen for the calls `(0.12, 0.30)`, `(-0.12, 0.30)` and `(0.12, 0)`.",
+   "steps": [
+    {
+     "text": "Add at the top: `if b <= 0 or h <= 0: raise ValueError('b and h must be positive lengths in metres')`."
+    },
+    {
+     "text": "Call `(0.12, 0.30)`: both positive, so it returns $2.7\\times10^{-4}$ m^4 as before."
+    },
+    {
+     "text": "Call `(-0.12, 0.30)`: $b\\le0$, so a `ValueError` is raised. Without the check it would return $-2.7\\times10^{-4}$ m^4, a physically meaningless value that could pass unnoticed."
+    },
+    {
+     "text": "Call `(0.12, 0)`: $h\\le0$, so a `ValueError` is raised. Silent zero results would cause a later division by zero far from the real fault."
+    }
+   ],
+   "answer": "Positive inputs return 2.7e-4 m^4; the other two calls raise ValueError."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Give each function one clear job, a descriptive name and a docstring with units.",
+    "Use parameters for inputs and `return` for outputs; do not rely on global variables.",
+    "Recognise that assignment inside a function creates a local variable.",
+    "Reject impossible inputs with `raise ValueError(...)` and a helpful message.",
+    "Test each function on a hand-calculated case."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common function mistakes",
+   "text": "Printing instead of returning gives `None` to the caller. Mixing units, such as passing millimetres to a function that expects metres, gives a result wrong by a factor of $10^{12}$ for $I$ and raises no error, so state units in the docstring and parameter names. `assert` statements can be disabled when Python is run with optimisation, so use `raise` for checks that must always run."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A function packages a calculation: parameters in, return value out, with a docstring stating units.",
+    "The second moment of area of a rectangle is I = b h^3 / 12; doubling depth multiplies I by 8.",
+    "Variables assigned in a function are local; globals can be read but should not be relied on, and assigning to a global name creates a local one.",
+    "Input checks with raise ValueError stop physically impossible arguments from producing plausible wrong answers."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Using $I=bh^3/12$, what value should a correct `second_moment_rect(0.06, 0.12)` return, in m^4 (b = 0.06 m, h = 0.12 m)?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o1"
+   ],
+   "correctValue": 8.64e-06,
+   "tolerance": 1e-07,
+   "unit": "m^4",
+   "explanation": "h^3 = 0.12^3 = 1.728e-3 m^3. Then I = 0.06 x 1.728e-3 / 12 = 1.0368e-4 / 12 = 8.64e-6 m^4.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A function `second_moment_rect(b, h)` is called with $b=40$ mm and $h=90$ mm, using millimetres throughout. What value in mm^4 is returned?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o1"
+   ],
+   "correctValue": 2430000,
+   "tolerance": 10000,
+   "unit": "mm^4",
+   "explanation": "h^3 = 90^3 = 729 000 mm^3, so b h^3 = 40 x 729 000 = 2.916e7. Dividing by 12 gives 2.43e6 mm^4; the units are consistent because b and h are both in mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A student writes `def I_rect(b, h): print(b * h**3 / 12)` and later `sigma = M * (h/2) / I_rect(b, h)`. What happens and what is the fix?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It returns 0 and the stress is infinite"
+    },
+    {
+     "id": "b",
+     "text": "The function needs a global variable"
+    },
+    {
+     "id": "c",
+     "text": "It works, because print returns the number"
+    },
+    {
+     "id": "d",
+     "text": "It raises a TypeError because the function returns None; replace `print(...)` by `return ...`"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It raises a TypeError because the function returns None; replace `print(...)` by `return ...`",
+   "distractorRationale": {
+    "d": "Correct: print displays a value but returns None.",
+    "c": "print shows the number but the call evaluates to None.",
+    "a": "The function returns None, not 0.",
+    "b": "Globals are not needed; parameters and return suffice."
+   },
+   "explanation": "A function without a return statement gives back None, so the division by I_rect(b, h) tries to divide a number by None. Using return hands the value to the caller instead of just displaying it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A beam section's depth $h$ is doubled while its width $b$ stays the same. By what factor does $I=bh^3/12$ change?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4"
+    },
+    {
+     "id": "b",
+     "text": "2"
+    },
+    {
+     "id": "c",
+     "text": "8"
+    },
+    {
+     "id": "d",
+     "text": "6"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "8",
+   "distractorRationale": {
+    "c": "Correct: the cube of 2.",
+    "b": "This would be the factor if I were proportional to h.",
+    "a": "This would be the factor if I were proportional to h^2.",
+    "d": "No power law gives 6 for doubling."
+   },
+   "explanation": "I is proportional to h^3, so doubling h multiplies I by 2^3 = 8. This is why deep sections are so efficient in bending.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does this code print?\n\nk = 5\ndef f(x):\n    k = 2\n    return k * x\ny = f(3)\nprint(k, y)",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2 15"
+    },
+    {
+     "id": "b",
+     "text": "5 6"
+    },
+    {
+     "id": "c",
+     "text": "5 15"
+    },
+    {
+     "id": "d",
+     "text": "2 6"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "5 6",
+   "distractorRationale": {
+    "b": "Correct: local k is 2, global k is still 5.",
+    "d": "The global variable is not changed by the local assignment.",
+    "c": "Uses the global k inside the function, which is shadowed by the local one.",
+    "a": "Both mistakes combined."
+   },
+   "explanation": "Inside f, the assignment k = 2 creates a local variable, so f(3) returns 2 x 3 = 6. The global k is unchanged at 5, so the print statement outputs 5 and 6.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "The code `count = 0` followed by `def inc(): count = count + 1` and then a call `inc()` produces which result?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "count stays 0 with no error"
+    },
+    {
+     "id": "b",
+     "text": "A SyntaxError at the definition"
+    },
+    {
+     "id": "c",
+     "text": "count becomes 1"
+    },
+    {
+     "id": "d",
+     "text": "An UnboundLocalError, because the assignment makes count local before it has a value"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "An UnboundLocalError, because the assignment makes count local before it has a value",
+   "distractorRationale": {
+    "d": "Correct: local variable used before assignment.",
+    "c": "The global count is not modified without a global declaration, and the line fails before then.",
+    "a": "An error is raised, not silent success.",
+    "b": "The definition is valid syntax; the error occurs when the function runs."
+   },
+   "explanation": "Because count is assigned in the function, Python treats it as local for the whole body. Reading it on the right-hand side before it has been given a local value raises UnboundLocalError. The fix is to pass count in and return the new value.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A script defines `L = 2.0` (a beam length in m) at the top level. A function `tip_deflection(P)` uses `L` directly from the global scope. Later a colleague changes `L` for a different part of the script and the results of the first calculation silently change. Explain the problem and show how to restructure the function.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o2"
+   ],
+   "markingGuide": [
+    "Identifies that the function depends on a global variable that can be changed elsewhere (hidden dependency)",
+    "Explains results change without any change in the function's own arguments or an error",
+    "Fix: make L (and E, I) parameters: def tip_deflection(P, L, E, I)",
+    "Notes that this makes the function testable with hand-calculated inputs and its units documented",
+    "Mentions that a local assignment would instead shadow the global, a related scope trap"
+   ],
+   "explanation": "A function that reads globals is not fully determined by its arguments, so its result can change unexpectedly. Passing all inputs as parameters makes the dependencies explicit and the function easy to test.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A function computes a section's second moment of area from its width and depth. Which is the best way to handle a negative depth?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Silently return 0"
+    },
+    {
+     "id": "b",
+     "text": "Print a warning and return the computed value anyway"
+    },
+    {
+     "id": "c",
+     "text": "Use `assert` only and trust it always runs"
+    },
+    {
+     "id": "d",
+     "text": "`raise ValueError('depth must be positive')`"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "`raise ValueError('depth must be positive')`",
+   "distractorRationale": {
+    "d": "Correct: fail loudly with a clear message.",
+    "a": "A silent 0 can cause a division by zero later.",
+    "b": "A warning may be missed, and the meaningless number is still used.",
+    "c": "assert statements are removed when Python runs in optimised mode, so critical checks should not depend on them."
+   },
+   "explanation": "Raising an exception stops the calculation and tells the caller exactly what is wrong, so a physically impossible input cannot lead to a plausible wrong result. Returning a number hides the error, and assert can be disabled.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A function `second_moment_rect(b, h)` raises ValueError when `b <= 0 or h <= 0`. How many of these five calls raise it? `(0.1, 0.2)`, `(-0.1, 0.2)`, `(0.1, 0)`, `(0, 0)`, `(0.3, -0.2)`.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o3"
+   ],
+   "correctValue": 4,
+   "tolerance": 0.1,
+   "unit": "calls",
+   "explanation": "The first call has two positive values and succeeds. The other four each contain a value that is zero or negative, so the check b <= 0 or h <= 0 is true and the error is raised.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Design the input checks for a function `reynolds(rho, v, d, mu)` that returns the Reynolds number for pipe flow. State which argument values you would reject, how you would report them, and why failing loudly is better than returning a number.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.functions-and-modules.writing-functions.o3"
+   ],
+   "markingGuide": [
+    "Rejects density rho <= 0, diameter d <= 0 and viscosity mu <= 0 as physically impossible (mu = 0 would also divide by zero)",
+    "Decides on velocity: either require v >= 0 or use abs(v) and document the choice",
+    "Uses raise ValueError with a message naming the argument and its units",
+    "Checks at the top of the function before the calculation",
+    "Failing loudly prevents a plausible wrong Re from silently choosing the wrong flow regime"
+   ],
+   "explanation": "Dividing by a zero viscosity or using a negative diameter has no physical meaning. An immediate error with a clear message is easier to diagnose than a wrong regime classification discovered much later.",
+   "board": "internal"
+  }
+ ]
+}

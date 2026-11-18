@@ -1,0 +1,392 @@
+{
+ "lessonTitle": "Double Integration",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A diving board is a cantilever, and how far its tip drops under a diver decides whether it feels springy or dangerous. Engineers find that drop by writing the bending moment along the board as an equation and integrating it twice, then using what they know about the supports to fix the two constants that appear."
+  },
+  {
+   "type": "text",
+   "markdown": "A beam bends into a curve $v(x)$, with $v$ the deflection (upward positive) at position $x$ along the beam. For small slopes the curvature is $v''$, and for a linear elastic beam the **moment-curvature relation** is $EI\\,v''=M(x)$, where $M$ is the bending moment (sagging positive), $E$ the modulus and $I$ the second moment of area. Given $M(x)$, integrating twice gives the slope $v'$ and then the deflection $v$, each with a constant of integration."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Boundary conditions",
+   "text": "**Boundary conditions** are known values of deflection or slope at particular positions, used to determine the integration constants. Fixed end: $v=0$ and $v'=0$. Pin or roller support: $v=0$. Free end: no support condition on $v$ or $v'$ (but $M=0$ and shear $=0$). Symmetry at mid-span: $v'=0$."
+  },
+  {
+   "type": "math",
+   "latex": "EI\\,\\frac{d^2v}{dx^2}=M(x),\\qquad EI\\,\\frac{dv}{dx}=\\int M\\,dx+C_1,\\qquad EI\\,v=\\iint M\\,dx\\,dx+C_1x+C_2",
+   "caption": "Small deflections, linear elastic, constant $EI$ (otherwise keep $EI$ inside the integrals); sagging moment positive, $v$ upward positive, so sagging deflections are negative."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Support / location",
+    "Boundary condition",
+    "Number of conditions"
+   ],
+   "rows": [
+    [
+     "Fixed (built-in) end",
+     "$v=0,\\ v'=0$",
+     "2"
+    ],
+    [
+     "Pin or roller",
+     "$v=0$",
+     "1"
+    ],
+    [
+     "Free end",
+     "none on $v$ (use $M=0$)",
+     "0"
+    ],
+    [
+     "Point load (segments joined)",
+     "$v$ and $v'$ continuous",
+     "2 per interface"
+    ]
+   ],
+   "caption": "Boundary and continuity conditions"
+  },
+  {
+   "type": "worked_example",
+   "title": "Cantilever with end load",
+   "prompt": "A cantilever of length L is fixed at x = 0 and carries a downward load P at its free end x = L. Derive the deflection equation and the tip deflection. Evaluate for P = 6 kN, L = 1.5 m, EI = 3000 kN m^2.",
+   "steps": [
+    {
+     "text": "Moment at section x, from the free-body of the part beyond it (hogging, so negative).",
+     "latex": "M(x)=-P(L-x)"
+    },
+    {
+     "text": "Integrate once, then apply v'(0) = 0 to get C1 = 0.",
+     "latex": "EI\\,v'=-PLx+\\frac{Px^2}{2}+C_1,\\quad C_1=0"
+    },
+    {
+     "text": "Integrate again and apply v(0) = 0 so C2 = 0.",
+     "latex": "EI\\,v=-\\frac{PLx^2}{2}+\\frac{Px^3}{6}"
+    },
+    {
+     "text": "Tip deflection at x = L.",
+     "latex": "v(L)=-\\frac{PL^3}{3EI}=-\\frac{6(1.5)^3}{3(3000)}=-2.25\\times10^{-3}\\ \\text{m}"
+    }
+   ],
+   "answer": "v(x) = (P/EI)(-L x^2/2 + x^3/6) and the tip drops by PL^3/(3EI) = 2.25 mm for the numbers given."
+  },
+  {
+   "type": "worked_example",
+   "title": "Simply supported beam with UDL",
+   "prompt": "A simply supported beam of span L carries a UDL w. Find the deflection curve and the mid-span deflection using the boundary conditions.",
+   "steps": [
+    {
+     "text": "Reactions wL/2; moment at x.",
+     "latex": "M(x)=\\frac{wL}{2}x-\\frac{w}{2}x^2"
+    },
+    {
+     "text": "Integrate twice.",
+     "latex": "EI\\,v=\\frac{wL}{12}x^3-\\frac{w}{24}x^4+C_1x+C_2"
+    },
+    {
+     "text": "v(0) = 0 gives C2 = 0; v(L) = 0 gives C1.",
+     "latex": "\\frac{wL^4}{12}-\\frac{wL^4}{24}+C_1L=0\\ \\Rightarrow\\ C_1=-\\frac{wL^3}{24}"
+    },
+    {
+     "text": "Mid-span, x = L/2.",
+     "latex": "EI\\,v=\\frac{wL^4}{96}-\\frac{wL^4}{384}-\\frac{wL^4}{48}=-\\frac{5wL^4}{384}"
+    }
+   ],
+   "answer": "The mid-span deflection is 5wL^4/(384EI) downward, the standard tabulated result."
+  },
+  {
+   "type": "text",
+   "markdown": "**Point load on a simply supported beam.** For a load $P$ at distance $a$ from the left support $A$ and $b=L-a$ from the right support, the moment equation has two parts, giving four constants. They are fixed by $v=0$ at each support and by continuity of $v$ and $v'$ at the load. In the segment $0\\le x\\le a$,"
+  },
+  {
+   "type": "math",
+   "latex": "v=-\\frac{P\\,b\\,x}{6EIL}\\left(L^2-b^2-x^2\\right)",
+   "caption": "Deflection (downward negative) for $0\\le x\\le a$ of a simply supported beam with point load $P$ at distance $a$ from the left support."
+  },
+  {
+   "type": "text",
+   "markdown": "**Where is the maximum?** It occurs where the slope is zero. Setting $v'=0$ in the formula gives $x_m=\\sqrt{(L^2-b^2)/3}$ from the left support if $a\\ge b$ (that is, the maximum lies in the **longer** segment). Substituting back, $|v|_{\\max}=\\dfrac{P\\,b\\,(L^2-b^2)^{3/2}}{9\\sqrt3\\,EIL}$. For a central load, $b=L/2$ gives $x_m=L/2$ and $PL^3/(48EI)$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Off-centre load",
+   "prompt": "A simply supported beam of span 6 m carries a 30 kN point load 4 m from the left support (b = 2 m). EI = 1.2e4 kN m^2. Find the position and size of the maximum deflection.",
+   "steps": [
+    {
+     "text": "The longer segment is on the left, so the maximum is in 0 <= x <= 4.",
+     "latex": "x_m=\\sqrt{\\frac{6^2-2^2}{3}}=\\sqrt{10.67}=3.27\\ \\text{m}"
+    },
+    {
+     "text": "Evaluate the maximum deflection.",
+     "latex": "|v|_{\\max}=\\frac{30(2)(32)^{3/2}}{9\\sqrt3\\,(1.2\\times10^{4})(6)}=9.68\\times10^{-3}\\ \\text{m}"
+    }
+   ],
+   "answer": "The maximum deflection is 9.68 mm at 3.27 m from the left support, which is slightly nearer the load than mid-span (3 m) but not under it."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Signs and constants",
+   "text": "Keep one sign convention throughout: with $v$ upward, a sagging beam has negative $v$ and $EI v''=M$. Check each constant against a boundary condition, and check units: kN and m give $EI$ in kN m$^2$ and deflections in metres. For loads applied at a point, use separate moment equations on each side and enforce continuity."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Double integration of EI v'' = M(x) gives slope and deflection; the two constants come from boundary conditions (fixed: v = 0 and v' = 0; supports: v = 0).",
+    "A cantilever with an end load deflects PL^3/(3EI) at the tip, and a simply supported beam with a UDL deflects 5wL^4/(384EI) at mid-span.",
+    "The maximum deflection occurs where v' = 0; for an off-centre point load it is in the longer segment, not under the load."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which boundary conditions apply at a fixed (built-in) end of a beam?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero deflection and zero slope"
+    },
+    {
+     "id": "b",
+     "text": "Zero deflection and zero moment"
+    },
+    {
+     "id": "c",
+     "text": "Zero slope and zero shear"
+    },
+    {
+     "id": "d",
+     "text": "Zero moment and zero shear"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Zero deflection and zero slope",
+   "distractorRationale": {
+    "a": "Correct: the wall prevents both translation and rotation.",
+    "b": "Zero moment applies at a free end or pin.",
+    "c": "Shear and slope conditions are not those of a fixed support.",
+    "d": "These are free-end conditions."
+   },
+   "explanation": "A built-in support allows neither displacement nor rotation, so v = 0 and v' = 0. These two conditions determine both integration constants for a cantilever.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cantilever with an end load P has tip deflection PL^3/(3EI). If both the load and the length are doubled (same section), the tip deflection becomes:",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "8 times the original"
+    },
+    {
+     "id": "b",
+     "text": "6 times the original"
+    },
+    {
+     "id": "c",
+     "text": "16 times the original"
+    },
+    {
+     "id": "d",
+     "text": "4 times the original"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "16 times the original",
+   "distractorRationale": {
+    "a": "Only the L^3 effect; forgets the doubled load.",
+    "b": "Adds rather than multiplies factors.",
+    "c": "Correct: 2 x 2^3 = 16.",
+    "d": "Uses L^2 instead of L^3."
+   },
+   "explanation": "The deflection is proportional to P and to L^3. Doubling both multiplies it by 2 x 8 = 16.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A simply supported beam carries a single point load placed off-centre. Where does the maximum deflection occur?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "In the longer segment, at the point where the slope is zero"
+    },
+    {
+     "id": "b",
+     "text": "Directly under the load"
+    },
+    {
+     "id": "c",
+     "text": "At mid-span exactly"
+    },
+    {
+     "id": "d",
+     "text": "At the nearer support"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "In the longer segment, at the point where the slope is zero",
+   "distractorRationale": {
+    "a": "Correct: v' = 0 occurs in the longer segment, close to mid-span.",
+    "b": "Deflection under the load is large but the slope there is not zero for an off-centre load.",
+    "c": "This is true only for a centrally placed load.",
+    "d": "Deflection is zero at supports."
+   },
+   "explanation": "The maximum deflection coincides with zero slope. For an off-centre load the slope is zero at a point in the longer segment, near but not at mid-span or under the load.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a simply supported beam with an off-centre point load, the moment is described by two equations. Which set of conditions determines all four integration constants?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "v = 0 and v' = 0 at both supports"
+    },
+    {
+     "id": "b",
+     "text": "v' = 0 at both supports and zero moment at the load"
+    },
+    {
+     "id": "c",
+     "text": "v = 0 at the load only"
+    },
+    {
+     "id": "d",
+     "text": "v = 0 at both supports plus continuity of v and v' at the load"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "v = 0 at both supports plus continuity of v and v' at the load",
+   "distractorRationale": {
+    "a": "Slope is not zero at pins.",
+    "b": "Moment is not zero at the load point.",
+    "c": "This gives only one condition.",
+    "d": "Correct: two support conditions plus two continuity conditions."
+   },
+   "explanation": "Two segments each have two constants. The pins give v = 0 at x = 0 and x = L; joining the segments requires equal deflection and equal slope at the load, giving four equations.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: at the location of maximum deflection of a beam, the slope of the elastic curve is zero.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A maximum of v(x) occurs where dv/dx = 0. This is how the position of maximum deflection is found.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A cantilever of length 2.5 m, with EI = 2000 kN m^2, carries a downward load of 4 kN at its free end. Find the magnitude of the tip deflection in mm.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o1"
+   ],
+   "correctValue": 10.42,
+   "tolerance": 0.1,
+   "unit": "mm",
+   "explanation": "From double integration v_tip = PL^3/(3EI) = 4(2.5^3)/(3 x 2000) = 0.01042 m = 10.42 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A simply supported beam of span 5 m, with EI = 24 000 kN m^2, carries a UDL of 15 kN/m over its whole span. Find the mid-span deflection in mm using the result of double integration.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o2"
+   ],
+   "correctValue": 5.09,
+   "tolerance": 0.05,
+   "unit": "mm",
+   "explanation": "With v(0) = v(L) = 0 the integration gives 5wL^4/(384EI) = 5 x 15 x 625/(384 x 24 000) = 5.09 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A simply supported beam of span 8 m, with EI = 30 000 kN m^2, carries a 40 kN point load 5 m from the left support (3 m from the right). Find the magnitude of the maximum deflection in mm, noting that it lies in the longer segment.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o3"
+   ],
+   "correctValue": 13.08,
+   "tolerance": 0.2,
+   "unit": "mm",
+   "explanation": "With b = 3 m: x_m = sqrt((64 - 9)/3) = 4.28 m from the left. |v|max = P b (L^2 - b^2)^1.5/(9 sqrt3 L EI) = 40(3)(55)^1.5/(9 x 1.732 x 8 x 30 000) = 13.1 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Outline the double-integration method for a simply supported beam under a UDL: the steps, the sign convention, and the boundary conditions used.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o2"
+   ],
+   "markingGuide": [
+    "Writes M(x) from a free-body of one side using the support reactions",
+    "States EI v'' = M(x) and the sign convention (sagging positive, v upward)",
+    "Integrates twice, introducing C1 and C2",
+    "Applies v = 0 at x = 0 and at x = L to solve for C1 and C2",
+    "Evaluates deflection at mid-span or where slope is zero"
+   ],
+   "explanation": "Once M(x) is known the curve follows by calculus. Two support conditions suffice because the beam has only one moment equation and two constants.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why the maximum deflection of a simply supported beam with an off-centre point load does not occur under the load, and describe how its position is found.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.beam-deflection.integration-method.o3"
+   ],
+   "markingGuide": [
+    "Maximum deflection occurs where the slope of the elastic curve is zero",
+    "Under an off-centre load the slope is non-zero because the beam is steeper on the shorter side",
+    "Writes v' for the longer segment and sets it to zero",
+    "Obtains x_m = sqrt((L^2 - b^2)/3), lying in the longer segment",
+    "Notes that it is close to, but not at, mid-span, and that for a central load it coincides with the load"
+   ],
+   "explanation": "Zero slope marks the lowest point. Because the shorter segment has to rise more steeply to reach its support, the lowest point shifts away from the load toward mid-span.",
+   "board": "internal"
+  }
+ ]
+}

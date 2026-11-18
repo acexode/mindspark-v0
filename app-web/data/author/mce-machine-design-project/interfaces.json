@@ -1,0 +1,399 @@
+{
+ "lessonTitle": "Interfaces and Architecture: Flows, Datums and Budget Allocation",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Two teams design a motorised camera slider: one builds the carriage, the other the drive. When the parts meet, the motor shaft is 2 mm off-centre from the pulley, the controller expects a 5 V pulse from a sensor that outputs 3.3 V, and the combined power draw exceeds the battery. All three failures are interface failures: nobody had written down exactly what crosses the boundary between the subsystems."
+  },
+  {
+   "type": "text",
+   "markdown": "An **interface** is the boundary where two subsystems exchange something or are joined. A system architecture divides a product into subsystems and then defines every interface, so that each team can work independently and the pieces fit when they meet. Interfaces come in two kinds: **functional** (what flows across the boundary: energy, material, signals) and **physical** (how the two parts are located and held together)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Functional block diagram",
+   "text": "A functional block diagram shows each subsystem as a block labelled by its function (a verb and a noun, for example 'convert electrical to rotary energy') and draws every flow between blocks as a labelled arrow. Three flow types are distinguished: **energy** (electrical power, mechanical torque, heat), **material** (parts, fluids, product being processed) and **signal** (commands and measurements carrying information, not power). Flows entering or leaving the system boundary are inputs and outputs."
+  },
+  {
+   "type": "worked_example",
+   "title": "Block diagram of a coffee grinder",
+   "prompt": "Identify the main functional blocks and flows for a mains-powered coffee grinder in which the user places beans in a hopper and presses a switch.",
+   "steps": [
+    {
+     "text": "Inputs crossing the boundary: electrical energy (mains), material (whole beans) and a signal (the user's on/off command)."
+    },
+    {
+     "text": "Blocks and internal flows: 'switch' passes the command signal to the motor controller; 'convert electrical to mechanical energy' (motor) sends rotary mechanical energy to 'grind beans' (burr set); the hopper delivers beans (material) to the burr set."
+    },
+    {
+     "text": "Outputs: ground coffee (material) and lost energy as heat and noise from the motor and burrs."
+    },
+    {
+     "text": "Check energy: every input energy must reach an output; the electrical input equals the useful grinding work plus heat losses.",
+     "latex": "P_{\\mathrm{in}}=P_{\\mathrm{useful}}+P_{\\mathrm{loss}}"
+    }
+   ],
+   "answer": "Three input flows, two functional blocks with a mechanical energy link, and outputs of ground coffee and waste heat."
+  },
+  {
+   "type": "text",
+   "markdown": "**Physical interfaces.** A mechanical interface is defined by three things. The **datum** is the reference face, axis or point from which the interface dimensions are measured and which locates the mating part (for example, a flange face as the primary datum and the pilot bore as the axis datum). The **fit** states how the mating features relate in size: a clearance, transition or interference class, chosen from how precisely and how permanently the parts must be located. The **fastening method** states how the parts are clamped or retained: bolts of a stated size and pattern, a clamp, a key, a snap fit or an adhesive. All three must be stated on the drawings of both parts, or the parts cannot be assumed to fit."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Interface element",
+    "What to specify",
+    "Example (illustrative)"
+   ],
+   "rows": [
+    [
+     "Datum",
+     "Reference face and axis, with dimensions measured from them",
+     "Flange face A; bore axis B"
+    ],
+    [
+     "Fit",
+     "Fit class for locating features",
+     "Locational clearance fit on a pilot (for example H7/g6, typical)"
+    ],
+    [
+     "Fastening",
+     "Fastener size, number, pattern and tightening",
+     "4 bolts on a 65 mm bolt circle"
+    ],
+    [
+     "Functional",
+     "Power, signal level, material flow rate",
+     "24 V, up to 4 A; 5 V pulse signal"
+    ]
+   ],
+   "caption": "Elements of an interface definition."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "One interface, one definition",
+   "text": "Both teams must work from the same single definition of the interface (often an *interface control document*). If each side draws its own version, the fit relies on luck. Changes to an interface need agreement from both owners."
+  },
+  {
+   "type": "text",
+   "markdown": "**Allocating a top-level requirement.** A requirement such as 'total mass at most 18 kg' or 'average electrical power at most 240 W' applies to the whole product, but each subsystem team needs its own number. The architect divides the budget among the subsystems in proportion to the estimated need of each, and keeps a reserve for growth. The rule is that the allocations plus the reserve must not exceed the top-level value. For a power budget, a subsystem's electrical allocation is its mechanical output divided by its efficiency, since the supply must provide the losses too."
+  },
+  {
+   "type": "math",
+   "latex": "P_{\\mathrm{elec}}=\\frac{P_{\\mathrm{mech}}}{\\eta},\\qquad \\sum_i A_i+A_{\\mathrm{reserve}}\\le A_{\\mathrm{top}}",
+   "caption": "P_elec is electrical input power (W), P_mech is mechanical output power (W), and eta is the efficiency (0 to 1). A_i are subsystem allocations and A_top is the top-level limit."
+  },
+  {
+   "type": "worked_example",
+   "title": "Allocating a 240 W power budget",
+   "prompt": "A rover has a top-level power limit of 240 W. A 10% reserve is held back. The drive must deliver 78 W of mechanical power with an overall drive efficiency of 0.60 (assumed). Computing and sensing are allocated 40 W and 28 W, and communications 18 W. Check the allocation.",
+   "steps": [
+    {
+     "text": "Hold back the reserve first: 10% of the 240 W limit.",
+     "latex": "A_{\\mathrm{reserve}}=0.10\\times240=24\\ \\mathrm{W}"
+    },
+    {
+     "text": "Electrical allocation for the drive.",
+     "latex": "P_{\\mathrm{elec}}=\\frac{78}{0.60}=130\\ \\mathrm{W}"
+    },
+    {
+     "text": "Sum of allocations plus reserve.",
+     "latex": "130+40+28+18+24=240\\ \\mathrm{W}"
+    },
+    {
+     "text": "The sum equals the limit, so the allocation is exactly consistent, with no remaining slack; any growth in one subsystem must be paid for by another or by the reserve."
+    }
+   ],
+   "answer": "The allocation is consistent: 216 W allocated plus 24 W reserve equals 240 W."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "List subsystems and draw every energy, material and signal flow between them.",
+    "Name a datum, a fit and a fastening method for every mechanical interface.",
+    "Allocate each top-level budget, including a reserve, so that the sum does not exceed the limit.",
+    "Record the result in a single interface document owned by both sides."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "A drawing arrow is not an interface definition",
+   "text": "An arrow between two blocks says only that something flows. It does not say how much, at what voltage, speed or pressure. Each arrow must carry a value, a unit and a tolerance before it counts as defined."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A functional block diagram shows energy, material and signal flows between subsystems, with every input traced to an output.",
+    "A mechanical interface is defined by a datum, a fit and a fastening method, written on both parts' drawings.",
+    "Top-level budgets such as mass and power are allocated across subsystems with a reserve, so that the sum never exceeds the limit; electrical power equals mechanical power divided by efficiency."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a block diagram of a garage door opener, which flow is a signal rather than an energy or material flow?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The 'open' command sent from the handheld remote to the controller"
+    },
+    {
+     "id": "b",
+     "text": "The 24 V power supplied to the motor"
+    },
+    {
+     "id": "c",
+     "text": "The door panel moving upward"
+    },
+    {
+     "id": "d",
+     "text": "Heat released by the motor windings"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The 'open' command sent from the handheld remote to the controller",
+   "distractorRationale": {
+    "a": "Correct: it carries information, not power.",
+    "b": "This is electrical energy.",
+    "c": "This is mechanical motion of material or energy delivered to the load.",
+    "d": "This is thermal energy, a loss."
+   },
+   "explanation": "Signals carry information at negligible power, while energy flows carry power. The remote command only tells the controller what to do; the motor supply does the work.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A block diagram shows 120 W of electrical energy entering a linear actuator that delivers 80 W of useful mechanical output. What other output must the diagram include to balance energy?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A 40 W thermal loss flow to the surroundings"
+    },
+    {
+     "id": "b",
+     "text": "A 40 W signal flow back to the controller"
+    },
+    {
+     "id": "c",
+     "text": "A 200 W mechanical flow into the actuator"
+    },
+    {
+     "id": "d",
+     "text": "No other output, because losses are not part of a diagram"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A 40 W thermal loss flow to the surroundings",
+   "distractorRationale": {
+    "a": "Correct: the remaining 40 W leaves as heat from friction and electrical losses.",
+    "b": "A signal carries information and not power.",
+    "c": "This does not balance the figures.",
+    "d": "Losses are real energy flows and should be shown."
+   },
+   "explanation": "Energy is conserved, so $120=80+P_{\\mathrm{loss}}$ gives a loss of 40 W. Showing this as a heat output keeps the diagram consistent with the first law.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a mechanical interface, which statement best describes a datum?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A reference face or axis from which interface dimensions are measured and the mating part is located"
+    },
+    {
+     "id": "b",
+     "text": "The size of the largest bolt used"
+    },
+    {
+     "id": "c",
+     "text": "The maximum load the interface can carry"
+    },
+    {
+     "id": "d",
+     "text": "The colour code of the mating part"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A reference face or axis from which interface dimensions are measured and the mating part is located",
+   "distractorRationale": {
+    "a": "Correct: it is the reference from which the position of features is defined.",
+    "b": "Bolt size is part of the fastening definition.",
+    "c": "Load capacity is a performance requirement.",
+    "d": "Colour coding is not a dimensional reference."
+   },
+   "explanation": "Datums give two teams a shared origin for their dimensions. Without them the position of the mating features on each part would be measured from different references.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A motor flange must be located concentrically on a gearbox face, removed and refitted during service, and held by four bolts. Which interface definition is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A pilot spigot with a locational clearance fit, plus four bolts on a defined pattern"
+    },
+    {
+     "id": "b",
+     "text": "A heavy interference press fit, with no fasteners"
+    },
+    {
+     "id": "c",
+     "text": "Loose clearance holes only, with the bolts providing the location"
+    },
+    {
+     "id": "d",
+     "text": "Adhesive bonding of the flange to the gearbox"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A pilot spigot with a locational clearance fit, plus four bolts on a defined pattern",
+   "distractorRationale": {
+    "a": "Correct: the spigot locates concentricity and the bolts clamp it, and the clearance fit allows removal.",
+    "b": "A heavy press fit makes service removal very difficult.",
+    "c": "Bolts in loose holes cannot guarantee concentricity.",
+    "d": "Bonding prevents service removal."
+   },
+   "explanation": "Location and clamping are separate jobs. A close locational fit on the pilot gives repeatable concentricity, and the bolts provide the clamping force.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 20 kg mass limit is allocated as 6 kg frame, 7 kg drive, 3 kg electronics and 4 kg payload mounts, with no reserve. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The allocations sum to exactly 20 kg and leave no room for growth in any subsystem"
+    },
+    {
+     "id": "b",
+     "text": "The allocations total 18 kg and so leave a 2 kg reserve"
+    },
+    {
+     "id": "c",
+     "text": "The allocations total 22 kg and exceed the limit"
+    },
+    {
+     "id": "d",
+     "text": "Allocation only matters for power and not for mass"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The allocations sum to exactly 20 kg and leave no room for growth in any subsystem",
+   "distractorRationale": {
+    "a": "Correct: 6+7+3+4 = 20 kg, leaving no reserve.",
+    "b": "This sum is wrong; the allocations add to 20.",
+    "c": "This sum is wrong; the allocations add to 20.",
+    "d": "Any top-level requirement, mass included, must be allocated."
+   },
+   "explanation": "The sum of allocations equals the limit, so any growth must be paid for by another subsystem. A sound budget normally holds back a reserve.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A product has a top-level electrical power limit of 150 W, and the architect holds back a 12% reserve. How much power, in watts, is available for allocation to the subsystems?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o3"
+   ],
+   "correctValue": 132.0,
+   "tolerance": 0.2,
+   "unit": "W",
+   "explanation": "The reserve is $0.12\\times150=18$ W, so the allocatable power is $150-18=132$ W. Equivalently it is 88% of the limit.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A linear actuator must deliver 45 W of mechanical output. Assuming an overall efficiency of 0.72, how much electrical power, in watts, must be allocated to it?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o3"
+   ],
+   "correctValue": 62.5,
+   "tolerance": 0.2,
+   "unit": "W",
+   "explanation": "The input power is output divided by efficiency, $45/0.72=62.5$ W. The extra 17.5 W is lost as heat and still has to be supplied.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A top-level mass limit is 18 kg. The architect allocates 35% to the frame, 30% to the drive, 12% to electronics and holds an 8% reserve. The remainder goes to the payload mount. What mass, in kg, is allocated to the payload mount?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o3"
+   ],
+   "correctValue": 2.7,
+   "tolerance": 0.02,
+   "unit": "kg",
+   "explanation": "The allocated percentages total $35+30+12+8=85\\%$, leaving 15% for the payload mount. That is $0.15\\times18=2.7$ kg.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A cordless screwdriver has a battery, a trigger switch, a motor, a gearbox and a chuck. Describe a functional block diagram for it, naming at least one energy flow, one material flow and one signal flow, and indicate where energy leaves the system as loss.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o1"
+   ],
+   "markingGuide": [
+    "Blocks identified by function: store energy, switch, convert to rotary motion, reduce speed and increase torque, grip bit",
+    "Energy flow: electrical energy from battery to motor, then mechanical energy through the gearbox to the chuck",
+    "Signal flow: trigger position (command) to the switch or controller",
+    "Material flow: the screw or the bit being driven, or the work-piece interaction",
+    "Losses as heat from motor and gearbox, noise, and mechanical friction shown as outputs",
+    "Every input traced to an output"
+   ],
+   "explanation": "A complete diagram shows energy transformation along the chain, a command signal acting on it, and the losses leaving as heat. This lets teams define each interface by what crosses it.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A gearbox output shaft must drive a conveyor drum through a coupling, and the two parts are designed by different teams. State what must be defined for the mechanical interface, justify your choice of datum, fit and fastening method, and say what happens if only one team's drawing contains the information.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.systems-integration.interfaces.o2"
+   ],
+   "markingGuide": [
+    "Datum: shaft axis and a shoulder or face as the axial reference, named on both drawings",
+    "Fit: a stated class for shaft-to-hub (for example a locational or transition fit with a key), justified by the need for alignment and torque transfer",
+    "Fastening: key and set screw, clamp or bolted flange with stated size and pattern",
+    "Torque and speed (functional) values on the interface definition",
+    "Risk of mismatched assumptions if only one team defines it, leading to misalignment or failure to assemble",
+    "A single shared interface document with change control"
+   ],
+   "explanation": "The interface is defined by reference, fit and fastening so that both teams make parts that mate. If only one drawing carries the information the other team may guess, and the parts may not assemble.",
+   "board": "internal"
+  }
+ ]
+}

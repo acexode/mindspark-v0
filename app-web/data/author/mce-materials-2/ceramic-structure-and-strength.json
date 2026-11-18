@@ -1,0 +1,424 @@
+{
+ "lessonTitle": "Ceramic Structure and Strength",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Twenty nominally identical alumina rods are broken in four-point bending. They fail anywhere between 280 and 420 MPa, yet twenty steel rods of the same size would all yield within a few per cent of one another. The scatter in ceramic strength is not experimental carelessness: it is built into the material, and an engineer must design with it."
+  },
+  {
+   "type": "text",
+   "markdown": "Ceramics have strong ionic or covalent bonds, so dislocations barely move and the material cannot blunt a crack tip by yielding. Strength is therefore set not by the bond strength but by the **largest flaw** in the stressed volume. Flaws are produced by processing (pores, inclusions, large grains) and by handling (scratches, impact damage), and their size varies randomly from specimen to specimen."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Griffith criterion",
+   "text": "A crack of characteristic length $a$ (half-length of an internal crack, or depth of an edge crack) in a brittle solid grows unstably when the stress reaches $\\sigma_f$, at which the elastic energy released by growth equals the energy needed to create the new crack surfaces. In terms of fracture toughness $K_{Ic}$ (Pa m$^{1/2}$) the condition is $K_I=Y\\sigma\\sqrt{\\pi a}=K_{Ic}$, where $Y$ is a dimensionless geometry factor of order 1."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_f=\\frac{K_{Ic}}{Y\\sqrt{\\pi a}}\\qquad\\left(\\text{ideally brittle: }K_{Ic}=\\sqrt{2E\\gamma_s}\\ \\Rightarrow\\ \\sigma_f=\\sqrt{\\frac{2E\\gamma_s}{\\pi a}}\\right)",
+   "caption": "sigma_f is the fracture stress, a the flaw size, Y about 1 for an internal flaw and about 1.12 for a shallow surface flaw, E the Young's modulus and gamma_s the energy per unit area of surface created."
+  },
+  {
+   "type": "worked_example",
+   "title": "Fracture stress from a flaw size",
+   "prompt": "An alumina component has $K_{Ic}=4.0$ MPa m$^{1/2}$ (typical). Find the fracture stress when the critical flaw is (i) an internal flaw of half-length $a=25\\ \\mu$m ($Y=1.0$) and (ii) a shallow edge flaw of depth $25\\ \\mu$m ($Y=1.12$).",
+   "steps": [
+    {
+     "text": "Convert the flaw size to metres and evaluate $\\sqrt{\\pi a}$.",
+     "latex": "\\sqrt{\\pi a}=\\sqrt{\\pi\\times25\\times10^{-6}}=8.86\\times10^{-3}\\ \\mathrm{m^{1/2}}"
+    },
+    {
+     "text": "(i) Internal flaw, $Y=1.0$.",
+     "latex": "\\sigma_f=\\frac{4.0}{1.0\\times8.86\\times10^{-3}}=451\\ \\mathrm{MPa}"
+    },
+    {
+     "text": "(ii) Edge flaw: the factor $Y=1.12$ increases the stress intensity, so the fracture stress is lower.",
+     "latex": "\\sigma_f=\\frac{4.0}{1.12\\times8.86\\times10^{-3}}=403\\ \\mathrm{MPa}"
+    }
+   ],
+   "answer": "About 451 MPa for the internal flaw and about 403 MPa for the edge flaw."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property (typical)",
+    "Alumina",
+    "Silicon carbide",
+    "Zirconia (toughened)",
+    "Structural steel"
+   ],
+   "rows": [
+    [
+     "Fracture toughness K_Ic (MPa m^1/2)",
+     "3.5 to 4.5",
+     "3 to 4",
+     "7 to 10",
+     "about 50 or more"
+    ],
+    [
+     "Typical critical flaw size",
+     "20 to 50 micrometres",
+     "10 to 40 micrometres",
+     "20 to 50 micrometres",
+     "millimetres (needs a large crack)"
+    ],
+    [
+     "Tensile strength scatter",
+     "large",
+     "large",
+     "moderate",
+     "small"
+    ],
+    [
+     "Behaviour at overload",
+     "fracture without warning",
+     "fracture without warning",
+     "fracture, some warning from transformation toughening",
+     "yielding and necking"
+    ]
+   ],
+   "caption": "Representative values; a table of numbers like these is typical, not a specification."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why strength scatters and depends on size.** Because $\\sigma_f\\propto a^{-1/2}$, a specimen with a flaw twice as large fails at only $1/\\sqrt2=0.71$ of the stress. Each specimen contains a different largest flaw, so measured strengths form a distribution. A **larger specimen** (more volume or surface) contains more flaws, so the chance that it contains a large, dangerous one is higher, and its average strength is lower. This is the **size effect**; it is absent in ductile metals, where yielding limits the stress at any flaw."
+  },
+  {
+   "type": "text",
+   "markdown": "**Weibull statistics.** The simplest description of the strength distribution is the Weibull distribution. For a reference volume $V_0$ the survival probability (the probability the specimen has not fractured) at tensile stress $\\sigma$ is given below. Here $\\sigma_0$ is a scale stress at which the survival probability is $e^{-1}=0.368$ for $V=V_0$, and $m$ is the **Weibull modulus**, which measures how narrow the scatter is."
+  },
+  {
+   "type": "math",
+   "latex": "P_s(V)=\\exp\\!\\left[-\\frac{V}{V_0}\\left(\\frac{\\sigma}{\\sigma_0}\\right)^{m}\\right]",
+   "caption": "Ps is the survival probability; V is the stressed volume, V0 a reference volume, sigma0 the scale stress and m the Weibull modulus."
+  },
+  {
+   "type": "worked_example",
+   "title": "Survival probability at a stated stress",
+   "prompt": "A ceramic has $\\sigma_0=300$ MPa for the reference volume $V_0$ and $m=10$. Find the survival probability at $\\sigma=250$ MPa for (i) a specimen of volume $V_0$ and (ii) a component of volume $4V_0$ under the same uniform stress.",
+   "steps": [
+    {
+     "text": "Compute the stress ratio raised to the power $m$.",
+     "latex": "\\left(\\frac{\\sigma}{\\sigma_0}\\right)^{m}=\\left(\\frac{250}{300}\\right)^{10}=0.1615"
+    },
+    {
+     "text": "(i) For $V=V_0$ the survival probability is $\\exp(-0.1615)$.",
+     "latex": "P_s=\\exp(-0.1615)=0.851"
+    },
+    {
+     "text": "(ii) For $V=4V_0$ the exponent is four times larger, so survival is lower.",
+     "latex": "P_s=\\exp(-4\\times0.1615)=\\exp(-0.646)=0.524"
+    }
+   ],
+   "answer": "85.1 % survive for V0 and only 52.4 % survive when the volume is four times larger."
+  },
+  {
+   "type": "text",
+   "markdown": "**Equal survival at different sizes.** If two specimens are to have the same survival probability, the exponent $(V/V_0)(\\sigma/\\sigma_0)^m$ must be equal. For volumes $V_1$ and $V_2$ the allowable stresses are therefore related by the first expression in the equation below, so a bigger part must be run at a lower stress, and the effect is stronger when $m$ is small."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\sigma_2}{\\sigma_1}=\\left(\\frac{V_1}{V_2}\\right)^{1/m}",
+   "caption": "Stress for equal survival probability at two different volumes."
+  },
+  {
+   "type": "worked_example",
+   "title": "Scaling the allowable stress with size",
+   "prompt": "A test bar of volume $V_1$ has a strength of 280 MPa at a chosen survival probability, with $m=10$. What stress gives the same survival probability in a component of volume $V_2=8V_1$?",
+   "steps": [
+    {
+     "text": "Write the scaling law and insert $V_1/V_2=1/8$ and $m=10$.",
+     "latex": "\\frac{\\sigma_2}{\\sigma_1}=\\left(\\frac{1}{8}\\right)^{1/10}"
+    },
+    {
+     "text": "Evaluate the ratio. It is less than 1, as expected for a larger component.",
+     "latex": "\\left(\\frac{1}{8}\\right)^{0.1}=0.812"
+    },
+    {
+     "text": "Multiply by the test stress.",
+     "latex": "\\sigma_2=280\\times0.812=227\\ \\mathrm{MPa}"
+    }
+   ],
+   "answer": "About 227 MPa, roughly 19 % below the test-bar value."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Mean strength is not a design strength",
+   "text": "Never design a ceramic part at its mean test strength. Using the Weibull relation, choose the stress at which the required survival probability (for example 0.999) is met for the actual stressed volume, and remember that a low modulus $m$ (typically 5 to 15 for conventional ceramics, often above 30 for structural metals) forces the design stress to be a small fraction of the mean."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Ceramic strength is governed by the largest flaw: $\\sigma_f=K_{Ic}/(Y\\sqrt{\\pi a})$, so strength falls as the square root of flaw size rises.",
+    "Because flaw size varies between specimens and larger volumes hold larger flaws, strength scatters and decreases with specimen size, unlike yielding metals.",
+    "Weibull statistics give survival probability $P_s=\\exp[-(V/V_0)(\\sigma/\\sigma_0)^m]$; a larger $m$ means less scatter, and equal survival requires $\\sigma_2/\\sigma_1=(V_1/V_2)^{1/m}$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why do the measured tensile strengths of nominally identical ceramic specimens vary widely, while those of a ductile steel do not?",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Ceramic bonds are weaker than metallic bonds, so strength depends on temperature fluctuations"
+    },
+    {
+     "id": "b",
+     "text": "The test machine is less accurate at the stresses used for ceramics"
+    },
+    {
+     "id": "c",
+     "text": "Each ceramic specimen has a different largest flaw and the ceramic cannot blunt it by plastic flow"
+    },
+    {
+     "id": "d",
+     "text": "Ceramics contain dislocations that move at random during loading"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Each ceramic specimen has a different largest flaw and the ceramic cannot blunt it by plastic flow",
+   "distractorRationale": {
+    "a": "Wrong: the bonds are strong, and temperature is not the source of the scatter.",
+    "b": "Wrong: instrument accuracy is not the explanation; the scatter is intrinsic to the material.",
+    "c": "Correct: strength is controlled by the largest random flaw, and without yielding to blunt it the scatter shows directly.",
+    "d": "Wrong: dislocations barely move in ceramics, which is exactly why they cannot blunt flaws."
+   },
+   "explanation": "Fracture stress scales as $a^{-1/2}$ for the critical flaw, and the largest flaw differs between specimens because processing and handling produce a random flaw population. Metals yield around a flaw and redistribute stress, so their strength is much less sensitive to it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A manufacturer tests short ceramic rods and then makes rods three times longer from the same powder and process. What does Weibull theory predict for the long rods?",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o1",
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A lower average strength, because the larger stressed volume is more likely to contain a large flaw"
+    },
+    {
+     "id": "b",
+     "text": "A higher average strength, because there is more material to carry the load"
+    },
+    {
+     "id": "c",
+     "text": "The same average strength, because the material is identical"
+    },
+    {
+     "id": "d",
+     "text": "A narrower scatter in strength but the same average strength"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A lower average strength, because the larger stressed volume is more likely to contain a large flaw",
+   "distractorRationale": {
+    "a": "Correct: a larger volume samples more of the flaw distribution, so the strength distribution shifts down.",
+    "b": "Wrong: more material does not carry the load more safely; it only adds more places for failure to start.",
+    "c": "Wrong: identical material does not give identical strength; volume enters the survival probability.",
+    "d": "Wrong: the modulus m is a material parameter and the mean strength does fall with volume."
+   },
+   "explanation": "The survival probability $\\exp[-(V/V_0)(\\sigma/\\sigma_0)^m]$ decreases as $V$ increases at fixed stress. Equivalent survival in a larger volume is therefore reached only at lower stress, by the factor $(V_1/V_2)^{1/m}$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A silicon carbide plate has $K_{Ic}=3.0$ MPa m$^{1/2}$ (typical). Failure starts from a shallow surface flaw of depth $a=40\\ \\mu$m, for which the geometry factor is $Y=1.12$. Use $\\sigma_f=K_{Ic}/(Y\\sqrt{\\pi a})$ to estimate the fracture stress, in MPa.",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o2"
+   ],
+   "correctValue": 239,
+   "tolerance": 5,
+   "unit": "MPa",
+   "explanation": "First $\\sqrt{\\pi a}=\\sqrt{\\pi\\times40\\times10^{-6}}=1.121\\times10^{-2}$ m$^{1/2}$, so $Y\\sqrt{\\pi a}=1.256\\times10^{-2}$. Then $\\sigma_f=3.0/1.256\\times10^{-2}\\approx239$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A ceramic has $K_{Ic}=4.5$ MPa m$^{1/2}$ and must carry a tensile stress of 150 MPa in service. Taking $Y=1$ and an internal flaw of half-length $a$, which is the largest flaw that is tolerable at the onset of fracture?",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 0.900 mm"
+    },
+    {
+     "id": "b",
+     "text": "About 0.573 mm"
+    },
+    {
+     "id": "c",
+     "text": "About 16.9 mm"
+    },
+    {
+     "id": "d",
+     "text": "About 0.287 mm"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "About 0.287 mm",
+   "distractorRationale": {
+    "a": "Wrong: this omits the factor of pi in the denominator.",
+    "b": "Wrong: this doubles the half-length (full crack length), but the criterion uses the half-length a.",
+    "c": "Wrong: this forgets to square the ratio of toughness to stress, so it is far too large.",
+    "d": "Correct: $a=(K_{Ic}/\\sigma)^2/\\pi=(0.03)^2/\\pi=2.87\\times10^{-4}$ m, which is 0.287 mm."
+   },
+   "explanation": "Rearranging $\\sigma_f=K_{Ic}/(Y\\sqrt{\\pi a})$ gives $a=(K_{Ic}/(Y\\sigma_f))^{2}/\\pi$. With $K_{Ic}/\\sigma_f=4.5/150=0.030$ m$^{1/2}$, $a=9.0\\times10^{-4}/\\pi=2.87\\times10^{-4}$ m, which is 0.287 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Quality control improves the processing of a ceramic so that the largest flaw size is reduced to one half of its former value. What happens to the Griffith fracture stress?",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It doubles"
+    },
+    {
+     "id": "b",
+     "text": "It rises by a factor of $\\sqrt2\\approx1.41$"
+    },
+    {
+     "id": "c",
+     "text": "It rises by a factor of 4"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged, because $K_{Ic}$ is a material constant"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It rises by a factor of $\\sqrt2\\approx1.41$",
+   "distractorRationale": {
+    "a": "Wrong: this treats the stress as inversely proportional to the flaw size rather than to its square root.",
+    "b": "Correct: $\\sigma_f\\propto a^{-1/2}$, so halving $a$ multiplies the stress by $\\sqrt2$.",
+    "c": "Wrong: a factor of 4 would require the flaw size to fall by a factor of 16.",
+    "d": "Wrong: $K_{Ic}$ is constant, but the stress needed to reach it depends on the flaw size."
+   },
+   "explanation": "From $\\sigma_f=K_{Ic}/(Y\\sqrt{\\pi a})$ with $K_{Ic}$ and $Y$ fixed, $\\sigma_f\\propto a^{-1/2}$. Halving $a$ therefore multiplies the fracture stress by $(1/2)^{-1/2}=1.41$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A ceramic has Weibull scale stress $\\sigma_0=400$ MPa for the reference volume $V_0$ and Weibull modulus $m=8$. Find the survival probability of a component of volume $V_0$ loaded to a uniform tensile stress of 320 MPa. Give a number between 0 and 1.",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o3"
+   ],
+   "correctValue": 0.846,
+   "tolerance": 0.005,
+   "unit": "(probability)",
+   "explanation": "The stress ratio is $320/400=0.8$ and $0.8^{8}=0.1678$. Then $P_s=\\exp(-0.1678)=0.846$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two ceramics have the same mean strength. Ceramic A has Weibull modulus $m=6$ and ceramic B has $m=20$. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A has less scatter, because a smaller $m$ means a narrower distribution"
+    },
+    {
+     "id": "b",
+     "text": "The two will have the same design stress, because the mean strength is the same"
+    },
+    {
+     "id": "c",
+     "text": "B is weaker, because a higher $m$ always means lower fracture toughness"
+    },
+    {
+     "id": "d",
+     "text": "B has less scatter, so a higher stress can be used at a given required survival probability"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "B has less scatter, so a higher stress can be used at a given required survival probability",
+   "distractorRationale": {
+    "a": "Wrong: the narrower distribution belongs to the larger Weibull modulus.",
+    "b": "Wrong: the lower tail of the distribution, which governs design, depends on m.",
+    "c": "Wrong: m describes scatter, not toughness, and has no direct link with K_Ic.",
+    "d": "Correct: a higher modulus means a narrower distribution, so the design stress for a given survival lies closer to the mean."
+   },
+   "explanation": "The Weibull modulus is a measure of reproducibility: the larger it is, the narrower the spread of strengths. The stress that gives, say, 99.9 % survival is therefore much closer to the mean for B than for A, so B can be loaded more heavily.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A ceramic has $\\sigma_0=300$ MPa for the reference volume $V_0$ and $m=10$. A part of volume $V_0$ must have survival probability 0.99. What is the maximum design stress, in MPa?",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o3"
+   ],
+   "correctValue": 189,
+   "tolerance": 3,
+   "unit": "MPa",
+   "explanation": "Set $\\exp[-(\\sigma/\\sigma_0)^m]=0.99$, so $(\\sigma/\\sigma_0)^{m}=-\\ln0.99=0.01005$. Then $\\sigma/\\sigma_0=0.01005^{0.1}=0.631$ and $\\sigma=300\\times0.631=189$ MPa, which is only 63 % of the scale stress.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why the tensile strength of a ceramic scatters and decreases as the specimen gets bigger, in contrast with a ductile metal. Include the relationship between flaw size and strength, and say what the designer should do about it.",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o1",
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o2"
+   ],
+   "markingGuide": [
+    "Strength is controlled by the largest flaw in the stressed volume (pores, inclusions, surface scratches) with no plastic blunting in a ceramic",
+    "Griffith: $\\sigma_f=K_{Ic}/(Y\\sqrt{\\pi a})$, so strength falls as the square root of flaw size rises",
+    "The largest flaw differs between specimens, so strengths follow a distribution",
+    "A larger volume or surface contains more flaws and so a larger worst flaw, hence a lower mean strength (size effect)",
+    "Metals yield and blunt flaws so scatter and size effect are small",
+    "Design: use Weibull statistics to choose a stress for the required survival probability, improve processing, or use proof testing and surface finishing to reduce flaw size"
+   ],
+   "explanation": "The strength of a brittle solid is a statistical property of its worst flaw rather than a fixed material constant. This is why designers use probabilistic tools and, for size, a volume-scaling law.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A ceramic bearing race of volume $V_1$ has a strength of 400 MPa at 99 % survival probability and $m=12$. A larger race has volume $V_2=10V_1$ and is made of the same material. Calculate the stress that gives 99 % survival for the larger race and comment on the result.",
+   "objectiveIds": [
+    "ug.mce-materials-2.ceramics-and-glass.ceramic-structure-and-strength.o3"
+   ],
+   "markingGuide": [
+    "States or uses the relation $\\sigma_2/\\sigma_1=(V_1/V_2)^{1/m}$",
+    "Substitutes $V_1/V_2=1/10$ and $m=12$: ratio $=10^{-1/12}=0.825$",
+    "Calculates $\\sigma_2\\approx400\\times0.825=330$ MPa",
+    "Comments that the larger component must be run at a lower stress, since a larger stressed volume has a greater chance of a large flaw",
+    "Comments that a higher modulus m would reduce the penalty (ratio closer to 1)"
+   ],
+   "explanation": "Equal survival means equal values of $(V/V_0)(\\sigma/\\sigma_0)^m$, so $\\sigma_2/\\sigma_1=(V_1/V_2)^{1/m}=10^{-1/12}=0.825$. The larger bearing race therefore has a design stress of about 330 MPa, and the penalty shrinks as $m$ increases.",
+   "board": "internal"
+  }
+ ]
+}

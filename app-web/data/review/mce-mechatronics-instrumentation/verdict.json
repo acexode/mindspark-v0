@@ -1,0 +1,22 @@
+{
+  "subjectId": "ug.mce-mechatronics-instrumentation",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "Round 2: all 16 units were re-read in full and every numeric key, worked example and marking-guide figure was recomputed in Python (ADC, aliasing, Butterworth cutoffs, IIR and moving-average filters, timer/PWM arithmetic, latency and response time, motor operating points and the gear-ratio quadratic N of about 4.92 to 43.08, PWM ripple and switching loss, UART/I2C timing, CAN frame lengths 47+8n and stuffed 135 bits, arbitration bit patterns, bus load, PLC response time, regression fits and residuals, bridge output, in-amp gain, SNR, CMRR, FK, IK, Jacobian and determinant). All keys and worked-example values agree with the text. All seven round-1 fixes were verified: sensor-actuator-loop q010 now names 0 V or the 10 V rail as outside the 1.0 to 9.0 V window; the fault table hold-last-valid is bounded to 3 cycles and the warning callout is reconciled; the IK singularity row now says largest determinant at 90 degrees, and the condition numbers check out (2.618 at 90 degrees, minimum 1.618 at about 131.8 degrees for l1 = l2); ladder-logic q008 says four conveyors; the gearbox sentence is corrected; interrupts-realtime q003 option b is clean; the SPI table row reads 3 + N. A scan of parsed strings found no tab or control characters, python format placeholders, e+06-style numbers, plain x as a multiplication sign in LaTeX, placeholder steps or stale option-letter references. Only two minor wording or consistency points remain, both leftovers from the round-1 areas. Confidence is high on the arithmetic and moderate on pedagogical level. This is an AI review only; the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-mechatronics-instrumentation.embedded-c.interrupts-realtime",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The lesson's latency definition lists three terms, '(ii) the instruction in progress' among them, but the formula t_lat,max = (N_block + N_entry)/f_clk and the worked example have no term for the instruction in progress. A student cannot tell where it is counted.",
+      "suggestedFix": "Either state that the instruction in progress is included in N_block (or neglected as a few cycles), or add it to the formula and worked example."
+    },
+    {
+      "subtopicId": "ug.mce-mechatronics-instrumentation.communication-buses.serial-buses",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "The SPI table row was corrected to '3 shared plus 1 CS per slave (3 + N)', but the prose still says 'SPI uses four signals ... and one chip-select (CS) per slave' and 'Data move in both directions on each clock edge'. The first reads as a fixed four lines, and full duplex is one bit each way per clock cycle, not per edge.",
+      "suggestedFix": "Reword to 'SPI uses SCLK, MOSI, MISO and one chip-select per slave (3 + N lines for N slaves)' and 'one bit moves in each direction per clock cycle'."
+    }
+  ]
+}

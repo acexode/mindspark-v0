@@ -1,0 +1,352 @@
+{
+ "lessonTitle": "Bisection and Bracketing",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A centrifugal pump delivers a head that falls with flow rate, while the pipe network demands a head that rises with it. The operating point is where the two curves meet, and for real curves no algebraic formula gives it. Bisection finds it by repeatedly halving an interval that is guaranteed to contain the answer."
+  },
+  {
+   "type": "text",
+   "markdown": "We want a root $r$ of a continuous function, that is, a value with $f(r)=0$. The **intermediate value theorem** says that if $f$ is continuous on $[a,b]$ and $f(a)$ and $f(b)$ have opposite signs, then at least one root lies inside $[a,b]$. An interval with this property is called a **bracket**. Bisection keeps a bracket at all times and shrinks it, so it cannot lose the root."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Bisection step",
+   "text": "Given a bracket $[a,b]$ with $f(a)f(b)<0$, compute the midpoint $m=(a+b)/2$. If $f(a)f(m)\\le 0$ the root is in $[a,m]$, so set $b=m$; otherwise the root is in $[m,b]$, so set $a=m$. Each step halves the bracket width."
+  },
+  {
+   "type": "math",
+   "latex": "w_k=\\frac{b_0-a_0}{2^{k}},\\qquad |r-m_k|\\le w_k",
+   "caption": "Bracket width after k iterations, and the guaranteed error bound on the k-th midpoint (m_k becomes an end of the new bracket)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Four bisection iterations by hand",
+   "prompt": "Apply bisection to $f(x)=x^3-x-2$ on $[1,2]$ for four iterations and bound the error of the final midpoint.",
+   "steps": [
+    {
+     "text": "Check the bracket: $f(1)=1-1-2=-2$ and $f(2)=8-2-2=4$. The signs differ, so a root lies in $[1,2]$.",
+     "latex": "f(1)f(2)=-8<0"
+    },
+    {
+     "text": "Iteration 1: $m_1=1.5$, $f(1.5)=3.375-1.5-2=-0.125<0$, which has the same sign as $f(1)$, so the new bracket is $[1.5,2]$."
+    },
+    {
+     "text": "Iteration 2: $m_2=1.75$, $f=5.3594-1.75-2=1.6094>0$, same sign as $f(2)$, so the bracket is $[1.5,1.75]$."
+    },
+    {
+     "text": "Iteration 3: $m_3=1.625$, $f=4.2910-1.625-2=0.6660>0$, so the bracket is $[1.5,1.625]$. Iteration 4: $m_4=1.5625$, $f=3.8147-1.5625-2=0.2522>0$, so the bracket is $[1.5,1.5625]$."
+    },
+    {
+     "text": "Error bound after $k=4$: $w_4=(2-1)/2^4=0.0625$. The estimate is $m_4=1.5625$, so $|r-m_4|\\le 0.0625$. (The true root is about 1.5214, so the actual error is 0.041, inside the bound.)",
+     "latex": "w_4=\\frac{1}{16}=0.0625"
+    }
+   ],
+   "answer": "After four iterations the bracket is [1.5, 1.5625]; the estimate 1.5625 is within 0.0625 of the root."
+  },
+  {
+   "type": "text",
+   "markdown": "To program bisection, the stopping rule should test the **bracket width**, because the width bounds the error in $x$ directly. A loop that runs while `b - a > tol` always terminates, since the width halves each pass. The routine should also refuse a starting interval with no sign change.\n\n```python\ndef bisect(f, a, b, tol):\n    if f(a) * f(b) > 0:\n        raise ValueError('no sign change on [a, b]')\n    while (b - a) > tol:\n        m = 0.5 * (a + b)\n        if f(a) * f(m) <= 0:\n            b = m\n        else:\n            a = m\n    return 0.5 * (a + b)\n```"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Tolerance on bracket width (initial width 1)",
+    "Required iterations $n=\\lceil\\log_2(1/\\text{tol})\\rceil$"
+   ],
+   "rows": [
+    [
+     "$10^{-2}$",
+     "7"
+    ],
+    [
+     "$10^{-3}$",
+     "10"
+    ],
+    [
+     "$10^{-4}$",
+     "14"
+    ],
+    [
+     "$10^{-6}$",
+     "20"
+    ]
+   ],
+   "caption": "Iterations needed for an initial bracket of width 1. Each extra decimal digit costs about 3.3 iterations."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Predicting the iteration count",
+   "text": "Requiring $w_n\\le \\text{tol}$ gives $n\\ge\\log_2\\big((b_0-a_0)/\\text{tol}\\big)$. Round **up** to the next integer, because you cannot perform a fraction of an iteration. This count depends only on the interval and tolerance, never on the function."
+  },
+  {
+   "type": "worked_example",
+   "title": "How many iterations?",
+   "prompt": "How many bisection iterations guarantee a bracket width below $10^{-4}$ starting from $[1,2]$?",
+   "steps": [
+    {
+     "text": "Write the condition $w_n=(b_0-a_0)/2^n\\le 10^{-4}$ with $b_0-a_0=1$.",
+     "latex": "\\frac{1}{2^n}\\le 10^{-4}"
+    },
+    {
+     "text": "Rearrange: $2^n\\ge 10^{4}$, so $n\\ge\\log_2(10^4)=4\\ln 10/\\ln 2=13.29$.",
+     "latex": "n\\ge\\log_2 10^4=13.29"
+    },
+    {
+     "text": "Round up to $n=14$. Check: $1/2^{14}=6.1\\times10^{-5}<10^{-4}$, whereas $n=13$ gives $1.22\\times10^{-4}>10^{-4}$, so 13 is not enough."
+    }
+   ],
+   "answer": "14 iterations."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Confirm $f(a)f(b)<0$ before starting, and that $f$ is continuous on the interval.",
+    "Stop on bracket width, and add a maximum iteration count as a safety net.",
+    "Return the midpoint of the final bracket.",
+    "Remember that each iteration gains one binary digit, a factor of 2 in accuracy."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Limits of bisection",
+   "text": "If $f(a)$ and $f(b)$ have the same sign, the interval may still contain an even number of roots, so a missing sign change does not prove there is no root. Bisection also finds only one root per bracket, and a discontinuity such as $1/x$ on $[-1,1]$ produces a sign change with no root. A small $|f(m)|$ does not guarantee a small error in $x$ when $f$ is very flat."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Bisection needs a continuous f and a sign change f(a)f(b)<0 to guarantee a root in the bracket.",
+    "Each iteration halves the bracket; after k iterations the error is at most (b0-a0)/2^k.",
+    "Program the stop test as (b - a) > tol, with a guard for the initial sign check.",
+    "The iterations needed are n >= log2((b0-a0)/tol), rounded up."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which interval is guaranteed by the sign test to contain a root of $f(x)=e^{-x}-x$? Use $f(0)=1$, $f(0.5)\\approx0.107$, $f(1)\\approx-0.632$, $f(2)\\approx-1.865$, $f(-1)\\approx3.718$.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "[1, 2]"
+    },
+    {
+     "id": "b",
+     "text": "[-1, 0]"
+    },
+    {
+     "id": "c",
+     "text": "[0.5, 1]"
+    },
+    {
+     "id": "d",
+     "text": "[0, 0.5]"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "[0.5, 1]",
+   "distractorRationale": {
+    "c": "Correct: opposite signs at the ends.",
+    "d": "Both ends are positive (1 and 0.107), so there is no guaranteed sign change.",
+    "a": "Both ends are negative, so no sign change is detected.",
+    "b": "Both ends are positive (3.718 and 1), so no sign change is detected."
+   },
+   "explanation": "A bracket requires f to change sign across the interval. Only on [0.5, 1] does f go from +0.107 to -0.632; every other interval has two values of the same sign, so the test gives no guarantee.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Apply bisection to $f(x)=x^2-10$ on $[3,4]$. What is the third midpoint $m_3$ (the midpoint computed in iteration 3)?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o1"
+   ],
+   "correctValue": 3.125,
+   "tolerance": 0.001,
+   "unit": "dimensionless",
+   "explanation": "Iteration 1: m=3.5, f=2.25>0 so the bracket is [3,3.5]. Iteration 2: m=3.25, f=0.5625>0 so the bracket is [3,3.25]. Iteration 3 uses the midpoint of [3,3.25], which is 3.125.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A bisection search starts on the bracket $[2,6]$ (a length in metres). What is the guaranteed upper bound on the error of the 5th midpoint, in metres?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o1"
+   ],
+   "correctValue": 0.125,
+   "tolerance": 0.002,
+   "unit": "m",
+   "explanation": "The bound after k iterations is (b0-a0)/2^k = 4/32 = 0.125 m. Each iteration halves the bracket, and the latest midpoint is an end of the new bracket.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A weld-temperature equation is to be solved by bisection on $[10,50]$ (units of mm) with a required bracket width of at most 0.01 mm. What is the minimum number of iterations?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o3"
+   ],
+   "correctValue": 12,
+   "tolerance": 0.5,
+   "unit": "iterations",
+   "explanation": "We need 40/2^n <= 0.01, so 2^n >= 4000 and n >= log2(4000) = 11.97. Rounding up gives 12, and check: 40/4096 = 0.00977 mm which is below 0.01 mm, while 40/2048 = 0.0195 mm is not.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A bisection solver currently meets a tolerance of $10^{-3}$ on the bracket width. Roughly how many extra iterations are needed to tighten the tolerance to $10^{-6}$, for the same starting bracket?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 3"
+    },
+    {
+     "id": "b",
+     "text": "About 20"
+    },
+    {
+     "id": "c",
+     "text": "About 1000"
+    },
+    {
+     "id": "d",
+     "text": "About 10"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "About 10",
+   "distractorRationale": {
+    "d": "Correct: log2(1000) is about 10.",
+    "a": "Confuses the three decades with three iterations; each decade needs about 3.3.",
+    "c": "Treats the iteration count as proportional to the tolerance ratio, but the dependence is logarithmic.",
+    "b": "This is the total count for 10^-6 from width 1, not the additional count."
+   },
+   "explanation": "The tolerance falls by a factor of 1000, and each iteration gives a factor of 2. So the extra iterations are log2(1000) = 9.97, about 10.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which loop condition correctly stops a bisection routine when the bracket $[a,b]$ is narrower than `tol`?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "`while a != b:`"
+    },
+    {
+     "id": "b",
+     "text": "`while f(m) != 0:`"
+    },
+    {
+     "id": "c",
+     "text": "`for k in range(5):`"
+    },
+    {
+     "id": "d",
+     "text": "`while (b - a) > tol:`"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "`while (b - a) > tol:`",
+   "distractorRationale": {
+    "d": "Correct: stop when the width is below the tolerance.",
+    "b": "An exact floating-point zero is rarely reached, so the loop may never end.",
+    "a": "The ends may never become exactly equal in floating point, so this may not terminate.",
+    "c": "A fixed count of 5 ignores the tolerance entirely."
+   },
+   "explanation": "The width test (b - a) > tol halves each pass, so it always terminates and directly bounds the error in x. Requiring f(m) to be exactly zero or a to equal b can loop forever in floating-point arithmetic.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe the structure of a program that finds a root of $f$ by bisection to a user-given tolerance. State what inputs it takes, what it should check before looping, the update rule inside the loop, the stopping rule, and what it returns.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o2"
+   ],
+   "markingGuide": [
+    "Inputs: function f, bracket ends a and b, tolerance tol (optionally a maximum iteration count)",
+    "Checks f(a)*f(b) < 0 (or <= 0) and raises an error if there is no sign change",
+    "Loop computes m=(a+b)/2 and keeps the half where the sign change persists (b=m if f(a)f(m)<=0 else a=m)",
+    "Stops when b-a <= tol (and/or a maximum iteration count is reached)",
+    "Returns the midpoint (or the final bracket) as the root estimate"
+   ],
+   "explanation": "The sign check protects against an invalid bracket, and the update rule preserves the sign change so a root stays enclosed. Stopping on the width gives a known bound on the error.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Bisection is applied to $f(x)=x^3+x-3$ on $[1,2]$. Compute the value of $f$ at the third midpoint $m_3$ (dimensionless, to 3 decimal places).",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o1"
+   ],
+   "correctValue": -0.451,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "f(1)=-1 and f(2)=7. m1=1.5 gives f=1.875>0 so the bracket is [1,1.5]; m2=1.25 gives f=0.203>0 so [1,1.25]; m3=1.125 gives f=1.4238+1.125-3=-0.4512.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "If $f$ is continuous and $f(a)$ and $f(b)$ have the same sign, bisection on $[a,b]$ is still guaranteed to converge to a root.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Bisection relies on a sign change to guarantee the root stays inside the bracket. With equal signs there may be no root, or an even number of roots, and the update rule cannot track one.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A colleague stops the bisection loop when $|f(m)|<10^{-6}$ and claims the root is therefore accurate to $10^{-6}$. Evaluate the claim and recommend a stopping rule.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.bracketing-methods.o2"
+   ],
+   "markingGuide": [
+    "The residual |f(m)| and the error |r - m| are related by the slope: error is roughly |f(m)|/|f'|",
+    "If |f'| is small (flat function) a tiny residual can coexist with a large error in x",
+    "If |f'| is large the opposite can occur: the residual is not small although x is accurate",
+    "Bracket width (b-a) < tol gives a guaranteed bound on the error in x",
+    "Combine both checks, plus a maximum iteration count, for robustness"
+   ],
+   "explanation": "The residual measures how well the equation is satisfied, not how close x is to the root. The width of the bracket is the quantity that bisection actually controls and bounds.",
+   "board": "internal"
+  }
+ ]
+}

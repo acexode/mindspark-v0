@@ -1,0 +1,403 @@
+{
+ "lessonTitle": "Impedance and AC Power",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A workshop's induction motors draw 40 A from the mains but deliver only as much useful work as 30 A of purely resistive load would. The utility still has to supply the extra 10 A, and bills the workshop for it. The difference comes from impedance: in AC circuits, inductors and capacitors push current out of step with voltage, and that changes how power is counted."
+  },
+  {
+   "type": "text",
+   "markdown": "In sinusoidal steady state every element obeys a generalised Ohm's law with complex numbers. The **impedance** $Z$ (ohm) relates the voltage and current phasors, $\\mathbf V=Z\\,\\mathbf I$. A resistor has $Z_R=R$; an inductor has $Z_L=j\\omega L$; a capacitor has $Z_C=1/(j\\omega C)=-j/(\\omega C)$, where $\\omega=2\\pi f$ is the angular frequency in rad/s and $j=\\sqrt{-1}$. The imaginary part is the **reactance** $X$ (ohm): inductive reactance $X_L=\\omega L$ and capacitive reactance $X_C=1/(\\omega C)$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Series RLC impedance",
+   "text": "Impedances in series add. $Z=R+j\\omega L+\\dfrac{1}{j\\omega C}=R+jX$, with net reactance $X=\\omega L-1/(\\omega C)$. Its magnitude is $|Z|=\\sqrt{R^2+X^2}$ and its phase is $\\varphi=\\arctan(X/R)$; the current lags the voltage by $\\varphi$ when $X>0$ (inductive) and leads when $X<0$ (capacitive)."
+  },
+  {
+   "type": "math",
+   "latex": "Z=R+j\\left(\\omega L-\\frac{1}{\\omega C}\\right),\\qquad |Z|=\\sqrt{R^{2}+X^{2}},\\qquad \\varphi=\\arctan\\frac{X}{R}",
+   "caption": "Series RLC impedance at angular frequency omega"
+  },
+  {
+   "type": "worked_example",
+   "title": "Impedance at a given frequency",
+   "prompt": "A series circuit has $R=47\\ \\Omega$, $L=20$ mH and $C=22$ uF, driven at $f=100$ Hz. Find the net reactance, the magnitude of the impedance and the phase angle.",
+   "steps": [
+    {
+     "text": "Angular frequency and reactances.",
+     "latex": "\\omega=2\\pi(100)=628.3\\ \\mathrm{rad/s},\\ \\ X_L=\\omega L=12.57\\ \\Omega,\\ \\ X_C=\\frac{1}{\\omega C}=72.34\\ \\Omega"
+    },
+    {
+     "text": "Net reactance (capacitive, since negative).",
+     "latex": "X=12.57-72.34=-59.78\\ \\Omega"
+    },
+    {
+     "text": "Magnitude and angle.",
+     "latex": "|Z|=\\sqrt{47^2+59.78^2}=76.0\\ \\Omega,\\quad \\varphi=\\arctan\\frac{-59.78}{47}=-51.8^\\circ"
+    }
+   ],
+   "answer": "|Z| = 76.0 ohm at -51.8 degrees: the circuit is capacitive at 100 Hz, so the current leads the voltage."
+  },
+  {
+   "type": "text",
+   "markdown": "**Resonance.** $X_L$ grows with frequency and $X_C$ falls with it. At the **resonant frequency** $f_0$ they are equal, the reactances cancel, and $Z=R$ is purely resistive and at its minimum. The current for a given source voltage is then at its maximum, $V/R$. Below $f_0$ the circuit is capacitive; above it, inductive."
+  },
+  {
+   "type": "math",
+   "latex": "\\omega_0=\\frac{1}{\\sqrt{LC}},\\qquad f_0=\\frac{1}{2\\pi\\sqrt{LC}}",
+   "caption": "Series resonance: X_L = X_C"
+  },
+  {
+   "type": "text",
+   "markdown": "**AC power.** For a load with voltage $V$ and current $I$ (both rms) and phase difference $\\varphi$ between them, three powers are defined. **Real (active) power** $P=VI\\cos\\varphi$ in watts does useful work and heats the load. **Reactive power** $Q=VI\\sin\\varphi$ in volt-amperes reactive (var) is exchanged back and forth with the stored fields and does no net work. **Apparent power** $S=VI$ in volt-amperes (VA) is what the supply must carry. They form a right-angled triangle, and the **power factor** is $\\mathrm{pf}=\\cos\\varphi=P/S$."
+  },
+  {
+   "type": "math",
+   "latex": "S=VI,\\quad P=S\\cos\\varphi,\\quad Q=S\\sin\\varphi,\\quad S^{2}=P^{2}+Q^{2},\\quad \\mathrm{pf}=\\frac{P}{S}",
+   "caption": "Power triangle, rms quantities"
+  },
+  {
+   "type": "worked_example",
+   "title": "Power of an AC load",
+   "prompt": "A load draws 5.0 A rms from a 230 V rms supply with the current lagging the voltage by 30 degrees. Find $S$, $P$, $Q$ and the power factor.",
+   "steps": [
+    {
+     "text": "Apparent power.",
+     "latex": "S=VI=230\\times5.0=1150\\ \\mathrm{VA}"
+    },
+    {
+     "text": "Real and reactive power.",
+     "latex": "P=1150\\cos30^\\circ=996\\ \\mathrm{W},\\qquad Q=1150\\sin30^\\circ=575\\ \\mathrm{var}"
+    },
+    {
+     "text": "Power factor, lagging because the load is inductive.",
+     "latex": "\\mathrm{pf}=\\cos30^\\circ=0.866\\ \\text{lagging}"
+    }
+   ],
+   "answer": "S = 1150 VA, P = 996 W, Q = 575 var, pf = 0.866 lagging."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Element",
+    "Impedance",
+    "Phase of $V$ relative to $I$",
+    "Real power"
+   ],
+   "rows": [
+    [
+     "Resistor",
+     "$R$",
+     "0 degrees (in phase)",
+     "$I^2R$"
+    ],
+    [
+     "Inductor",
+     "$j\\omega L$",
+     "+90 degrees (current lags)",
+     "0"
+    ],
+    [
+     "Capacitor",
+     "$1/(j\\omega C)$",
+     "-90 degrees (current leads)",
+     "0"
+    ],
+    [
+     "Series RLC at $f_0$",
+     "$R$ (minimum)",
+     "0 degrees",
+     "$V^2/R$"
+    ]
+   ],
+   "caption": "Ideal elements in sinusoidal steady state"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Only the resistance dissipates real power: $P=I^2R$.",
+    "A low power factor means more current for the same real power, so larger cables and losses.",
+    "Reactive power does no net work but loads the supply.",
+    "At resonance the voltages across $L$ and $C$ cancel at the series ends but each can be larger than the source voltage."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why power factor matters",
+   "text": "For a fixed $P$ and $V$, the current is $I=P/(V\\,\\mathrm{pf})$. Halving the power factor doubles the current and quadruples the $I^2R$ loss in the supply cables, so utilities penalise low power factor."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Series impedance $Z=R+j(\\omega L-1/\\omega C)$; magnitude $\\sqrt{R^2+X^2}$, phase $\\arctan(X/R)$.",
+    "Resonance at $f_0=1/(2\\pi\\sqrt{LC})$ where $Z=R$ is minimum.",
+    "$P=VI\\cos\\varphi$, $Q=VI\\sin\\varphi$, $S=VI$, pf $=\\cos\\varphi$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A series circuit contains $L=10$ mH and $C=10$ uF. What is its resonant frequency?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "503 Hz"
+    },
+    {
+     "id": "b",
+     "text": "3162 Hz"
+    },
+    {
+     "id": "c",
+     "text": "79.6 Hz"
+    },
+    {
+     "id": "d",
+     "text": "1006 Hz"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "503 Hz",
+   "distractorRationale": {
+    "a": "Correct: 1/(2 pi sqrt(1e-7)) = 503 Hz.",
+    "b": "Wrong: 3162 is omega_0 in rad/s; forgetting to divide by 2 pi.",
+    "c": "Wrong: this divides by 2 pi twice.",
+    "d": "Wrong: a factor-of-two slip in the square root."
+   },
+   "explanation": "$\\omega_0=1/\\sqrt{LC}=1/\\sqrt{10^{-7}}=3162$ rad/s, and $f_0=\\omega_0/2\\pi=503$ Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A load draws 10 A at 230 V rms and consumes 1.15 kW of real power. What is its power factor?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.50"
+    },
+    {
+     "id": "b",
+     "text": "1.00"
+    },
+    {
+     "id": "c",
+     "text": "0.87"
+    },
+    {
+     "id": "d",
+     "text": "2.00"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.50",
+   "distractorRationale": {
+    "a": "Correct: S = 2300 VA, pf = 1150/2300 = 0.5.",
+    "b": "Wrong: pf = 1 would require P = 2300 W.",
+    "c": "Wrong: 0.87 is cos 30 degrees, unrelated to these numbers.",
+    "d": "Wrong: pf cannot exceed 1; this inverts the ratio."
+   },
+   "explanation": "Apparent power is $S=VI=230\\times10=2300$ VA, so $\\mathrm{pf}=P/S=1150/2300=0.50$. The power factor is always between 0 and 1.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the reactance of a 0.10 H inductor at 50 Hz?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "31.4 ohm"
+    },
+    {
+     "id": "b",
+     "text": "5.0 ohm"
+    },
+    {
+     "id": "c",
+     "text": "0.032 ohm"
+    },
+    {
+     "id": "d",
+     "text": "314 ohm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "31.4 ohm",
+   "distractorRationale": {
+    "a": "Correct: 2 pi x 50 x 0.10 = 31.4 ohm.",
+    "b": "Wrong: this uses f x L and omits 2 pi.",
+    "c": "Wrong: this is 1/(2 pi f L), the capacitor-style reciprocal.",
+    "d": "Wrong: a factor-of-ten slip in L."
+   },
+   "explanation": "Inductive reactance is $X_L=\\omega L=2\\pi f L=2\\pi\\times50\\times0.10=31.4$ ohm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A series RLC circuit is driven below its resonant frequency. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The net reactance is capacitive and the current leads the voltage"
+    },
+    {
+     "id": "b",
+     "text": "The net reactance is inductive and the current lags the voltage"
+    },
+    {
+     "id": "c",
+     "text": "The impedance is purely resistive"
+    },
+    {
+     "id": "d",
+     "text": "The impedance is at its maximum"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The net reactance is capacitive and the current leads the voltage",
+   "distractorRationale": {
+    "a": "Correct: below f_0, X_C > X_L so X is negative.",
+    "b": "Wrong: that describes frequencies above f_0.",
+    "c": "Wrong: only at resonance.",
+    "d": "Wrong: the impedance is at its minimum (R) at resonance, and rises either side."
+   },
+   "explanation": "At low frequency $X_C=1/\\omega C$ is large and $X_L=\\omega L$ is small, so the net reactance $X<0$. A negative reactance means the current leads the voltage.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A load takes 400 W of real power and 500 VA of apparent power. What is its reactive power?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "300 var"
+    },
+    {
+     "id": "b",
+     "text": "100 var"
+    },
+    {
+     "id": "c",
+     "text": "900 var"
+    },
+    {
+     "id": "d",
+     "text": "400 var"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "300 var",
+   "distractorRationale": {
+    "a": "Correct: Q = sqrt(500^2 - 400^2) = 300 var.",
+    "b": "Wrong: this subtracts S - P instead of using the triangle.",
+    "c": "Wrong: this adds S + P.",
+    "d": "Wrong: this copies P."
+   },
+   "explanation": "The power triangle gives $S^2=P^2+Q^2$, so $Q=\\sqrt{500^2-400^2}=300$ var. Powers do not add or subtract linearly.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A series circuit has $R=68\\ \\Omega$, $L=50$ mH and $C=47$ uF, driven at 60 Hz. What is the magnitude of the impedance, in ohms?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o1"
+   ],
+   "correctValue": 77.7,
+   "tolerance": 0.3,
+   "unit": "ohm",
+   "explanation": "$X_L=2\\pi(60)(0.050)=18.85$ ohm and $X_C=1/(2\\pi\\cdot60\\cdot47\\times10^{-6})=56.44$ ohm, so $X=-37.59$ ohm. Then $|Z|=\\sqrt{68^2+37.59^2}=77.7$ ohm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A series RLC tuned circuit uses $L=2.2$ mH and $C=4.7$ uF. What is its resonant frequency, in hertz?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o2"
+   ],
+   "correctValue": 1565,
+   "tolerance": 5,
+   "unit": "Hz",
+   "explanation": "$LC=2.2\\times10^{-3}\\times4.7\\times10^{-6}=1.034\\times10^{-8}$, so $\\sqrt{LC}=1.017\\times10^{-4}$ s. Then $f_0=1/(2\\pi\\times1.017\\times10^{-4})=1565$ Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 230 V, 50 Hz motor draws 1.80 kW of real power at a power factor of 0.75 lagging. What is its reactive power, in var?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o3"
+   ],
+   "correctValue": 1587,
+   "tolerance": 5,
+   "unit": "var",
+   "explanation": "The apparent power is $S=P/\\mathrm{pf}=1800/0.75=2400$ VA. Then $Q=\\sqrt{S^2-P^2}=\\sqrt{2400^2-1800^2}=1587$ var (inductive).",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe what happens to the impedance, the current amplitude and the phase of a series RLC circuit as the source frequency is swept upward through resonance, for a fixed source voltage. Explain why the impedance is minimum at resonance.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o1",
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o2"
+   ],
+   "markingGuide": [
+    "X_L = omega L increases with frequency and X_C = 1/(omega C) decreases",
+    "Below f_0 the net reactance is capacitive (negative), above f_0 inductive (positive)",
+    "At f_0, X_L = X_C so reactances cancel and Z = R (purely resistive, minimum |Z|)",
+    "Current amplitude V/|Z| therefore peaks at resonance at V/R",
+    "Phase of current relative to voltage goes from leading to zero to lagging"
+   ],
+   "explanation": "As $f$ rises, $X_L=\\omega L$ grows and $X_C=1/\\omega C$ shrinks. Below $f_0$ the net reactance is negative (capacitive), at $f_0$ the two cancel so $Z=R$ and $|Z|$ is minimum, and above $f_0$ it is positive (inductive). The current amplitude $V/|Z|$ peaks at resonance and the phase moves from leading to zero to lagging.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A 2.0 kW single-phase load is supplied at 230 V rms. Compare the supply current when its power factor is 1.0 and when it is 0.60. Explain what this means for cable losses and why a utility prefers a high power factor.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.ac-and-impedance.impedance-and-power.o3"
+   ],
+   "markingGuide": [
+    "I = P/(V pf)",
+    "pf 1.0: I = 2000/230 = 8.7 A",
+    "pf 0.60: I = 2000/(230 x 0.60) = 14.5 A",
+    "Cable loss I^2 R scales with the square of the current: ratio (1/0.6)^2 = 2.8 times",
+    "Reactive power does no work but needs current, so low pf wastes capacity and increases losses"
+   ],
+   "explanation": "Since $P=VI\\,\\mathrm{pf}$, the current is $I=P/(V\\,\\mathrm{pf})$: 8.7 A at unity pf and 14.5 A at pf 0.60. The $I^2R$ loss in the supply cables rises by $(1/0.6)^2\\approx2.8$ times for the same useful power. The extra current only carries reactive power, which does no work but occupies cable and transformer capacity.",
+   "board": "internal"
+  }
+ ]
+}

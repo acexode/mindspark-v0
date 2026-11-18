@@ -1,0 +1,415 @@
+{
+ "lessonTitle": "Factor of Safety and Load Cases",
+ "estimatedMinutes": 55,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hoist hook is never designed to carry exactly its rated load, because the rated load is only an estimate and the steel is never quite the steel on the datasheet. The ratio by which the part is made stronger than the load it is expected to carry is the factor of safety, and choosing it well is a judgement as much as a calculation."
+  },
+  {
+   "type": "text",
+   "markdown": "For a ductile part loaded statically, failure means yielding: the part takes a permanent set and no longer functions. A strength criterion has to turn the actual stress state, which may involve bending, torsion and axial force at once, into one number that can be compared with the yield strength $S_y$ measured in a simple tension test. The **von Mises (distortion-energy)** criterion does this by calculating an equivalent tensile stress $\\sigma'$ that produces the same distortion energy as the real state of stress."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Factor of safety",
+   "text": "The factor of safety (design factor) against yielding is $n=S_y/\\sigma'$, the ratio of the material's yield strength to the von Mises equivalent stress at the most highly stressed point. The part is acceptable when $n$ is not less than a chosen design factor $n_d$, equivalently when $\\sigma'\\le S_y/n_d$ (the allowable stress)."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma'=\\sqrt{\\sigma_x^2-\\sigma_x\\sigma_y+\\sigma_y^2+3\\tau_{xy}^2},\\qquad n=\\frac{S_y}{\\sigma'}",
+   "caption": "Von Mises stress for plane stress (stresses in MPa); for a shaft with bending stress sigma and torsional shear tau only, sigma' = sqrt(sigma^2 + 3 tau^2)"
+  },
+  {
+   "type": "text",
+   "markdown": "Two special cases are worth remembering. In uniaxial tension $\\sigma'=\\sigma$, and in pure shear $\\sigma'=\\sqrt3\\,\\tau$, so yielding in torsion is predicted at a shear stress of $S_{sy}=S_y/\\sqrt3=0.577S_y$. For a solid round bar of diameter $d$, bending moment $M$ and torque $T$ give the surface stresses $\\sigma=32M/(\\pi d^3)$ and $\\tau=16T/(\\pi d^3)$. The transverse shear force gives zero shear at the outer fibre where bending is largest, so it is neglected there."
+  },
+  {
+   "type": "worked_example",
+   "title": "Von Mises factor of safety for a cantilever shaft",
+   "prompt": "A solid round steel bar of diameter 30 mm projects 250 mm from a rigid wall. A 2.4 kN transverse load acts at the free end, applied through an arm that is offset 200 mm from the bar axis, so it also twists the bar. The steel has a typical yield strength $S_y=420$ MPa. Find the factor of safety against yielding at the wall.",
+   "steps": [
+    {
+     "text": "Bending moment and torque at the fixed end (the critical section).",
+     "latex": "M=2400\\times0.250=600\\ \\text{N m},\\qquad T=2400\\times0.200=480\\ \\text{N m}"
+    },
+    {
+     "text": "Surface stresses at the top fibre, using $d^3=27000$ mm$^3$ and N mm for moments.",
+     "latex": "\\sigma=\\frac{32\\times600\\times10^3}{\\pi\\times27000}=226.4\\ \\text{MPa},\\qquad \\tau=\\frac{16\\times480\\times10^3}{\\pi\\times27000}=90.5\\ \\text{MPa}"
+    },
+    {
+     "text": "Von Mises equivalent stress.",
+     "latex": "\\sigma'=\\sqrt{226.4^2+3\\times90.5^2}=275.4\\ \\text{MPa}"
+    },
+    {
+     "text": "Factor of safety against yielding.",
+     "latex": "n=\\frac{420}{275.4}=1.53"
+    }
+   ],
+   "answer": "$\\sigma'\\approx275$ MPa and $n\\approx1.53$. Ignoring the torque would give $n=420/226=1.86$, an unsafe over-estimate."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Situation (typical rule-of-thumb guidance)",
+    "Typical design factor $n_d$ against yield"
+   ],
+   "rows": [
+    [
+     "Loads, material properties and analysis all well known; strict quality control",
+     "1.25 to 1.5"
+    ],
+    [
+     "Ductile material, average loads, ordinary quality control",
+     "1.5 to 2.0"
+    ],
+    [
+     "Uncertain loads or properties, or modest consequences of failure",
+     "2.0 to 3.0"
+    ],
+    [
+     "Brittle material (use ultimate strength) or poorly known data",
+     "3.0 or more"
+    ],
+    [
+     "Failure endangers people, or a design code applies",
+     "As required by the code or standard, usually higher"
+    ]
+   ],
+   "caption": "Representative design factors (indicative; always follow the code or company standard for the application)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing a design factor.** The design factor covers things we cannot calculate: scatter in material strength, uncertainty in the load (a service load can exceed the estimate), manufacturing tolerances, corrosion and wear, and the accuracy of the analysis model. It should rise with the **consequence of failure** (danger to life, cost of shutdown, difficulty of inspection) and fall as loads and properties are known better. Choosing a factor that is too large wastes material and weight; too small invites failure. Where the loads differ in different **load cases** (normal operation, start-up, emergency stop, test) the part is checked against the governing case with an appropriate factor for each."
+  },
+  {
+   "type": "worked_example",
+   "title": "Sizing a tie rod with a design factor",
+   "prompt": "A round tie rod carries a steady axial tension of 85 kN. The rod steel has a typical yield strength of 350 MPa, and the load is well estimated but the rod is part of a lifting frame, so a design factor $n_d=2.0$ is chosen. Find the minimum diameter and round it up to the standard size of 25 mm to find the actual factor of safety.",
+   "steps": [
+    {
+     "text": "Allowable stress.",
+     "latex": "\\sigma_{all}=\\frac{S_y}{n_d}=\\frac{350}{2.0}=175\\ \\text{MPa}"
+    },
+    {
+     "text": "Required area and diameter for uniaxial tension, $\\sigma'=P/A$.",
+     "latex": "A=\\frac{85000}{175}=486\\ \\text{mm}^2,\\qquad d=\\sqrt{\\frac{4A}{\\pi}}=24.9\\ \\text{mm}"
+    },
+    {
+     "text": "Round up to 25 mm and compute the actual stress, with $A=\\pi\\times25^2/4=490.9$ mm$^2$.",
+     "latex": "\\sigma=\\frac{85000}{490.9}=173.2\\ \\text{MPa}"
+    },
+    {
+     "text": "Actual factor of safety.",
+     "latex": "n=\\frac{350}{173.2}=2.02"
+    }
+   ],
+   "answer": "The minimum diameter is 24.9 mm; the 25 mm rod gives n = 2.02, slightly above the design factor of 2.0."
+  },
+  {
+   "type": "text",
+   "markdown": "**Finding the critical section.** Failure begins where the stress state is worst, which is not always where the load is applied. Start with a free-body diagram of the whole part, resolve the reactions from equilibrium, then draw shear-force and bending-moment diagrams (and a torque diagram for shafts). The candidates for the critical section are the places of maximum moment, of combined bending and torque, and of reduced diameter or stress concentration such as shoulders, grooves and holes. Where the section changes, a section with a smaller moment but a much smaller diameter can be critical, so compare stresses, not moments alone."
+  },
+  {
+   "type": "worked_example",
+   "title": "Critical section of a simply supported bar",
+   "prompt": "A uniform steel bar of diameter 30 mm ($S_y=350$ MPa, typical) is simply supported over a 600 mm span. A 3 kN downward load acts 200 mm from the left support and a 1 kN downward load acts 450 mm from the left support. Find the critical section and the factor of safety at that section (ignore shear stress at the extreme fibre).",
+   "steps": [
+    {
+     "text": "Reactions from moments about the right support: $R_A=(3\\times400+1\\times150)/600$.",
+     "latex": "R_A=2.25\\ \\text{kN},\\qquad R_B=4-2.25=1.75\\ \\text{kN}"
+    },
+    {
+     "text": "Moments under the loads (the bending-moment diagram has its peaks there).",
+     "latex": "M_{200}=2.25\\times0.200=450\\ \\text{N m},\\qquad M_{450}=1.75\\times0.150=262.5\\ \\text{N m}"
+    },
+    {
+     "text": "The bar is uniform, so the section of largest moment, 200 mm from the left, is critical. Bending stress there.",
+     "latex": "\\sigma=\\frac{32\\times450\\times10^3}{\\pi\\times27000}=169.8\\ \\text{MPa}"
+    },
+    {
+     "text": "Factor of safety, with $\\sigma'=\\sigma$ since there is no torque.",
+     "latex": "n=\\frac{350}{169.8}=2.06"
+    }
+   ],
+   "answer": "The critical section is 200 mm from the left support, where $M=450$ N m; the factor of safety is 2.06."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Draw the free-body diagram first",
+   "text": "The factor of safety is only as good as the stress it is built on. Get the loads and the critical section from the free-body diagram, include every stress component acting at the point (bending, torsion, axial), and only then apply the von Mises criterion and compare with the design factor for the application."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Factor of safety against yield is $n=S_y/\\sigma'$ with $\\sigma'=\\sqrt{\\sigma^2+3\\tau^2}$ for bending plus torsion of a shaft, and the equivalent shear yield strength is $0.577S_y$.",
+    "The design factor reflects uncertainty in loads, properties and analysis and the consequence of failure; indicative values run from about 1.25 to 3 or more, and codes take precedence.",
+    "Sizing: $\\sigma_{all}=S_y/n_d$; round up to a standard size and recompute the actual factor.",
+    "The critical section follows from the free-body, shear and moment diagrams, accounting for diameter changes and stress concentrations."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A ductile part is loaded statically. The von Mises equivalent stress at its critical point is 180 MPa and the material yield strength is 360 MPa. What is the factor of safety against yielding?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2.0"
+    },
+    {
+     "id": "b",
+     "text": "0.5"
+    },
+    {
+     "id": "c",
+     "text": "1.5"
+    },
+    {
+     "id": "d",
+     "text": "3.6"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "2.0",
+   "distractorRationale": {
+    "a": "Correct: n = Sy/sigma' = 360/180 = 2.0.",
+    "b": "0.5 inverts the ratio (stress over strength).",
+    "c": "1.5 would need an equivalent stress of 240 MPa.",
+    "d": "3.6 divides by 100 mistakenly."
+   },
+   "explanation": "The factor of safety against yielding is the yield strength divided by the equivalent stress, so $n=360/180=2.0$. A value greater than 1 means the point has not yet reached yield.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which circumstance justifies choosing a larger design factor?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The consequence of failure is severe and the loads are poorly known"
+    },
+    {
+     "id": "b",
+     "text": "The loads are measured accurately and the material is certified"
+    },
+    {
+     "id": "c",
+     "text": "The part is cheap and easily replaced"
+    },
+    {
+     "id": "d",
+     "text": "The analysis was carried out by finite elements"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The consequence of failure is severe and the loads are poorly known",
+   "distractorRationale": {
+    "a": "Correct: uncertainty and severity both push the design factor up.",
+    "b": "Accurate loads and certified material let the factor be lowered.",
+    "c": "Low consequence allows a lower factor.",
+    "d": "Better analysis may reduce the uncertainty, not raise it."
+   },
+   "explanation": "A design factor protects against what the calculation cannot capture and against the cost of being wrong. High consequence or high uncertainty therefore calls for a larger factor.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "According to the von Mises criterion, a ductile material yields in pure shear at a shear stress of approximately:",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.577 S_y"
+    },
+    {
+     "id": "b",
+     "text": "0.5 S_y"
+    },
+    {
+     "id": "c",
+     "text": "1.0 S_y"
+    },
+    {
+     "id": "d",
+     "text": "1.73 S_y"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.577 S_y",
+   "distractorRationale": {
+    "a": "Correct: sigma' = sqrt(3) tau reaches Sy at tau = Sy/sqrt(3) = 0.577 Sy.",
+    "b": "0.5 Sy is the maximum shear stress (Tresca) value, slightly conservative.",
+    "c": "Shear yield is not equal to the tensile yield strength.",
+    "d": "1.73 Sy is sqrt(3) Sy, the inverse of the factor."
+   },
+   "explanation": "In pure shear the equivalent stress is $\\sigma'=\\sqrt3\\tau$, so yield occurs when $\\tau=S_y/\\sqrt3=0.577S_y$. The Tresca criterion would give $0.5S_y$, which is a little more conservative.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A shaft carries a bending stress of 150 MPa and a torsional shear stress of 60 MPa at the same surface point, and its material has $S_y=360$ MPa. What is the factor of safety against yielding by the von Mises criterion?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.97"
+    },
+    {
+     "id": "b",
+     "text": "2.23"
+    },
+    {
+     "id": "c",
+     "text": "1.71"
+    },
+    {
+     "id": "d",
+     "text": "2.40"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "1.97",
+   "distractorRationale": {
+    "a": "Correct: sigma' = sqrt(150^2 + 3 x 60^2) = 182.5 MPa, n = 360/182.5 = 1.97.",
+    "b": "2.23 uses sqrt(sigma^2 + tau^2) and omits the factor 3 on the shear term.",
+    "c": "1.71 adds the two stresses directly (150 + 60 = 210 MPa), which is not how they combine.",
+    "d": "2.40 ignores the torsion altogether (360/150)."
+   },
+   "explanation": "The equivalent stress is $\\sigma'=\\sqrt{150^2+3\\times60^2}=182.5$ MPa and so $n=360/182.5=1.97$. Ignoring the torsion would overestimate the safety margin at 2.40.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A stepped shaft carries a gear between two bearings. Which statement about locating its critical section is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Compare stresses at the section of maximum moment and at shoulders or keyways, since a smaller diameter or stress concentration can make a lower-moment section critical"
+    },
+    {
+     "id": "b",
+     "text": "The critical section is always at the section of largest bending moment"
+    },
+    {
+     "id": "c",
+     "text": "The critical section is always where the load is applied"
+    },
+    {
+     "id": "d",
+     "text": "The critical section is always at a bearing"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Compare stresses at the section of maximum moment and at shoulders or keyways, since a smaller diameter or stress concentration can make a lower-moment section critical",
+   "distractorRationale": {
+    "a": "Correct: stress depends on moment, diameter and stress concentration together.",
+    "b": "A section with smaller moment but much smaller diameter may have the higher stress.",
+    "c": "The load point is not necessarily the worst stress point.",
+    "d": "At a simple support the bending moment is zero."
+   },
+   "explanation": "Bending stress varies as $M/d^3$, so a thinner section can carry a higher stress even at a lower moment. A stress-concentration feature adds a further multiplier, so all candidate sections must be compared.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A round tension rod of diameter 20 mm carries a steady axial load of 60 kN. The steel yield strength is 300 MPa. Find the factor of safety against yielding (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o1"
+   ],
+   "correctValue": 1.570796,
+   "tolerance": 0.03,
+   "unit": "dimensionless",
+   "explanation": "The area is $\\pi\\times20^2/4=314.2$ mm$^2$, so $\\sigma=60000/314.2=191.0$ MPa. Then $n=S_y/\\sigma=300/191.0=1.57$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A round bar in pure bending carries a moment of 250 N m. The steel has $S_y=300$ MPa and a design factor $n_d=2.5$ is specified. Find the minimum bar diameter in mm.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o2"
+   ],
+   "correctValue": 27.685537,
+   "tolerance": 0.5,
+   "unit": "mm",
+   "explanation": "The allowable stress is $300/2.5=120$ MPa. From $\\sigma=32M/(\\pi d^3)$ we get $d=(32\\times250\\times10^3/(\\pi\\times120))^{1/3}=27.7$ mm, which would be rounded up to the next standard size.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A solid shaft of diameter 40 mm carries a bending moment of 1200 N m and a torque of 900 N m at the same section. The steel yield strength is 490 MPa. Find the factor of safety against yielding by the von Mises criterion (neglect transverse shear; dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o1",
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o3"
+   ],
+   "correctValue": 2.151612,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "With $d^3=64000$ mm$^3$ the surface stresses are $\\sigma=32\\times1200\\times10^3/(\\pi\\times64000)=191.0$ MPa and $\\tau=16\\times900\\times10^3/(\\pi\\times64000)=71.6$ MPa. Then $\\sigma'=\\sqrt{191.0^2+3\\times71.6^2}=227.7$ MPa and $n=490/227.7=2.15$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Two components are to be designed: (a) a bracket supporting a light shelf in a domestic setting and (b) a lifting lug on a pressure vessel that will be hoisted with people working below. Both are made of ductile steel loaded statically. Discuss how the design factor for each should be chosen, naming the considerations involved.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o2"
+   ],
+   "markingGuide": [
+    "Design factor allows for uncertainty in load, material strength, dimensions and analysis accuracy.",
+    "Consequence of failure: (b) endangers life and is costly, so a larger factor (and compliance with lifting codes) is needed; (a) has low consequence so a modest factor is acceptable.",
+    "Load knowledge: (a) load can be misused or overloaded, (b) rated and proof-tested loads are better defined; dynamic effects such as shock on lifting should be allowed for.",
+    "Inspectability, corrosion and consequences of repeated use should raise the factor; quality control and certified material may lower it.",
+    "Over-large factors waste weight and cost, so judgement balances the two; an applicable code overrides personal judgement."
+   ],
+   "explanation": "The factor is chosen from judgement about uncertainty and consequence, with codes taking precedence. The same material can therefore be used with very different factors.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe, step by step, how you would find the critical section of a stepped shaft carrying a gear and a pulley between two bearings, and what stresses you would evaluate there before computing the factor of safety by the von Mises criterion.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o1",
+    "ug.mce-machine-design-1.static-strength-design.factor-of-safety-and-load-cases.o3"
+   ],
+   "markingGuide": [
+    "Free-body diagram of the shaft: resolve gear and pulley forces into two perpendicular planes and find bearing reactions by equilibrium.",
+    "Draw shear-force and bending-moment diagrams in each plane and combine them vectorially to give the resultant moment along the shaft; draw the torque diagram, which acts only between the power input and output.",
+    "List candidate sections: maximum resultant moment, sections with combined bending and torque, and sections with reduced diameter, shoulder fillets, keyways or grooves where stress concentration applies.",
+    "At each candidate compute $\\sigma=32M/(\\pi d^3)$ and $\\tau=16T/(\\pi d^3)$ (with stress concentration factors where relevant, noting they are applied to the nominal stress).",
+    "Form $\\sigma'=\\sqrt{\\sigma^2+3\\tau^2}$ and $n=S_y/\\sigma'$ at each; the smallest $n$ identifies the critical section."
+   ],
+   "explanation": "The critical section is identified by comparing stresses at all candidates, not just moments. The von Mises factor is evaluated at the governing one.",
+   "board": "internal"
+  }
+ ]
+}

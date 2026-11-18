@@ -1,0 +1,415 @@
+{
+ "lessonTitle": "Helical Compression Springs",
+ "estimatedMinutes": 55,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A press tool is fitted with a helical compression spring to push the work-piece clear of the die after each stroke. If the spring is too weak it will not do the job, if it coils up solid before the stroke ends it will be crushed, and if it is slender it can bow sideways and jam. Three simple checks, stress, rate and stability, decide whether it works."
+  },
+  {
+   "type": "text",
+   "markdown": "A helical compression spring is a wire of diameter $d$ wound into a coil of mean diameter $D$ with $N_a$ **active** coils (those free to deflect). The axial force $F$ twists the wire, so the wire is mainly loaded in **torsion**, even though the spring is axially compressed. The ratio $C=D/d$ is the **spring index**; practical springs have $C$ between about 4 and 12, because a very small index is difficult to coil and a large one is flimsy and tangles."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Shear stress with the Wahl factor",
+   "text": "The torque in the wire is $T=FD/2$, giving a nominal torsional shear stress $\\tau=8FD/(\\pi d^3)$. The direct shear $F/A$ and the curvature of the wire raise the stress on the inside of the coil. The Wahl factor $K_w=\\dfrac{4C-1}{4C-4}+\\dfrac{0.615}{C}$ corrects for both effects, so that $\\tau_{max}=K_w\\,\\dfrac{8FD}{\\pi d^3}$."
+  },
+  {
+   "type": "math",
+   "latex": "\\tau_{max}=K_w\\frac{8FD}{\\pi d^3},\\qquad K_w=\\frac{4C-1}{4C-4}+\\frac{0.615}{C},\\qquad C=\\frac{D}{d}",
+   "caption": "Maximum shear stress in a helical spring (F in N, D and d in mm give MPa); the Bergstrasser factor (4C+2)/(4C-3) is a close alternative"
+  },
+  {
+   "type": "text",
+   "markdown": "The Wahl factor falls as the index rises: it is about 1.40 for $C=4$, 1.25 for $C=6$ and 1.14 for $C=10$, so tightly coiled springs of low index suffer a large stress penalty. The same factor is used for static design in this unit; for fatigue the stress concentration is applied differently, as the next unit shows."
+  },
+  {
+   "type": "worked_example",
+   "title": "Wahl stress in a small die spring",
+   "prompt": "A steel spring is wound from wire of diameter $d=3$ mm with a mean coil diameter $D=24$ mm. It carries an axial load $F=150$ N. Find the spring index, the Wahl factor and the maximum shear stress.",
+   "steps": [
+    {
+     "text": "Spring index.",
+     "latex": "C=\\frac{D}{d}=\\frac{24}{3}=8"
+    },
+    {
+     "text": "Wahl factor, with $4C-1=31$ and $4C-4=28$.",
+     "latex": "K_w=\\frac{31}{28}+\\frac{0.615}{8}=1.1071+0.0769=1.184"
+    },
+    {
+     "text": "Nominal torsional stress, with $d^3=27$ mm$^3$ (forces in N and lengths in mm give MPa).",
+     "latex": "\\tau=\\frac{8\\times150\\times24}{\\pi\\times27}=339.5\\ \\text{MPa}"
+    },
+    {
+     "text": "Corrected maximum stress.",
+     "latex": "\\tau_{max}=1.184\\times339.5=402.0\\ \\text{MPa}"
+    }
+   ],
+   "answer": "$C=8$, $K_w=1.184$ and $\\tau_{max}=402$ MPa, about 18 per cent above the nominal value."
+  },
+  {
+   "type": "text",
+   "markdown": "**Spring rate.** The deflection of the spring is the sum of the twists of the wire elements. Equating the work done by the force to the torsional strain energy of the wire gives the rate $k=F/y$ below, where $G$ is the shear modulus of the wire (typical steel $G\\approx79.3$ GPa). Notice the strong dependence: $k\\propto d^4$, $k\\propto1/D^3$ and $k\\propto1/N_a$. Doubling the number of active coils halves the rate, and the rate is not affected by the Wahl factor."
+  },
+  {
+   "type": "math",
+   "latex": "k=\\frac{F}{y}=\\frac{d^4G}{8D^3N_a}",
+   "caption": "Spring rate of a helical compression spring (N/mm when d, D in mm and G in N/mm^2)"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "End type",
+    "Total coils $N_t$",
+    "Solid height $L_s$",
+    "Comment"
+   ],
+   "rows": [
+    [
+     "Plain",
+     "$N_a$",
+     "$d\\,(N_t+1)$",
+     "Cheap, but the load is applied off-centre"
+    ],
+    [
+     "Plain and ground",
+     "$N_a+1$",
+     "$d\\,N_t$",
+     "Flat bearing surface"
+    ],
+    [
+     "Squared (closed)",
+     "$N_a+2$",
+     "$d\\,(N_t+1)$",
+     "Better seating, common"
+    ],
+    [
+     "Squared and ground",
+     "$N_a+2$",
+     "$d\\,N_t$",
+     "Best seating; spring stands square, most common for design"
+    ]
+   ],
+   "caption": "Coil end types and solid height (Shigley convention)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Rate, solid height and stability of the same spring",
+   "prompt": "The spring above ($d=3$ mm, $D=24$ mm, $F=150$ N) has $N_a=9$ active coils, squared-and-ground ends and a free length $L_0=80$ mm. It is compressed between flat parallel plates. Find the rate, the deflection under 150 N, the solid height, the clearance to solid, and check buckling using the criterion $L_0<2.63D/\\alpha$ with $\\alpha=0.5$ (both ends fixed).",
+   "steps": [
+    {
+     "text": "Rate with $d^4=81$ mm$^4$, $D^3=13824$ mm$^3$ and $G=79300$ MPa.",
+     "latex": "k=\\frac{81\\times79300}{8\\times13824\\times9}=6.45\\ \\text{N/mm}"
+    },
+    {
+     "text": "Deflection under 150 N.",
+     "latex": "y=\\frac{F}{k}=\\frac{150}{6.45}=23.2\\ \\text{mm}"
+    },
+    {
+     "text": "Total coils $N_t=9+2=11$ and solid height for squared-and-ground ends. The loaded length is $80-23.2=56.8$ mm.",
+     "latex": "L_s=dN_t=3\\times11=33\\ \\text{mm},\\qquad \\text{clearance}=56.8-33=23.8\\ \\text{mm}"
+    },
+    {
+     "text": "Force at solid, for reference, $F_s=k(L_0-L_s)$, and stability limit.",
+     "latex": "F_s=6.45\\times47=303\\ \\text{N},\\qquad \\frac{2.63D}{\\alpha}=\\frac{2.63\\times24}{0.5}=126\\ \\text{mm}"
+    }
+   ],
+   "answer": "$k=6.45$ N/mm, $y=23.2$ mm, $L_s=33$ mm with 23.8 mm clearance, and since $L_0=80<126$ mm the spring is absolutely stable against buckling."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Solid height and buckling.** At solid height the coils touch and the spring can compress no further. A good design leaves a margin, commonly about 10 to 15 per cent of the working deflection, so the working length stays above the solid height. A compression spring is also like a column: a slender spring (large $L_0/D$) can buckle sideways before it reaches its working deflection. Steel springs are **absolutely stable** (never buckle) when $L_0<2.63D/\\alpha$, where the end-condition constant $\\alpha$ depends on how the ends are supported. Commonly used values (typical) are $\\alpha=0.5$ for both ends flat and fixed between parallel plates, $\\alpha=0.707$ for one end fixed and one pivoted, $\\alpha=1$ for both ends pivoted and $\\alpha=2$ for one end fixed and one end free."
+  },
+  {
+   "type": "math",
+   "latex": "L_0<\\frac{2.63\\,D}{\\alpha}\\quad(\\text{steel}),\\qquad L_s=d\\,N_t,\\qquad L_0-L_s\\ge(1+\\xi)\\,y_{max},\\ \\xi\\approx0.15",
+   "caption": "Absolute stability criterion, solid height and clash allowance"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "If a spring is unstable, guide it on a rod or in a bore, which adds friction and wear.",
+    "Reduce the free length or increase the coil diameter to bring $L_0/D$ down.",
+    "Use plates that keep the ends fixed (small $\\alpha$) rather than pivoted ends.",
+    "Keep the stress, rate and clash checks consistent: changing $d$, $D$ or $N_a$ alters all three."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Check the three limits in order",
+   "text": "(1) The stress at the working load, including $K_w$; (2) the solid height against the free length and working deflection; (3) the buckling criterion for the end conditions. A spring that passes the stress test can still fail on the other two."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Wire in a helical spring is loaded in torsion: $\\tau_{max}=K_w8FD/(\\pi d^3)$ with the Wahl factor $K_w=(4C-1)/(4C-4)+0.615/C$ and index $C=D/d$.",
+    "The spring rate is $k=d^4G/(8D^3N_a)$; it varies as $d^4$, $1/D^3$ and $1/N_a$.",
+    "Solid height $L_s=dN_t$ (squared and ground ends, $N_t=N_a+2$) must lie below the compressed length with a clash allowance.",
+    "A steel spring is absolutely stable when $L_0<2.63D/\\alpha$; otherwise guide it or shorten it."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does the Wahl factor $K_w$ account for in the stress calculation for a helical compression spring?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The direct shear stress and the stress concentration from the curvature of the wire"
+    },
+    {
+     "id": "b",
+     "text": "The bending of the wire at the end coils"
+    },
+    {
+     "id": "c",
+     "text": "The reduction of stress by the pre-set of the spring"
+    },
+    {
+     "id": "d",
+     "text": "The buckling of the spring at large deflection"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The direct shear stress and the stress concentration from the curvature of the wire",
+   "distractorRationale": {
+    "a": "Correct: K_w raises the nominal torsional stress to include direct shear and curvature.",
+    "b": "Bending of the end coils is not part of the Wahl factor.",
+    "c": "Pre-setting changes residual stress, but is not part of K_w.",
+    "d": "Buckling is a stability question treated by a separate criterion."
+   },
+   "explanation": "The nominal formula $8FD/(\\pi d^3)$ ignores the direct shear $F/A$ and the higher stress at the inside of the curved wire. The Wahl factor multiplies the nominal stress to give the true maximum on the inside of the coil.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A compression spring has its number of active coils doubled while the wire diameter, coil diameter and material are unchanged. What happens to the spring rate?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It halves"
+    },
+    {
+     "id": "b",
+     "text": "It doubles"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "It quadruples"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It halves",
+   "distractorRationale": {
+    "a": "Correct: k is proportional to 1/N_a.",
+    "b": "The rate rises only if the coils are fewer.",
+    "c": "The number of active coils appears in the denominator of the rate.",
+    "d": "A quadrupled rate would come from doubling d^2 or similar, not from N_a."
+   },
+   "explanation": "From $k=d^4G/(8D^3N_a)$ the rate is inversely proportional to the number of active coils. More coils share the deflection, so each takes less and the spring is softer.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Spring X has a spring index $C=5$ and spring Y has $C=10$. Which statement about their Wahl factors is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$K_w$ is larger for spring X"
+    },
+    {
+     "id": "b",
+     "text": "$K_w$ is larger for spring Y"
+    },
+    {
+     "id": "c",
+     "text": "$K_w$ is the same for both"
+    },
+    {
+     "id": "d",
+     "text": "$K_w$ does not depend on the spring index"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$K_w$ is larger for spring X",
+   "distractorRationale": {
+    "a": "Correct: the curvature and direct-shear penalty is largest for a tightly coiled spring.",
+    "b": "K_w decreases as C increases, so Y has the smaller factor.",
+    "c": "K_w is a function of C and so differs.",
+    "d": "K_w is defined entirely in terms of C."
+   },
+   "explanation": "$K_w$ is 1.310 at $C=5$ and 1.145 at $C=10$, so tight coils suffer a heavier curvature penalty. For large $C$ the factor approaches 1.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A spring has 10 active coils, wire diameter 2 mm, and squared-and-ground ends. What is its solid height?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "24 mm"
+    },
+    {
+     "id": "b",
+     "text": "20 mm"
+    },
+    {
+     "id": "c",
+     "text": "22 mm"
+    },
+    {
+     "id": "d",
+     "text": "26 mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "24 mm",
+   "distractorRationale": {
+    "a": "Correct: N_t = 10 + 2 = 12 and L_s = d N_t = 24 mm.",
+    "b": "20 mm counts only the active coils.",
+    "c": "22 mm adds only one end coil.",
+    "d": "26 mm uses the formula for squared (not ground) ends, d(N_t + 1)."
+   },
+   "explanation": "For squared-and-ground ends the total number of coils is $N_t=N_a+2=12$, and every coil is solid at $d$ thick, so $L_s=dN_t=2\\times12=24$ mm. If the ends were only squared, one more wire diameter would be added.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A tall, slender compression spring is found to bow sideways when compressed. Which action is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Reduce the free length or guide the spring on a rod or in a bore"
+    },
+    {
+     "id": "b",
+     "text": "Increase the number of active coils"
+    },
+    {
+     "id": "c",
+     "text": "Use a wire of smaller diameter"
+    },
+    {
+     "id": "d",
+     "text": "Increase the free length"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Reduce the free length or guide the spring on a rod or in a bore",
+   "distractorRationale": {
+    "a": "Correct: it reduces L_0/D or prevents lateral movement.",
+    "b": "More coils at the same pitch increase the free length and slenderness.",
+    "c": "A smaller wire lowers the rate but does not improve stability.",
+    "d": "A greater free length worsens buckling."
+   },
+   "explanation": "Buckling depends on the ratio $L_0/D$ and the end conditions. Guiding the spring or shortening it brings the spring back inside the stability limit $L_0<2.63D/\\alpha$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel spring is made of 5 mm wire with a mean coil diameter of 30 mm and 8 active coils. Taking $G=79.3$ GPa, find the spring rate in N/mm.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o2"
+   ],
+   "correctValue": 28.682002,
+   "tolerance": 0.3,
+   "unit": "N/mm",
+   "explanation": "The rate is $k=d^4G/(8D^3N_a)=625\\times79300/(8\\times27000\\times8)=28.68$ N/mm. A 100 N load would therefore compress the spring by about 3.5 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A spring of wire diameter 5 mm and mean coil diameter 30 mm carries an axial load of 400 N. Using the Wahl factor, find the maximum shear stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o1"
+   ],
+   "correctValue": 306.188646,
+   "tolerance": 5,
+   "unit": "MPa",
+   "explanation": "The index is $C=30/5=6$, so $K_w=23/20+0.615/6=1.2525$. The nominal stress is $8FD/(\\pi d^3)=8\\times400\\times30/(\\pi\\times125)=244.5$ MPa, so $\\tau_{max}=1.2525\\times244.5=306.2$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A steel compression spring has mean coil diameter 20 mm and is compressed between a fixed plate and a pivoting seat (end-condition constant $\\alpha=0.707$). Using $L_0<2.63D/\\alpha$, find the largest free length in mm for which the spring is absolutely stable.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o3"
+   ],
+   "correctValue": 74.398868,
+   "tolerance": 1.0,
+   "unit": "mm",
+   "explanation": "Substituting gives $L_0<2.63\\times20/0.707=74.4$ mm. A longer spring could buckle at some deflection unless it is guided.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Starting from the torque in the wire, explain why the maximum shear stress in a helical compression spring is written $\\tau_{max}=K_w\\,8FD/(\\pi d^3)$. State what the Wahl factor corrects for and how it varies with the spring index.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o1"
+   ],
+   "markingGuide": [
+    "Axial force $F$ at mean radius $D/2$ gives torque $T=FD/2$ in the wire.",
+    "Torsion formula for a solid round wire: $\\tau=16T/(\\pi d^3)=8FD/(\\pi d^3)$.",
+    "Direct shear $F/A$ adds to the torsional shear on the inner side of the coil.",
+    "Curvature of the wire concentrates stress at the inside of the coil (shorter path for the same twist).",
+    "$K_w=(4C-1)/(4C-4)+0.615/C$ captures both; it decreases as $C$ increases and approaches 1 for large $C$."
+   ],
+   "explanation": "The wire is loaded in torsion with extra shear and curvature effects at the inside of the coil. The Wahl factor packages these into one multiplier that depends only on the index.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A designer proposes a steel helical compression spring of 12 mm mean coil diameter and 70 mm free length, fixed between flat plates. Explain how you would check it for (a) solid height and (b) buckling, state the criteria and say what you would do if it fails the buckling check.",
+   "objectiveIds": [
+    "ug.mce-machine-design-1.springs.helical-compression-springs.o3"
+   ],
+   "markingGuide": [
+    "(a) Solid height $L_s=dN_t$ with $N_t$ from the end type; the working length $L_0-y$ must exceed $L_s$ with a clash allowance, $L_0-L_s\\ge(1+\\xi)y_{max}$, with $\\xi\\approx0.15$.",
+    "(b) Buckling: absolutely stable if $L_0<2.63D/\\alpha$ with $\\alpha=0.5$ for fixed ends.",
+    "Evaluation: $2.63\\times12/0.5=63.1$ mm and $L_0=70$ mm exceeds this, so the spring is not absolutely stable and may buckle.",
+    "Remedies: shorten the spring, increase the coil diameter, guide it with a rod or bore (accounting for friction), or check the critical deflection against the working deflection.",
+    "State that ends constants depend on the end conditions and that buckling is a function of the ratio $L_0/D$."
+   ],
+   "explanation": "A spring that is not absolutely stable may still work if its working deflection stays below the critical deflection, but the safe route is to change the geometry or guide it. This is why the criterion is a sufficient, not a necessary, condition.",
+   "board": "internal"
+  }
+ ]
+}

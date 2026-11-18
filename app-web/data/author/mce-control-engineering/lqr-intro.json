@@ -1,0 +1,399 @@
+{
+ "lessonTitle": "Optimal Control with LQR",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A semiconductor wafer stage must settle in milliseconds, but its linear motor drive overheats if the commanded current is large for long. Pole placement would make the designer guess pole locations and then discover the current limits by trial. Linear quadratic regulator (LQR) design starts from the trade-off instead: write down how much you dislike state error and how much you dislike control effort, and let mathematics find the gain."
+  },
+  {
+   "type": "text",
+   "markdown": "LQR chooses the state-feedback gain $K$ (with $u=-Kx$) that minimises a quadratic cost over an infinite horizon. The cost adds up the squared state error and the squared control effort, each weighted by a design matrix. It does not ask you to choose the poles: the poles are an *outcome* of the weights."
+  },
+  {
+   "type": "math",
+   "latex": "J=\\int_{0}^{\\infty}\\big(x^{T}Q\\,x+u^{T}R\\,u\\big)\\,dt,\\qquad Q=Q^{T}\\succeq0,\\quad R=R^{T}\\succ0",
+   "caption": "LQR cost. $Q$ ($n\\times n$) penalises state deviation, $R$ ($m\\times m$) penalises control effort; $Q$ is positive semi-definite and $R$ is positive definite."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "The weights Q and R",
+   "text": "A large diagonal entry $q_{ii}$ makes deviation of state $x_i$ expensive, so the optimal controller drives it to zero quickly. A large $R$ makes control effort expensive, so the controller uses less actuation and responds more slowly. Only the ratio of $Q$ to $R$ matters for the shape of the optimal gain: scaling both by the same factor leaves $K$ unchanged."
+  },
+  {
+   "type": "text",
+   "markdown": "The optimal gain is $K=R^{-1}B^{T}P$, where $P\\succeq0$ solves the algebraic Riccati equation $A^{T}P+PA-PBR^{-1}B^{T}P+Q=0$. We rarely solve it by hand beyond first and second order; software (for example MATLAB's `lqr` or SciPy) does it. What matters for design is the effect of $Q$ and $R$, which the scalar and double-integrator cases show clearly."
+  },
+  {
+   "type": "worked_example",
+   "title": "Evaluating the cost integrand",
+   "prompt": "A two-state plant is weighted with $Q=\\mathrm{diag}(4,\\,1)$ and $R=0.5$. At one instant $x=[0.5\\;\\;-1]^T$ and $u=2$. Find the instantaneous cost $x^TQx+Ru^2$.",
+   "steps": [
+    {
+     "text": "State term with a diagonal $Q$: $x^TQx=4x_1^2+1\\,x_2^2$.",
+     "latex": "4(0.5)^2+1(-1)^2=1+1=2"
+    },
+    {
+     "text": "Control term: $Ru^2=0.5\\times 2^2$.",
+     "latex": "0.5\\times4=2"
+    },
+    {
+     "text": "Add the two terms.",
+     "latex": "2+2=4"
+    }
+   ],
+   "answer": "The instantaneous cost is 4 (cost units); the controller is minimising the time integral of this quantity."
+  },
+  {
+   "type": "worked_example",
+   "title": "Scalar LQR and the effect of R",
+   "prompt": "A plant $\\dot x=2x+u$ has weights $q=5$ (so $J=\\int(5x^2+r u^2)dt$). Find the optimal gain and closed-loop pole for $r=1$ and for $r=4$.",
+   "steps": [
+    {
+     "text": "For a scalar plant $\\dot x=ax+bu$ the Riccati equation is $2aP-b^2P^2/r+q=0$ and the optimal closed-loop pole is $-\\sqrt{a^2+b^2q/r}$, with gain $K=\\big(a+\\sqrt{a^2+b^2q/r}\\big)/b$.",
+     "latex": "a=2,\\;b=1,\\;q=5"
+    },
+    {
+     "text": "For $r=1$: $\\sqrt{4+5}=3$.",
+     "latex": "K=5,\\quad \\text{pole}=2-5=-3"
+    },
+    {
+     "text": "For $r=4$: $\\sqrt{4+5/4}=2.2913$.",
+     "latex": "K=4.2913,\\quad \\text{pole}=-2.2913"
+    },
+    {
+     "text": "Quadrupling $R$ lowers the gain from 5 to about 4.29 and moves the pole from $-3$ to about $-2.29$: less effort, slower response.",
+     "latex": "|u(0)|\\ \\text{falls from }5x_0\\text{ to }4.29x_0"
+    }
+   ],
+   "answer": "$r=1$: $K=5$, pole $-3$. $r=4$: $K\\approx4.29$, pole $\\approx-2.29$. A larger $R$ gives smaller gain and a slower loop."
+  },
+  {
+   "type": "worked_example",
+   "title": "LQR for a double integrator",
+   "prompt": "For $\\ddot y=u$ with states $y,\\dot y$, take $Q=\\mathrm{diag}(q,0)$ and $R=r$. The optimal gain is $K=[\\rho\\;\\;\\sqrt{2\\rho}]$ with $\\rho=\\sqrt{q/r}$. Compare $q=100$ for $r=1$ and $r=4$.",
+   "steps": [
+    {
+     "text": "Case $r=1$: $\\rho=\\sqrt{100/1}=10$.",
+     "latex": "K=[10\\;\\;\\sqrt{20}]=[10\\;\\;4.472]"
+    },
+    {
+     "text": "Case $r=4$: $\\rho=\\sqrt{100/4}=5$.",
+     "latex": "K=[5\\;\\;\\sqrt{10}]=[5\\;\\;3.162]"
+    },
+    {
+     "text": "The closed loop is $s^2+\\sqrt{2\\rho}\\,s+\\rho$, so $\\omega_n=\\sqrt\\rho$ and $\\zeta=\\sqrt{2\\rho}/(2\\sqrt\\rho)=1/\\sqrt2$ for any $q,r$. Raising $R$ lowers $\\omega_n$ from 3.16 to 2.24 rad/s but leaves the damping at 0.707.",
+     "latex": "\\omega_n=3.16\\to2.24\\ \\mathrm{rad/s},\\quad\\zeta=0.707"
+    }
+   ],
+   "answer": "Gains $[10\\;\\;4.47]$ ($r=1$) and $[5\\;\\;3.16]$ ($r=4$); both loops have $\\zeta=0.707$, and the larger $R$ is slower and uses less effort."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Aspect",
+    "Pole placement",
+    "LQR"
+   ],
+   "rows": [
+    [
+     "Design inputs",
+     "Desired pole locations",
+     "Weights $Q$ and $R$"
+    ],
+    [
+     "Where poles come from",
+     "Chosen directly by the designer",
+     "Result of minimising $J$"
+    ],
+    [
+     "Control-effort trade-off",
+     "Found afterwards by simulation",
+     "Built into the cost through $R$"
+    ],
+    [
+     "Several inputs",
+     "Gain not unique; extra freedom must be used",
+     "Unique optimal $K$ for given $Q,R$"
+    ],
+    [
+     "Typical robustness",
+     "No guarantee",
+     "For full state feedback and a single input, gain margin at least 2 in the upward direction and phase margin at least 60 degrees (a known property)"
+    ],
+    [
+     "Needs",
+     "Controllable $(A,B)$",
+     "Stabilisable $(A,B)$ and detectable weighting"
+    ]
+   ],
+   "caption": "Comparison of pole placement and LQR on the same plant."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Using Q and R as tuning knobs",
+   "text": "Start with $Q$ diagonal with entries $1/x_{i,max}^2$ and $R$ with entries $1/u_{max}^2$ (Bryson's rule), simulate, then scale the weights up or down until the response speed and the peak actuator effort are acceptable. Increasing $R$ (or reducing $Q$) trades response speed for lower effort."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "LQR does not remove the need for sensing and limits",
+   "text": "LQR assumes the full state is available, a linear plant and no actuator limits. In practice combine it with an observer for unmeasured states and check saturation in simulation."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The LQR cost is $J=\\int(x^TQx+u^TRu)\\,dt$ with $Q\\succeq0$ penalising state error and $R\\succ0$ penalising effort; $u=-Kx$ with $K=R^{-1}B^TP$.",
+    "Increasing $R$ reduces gain and peak effort but slows the response; increasing $Q$ does the opposite.",
+    "Pole placement specifies poles and discovers effort afterwards, whereas LQR specifies the cost trade-off and obtains the poles as an output."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which expression is the standard infinite-horizon LQR cost?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$J=\\int_0^\\infty (x^TQx+u^TRu)\\,dt$"
+    },
+    {
+     "id": "b",
+     "text": "$J=\\int_0^\\infty (x^TRx+u^TQu)\\,dt$"
+    },
+    {
+     "id": "c",
+     "text": "$J=\\int_0^\\infty (y-r)\\,dt$"
+    },
+    {
+     "id": "d",
+     "text": "$J=x^TQx$ evaluated at the final time only"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$J=\\int_0^\\infty (x^TQx+u^TRu)\\,dt$",
+   "distractorRationale": {
+    "a": "It adds weighted state deviation and weighted control effort over all time.",
+    "b": "The weights are swapped: $Q$ belongs with the state and $R$ with the input.",
+    "c": "This is an unweighted integrated error and ignores control effort.",
+    "d": "That is a terminal cost for a finite horizon, not the infinite-horizon LQR cost."
+   },
+   "explanation": "The infinite-horizon LQR cost integrates $x^TQx$, which penalises state deviation, plus $u^TRu$, which penalises actuation. The pairing of $Q$ with states and $R$ with inputs is essential to the trade-off.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What conditions are normally placed on the weights $Q$ and $R$?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$Q$ negative definite and $R$ positive definite"
+    },
+    {
+     "id": "b",
+     "text": "$Q$ positive semi-definite and $R$ positive definite"
+    },
+    {
+     "id": "c",
+     "text": "Both must be identity matrices"
+    },
+    {
+     "id": "d",
+     "text": "$R=0$ to allow unlimited effort"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$Q$ positive semi-definite and $R$ positive definite",
+   "distractorRationale": {
+    "a": "A negative $Q$ would reward state deviation, so the cost would be unbounded below.",
+    "b": "$R\\succ0$ ensures $R^{-1}$ exists and effort is always penalised.",
+    "c": "They are free design parameters, only constrained in definiteness.",
+    "d": "$R=0$ makes the problem singular and permits infinite gain."
+   },
+   "explanation": "The cost must be bounded below and the optimisation well posed, which needs $Q\\succeq0$ and $R\\succ0$. The latter also guarantees that $R^{-1}$ in the gain formula exists.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a given plant, $R$ is increased by a factor of four while $Q$ is kept fixed. What is the expected change in the LQR design?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Larger gains and faster response"
+    },
+    {
+     "id": "b",
+     "text": "No change, since only $Q$ affects the gain"
+    },
+    {
+     "id": "c",
+     "text": "The closed loop becomes unstable"
+    },
+    {
+     "id": "d",
+     "text": "Smaller gains and lower peak control effort, with a slower closed-loop response"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Smaller gains and lower peak control effort, with a slower closed-loop response",
+   "distractorRationale": {
+    "a": "This is the effect of increasing $Q$ or decreasing $R$.",
+    "b": "$K=R^{-1}B^TP$ depends explicitly on $R$ and $P$ also depends on it.",
+    "c": "LQR with $R\\succ0$ and a stabilisable plant is stable for any such weights.",
+    "d": "Control effort is penalised more heavily, so the optimum uses less of it."
+   },
+   "explanation": "Raising $R$ makes control effort more expensive in $J$, so the minimum lies at a smaller input and a slower response. For example, the scalar plant in the lesson goes from a pole at $-3$ to about $-2.29$ when $R$ is quadrupled.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "How does LQR differ in its design inputs from pole placement?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "LQR takes the poles as input and returns $Q$ and $R$"
+    },
+    {
+     "id": "b",
+     "text": "LQR requires no model of the plant"
+    },
+    {
+     "id": "c",
+     "text": "LQR takes weights $Q$ and $R$ and produces the poles as a result; pole placement takes the poles as the input"
+    },
+    {
+     "id": "d",
+     "text": "LQR needs an observable system but pole placement needs a controllable one"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "LQR takes weights $Q$ and $R$ and produces the poles as a result; pole placement takes the poles as the input",
+   "distractorRationale": {
+    "a": "The direction is reversed.",
+    "b": "LQR solves a Riccati equation using $A$ and $B$, so a model is needed.",
+    "c": "The cost trade-off determines the optimal poles, rather than the designer choosing them.",
+    "d": "Both need the input to influence the unstable modes (controllability or stabilisability)."
+   },
+   "explanation": "In pole placement the closed-loop poles are specified and $K$ is derived; in LQR the cost weights are specified and the optimal $K$, and hence the poles, follow from the Riccati equation.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: increasing a diagonal entry of $Q$ that weights a state makes the optimal controller drive that state to zero more aggressively.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "A larger penalty on a state raises the cost of its deviation, so the optimum trades more control effort to reduce it. This usually increases the gain and speeds up that state's response.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A plant has $Q=\\mathrm{diag}(6,\\,2)$ and $R=3$. At an instant $x=[0.4\\;\\;-0.5]^T$ and $u=1$. Find the instantaneous cost $x^TQx+Ru^2$ (cost units).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o1"
+   ],
+   "correctValue": 4.46,
+   "tolerance": 0.01,
+   "unit": "cost units",
+   "explanation": "The state term is $6(0.4)^2+2(-0.5)^2=0.96+0.5=1.46$ and the control term is $3(1)^2=3$. The total instantaneous cost is $4.46$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A scalar plant $\\dot x=x+2u$ is controlled by LQR with $J=\\int(8x^2+2u^2)\\,dt$. Use the optimal closed-loop pole $-\\sqrt{a^2+b^2q/r}$ to find the closed-loop pole (in s$^{-1}$).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o2"
+   ],
+   "correctValue": -4.123106,
+   "tolerance": 0.01,
+   "unit": "s^-1",
+   "explanation": "Here $a=1$, $b=2$, $q=8$, $r=2$, so $a^2+b^2q/r=1+4\\cdot8/2=17$ and the pole is $-\\sqrt{17}\\approx-4.123$ s$^{-1}$. Raising $r$ would shrink this value and slow the loop.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A double integrator $\\ddot y=u$ is controlled by LQR with $Q=\\mathrm{diag}(64,0)$ and $R=4$, giving $K=[\\rho\\;\\;\\sqrt{2\\rho}]$ with $\\rho=\\sqrt{q/r}$. Estimate the 2% settling time (s) using $t_s=4/\\sigma$ where $\\sigma$ is the real part of the closed-loop poles.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o2"
+   ],
+   "correctValue": 2.828427,
+   "tolerance": 0.03,
+   "unit": "s",
+   "explanation": "Here $\\rho=\\sqrt{64/4}=4$, so the closed loop is $s^2+\\sqrt8\\,s+4$ with $2\\sigma=\\sqrt8=2.828$ so $\\sigma=1.414$ s$^{-1}$. Then $t_s=4/1.414=2.83$ s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain, in terms of the cost function, what happens to the optimal controller when $R$ is increased and why this is useful when the actuator is close to saturation.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o2"
+   ],
+   "markingGuide": [
+    "States $J$ contains $\\int u^TRu\\,dt$, so a larger $R$ penalises control effort more.",
+    "Concludes the optimal gain and peak control effort decrease.",
+    "States the response becomes slower (poles move toward the origin).",
+    "Links to saturation: lower peak command reduces the chance of clipping and windup, at the price of slower tracking."
+   ],
+   "explanation": "A larger $R$ increases the cost of any control action, so the minimiser uses less input and has smaller gains, which gives a slower response. That keeps commands further from the actuator limit, reducing saturation and windup at the expense of speed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A double integrator is to be regulated. Compare designing $K$ by pole placement (choose a pole pair) with designing it by LQR with $Q=\\mathrm{diag}(q,0)$, $R=r$. Discuss the form of the resulting closed-loop damping and how the designer would adjust each method if the actuator saturates.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o3",
+    "ug.mce-control-engineering.state-feedback-observers.lqr-intro.o2"
+   ],
+   "markingGuide": [
+    "Pole placement: the designer picks $\\omega_n$ and $\\zeta$ directly and $K=[\\omega_n^2\\;\\;2\\zeta\\omega_n]$.",
+    "LQR: the optimal $K=[\\rho\\;\\;\\sqrt{2\\rho}]$ with $\\rho=\\sqrt{q/r}$ leads to $\\zeta=1/\\sqrt2$ regardless of $q,r$; only speed $\\omega_n=\\sqrt\\rho$ changes with the weights.",
+    "Notes that LQR links effort to the cost through $R$, so saturation is addressed by increasing $r$ (or lowering $q$).",
+    "Pole placement: reduce $\\omega_n$ to reduce effort, but the link between poles and effort must be found by simulation.",
+    "Concludes they can produce the same $K$ if the poles coincide; the difference is in the design parameters and how the trade-off is explored."
+   ],
+   "explanation": "Pole placement gives direct control of $\\omega_n$ and $\\zeta$, whereas LQR returns $\\zeta=0.707$ with $\\omega_n=\\sqrt{\\rho}$ set by the weights. When the actuator saturates, LQR lets the designer raise $R$ to slow the loop systematically, while pole placement requires lowering $\\omega_n$ and checking the effort by simulation.",
+   "board": "internal"
+  }
+ ]
+}

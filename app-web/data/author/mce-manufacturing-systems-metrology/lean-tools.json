@@ -1,0 +1,411 @@
+{
+ "lessonTitle": "Lean Principles and Tools: Waste, Value-Stream Maps and Kanban",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A gearbox plant measures how long a casting takes from the receiving dock to the shipped gearbox: 12.5 working days. When the engineers add up the time that metal is actually being cut, welded, painted or assembled, it comes to seven minutes. The other 99.9% of the time the part is waiting, being moved or sitting in a pile. Lean thinking starts by making that invisible waste visible."
+  },
+  {
+   "type": "text",
+   "markdown": "**Lean production** aims to deliver what the customer wants, when they want it, with the least waste. Its starting point is the idea of *value*: an activity adds value only if the customer would pay for it, if it changes the product's form or function, and if it is done right the first time. Everything else is either unavoidable support (necessary non-value-added) or **waste** (*muda* in Japanese) to be removed."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Waste (the seven)",
+    "Description",
+    "Shop-floor example"
+   ],
+   "rows": [
+    [
+     "Transportation",
+     "Moving parts or material between steps without adding value",
+     "Forklift shuttles castings between two buildings"
+    ],
+    [
+     "Inventory",
+     "More raw material, work in progress (WIP) or finished goods than needed now",
+     "Pallets of half-finished housings between stations"
+    ],
+    [
+     "Motion",
+     "Unnecessary movement of people",
+     "Operator walks 15 m to fetch a gauge every cycle"
+    ],
+    [
+     "Waiting",
+     "Idle people, machines or parts",
+     "Machine stopped waiting for material or an inspector"
+    ],
+    [
+     "Overproduction",
+     "Making more or earlier than the customer needs",
+     "Stamping 1200 brackets when 800 are consumed (the worst waste: it causes inventory, transport and waiting)"
+    ],
+    [
+     "Over-processing",
+     "Doing more work than the customer requires",
+     "Polishing a hidden surface to a mirror finish"
+    ],
+    [
+     "Defects",
+     "Parts that must be scrapped, reworked or re-inspected",
+     "Rework of oversize bores"
+    ]
+   ],
+   "caption": "The seven classical wastes (the acronym TIMWOOD is a common memory aid)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Value-stream map and value-added ratio",
+   "text": "A **value-stream map (VSM)** shows, for one product family, every process step (with its processing time), every inventory or queue between steps (with its waiting time) and the flows of material and information from supplier to customer. The **value-added time ratio** is the total value-adding processing time divided by the total lead time: $\\text{VA ratio}=\\sum t_{\\text{VA}}/T_{\\text{lead}}$. Lead time is the elapsed time for one part to travel the whole stream, including all waiting."
+  },
+  {
+   "type": "math",
+   "latex": "\\text{VA ratio}=\\frac{\\sum t_{\\mathrm{VA}}}{T_{\\mathrm{lead}}}\\times100\\%,\\qquad T_{\\mathrm{lead}}=\\sum t_{\\mathrm{process}}+\\sum t_{\\mathrm{wait}}",
+   "caption": "Both times in the same unit. Lead time can also be estimated from Little's law: T_lead = WIP / throughput."
+  },
+  {
+   "type": "worked_example",
+   "title": "Value-added ratio of a current-state map",
+   "prompt": "A casting stream has raw material stock of 4 working days, cutting 60 s, a queue of 2 days, welding 120 s, a queue of 1.5 days, painting 90 s, a queue of 3 days, assembly 150 s, and finished goods stock of 2 days. A working day is 8 h. Find the lead time and the value-added ratio.",
+   "steps": [
+    {
+     "text": "Add the waiting times in working days.",
+     "latex": "4+2+1.5+3+2=12.5\\ \\text{days}"
+    },
+    {
+     "text": "Convert to seconds, one working day being $8\\times3600=28800$ s.",
+     "latex": "12.5\\times28800=360000\\ \\text{s}"
+    },
+    {
+     "text": "Add the processing times, all of which add value here.",
+     "latex": "60+120+90+150=420\\ \\text{s}"
+    },
+    {
+     "text": "Lead time is the sum, and the ratio follows.",
+     "latex": "T_{\\text{lead}}=360000+420=360420\\ \\text{s},\\quad \\frac{420}{360420}=0.117\\%"
+    }
+   ],
+   "answer": "The value-added ratio is only about 0.12%. The stocks and queues between the steps, not the processes, dominate the lead time, so shrinking them is where improvement lies."
+  },
+  {
+   "type": "text",
+   "markdown": "**Pull systems and kanban.** In a *push* system each station produces according to a schedule and sends parts on, whether or not the next station needs them; inventory builds wherever production outruns consumption. In a *pull* system a station produces only when a downstream station signals that it has used material. The signal is typically a **kanban** (card or bin): a container holds a fixed quantity, and an empty container (or returned card) authorises the upstream station to refill it. With $N$ kanban cards in circulation each for a container of $C$ parts, work in progress in that loop cannot exceed $NC$ parts."
+  },
+  {
+   "type": "math",
+   "latex": "N=\\left\\lceil\\frac{D\\,L\\,(1+s)}{C}\\right\\rceil",
+   "caption": "D demand rate (parts per hour); L replenishment lead time of the loop (h); s safety factor (a fraction); C parts per container; N number of kanban, rounded up."
+  },
+  {
+   "type": "worked_example",
+   "title": "Kanban sizing and WIP limit",
+   "prompt": "Demand is 120 parts per hour, the replenishment loop (production, transport and waiting) takes 30 min, containers hold 20 parts and a 10% safety factor is used. Find the number of kanban and the maximum loop WIP.",
+   "steps": [
+    {
+     "text": "Substitute into the kanban formula with $L=0.5$ h.",
+     "latex": "\\frac{120\\times0.5\\times1.10}{20}=3.3"
+    },
+    {
+     "text": "Round up to a whole number of containers.",
+     "latex": "N=4"
+    },
+    {
+     "text": "Maximum WIP is the number of cards times the container size.",
+     "latex": "WIP_{\\max}=4\\times20=80\\ \\text{parts}"
+    }
+   ],
+   "answer": "Four kanban are needed and loop WIP is capped at 80 parts; by Little's law the average time in the loop is $80/120=0.67$ h (40 min) when the loop is full."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "When all cards are attached to full containers, the upstream station stops: overproduction is physically prevented.",
+    "Reducing the number of cards exposes problems (breakdowns, long changeovers) that inventory had hidden.",
+    "Kanban works best with level, repeatable demand; very erratic or low-volume items are poor candidates.",
+    "Visual management (andon lights, floor markings, shadow boards) makes abnormal conditions obvious at a glance."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not simply cut cards",
+   "text": "Removing kanban without first reducing the loop's replenishment time or variability causes stock-outs and line stoppages. Improve the process, then reduce the cards."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Lean removes the seven wastes: transportation, inventory, motion, waiting, overproduction, over-processing and defects, with overproduction being the most damaging.",
+    "A value-stream map totals processing and waiting times to give lead time; the value-added ratio $\\sum t_{VA}/T_{lead}$ is typically very small.",
+    "Kanban pulls production from consumption and bounds WIP at $N\\times C$ in each loop, with $N=\\lceil DL(1+s)/C\\rceil$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A press makes 1200 brackets per shift although the next operation uses only 800. The surplus is stacked in a corridor. Which waste is the root problem?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Overproduction, which in turn creates inventory and transport"
+    },
+    {
+     "id": "b",
+     "text": "Waiting, because the brackets wait to be used"
+    },
+    {
+     "id": "c",
+     "text": "Over-processing, because extra brackets are being processed"
+    },
+    {
+     "id": "d",
+     "text": "Defects, because the extra brackets will probably be scrapped"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Overproduction, which in turn creates inventory and transport",
+   "distractorRationale": {
+    "a": "Producing more than the next process needs is overproduction, and the corridor stock is one of its consequences.",
+    "b": "The waiting is a consequence of making more than needed; the root cause is overproduction.",
+    "c": "Over-processing means doing more work on each part than the customer needs, not making extra parts.",
+    "d": "Nothing in the scenario says the parts are faulty."
+   },
+   "explanation": "Overproduction is called the worst waste because it generates the others: stock to store, movement to a corridor, and later possible damage or obsolescence. It is identified by the mismatch between output and consumption.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A machinist polishes the hidden internal surface of a housing to a mirror finish, although the drawing specifies only a standard machined finish there. Which waste is this?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Motion"
+    },
+    {
+     "id": "b",
+     "text": "Defects"
+    },
+    {
+     "id": "c",
+     "text": "Over-processing"
+    },
+    {
+     "id": "d",
+     "text": "Transportation"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Over-processing",
+   "distractorRationale": {
+    "a": "Motion concerns unnecessary movement of people, not extra work on the part.",
+    "b": "The surface meets the drawing; the problem is the extra effort, not a faulty part.",
+    "c": "Work beyond what the customer requires is over-processing.",
+    "d": "No movement of material is described."
+   },
+   "explanation": "The customer does not value a finish that the drawing does not ask for, so the polishing time and cost are waste. The fix is to align the process with the specification.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a value-stream map of a machined component, which of the following is value-adding time?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The time a pallet of parts waits for the next machine"
+    },
+    {
+     "id": "b",
+     "text": "The time spent moving parts between buildings by forklift"
+    },
+    {
+     "id": "c",
+     "text": "The time spent inspecting every part that has never failed"
+    },
+    {
+     "id": "d",
+     "text": "The time the cutter is removing material to bring the part to its final shape"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The time the cutter is removing material to bring the part to its final shape",
+   "distractorRationale": {
+    "a": "Waiting adds no value; it extends lead time.",
+    "b": "Transport is necessary at best but does not change the part.",
+    "c": "Inspection is non-value-adding because the customer does not pay for it.",
+    "d": "Only activities that change the part's form or function, right first time, are value adding."
+   },
+   "explanation": "Cutting changes the part to what the customer wants and therefore adds value. Waiting, moving and inspecting are either waste or necessary support, and they count in lead time but not in value-adding time.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A kanban loop has 5 cards, each for a container of 8 parts. What is the effect when all five containers are full of finished parts?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The upstream station must stop producing until a container is consumed, so WIP cannot exceed 40 parts"
+    },
+    {
+     "id": "b",
+     "text": "The upstream station keeps producing and starts a sixth container, since the card limit is advisory"
+    },
+    {
+     "id": "c",
+     "text": "The downstream station must stop, because the supermarket is full"
+    },
+    {
+     "id": "d",
+     "text": "WIP is unbounded but the cards track it"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The upstream station must stop producing until a container is consumed, so WIP cannot exceed 40 parts",
+   "distractorRationale": {
+    "a": "No empty container or free card means no authorisation for upstream production.",
+    "b": "The card limit is a hard cap; no card means no authorisation to produce.",
+    "c": "Downstream continues consuming; it is upstream that stops.",
+    "d": "The whole point of kanban is that WIP is bounded by the number of cards times the container size."
+   },
+   "explanation": "In a pull loop production is triggered only by consumption, so the number of cards fixes the loop's maximum WIP at $5\\times8=40$ parts. This prevents overproduction and exposes problems that inventory would hide.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the principal difference between a push system and a pull system?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A push system is run by computers, whereas a pull system uses paper only"
+    },
+    {
+     "id": "b",
+     "text": "A push system produces to a schedule regardless of downstream use, whereas a pull system produces only when downstream consumption signals it"
+    },
+    {
+     "id": "c",
+     "text": "A pull system produces as fast as possible, whereas a push system is limited"
+    },
+    {
+     "id": "d",
+     "text": "A push system needs no inventory, whereas a pull system needs large stocks"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "A push system produces to a schedule regardless of downstream use, whereas a pull system produces only when downstream consumption signals it",
+   "distractorRationale": {
+    "a": "Both can use any medium; the difference is the logic of authorising production.",
+    "b": "In pull, consumption authorises production; in push, a schedule does.",
+    "c": "A pull system is limited by signals, not run flat out.",
+    "d": "Push typically builds inventory; pull limits it."
+   },
+   "explanation": "Because pull ties production to actual use, inventory is bounded by the number of kanban. Push relies on forecasts and schedules, so errors show up as excess stock or shortages.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A short value stream has three value-adding steps of 6, 4 and 8 minutes and three queues of 140, 95 and 107 minutes. Calculate the value-added time ratio as a percentage.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o2"
+   ],
+   "correctValue": 5.0,
+   "tolerance": 0.1,
+   "unit": "per cent",
+   "explanation": "Value-adding time is $6+4+8=18$ min and the lead time is $18+140+95+107=360$ min. The ratio is $18/360=0.05$, or 5.0%.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A kanban loop serves demand of 90 parts per hour. The replenishment lead time is 40 minutes, a container holds 12 parts and a 20% safety factor is used. Find the number of kanban (cards) required, assuming the formula gives a whole number.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o3"
+   ],
+   "correctValue": 6,
+   "tolerance": 0.05,
+   "unit": "cards",
+   "explanation": "$N=D\\,L(1+s)/C=90\\times(40/60)\\times1.20/12=72/12=6$. Six cards allow at most $6\\times12=72$ parts in the loop.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cell holds on average 150 units of work in process and ships 25 units per hour. Using Little's law, find the average lead time in hours.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o2",
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o3"
+   ],
+   "correctValue": 6,
+   "tolerance": 0.05,
+   "unit": "h",
+   "explanation": "Little's law gives lead time $=\\text{WIP}/\\text{throughput}=150/25=6$ h. Reducing WIP by half at the same throughput would halve the lead time.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "In a machining shop an observer notes: (i) operators carry castings 40 m to a cleaning station and back, (ii) a lathe is idle for 25 minutes each shift waiting for a crane, (iii) every part is measured three times though the process is capable, and (iv) a stock of 300 finished shafts exceeds the week's orders. Identify the waste in each case and propose one lean action for each.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o1"
+   ],
+   "markingGuide": [
+    "(i) Transportation (or motion): locate cleaning next to the machine, or use cell layout",
+    "(ii) Waiting: provide a dedicated lifting aid or schedule the crane, or level the flow",
+    "(iii) Over-processing (repeated inspection): reduce to one inspection or use process control",
+    "(iv) Overproduction and inventory: produce to customer demand with a pull signal or kanban",
+    "Distinguishes each waste correctly",
+    "Actions are specific and reduce the identified waste"
+   ],
+   "explanation": "The four observations map to transportation, waiting, over-processing and overproduction (with inventory). Each action addresses the cause: layout for transport, a lifting aid for waiting, one inspection backed by process control for over-processing and a pull signal for overproduction.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how to build a current-state value-stream map and use it to find the value-added ratio. Then explain how introducing a kanban loop between two stations with a large inventory queue would change the lead time and why the ratio rises. Use Little's law in your answer.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o2",
+    "ug.mce-manufacturing-systems-metrology.lean-production.lean-tools.o3"
+   ],
+   "markingGuide": [
+    "Map the steps for one product family with processing times, queues or inventories and information flow",
+    "Lead time is the sum of processing and waiting times",
+    "Value-added ratio is value-adding time divided by lead time",
+    "Kanban caps WIP at the number of cards times container size",
+    "Little's law: lead time equals WIP divided by throughput, so lowering WIP at the same throughput lowers lead time",
+    "With the same value-adding time but smaller lead time, the ratio rises"
+   ],
+   "explanation": "The map totals processing and queue times; the ratio is the value-adding part divided by the total. A kanban loop caps WIP, so by Little's law lead time falls at constant throughput, and since the value-adding time is unchanged the ratio rises.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,408 @@
+{
+ "lessonTitle": "Discrete Controller Design",
+ "estimatedMinutes": 34,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A drone's attitude controller was tuned in a continuous-time simulation to a phase margin of 50 degrees. Ported to a flight computer running at 100 Hz, the same gains made the airframe shake. Nothing in the algebra was wrong; the sampling and computation delays the simulation left out had quietly eaten the margin. Designing a controller for a computer means choosing a discretisation and then checking stability in the z-domain with the delays included."
+  },
+  {
+   "type": "text",
+   "markdown": "A continuous controller $C(s)$ can be run on a computer by replacing $s$ with a discrete approximation. The simplest choice is the **backward difference**, which approximates the derivative by $\\dot e(kT)\\approx(e[k]-e[k-1])/T$ and an integral by accumulating rectangles of width $T$. In the transform domain this is the substitution"
+  },
+  {
+   "type": "math",
+   "latex": "s\\;\\longrightarrow\\;\\frac{1-z^{-1}}{T}=\\frac{z-1}{Tz},\\qquad \\frac{1}{s}\\;\\longrightarrow\\;\\frac{Tz}{z-1}",
+   "caption": "Backward-difference (backward Euler) mapping with sample period $T$ in seconds."
+  },
+  {
+   "type": "text",
+   "markdown": "Applying it to the PID law $u=K_pe+K_i\\int e\\,dt+K_d\\dot e$ gives the difference equations below, where $I[k]$ is the integrator state and $u[k]$ is the controller output at sample $k$:"
+  },
+  {
+   "type": "math",
+   "latex": "I[k]=I[k-1]+T\\,e[k],\\qquad u[k]=K_p\\,e[k]+K_i\\,I[k]+\\frac{K_d}{T}\\big(e[k]-e[k-1]\\big)",
+   "caption": "Discrete PID with backward-difference integral and derivative. The corresponding controller is $C(z)=K_p+K_i\\dfrac{Tz}{z-1}+K_d\\dfrac{z-1}{Tz}$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Coding a discrete PID",
+   "prompt": "Convert a PID controller with $K_p=2$, $K_i=5\\ \\mathrm{s^{-1}}$ (so $K_i$ multiplies the integral of the error) and $K_d=0.1$ s to a difference equation for $T=0.01$ s, and compute the first two outputs for the error sequence $e[0]=1$, $e[1]=0.8$, with $I[-1]=0$ and $e[-1]=0$.",
+   "steps": [
+    {
+     "text": "The integrator and derivative coefficients are $K_iT$ and $K_d/T$.",
+     "latex": "K_iT=5\\times0.01=0.05,\\qquad K_d/T=0.1/0.01=10"
+    },
+    {
+     "text": "Sample 0: the integrator accumulates $T\\,e[0]=0.01$, and the derivative sees a jump from 0 to 1.",
+     "latex": "I[0]=0.01,\\quad u[0]=2(1)+5(0.01)+10(1-0)=12.05"
+    },
+    {
+     "text": "Sample 1: $I[1]=0.01+0.01\\times0.8=0.018$, and the derivative sees $0.8-1=-0.2$.",
+     "latex": "u[1]=2(0.8)+5(0.018)+10(-0.2)=-0.31"
+    },
+    {
+     "text": "The large $u[0]$ comes from the derivative term reacting to the sudden jump in $e$ (derivative kick); in practice the derivative is applied to the measurement and filtered.",
+     "latex": "\\text{derivative kick at the first sample}"
+    }
+   ],
+   "answer": "$u[0]=12.05$ and $u[1]=-0.31$, using $u[k]=2e[k]+5I[k]+10(e[k]-e[k-1])$ with $I[k]=I[k-1]+0.01e[k]$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Stability of a sampled-data loop",
+   "text": "A discrete-time system is asymptotically stable if and only if all poles of its transfer function (the roots of the characteristic polynomial in $z$) lie strictly inside the unit circle, $|z|<1$. For a second-order polynomial $z^2+a_1z+a_0$ the conditions (Jury) are $|a_0|<1$, $1+a_1+a_0>0$ and $1-a_1+a_0>0$."
+  },
+  {
+   "type": "text",
+   "markdown": "Discretisation can change stability. A continuous first-order plant under proportional control is stable for every gain, but its sampled version is not: the zero-order-hold (ZOH, which holds the controller output constant over each sample) turns $G(s)=1/(s+1)$ into $G(z)=(1-e^{-T})/(z-e^{-T})$, whose closed-loop pole under gain $K$ moves with $K$ and can leave the unit circle."
+  },
+  {
+   "type": "worked_example",
+   "title": "Gain limit of a sampled loop",
+   "prompt": "The plant $G(s)=1/(s+1)$ is sampled with a ZOH at $T=0.1$ s and controlled by a proportional gain $K$. Find the range of $K$ for stability.",
+   "steps": [
+    {
+     "text": "ZOH equivalent: $e^{-T}=e^{-0.1}$ and $1-e^{-T}$ are",
+     "latex": "a=e^{-0.1}=0.9048,\\quad b=1-a=0.0952,\\quad G(z)=\\frac{b}{z-a}"
+    },
+    {
+     "text": "Closed-loop characteristic equation $1+KG(z)=0$ gives $z-a+Kb=0$, so the single closed-loop pole is",
+     "latex": "z_{cl}=a-bK=0.9048-0.0952K"
+    },
+    {
+     "text": "Stability needs $-1<z_{cl}<1$. The upper condition gives $K>-(1-a)/b=-1$, which holds for all positive $K$. The lower condition is $a-bK>-1$, i.e.",
+     "latex": "K<\\frac{1+a}{b}=20.02"
+    },
+    {
+     "text": "In continuous time the closed loop $s+1+K=0$ is stable for every $K>0$. The sampled loop is limited to $K<20$ because the pole passes through $z=-1$.",
+     "latex": "0<K<20.0"
+    }
+   ],
+   "answer": "Stable for $0<K<20.0$ (closed-loop pole $z=a-bK$ reaches $-1$ at $K=20.0$)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Computation delay.** A real controller reads the sensor, computes for a time $\\tau_c$ and then writes the actuator. This is a pure delay of $\\tau_c$ in the loop, with transfer function $e^{-s\\tau_c}$. It has unit magnitude at every frequency, so it changes no gain, but it adds phase lag $-\\omega\\tau_c$ radians at frequency $\\omega$. The ZOH adds a further effective delay of about $T/2$. So at the gain crossover frequency $\\omega_{gc}$ the phase margin is reduced by roughly the amount below."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta\\mathrm{PM}\\approx-\\omega_{gc}\\Big(\\tau_c+\\frac{T}{2}\\Big)\\ \\text{[rad]}\\quad\\Longrightarrow\\quad\\Delta\\mathrm{PM}\\approx-\\frac{180}{\\pi}\\,\\omega_{gc}\\Big(\\tau_c+\\frac{T}{2}\\Big)\\ \\text{[degrees]}",
+   "caption": "Phase-margin loss from computation delay $\\tau_c$ and the zero-order-hold half-sample delay (s), with $\\omega_{gc}$ in rad/s."
+  },
+  {
+   "type": "worked_example",
+   "title": "Margin lost to delay",
+   "prompt": "A loop has a phase margin of 50$^\\circ$ at $\\omega_{gc}=20$ rad/s. A computation delay of 5 ms is introduced (ignore the hold). Find the new phase margin and the largest tolerable delay.",
+   "steps": [
+    {
+     "text": "Phase lag at crossover:",
+     "latex": "\\Delta\\varphi=\\omega_{gc}\\tau_c=20\\times0.005=0.10\\ \\mathrm{rad}=5.73^\\circ"
+    },
+    {
+     "text": "New margin:",
+     "latex": "\\mathrm{PM}'=50^\\circ-5.73^\\circ=44.3^\\circ"
+    },
+    {
+     "text": "The delay that uses up the whole margin is $\\tau_{max}=\\mathrm{PM}/\\omega_{gc}$ with PM in radians.",
+     "latex": "\\tau_{max}=\\frac{0.8727}{20}=43.6\\ \\mathrm{ms}"
+    }
+   ],
+   "answer": "New margin about 44.3 degrees; instability would arrive at a delay of about 44 ms."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Effect",
+    "Where it enters",
+    "Consequence for the loop",
+    "Mitigation"
+   ],
+   "rows": [
+    [
+     "Sampling (ZOH)",
+     "Output held for $T$",
+     "Effective delay $\\approx T/2$: phase loss $\\omega T/2$",
+     "Sample faster, design directly in discrete time"
+    ],
+    [
+     "Computation delay",
+     "Sensor read to actuator write",
+     "Phase loss $\\omega\\tau_c$, no gain change",
+     "Shorten computation, write output at a fixed time"
+    ],
+    [
+     "Backward-difference approximation",
+     "Derivative and integral",
+     "Discrete behaviour differs from the continuous design at high frequency",
+     "Use small $T$, or a more accurate mapping (Tustin)"
+    ],
+    [
+     "Derivative kick and noise",
+     "$K_d/T$ coefficient",
+     "Large output spikes after steps in $e$",
+     "Differentiate the measurement, filter the derivative"
+    ]
+   ],
+   "caption": "How sampled implementation changes the loop."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Backward difference is not exact",
+   "text": "The backward difference maps every stable continuous pole to a stable discrete pole (inside a disc of radius 1/2 centred at $z=1/2$), but it distorts damping and frequency at high frequency relative to the continuous design. The plant, hold and delays add their own effects, so always check the poles and the phase margin of the final discrete loop."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Backward difference replaces $s$ by $(1-z^{-1})/T$: integral $I[k]=I[k-1]+Te[k]$ and derivative $(e[k]-e[k-1])/T$, giving $u[k]=K_pe[k]+K_iI[k]+(K_d/T)(e[k]-e[k-1])$.",
+    "A discrete system is stable when all closed-loop poles satisfy $|z|<1$; a loop stable at every gain in continuous time can have a finite gain limit once sampled.",
+    "A delay $\\tau_c$ plus the hold delay $T/2$ lowers the phase margin by $\\omega_{gc}(\\tau_c+T/2)$ radians without changing the gain."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What substitution does the backward-difference approximation use for $s$?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$s\\to(1-z^{-1})/T$"
+    },
+    {
+     "id": "b",
+     "text": "$s\\to(z-1)/T$"
+    },
+    {
+     "id": "c",
+     "text": "$s\\to T(1-z^{-1})$"
+    },
+    {
+     "id": "d",
+     "text": "$s\\to(1+z^{-1})/T$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$s\\to(1-z^{-1})/T$",
+   "distractorRationale": {
+    "a": "This is the difference of the current and previous samples divided by $T$.",
+    "b": "This is the forward difference, which maps to the future sample.",
+    "c": "The factor of $T$ is inverted; the derivative has units of 1/s.",
+    "d": "This sums the two samples instead of differencing them."
+   },
+   "explanation": "A derivative is approximated by $(e[k]-e[k-1])/T$, whose z-transform multiplies $E(z)$ by $(1-z^{-1})/T$. The forward difference uses $(z-1)/T$, which is a different approximation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A discrete-time closed-loop system is asymptotically stable when",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "every closed-loop pole lies in the left half of the z-plane"
+    },
+    {
+     "id": "b",
+     "text": "every closed-loop pole lies strictly inside the unit circle"
+    },
+    {
+     "id": "c",
+     "text": "every closed-loop pole lies outside the unit circle"
+    },
+    {
+     "id": "d",
+     "text": "every closed-loop pole has a positive real part"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "every closed-loop pole lies strictly inside the unit circle",
+   "distractorRationale": {
+    "a": "The left half-plane criterion applies to the s-plane, not the z-plane.",
+    "b": "Then each mode $z^k$ decays.",
+    "c": "Poles outside the circle correspond to growing modes.",
+    "d": "The sign of the real part is not the stability criterion in the z-plane."
+   },
+   "explanation": "A pole at $z$ contributes a mode $z^k$, which decays only if $|z|<1$. The left-half-plane test belongs to continuous-time systems.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For the discrete PID with backward differences, which update is correct for the integrator state?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$I[k]=I[k-1]+e[k]/T$"
+    },
+    {
+     "id": "b",
+     "text": "$I[k]=T\\,e[k]-I[k-1]$"
+    },
+    {
+     "id": "c",
+     "text": "$I[k]=I[k-1]$"
+    },
+    {
+     "id": "d",
+     "text": "$I[k]=I[k-1]+T\\,e[k]$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$I[k]=I[k-1]+T\\,e[k]$",
+   "distractorRationale": {
+    "a": "Dividing by $T$ would make the integral grow with faster sampling, which is the wrong dimension.",
+    "b": "Subtracting the previous sum would make the state oscillate.",
+    "c": "The integrator would never respond to the error.",
+    "d": "A rectangle of width $T$ and height $e[k]$ is added to the running sum."
+   },
+   "explanation": "The integral accumulates area, so each sample adds $T\\,e[k]$ to the previous total. The coefficient $K_iT$ multiplies $e[k]$ if the gain is folded in.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A pure computation delay of $\\tau_c$ is added to a stable loop. What is its effect at the gain crossover frequency?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It reduces the magnitude and leaves the phase unchanged"
+    },
+    {
+     "id": "b",
+     "text": "It increases the phase margin"
+    },
+    {
+     "id": "c",
+     "text": "It leaves the magnitude unchanged and reduces the phase by $\\omega_{gc}\\tau_c$ radians"
+    },
+    {
+     "id": "d",
+     "text": "It has no effect unless the delay exceeds one sample period"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It leaves the magnitude unchanged and reduces the phase by $\\omega_{gc}\\tau_c$ radians",
+   "distractorRationale": {
+    "a": "A pure delay does not attenuate the signal.",
+    "b": "A delay only subtracts phase.",
+    "c": "The delay $e^{-s\\tau_c}$ has unit magnitude and linear phase.",
+    "d": "Any delay reduces the margin, regardless of the sample period."
+   },
+   "explanation": "A pure delay has $|e^{-j\\omega\\tau_c}|=1$ and phase $-\\omega\\tau_c$, so the crossover frequency is unchanged but the phase margin falls by $\\omega_{gc}\\tau_c$. A large enough delay therefore destabilises the loop.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: a proportional gain that gives a stable closed loop for every positive $K$ in continuous time can still give an unstable closed loop when the loop is sampled at a slow rate.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Sampling with a zero-order hold introduces extra delay, so the sampled loop has a gain limit; for $G=1/(s+1)$ at $T=0.1$ s the pole reaches $z=-1$ at $K\\approx20$. A continuous first-order loop has no such limit.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A PID controller has $K_d=0.2$ s and runs at $T=0.004$ s. In the backward-difference form $u[k]=\\dots+(K_d/T)(e[k]-e[k-1])$, what is the coefficient $K_d/T$ (dimensionless)?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o1"
+   ],
+   "correctValue": 50.0,
+   "tolerance": 0.1,
+   "unit": "dimensionless",
+   "explanation": "$K_d/T=0.2/0.004=50$. A coefficient this large shows why quantisation noise in $e$ is amplified in the derivative term.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A plant sampled with ZOH gives $G(z)=0.2/(z-0.8)$. Under proportional gain $K$ the closed-loop pole is $z=0.8-0.2K$. Find the largest positive gain $K$ (dimensionless) for which the loop is stable.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o2"
+   ],
+   "correctValue": 9.0,
+   "tolerance": 0.05,
+   "unit": "dimensionless",
+   "explanation": "Stability needs $0.8-0.2K>-1$, i.e. $K<1.8/0.2=9$. At $K=9$ the pole is exactly at $z=-1$, on the unit circle.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A loop has a phase margin of $45^\\circ$ at $\\omega_{gc}=30$ rad/s. The controller has a computation delay of 12 ms and runs with a ZOH at $T=10$ ms (effective extra delay $T/2$). Find the new phase margin in degrees.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o3"
+   ],
+   "correctValue": 15.779152,
+   "tolerance": 0.3,
+   "unit": "degrees",
+   "explanation": "Total delay is $12+5=17$ ms, so the phase lag is $30\\times0.017=0.51$ rad $=29.2^\\circ$. The new margin is $45^\\circ-29.2^\\circ=15.8^\\circ$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the difference equations for a discrete PID controller using the backward-difference method, and compute the numerical coefficients for $K_p=1$, $K_i=2\\ \\mathrm{s^{-1}}$, $K_d=0.05$ s and $T=0.02$ s.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o1"
+   ],
+   "markingGuide": [
+    "Integral: $I[k]=I[k-1]+Te[k]$ from rectangles of width $T$.",
+    "Derivative: $(e[k]-e[k-1])/T$ from the backward difference.",
+    "Output $u[k]=K_pe[k]+K_iI[k]+(K_d/T)(e[k]-e[k-1])$.",
+    "Coefficients: $K_iT=0.04$ and $K_d/T=2.5$ (with $K_p=1$)."
+   ],
+   "explanation": "The backward difference replaces $\\int e$ by the running sum $I[k]=I[k-1]+Te[k]$ and $\\dot e$ by $(e[k]-e[k-1])/T$, giving $u[k]=K_pe[k]+K_iI[k]+(K_d/T)(e[k]-e[k-1])$. With the given values $K_iT=2\\times0.02=0.04$ and $K_d/T=0.05/0.02=2.5$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A loop has $\\omega_{gc}=40$ rad/s and must lose no more than $10^\\circ$ of phase margin to implementation delays. The computation delay is 1 ms. Estimate the largest sample period $T$ allowed (including the ZOH effect) and explain how you would reduce the loss if the available hardware were slower.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.digital-control.discrete-controllers.o3"
+   ],
+   "markingGuide": [
+    "Maximum total delay from $\\omega_{gc}\\tau_{tot}\\le10^\\circ=0.1745$ rad, so $\\tau_{tot}\\le0.1745/40=4.36$ ms.",
+    "Total delay is $\\tau_c+T/2$, so $T/2\\le4.36-1=3.36$ ms.",
+    "Hence $T\\le2\\times3.36\\approx6.7$ ms (around 6.7 ms, i.e. at least about 150 Hz).",
+    "Mitigation: shorten the computation (simpler code, fixed-point, interrupts), output the control at a fixed time, sample faster, lower $\\omega_{gc}$, or add phase lead to compensate."
+   ],
+   "explanation": "The allowed total delay is $0.1745/40=4.36$ ms, so $T/2\\le3.36$ ms and $T\\le6.7$ ms. With slower hardware, the crossover frequency must be lowered or lead added, since the margin loss scales with $\\omega_{gc}$.",
+   "board": "internal"
+  }
+ ]
+}

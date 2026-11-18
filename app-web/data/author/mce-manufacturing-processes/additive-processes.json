@@ -1,0 +1,399 @@
+{
+ "lessonTitle": "Metal and Polymer Additive Processes",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A rocket-engine injector with cooling channels woven through its wall cannot be drilled, cast or machined in one piece, yet it is printed in a single build from metal powder. The same technology that makes that impossible geometry routine would be a poor choice for a plain bracket needed in thousands. Choosing among additive manufacturing, casting and machining is about geometry, volume and what the process does to the metal."
+  },
+  {
+   "type": "text",
+   "markdown": "**Additive manufacturing (AM)** builds a part layer by layer from a digital model, adding material only where needed. Two metal processes dominate. In **laser powder bed fusion (LPBF, also called selective laser melting)** a recoater spreads a thin layer of metal powder (typically 20 to 60 $\\mu$m thick) over a build plate, a scanning laser melts the cross-section of the part, the plate lowers and the next layer is spread, repeating thousands of times inside an inert-gas chamber. In **directed energy deposition (DED)** a nozzle feeds powder or wire into a melt pool created by a laser, electron beam or arc and the head moves to deposit beads, building up or repairing a part without a powder bed. Polymers use related methods: material extrusion (melted filament deposited through a nozzle), selective laser sintering (a laser fuses polymer powder) and binder jetting (a printed binder glues a powder bed, which is then sintered or infiltrated)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Build rate",
+   "text": "The volumetric build rate is the volume of material added per unit time. For a scanned powder-bed process it is approximately $\\dot V=t\\,h\\,v$, with layer thickness $t$ (mm), hatch spacing (distance between adjacent scan tracks) $h$ (mm) and scan speed $v$ (mm/s). This gives mm$^3$/s; multiply by 3.6 to get cm$^3$/h. The figure ignores recoating and other idle time, so the real rate is lower."
+  },
+  {
+   "type": "math",
+   "latex": "\\dot V=t\\,h\\,v\\ [\\text{mm}^3/\\text{s}],\\qquad \\dot V_{cm^3/h}=3.6\\,\\dot V_{mm^3/s}",
+   "caption": "Ideal volumetric build rate for LPBF"
+  },
+  {
+   "type": "worked_example",
+   "title": "LPBF build time",
+   "prompt": "An LPBF process uses a layer thickness $t=0.04$ mm, hatch spacing $h=0.11$ mm and scan speed $v=1000$ mm/s. Find the ideal build rate and the scanning time for a part of volume 30 cm$^3$.",
+   "steps": [
+    {
+     "text": "Build rate in mm$^3$/s.",
+     "latex": "\\dot V=0.04\\times0.11\\times1000=4.4\\ \\text{mm}^3/\\text{s}"
+    },
+    {
+     "text": "Convert to cm$^3$/h.",
+     "latex": "4.4\\times3.6=15.8\\ \\text{cm}^3/\\text{h}"
+    },
+    {
+     "text": "Scanning time for the part.",
+     "latex": "\\frac{30}{15.8}=1.89\\ \\text{h}"
+    }
+   ],
+   "answer": "The ideal rate is 15.8 cm^3/h and scanning the part takes about 1.9 h, before recoating, preheating and cool-down."
+  },
+  {
+   "type": "text",
+   "markdown": "DED deposits material far faster but far less precisely. With wire of diameter $d_w$ fed at speed $v_w$, the volume rate is $\\dot V=\\pi d_w^2v_w/4$. For 1.2 mm wire fed at 5 m/min (5000 mm/min) the rate is $\\frac{\\pi}{4}(1.2)^2(5000)=5655$ mm$^3$/min, about 339 cm$^3$/h, around 21 times the LPBF rate above. The price is a wide bead (typically 1 to 5 mm) and thick layers (0.2 to 1 mm or more), so the as-built surface is rough and the part is machined after deposition."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Laser powder bed fusion",
+    "Directed energy deposition"
+   ],
+   "rows": [
+    [
+     "Typical layer thickness",
+     "20 to 60 $\\mu$m",
+     "0.2 to 1 mm or more"
+    ],
+    [
+     "Minimum feature size",
+     "About 0.15 to 0.3 mm",
+     "About 1 mm or larger"
+    ],
+    [
+     "Typical tolerance",
+     "$\\pm0.05$ to $\\pm0.2$ mm",
+     "$\\pm0.5$ mm or looser"
+    ],
+    [
+     "As-built roughness $R_a$",
+     "About 5 to 15 $\\mu$m",
+     "Tens of $\\mu$m; machined after build"
+    ],
+    [
+     "Typical deposition rate",
+     "Roughly 5 to 40 cm$^3$/h",
+     "Roughly 50 to several hundred cm$^3$/h"
+    ],
+    [
+     "Part size",
+     "Limited by powder bed (typically up to a few hundred mm)",
+     "Large parts and repair of existing parts"
+    ],
+    [
+     "Typical use",
+     "Complex small to medium parts, lattices, internal channels",
+     "Large near-net shapes, cladding, repair"
+    ]
+   ],
+   "caption": "Typical capabilities (orders of magnitude, depending on machine and material)"
+  },
+  {
+   "type": "text",
+   "markdown": "A characteristic problem of LPBF is **residual stress**. The laser heats a tiny region far above its melting point while the surrounding solid and the baseplate remain much cooler, so very steep temperature gradients and extremely fast cooling occur (of the order of $10^{5}$ to $10^{6}$ K/s). The newly melted layer tries to shrink as it solidifies and cools, but is held by the cooler material beneath it, so it is stretched into **tensile residual stress**, often approaching the yield strength, with balancing compression in the underlying material. Repeated for thousands of layers, the stresses accumulate."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Consequences and remedies of LPBF residual stress",
+   "text": "The stress causes cracking and delamination during the build, warping against supports, and distortion when the part is cut off the baseplate because the constraint is removed. Typical remedies are preheating the baseplate, using scan strategies that rotate or divide the scan area into islands, adding supports and anchoring, optimising orientation, and a stress-relief heat treatment before the part is removed from the plate."
+  },
+  {
+   "type": "text",
+   "markdown": "The third decision is **process selection by batch size**. AM has almost no tooling cost but a high cost per part (slow build, powder, machine time, post-processing), casting has high tooling cost and low unit cost, and machining sits in between. Geometry can override cost: internal channels, lattices and consolidated assemblies can often only be made by AM."
+  },
+  {
+   "type": "worked_example",
+   "title": "Which route at 10, 100 and 1000 parts?",
+   "prompt": "Illustrative costs (currency units): LPBF has fixed cost 500 and variable cost 260 per part; CNC machining from billet has fixed 2500 and variable 140; investment casting plus finishing has fixed 12 000 and variable 60. Find the cheapest route at $N=10$, 100 and 1000.",
+   "steps": [
+    {
+     "text": "Unit cost $c=F/N+v$ at $N=10$.",
+     "latex": "LPBF 310, CNC 390, casting 1260, so LPBF is cheapest."
+    },
+    {
+     "text": "At $N=100$.",
+     "latex": "LPBF 265, CNC 165, casting 180, so CNC machining is cheapest."
+    },
+    {
+     "text": "At $N=1000$.",
+     "latex": "LPBF 260.5, CNC 142.5, casting 72.0, so casting is cheapest."
+    }
+   ],
+   "answer": "AM wins at about 10 parts, machining at 100 and casting at 1000; the AM-to-CNC break-even is about 17 parts and CNC-to-casting about 119 parts, if all three can make the geometry."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Cost is not the only criterion",
+   "text": "The example assumes the part can be made by all three routes. If the geometry has internal channels or lattices, only AM may be feasible. AM parts may also need support removal, heat treatment, machining of fits and inspection, which are included in the variable cost. All figures here are illustrative."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "LPBF gives fine features (about 0.15 to 0.3 mm) at low build rate; DED gives high deposition rate and large parts at coarse resolution.",
+    "Build rate is approximately $t\\,h\\,v$ for a powder bed and $\\pi d_w^2v_w/4$ for wire DED.",
+    "LPBF residual stress comes from steep thermal gradients and constrained shrinkage, giving tensile stress in the top layers and distortion on release from the plate.",
+    "Choose AM for complex, low-volume parts, machining for medium volumes and casting for high volumes, subject to geometry and quality."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement correctly compares laser powder bed fusion (LPBF) with directed energy deposition (DED)?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "LPBF has a higher build rate and coarser features"
+    },
+    {
+     "id": "b",
+     "text": "LPBF gives finer features but a lower build rate; DED gives a higher deposition rate but coarser features"
+    },
+    {
+     "id": "c",
+     "text": "DED gives finer features and lower build rate"
+    },
+    {
+     "id": "d",
+     "text": "They have the same resolution and build rate"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "LPBF gives finer features but a lower build rate; DED gives a higher deposition rate but coarser features",
+   "distractorRationale": {
+    "a": "LPBF uses thin layers and a small laser spot, so it has fine resolution but low volumetric rate.",
+    "c": "DED uses wide beads and thick layers, so it is coarser, not finer.",
+    "d": "They differ by roughly an order of magnitude in both layer thickness and deposition rate."
+   },
+   "explanation": "In LPBF a small laser melts thin layers in a powder bed, giving fine detail but slow build rates. DED deposits thick beads quickly, which suits large parts and repair but needs finish machining.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An LPBF machine uses a layer thickness of 0.03 mm, a hatch spacing of 0.10 mm and a scan speed of 800 mm/s. Calculate the ideal build rate in cm$^3$/h (ignoring recoating time).",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o1"
+   ],
+   "correctValue": 8.64,
+   "tolerance": 0.1,
+   "unit": "cm^3/h",
+   "explanation": "The rate is $\\dot V=0.03\\times0.10\\times800=2.4$ mm$^3$/s. Multiplying by 3.6 to convert to cm$^3$/h gives 8.64 cm$^3$/h, an ideal figure that is lowered by recoating and idle time.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A DED process deposits metal at 200 cm$^3$/h. Calculate the time to deposit a part volume of 45 cm$^3$, in minutes.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o1"
+   ],
+   "correctValue": 13.5,
+   "tolerance": 0.2,
+   "unit": "min",
+   "explanation": "The time is $45/200=0.225$ h, which is $0.225\\times60=13.5$ min. The higher deposition rate of DED means large volumes can be added quickly, though with coarse resolution.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In LPBF, why does the top layer end up in tensile residual stress after cooling?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It expands more than the layers below it"
+    },
+    {
+     "id": "b",
+     "text": "The laser compresses it directly"
+    },
+    {
+     "id": "c",
+     "text": "The powder bed pulls it outward"
+    },
+    {
+     "id": "d",
+     "text": "Its contraction on cooling is restrained by the cooler solid material below it"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Its contraction on cooling is restrained by the cooler solid material below it",
+   "distractorRationale": {
+    "a": "Expansion happens on heating; the residual tensile stress comes from restrained contraction on cooling.",
+    "b": "The laser heats the metal but does not exert a compressive force.",
+    "c": "The powder bed is loose and cannot exert significant force."
+   },
+   "explanation": "The freshly melted layer tries to shrink as it cools but is constrained by the cooler solid below, so it is stretched into tension, often approaching the yield strength. The material below is compressed in balance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which action helps to reduce residual stress and distortion in LPBF parts?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Preheating the baseplate and stress relieving before cutting the part off"
+    },
+    {
+     "id": "b",
+     "text": "Using the highest possible scan speed on every layer"
+    },
+    {
+     "id": "c",
+     "text": "Removing the supports before the build is finished"
+    },
+    {
+     "id": "d",
+     "text": "Cooling the baseplate to a low temperature"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Preheating the baseplate and stress relieving before cutting the part off",
+   "distractorRationale": {
+    "b": "Higher speed does not reduce the thermal gradient and may increase it.",
+    "c": "Supports help to anchor the part and conduct heat; removing them would raise distortion.",
+    "d": "A cold plate increases the temperature gradient and thermal stress."
+   },
+   "explanation": "Preheating lowers the gradient between the melt pool and the surrounding solid, so less stress builds up. A stress-relief heat treatment before removal keeps the part from warping when the constraint is released.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An LPBF part is flat and accurate while attached to its baseplate but bends noticeably after wire cutting from the plate. What is the cause?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The part shrinks because it loses heat"
+    },
+    {
+     "id": "b",
+     "text": "The wire cutting adds heat"
+    },
+    {
+     "id": "c",
+     "text": "Residual stress in the part is released when it is no longer constrained"
+    },
+    {
+     "id": "d",
+     "text": "The baseplate melts into the part"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Residual stress in the part is released when it is no longer constrained",
+   "distractorRationale": {
+    "a": "Cooling would have occurred before cutting and would not appear suddenly at removal.",
+    "b": "Wire cutting adds little heat and does not explain a systematic bend.",
+    "d": "The baseplate does not melt into the part at the time of cutting."
+   },
+   "explanation": "While attached, the baseplate holds the locked-in tensile stresses in balance. When the part is cut off, the stresses redistribute and the part distorts, which is why stress relief is done before removal.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Additive manufacturing has a fixed cost of 800 units and a variable cost of 310 units per part. CNC machining has a fixed cost of 4000 units and a variable cost of 190 units per part. Calculate the break-even quantity in parts (below it, additive manufacturing is cheaper).",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o3"
+   ],
+   "correctValue": 26.666667,
+   "tolerance": 0.5,
+   "unit": "parts",
+   "explanation": "Equating costs gives $800+310N=4000+190N$, so $120N=3200$ and $N=26.7$ parts. Below about 27 parts the AM route is cheaper, above it machining wins.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A company needs 5000 identical simple steel brackets (plain flat shapes with two holes) a year for five years. Which route is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "LPBF in stainless steel"
+    },
+    {
+     "id": "b",
+     "text": "DED with wire"
+    },
+    {
+     "id": "c",
+     "text": "Machining each from billet at low cost per part"
+    },
+    {
+     "id": "d",
+     "text": "Stamping or casting and finishing, using dedicated tooling"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Stamping or casting and finishing, using dedicated tooling",
+   "distractorRationale": {
+    "a": "LPBF has a high cost per part and its geometric freedom is not needed for a plain bracket.",
+    "b": "DED is coarse and slow to finish for small simple parts.",
+    "c": "Machining from billet has the highest variable cost, which becomes prohibitive at 25 000 parts."
+   },
+   "explanation": "A plain geometry at 25 000 parts over five years repays dedicated tooling, so the lowest cost per part comes from a high-volume process. AM would be justified only if the geometry were complex or tooling unavailable.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare laser powder bed fusion with directed energy deposition in terms of layer thickness, feature resolution, deposition rate, post-processing and typical applications.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o1"
+   ],
+   "markingGuide": [
+    "LPBF: thin layers (20 to 60 $\\mu$m), fine features (about 0.15 to 0.3 mm)",
+    "DED: thick layers (0.2 to 1 mm or more), coarse features (about 1 mm)",
+    "DED deposition rate much higher (tens to hundreds of cm$^3$/h versus single digits to tens for LPBF)",
+    "DED needs substantial finish machining; LPBF needs support removal and stress relief",
+    "Applications: LPBF complex small parts, DED large parts, cladding and repair"
+   ],
+   "explanation": "LPBF trades speed for detail by using thin layers in a powder bed, while DED trades detail for speed with wide beads and thick layers. Their applications follow: complex small parts for LPBF, large structures and repair for DED.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A company can make a titanium lattice-cored implant either by LPBF (50 units) or a simple titanium bracket by casting or machining (50 000 units). Explain the choice for each, referring to batch size, geometry and cost structure. Also explain one drawback of LPBF for the implant related to residual stress and how it is controlled.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o2",
+    "ug.mce-manufacturing-processes.powder-and-additive-processes.additive-processes.o3"
+   ],
+   "markingGuide": [
+    "Implant: complex internal lattice cannot be machined or cast; low volume means no tooling investment; AM chosen",
+    "Bracket: simple geometry, high volume, so tooling amortised; casting or machining/forging chosen, since $c=F/N+v$ falls with volume",
+    "Cost structure: AM low fixed, high variable; casting high fixed, low variable",
+    "Drawback: residual stress from steep thermal gradients and constrained shrinkage causing distortion or cracking",
+    "Control: preheat baseplate, scan strategy, supports, stress-relief heat treatment before removal"
+   ],
+   "explanation": "The lattice implant is a geometry-driven, low-volume case where AM is the only practical route, while the bracket is a cost-driven, high-volume case. Residual stress in the implant is controlled by preheating and a stress-relief treatment before it is cut from the plate.",
+   "board": "internal"
+  }
+ ]
+}

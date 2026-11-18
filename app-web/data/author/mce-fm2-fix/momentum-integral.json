@@ -1,0 +1,411 @@
+{
+ "lessonTitle": "Momentum Integral Method and Boundary Layer Separation",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "An engineer needs a quick estimate of the boundary layer thickness on a wind-tunnel floor but cannot solve the full boundary layer equations. Instead she assumes a plausible velocity profile and applies a global momentum balance, getting the thickness within about 10 per cent in two lines of algebra. The same balance also shows why a rising pressure along a surface can make a boundary layer peel away."
+  },
+  {
+   "type": "text",
+   "markdown": "The exact boundary layer equations are partial differential equations. The **momentum integral method** (von Karman, 1921) replaces them with an ordinary differential equation by integrating the momentum equation across the layer. We then assume a reasonable velocity profile that satisfies the wall and edge conditions, evaluate the integrals, and solve for the growth of the thickness. The method gives engineering accuracy for laminar and turbulent layers, and handles situations where no closed-form solution exists."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\tau_w}{\\rho U^2}=\\frac{d\\theta}{dx}+\\left(2+H\\right)\\frac{\\theta}{U}\\frac{dU}{dx},\\qquad \\theta=\\int_0^{\\delta}\\frac{u}{U}\\left(1-\\frac{u}{U}\\right)dy,\\quad H=\\frac{\\delta^*}{\\theta}",
+   "caption": "von Karman momentum integral equation; for zero pressure gradient (dU/dx = 0) it reduces to tau_w = rho U^2 d(theta)/dx"
+  },
+  {
+   "type": "text",
+   "markdown": "For a flat plate with no pressure gradient the equation becomes $\\tau_w=\\rho U^2\\,d\\theta/dx$: the wall friction equals the rate at which momentum is lost from the boundary layer. We need two inputs: an assumed profile $u/U=f(\\eta)$ with $\\eta=y/\\delta$, giving $\\theta=\\beta\\delta$ with $\\beta=\\int_0^1f(1-f)\\,d\\eta$ a constant, and the wall shear $\\tau_w=\\mu\\,(U/\\delta)\\,f'(0)$. A good profile satisfies $f(0)=0$, $f(1)=1$ and $f'(1)=0$. Substituting gives $\\rho U^2\\beta\\,d\\delta/dx=\\mu Uf'(0)/\\delta$, which integrates directly."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta\\,d\\delta=\\frac{f'(0)}{\\beta}\\,\\frac{\\nu}{U}\\,dx\\ \\Longrightarrow\\ \\delta=\\sqrt{\\frac{2f'(0)}{\\beta}}\\;\\frac{x}{\\sqrt{Re_x}},\\qquad c_f=\\frac{2f'(0)\\,\\nu}{U\\delta}",
+   "caption": "Laminar flat-plate result for an assumed profile with delta = 0 at x = 0"
+  },
+  {
+   "type": "worked_example",
+   "title": "Momentum integral with a parabolic profile",
+   "prompt": "Use the profile u/U = 2 eta - eta^2 (0 <= eta <= 1) in the momentum integral equation to find the laminar flat-plate boundary layer thickness and local skin friction coefficient. Evaluate them for air (kinematic viscosity 1.5e-5 m^2/s, density 1.20 kg/m^3) at U = 10 m/s and x = 0.50 m.",
+   "steps": [
+    {
+     "text": "The profile gives theta = 2 delta/15 (beta = 2/15) and wall gradient f'(0) = 2, so tau_w = 2 mu U/delta.",
+     "latex": "\\theta=\\frac{2\\delta}{15},\\qquad \\tau_w=\\frac{2\\mu U}{\\delta}"
+    },
+    {
+     "text": "Insert into tau_w = rho U^2 d theta/dx and separate the variables.",
+     "latex": "\\rho U^2\\frac{2}{15}\\frac{d\\delta}{dx}=\\frac{2\\mu U}{\\delta}\\ \\Longrightarrow\\ \\delta\\,d\\delta=\\frac{15\\nu}{U}dx"
+    },
+    {
+     "text": "Integrate from the leading edge (delta = 0 at x = 0): delta squared is 30 nu x/U, so delta = 5.48 x/sqrt(Re_x), within 10 per cent of the Blasius 5.0.",
+     "latex": "\\delta=\\sqrt{\\frac{30\\nu x}{U}}=\\frac{5.48\\,x}{\\sqrt{Re_x}}"
+    },
+    {
+     "text": "Numerical values: Re_x = 10 x 0.50/1.5e-5 = 3.333e+05 gives the thickness below.",
+     "latex": "\\delta=\\frac{5.477\\times0.50}{\\sqrt{3.333e+05}}=4.74\\ \\text{mm}"
+    },
+    {
+     "text": "Skin friction coefficient from c_f = tau_w/(0.5 rho U^2) = 4 nu/(U delta) and wall shear stress for the dynamic pressure 60 Pa.",
+     "latex": "c_f=\\frac{0.730}{\\sqrt{Re_x}}=1.265e-03,\\quad \\tau_w=c_f(60)=0.076\\ \\text{Pa}"
+    }
+   ],
+   "answer": "delta = 4.74 mm, c_f = 1.26e-03 (Blasius 0.664/sqrt(Re_x) = 1.15e-03), tau_w = 0.076 Pa."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Assumed profile $u/U$",
+    "$f'(0)$",
+    "$\\theta/\\delta$",
+    "$\\delta\\sqrt{Re_x}/x$",
+    "$c_f\\sqrt{Re_x}$"
+   ],
+   "rows": [
+    [
+     "Linear: $\\eta$",
+     "1",
+     "1/6",
+     "3.46",
+     "0.577"
+    ],
+    [
+     "Parabolic: $2\\eta-\\eta^2$",
+     "2",
+     "2/15",
+     "5.48",
+     "0.730"
+    ],
+    [
+     "Cubic: $\\tfrac32\\eta-\\tfrac12\\eta^3$",
+     "3/2",
+     "39/280",
+     "4.64",
+     "0.646"
+    ],
+    [
+     "Sine: $\\sin(\\pi\\eta/2)$",
+     "$\\pi/2$",
+     "$(4-\\pi)/(2\\pi)$",
+     "4.79",
+     "0.655"
+    ],
+    [
+     "Exact (Blasius)",
+     "-",
+     "0.664/5.0",
+     "5.0",
+     "0.664"
+    ]
+   ],
+   "caption": "Effect of the assumed profile on the laminar flat-plate result; the cubic and sine profiles are within 3 per cent for c_f"
+  },
+  {
+   "type": "text",
+   "markdown": "**Separation.** If the free-stream velocity decreases along the surface, $dU/dx<0$ and by Bernoulli the pressure rises: $dp/dx>0$, an **adverse pressure gradient**. Fluid in the boundary layer has already lost momentum to friction and has little kinetic energy near the wall; it is decelerated by the rising pressure far more than the free stream, which has higher kinetic energy. Evaluating the momentum equation at the wall (where $u=v=0$) gives $\\mu\\,(\\partial^2u/\\partial y^2)_w=dp/dx$, so an adverse gradient makes the profile concave upwards at the wall. If the gradient is strong enough the wall shear $\\tau_w=\\mu(\\partial u/\\partial y)_w$ falls to zero at the **separation point**; beyond it fluid near the wall flows backwards and the layer lifts away, forming a wake with high form drag."
+  },
+  {
+   "type": "text",
+   "markdown": "**Turbulent layers.** A turbulent boundary layer has a much fuller profile, with high-momentum fluid brought close to the wall by turbulent mixing, and it grows faster. For a smooth flat plate with a one-seventh power-law profile and the empirical wall shear law, a widely used correlation (typical, valid roughly for $5\\times10^5<Re_x<10^7$ and a turbulent layer starting at the leading edge) is $\\delta/x\\approx0.37\\,Re_x^{-1/5}$, so the thickness grows as $x^{4/5}$ rather than $x^{1/2}$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Laminar versus turbulent thickness",
+   "prompt": "Air (kinematic viscosity 1.5e-5 m^2/s) flows at 25 m/s over a smooth flat plate. At x = 1.20 m compare the turbulent boundary layer thickness from delta/x = 0.37 Re_x^(-1/5) with the value that a laminar Blasius layer would have there.",
+   "steps": [
+    {
+     "text": "Local Reynolds number at x = 1.20 m.",
+     "latex": "Re_x=\\frac{25\\times1.20}{1.5\\times10^{-5}}=2.00e+06"
+    },
+    {
+     "text": "Turbulent correlation: Re_x to the power 0.2 is 18.21.",
+     "latex": "\\delta_t=0.37(1.20)(2.00e+06)^{-1/5}=24.39\\ \\text{mm}"
+    },
+    {
+     "text": "Hypothetical laminar thickness using the Blasius constant 5.0 for comparison (it would not stay laminar at this Reynolds number).",
+     "latex": "\\delta_l=\\frac{5.0(1.20)}{\\sqrt{2.00e+06}}=4.24\\ \\text{mm}"
+    }
+   ],
+   "answer": "Turbulent delta = 24.4 mm against a laminar value of 4.2 mm: the turbulent layer is about 5.7 times thicker."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "State the momentum integral equation for the pressure gradient in the problem.",
+    "Choose a profile satisfying $f(0)=0$, $f(1)=1$, $f'(1)=0$ and compute $\\theta/\\delta$ and $f'(0)$.",
+    "Integrate $\\delta\\,d\\delta\\propto\\nu\\,dx/U$ from the leading edge to find $\\delta(x)$.",
+    "Obtain $\\tau_w$ and $c_f$ from the profile slope at the wall.",
+    "For turbulent layers use the power-law correlation $\\delta/x\\approx0.37\\,Re_x^{-1/5}$ and remember the layer is thicker than a laminar one."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Why a fuller profile resists separation",
+   "text": "A turbulent layer carries more momentum close to the wall, so it can climb a larger adverse pressure gradient before the wall shear drops to zero. Golf-ball dimples and trip wires exploit this by deliberately making the layer turbulent, while vortex generators re-energise the layer by mixing high-momentum fluid down towards the wall."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Assumed profile gives an approximate answer",
+   "text": "The accuracy of the method depends on the assumed profile. A linear profile underestimates $\\delta$ by 30 per cent; the cubic and sine profiles are within about 8 per cent for $\\delta$ and 3 per cent for $c_f$. The approach also does not detect separation reliably unless the profile family can reach zero wall shear."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The momentum integral equation $\\tau_w=\\rho U^2d\\theta/dx$ (zero pressure gradient) converts the boundary layer problem to one ODE when a profile is assumed.",
+    "Different assumed profiles give $\\delta\\sqrt{Re_x}/x$ between 3.5 and 5.5; the cubic and sine profiles are within about 8 per cent of Blasius.",
+    "An adverse pressure gradient ($dp/dx>0$) decelerates the low-momentum near-wall fluid, drives $\\tau_w\\to0$ and causes separation.",
+    "A turbulent layer on a flat plate has $\\delta/x\\approx0.37Re_x^{-1/5}$, grows as $x^{4/5}$ and resists separation better."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does an adverse pressure gradient in the flow direction mean for the boundary layer?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The pressure increases downstream along the surface"
+    },
+    {
+     "id": "b",
+     "text": "The pressure is uniform along the surface"
+    },
+    {
+     "id": "c",
+     "text": "The pressure increases away from the wall within the layer"
+    },
+    {
+     "id": "d",
+     "text": "The pressure decreases downstream along the surface"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The pressure increases downstream along the surface",
+   "distractorRationale": {
+    "a": "Correct: dp/dx > 0 opposes the flow and decelerates it.",
+    "b": "With uniform pressure the layer has zero pressure gradient, as on a flat plate in a uniform stream.",
+    "c": "In a thin boundary layer pressure is essentially constant across it; the gradient of interest is streamwise.",
+    "d": "This is a favourable gradient, which accelerates the flow and stabilises the layer."
+   },
+   "explanation": "An adverse gradient has $dp/dx>0$, i.e. rising pressure in the direction of flow, as happens in a diverging duct or on the rear of a bluff body. It decelerates fluid already slowed by friction near the wall.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Apply the momentum integral equation to laminar flat-plate flow with the linear profile u/U = y/delta (for which theta = delta/6 and tau_w = mu U/delta). Water of kinematic viscosity 1.0e-6 m^2/s flows at 0.60 m/s along the plate. Find the boundary layer thickness at x = 0.30 m, in millimetres.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o1"
+   ],
+   "correctValue": 2.44949,
+   "tolerance": 0.02,
+   "unit": "mm",
+   "explanation": "Substituting in tau_w = rho U^2 d theta/dx gives (rho U^2/6) d delta/dx = mu U/delta, so delta d delta = 6 nu dx/U and delta^2 = 12 nu x/U. Then delta = sqrt(12 x 1.0e-6 x 0.30/0.60) = 2.449 mm (3.46 x/sqrt(Re_x)).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Air (kinematic viscosity 1.5e-5 m^2/s) flows at 40.0 m/s over a smooth flat plate and the boundary layer is turbulent from the leading edge. Use the correlation delta/x = 0.37 Re_x^(-1/5) to estimate the boundary layer thickness at x = 2.00 m in millimetres.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o3"
+   ],
+   "correctValue": 33.4066,
+   "tolerance": 0.3,
+   "unit": "mm",
+   "explanation": "Re_x = 40.0 x 2.00/1.5e-5 = 5.333e+06. Re_x^(-1/5) = 0.0451, so delta = 0.37 x 2.00 x 0.0451 = 0.0334 m = 33.4 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How does the boundary layer thickness grow with distance x along a smooth flat plate in the laminar and turbulent regimes?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Both grow in proportion to x^(1/2)"
+    },
+    {
+     "id": "b",
+     "text": "Laminar: proportional to x; turbulent: proportional to x^(1/2)"
+    },
+    {
+     "id": "c",
+     "text": "Laminar: proportional to x^(1/2); turbulent: roughly proportional to x^(4/5)"
+    },
+    {
+     "id": "d",
+     "text": "Laminar: proportional to x^(4/5); turbulent: proportional to x^(1/2)"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Laminar: proportional to x^(1/2); turbulent: roughly proportional to x^(4/5)",
+   "distractorRationale": {
+    "a": "The two regimes have different exponents because turbulent mixing thickens the layer faster.",
+    "b": "This swaps the exponents and gives linear laminar growth.",
+    "c": "Correct: Blasius gives delta proportional to sqrt(x), the turbulent correlation gives x^(4/5).",
+    "d": "This reverses the two regimes: the turbulent layer grows faster."
+   },
+   "explanation": "Since $\\delta_{lam}\\propto x\\,Re_x^{-1/2}\\propto x^{1/2}$ and $\\delta_{turb}\\propto x\\,Re_x^{-1/5}\\propto x^{4/5}$, a turbulent layer thickens faster as it moves downstream.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the wall shear stress at the point of boundary layer separation?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero"
+    },
+    {
+     "id": "b",
+     "text": "Equal to the free-stream dynamic pressure"
+    },
+    {
+     "id": "c",
+     "text": "Maximum"
+    },
+    {
+     "id": "d",
+     "text": "Negative infinity"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Zero",
+   "distractorRationale": {
+    "a": "Correct: separation is defined as (du/dy)_w = 0.",
+    "b": "There is no such relation; tau_w is related to the wall gradient.",
+    "c": "Shear stress is largest at the leading edge, not at separation.",
+    "d": "The shear is finite; reverse flow makes it negative downstream of separation, not at the point."
+   },
+   "explanation": "At separation the velocity gradient at the wall vanishes, $(\\partial u/\\partial y)_w=0$, so $\\tau_w=0$. Downstream of this point the near-wall flow is reversed and $\\tau_w$ is negative.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "On a flat plate aligned with a uniform stream (zero pressure gradient), a laminar boundary layer will eventually separate if the plate is long enough.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "With no adverse pressure gradient there is nothing to decelerate the near-wall fluid beyond viscous friction, so the wall shear stress remains positive. The layer will thicken and, at a high enough Reynolds number, undergo transition to turbulence, but it does not separate.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "In a laminar boundary layer, the velocity profile is parabolic, u/U = 2y/delta - (y/delta)^2, with delta = 3.0 mm and free-stream speed U = 8.0 m/s in air of dynamic viscosity 1.8e-5 Pa s. Find the wall shear stress in pascals.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o1"
+   ],
+   "correctValue": 0.096,
+   "tolerance": 0.002,
+   "unit": "Pa",
+   "explanation": "The wall gradient is du/dy at y = 0, equal to 2U/delta = 2 x 8.0/0.003 = 5333 1/s. Then tau_w = mu du/dy = 1.8e-5 x 5333 = 0.0960 Pa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does a turbulent boundary layer withstand an adverse pressure gradient longer than a laminar layer before separating?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o2",
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Turbulent flow has zero pressure gradient"
+    },
+    {
+     "id": "b",
+     "text": "Turbulent mixing carries high-momentum fluid towards the wall, giving a fuller profile and larger near-wall momentum"
+    },
+    {
+     "id": "c",
+     "text": "Turbulent layers have lower skin friction"
+    },
+    {
+     "id": "d",
+     "text": "Turbulent layers are thinner than laminar layers"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Turbulent mixing carries high-momentum fluid towards the wall, giving a fuller profile and larger near-wall momentum",
+   "distractorRationale": {
+    "a": "The pressure gradient is imposed by the outer flow and is not changed by turbulence.",
+    "b": "Correct: more near-wall momentum is available to overcome the pressure rise.",
+    "c": "Turbulent layers have higher wall shear stress, not lower.",
+    "d": "They are thicker, and thickness is not the reason."
+   },
+   "explanation": "Mixing transfers momentum from the outer flow into the near-wall region, making the profile fuller and increasing $(\\partial u/\\partial y)_w$. A larger near-wall momentum takes a stronger or longer adverse gradient to reduce wall shear to zero.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why an adverse pressure gradient can cause a laminar boundary layer to separate. Use the momentum balance at the wall to justify why the velocity profile develops an inflection point and describe what happens to the wall shear stress and to the drag of a bluff body when separation occurs.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o2"
+   ],
+   "markingGuide": [
+    "Adverse gradient: dp/dx > 0 (free stream decelerates and pressure rises downstream)",
+    "Near-wall fluid has low kinetic energy after viscous losses so is decelerated more than the free stream",
+    "At the wall u = v = 0, so mu d2u/dy2 = dp/dx > 0: profile curvature is positive at the wall while negative further out, giving an inflection point",
+    "Wall shear falls as the gradient steepens and reaches zero at separation, with reverse flow beyond",
+    "Separated, low-pressure wake raises pressure (form) drag of a bluff body"
+   ],
+   "explanation": "The pressure rise decelerates the weakest, slowest fluid nearest the wall. Evaluating the momentum equation at the wall gives $\\mu(\\partial^2u/\\partial y^2)_w=dp/dx>0$, which tilts the profile until $(\\partial u/\\partial y)_w=0$ at separation. Beyond this point a thick low-pressure wake forms and form drag increases sharply.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Use the momentum integral equation with the cubic profile u/U = 1.5 eta - 0.5 eta^3 (for which theta = 39 delta/280 and (du/dy)_w = 1.5 U/delta) to derive delta(x) and c_f for a laminar flat-plate boundary layer. Evaluate the thickness in mm at x = 0.080 m for water of kinematic viscosity 1.0e-6 m^2/s at U = 5.0 m/s.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.boundary-layers.momentum-integral.o1"
+   ],
+   "markingGuide": [
+    "Writes tau_w = rho U^2 d theta/dx for zero pressure gradient",
+    "tau_w = 1.5 mu U/delta and theta = (39/280) delta",
+    "Obtains delta d delta = (1.5 x 280/39) nu dx/U = 10.77 nu dx/U",
+    "Integrates: delta^2 = 21.54 nu x/U, so delta = 4.64 x/sqrt(Re_x)",
+    "c_f = 2 tau_w/(rho U^2) = 3 nu/(U delta) = 0.646/sqrt(Re_x)",
+    "At x = 0.080 m: Re_x = 4.0e+05 and delta = 0.587 mm"
+   ],
+   "explanation": "Substituting gives $\\delta\\,d\\delta=10.77\\,\\nu\\,dx/U$ and so $\\delta=4.64\\,x/\\sqrt{Re_x}$, with $c_f=0.646/\\sqrt{Re_x}$. At x = 0.080 m, $Re_x=4.00e+05$ and the thickness is 0.587 mm, within 8 per cent of the Blasius value 0.632 mm.",
+   "board": "internal"
+  }
+ ]
+}

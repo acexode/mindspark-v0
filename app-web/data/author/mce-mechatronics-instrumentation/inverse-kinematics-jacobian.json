@@ -1,0 +1,398 @@
+{
+ "lessonTitle": "Inverse Kinematics and the Jacobian",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A welding robot must drag its torch along a seam at a steady 20 mm/s. The seam is described by points in the workshop, but the robot is commanded by joint angles, so every point must be converted into angles, and every velocity into joint speeds. Inverse kinematics and the Jacobian do exactly that."
+  },
+  {
+   "type": "text",
+   "markdown": "**Inverse kinematics (IK)** finds the joint values that place the end effector at a desired position. Unlike forward kinematics, IK can have no solution (target out of reach), one, two or infinitely many. For the planar two-link arm with link lengths $l_1,l_2$ (metres) the solution is closed form. The **Jacobian** then maps joint velocities to end-effector velocities, and tells us where that mapping fails."
+  },
+  {
+   "type": "math",
+   "latex": "\\cos\\theta_2=\\frac{x^2+y^2-l_1^2-l_2^2}{2\\,l_1l_2},\\qquad \\theta_1=\\operatorname{atan2}(y,x)-\\operatorname{atan2}\\bigl(l_2\\sin\\theta_2,\\ l_1+l_2\\cos\\theta_2\\bigr)",
+   "caption": "Inverse kinematics of the two-link planar arm"
+  },
+  {
+   "type": "text",
+   "markdown": "The first equation comes from the law of cosines applied to the triangle formed by the two links and the line from base to target. A solution exists only if the right-hand side lies in $[-1,1]$, which means the target distance lies between $|l_1-l_2|$ and $l_1+l_2$. Because $\\theta_2=\\pm\\arccos(\\cdot)$, there are normally **two solutions**: elbow-down ($\\theta_2>0$) and elbow-up ($\\theta_2<0$). Choose using joint limits, obstacles and the shortest motion from the current pose."
+  },
+  {
+   "type": "worked_example",
+   "title": "Solving the inverse kinematics",
+   "prompt": "A planar arm has $l_1=0.50$ m and $l_2=0.40$ m. Find both joint solutions for a target at $(0.60,\\,0.40)$ m.",
+   "steps": [
+    {
+     "text": "Compute $\\cos\\theta_2$ from the target distance squared $0.52$.",
+     "latex": "\\cos\\theta_2=\\frac{0.52-0.25-0.16}{2(0.5)(0.4)}=0.275"
+    },
+    {
+     "text": "Take both signs of the inverse cosine.",
+     "latex": "\\theta_2=\\pm74.04^\\circ"
+    },
+    {
+     "text": "For $\\theta_2=+74.04^\\circ$ (elbow-down): $\\operatorname{atan2}(0.4,0.6)=33.69^\\circ$ and the second term is $\\operatorname{atan2}(0.3846,0.6100)=32.23^\\circ$.",
+     "latex": "\\theta_1=33.69^\\circ-32.23^\\circ=1.46^\\circ"
+    },
+    {
+     "text": "For $\\theta_2=-74.04^\\circ$ (elbow-up) the second term is $-32.23^\\circ$.",
+     "latex": "\\theta_1=33.69^\\circ+32.23^\\circ=65.92^\\circ"
+    },
+    {
+     "text": "Verify the first solution with forward kinematics.",
+     "latex": "x=0.5\\cos1.46^\\circ+0.4\\cos75.50^\\circ=0.600,\\ y=0.400"
+    }
+   ],
+   "answer": "Elbow-down: (theta1, theta2) = (1.46, 74.04) degrees; elbow-up: (65.92, -74.04) degrees. Forward kinematics returns (0.600, 0.400) m, confirming the result."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Jacobian",
+   "text": "The Jacobian $J(\\boldsymbol{\\theta})$ is the matrix of partial derivatives of tip position with respect to joint angles. It relates joint rates $\\dot{\\boldsymbol\\theta}$ (rad/s) to tip velocity $\\mathbf{v}$ (m/s) through $\\mathbf{v}=J\\dot{\\boldsymbol\\theta}$ and depends on the current configuration."
+  },
+  {
+   "type": "math",
+   "latex": "J=\\begin{bmatrix}-l_1\\sin\\theta_1-l_2\\sin(\\theta_1+\\theta_2)&-l_2\\sin(\\theta_1+\\theta_2)\\\\ l_1\\cos\\theta_1+l_2\\cos(\\theta_1+\\theta_2)&l_2\\cos(\\theta_1+\\theta_2)\\end{bmatrix},\\qquad \\det J=l_1l_2\\sin\\theta_2",
+   "caption": "Jacobian of the planar two-link arm (derived by differentiating x and y)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Tip velocity from joint rates",
+   "prompt": "With $l_1=0.50$ m, $l_2=0.40$ m, $\\theta_1=30^\\circ$ and $\\theta_2=60^\\circ$, the joints move at $\\dot\\theta_1=0.5$ rad/s and $\\dot\\theta_2=0.2$ rad/s. Find the tip velocity.",
+   "steps": [
+    {
+     "text": "The absolute angle of link 2 is $90^\\circ$, so $\\sin90^\\circ=1$ and $\\cos90^\\circ=0$. Evaluate the Jacobian.",
+     "latex": "J=\\begin{bmatrix}-0.25-0.40&-0.40\\\\ 0.433+0&0\\end{bmatrix}=\\begin{bmatrix}-0.650&-0.400\\\\ 0.433&0\\end{bmatrix}"
+    },
+    {
+     "text": "Multiply by the joint rates.",
+     "latex": "v_x=-0.650(0.5)-0.400(0.2)=-0.405\\ \\text{m/s},\\quad v_y=0.433(0.5)=0.217\\ \\text{m/s}"
+    },
+    {
+     "text": "Combine into a speed.",
+     "latex": "|\\mathbf{v}|=\\sqrt{-0.405^2+0.217^2}=0.459\\ \\text{m/s}"
+    }
+   ],
+   "answer": "The tip moves at (-0.405, 0.217) m/s, a speed of 0.459 m/s."
+  },
+  {
+   "type": "text",
+   "markdown": "**Singularities.** A configuration is singular when $\\det J=0$, that is $\\sin\\theta_2=0$: the arm is fully stretched ($\\theta_2=0$) or fully folded ($\\theta_2=180^\\circ$). The Jacobian then loses rank (from 2 to 1), so the tip cannot move along the direction of the arm however fast the joints turn. Near a singularity, the inverse $J^{-1}$ has huge entries, so a modest tip velocity demands very large joint rates."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Configuration",
+    "$\\det J$",
+    "Rank of $J$",
+    "Consequence"
+   ],
+   "rows": [
+    [
+     "$\\theta_2=0$ (stretched)",
+     "0",
+     "1",
+     "Cannot move radially; boundary of the workspace"
+    ],
+    [
+     "$\\theta_2=180^\\circ$ (folded)",
+     "0",
+     "1",
+     "Cannot move radially; inner boundary"
+    ],
+    [
+     "$\\theta_2=5^\\circ$ (nearly stretched)",
+     "small",
+     "2 but nearly 1",
+     "Very large joint rates for radial motion"
+    ],
+    [
+     "$\\theta_2=90^\\circ$",
+     "$l_1l_2$ (maximum)",
+     "2",
+     "Best conditioned motion"
+    ]
+   ],
+   "caption": "Singular and near-singular configurations of the two-link arm"
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not trust $J^{-1}$ near singularities",
+   "text": "Planning tool paths through a singular pose can ask for infinite joint speeds. Practical controllers avoid the region, limit joint rates, or use damped inverses."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "IK for the two-link arm uses the law of cosines and gives two solutions (elbow-up and elbow-down) when the target is reachable.",
+    "A target is reachable only if its distance from the base lies between $|l_1-l_2|$ and $l_1+l_2$.",
+    "The Jacobian maps joint rates to tip velocity, $\\mathbf{v}=J\\dot{\\boldsymbol\\theta}$, and $\\det J=l_1l_2\\sin\\theta_2$ for the planar arm.",
+    "Singularities occur at $\\theta_2=0$ or $180^\\circ$, where rank drops and joint rates become unbounded for some tip motions."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a target strictly inside the workspace of a planar two-link arm, how many inverse-kinematics solutions are there?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Two: elbow-up and elbow-down"
+    },
+    {
+     "id": "b",
+     "text": "Exactly one"
+    },
+    {
+     "id": "c",
+     "text": "Infinitely many"
+    },
+    {
+     "id": "d",
+     "text": "None"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Two: elbow-up and elbow-down",
+   "distractorRationale": {
+    "a": "Correct: positive and negative theta2.",
+    "b": "One solution occurs only on the boundary where theta2 is 0 or 180 degrees.",
+    "c": "Infinitely many solutions appear for redundant arms, not for two links in a plane.",
+    "d": "A target inside the reach limits has at least one solution."
+   },
+   "explanation": "The equation $\\cos\\theta_2=\\ldots$ gives $\\theta_2=\\pm\\arccos(\\cdot)$, and each sign has a matching $\\theta_1$, so two mirror-image solutions exist. Only on the workspace boundary do they coincide.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does the manipulator Jacobian relate?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Joint angles to end-effector position"
+    },
+    {
+     "id": "b",
+     "text": "Motor current to joint torque"
+    },
+    {
+     "id": "c",
+     "text": "Link lengths to workspace area"
+    },
+    {
+     "id": "d",
+     "text": "Joint velocities to end-effector velocity"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Joint velocities to end-effector velocity",
+   "distractorRationale": {
+    "a": "That mapping is forward kinematics.",
+    "b": "Torque and current are related by the motor constant.",
+    "c": "Link lengths are constants within the Jacobian, not its inputs and outputs.",
+    "d": "Correct: joint rates to tip velocity."
+   },
+   "explanation": "The Jacobian is the derivative of the forward-kinematic map, so $\\mathbf{v}=J\\dot{\\boldsymbol\\theta}$ links joint rates to tip velocity. The position map itself is the forward kinematics, not the Jacobian.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A planar two-link arm is fully stretched out ($\\theta_2=0$). What can the tip not do, however fast the joints move?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Move perpendicular to the arm"
+    },
+    {
+     "id": "b",
+     "text": "Rotate about the base"
+    },
+    {
+     "id": "c",
+     "text": "Move along the direction of the arm"
+    },
+    {
+     "id": "d",
+     "text": "Move at all"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Move along the direction of the arm",
+   "distractorRationale": {
+    "a": "The tip can still swing perpendicular to the arm.",
+    "b": "Joint 1 still rotates the whole arm.",
+    "c": "Correct: radial motion is lost at the singularity.",
+    "d": "The tip can still move sideways, so it is not stationary."
+   },
+   "explanation": "At $\\theta_2=0$ both columns of the Jacobian are parallel to each other and perpendicular to the arm, so only perpendicular velocity is possible. Radial motion needs an infinite rate.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A tool path passes close to a singular configuration of a robot arm. What is the likely result at a constant tip speed?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Very large joint speeds are demanded"
+    },
+    {
+     "id": "b",
+     "text": "Joint speeds fall to zero"
+    },
+    {
+     "id": "c",
+     "text": "The Jacobian becomes the identity"
+    },
+    {
+     "id": "d",
+     "text": "The arm gains an extra degree of freedom"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Very large joint speeds are demanded",
+   "distractorRationale": {
+    "a": "Correct: joint rates blow up.",
+    "b": "Zero rates would happen if the tip speed were zero, not near a singularity.",
+    "c": "The Jacobian approaches rank deficiency, not the identity.",
+    "d": "The singularity removes mobility instead of adding any."
+   },
+   "explanation": "Near a singularity $\\det J\\to0$, so $J^{-1}$ has very large entries and the required $\\dot{\\boldsymbol\\theta}=J^{-1}\\mathbf{v}$ grows without bound. Controllers must slow the tip or avoid the region.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A two-link arm has $l_1=0.50$ m and $l_2=0.40$ m. Its tip is commanded to $(1.2,\\,0)$ m. What does the IK calculation show?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Two solutions"
+    },
+    {
+     "id": "b",
+     "text": "One solution with $\\theta_2=0$"
+    },
+    {
+     "id": "c",
+     "text": "No solution, because $\\cos\\theta_2>1$"
+    },
+    {
+     "id": "d",
+     "text": "A solution with a negative link length"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "No solution, because $\\cos\\theta_2>1$",
+   "distractorRationale": {
+    "a": "Two solutions require a reachable target.",
+    "b": "$\\theta_2=0$ would reach only 0.9 m.",
+    "c": "Correct: the target is beyond $l_1+l_2=0.9$ m.",
+    "d": "Link lengths are fixed and never change."
+   },
+   "explanation": "Here $\\cos\\theta_2=(1.44-0.25-0.16)/0.40=2.575$, which exceeds 1, so no real angle exists. The target is 1.2 m away and the maximum reach is 0.9 m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A planar arm with $l_1=0.40$ m and $l_2=0.30$ m must put its tip at $(0.55,\\,0.25)$ m. Find the elbow-down angle $\\theta_2$ (positive) in degrees.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o1"
+   ],
+   "correctValue": 61.4,
+   "tolerance": 0.3,
+   "unit": "degrees",
+   "explanation": "$\\cos\\theta_2=(0.365-0.16-0.09)/(2\\times0.4\\times0.3)=0.4792$, so $\\theta_2=\\arccos(0.4792)=61.4^\\circ$. The elbow-up solution is the negative of this.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A two-link arm with $l_1=0.60$ m and $l_2=0.30$ m is at $\\theta_1=0^\\circ$, $\\theta_2=90^\\circ$ with $\\dot\\theta_1=1.0$ rad/s and $\\dot\\theta_2=-0.5$ rad/s. Compute the speed of the tip in m/s.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o2"
+   ],
+   "correctValue": 0.618,
+   "tolerance": 0.005,
+   "unit": "m/s",
+   "explanation": "At this pose $J=[[-0.30,-0.30],[0.60,0]]$, so $v_x=-0.30(1.0)-0.30(-0.5)=-0.15$ m/s and $v_y=0.60(1.0)=0.60$ m/s. The speed is $\\sqrt{0.15^2+0.60^2}=0.618$ m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A two-link arm with $l_1=l_2=0.50$ m is at $\\theta_1=0^\\circ$ and $\\theta_2=5^\\circ$ (nearly stretched). The tip must move along the x-axis at $0.10$ m/s (with $v_y=0$). Find the magnitude of the required $\\dot\\theta_2$ in rad/s using $\\dot{\\boldsymbol\\theta}=J^{-1}\\mathbf{v}$.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o2",
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o3"
+   ],
+   "correctValue": 4.58,
+   "tolerance": 0.1,
+   "unit": "rad/s",
+   "explanation": "Here $\\det J=l_1l_2\\sin5^\\circ=0.0218$ m^2 and $J_{21}=0.9981$, so $\\dot\\theta_2=-J_{21}v_x/\\det J=-4.58$ rad/s (and $\\dot\\theta_1=+2.29$ rad/s). The very large rates show the effect of being close to a singularity.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why a planar two-link arm generally has two inverse-kinematics solutions for a reachable target, and describe the criteria for choosing between them and the condition under which no solution exists.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o1"
+   ],
+   "markingGuide": [
+    "Derives $\\cos\\theta_2$ from the law of cosines and notes $\\theta_2=\\pm\\arccos$ (2 marks)",
+    "Describes elbow-up and elbow-down as mirror-image poses reaching the same point (1 mark)",
+    "Gives the reachability condition $|l_1-l_2|\\le r\\le l_1+l_2$, or equivalently $|\\cos\\theta_2|\\le1$ (2 marks)",
+    "States selection criteria: joint limits, obstacles, minimum joint motion from the current pose (2 marks)",
+    "Mentions the two solutions merge at the workspace boundary (1 mark)"
+   ],
+   "explanation": "The law of cosines fixes only $\\cos\\theta_2$, leaving a sign ambiguity that produces mirror-image solutions; a target is reachable only if $|\\cos\\theta_2|\\le1$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "For a two-link arm with $l_1=0.45$ m and $l_2=0.35$ m, show that $\\det J=l_1l_2\\sin\\theta_2$ and identify the singular configurations. Describe what happens to the tip motion and joint rates as $\\theta_2\\to0$, and suggest two ways a controller can cope. Evaluate $\\det J$ at $\\theta_2=5^\\circ$.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o2",
+    "ug.mce-mechatronics-instrumentation.robot-kinematics.inverse-kinematics-jacobian.o3"
+   ],
+   "markingGuide": [
+    "Computes the determinant from the Jacobian entries and simplifies to $l_1l_2\\sin\\theta_2$ (2 marks)",
+    "Identifies singularities at $\\theta_2=0$ and $180^\\circ$, with the arm stretched or folded (1 mark)",
+    "Explains rank drops to 1 so radial tip motion is impossible, and that joint rates grow like $1/\\sin\\theta_2$ (2 marks)",
+    "Evaluates $\\det J=0.45\\times0.35\\sin5^\\circ=0.0137$ m^2 at 5 degrees (1 mark)",
+    "Suggests two remedies: avoid singular poses in path planning, limit joint rates, or use a damped pseudo-inverse (2 marks)"
+   ],
+   "explanation": "Expanding the determinant gives $l_1l_2\\sin\\theta_2$, which vanishes when the arm is straight or folded. At 5 degrees it equals 0.0137 m^2, so radial velocity demands very large joint rates.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,401 @@
+{
+  "lessonTitle": "Designing for Additive: Orientation, Anisotropy and Build Estimates",
+  "estimatedMinutes": 25,
+  "blocks": [
+    {
+      "type": "hook",
+      "text": "A student prints the same bracket twice from one file: standing upright, it snaps under a tensile load of 600 N; lying flat, it carries more than twice that. The shape, material and printer were identical. Only the build orientation changed."
+    },
+    {
+      "type": "text",
+      "markdown": "Layer-wise processes build in the vertical (Z) direction. Where you place and rotate the part on the build plate sets its **build orientation**, and that choice affects strength, surface quality, support material, build time and cost. Designing for additive means choosing the orientation deliberately and then shaping the part to suit it."
+    },
+    {
+      "type": "callout",
+      "variant": "definition",
+      "title": "Anisotropy",
+      "text": "A part is anisotropic when its properties depend on direction. In extrusion and powder bed processes the material is **stronger along the layer plane (X and Y) than across layers (Z)**, because inter-layer bonds are weaker than the material within a deposited line and layer interfaces contain small voids and defects."
+    },
+    {
+      "type": "text",
+      "markdown": "**Why layer-wise parts are anisotropic.** Within a layer the bead or fused track is continuous, so load travels through bonded material. Across layers the bond depends on heat diffusion at the interface: the new bead only partly re-melts the layer beneath, which has already cooled, so the bond area is smaller than the cross-section and the boundary has notches between beads where cracks start. A load that tries to pull layers apart (tension in Z) therefore fails at lower stress than one that stretches the layers along their length."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Orientation",
+        "Strength in loaded direction",
+        "Surface finish",
+        "Support volume",
+        "Build height and layers"
+      ],
+      "rows": [
+        [
+          "Flat on its largest face",
+          "Layers parallel to long axis: high for in-plane loads",
+          "Top face good; underside rough where supported",
+          "Low for plate-like parts",
+          "Low height, few layers, fastest"
+        ],
+        [
+          "Standing upright",
+          "Load along Z crosses layers: weakest",
+          "Vertical walls smooth, stair steps on curves",
+          "Depends on overhangs; can be lowest for tall bosses",
+          "Tall, many layers, slowest"
+        ],
+        [
+          "On its side",
+          "Mixed",
+          "Compromise",
+          "Often highest for through-holes",
+          "Intermediate"
+        ]
+      ],
+      "caption": "Qualitative comparison; the best choice depends on the part and its loading."
+    },
+    {
+      "type": "text",
+      "markdown": "**Surface finish** is affected by **stair-stepping**: a sloped or curved surface is built from rectangular layers, so the surface shows a series of steps whose height grows with layer height and with the angle toward the horizontal. Cosmetic or sealing faces are best oriented vertical or with the layers parallel to the surface. Finishing methods such as sanding, vapour smoothing or machining are applied afterwards; critical faces printed with extra stock can be machined to size."
+    },
+    {
+      "type": "math",
+      "latex": "N_{layers}=\\frac{H}{h}\\qquad t_{build}\\approx N_{layers}\\,t_{layer}+\\frac{V_{part}+V_{support}}{Q}",
+      "caption": "Layer count from part height H in the build direction and layer height h; build time from per-layer overhead tlayer (recoating, travel) and volumetric deposition rate Q."
+    },
+    {
+      "type": "worked_example",
+      "title": "Comparing two orientations for time and material",
+      "prompt": "A bracket of volume 48 cm$^3$ is built from PLA (typical density 1.24 g/cm$^3$). Orientation A is 60 mm tall with 4 cm$^3$ of support; orientation B is 25 mm tall with 14 cm$^3$ of support. Layer height 0.2 mm, layer overhead 6 s, deposition rate $Q=8$ mm$^3$/s. Compare build time and material mass.",
+      "steps": [
+        {
+          "text": "Number of layers: height divided by layer height.",
+          "latex": "N_A=\\frac{60}{0.2}=300,\\quad N_B=\\frac{25}{0.2}=125"
+        },
+        {
+          "text": "Overhead time: layers times 6 s gives 1800 s for A and 750 s for B.",
+          "latex": "t_{ov,A}=300\\times6=1800\\ \\mathrm{s},\\quad t_{ov,B}=125\\times6=750\\ \\mathrm{s}"
+        },
+        {
+          "text": "Deposition time: total volume (part plus support) over Q. Volumes are 52 000 mm^3 for A and 62 000 mm^3 for B.",
+          "latex": "t_{dep,A}=\\frac{52000}{8}=6500\\ \\mathrm{s},\\quad t_{dep,B}=\\frac{62000}{8}=7750\\ \\mathrm{s}"
+        },
+        {
+          "text": "Total times: A = 1800 + 6500 = 8300 s = 2.31 h; B = 750 + 7750 = 8500 s = 2.36 h.",
+          "latex": "t_A=8300\\ \\mathrm{s},\\quad t_B=8500\\ \\mathrm{s}"
+        },
+        {
+          "text": "Material mass: volume times density. A: 52 x 1.24 = 64.5 g. B: 62 x 1.24 = 76.9 g.",
+          "latex": "m_A=64.5\\ \\mathrm{g},\\quad m_B=76.9\\ \\mathrm{g}"
+        }
+      ],
+      "answer": "The times are almost the same (2.31 h and 2.36 h) but B uses 12.4 g more material. Orientation A is slightly better on time and material, so strength and finish should decide."
+    },
+    {
+      "type": "worked_example",
+      "title": "Orientation and strength margin",
+      "prompt": "A tie bar of cross-section 10 mm x 6 mm carries a tensile load of 800 N. Typical strengths for the printed material are 50 MPa along the layers and 25 MPa across layers. Compare the safety factors for the two orientations.",
+      "steps": [
+        {
+          "text": "Stress is load divided by area: the area is 60 mm^2.",
+          "latex": "\\sigma=\\frac{800}{60}=13.3\\ \\mathrm{MPa}"
+        },
+        {
+          "text": "If the bar is printed flat, the load runs along the layers: safety factor is strength over stress.",
+          "latex": "n_{flat}=\\frac{50}{13.3}=3.75"
+        },
+        {
+          "text": "If the bar is printed upright, the load pulls layers apart: use the Z strength.",
+          "latex": "n_{upright}=\\frac{25}{13.3}=1.88"
+        }
+      ],
+      "answer": "Flat orientation gives a safety factor of 3.75; upright gives 1.88, half as much, so the bar should be printed flat unless other constraints prevent it."
+    },
+    {
+      "type": "list",
+      "style": "bullet",
+      "items": [
+        "Align the main tensile load with the layer plane, not across layers.",
+        "Place cosmetic or sealing faces vertical or parallel to layers to reduce stair-stepping.",
+        "Orient to minimise overhangs and support volume, particularly on hidden internal surfaces.",
+        "Lower height means fewer layers and a shorter overhead, but may increase support volume.",
+        "Add machining stock to faces that need tight tolerance or smooth finish."
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Orientation choices conflict",
+      "text": "The orientation that is strongest may leave the most support on a cosmetic face, and the one with least support may be tall and slow. State which requirement dominates before choosing, and check the others."
+    },
+    {
+      "type": "check",
+      "questionId": "q001"
+    },
+    {
+      "type": "callout",
+      "variant": "key-point",
+      "title": "Estimate before you print",
+      "text": "Layer count is $H/h$, build time is layer overhead plus volume over deposition rate, and material is total volume (part plus support) times density. Use these estimates to compare orientations quickly."
+    },
+    {
+      "type": "summary",
+      "points": [
+        "Orientation sets strength, surface finish, support volume and build time, so it is a design decision, not a printing detail.",
+        "Layer-wise parts are anisotropic: strength across layers is lower than along them because inter-layer bonds are weaker and contain voids.",
+        "Build time is about N_layers x t_layer plus total volume over deposition rate; material is total volume times density."
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A hollow cylindrical housing has a cosmetic outer curved surface and must be watertight. Which orientation best reduces stair-stepping on the curved surface?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o1"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Axis of the cylinder vertical, so the wall surface is built as vertical layers"
+        },
+        {
+          "id": "b",
+          "text": "Axis horizontal, so the curved surface passes through every angle to the layers"
+        },
+        {
+          "id": "c",
+          "text": "Tilted at 45 degrees to the plate"
+        },
+        {
+          "id": "d",
+          "text": "Any orientation, because stair-stepping does not depend on orientation"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "Axis of the cylinder vertical, so the wall surface is built as vertical layers",
+      "distractorRationale": {
+        "b": "With the axis horizontal, parts of the curve are nearly flat to the layers and show pronounced steps.",
+        "c": "A tilt makes more of the surface a shallow slope that steps strongly.",
+        "d": "Stair-stepping depends strongly on the angle between the surface and the layer plane."
+      },
+      "explanation": "A surface that is vertical is built by layers stacked directly above each other, so the steps are tiny. Stair-stepping is worst where the surface is shallow to the horizontal.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A flat bracket plate with a tall boss on one face has no overhangs when printed with the boss pointing up. What is the main advantage of that orientation over lying on its side, where the boss would project sideways?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o1"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Less support material is needed"
+        },
+        {
+          "id": "b",
+          "text": "The part is guaranteed to be isotropic"
+        },
+        {
+          "id": "c",
+          "text": "The need for any post-processing is removed"
+        },
+        {
+          "id": "d",
+          "text": "Inter-layer strength is increased"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "Less support material is needed",
+      "distractorRationale": {
+        "b": "The part is still anisotropic in any orientation.",
+        "c": "Post-processing such as support removal, cleaning and finishing is still needed whatever the orientation.",
+        "d": "Layer bonds are unchanged by orientation; only the load direction relative to them changes."
+      },
+      "explanation": "With the boss up, each layer rests on the layer below and no overhang needs support, so less support material is used. Lying on its side would put the boss in mid-air and require supports.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "What is the principal reason a part printed by extrusion is weaker across the layers than along them?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o2"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "The bond between neighbouring layers is weaker and contains voids, whereas within a layer the material is continuous"
+        },
+        {
+          "id": "b",
+          "text": "The material changes chemically from one layer to the next"
+        },
+        {
+          "id": "c",
+          "text": "The nozzle moves faster in the vertical direction"
+        },
+        {
+          "id": "d",
+          "text": "The part expands upward after it cools"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "The bond between neighbouring layers is weaker and contains voids, whereas within a layer the material is continuous",
+      "distractorRationale": {
+        "b": "The material is the same; the cause is partial bonding at the interface.",
+        "c": "The nozzle does not move continuously upward; Z moves in layer steps.",
+        "d": "Expansion is not the cause of the strength difference."
+      },
+      "explanation": "Within a layer, material is continuous; across layers the bond forms by diffusion at an interface where the earlier layer has cooled, leaving a smaller bonded area and notches. Pulling layers apart therefore needs less stress.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Two tensile specimens are printed in the same material, one lying flat with the load along the layers and one standing up with the load across layers. What will be observed?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o2"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "The flat specimen is stronger"
+        },
+        {
+          "id": "b",
+          "text": "The standing specimen is stronger"
+        },
+        {
+          "id": "c",
+          "text": "Both are identical because the cross-sections are the same"
+        },
+        {
+          "id": "d",
+          "text": "The standing specimen is stiffer in all directions"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "The flat specimen is stronger",
+      "distractorRationale": {
+        "b": "Load across layers is carried by weaker inter-layer bonds, so the standing specimen is weaker.",
+        "c": "Equal cross-section does not mean equal strength when properties depend on direction.",
+        "d": "Direction-dependent bonding does not make the specimen stronger in any direction."
+      },
+      "explanation": "Loading along the layers is carried by continuous deposited lines, while loading across layers must pull apart the weaker interfaces. Anisotropy means that identical cross-sections can give different strengths.",
+      "board": "internal"
+    },
+    {
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "A 90 mm tall part is sliced at a layer height of 0.3 mm. If the layer height is halved, what happens to the number of layers?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o3"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "It doubles, from 300 to 600"
+        },
+        {
+          "id": "b",
+          "text": "It halves, from 300 to 150"
+        },
+        {
+          "id": "c",
+          "text": "It stays the same"
+        },
+        {
+          "id": "d",
+          "text": "It increases by 50 %"
+        }
+      ],
+      "correctOptionId": "a",
+      "correctOptionText": "It doubles, from 300 to 600",
+      "distractorRationale": {
+        "b": "Halving the layer height gives more layers, not fewer.",
+        "c": "Layer count is height divided by layer height, so it changes.",
+        "d": "Number of layers varies inversely with layer height, giving 100 %, not 50 %."
+      },
+      "explanation": "The layer count is $H/h$, so halving h doubles N from 90/0.3 = 300 to 90/0.15 = 600. Smaller layers improve the stair-stepping but add time through the per-layer overhead.",
+      "board": "internal"
+    },
+    {
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "A part 45 mm tall, volume (with support) 36 cm$^3$, is printed at layer height 0.15 mm. Each layer carries 5 s of overhead and the deposition rate is 6 mm$^3$/s. Estimate the total build time in hours.",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o3"
+      ],
+      "correctValue": 2.083,
+      "tolerance": 0.02,
+      "unit": "h",
+      "explanation": "The layer count is $45/0.15=300$, giving 1500 s of overhead. Deposition takes $36000/6=6000$ s, so the total is 7500 s, or 2.08 h.",
+      "board": "internal"
+    },
+    {
+      "type": "numeric",
+      "difficulty": 1,
+      "stem": "A part of 52 cm$^3$ is printed with 11 cm$^3$ of support structure in ABS with density 1.05 g/cm$^3$. What is the mass of material used, in grams?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o3"
+      ],
+      "correctValue": 66.15,
+      "tolerance": 0.5,
+      "unit": "g",
+      "explanation": "The total volume is $52+11=63$ cm^3. Multiplying by the density gives 66.15 g. The support is a material cost even though it is removed afterwards.",
+      "board": "internal"
+    },
+    {
+      "type": "numeric",
+      "difficulty": 2,
+      "stem": "A printed link has a cross-section of 8 mm by 5 mm and is pulled so that the layers are pulled apart. The inter-layer tensile strength is taken as 28 MPa. What maximum load, in newtons, can it carry before the layers separate?",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o2"
+      ],
+      "correctValue": 1120,
+      "tolerance": 5,
+      "unit": "N",
+      "explanation": "The area is $8\\times5=40$ mm^2. The failure load is $28\\times40=1120$ N. Along the layers the same bar would carry more because the strength in that direction is higher.",
+      "board": "internal"
+    },
+    {
+      "type": "theory",
+      "difficulty": 2,
+      "stem": "A lightweight fan guard is to be printed in nylon on an FDM machine. It is a flat ring with a thin outer rim, loaded mainly in tension in the plane of the ring, and one face is visible to the customer. Choose a build orientation and justify it, covering strength, surface finish and support.",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o1",
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o2"
+      ],
+      "markingGuide": [
+        "Orientation flat so that layers lie in the plane of the ring and in-plane tension is carried along the layers",
+        "Notes that load across layers would be the weakest direction",
+        "Visible face placed upward or on the best-finishing side, noting stair-stepping is small on flat faces",
+        "Support is low because a flat ring has few overhangs",
+        "Mentions build height low and fewer layers, or notes any trade-off or finishing step"
+      ],
+      "explanation": "The best choice aligns the load with the layers, keeps the cosmetic face flat and keeps support to a minimum. Each requirement is addressed separately and the conflicts, if any, are named.",
+      "board": "internal"
+    },
+    {
+      "type": "theory",
+      "difficulty": 3,
+      "stem": "Explain why parts made by material extrusion and powder bed fusion are anisotropic, and give two design or process actions that reduce the consequences.",
+      "objectiveIds": [
+        "ug.mce-design-and-manufacture-1.additive-manufacturing.design-for-am.o2"
+      ],
+      "markingGuide": [
+        "Strength within a layer is higher because material is continuous",
+        "Between layers, bonding is by partial re-melting or diffusion and leaves voids and notches",
+        "Anisotropy means properties depend on direction relative to the build axis",
+        "Action: orient the main load along the layers or avoid loads that pull layers apart",
+        "Action: change the design (ribs or radii), annealing or heat treatment, or add stock and machine critical features"
+      ],
+      "explanation": "Layer interfaces are weaker than the bulk of a deposited line, so strength depends on the load direction relative to the layers. Aligning load with the layer plane and strengthening or finishing the interface reduces the penalty.",
+      "board": "internal"
+    }
+  ]
+}

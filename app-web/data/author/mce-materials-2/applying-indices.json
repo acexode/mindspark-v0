@@ -1,0 +1,461 @@
+{
+ "lessonTitle": "Applying Indices and Trade-offs",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A drone manufacturer needs a boom arm that stays stiff, survives a hot parked vehicle and costs under a set limit per kilogram. A database lists hundreds of materials: no engineer reads them all. Screening throws out the impossible ones, an index ranks what is left, and a chart makes the ranking visible at a glance."
+  },
+  {
+   "type": "text",
+   "markdown": "Once a performance index has been derived (for a stiff, light beam of square section it is $M=E^{1/2}/\\rho$), the work of selection is mechanical. It runs in three stages: **screen** with pass/fail constraints, **rank** the survivors with the index, and then **resolve** any conflict between performance and cost with an explicit trade-off value. This unit shows each stage with numbers."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Screening, ranking and the exchange constant",
+   "text": "**Screening** removes every material that fails a hard limit (for example $E\\ge E_{\\min}$, maximum service temperature, cost per kilogram). **Ranking** orders the survivors by the performance index $M$. The **exchange constant** $\\alpha$ is the value, in USD per kg, that the designer places on saving one kilogram of mass."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Material (typical)",
+    "E (GPa)",
+    "Density (Mg/m^3)",
+    "Cost (USD/kg, illustrative)",
+    "Index E^(1/2)/rho"
+   ],
+   "rows": [
+    [
+     "Steel",
+     "210",
+     "7.85",
+     "1",
+     "1.85"
+    ],
+    [
+     "Aluminium alloy",
+     "69",
+     "2.70",
+     "3",
+     "3.08"
+    ],
+    [
+     "Ti-6Al-4V",
+     "114",
+     "4.43",
+     "45",
+     "2.41"
+    ],
+    [
+     "CFRP (laminate)",
+     "100",
+     "1.55",
+     "60",
+     "6.45"
+    ],
+    [
+     "Magnesium alloy",
+     "45",
+     "1.77",
+     "4",
+     "3.79"
+    ],
+    [
+     "GFRP (laminate)",
+     "20",
+     "1.90",
+     "4",
+     "2.35"
+    ]
+   ],
+   "caption": "Candidate set used in this unit. Values are typical and rounded; cost is an illustrative price. The index is in GPa^(1/2) per (Mg/m^3)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Screen then rank a drone boom arm",
+   "prompt": "A boom arm must have $E\\ge30$ GPa, cost at most USD 20 per kg and survive 100 C. Every material in the table passes the temperature limit. Screen the table and rank the survivors by $M=E^{1/2}/\\rho$ (E in GPa, $\\rho$ in Mg m$^{-3}$).",
+   "steps": [
+    {
+     "text": "Apply the stiffness limit $E\\ge30$ GPa. GFRP has $E=20$ GPa and is removed; all other materials pass."
+    },
+    {
+     "text": "Apply the cost limit of USD 20 per kg. Ti-6Al-4V (45) and CFRP (60) are removed. Survivors: steel, aluminium alloy, magnesium alloy."
+    },
+    {
+     "text": "Compute the index for each survivor.",
+     "latex": "M_{\\text{Mg}}=\\frac{\\sqrt{45}}{1.77}=3.79,\\quad M_{\\text{Al}}=\\frac{\\sqrt{69}}{2.70}=3.08,\\quad M_{\\text{steel}}=\\frac{\\sqrt{210}}{7.85}=1.85"
+    },
+    {
+     "text": "Rank by index: higher $M$ means lower mass for the required stiffness. The magnesium alloy ranks first, aluminium second, steel last."
+    }
+   ],
+   "answer": "Magnesium alloy (M = 3.79), then aluminium alloy (3.08), then steel (1.85); GFRP, titanium and CFRP are screened out."
+  },
+  {
+   "type": "text",
+   "markdown": "**Property charts and selection lines.** On a chart of $\\log E$ against $\\log\\rho$, every material is a point. Because $M=E^{1/2}/\\rho$, a given value $M_0$ satisfies $\\log E=2\\log\\rho+2\\log M_0$, which is a straight line of **slope 2**. Moving the line upward raises $M_0$. All materials on or above the line have $M\\ge M_0$; those below it are worse. For a different index $M=E^{1/n}/\\rho$ the line has slope $n$ (slope 3 for a stiff light panel, $E^{1/3}/\\rho$)."
+  },
+  {
+   "type": "math",
+   "latex": "M=\\frac{E^{1/2}}{\\rho}\\ \\Rightarrow\\ \\log E=2\\log\\rho+2\\log M_0\\qquad\\text{(slope 2 on a log-log chart)}",
+   "caption": "Selection line for the index E^(1/2)/rho; materials above the line have an index larger than M0."
+  },
+  {
+   "type": "worked_example",
+   "title": "Place a selection line on the chart",
+   "prompt": "Draw the line $M_0=3.0$ GPa$^{1/2}$/(Mg m$^{-3}$) through the candidate set and decide which of steel, aluminium alloy and magnesium alloy lie above it.",
+   "steps": [
+    {
+     "text": "Write the line equation in linear form.",
+     "latex": "E=(M_0\\rho)^2=9\\rho^{2}"
+    },
+    {
+     "text": "Evaluate the line at each density. At $\\rho=2.70$ the line sits at $E=65.6$ GPa, at $\\rho=7.85$ at $E=555$ GPa and at $\\rho=1.77$ at $E=28.2$ GPa.",
+     "latex": "E_{\\text{line}}(2.70)=9\\times2.70^{2}=65.6\\ \\text{GPa}"
+    },
+    {
+     "text": "Compare each material's actual modulus with the line value at its own density. Aluminium (69 > 65.6) and magnesium (45 > 28.2) lie above the line; steel (210 < 555) lies far below it."
+    },
+    {
+     "text": "Aluminium and magnesium therefore satisfy $M\\ge3.0$; steel does not, in agreement with the indices 3.08, 3.79 and 1.85."
+    }
+   ],
+   "answer": "The selection line at M0 = 3.0 separates aluminium and magnesium (above) from steel (below)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Trade-offs.** Performance and cost often conflict: the lightest material is rarely the cheapest. A single combined objective turns this into a ranking. If the mass required is $m=k/M$ (with $k$ set by the geometry and load, the same for all materials), the cost of material is $C\\,m$ ($C$ in USD/kg) and each kilogram of mass is valued at $\\alpha$, the combined cost is $Z=(C+\\alpha)\\,m$. Minimising $Z$ means minimising $(C+\\alpha)/M$."
+  },
+  {
+   "type": "math",
+   "latex": "Z=(C+\\alpha)\\,m=\\frac{k\\,(C+\\alpha)}{M}\\qquad\\Rightarrow\\qquad \\text{minimise }\\ \\frac{C+\\alpha}{M}",
+   "caption": "C is the material price in USD per kg, alpha the value of a kilogram saved in USD per kg, and M the performance index."
+  },
+  {
+   "type": "worked_example",
+   "title": "Resolve a cost conflict at two exchange constants",
+   "prompt": "Using the table, find the best material for the stiff beam when $\\alpha=0$ (cost only) and when $\\alpha=100$ USD/kg (a weight-critical aircraft), with no cost limit. Then find the exchange constant at which aluminium alloy overtakes steel.",
+   "steps": [
+    {
+     "text": "Cost only ($\\alpha=0$): evaluate $C/M$. Steel is $1/1.85=0.54$, aluminium $0.98$, magnesium $1.06$, GFRP $1.70$, CFRP $9.3$, titanium $18.7$. Steel is cheapest per unit of performance.",
+     "latex": "\\frac{C}{M}"
+    },
+    {
+     "text": "Weight-critical ($\\alpha=100$): evaluate $(C+100)/M$. Steel $54.7$, aluminium $33.5$, magnesium $27.4$, GFRP $44.2$, titanium $60.2$, CFRP $24.8$. CFRP now wins despite its price.",
+     "latex": "\\frac{C+100}{M}\\Big|_{\\text{CFRP}}=\\frac{160}{6.45}=24.8"
+    },
+    {
+     "text": "For the aluminium/steel crossover set the two costs equal and solve for $\\alpha$.",
+     "latex": "\\frac{3+\\alpha}{3.08}=\\frac{1+\\alpha}{1.85}\\ \\Rightarrow\\ \\alpha\\approx2.0\\ \\text{USD/kg}"
+    }
+   ],
+   "answer": "Steel wins at alpha = 0, CFRP wins at alpha = 100 USD/kg, and aluminium overtakes steel above alpha of about 2 USD/kg."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Application (order of magnitude, typical)",
+    "Exchange constant alpha (USD per kg saved)",
+    "Typical outcome"
+   ],
+   "rows": [
+    [
+     "Bridge or building frame",
+     "about 0 or less",
+     "Cheapest material that meets the constraints"
+    ],
+    [
+     "Family car",
+     "about 1 to 5",
+     "Steel and aluminium compete"
+    ],
+    [
+     "Commercial aircraft",
+     "about 100 to 500",
+     "Composites and titanium justified"
+    ],
+    [
+     "Spacecraft",
+     "about 3000 or more",
+     "Lowest mass at almost any price"
+    ]
+   ],
+   "caption": "Higher alpha pushes the choice toward lighter and more expensive materials."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Screen before you rank",
+   "text": "A material that fails a hard constraint (temperature, toughness, cost limit) must be removed even if it has the highest index; the index only ranks materials that are already acceptable. Also, indices rank under the stated shape and loading assumptions: change the geometry and the ranking can change."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Screening applies pass/fail limits first; the performance index then ranks the survivors, and a higher index means less mass for the same function.",
+    "For $M=E^{1/n}/\\rho$ the selection line on a log $E$ against log $\\rho$ chart has slope $n$ (slope 2 for $E^{1/2}/\\rho$); materials above the line have a larger index.",
+    "Cost and performance conflicts are resolved by minimising $(C+\\alpha)/M$, where the exchange constant $\\alpha$ is the value of saving 1 kg; higher $\\alpha$ favours lighter, costlier materials."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A candidate material has the highest performance index in the database but its maximum service temperature is below the operating temperature. What should the selection procedure do?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Keep it, because the index is the only criterion that matters"
+    },
+    {
+     "id": "b",
+     "text": "Keep it but halve its index to account for the temperature"
+    },
+    {
+     "id": "c",
+     "text": "Eliminate it at the screening stage, because the temperature limit is a pass/fail constraint"
+    },
+    {
+     "id": "d",
+     "text": "Rank it last among the survivors and accept the risk"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Eliminate it at the screening stage, because the temperature limit is a pass/fail constraint",
+   "distractorRationale": {
+    "a": "Wrong: the index only ranks materials that already satisfy every constraint.",
+    "b": "Wrong: there is no rule for halving an index; a constraint is pass or fail.",
+    "c": "Correct: constraints are applied first, and a failure removes the material whatever its index.",
+    "d": "Wrong: ranking last still lets an unsuitable material remain a candidate."
+   },
+   "explanation": "A limit such as maximum service temperature is a hard constraint, so a material that fails it is removed before ranking. The performance index only orders materials that have already passed every constraint.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A timber has $E=12$ GPa and density $600$ kg m$^{-3}$. Evaluate the beam index $M=E^{1/2}/\\rho$ with $E$ in GPa and $\\rho$ in Mg m$^{-3}$. Give your answer in GPa$^{1/2}$ per (Mg m$^{-3}$).",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o1"
+   ],
+   "correctValue": 5.77,
+   "tolerance": 0.05,
+   "unit": "GPa^(1/2)/(Mg/m^3)",
+   "explanation": "Convert the density to $0.600$ Mg m$^{-3}$ and take $E^{1/2}=\\sqrt{12}=3.464$. Then $M=3.464/0.600=5.77$, which is high because the density is very low.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A light stiff panel has the performance index $M=E^{1/3}/\\rho$. What is the slope of the selection line on a chart of $\\log E$ (vertical) against $\\log\\rho$ (horizontal)?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3"
+    },
+    {
+     "id": "b",
+     "text": "1/3"
+    },
+    {
+     "id": "c",
+     "text": "2"
+    },
+    {
+     "id": "d",
+     "text": "1"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "3",
+   "distractorRationale": {
+    "a": "Correct: $\\log E=3\\log\\rho+3\\log M_0$, so the slope is 3.",
+    "b": "Wrong: 1/3 is the exponent on E in the index, not the slope; the line must be solved for log E.",
+    "c": "Wrong: slope 2 belongs to the beam index $E^{1/2}/\\rho$.",
+    "d": "Wrong: a slope of 1 corresponds to the specific stiffness index $E/\\rho$."
+   },
+   "explanation": "Taking logarithms of $M_0=E^{1/3}/\\rho$ gives $\\tfrac13\\log E-\\log\\rho=\\log M_0$, so $\\log E=3\\log\\rho+3\\log M_0$. The slope is the reciprocal of the exponent on E, which is 3.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "On a $\\log E$ against $\\log\\rho$ chart, a selection line for the beam index $M_0=4$ GPa$^{1/2}$/(Mg m$^{-3}$) passes through $E=16\\rho^{2}$. A material has $E=60$ GPa and $\\rho=1.8$ Mg m$^{-3}$. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It lies below the line and its index is less than 4"
+    },
+    {
+     "id": "b",
+     "text": "It lies on the line, so its index is exactly 4"
+    },
+    {
+     "id": "c",
+     "text": "It lies above the line but its index is less than 4"
+    },
+    {
+     "id": "d",
+     "text": "It lies above the line and its index is about 4.3, greater than 4"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It lies above the line and its index is about 4.3, greater than 4",
+   "distractorRationale": {
+    "a": "Wrong: 60 GPa exceeds the line value, so it lies above, not below.",
+    "b": "Wrong: the line value 51.8 GPa is not equal to 60 GPa.",
+    "c": "Wrong: being above the line means a larger index, not a smaller one.",
+    "d": "Correct: at $\\rho=1.8$ the line sits at $E=51.8$ GPa, the material has 60 GPa, and $\\sqrt{60}/1.8=4.30$."
+   },
+   "explanation": "The line value at $\\rho=1.8$ is $16\\times1.8^{2}=51.8$ GPa, which is below the material's 60 GPa, so the point is above the line. Directly, $M=\\sqrt{60}/1.8=4.30>4$, which confirms that points above the line have the larger index.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A selection line for $M_0=3.5$ GPa$^{1/2}$/(Mg m$^{-3}$) is drawn on a log-log chart of $E$ against $\\rho$. What modulus, in GPa, does the line have at $\\rho=2.0$ Mg m$^{-3}$?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o2"
+   ],
+   "correctValue": 49,
+   "tolerance": 0.5,
+   "unit": "GPa",
+   "explanation": "The line satisfies $E=(M_0\\rho)^2$. At $\\rho=2.0$ this is $(3.5\\times2.0)^2=7.0^{2}=49$ GPa, so a material at this density needs a modulus of at least 49 GPa to be on or above the line.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two materials give the same stiffness for the same geometry. Material P has price USD 2.0 per kg and index $M=2.5$; Material Q has price USD 14 per kg and index $M=5.0$ (same units). Find the exchange constant $\\alpha$, in USD per kg, at which the two have equal combined cost $Z\\propto(C+\\alpha)/M$.",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o3"
+   ],
+   "correctValue": 10,
+   "tolerance": 0.1,
+   "unit": "USD/kg",
+   "explanation": "Set $(2+\\alpha)/2.5=(14+\\alpha)/5.0$, so $5(2+\\alpha)=2.5(14+\\alpha)$, giving $10+5\\alpha=35+2.5\\alpha$. Then $2.5\\alpha=25$ and $\\alpha=10$ USD/kg; for larger $\\alpha$ the lighter, dearer material Q is better.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "Material R costs USD 5 per kg with index $M=3.0$; material S costs USD 25 per kg with index $M=4.5$. For a weight-critical application the exchange constant is $\\alpha=60$ USD/kg. Using $Z\\propto(C+\\alpha)/M$, which material should be chosen?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Material R, because it has the lower price per kilogram"
+    },
+    {
+     "id": "b",
+     "text": "Material S, because $(25+60)/4.5=18.9$ is lower than $(5+60)/3.0=21.7$"
+    },
+    {
+     "id": "c",
+     "text": "Material R, because its combined value $(5+60)/3.0=21.7$ is lower than that of S"
+    },
+    {
+     "id": "d",
+     "text": "Material S, because it has the higher price and so must be better"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Material S, because $(25+60)/4.5=18.9$ is lower than $(5+60)/3.0=21.7$",
+   "distractorRationale": {
+    "a": "Wrong: price per kilogram alone ignores the extra mass of the poorer material.",
+    "b": "Correct: the combined cost is lower for S once the value of mass is counted.",
+    "c": "Wrong: 21.7 is larger than 18.9, so R has the higher combined cost.",
+    "d": "Wrong: price is not a measure of performance; the choice follows from the numbers."
+   },
+   "explanation": "At $\\alpha=60$ the combined measure is $(5+60)/3.0=21.7$ for R and $(25+60)/4.5=18.9$ for S, so S is better. The crossover is at $\\alpha=35$ USD/kg, since $(5+35)/3.0=(25+35)/4.5$, so a mass-critical application above that value favours S.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A beam must be stiff and light and a screen needs at least $T_{\\max}\\ge120$ C and price at most USD 10 per kg. Five candidates are listed as (E in GPa, $\\rho$ in Mg m$^{-3}$, $T_{\\max}$ in C, price in USD/kg): A (70, 2.7, 200, 3.0); B (45, 1.8, 100, 4.0); C (110, 4.4, 400, 30); D (200, 7.8, 500, 1.0); E (38, 1.4, 150, 8.0). Which is the best choice by $E^{1/2}/\\rho$ after screening?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "B, with an index of about 3.7"
+    },
+    {
+     "id": "b",
+     "text": "A, with an index of about 3.1"
+    },
+    {
+     "id": "c",
+     "text": "D, with an index of about 1.8"
+    },
+    {
+     "id": "d",
+     "text": "E, with an index of about 4.4"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "E, with an index of about 4.4",
+   "distractorRationale": {
+    "a": "Wrong: B has a high index but fails the 120 C limit.",
+    "b": "Wrong: A passes the screen, but its index of 3.1 is below that of the correct material.",
+    "c": "Wrong: D passes but has the lowest index of the survivors.",
+    "d": "Correct: E passes both limits (150 C, 8 USD per kg) and has the largest index among the survivors A, D and E."
+   },
+   "explanation": "B fails the temperature limit (100 C) and C fails the price limit (30 USD per kg), so A, D and E survive. Their indices are $\\sqrt{70}/2.7=3.10$, $\\sqrt{200}/7.8=1.81$ and $\\sqrt{38}/1.4=4.40$, so E ranks first.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe, in order, how a designer selects a material for a lightweight stiff beam from a database of 3000 materials using screening, ranking and a chart. Explain what the selection line represents and why a material above it is preferred.",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o1",
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o2"
+   ],
+   "markingGuide": [
+    "Screening: apply pass/fail constraints (for example minimum modulus, service temperature, price) to remove unsuitable materials",
+    "Ranking: compute the performance index (here $E^{1/2}/\\rho$) for survivors and order them, larger index meaning less mass",
+    "Chart: plot $\\log E$ against $\\log\\rho$; the line $\\log E=2\\log\\rho+2\\log M_0$ has slope 2 and represents constant index $M_0$",
+    "Materials above the line have a larger index, so lower mass for the same stiffness; moving the line up tightens the selection",
+    "States that the survivors are then checked against secondary criteria (cost, manufacturability, other constraints)"
+   ],
+   "explanation": "Selection proceeds from hard constraints to an index-based ranking and then to a visual check. The line on the chart is a graphical statement of the index, so everything above it beats the chosen threshold.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A weight-critical aerospace bracket and a low-cost domestic appliance bracket need the same stiffness. Explain, using the exchange constant $\\alpha$ and the combined cost $Z\\propto(C+\\alpha)/M$, why they may end up using different materials, and describe what happens to the best choice as $\\alpha$ increases.",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.applying-indices.o3"
+   ],
+   "markingGuide": [
+    "Defines alpha as the value (in USD per kg) of saving one kilogram of mass",
+    "Writes the combined cost as proportional to $(C+\\alpha)/M$, with C the price per kg and M the performance index",
+    "For the appliance alpha is near zero, so the lowest $C/M$ (cheap, heavy material) wins",
+    "For the aerospace bracket alpha is large, so the $\\alpha$ term dominates and the choice follows the largest M (light, costly material)",
+    "As alpha increases the optimum moves from cheap, low-index materials to expensive, high-index ones, with crossover values found by equating the two $(C+\\alpha)/M$ expressions"
+   ],
+   "explanation": "The exchange constant decides how much a kilogram is worth, so the same index and price data give different optimal materials in different industries. Large alpha makes the term in $C$ negligible, whereas small alpha makes price the dominant term.",
+   "board": "internal"
+  }
+ ]
+}

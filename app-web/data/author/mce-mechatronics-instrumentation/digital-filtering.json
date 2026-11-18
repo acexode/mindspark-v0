@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "Digital Filtering: Moving Average and First-Order Filters",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hydraulic press load cell reads 12.4 kN, then 12.9, then 12.1, then 12.7 although the true force is steady. Smoothing the numbers in firmware removes the jitter, but every smoothing filter also delays the reading, and that delay is what decides whether the press controller stays stable."
+  },
+  {
+   "type": "text",
+   "markdown": "A **digital filter** computes each output sample from the current and earlier input samples. Here $x[k]$ is the input at sample $k$, $y[k]$ the output, and $T_s$ the sample period in seconds. Two filters cover most embedded smoothing: the **moving average** and the **first-order exponential (IIR) low-pass**. Both trade noise reduction against lag."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "First-order low-pass filter",
+   "text": "The digital equivalent of an RC filter with time constant $\\tau$ (seconds) updates $y[k]=y[k-1]+\\alpha\\,(x[k]-y[k-1])$ with smoothing factor $\\alpha=T_s/(\\tau+T_s)$, where $0<\\alpha\\le1$. It needs one stored value. This form is the backward-Euler discretisation; for $T_s\\ll\\tau$ it agrees closely with $1-e^{-T_s/\\tau}$."
+  },
+  {
+   "type": "math",
+   "latex": "y[k]=y[k-1]+\\alpha\\,\\bigl(x[k]-y[k-1]\\bigr),\\qquad \\alpha=\\frac{T_s}{\\tau+T_s}",
+   "caption": "Exponential (first-order) low-pass filter"
+  },
+  {
+   "type": "math",
+   "latex": "y[k]=\\frac{1}{M}\\sum_{i=0}^{M-1}x[k-i]",
+   "caption": "Moving average over the last M samples"
+  },
+  {
+   "type": "worked_example",
+   "title": "Implementing a filter from a time constant",
+   "prompt": "A sensor is sampled every $T_s=0.1$ s and must be filtered with $\\tau=0.5$ s. Find $\\alpha$, the first three outputs for a step input from 0 to 1, and the approximate delay.",
+   "steps": [
+    {
+     "text": "Compute the smoothing factor.",
+     "latex": "\\alpha=\\frac{0.1}{0.5+0.1}=0.1667"
+    },
+    {
+     "text": "Apply the recursion starting from $y[0]=0$ with $x=1$: $y[1]=0+0.1667(1-0)=0.1667$.",
+     "latex": "y[1]=0.1667"
+    },
+    {
+     "text": "Next: $y[2]=0.1667+0.1667(1-0.1667)=0.3056$, and $y[3]=0.3056+0.1667(1-0.3056)=0.4213$.",
+     "latex": "y[2]=0.3056,\\ y[3]=0.4213"
+    },
+    {
+     "text": "The low-frequency delay in samples is $(1-\\alpha)/\\alpha$, which equals $\\tau/T_s$.",
+     "latex": "\\frac{1-\\alpha}{\\alpha}=\\frac{0.8333}{0.1667}=5\\ \\text{samples}=0.5\\ \\text{s}"
+    }
+   ],
+   "answer": "alpha = 0.167; outputs 0.167, 0.306, 0.421; the filter delays slow signals by about 5 samples (0.5 s), equal to the time constant."
+  },
+  {
+   "type": "text",
+   "markdown": "**Noise reduction.** For white noise of standard deviation $\\sigma$ on each sample, a moving average of $M$ samples gives output deviation $\\sigma/\\sqrt{M}$, while the exponential filter gives $\\sigma\\sqrt{\\alpha/(2-\\alpha)}$. **Lag.** For slowly varying signals a moving average delays by $(M-1)/2$ samples (it is centred on its window), and the exponential filter by $(1-\\alpha)/\\alpha$ samples. Delay in seconds is samples times $T_s$, and delays of filters in series add."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Moving average (M samples)",
+    "Exponential filter ($\\alpha$)"
+   ],
+   "rows": [
+    [
+     "Memory needed",
+     "M stored samples (or running sum)",
+     "One value"
+    ],
+    [
+     "Low-frequency delay (samples)",
+     "$(M-1)/2$",
+     "$(1-\\alpha)/\\alpha$"
+    ],
+    [
+     "White-noise std factor",
+     "$1/\\sqrt{M}$",
+     "$\\sqrt{\\alpha/(2-\\alpha)}$"
+    ],
+    [
+     "Step response",
+     "Reaches final value exactly after M samples",
+     "Approaches final value, never exactly"
+    ],
+    [
+     "Matching rule",
+     "$\\alpha=2/(M+1)$ gives equal lag",
+     "$M=(2-\\alpha)/\\alpha$ gives equal lag"
+    ]
+   ],
+   "caption": "Moving average compared with the exponential filter"
+  },
+  {
+   "type": "worked_example",
+   "title": "Matching the two filters",
+   "prompt": "At $T_s=10$ ms a moving average with $M=9$ is replaced by an exponential filter with the same low-frequency delay. Find $\\alpha$, the delay and both noise factors.",
+   "steps": [
+    {
+     "text": "Moving-average delay.",
+     "latex": "\\frac{M-1}{2}=4\\ \\text{samples}=40\\ \\text{ms}"
+    },
+    {
+     "text": "Equate the exponential delay $(1-\\alpha)/\\alpha$ to 4 samples; the matching rule gives the same result.",
+     "latex": "\\alpha=\\frac{2}{M+1}=\\frac{2}{10}=0.2"
+    },
+    {
+     "text": "Noise factors: moving average and exponential.",
+     "latex": "\\frac{1}{\\sqrt{9}}=0.333,\\qquad \\sqrt{\\frac{0.2}{1.8}}=0.333"
+    }
+   ],
+   "answer": "alpha = 0.2, delay 4 samples = 40 ms for both, and both reduce white-noise deviation to one third. The exponential filter reaches the same result with one stored value instead of nine."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Smoothing always costs delay",
+   "text": "For white noise, matching the delay gives the same noise reduction, so neither filter beats the other on that trade. Choose by memory, step behaviour and how the filter sits in the loop. A smaller $\\alpha$ or larger $M$ gives more smoothing and more delay."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Delay inside a feedback loop",
+   "text": "A filter in a feedback path adds phase lag at the loop crossover frequency, which reduces stability margin. Do not smooth more than the measurement noise requires."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Choose $\\alpha$ from $\\tau$ and $T_s$, not by trial and error.",
+    "Add the delays of cascaded filters.",
+    "Check the delay against the control loop or display requirement."
+   ]
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The exponential filter is $y[k]=y[k-1]+\\alpha(x[k]-y[k-1])$ with $\\alpha=T_s/(\\tau+T_s)$.",
+    "A moving average of M samples delays slow signals by $(M-1)/2$ samples and reduces white-noise deviation by $1/\\sqrt{M}$.",
+    "The exponential filter delays by $(1-\\alpha)/\\alpha$ samples and reduces noise deviation by $\\sqrt{\\alpha/(2-\\alpha)}$.",
+    "Equal delay gives equal white-noise reduction, so the choice depends on memory and step response."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A filter has time constant $\\tau=0.20$ s and is run at $T_s=0.020$ s. What is the smoothing factor $\\alpha=T_s/(\\tau+T_s)$?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.100"
+    },
+    {
+     "id": "b",
+     "text": "0.0909"
+    },
+    {
+     "id": "c",
+     "text": "0.909"
+    },
+    {
+     "id": "d",
+     "text": "0.0182"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "0.0909",
+   "distractorRationale": {
+    "a": "This divides by tau alone, forgetting to add the sample period in the denominator.",
+    "b": "Correct: 0.020 divided by 0.220.",
+    "c": "This is $1-\\alpha$, the weight on the old output, not the weight on the new sample.",
+    "d": "This divides by $11\\tau$ or similar, an arithmetic slip."
+   },
+   "explanation": "Substituting gives $\\alpha=0.020/(0.20+0.020)=0.020/0.220=0.0909$. A small alpha means heavy smoothing, consistent with a time constant ten times the sample period.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 10-sample moving average runs at 100 Hz. Approximately how much does it delay a slowly varying signal?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "100 ms"
+    },
+    {
+     "id": "b",
+     "text": "45 ms"
+    },
+    {
+     "id": "c",
+     "text": "50 ms"
+    },
+    {
+     "id": "d",
+     "text": "5 ms"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "45 ms",
+   "distractorRationale": {
+    "a": "This uses the whole window length of 10 samples instead of its centre.",
+    "b": "Correct: 4.5 samples at 10 ms each.",
+    "c": "This uses $M/2=5$ samples, ignoring the minus one.",
+    "d": "This is half a sample period times 10, a unit slip."
+   },
+   "explanation": "The delay is $(M-1)/2=4.5$ samples and $T_s=10$ ms, so about 45 ms. The window is centred 4.5 samples in the past.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An exponential filter's smoothing factor is reduced from 0.2 to 0.05 at a fixed sample rate. What is the main consequence?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The output is noisier but responds faster"
+    },
+    {
+     "id": "b",
+     "text": "The output is unchanged because alpha only affects the gain at DC"
+    },
+    {
+     "id": "c",
+     "text": "The filter becomes unstable because alpha is too small"
+    },
+    {
+     "id": "d",
+     "text": "The output is smoother but lags the input more"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The output is smoother but lags the input more",
+   "distractorRationale": {
+    "a": "That describes a larger alpha, the opposite direction.",
+    "b": "Alpha changes both noise reduction and delay; the DC gain stays at one.",
+    "c": "The filter is stable for any alpha between 0 and 1.",
+    "d": "Correct: more smoothing and more delay."
+   },
+   "explanation": "A smaller $\\alpha$ weights new samples less, which averages over a longer effective time and increases the delay $(1-\\alpha)/\\alpha$ from 4 to 19 samples. Noise is reduced but the response is slower.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "After a step input, which statement about a 4-sample moving average and an exponential filter is correct?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The moving average reaches the final value exactly after 4 samples; the exponential filter only approaches it"
+    },
+    {
+     "id": "b",
+     "text": "Both reach the final value exactly after 4 samples"
+    },
+    {
+     "id": "c",
+     "text": "The exponential filter reaches the final value first"
+    },
+    {
+     "id": "d",
+     "text": "Neither filter ever reaches the final value"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The moving average reaches the final value exactly after 4 samples; the exponential filter only approaches it",
+   "distractorRationale": {
+    "a": "Correct: finite memory versus infinite memory.",
+    "b": "The exponential filter retains a decaying memory of the old value.",
+    "c": "The exponential filter approaches smoothly and never overtakes the moving average here.",
+    "d": "The moving average does settle exactly in finite time."
+   },
+   "explanation": "A moving average of 4 samples ignores input older than 4 samples, so once all four equal the new value the output equals it exactly. The exponential filter keeps a decaying contribution from old data and only approaches the final value asymptotically.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why should the delay of a smoothing filter be checked before it is placed in the feedback path of a position controller?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Digital filters change the sign of the measurement"
+    },
+    {
+     "id": "b",
+     "text": "Filtering removes the DC gain of the sensor"
+    },
+    {
+     "id": "c",
+     "text": "Its phase lag at the crossover frequency reduces stability margin"
+    },
+    {
+     "id": "d",
+     "text": "Filters increase the sensor noise at low frequency"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Its phase lag at the crossover frequency reduces stability margin",
+   "distractorRationale": {
+    "a": "Filters do not invert the signal.",
+    "b": "A low-pass filter has unity DC gain, so DC is preserved.",
+    "c": "Correct: extra lag reduces phase margin.",
+    "d": "A low-pass filter reduces rather than increases noise."
+   },
+   "explanation": "A delay of $d$ seconds adds phase lag $\\omega d$ at frequency $\\omega$, and the loop crossover frequency is where lag erodes the phase margin. Excessive smoothing can turn a stable loop into an oscillating one.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A filter with time constant 0.35 s runs at a sample period of 0.005 s. Compute the smoothing factor $\\alpha=T_s/(\\tau+T_s)$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o1"
+   ],
+   "correctValue": 0.0141,
+   "tolerance": 0.0005,
+   "unit": "dimensionless",
+   "explanation": "$\\alpha=0.005/(0.35+0.005)=0.005/0.355=0.01408$. The value is small because the time constant spans 70 sample periods.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Sensor noise is white with standard deviation 12 mV. It passes through an exponential filter with $\\alpha=0.04$. Using $\\sigma_{out}=\\sigma\\sqrt{\\alpha/(2-\\alpha)}$, find the output noise standard deviation in millivolts.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o2"
+   ],
+   "correctValue": 1.71,
+   "tolerance": 0.05,
+   "unit": "mV",
+   "explanation": "$\\sqrt{0.04/1.96}=0.1429$, so the output deviation is $12\\times0.1429=1.71$ mV. Heavy smoothing reduces the noise by about a factor of 7.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A signal at 500 Hz sampling (T_s = 2 ms) passes through a 16-sample moving average followed by an exponential filter with $\\alpha=0.1$. Using low-frequency delays of $(M-1)/2$ samples and $(1-\\alpha)/\\alpha$ samples, find the total delay in milliseconds.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o3"
+   ],
+   "correctValue": 33,
+   "tolerance": 1,
+   "unit": "ms",
+   "explanation": "The moving average delays by $15/2=7.5$ samples and the exponential filter by $0.9/0.1=9$ samples. The total of 16.5 samples at 2 ms each is 33 ms, because delays of cascaded filters add.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare a moving-average filter and an exponential filter on delay, white-noise reduction, memory and step response. Explain what happens to noise reduction when the two are matched to the same delay.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o2",
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o3"
+   ],
+   "markingGuide": [
+    "Gives delay $(M-1)/2$ samples versus $(1-\\alpha)/\\alpha$ samples (2 marks)",
+    "Gives noise factors $1/\\sqrt{M}$ versus $\\sqrt{\\alpha/(2-\\alpha)}$ (2 marks)",
+    "States memory: M samples versus one value (1 mark)",
+    "States step behaviour: exact settling after M samples versus asymptotic approach (1 mark)",
+    "Shows that with $\\alpha=2/(M+1)$ the delays and white-noise reductions are equal, so the choice rests on memory and step shape (2 marks)"
+   ],
+   "explanation": "When the delay is matched, both filters reduce white noise by the same factor, so the practical choice depends on memory and on step response rather than on noise.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A force signal sampled at $T_s=2$ ms must be smoothed with a delay of at most 20 ms and a white-noise standard-deviation reduction to at most one quarter of the input. Determine the permitted range of $\\alpha$ for an exponential filter and recommend a value.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o1",
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o2",
+    "ug.mce-mechatronics-instrumentation.adc-signal-processing.digital-filtering.o3"
+   ],
+   "markingGuide": [
+    "Delay constraint $(1-\\alpha)/\\alpha\\le10$ samples, so $\\alpha\\ge1/11=0.0909$ (2 marks)",
+    "Noise constraint $\\alpha/(2-\\alpha)\\le1/16$, so $\\alpha\\le2/17=0.1176$ (2 marks)",
+    "States the permitted range 0.091 to 0.118 (1 mark)",
+    "Recommends a value inside the range, for example 0.1, and quotes its delay of 9 samples = 18 ms and noise factor 0.229 (2 marks)",
+    "Notes the narrow window leaves little margin and that a longer delay budget or lower noise requirement would widen it (1 mark)"
+   ],
+   "explanation": "The delay requirement sets a lower bound and the noise requirement an upper bound on alpha. For example, $\\alpha=0.1$ gives 18 ms delay and a noise factor of $\\sqrt{0.1/1.9}=0.229$, which is below 0.25.",
+   "board": "internal"
+  }
+ ]
+}

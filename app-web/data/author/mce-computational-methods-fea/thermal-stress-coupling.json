@@ -1,0 +1,384 @@
+{
+ "lessonTitle": "Thermal Stress Analysis: Temperature as a Strain Load",
+ "estimatedMinutes": 36,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 6 m aluminium busbar (1000 mm$^2$ section) bolted rigidly between two cabinet walls warms by 40 K in service. Free to expand it would lengthen by 5.5 mm; held by the walls it cannot, and it instead pushes on them with tens of kilonewtons. FE codes handle this by turning the temperature field into a load, and this unit shows how that load is built for a bar element."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** A temperature change $\\Delta T$ (K) makes a free material element expand by the **thermal strain** $\\varepsilon_{th}=\\alpha\\,\\Delta T$, where $\\alpha$ is the coefficient of thermal expansion (1/K; about $12\\times10^{-6}$ for steel and $23\\times10^{-6}$ for aluminium, typical values). Stress arises only from the part of the total strain that is *not* thermal: the **mechanical strain** $\\varepsilon_{mech}=\\varepsilon-\\varepsilon_{th}$. A body that can expand freely has $\\varepsilon=\\varepsilon_{th}$ and therefore no stress."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Thermal strain as an initial strain",
+   "text": "The stress in an FE model is $\\sigma=E(\\varepsilon-\\alpha\\Delta T)$ for a bar, and $\\boldsymbol{\\sigma}=\\mathbf{D}(\\boldsymbol{\\varepsilon}-\\boldsymbol{\\varepsilon}_{th})$ in general, with $\\boldsymbol{\\varepsilon}_{th}=\\alpha\\Delta T\\{1,1,0\\}^T$ in a plane problem. The temperature field must come from a prior thermal analysis (steady or transient) or be prescribed; the structural step uses its nodal values as input."
+  },
+  {
+   "type": "text",
+   "markdown": "**Thermal load vector.** Starting from the principle of virtual work, the equivalent nodal load of the initial strain is $\\mathbf{f}_{th}=\\int\\mathbf{B}^T\\mathbf{D}\\boldsymbol{\\varepsilon}_{th}\\,\\mathrm{d}V$. For a bar element $\\mathbf{B}=[-1,\\ 1]/L$, constant $E$, $A$ and a uniform $\\Delta T$, the integral is $EA\\alpha\\Delta T\\{-1,\\ +1\\}^T$: the heated element **pushes outward on both nodes** with the force that would have to be applied to hold its length at the free thermal value. Assembly and solution are then identical to a mechanical problem, $\\mathbf{K}\\mathbf{u}=\\mathbf{F}_{mech}+\\mathbf{F}_{th}$."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{f}_{th}=EA\\alpha\\Delta T\\begin{Bmatrix}-1\\\\+1\\end{Bmatrix},\\qquad \\sigma=E\\left(\\frac{u_2-u_1}{L}-\\alpha\\Delta T\\right)",
+   "caption": "Thermal load vector and stress recovery for a bar element"
+  },
+  {
+   "type": "worked_example",
+   "title": "Thermal load of one element",
+   "prompt": "A steel bar element has $E=200$ GPa, $A=300$ mm$^2$, $L=500$ mm and $\\alpha=12\\times10^{-6}$ K$^{-1}$. It is heated uniformly by $\\Delta T=60$ K. Find the thermal strain, the free elongation and the thermal load vector.",
+   "steps": [
+    {
+     "text": "Thermal strain $\\alpha\\Delta T$.",
+     "latex": "\\varepsilon_{th}=(12\\times10^{-6})(60)=7.20\\times10^{-4}"
+    },
+    {
+     "text": "Free elongation if unconstrained: $\\delta=\\varepsilon_{th}L$.",
+     "latex": "\\delta=(7.20\\times10^{-4})(500)=0.360\\ \\text{mm}"
+    },
+    {
+     "text": "Equivalent nodal force magnitude $EA\\alpha\\Delta T$ with $E=2.0\\times10^{5}$ N/mm$^2$.",
+     "latex": "EA\\alpha\\Delta T=(2.0\\times10^{5})(300)(7.20\\times10^{-4})=43200\\ \\text{N}"
+    },
+    {
+     "text": "The vector pushes the nodes apart.",
+     "latex": "\\mathbf{f}_{th}=\\{-43200,\\ +43200\\}\\ \\text{N}"
+    }
+   ],
+   "answer": "Thermal strain $7.20\\times10^{-4}$, free elongation $0.360$ mm and $\\mathbf{f}_{th}=\\{-43200,\\ +43200\\}$ N. If both ends were fixed, this force would be balanced by compressive reactions of 43200 N, i.e. a stress of $E\\alpha\\Delta T=144.0$ MPa."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Free expansion gives no stress",
+   "text": "If the supports allow every part of the body to move to its free thermally expanded position, then $\\varepsilon=\\varepsilon_{th}$, $\\sigma=0$, and the FE solution shows displacement but zero stress. A bar fixed at one end only, a body on rollers that prevent only rigid-body motion, and a uniformly heated body supported in a statically determinate way all behave like this. Stress needs **restraint**: fixed ends, two rigid supports, or a non-uniform temperature in a body that must stay compatible."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Support / loading case",
+    "Uniform $\\Delta T$ result",
+    "Reason"
+   ],
+   "rows": [
+    [
+     "Bar fixed at one end, other free",
+     "Elongates $\\alpha\\Delta TL$, stress $=0$",
+     "Free to expand: $\\varepsilon=\\varepsilon_{th}$"
+    ],
+    [
+     "Bar fixed at both ends",
+     "No displacement, $\\sigma=-E\\alpha\\Delta T$ (compressive for heating)",
+     "Full restraint"
+    ],
+    [
+     "Bar between a wall and a spring",
+     "Partial expansion, stress between 0 and $-E\\alpha\\Delta T$",
+     "Restraint proportional to the spring stiffness"
+    ],
+    [
+     "Plate on three rigid-body-only supports",
+     "Stress-free",
+     "Statically determinate"
+    ]
+   ],
+   "caption": "Restraint determines thermal stress"
+  },
+  {
+   "type": "worked_example",
+   "title": "Stepped aluminium bar fixed at both ends",
+   "prompt": "An aluminium bar ($E=70$ GPa, $\\alpha=23\\times10^{-6}$ K$^{-1}$) has two segments: $A_1=400$ mm$^2$, $L_1=300$ mm and $A_2=250$ mm$^2$, $L_2=200$ mm. Both ends are rigidly fixed and the bar is heated uniformly by 50 K. Find the displacement of the middle node, the stress in each segment and the wall reactions.",
+   "steps": [
+    {
+     "text": "Element stiffnesses $k_e=A_eE/L_e$ and thermal forces $f_{th,e}=EA_e\\alpha\\Delta T$.",
+     "latex": "k_1=93333,\\ k_2=87500\\ \\text{N/mm};\\quad f_{th,1}=32200,\\ f_{th,2}=20125\\ \\text{N}"
+    },
+    {
+     "text": "Assemble the global thermal load: the middle node receives $+f_{th,1}$ from the left element and $-f_{th,2}$ from the right.",
+     "latex": "F_2=f_{th,1}-f_{th,2}=12075\\ \\text{N}"
+    },
+    {
+     "text": "Fix $u_1=u_3=0$; one free DOF: $(k_1+k_2)u_2=F_2$.",
+     "latex": "u_2=\\frac{12075}{180833}=0.06677\\ \\text{mm}"
+    },
+    {
+     "text": "Stress $\\sigma_e=E[(u_{e+1}-u_e)/L_e-\\alpha\\Delta T]$ in each segment.",
+     "latex": "\\sigma_1=-64.92,\\quad \\sigma_2=-103.87\\ \\text{MPa}"
+    },
+    {
+     "text": "Axial force $N=\\sigma A$ must be the same in both segments, and equal to the wall reactions.",
+     "latex": "N_1=-25968,\\ N_2=-25968\\ \\text{N};\\quad R_1=25968,\\ R_3=-25968\\ \\text{N}"
+    }
+   ],
+   "answer": "$u_2=0.06677$ mm, $\\sigma_1=-64.9$ MPa and $\\sigma_2=-103.9$ MPa (both compressive), force $-25968$ N in each segment and wall reactions of equal and opposite sign. The thinner segment carries the larger stress because the same force acts on a smaller area."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Heating a restrained body produces compression; cooling produces tension.",
+    "The thermal load is $\\mathbf{f}_{th}=\\int\\mathbf{B}^T\\mathbf{D}\\boldsymbol{\\varepsilon}_{th}\\,\\mathrm{d}V$; for a bar $EA\\alpha\\Delta T\\{-1,1\\}$.",
+    "Recover the stress from $\\sigma=E(\\varepsilon-\\alpha\\Delta T)$, not $E\\varepsilon$, otherwise free expansion would appear stressed.",
+    "Reaction forces must balance (sum to zero) because no external load acts."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Forgetting the thermal strain in stress recovery",
+   "text": "Computing stress from nodal displacements alone ($\\sigma=E\\varepsilon$) gives the wrong answer in a thermal problem. For the one-end-fixed bar it would predict a stress of $E\\alpha\\Delta T$ although the bar is stress-free."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A temperature change acts as an initial strain $\\alpha\\Delta T$; stress follows from the mechanical strain $\\varepsilon-\\alpha\\Delta T$ and the thermal load vector for a bar is $EA\\alpha\\Delta T\\{-1,+1\\}^T$.",
+    "Stress arises only where the supports or neighbouring material prevent free expansion; a statically determinate body heated uniformly stays stress-free.",
+    "For a bar fixed at both ends, $\\sigma=-E\\alpha\\Delta T$; with segments of different area the force is common to all segments and the stress varies inversely with area."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A uniform copper bar is fixed at its left end and free at its right end. It is heated uniformly by 40 K. What stress does an FE model with the thermal strain load predict?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero, because the bar can expand freely"
+    },
+    {
+     "id": "b",
+     "text": "Compressive, equal to $E\\alpha\\Delta T$"
+    },
+    {
+     "id": "c",
+     "text": "Tensile, equal to $E\\alpha\\Delta T$"
+    },
+    {
+     "id": "d",
+     "text": "Compressive, equal to $E\\alpha\\Delta T$ divided by 2"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Zero, because the bar can expand freely",
+   "distractorRationale": {
+    "b": "This is the fixed-fixed result; it requires a second restraint.",
+    "c": "Heating can never give tension without an external restraint pulling the ends.",
+    "d": "No factor of 1/2 arises; half of the restraint is not present."
+   },
+   "explanation": "With one end free the bar elongates by $\\alpha\\Delta TL$ and the strain equals the thermal strain, so $\\sigma=E(\\varepsilon-\\alpha\\Delta T)=0$. The FE displacement shows the elongation but the stress is zero.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a two-node bar element heated uniformly by $\\Delta T$ what is the thermal load vector, in the order $(f_1,f_2)$?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$EA\\alpha\\Delta T\\,(-1,\\ +1)$"
+    },
+    {
+     "id": "b",
+     "text": "$EA\\alpha\\Delta T\\,(+1,\\ -1)$"
+    },
+    {
+     "id": "c",
+     "text": "$EA\\alpha\\Delta T\\,(1,\\ 1)$"
+    },
+    {
+     "id": "d",
+     "text": "$\\alpha\\Delta T\\,(-1,\\ +1)$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$EA\\alpha\\Delta T\\,(-1,\\ +1)$",
+   "distractorRationale": {
+    "b": "The signs are reversed, which would model a cooled element or a contracting bar.",
+    "c": "Equal signs would represent a net force and imply rigid-body acceleration, which thermal loads never produce.",
+    "d": "This is a strain vector, not a force; the factor $EA$ is missing."
+   },
+   "explanation": "The integral $\\int\\mathbf{B}^TE\\alpha\\Delta T\\,A\\,\\mathrm{d}x$ with $\\mathbf{B}=[-1,1]/L$ gives $EA\\alpha\\Delta T\\{-1,1\\}$. The two forces are equal and opposite, so a thermal load has no net resultant by itself.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A steel bar is rigidly fixed between two walls and then cooled by 30 K. Which statement about the result is correct?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The bar is in tension, with stress magnitude $E\\alpha\\Delta T$ and no displacement"
+    },
+    {
+     "id": "b",
+     "text": "The bar is in compression with stress magnitude $E\\alpha\\Delta T$"
+    },
+    {
+     "id": "c",
+     "text": "The bar is stress-free since both ends are fixed"
+    },
+    {
+     "id": "d",
+     "text": "The bar shortens by $\\alpha\\Delta TL$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The bar is in tension, with stress magnitude $E\\alpha\\Delta T$ and no displacement",
+   "distractorRationale": {
+    "b": "Compression would result from heating, not cooling.",
+    "c": "Fixed ends are exactly what produces stress; they remove free expansion.",
+    "d": "With both ends fixed there is no displacement at all."
+   },
+   "explanation": "Cooling creates a negative thermal strain that the walls prevent, so the mechanical strain is positive and the bar is in tension, $\\sigma=+E\\alpha|\\Delta T|$. The nodal displacements are zero.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which of the following support arrangements allows a uniformly heated 2D plate to expand without developing thermal stress?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Three supports that only remove the rigid-body motions (statically determinate)"
+    },
+    {
+     "id": "b",
+     "text": "All four edges clamped"
+    },
+    {
+     "id": "c",
+     "text": "Two opposite edges clamped"
+    },
+    {
+     "id": "d",
+     "text": "The plate bonded to a stiffer plate along one face"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Three supports that only remove the rigid-body motions (statically determinate)",
+   "distractorRationale": {
+    "b": "Clamping all edges blocks expansion in both directions.",
+    "c": "Clamping opposite edges prevents expansion in one direction, causing stress there.",
+    "d": "A bonded stiffer plate restrains the expansion and causes stress (the bimetal effect)."
+   },
+   "explanation": "Uniform heating gives a strain field $\\alpha\\Delta T$ in every direction. A body supported only against rigid motion can adopt exactly this field, so mechanical strain and stress are zero.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "In an FE thermal-stress analysis it is enough to compute the stress from the nodal displacements as $\\sigma=E\\varepsilon$, since the temperature load has already been applied to the model.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The stress must subtract the thermal strain: $\\sigma=E(\\varepsilon-\\alpha\\Delta T)$. Without that subtraction a freely expanding bar would show a stress $E\\alpha\\Delta T$ although it is stress-free, so the thermal part is needed in both the load and the stress recovery.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A copper bar element has $E=110$ GPa, $A=150$ mm$^2$ and $\\alpha=17\\times10^{-6}$ K$^{-1}$. It is heated uniformly by 40 K. Find the magnitude of the nodal thermal force $EA\\alpha\\Delta T$ in N.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o2"
+   ],
+   "correctValue": 11220.0,
+   "tolerance": 20.0,
+   "unit": "N",
+   "explanation": "$EA\\alpha\\Delta T=110\\,000\\times150\\times17\\times10^{-6}\\times40=11220$ N, with the right node pushed in $+x$ and the left in $-x$. The thermal strain is $6.8\\times10^{-4}$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel bar ($E=210$ GPa, $\\alpha=11.7\\times10^{-6}$ K$^{-1}$) is rigidly fixed at both ends and heated uniformly by 80 K. Find the magnitude of the compressive stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o2"
+   ],
+   "correctValue": 196.56,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "With no displacement possible the mechanical strain is $-\\alpha\\Delta T$, so $\\sigma=-E\\alpha\\Delta T=-210\\,000\\times11.7\\times10^{-6}\\times80=-196.6$ MPa. The magnitude is 196.6 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A steel bar ($E=200$ GPa, $A=200$ mm$^2$, $L=400$ mm, $\\alpha=12\\times10^{-6}$ K$^{-1}$) is fixed at the left end; its right end bears on a spring wall of stiffness $4.0\\times10^{4}$ N/mm. The bar is heated by 50 K. Find the compressive force in the bar in kN.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o2",
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o3"
+   ],
+   "correctValue": 6.857142857142857,
+   "tolerance": 0.05,
+   "unit": "kN",
+   "explanation": "The free elongation is $\\alpha\\Delta TL=0.240$ mm. The bar stiffness is $AE/L=100000$ N/mm, in series with the spring, so $N=\\delta_{free}/(1/k_b+1/k_s)=0.240/(1\\times10^{-5}+2.5\\times10^{-5})=6857$ N = 6.857 kN.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how a temperature field is applied in an FE structural model as a thermal strain load, and write the stress recovery relation. Why does a freely expanding bar show displacement but no stress?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o1"
+   ],
+   "markingGuide": [
+    "Thermal strain $\\varepsilon_{th}=\\alpha\\Delta T$ treated as an initial strain",
+    "Equivalent nodal load $\\mathbf{f}_{th}=\\int\\mathbf{B}^T\\mathbf{D}\\boldsymbol{\\varepsilon}_{th}\\,\\mathrm{d}V$; for a bar $EA\\alpha\\Delta T\\{-1,1\\}$, added to the mechanical loads",
+    "Solve $\\mathbf{K}\\mathbf{u}=\\mathbf{F}$ as usual",
+    "Stress $\\sigma=E(\\varepsilon-\\varepsilon_{th})$ from the mechanical strain",
+    "Free expansion: total strain equals thermal strain so mechanical strain and stress are zero"
+   ],
+   "explanation": "Thermal expansion is a strain with no stress attached. The load vector is the force that would be needed to keep the element at its original length, and once the structure relaxes against the supports, only the part of the strain that was prevented produces stress.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "List the conditions under which a uniformly heated body develops no thermal stress, and give two practical examples of boundary conditions in an FE model that do produce thermal stress. Include a bar fixed at both ends in your answer.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.heat-conduction-fe.thermal-stress-coupling.o3"
+   ],
+   "markingGuide": [
+    "No stress if the supports remove only rigid-body motion (statically determinate) and temperature is uniform (or linear in a plate)",
+    "Free end bar: displacement $\\alpha\\Delta TL$, zero stress",
+    "Fixed-fixed bar: $u=0$ everywhere, $\\sigma=-E\\alpha\\Delta T$ (compression for heating)",
+    "Over-constrained supports (clamped edges), springs/walls, or bonded materials with different $\\alpha$ produce stress",
+    "Non-uniform temperature in a body that must remain compatible also produces stress"
+   ],
+   "explanation": "Thermal stress is a compatibility effect: the body wants to take a thermally expanded shape, and whatever prevents it generates stress. Over-restrained boundary conditions are therefore a common cause of unexpectedly large thermal stresses in FE models.",
+   "board": "internal"
+  }
+ ]
+}

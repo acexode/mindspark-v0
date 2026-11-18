@@ -1,0 +1,392 @@
+{
+ "lessonTitle": "Castigliano and Unit-Load Methods",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A crane hook, a bicycle frame tube and a press frame all bend into curved shapes that are hard to describe with a single beam equation. Yet the vertical drop of the hook, or the opening of the press jaws, can be found by differentiating one number, the strain energy, with respect to the load. This is the idea behind Castigliano's theorem."
+  },
+  {
+   "type": "text",
+   "markdown": "For a linear-elastic structure with loads $P_1,P_2,\\dots$, the total strain energy $U$ is a function of those loads. **Castigliano's second theorem** states that the displacement $\\delta_i$ of the point of application of $P_i$, **in the direction of $P_i$**, is the partial derivative of $U$ with respect to $P_i$. Assumptions: linear-elastic material, small deflections, supports that do not move, and (unless stated) bending energy only, neglecting axial and shear energy, which is accurate for slender members."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta_i=\\frac{\\partial U}{\\partial P_i},\\qquad U=\\int\\frac{M^2}{2EI}\\,dx\\quad\\Rightarrow\\quad\\delta_i=\\int\\frac{M}{EI}\\frac{\\partial M}{\\partial P_i}\\,dx",
+   "caption": "Castigliano's second theorem for bending; differentiate before integrating"
+  },
+  {
+   "type": "worked_example",
+   "title": "Tip deflection of a cantilever by Castigliano",
+   "prompt": "An aluminium cantilever of length $L=1.0$ m, rectangular section 25 mm wide and 50 mm deep (bending about the horizontal axis), carries a tip load $P=800$ N. $E=70$ GPa. Find the tip deflection.",
+   "steps": [
+    {
+     "text": "Bending moment at distance $x$ from the free end.",
+     "latex": "M=-Px,\\qquad\\frac{\\partial M}{\\partial P}=-x"
+    },
+    {
+     "text": "Apply the theorem; the two minus signs cancel.",
+     "latex": "\\delta=\\frac{1}{EI}\\int_0^LPx\\cdot x\\,dx=\\frac{PL^3}{3EI}"
+    },
+    {
+     "text": "Second moment of area.",
+     "latex": "I=\\frac{25(50)^3}{12}=260417\\ \\text{mm}^4"
+    },
+    {
+     "text": "Substitute numbers.",
+     "latex": "\\delta=\\frac{800(1000)^3}{3(70000)(260417)}=14.63\\ \\text{mm}"
+    }
+   ],
+   "answer": "$\\delta=PL^3/(3EI)\\approx14.63$ mm in the direction of the load."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Dummy loads.** Castigliano's theorem gives the deflection only where a load acts. To find the deflection at a point with no load, or in a direction with no load, apply a fictitious **dummy load** $Q$ there in the desired direction, write $M$ including $Q$, differentiate with respect to $Q$, and then **set $Q=0$**. The result is the true deflection of the actual structure."
+  },
+  {
+   "type": "worked_example",
+   "title": "Tip deflection of a cantilever under a uniformly distributed load (dummy load)",
+   "prompt": "A steel cantilever of length $L=1.2$ m carries a UDL $w=3$ N/mm over its whole length and no tip load. $E=200$ GPa, $I=1.5\\times10^6$ mm$^4$. Find the tip deflection.",
+   "steps": [
+    {
+     "text": "Add a dummy downward load $Q$ at the tip. The moment at distance $x$ from the tip.",
+     "latex": "M=-\\left(Qx+\\frac{wx^2}{2}\\right),\\qquad\\frac{\\partial M}{\\partial Q}=-x"
+    },
+    {
+     "text": "Apply the theorem and set $Q=0$.",
+     "latex": "\\delta=\\frac{1}{EI}\\int_0^L\\frac{wx^2}{2}\\,x\\,dx=\\frac{wL^4}{8EI}"
+    },
+    {
+     "text": "Substitute numbers.",
+     "latex": "\\delta=\\frac{3(1200)^4}{8(200000)(1.5\\times10^6)}=2.592\\ \\text{mm}"
+    }
+   ],
+   "answer": "$\\delta=wL^4/(8EI)\\approx2.59$ mm downward at the tip."
+  },
+  {
+   "type": "text",
+   "markdown": "**Unit-load method.** The unit-load method is Castigliano with the dummy load taken as a unit load. It requires two bending moment expressions along each member: $M(x)$ from the real loads, and $m(x)$ from a **unit load** (1 N) applied at the point and in the direction of the required deflection, with the real loads removed. The deflection is the integral of their product divided by $EI$, summed over all members."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta=\\sum\\int\\frac{M\\,m}{EI}\\,dx",
+   "caption": "Unit-load (virtual work) deflection; m is the bending moment from a unit load at the point and direction of interest"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Castigliano (dummy load)",
+    "Unit-load method"
+   ],
+   "rows": [
+    [
+     "Auxiliary load",
+     "Symbol $Q$, then set $Q=0$",
+     "1 unit, real loads removed"
+    ],
+    [
+     "Derivative needed",
+     "$\\partial M/\\partial Q$",
+     "None; $m=\\partial M/\\partial Q$ directly"
+    ],
+    [
+     "Works for unloaded points",
+     "Yes (add $Q$)",
+     "Yes"
+    ],
+    [
+     "Best for",
+     "Single deflection with an algebraic load symbol",
+     "Frames with several members and numeric loads"
+    ]
+   ],
+   "caption": "Castigliano versus unit-load method"
+  },
+  {
+   "type": "worked_example",
+   "title": "Vertical deflection at the end of an L-shaped frame",
+   "prompt": "A bracket has a vertical column of height $H=600$ mm fixed at its base and a horizontal arm of length $B=800$ mm projecting from the top of the column. A vertical load $P=1000$ N acts downward at the free end of the arm. $E=200$ GPa, $I=1.0\\times10^6$ mm$^4$ for both members. Using bending energy only, find the vertical deflection of the load point.",
+   "steps": [
+    {
+     "text": "Arm: take $x$ from the free end. Real moment and unit-load moment.",
+     "latex": "M=Px,\\qquad m=1\\cdot x"
+    },
+    {
+     "text": "Column: the load $P$ is at an arm length $B$ from the column axis, so the moment is constant over the column height. The unit load gives $m=1\\cdot B$.",
+     "latex": "M=PB,\\qquad m=B"
+    },
+    {
+     "text": "Arm contribution.",
+     "latex": "\\frac{1}{EI}\\int_0^BPx^2\\,dx=\\frac{PB^3}{3EI}=0.853\\ \\text{mm}"
+    },
+    {
+     "text": "Column contribution.",
+     "latex": "\\frac{1}{EI}\\int_0^H(PB)(B)\\,dy=\\frac{PB^2H}{EI}=1.920\\ \\text{mm}"
+    },
+    {
+     "text": "Sum.",
+     "latex": "\\delta_v=0.853+1.920=2.77\\ \\text{mm}"
+    }
+   ],
+   "answer": "$\\delta_v\\approx2.77$ mm downward; the column bending contributes more than the arm."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Draw the real moment diagram $M$ member by member, with a clear origin and sign convention.",
+    "Apply a unit (or dummy) load where the deflection is wanted, in its direction, and find $m$.",
+    "Integrate $Mm/EI$ over each member and add the results.",
+    "A positive answer means the deflection is in the direction of the unit load."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Direction and the real load",
+   "text": "The deflection found is the component along the direction of the dummy or unit load. A negative result means it acts opposite to that assumed direction. Always remove the real loads when finding $m$ in the unit-load method, and always set $Q=0$ after differentiating in the dummy-load method."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Same answer, two routes",
+   "text": "The unit-load method and Castigliano with a dummy load give identical results because $m=\\partial M/\\partial Q$. Choose whichever is faster for the structure."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Castigliano's second theorem: $\\delta_i=\\partial U/\\partial P_i$, giving the displacement at the load point in the load's direction; for bending, $\\delta=\\int(M/EI)(\\partial M/\\partial P)dx$.",
+    "To find the deflection where no load acts, add a dummy load $Q$ in the desired direction, differentiate, then set $Q=0$.",
+    "The unit-load method uses $\\delta=\\sum\\int Mm/EI\\,dx$, with $m$ due to a unit load at the point and direction wanted.",
+    "For frames, add the contributions of each member; column and arm bending both matter."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement correctly expresses Castigliano's second theorem for a linear-elastic structure?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The displacement of a load's point of application, in the direction of that load, equals the partial derivative of total strain energy with respect to that load"
+    },
+    {
+     "id": "b",
+     "text": "The load equals the derivative of strain energy with respect to displacement, giving the stress"
+    },
+    {
+     "id": "c",
+     "text": "The deflection at any point equals the total strain energy divided by the load"
+    },
+    {
+     "id": "d",
+     "text": "The deflection equals the strain energy integrated over the span"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The displacement of a load's point of application, in the direction of that load, equals the partial derivative of total strain energy with respect to that load",
+   "distractorRationale": {
+    "a": "Correct: $\\delta_i=\\partial U/\\partial P_i$.",
+    "b": "This is the first theorem (force from the derivative of energy with respect to displacement), which gives force, not deflection.",
+    "c": "$\\delta=2U/P$ applies only to a single load and is derived, not the theorem.",
+    "d": "Integrating $U$ over the span makes no dimensional sense."
+   },
+   "explanation": "Castigliano's second theorem differentiates $U$ with respect to a load to give the deflection under that load, in the direction in which the load acts. For a single load $U=\\tfrac12P\\delta$ and $\\partial U/\\partial P=\\delta$ agrees with $\\delta=2U/P$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel cantilever of length 0.9 m carries a tip load of 500 N. $E=200$ GPa and $I=1.2\\times10^5$ mm$^4$. Use Castigliano's theorem (equivalently $\\delta=PL^3/3EI$) to find the tip deflection in mm.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o1"
+   ],
+   "correctValue": 5.0625,
+   "tolerance": 0.02,
+   "unit": "mm",
+   "explanation": "With $M=-Px$ and $\\partial M/\\partial P=-x$, $\\delta=\\frac1{EI}\\int_0^LPx^2dx=PL^3/(3EI)=500(900)^3/(3\\times200000\\times1.2\\times10^5)=5.062$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A simply supported steel beam of span 2.0 m carries a uniformly distributed load of 4 N/mm over the whole span. $E=200$ GPa and $I=5.0\\times10^6$ mm$^4$. Using the dummy-load method (the result is the standard $5wL^4/384EI$ for a central dummy load), find the mid-span deflection in mm.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o2"
+   ],
+   "correctValue": 0.833333,
+   "tolerance": 0.01,
+   "unit": "mm",
+   "explanation": "A dummy load $Q$ at mid-span adds $Qx/2$ to the moment in each half, so $\\partial M/\\partial Q=x/2$. Integrating $(M/EI)(\\partial M/\\partial Q)$ over both halves and setting $Q=0$ gives $\\delta=5wL^4/(384EI)=5(4)(2000)^4/(384\\times200000\\times5\\times10^6)=0.833$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why is a dummy load $Q$ added when using Castigliano's theorem to find the deflection at a point where no load is applied?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Because a dummy load changes the real deflection to the one required"
+    },
+    {
+     "id": "b",
+     "text": "Because strain energy is zero where there is no load"
+    },
+    {
+     "id": "c",
+     "text": "Because the theorem differentiates with respect to a load at the point of interest; $Q$ is set to zero after differentiating"
+    },
+    {
+     "id": "d",
+     "text": "Because the dummy load must be left in place to balance the structure"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Because the theorem differentiates with respect to a load at the point of interest; $Q$ is set to zero after differentiating",
+   "distractorRationale": {
+    "a": "The dummy load is fictitious; the real deflection is found by removing it after differentiating.",
+    "b": "Strain energy is a global quantity and is not zero at unloaded points.",
+    "c": "Correct: the derivative needs a load variable at that point, and $Q=0$ restores the real structure.",
+    "d": "The dummy load does not enter the equilibrium of the real structure."
+   },
+   "explanation": "Differentiating $U$ with respect to a quantity that does not appear in it would give zero. Introducing $Q$ as a variable makes the derivative meaningful, and setting $Q=0$ afterwards recovers the real structure and its true deflection.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An L-shaped frame has a vertical column of height 400 mm, fixed at its base, with a horizontal arm of length 500 mm at the top. A vertical load of 600 N acts downward at the free end of the arm. $E=70$ GPa and $I=2.0\\times10^5$ mm$^4$ for both members. Using bending energy only and the unit-load method, find the vertical deflection of the load point in mm.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o3"
+   ],
+   "correctValue": 6.071429,
+   "tolerance": 0.03,
+   "unit": "mm",
+   "explanation": "Arm: $M=Px$, $m=x$, contributing $PB^3/(3EI)=1.786$ mm. Column: $M=PB$, $m=B$, contributing $PB^2H/(EI)=4.286$ mm. The total is 6.07 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A steel cantilever of length 0.6 m carries a tip load of 1.2 kN. $E=200$ GPa and $I=3.0\\times10^5$ mm$^4$. Using a unit load at mid-span, find the deflection at mid-span (the point 0.3 m from the fixed end) in mm. (Take $x$ from the free end and integrate only over the part of the beam between the free end and the fixed end where $m\\ne0$.)",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o2"
+   ],
+   "correctValue": 0.45,
+   "tolerance": 0.005,
+   "unit": "mm",
+   "explanation": "With $x$ from the free end, $M=Px$ and the unit load at mid-span gives $m=0$ for $x<L/2$ and $m=x-L/2$ for $x>L/2$. Then $\\delta=\\frac{P}{EI}\\int_{L/2}^{L}x(x-L/2)dx=\\frac{5PL^3}{48EI}=0.450$ mm. This is 31% of the tip deflection, not half.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In the unit-load method, the bending moment $m(x)$ used in $\\delta=\\int Mm/EI\\,dx$ is the bending moment due to",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "the real loads, with a unit load added at the support"
+    },
+    {
+     "id": "b",
+     "text": "a unit load applied at the point and in the direction of the deflection sought, with the real loads removed"
+    },
+    {
+     "id": "c",
+     "text": "the real loads multiplied by a factor of safety"
+    },
+    {
+     "id": "d",
+     "text": "a unit load applied at the point of maximum bending moment"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "a unit load applied at the point and in the direction of the deflection sought, with the real loads removed",
+   "distractorRationale": {
+    "a": "The real loads give $M$; supports are not loaded by the unit load.",
+    "b": "Correct: $m$ is the virtual moment from a 1 N load at the point and direction of interest.",
+    "c": "A factor of safety has no role in a deflection calculation.",
+    "d": "The unit load goes at the point where the deflection is wanted, not at the point of maximum moment."
+   },
+   "explanation": "The product $Mm$ measures how much of the real deformation acts through the virtual load's point and direction. Applying the unit load elsewhere would give a different deflection than the one requested.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe, step by step, how to find the deflection of an unloaded point of a beam by the dummy-load version of Castigliano's theorem, and explain why this gives the same result as the unit-load method.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o2",
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o3"
+   ],
+   "markingGuide": [
+    "Apply a fictitious load $Q$ at the point and in the direction of the required deflection.",
+    "Write the bending moment $M(x)$ for all members including both the real loads and $Q$.",
+    "Differentiate: $\\partial M/\\partial Q$ for each member, then form $\\int(M/EI)(\\partial M/\\partial Q)dx$.",
+    "Set $Q=0$ and evaluate the integrals to obtain the deflection of the real structure.",
+    "Because $M=M_0+Qm$, $\\partial M/\\partial Q=m$, the moment per unit load, so the integrals are identical to the unit-load integral $\\int Mm/EI\\,dx$.",
+    "Sign: a positive result is in the direction assumed for $Q$."
+   ],
+   "explanation": "The dummy-load derivative $\\partial M/\\partial Q$ equals the moment per unit load $m$, so setting $Q=0$ gives precisely the unit-load integral. The two methods are the same calculation organised differently.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A bracket has a vertical column of height $H=300$ mm fixed at its base and a horizontal arm of length $B=500$ mm extending from its top. A vertical load $P=800$ N acts at the free end of the arm. $EI=1.6\\times10^{11}$ N mm$^2$ for both members. Use the unit-load method to find the horizontal deflection of the arm's free end (the end moves outward in the direction the arm points). Explain why the arm contributes nothing to this component.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o1",
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o3"
+   ],
+   "markingGuide": [
+    "Real moments: arm $M=Px$; column $M=PB$ (constant).",
+    "Apply a horizontal unit load at the free end, along the arm's axis: in the arm it produces only an axial force, so $m=0$ there.",
+    "Column: the horizontal unit load acts at the top of the column at the arm's level, so $m=y$ measured from the top.",
+    "$\\delta_h=\\frac1{EI}\\int_0^H(PB)(y)\\,dy=PBH^2/(2EI)=800(500)(300)^2/(2\\times1.6\\times10^{11})=0.1125$ mm.",
+    "Arm contributes nothing because the unit load passes along its axis and creates no bending there (axial energy neglected).",
+    "Both real moment and the unit-load moment in the column have the same sense, so the result is positive: the tip moves outward, in the direction of the unit load."
+   ],
+   "explanation": "Only members in which both $M$ and $m$ are non-zero contribute. The horizontal unit load along the arm gives no bending in the arm, while the column bends under both, so the whole horizontal deflection comes from the column.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: Castigliano's second theorem gives the displacement of the point of application of a load $P_i$ in the direction of $P_i$ as $\\partial U/\\partial P_i$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.energy-methods.castigliano-unit-load.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "This is the statement of the theorem for linear-elastic structures. If the displacement is wanted at a point with no load, or in a different direction, a dummy load must first be introduced and later set to zero.",
+   "board": "internal"
+  }
+ ]
+}

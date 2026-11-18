@@ -1,0 +1,415 @@
+{
+ "lessonTitle": "Worst-Case Stack-Up: Chains, Limits and Tightening",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A gearbox end cover must leave a gap of at least 2.7 mm so that the shaft can expand when hot. On the drawings every part meets its own tolerance, and yet on the third prototype the cover binds against the bearing and the shaft seizes. Each part was correct; the assembly was not, because no one had added up how the tolerances of the parts stack across the gap."
+  },
+  {
+   "type": "text",
+   "markdown": "A **tolerance stack-up** predicts the variation of an assembly dimension, such as a gap, from the tolerances of the individual parts that define it. The **worst-case** method assumes every dimension takes its most unfavourable limit simultaneously. If the assembly works in that case, it works for every combination, so the method is simple and gives a guarantee. Its weakness is that it can demand tight, costly tolerances for an event that almost never happens."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Dimension chain",
+   "text": "A dimension chain is the closed path of dimensions that runs from one surface bounding the gap, through the parts and their contact faces, to the opposite surface of the gap. Each dimension in the chain is given a **direction**: positive if increasing it *increases* the gap, negative if increasing it *decreases* the gap. The nominal gap is the sum of the signed nominal dimensions."
+  },
+  {
+   "type": "text",
+   "markdown": "**Drawing the chain.** (1) Sketch the assembly and mark the gap. (2) Pick one face of the gap as the start and travel through each part to the other face, writing down each dimension that you cross. (3) Mark as positive each dimension that you traverse in the direction that opens the gap, and negative otherwise. In a typical stack a housing cavity depth is positive, and the widths of components stacked inside it are negative, because larger parts leave less room. (4) Check that the chain is closed: it starts and ends on the gap faces."
+  },
+  {
+   "type": "math",
+   "latex": "g_{\\mathrm{nom}}=\\sum_{+}d_i-\\sum_{-}d_j,\\qquad t_{g}=\\sum_i t_i",
+   "caption": "Nominal gap is the sum of positive nominal dimensions minus the sum of negative ones (mm). The worst-case gap tolerance t_g is the sum of all the individual tolerances, whatever their sign, because each can act in the worst direction."
+  },
+  {
+   "type": "math",
+   "latex": "g_{\\max}=\\sum_{+}d_{i,\\max}-\\sum_{-}d_{j,\\min},\\qquad g_{\\min}=\\sum_{+}d_{i,\\min}-\\sum_{-}d_{j,\\max}",
+   "caption": "Limits of the gap: the largest gap occurs with positive dimensions at their upper limits and negative dimensions at their lower limits, the smallest gap with the reverse."
+  },
+  {
+   "type": "worked_example",
+   "title": "Worst-case gap",
+   "prompt": "A housing cavity is $60.00\\pm0.10$ mm deep (positive). Inside it are stacked a bearing $20.00\\pm0.05$ mm, a spacer $12.00\\pm0.08$ mm and a gear hub $25.00\\pm0.12$ mm (all negative). Find the nominal gap, the worst-case tolerance and the limits.",
+   "steps": [
+    {
+     "text": "Nominal gap: positive dimension minus the sum of the negative dimensions.",
+     "latex": "g_{\\mathrm{nom}}=60.00-(20.00+12.00+25.00)=3.00\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Worst-case tolerance: add every individual tolerance, whatever its sign.",
+     "latex": "t_g=0.10+0.05+0.08+0.12=0.35\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Limits: $g_{\\max}=3.00+0.35=3.35$ mm and $g_{\\min}=3.00-0.35=2.65$ mm.",
+     "latex": "g=3.00\\pm0.35\\ \\mathrm{mm}"
+    }
+   ],
+   "answer": "The gap lies between 2.65 mm and 3.35 mm in the worst case."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Dimension",
+    "Nominal (mm)",
+    "Tolerance (mm)",
+    "Direction",
+    "Effect on gap"
+   ],
+   "rows": [
+    [
+     "Housing cavity depth",
+     "60.00",
+     "0.10",
+     "Positive",
+     "Larger depth opens the gap"
+    ],
+    [
+     "Bearing width",
+     "20.00",
+     "0.05",
+     "Negative",
+     "Wider bearing closes the gap"
+    ],
+    [
+     "Spacer length",
+     "12.00",
+     "0.08",
+     "Negative",
+     "Longer spacer closes the gap"
+    ],
+    [
+     "Gear hub width",
+     "25.00",
+     "0.12",
+     "Negative",
+     "Wider hub closes the gap"
+    ]
+   ],
+   "caption": "The dimension chain of the gearbox example with signs."
+  },
+  {
+   "type": "text",
+   "markdown": "**Which tolerance to tighten.** In a worst-case stack each tolerance enters the sum with the same weight of one, whatever its direction. Reducing any single tolerance by an amount $x$ reduces $t_g$ by exactly $x$. The designer therefore compares the cost of tightening each dimension: tightening is usually cheapest for the dimension with the loosest tolerance and on a process that can easily do better, and most expensive where the process is already at its capability limit. The required reduction is found from the requirement: the new total tolerance must be no greater than the nominal gap minus the minimum allowed gap."
+  },
+  {
+   "type": "worked_example",
+   "title": "Meeting a minimum gap",
+   "prompt": "The gearbox gap must not be less than 2.70 mm. The worst case gives 2.65 mm. Find the reduction needed and a tolerance that could be tightened.",
+   "steps": [
+    {
+     "text": "The new total tolerance may be at most the nominal gap minus the minimum allowed gap.",
+     "latex": "t_{g,\\max}=3.00-2.70=0.30\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Reduction needed: $0.35-0.30=0.05$ mm."
+    },
+    {
+     "text": "Tighten the gear hub, the loosest dimension, from $\\pm0.12$ mm to $\\pm0.07$ mm, giving $t_g=0.10+0.05+0.08+0.07=0.30$ mm and $g_{\\min}=2.70$ mm.",
+     "latex": "t_g=0.10+0.05+0.08+0.07=0.30\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Check that the hub process can hold $\\pm0.07$ mm at acceptable cost. If not, split the reduction between the hub and the housing."
+    }
+   ],
+   "answer": "Reduce the gear hub tolerance from $\\pm0.12$ to $\\pm0.07$ mm, giving a minimum gap of 2.70 mm."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Draw the assembly and mark the gap.",
+    "Trace the chain and assign a sign to each dimension.",
+    "Compute the nominal gap and the sum of tolerances.",
+    "Compare the limits with the requirement.",
+    "If the requirement is not met, calculate the required reduction and choose which tolerance to tighten, considering cost and process capability."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Sign is for the nominal, not for the tolerance",
+   "text": "Directions decide how each dimension enters the nominal gap. In the worst case every tolerance is added regardless of sign, because a positive dimension at its upper limit and a negative one at its lower limit both enlarge the gap."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Include every contact",
+   "text": "A forgotten washer, shim or coating layer is a dimension in the chain. Also be careful with datums: dimensions measured from different datums cannot be chained without conversion."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A dimension chain runs across the gap with positive dimensions that open it and negative ones that close it; nominal gap is the signed sum.",
+    "Worst-case tolerance is the sum of all individual tolerances; the limits are the nominal gap plus and minus that sum.",
+    "To meet a requirement, tighten a tolerance by the shortfall, choosing the dimension where tightening is cheapest."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a dimension chain for the gap between a cover and a bearing stack, which dimension is positive?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The depth of the housing cavity, because increasing it opens the gap"
+    },
+    {
+     "id": "b",
+     "text": "The width of the bearing, because increasing it closes the gap"
+    },
+    {
+     "id": "c",
+     "text": "The length of a spacer, because it increases the stack"
+    },
+    {
+     "id": "d",
+     "text": "The thickness of a washer in the stack"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The depth of the housing cavity, because increasing it opens the gap",
+   "distractorRationale": {
+    "a": "Correct: a deeper cavity leaves more room, so it enlarges the gap.",
+    "b": "A wider bearing closes the gap, so it is negative.",
+    "c": "A longer spacer closes the gap and is negative.",
+    "d": "A thicker washer closes the gap and is negative."
+   },
+   "explanation": "A dimension is positive when increasing it increases the gap. The cavity depth increases the available room, while the stacked components use it up.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which description of a dimension chain is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A closed path of dimensions running from one gap surface through the parts to the opposite surface"
+    },
+    {
+     "id": "b",
+     "text": "A list of all dimensions on the drawing in alphabetical order"
+    },
+    {
+     "id": "c",
+     "text": "The dimensions of the largest part only"
+    },
+    {
+     "id": "d",
+     "text": "The tolerances sorted from largest to smallest"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A closed path of dimensions running from one gap surface through the parts to the opposite surface",
+   "distractorRationale": {
+    "a": "Correct: the chain traces how the gap is defined by the parts.",
+    "b": "Order on the drawing is irrelevant.",
+    "c": "The chain includes all parts that define the gap.",
+    "d": "Sorting tolerances is not a chain."
+   },
+   "explanation": "The chain connects the two faces bounding the gap through every contact. Every dimension that affects the gap therefore appears once.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A gap is defined by a positive dimension of 40.00 mm with tolerance $\\pm0.10$ mm and negative dimensions 15.00 mm $\\pm0.05$ mm and 20.00 mm $\\pm0.05$ mm. Which statement gives the worst-case minimum gap?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4.80 mm, from 39.90 minus 15.05 and 20.05"
+    },
+    {
+     "id": "b",
+     "text": "5.20 mm, from 40.10 minus 14.95 and 19.95"
+    },
+    {
+     "id": "c",
+     "text": "5.00 mm, the nominal value"
+    },
+    {
+     "id": "d",
+     "text": "4.90 mm, from subtracting only the largest tolerance"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "4.80 mm, from 39.90 minus 15.05 and 20.05",
+   "distractorRationale": {
+    "a": "Correct: the smallest gap has the positive dimension at its minimum and the negative ones at their maximum: 39.90-35.10=4.80.",
+    "b": "This is the maximum gap.",
+    "c": "This is the nominal gap, not the worst-case limit.",
+    "d": "It ignores two of the three tolerances."
+   },
+   "explanation": "The worst-case limits use all tolerances. The nominal gap is $40-35=5.00$ mm, the tolerance is $0.10+0.05+0.05=0.20$ mm, giving 4.80 to 5.20 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a worst-case stack the required minimum gap is not met. Which statement correctly guides the choice of the tolerance to tighten?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Each tolerance adds equally to the total, so choose the one that is cheapest to tighten"
+    },
+    {
+     "id": "b",
+     "text": "Only tolerances on positive dimensions affect the minimum gap"
+    },
+    {
+     "id": "c",
+     "text": "Tightening a negative dimension never helps"
+    },
+    {
+     "id": "d",
+     "text": "Always tighten the smallest tolerance"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Each tolerance adds equally to the total, so choose the one that is cheapest to tighten",
+   "distractorRationale": {
+    "a": "Correct: in the worst-case sum each tolerance has the same weight, so cost decides.",
+    "b": "All tolerances add to the total regardless of sign.",
+    "c": "Tightening a negative dimension reduces the total just as a positive one does.",
+    "d": "The smallest tolerance is usually the most expensive to tighten further."
+   },
+   "explanation": "Because each tolerance enters the worst-case sum with weight one, the benefit of a reduction is the same wherever it is made. The sensible choice is the dimension where tightening costs least.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a nominal gap of 2.00 mm and a worst-case tolerance of $\\pm0.35$ mm, what are the gap limits?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.65 mm and 2.35 mm"
+    },
+    {
+     "id": "b",
+     "text": "1.65 mm and 2.00 mm"
+    },
+    {
+     "id": "c",
+     "text": "2.00 mm and 2.35 mm"
+    },
+    {
+     "id": "d",
+     "text": "1.35 mm and 2.70 mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "1.65 mm and 2.35 mm",
+   "distractorRationale": {
+    "a": "Correct: $2.00\\pm0.35$.",
+    "b": "This gives only the lower limit and nominal.",
+    "c": "This gives only the nominal and the upper limit.",
+    "d": "This uses twice the tolerance."
+   },
+   "explanation": "The worst-case gap limits are the nominal value minus and plus the total tolerance. Here that gives 1.65 mm and 2.35 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A gap is formed by a positive dimension $85.00\\pm0.15$ mm and three negative dimensions $30.00\\pm0.05$, $18.00\\pm0.04$ and $22.00\\pm0.06$ mm. Find the worst-case minimum gap in mm.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o1",
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o2"
+   ],
+   "correctValue": 14.7,
+   "tolerance": 0.005,
+   "unit": "mm",
+   "explanation": "The nominal gap is $85-70=15.00$ mm and the total tolerance is $0.15+0.05+0.04+0.06=0.30$ mm. The minimum is $15.00-0.30=14.70$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A housing is $120.0\\pm0.2$ mm long (positive). Two components inside have lengths $45.0\\pm0.1$ mm and $60.0\\pm0.15$ mm (negative). Find the worst-case maximum gap in mm.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o2"
+   ],
+   "correctValue": 15.45,
+   "tolerance": 0.005,
+   "unit": "mm",
+   "explanation": "The nominal gap is $120.0-105.0=15.0$ mm and the total tolerance is $0.2+0.1+0.15=0.45$ mm. The maximum gap is $15.0+0.45=15.45$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A stack has a nominal gap of 1.10 mm and four contributing tolerances of $\\pm0.25$, $\\pm0.20$, $\\pm0.15$ and $\\pm0.10$ mm. The gap must never be below 0.50 mm. If only the $\\pm0.25$ mm tolerance is tightened, what is the largest value of that tolerance, in mm, that meets the requirement?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o3"
+   ],
+   "correctValue": 0.15,
+   "tolerance": 0.005,
+   "unit": "mm",
+   "explanation": "The total tolerance may be at most $1.10-0.50=0.60$ mm. The other three sum to $0.45$ mm, so the tightened tolerance must be at most $0.60-0.45=0.15$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A shaft is held axially between two bearing shoulders of a housing, with a bearing inner ring, a spacer and a circlip stacked on the shaft. The end float (axial gap) between the circlip and a shoulder is to be calculated. Describe how you would draw the dimension chain, assign signs and write the equation for the worst-case end float.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o1"
+   ],
+   "markingGuide": [
+    "Sketch the assembly and mark the end-float gap",
+    "Chain starts at one gap face and passes through each contact to the other face",
+    "Housing dimension between shoulders is positive (a larger distance opens the gap)",
+    "Stack widths on the shaft (bearing, spacer, circlip) are negative",
+    "Nominal gap equation with signed dimensions",
+    "Worst-case tolerance as the sum of all tolerances and the limits as nominal plus and minus it"
+   ],
+   "explanation": "The chain follows the load path through the parts. Signs follow the effect of each dimension on the gap, and the tolerance is the plain sum of all tolerances.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A gap is formed by a positive dimension $52.00\\pm0.10$ mm and negative dimensions $18.00\\pm0.05$, $10.00\\pm0.04$ and $22.00\\pm0.08$ mm. The gap must lie between 1.80 mm and 2.20 mm. Calculate the worst-case limits, decide whether the requirement is met, and propose a tolerance change that meets it, justifying your choice.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o2",
+    "ug.mce-machine-design-project.tolerance-stack.worst-case-stack.o3"
+   ],
+   "markingGuide": [
+    "Nominal gap $52-50=2.00$ mm",
+    "Total tolerance $0.10+0.05+0.04+0.08=0.27$ mm, so limits 1.73 mm to 2.27 mm",
+    "Requirement not met since limits lie outside 1.80 to 2.20 mm",
+    "Required total tolerance at most $0.20$ mm, so a reduction of at least $0.07$ mm",
+    "Proposed change, for example tighten the $\\pm0.10$ mm dimension to $\\pm0.03$ mm giving $0.20$ mm, or split between dimensions",
+    "Justification by cost or process capability and re-check of the limits"
+   ],
+   "explanation": "The worst-case limits are outside the required band, so the total tolerance must fall from 0.27 to 0.20 mm. The justification must say why the chosen dimension is the cheapest to tighten.",
+   "board": "internal"
+  }
+ ]
+}

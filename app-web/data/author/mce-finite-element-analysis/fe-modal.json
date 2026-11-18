@@ -1,0 +1,359 @@
+{
+ "lessonTitle": "Modal Analysis of Bars: Mass Matrices and Natural Frequencies",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A tuning fork, a drill rod and a turbine blade each ring at a few special frequencies, and a machine whose forcing frequency lands on one of them can shake itself apart. Modal analysis finds those frequencies before the prototype exists. In the finite element method it becomes an eigenvalue problem built from the stiffness matrix you already know and a new matrix that carries the inertia, the mass matrix."
+  },
+  {
+   "type": "text",
+   "markdown": "**Free vibration of a bar.** Take an axial bar with Young's modulus $E$ (Pa), area $A$ (m$^2$), density $\\rho$ (kg/m$^3$) and length $L$ (m). Assume small, undamped, linear motion with no applied load, so that the equation of motion is $\\mathbf M\\ddot{\\mathbf u}+\\mathbf K\\mathbf u=\\mathbf 0$. We look for harmonic motion $\\mathbf u=\\boldsymbol\\phi\\sin\\omega t$ with natural circular frequency $\\omega$ (rad/s) and mode shape $\\boldsymbol\\phi$."
+  },
+  {
+   "type": "math",
+   "latex": "\\left(\\mathbf K-\\omega^2\\mathbf M\\right)\\boldsymbol\\phi=\\mathbf 0,\\qquad\\det\\left(\\mathbf K-\\omega^2\\mathbf M\\right)=0,\\qquad f=\\frac{\\omega}{2\\pi}",
+   "caption": "Generalised eigenvalue problem; $f$ is the frequency in Hz"
+  },
+  {
+   "type": "text",
+   "markdown": "**Element mass matrices.** The consistent mass uses the same shape functions as the stiffness: $\\mathbf m=\\int_0^{L_e}\\rho A\\,\\mathbf N^{T}\\mathbf N\\,dx$. For a two-node bar with $N_1=1-x/L_e$ and $N_2=x/L_e$, the integrals $\\int N_1^2dx=L_e/3$ and $\\int N_1N_2dx=L_e/6$ give the matrix below. The lumped mass instead puts half of the element mass on each node and has no off-diagonal terms. Both conserve the total mass $\\rho AL_e$ (kg)."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf m_{cons}=\\frac{\\rho AL_e}{6}\\begin{bmatrix}2&1\\\\1&2\\end{bmatrix},\\qquad\\mathbf m_{lump}=\\frac{\\rho AL_e}{2}\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix},\\qquad\\mathbf k=\\frac{EA}{L_e}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}",
+   "caption": "Two-node bar element matrices"
+  },
+  {
+   "type": "worked_example",
+   "title": "Element mass matrices of a steel rod",
+   "prompt": "A steel rod ($\\rho=7800$ kg/m$^3$, $A=300$ mm$^2$) is divided into elements of length $L_e=1$ m. Compute the element mass and both mass matrices.",
+   "steps": [
+    {
+     "text": "Element mass: $m=\\rho AL_e=7800\\times300\\times10^{-6}\\times1=2.34$ kg."
+    },
+    {
+     "text": "Consistent matrix: $\\dfrac{m}{6}\\begin{bmatrix}2&1\\\\1&2\\end{bmatrix}$ has diagonal entries $2m/6=0.78$ kg and off-diagonal entries $m/6=0.39$ kg."
+    },
+    {
+     "text": "Lumped matrix: diagonal entries $m/2=1.17$ kg and zero off-diagonal entries."
+    },
+    {
+     "text": "Check: the sum of all consistent entries is $(2+1+1+2)m/6=m$, and the lumped diagonal sum is $m$, so both carry the full element mass."
+    }
+   ],
+   "answer": "Element mass 2.34 kg; consistent diagonal 0.78 kg and off-diagonal 0.39 kg; lumped diagonal 1.17 kg."
+  },
+  {
+   "type": "text",
+   "markdown": "**Two-element fixed-free bar.** Fix node 1 and divide the bar into two elements of length $L_e=L/2$. The free degrees of freedom are $u_2$ (middle) and $u_3$ (free end). The stiffness matrix is $k\\begin{bmatrix}2&-1\\\\-1&1\\end{bmatrix}$ with $k=EA/L_e=2EA/L$. With lumped mass the matrix is $\\dfrac{\\rho AL}{4}\\begin{bmatrix}2&0\\\\0&1\\end{bmatrix}$, and with consistent mass it is $\\dfrac{\\rho AL}{12}\\begin{bmatrix}4&1\\\\1&2\\end{bmatrix}$ (the shared middle node receives contributions from both elements)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Natural frequencies of the two-element bar",
+   "prompt": "Solve the eigenproblem for a steel rod ($E=200$ GPa, $\\rho=7800$ kg/m$^3$, $L=2$ m) fixed at one end, using lumped mass. Then state the consistent-mass results and compare with the exact values $\\omega_n=(2n-1)\\dfrac{\\pi}{2L}\\sqrt{E/\\rho}$.",
+   "steps": [
+    {
+     "text": "Wave speed $c=\\sqrt{E/\\rho}=5063.7$ m/s, so $c/L=2531.8$ rad/s."
+    },
+    {
+     "text": "Lumped: let $\\Omega=\\omega^2\\rho L^2/(8E)$. The determinant condition becomes $(2-2\\Omega)(1-\\Omega)-1=0$, i.e. $2\\Omega^2-4\\Omega+1=0$, giving $\\Omega=1\\mp1/\\sqrt2=0.2929,\\;1.7071$.",
+     "latex": "\\det\\begin{bmatrix}2-2\\Omega&-1\\\\-1&1-\\Omega\\end{bmatrix}=0"
+    },
+    {
+     "text": "So $\\omega_1=\\sqrt{8(0.2929)}\\,c/L=1.5307\\,c/L$ and $\\omega_2=\\sqrt{8(1.7071)}\\,c/L=3.6955\\,c/L$."
+    },
+    {
+     "text": "Consistent: let $\\Lambda=\\omega^2\\rho L^2/(24E)$, so $7\\Lambda^2-10\\Lambda+1=0$, with roots $0.1082,\\;1.3203$. Then $\\omega_1=1.6114\\,c/L$ and $\\omega_2=5.6293\\,c/L$."
+    },
+    {
+     "text": "Exact values are $\\omega_1=\\pi/2\\,c/L=1.5708\\,c/L$ and $\\omega_2=3\\pi/2\\,c/L=4.7124\\,c/L$. In hertz ($c/L=2531.8$ rad/s): exact 633 and 1898.9 Hz; lumped 616.8 and 1489.1 Hz; consistent 649.3 and 2268.4 Hz."
+    }
+   ],
+   "answer": "Lumped: 616.8 and 1489.1 Hz (low); consistent: 649.3 and 2268.4 Hz (high); exact 633 and 1898.9 Hz."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Mode",
+    "Exact",
+    "Lumped mass",
+    "Consistent mass",
+    "Error lumped",
+    "Error consistent"
+   ],
+   "rows": [
+    [
+     "1",
+     "$1.5708\\,c/L$",
+     "$1.5307\\,c/L$",
+     "$1.6114\\,c/L$",
+     "-2.6%",
+     "+2.6%"
+    ],
+    [
+     "2",
+     "$4.7124\\,c/L$",
+     "$3.6955\\,c/L$",
+     "$5.6293\\,c/L$",
+     "-21.6%",
+     "+19.5%"
+    ]
+   ],
+   "caption": "Two-element fixed-free bar, frequencies as multiples of $c/L$ with $c=\\sqrt{E/\\rho}$"
+  },
+  {
+   "type": "text",
+   "markdown": "**Discrepancy and trends.** The consistent-mass frequencies are upper bounds: the assumed displacement shape stiffens the system, as in the Ritz method, and the consistent mass is exact for that shape. A lumped mass loses the inertial coupling between nodes, which lowers the frequencies and often cancels part of the stiffness error, so lumped values for linear elements typically fall below exact. In both cases, the error grows with mode number because a mode with $n$ half-waves needs more elements to be resolved: a rule of thumb is at least 8 to 10 linear elements per half wavelength (typical guidance)."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Assemble $\\mathbf K$ and $\\mathbf M$ for the free degrees of freedom after applying supports.",
+    "Form $\\det(\\mathbf K-\\omega^2\\mathbf M)=0$ and solve for $\\omega^2$; the number of frequencies equals the number of free degrees of freedom.",
+    "Convert to hertz, $f=\\omega/2\\pi$, and sketch the mode shapes.",
+    "Compare with an analytical result and refine the mesh until the modes of interest converge."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Higher modes",
+   "text": "Never trust the highest computed frequencies of a coarse model. A model with $N$ degrees of freedom returns $N$ frequencies, but only the lowest few are usually accurate, and the highest are meaningless numerical artefacts."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Modal analysis solves $(\\mathbf K-\\omega^2\\mathbf M)\\boldsymbol\\phi=\\mathbf 0$; the frequencies are the roots of $\\det(\\mathbf K-\\omega^2\\mathbf M)=0$.",
+    "The consistent bar mass is $\\frac{\\rho AL_e}{6}[2,1;1,2]$ and the lumped mass is $\\frac{\\rho AL_e}{2}\\,\\mathrm{diag}(1,1)$; both conserve the total mass.",
+    "For the two-element fixed-free bar the first frequency is $1.6114\\,c/L$ (consistent, high) or $1.5307\\,c/L$ (lumped, low), against the exact $1.5708\\,c/L$.",
+    "Accuracy falls with mode number, so refine until the modes of interest have converged."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which matrix is the lumped mass matrix of a two-node bar element of length $L_e$, area $A$ and density $\\rho$?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dfrac{\\rho AL_e}{2}\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dfrac{\\rho AL_e}{6}\\begin{bmatrix}2&1\\\\1&2\\end{bmatrix}$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dfrac{\\rho A}{L_e}\\begin{bmatrix}1&-1\\\\-1&1\\end{bmatrix}$"
+    },
+    {
+     "id": "d",
+     "text": "$\\rho AL_e\\begin{bmatrix}1&0\\\\0&0\\end{bmatrix}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\dfrac{\\rho AL_e}{2}\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}$",
+   "distractorRationale": {
+    "a": "Correct: half of the element mass sits at each node and there is no coupling.",
+    "b": "This is the consistent mass matrix, which has off-diagonal coupling.",
+    "c": "This has the stiffness pattern and the wrong dimensions for a mass matrix.",
+    "d": "It places all of the mass on one node, which is not symmetric and does not represent the element."
+   },
+   "explanation": "Lumping splits the element mass $\\rho AL_e$ equally between the two nodes, giving a diagonal matrix. The consistent matrix is derived from the shape functions and has off-diagonal terms.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "An aluminium bar element has density $\\rho=2700$ kg/m$^3$, area $A=250$ mm$^2$ and length $L_e=0.4$ m. Find the diagonal entry $M_{11}$ of its consistent mass matrix, in kg.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o1"
+   ],
+   "correctValue": 0.09,
+   "tolerance": 0.002,
+   "unit": "kg",
+   "explanation": "The element mass is $\\rho AL_e=2700\\times250\\times10^{-6}\\times0.4=0.27$ kg. The consistent diagonal entry is $2\\rho AL_e/6=\\rho AL_e/3=0.09$ kg. The off-diagonal entries are $0.045$ kg and the row sum equals half of the element mass, $0.135$ kg.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An aluminium rod ($E=70$ GPa, $\\rho=2700$ kg/m$^3$, $L=1.5$ m) is fixed at one end and free at the other. Model it with two equal elements and lumped mass, for which $\\omega_1=1.5307\\,\\sqrt{E/\\rho}/L$. Find the first natural frequency in Hz.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o2"
+   ],
+   "correctValue": 826.98,
+   "tolerance": 3.0,
+   "unit": "Hz",
+   "explanation": "The wave speed is $\\sqrt{70\\times10^{9}/2700}=5091.8$ m/s and $c/L=3394.5$ rad/s. Then $\\omega_1=1.5307\\times3394.5=5196$ rad/s and $f=\\omega_1/2\\pi=827$ Hz. The exact value is $\\frac{\\pi}{2}\\times3394.5/2\\pi=848.6$ Hz, so the lumped model is slightly low.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "For the same aluminium rod ($E=70$ GPa, $\\rho=2700$ kg/m$^3$, $L=1.5$ m, fixed-free) with two equal elements and consistent mass, the eigenproblem reduces to $7\\Lambda^2-10\\Lambda+1=0$ with $\\Lambda=\\omega^2\\rho L^2/(24E)$. Find the second natural frequency in Hz.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o2"
+   ],
+   "correctValue": 3041.24,
+   "tolerance": 10.0,
+   "unit": "Hz",
+   "explanation": "The larger root is $\\Lambda=(10+\\sqrt{72})/14=1.3203$, so $\\omega_2=\\sqrt{24\\times1.3203}\\,c/L=5.629\\times3394.5=19107$ rad/s. Then $f_2=19107/2\\pi\\approx3041$ Hz. The exact second frequency is 2545.8 Hz, so the consistent value is 19.5% high.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A fixed-free rod is modelled with two elements and lumped mass, and the computed first frequency is $\\omega_1=1.5307\\,c/L$ whereas the exact value is $(\\pi/2)\\,c/L$. Find the percentage error of the FE result, defined as (FE - exact)/exact, in percent (negative if too low).",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o3"
+   ],
+   "correctValue": -2.55,
+   "tolerance": 0.1,
+   "unit": "%",
+   "explanation": "The exact coefficient is $\\pi/2=1.5708$. The error is $(1.5307-1.5708)/1.5708=-0.0255$, i.e. about $-2.55\\%$. The lumped-mass model therefore gives a fundamental frequency about 2.5% below the exact value.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why are the natural frequencies computed with a consistent mass matrix and linear bar elements never lower than the exact ones?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The assumed displacement field restricts the motion, so the model is stiffer than the real bar, which raises the frequencies"
+    },
+    {
+     "id": "b",
+     "text": "Consistent mass removes some of the mass of the bar"
+    },
+    {
+     "id": "c",
+     "text": "The element stiffness is calculated with a lower modulus"
+    },
+    {
+     "id": "d",
+     "text": "The boundary condition at the fixed end is relaxed"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The assumed displacement field restricts the motion, so the model is stiffer than the real bar, which raises the frequencies",
+   "distractorRationale": {
+    "a": "Correct: restricting the displacement to the element shape functions can only add stiffness, giving an upper bound for the Rayleigh quotient.",
+    "b": "Consistent mass conserves the total mass; it does not remove any.",
+    "c": "The stiffness uses the true modulus; the stiffening comes from the restricted shape.",
+    "d": "The fixed boundary condition is imposed exactly, not relaxed."
+   },
+   "explanation": "The eigenvalue is a Rayleigh quotient minimised over the admissible space, so a restricted space gives values at or above the exact ones. A lumped mass changes the quotient's denominator and often results in lower frequencies.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A model has 40 free degrees of freedom. How many natural frequencies does the generalised eigenproblem $(\\mathbf K-\\omega^2\\mathbf M)\\boldsymbol\\phi=\\mathbf 0$ produce, and how many can be trusted?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "40 frequencies, of which only the lowest few are accurate"
+    },
+    {
+     "id": "b",
+     "text": "20 frequencies, because modes occur in pairs"
+    },
+    {
+     "id": "c",
+     "text": "Only one frequency, the fundamental"
+    },
+    {
+     "id": "d",
+     "text": "40 frequencies, all equally accurate"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "40 frequencies, of which only the lowest few are accurate",
+   "distractorRationale": {
+    "a": "Correct: a model with $N$ free degrees of freedom has $N$ eigenvalues, but the discretisation resolves only the lowest modes well.",
+    "b": "Pairs occur only with symmetric repeated eigenvalues, not as a general rule.",
+    "c": "The determinant condition has $N$ roots, not one.",
+    "d": "Accuracy decreases with mode number because high modes oscillate faster than the mesh can resolve."
+   },
+   "explanation": "The determinant of the $N\\times N$ matrix is a polynomial of degree $N$ in $\\omega^2$, so there are $N$ roots. The mode shapes with many half-waves per mesh are poorly represented.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "In a finite element model of a bar, the error in the computed natural frequency generally increases with mode number for a fixed mesh.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. A higher mode has more half-waves along the bar, so fewer elements represent each wave and the interpolation error rises. For the two-element bar the errors are 2.5% and about 22% for the first two modes.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the consistent mass matrix of a two-node bar element from the shape functions, and explain how it differs in form and in its effect on the computed frequencies from the lumped mass matrix.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o1",
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o3"
+   ],
+   "markingGuide": [
+    "Shape functions $N_1=1-x/L_e$, $N_2=x/L_e$ and $\\mathbf m=\\int_0^{L_e}\\rho A\\,\\mathbf N^T\\mathbf N\\,dx$",
+    "Integrals: $\\int N_1^2dx=L_e/3$, $\\int N_1N_2dx=L_e/6$, giving $\\frac{\\rho AL_e}{6}[2,1;1,2]$",
+    "Lumped matrix puts $\\rho AL_e/2$ on each node: diagonal, no coupling",
+    "Both conserve total mass $\\rho AL_e$",
+    "Consistent: frequencies upper bounds (high); lumped: usually lower; diagonal is cheaper and needed for explicit dynamics"
+   ],
+   "explanation": "The consistent mass uses the same interpolation as the stiffness and has off-diagonal terms. Lumping simplifies the matrix and tends to lower the frequencies.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Show that, for a fixed-free bar modelled by two equal elements with lumped mass, the eigenvalue equation reduces to $2\\Omega^2-4\\Omega+1=0$, where $\\Omega=\\omega^2\\rho L^2/(8E)$. Solve it and compare the first frequency with the exact value $(\\pi/2)\\sqrt{E/\\rho}/L$.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o2",
+    "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal.o3"
+   ],
+   "markingGuide": [
+    "Free degrees of freedom $u_2,u_3$; $\\mathbf K=\\frac{2EA}{L}[2,-1;-1,1]$, $\\mathbf M=\\frac{\\rho AL}{4}\\mathrm{diag}(2,1)$",
+    "Form $\\det(\\mathbf K-\\omega^2\\mathbf M)=0$ and divide by $(2EA/L)^2$ using $\\Omega=\\omega^2\\rho L^2/(8E)$",
+    "Determinant $(2-2\\Omega)(1-\\Omega)-1=2\\Omega^2-4\\Omega+1=0$",
+    "Roots $\\Omega=1\\pm1/\\sqrt2=0.2929,\\ 1.7071$",
+    "$\\omega_1=\\sqrt{8\\times0.2929}\\,c/L=1.5307\\,c/L$, which is 2.5% below the exact $1.5708\\,c/L$"
+   ],
+   "explanation": "The mass and stiffness matrices are combined to form a quadratic equation in $\\Omega$. The smaller root gives the fundamental frequency, close to the analytical value.",
+   "board": "internal"
+  }
+ ]
+}

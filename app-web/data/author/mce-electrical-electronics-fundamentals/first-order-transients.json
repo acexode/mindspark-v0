@@ -1,0 +1,399 @@
+{
+ "lessonTitle": "First-Order Step Response",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A thermistor signal is smoothed by a simple resistor and capacitor before it reaches a data logger. Step the temperature suddenly and the logger's reading does not jump; it creeps up to the new value along a smooth curve. How long the creep lasts is set by one number, the time constant, and every first-order circuit in mechatronics, from sensor filters to motor coils, shares the same curve."
+  },
+  {
+   "type": "text",
+   "markdown": "A circuit with **one** energy-storage element (a capacitor or an inductor) and resistors is a **first-order circuit**. Following a sudden change, such as a switch closing, the stored quantity cannot jump (capacitor voltage and inductor current are continuous). It moves exponentially from its initial value to its final (steady-state) value. The speed of that movement is set by the **time constant** $\\tau$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Time constant",
+   "text": "For a capacitor $C$ charging through a resistance $R$, $\\tau=RC$. For an inductor $L$ in series with a resistance $R$, $\\tau=L/R$. In both cases $\\tau$ is in seconds and $R$ is the Thevenin resistance seen by the storage element."
+  },
+  {
+   "type": "math",
+   "latex": "v_C(t)=V_f+\\left(V_0-V_f\\right)e^{-t/\\tau},\\qquad \\tau=RC\\ \\ \\text{or}\\ \\ \\tau=\\frac{L}{R}",
+   "caption": "General first-order response: V_0 is the initial value, V_f the final value after a long time, t measured from the switching instant"
+  },
+  {
+   "type": "text",
+   "markdown": "For a capacitor charged from 0 V by a step of size $V_s$, $V_0=0$ and $V_f=V_s$, so $v_C=V_s(1-e^{-t/\\tau})$. At $t=\\tau$ the voltage has covered $1-e^{-1}=63.2\\%$ of the step; at $2\\tau$, 86.5 %; at $3\\tau$, 95.0 %; at $5\\tau$, 99.3 %. For an inductor driven by a step, the current $i_L$ has the same shape with $I_f=V_s/R$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Capacitor voltage after a step",
+   "prompt": "A 5.0 V step is applied to a series 47 k$\\Omega$ resistor and 2.2 uF capacitor (initially uncharged). Find $\\tau$ and the capacitor voltage 150 ms after the step.",
+   "steps": [
+    {
+     "text": "Time constant.",
+     "latex": "\\tau=RC=47\\times10^{3}\\times2.2\\times10^{-6}=0.1034\\ \\mathrm{s}=103.4\\ \\mathrm{ms}"
+    },
+    {
+     "text": "Insert $t/\\tau$ in the charging equation.",
+     "latex": "\\frac{t}{\\tau}=\\frac{150}{103.4}=1.451"
+    },
+    {
+     "text": "Evaluate the voltage.",
+     "latex": "v_C=5.0\\left(1-e^{-1.451}\\right)=5.0(1-0.2344)=3.83\\ \\mathrm{V}"
+    }
+   ],
+   "answer": "tau = 103 ms; after 150 ms the capacitor voltage is 3.83 V, about 77 % of the final value."
+  },
+  {
+   "type": "text",
+   "markdown": "**Settling time.** Rearranging the charging equation gives the time to reach any voltage $v$: $t=\\tau\\ln\\dfrac{V_f-V_0}{V_f-v}$. For 95 % of the final value, $V_f-v=0.05\\,(V_f-V_0)$, so $t_{95}=\\tau\\ln 20=2.996\\,\\tau\\approx3\\tau$. Engineers often take $3\\tau$ as the time to reach 95 % and $5\\tau$ as 'settled'."
+  },
+  {
+   "type": "math",
+   "latex": "t=\\tau\\ln\\frac{V_f-V_0}{V_f-v},\\qquad t_{95}=\\tau\\ln 20\\approx 3\\tau",
+   "caption": "Time to reach a chosen value and the 95 % settling time"
+  },
+  {
+   "type": "worked_example",
+   "title": "An RL circuit",
+   "prompt": "A coil of $L=0.30$ H and total series resistance $R=15\\ \\Omega$ is connected to a 12 V supply at $t=0$. Find $\\tau$, the final current and the time to reach 95 % of it.",
+   "steps": [
+    {
+     "text": "Time constant.",
+     "latex": "\\tau=\\frac{L}{R}=\\frac{0.30}{15}=0.020\\ \\mathrm{s}=20\\ \\mathrm{ms}"
+    },
+    {
+     "text": "Final current (inductor is a short at DC steady state).",
+     "latex": "I_f=\\frac{12}{15}=0.80\\ \\mathrm{A}"
+    },
+    {
+     "text": "Time to 95 %.",
+     "latex": "t_{95}=\\tau\\ln20=20\\times2.996=59.9\\ \\mathrm{ms}"
+    }
+   ],
+   "answer": "tau = 20 ms, final current 0.80 A, 95 % (0.76 A) reached after about 60 ms."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Elapsed time",
+    "Fraction of final value",
+    "Remaining"
+   ],
+   "rows": [
+    [
+     "$1\\tau$",
+     "63.2 %",
+     "36.8 %"
+    ],
+    [
+     "$2\\tau$",
+     "86.5 %",
+     "13.5 %"
+    ],
+    [
+     "$3\\tau$",
+     "95.0 %",
+     "5.0 %"
+    ],
+    [
+     "$4\\tau$",
+     "98.2 %",
+     "1.8 %"
+    ],
+    [
+     "$5\\tau$",
+     "99.3 %",
+     "0.7 %"
+    ]
+   ],
+   "caption": "Rise of a first-order step response (for decay, the remaining column is the value left)"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "$\\tau=RC$ or $L/R$ in seconds; bigger R or C (or L, smaller R for RL) means slower response.",
+    "Discharge from $V_0$ to zero follows $v=V_0e^{-t/\\tau}$: 36.8 % left after one $\\tau$.",
+    "The tangent at $t=0$ would reach the final value in exactly one $\\tau$.",
+    "The same $\\tau$ governs charging and discharging through the same resistance."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Find the right R",
+   "text": "$R$ in $\\tau$ is the resistance the storage element drives or is driven through, the Thevenin resistance seen at its terminals, not simply 'the resistor in the picture'."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Time constant is $\\tau=RC$ for RC circuits and $\\tau=L/R$ for RL circuits.",
+    "Response: $v=V_f+(V_0-V_f)e^{-t/\\tau}$; after one $\\tau$ it has covered 63.2 % of the change.",
+    "95 % of the final value is reached at $\\tau\\ln20\\approx3\\tau$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is the time constant of a series circuit of a 10 k$\\Omega$ resistor and a 100 nF capacitor?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.0 ms"
+    },
+    {
+     "id": "b",
+     "text": "1.0 s"
+    },
+    {
+     "id": "c",
+     "text": "0.1 ms"
+    },
+    {
+     "id": "d",
+     "text": "10 ms"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "1.0 ms",
+   "distractorRationale": {
+    "a": "Correct: 10e3 x 100e-9 = 1e-3 s.",
+    "b": "Wrong: this mistakes 100 nF for 100 uF.",
+    "c": "Wrong: this loses a factor of 10 in the product.",
+    "d": "Wrong: this gains a factor of 10 in the product."
+   },
+   "explanation": "$\\tau=RC=10\\times10^{3}\\times100\\times10^{-9}=1.0\\times10^{-3}$ s, or 1.0 ms. Convert nanofarads to farads before multiplying.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 50 mH inductor is in series with a total resistance of 25 ohm. What is the time constant?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2.0 ms"
+    },
+    {
+     "id": "b",
+     "text": "1250 s"
+    },
+    {
+     "id": "c",
+     "text": "0.5 s"
+    },
+    {
+     "id": "d",
+     "text": "20 ms"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "2.0 ms",
+   "distractorRationale": {
+    "a": "Correct: L/R = 0.050/25 = 2.0 ms.",
+    "b": "Wrong: this multiplies L by R instead of dividing.",
+    "c": "Wrong: this divides R by L.",
+    "d": "Wrong: this mis-scales mH."
+   },
+   "explanation": "For an RL circuit $\\tau=L/R=0.050/25=0.002$ s = 2.0 ms. Larger inductance slows the current build-up; larger resistance speeds it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Approximately how many time constants must elapse for a first-order step response to reach 95 % of its final value?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3"
+    },
+    {
+     "id": "b",
+     "text": "1"
+    },
+    {
+     "id": "c",
+     "text": "5"
+    },
+    {
+     "id": "d",
+     "text": "0.5"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "3",
+   "distractorRationale": {
+    "a": "Correct: ln 20 = 2.996, about 3 tau.",
+    "b": "Wrong: one tau gives only 63.2 %.",
+    "c": "Wrong: five tau reaches about 99.3 %, the 'settled' convention.",
+    "d": "Wrong: half a tau gives 39 %."
+   },
+   "explanation": "Setting $1-e^{-t/\\tau}=0.95$ gives $t/\\tau=\\ln20=2.996$. Hence three time constants give 95 %.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 12 V step is applied to an uncharged 1.0 uF capacitor in series with 22 k$\\Omega$. What is the capacitor voltage 30 ms after the step?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "8.93 V"
+    },
+    {
+     "id": "b",
+     "text": "3.07 V"
+    },
+    {
+     "id": "c",
+     "text": "7.59 V"
+    },
+    {
+     "id": "d",
+     "text": "12 V"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "8.93 V",
+   "distractorRationale": {
+    "a": "Correct: tau = 22 ms, v = 12(1 - e^(-30/22)) = 8.93 V.",
+    "b": "Wrong: this is the decay value 12 e^(-t/tau), the voltage still remaining to be charged.",
+    "c": "Wrong: this is the voltage at exactly one tau (63.2 %), not at 30 ms.",
+    "d": "Wrong: this is the final value, reached only after several time constants."
+   },
+   "explanation": "$\\tau=22\\times10^3\\times1.0\\times10^{-6}=22$ ms, so $t/\\tau=1.364$. Then $v=12(1-e^{-1.364})=12(1-0.2557)=8.93$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A capacitor charged to 9.0 V is discharged through a resistor. At a time equal to one time constant after the switch closes, what is its voltage?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "3.31 V"
+    },
+    {
+     "id": "b",
+     "text": "5.69 V"
+    },
+    {
+     "id": "c",
+     "text": "0 V"
+    },
+    {
+     "id": "d",
+     "text": "4.5 V"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "3.31 V",
+   "distractorRationale": {
+    "a": "Correct: 9 e^(-1) = 3.31 V.",
+    "b": "Wrong: this is 9 x 0.632, the charging fraction applied to a discharge.",
+    "c": "Wrong: the capacitor has not fully discharged after one tau.",
+    "d": "Wrong: this assumes a linear fall to half at one tau."
+   },
+   "explanation": "Discharge follows $v=V_0e^{-t/\\tau}$, so at $t=\\tau$ the voltage is $9.0\\times0.3679=3.31$ V. 36.8 % of the initial voltage remains.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 3.3 k$\\Omega$ resistor charges a 47 uF capacitor. What is the time constant, in milliseconds?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o1"
+   ],
+   "correctValue": 155.1,
+   "tolerance": 1,
+   "unit": "ms",
+   "explanation": "$\\tau=RC=3300\\times47\\times10^{-6}=0.1551$ s, which is 155.1 ms.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A solenoid has $L=120$ mH and a series resistance of 40 ohm, and is switched onto a DC supply. How long (in ms) does the current take to reach 95 % of its final value?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o3"
+   ],
+   "correctValue": 8.99,
+   "tolerance": 0.1,
+   "unit": "ms",
+   "explanation": "$\\tau=L/R=0.120/40=3.0$ ms. Then $t_{95}=\\tau\\ln20=3.0\\times2.996=8.99$ ms.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 5.0 V step is applied to a 10 k$\\Omega$ resistor in series with an uncharged 0.47 uF capacitor. How long (in ms) does the capacitor voltage take to reach 4.0 V?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o2",
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o3"
+   ],
+   "correctValue": 7.56,
+   "tolerance": 0.1,
+   "unit": "ms",
+   "explanation": "$\\tau=10^4\\times0.47\\times10^{-6}=4.7$ ms. Using $t=\\tau\\ln\\frac{V_f-V_0}{V_f-v}=4.7\\ln\\frac{5}{1}=4.7\\times1.609=7.56$ ms.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain physically why the time constant of an RC circuit increases when either R or C is increased, and what 'one time constant' means for the response.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o1"
+   ],
+   "markingGuide": [
+    "Larger C needs more charge to reach the same voltage",
+    "Larger R reduces the charging current for a given voltage difference",
+    "Both slow the rate of voltage change so tau = RC increases",
+    "One tau is the time to complete 63.2 % of the total change (or time for decay to 36.8 %)",
+    "Equivalent statement: initial slope would reach the final value in one tau"
+   ],
+   "explanation": "Charging a capacitor to a given voltage needs a charge $Q=CV$, so a larger $C$ requires more charge, while a larger $R$ reduces the current $i=(V_s-v)/R$ delivering that charge. Both slow the process, which is why $\\tau=RC$ grows with each. After one time constant the capacitor has completed 63.2 % of its voltage change.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A 12-bit ADC input (full scale 3.3 V) is preceded by an RC filter with $R=1.0$ k$\\Omega$ and $C=10$ uF. After a full-scale step at the input, estimate how long the designer must wait before sampling so that the capacitor voltage is within one LSB of final. Show the reasoning.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o2",
+    "ug.mce-electrical-electronics-fundamentals.rc-rl-transients.first-order-transients.o3"
+   ],
+   "markingGuide": [
+    "Computes tau = RC = 1.0e3 x 10e-6 = 10 ms",
+    "One LSB = 3.3/4096 = 0.806 mV, so remaining fraction = 1/4096",
+    "Sets e^(-t/tau) = 1/4096, giving t = tau ln 4096",
+    "Calculates t = 10 ms x 8.32 = 83.2 ms",
+    "Notes this is about 8.3 time constants, much longer than the 3 tau used for 95 %"
+   ],
+   "explanation": "The time constant is $\\tau=RC=1.0\\times10^3\\times10\\times10^{-6}=10$ ms. Being within one LSB means a remaining error of $1/4096$ of the step, so $e^{-t/\\tau}=1/4096$ and $t=\\tau\\ln4096=10\\times8.32=83.2$ ms. Higher accuracy therefore needs many more time constants than the 95 % rule of thumb.",
+   "board": "internal"
+  }
+ ]
+}

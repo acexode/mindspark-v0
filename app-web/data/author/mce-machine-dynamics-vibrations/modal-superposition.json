@@ -1,0 +1,422 @@
+{
+ "lessonTitle": "Modal Superposition and the Vibration Absorber",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A ventilation fan bolted to a roof slab shakes the floor below at exactly one speed. Rather than stiffening the slab, an engineer hangs a small spring-mounted mass on it and the slab stops moving at that speed. Two ideas explain both the problem and the cure: modal decoupling and the tuned vibration absorber."
+  },
+  {
+   "type": "text",
+   "markdown": "A two-degree-of-freedom system obeys $\\mathbf{M}\\ddot{\\mathbf{x}}+\\mathbf{K}\\mathbf{x}=\\mathbf{f}(t)$, where $\\mathbf{M}$ (kg) and $\\mathbf{K}$ (N/m) are the mass and stiffness matrices, $\\mathbf{x}$ the displacement vector (m) and $\\mathbf{f}$ the force vector (N). The equations are coupled through off-diagonal terms in $\\mathbf{K}$. The free-vibration solution gives natural frequencies $\\omega_i$ (rad/s) and mode shapes $\\boldsymbol\\varphi_i$. Those mode shapes have a special property, **orthogonality**, which lets us split the coupled problem into independent one-degree-of-freedom problems."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Orthogonality and modal coordinates",
+   "text": "For distinct natural frequencies, $\\boldsymbol\\varphi_i^T\\mathbf{M}\\boldsymbol\\varphi_j=0$ and $\\boldsymbol\\varphi_i^T\\mathbf{K}\\boldsymbol\\varphi_j=0$ for $i\\ne j$. Write $\\mathbf{x}(t)=\\sum_i\\boldsymbol\\varphi_i\\,q_i(t)$, where each $q_i$ is a **modal coordinate**. Substituting and premultiplying by $\\boldsymbol\\varphi_i^T$ kills all cross terms."
+  },
+  {
+   "type": "math",
+   "latex": "M_i\\ddot{q}_i+K_iq_i=f_i(t),\\quad M_i=\\boldsymbol\\varphi_i^T\\mathbf{M}\\boldsymbol\\varphi_i,\\ K_i=\\boldsymbol\\varphi_i^T\\mathbf{K}\\boldsymbol\\varphi_i=\\omega_i^2M_i,\\ f_i=\\boldsymbol\\varphi_i^T\\mathbf{f}",
+   "caption": "Decoupled modal equations (modal mass, stiffness, force)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Worked system.** Masses $m_1=2$ kg and $m_2=1$ kg are joined in a chain: a spring of 600 N/m from a fixed wall to $m_1$ and a spring of 600 N/m from $m_1$ to $m_2$. Then $\\mathbf{M}=\\mathrm{diag}(2,1)$ kg and $\\mathbf{K}=\\begin{bmatrix}1200&-600\\\\-600&600\\end{bmatrix}$ N/m. The eigenvalues satisfy $2\\lambda^2-2400\\lambda+360000=0$, so $\\omega_1^2=175.74$ and $\\omega_2^2=1024.26$ rad$^2$/s$^2$, i.e. $\\omega_1=13.26$ and $\\omega_2=32.00$ rad/s. The mode shapes, normalised to 1 at $m_1$, are $\\boldsymbol\\varphi_1=[1,\\ 1.4142]^T$ and $\\boldsymbol\\varphi_2=[1,\\ -1.4142]^T$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Check orthogonality and find modal masses",
+   "prompt": "For the system above, verify that the two mode shapes are orthogonal with respect to the mass matrix and find the modal masses and modal stiffnesses.",
+   "steps": [
+    {
+     "text": "Cross term with the mass matrix; the sum should vanish.",
+     "latex": "\\varphi_1^T M\\varphi_2=2(1)(1)+1(1.4142)(-1.4142)=0.0000"
+    },
+    {
+     "text": "Modal masses from the diagonal products.",
+     "latex": "M_1=2(1)^2+1(1.4142)^2=4.000\\ \\text{kg},\\quad M_2=4.000\\ \\text{kg}"
+    },
+    {
+     "text": "Modal stiffnesses from phi transposed K phi; they must equal omega squared times modal mass.",
+     "latex": "K_1=702.94\\ \\text{N/m}=\\omega_1^2M_1=702.94,\\quad K_2=4097.06=\\omega_2^2M_2=4097.06"
+    },
+    {
+     "text": "Stiffness cross term, which also vanishes.",
+     "latex": "\\varphi_1^TK\\varphi_2=0.0000"
+    }
+   ],
+   "answer": "Cross terms are zero (0.000 and 0.000); M1 = M2 = 4.00 kg; K1 = 702.9 N/m and K2 = 4097.1 N/m."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Step",
+    "Coupled (physical) form",
+    "Modal form"
+   ],
+   "rows": [
+    [
+     "Unknowns",
+     "$x_1(t),x_2(t)$ in coupled equations",
+     "Independent $q_1(t),q_2(t)$"
+    ],
+    [
+     "Mass and stiffness",
+     "Full matrices $\\mathbf{M},\\mathbf{K}$",
+     "Scalars $M_i,K_i=\\omega_i^2M_i$"
+    ],
+    [
+     "Forcing",
+     "Forces $f_1,f_2$ on masses",
+     "Modal force $f_i=\\boldsymbol\\varphi_i^T\\mathbf{f}$"
+    ],
+    [
+     "Initial conditions",
+     "$\\mathbf{x}(0),\\dot{\\mathbf{x}}(0)$",
+     "$q_i(0)=\\boldsymbol\\varphi_i^T\\mathbf{M}\\mathbf{x}(0)/M_i$"
+    ],
+    [
+     "Harmonic response",
+     "Solve two coupled equations",
+     "$q_i=f_i/(K_i-\\omega^2M_i)$ (undamped)"
+    ],
+    [
+     "Recover physical motion",
+     "",
+     "$\\mathbf{x}=\\boldsymbol\\varphi_1q_1+\\boldsymbol\\varphi_2q_2$"
+    ]
+   ],
+   "caption": "The modal superposition recipe"
+  },
+  {
+   "type": "worked_example",
+   "title": "Harmonic response by superposition",
+   "prompt": "A force 10 sin(20 t) N acts on $m_2$ only in the system above (frequency 20 rad/s). Find the steady-state amplitudes of both masses.",
+   "steps": [
+    {
+     "text": "Modal forces: project the force vector on each mode shape.",
+     "latex": "f_1=\\boldsymbol\\varphi_1^T\\mathbf{f}=1.4142\\times10=14.142\\ \\text{N},\\quad f_2=-14.142\\ \\text{N}"
+    },
+    {
+     "text": "Modal amplitudes from each decoupled one-DOF equation (undamped, steady state).",
+     "latex": "q_1=\\frac{f_1}{K_1-\\omega^2M_1}=\\frac{14.142}{-897.06}=-15.765\\ \\text{mm},\\quad q_2=\\frac{-14.142}{2497.06}=-5.664\\ \\text{mm}"
+    },
+    {
+     "text": "Add the modal contributions with the mode shapes as weights.",
+     "latex": "x_1=1q_1+1q_2=-21.429\\ \\text{mm}"
+    },
+    {
+     "text": "Second mass.",
+     "latex": "x_2=1.4142q_1+(-1.4142)q_2=-14.286\\ \\text{mm}"
+    }
+   ],
+   "answer": "X1 = -21.429 mm and X2 = -14.286 mm (the amplitudes are signed, with positive meaning in phase with the force). The forcing frequency lies above the first and below the second natural frequency, so mode 1 responds out of phase with its modal force while mode 2 responds in phase with its modal force."
+  },
+  {
+   "type": "text",
+   "markdown": "**The undamped vibration absorber.** Suppose a primary mass $m$ with stiffness $k$ is forced at $F_0\\sin\\omega t$ and a small absorber mass $m_a$ on a spring $k_a$ is attached. Writing the two equations of motion and solving for steady state gives the primary amplitude $X_1=F_0(k_a-m_a\\omega^2)/D$, with $D=(k+k_a-m\\omega^2)(k_a-m_a\\omega^2)-k_a^2$. If the absorber is tuned so that $k_a/m_a=\\omega^2$, then $X_1=0$: the primary mass stands still. The absorber moves with amplitude $X_2=-F_0/k_a$ (opposite to the force), so its spring force on the primary, $k_aX_2$, is exactly $-F_0$ and cancels the applied force."
+  },
+  {
+   "type": "math",
+   "latex": "\\omega_a=\\sqrt{\\frac{k_a}{m_a}}=\\omega_{exc},\\qquad X_1=0,\\qquad X_2=-\\frac{F_0}{k_a}",
+   "caption": "Tuning condition for an undamped absorber (omega in rad/s)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Tuning an absorber for a resonant machine",
+   "prompt": "A 200 kg machine of stiffness 4.935 x 10^6 N/m (natural frequency 25 Hz) is excited by a 400 N force at 25 Hz. Design an absorber of mass 10 kg and find its stiffness, its amplitude, and the new natural frequencies.",
+   "steps": [
+    {
+     "text": "Absorber tuned to the excitation frequency 25 Hz = 157.08 rad/s.",
+     "latex": "k_a=m_a\\omega^2=10\\times24674=2.4674 x 10^5\\ \\text{N/m}"
+    },
+    {
+     "text": "Absorber amplitude cancels the force.",
+     "latex": "X_2=F_0/k_a=400/2.4674 x 10^5=1.621\\ \\text{mm}"
+    },
+    {
+     "text": "New natural frequencies from the two-DOF characteristic equation with mass ratio mu = m_a/m = 0.05.",
+     "latex": "m\\,m_a\\lambda^2-[mk_a+m_a(k+k_a)]\\lambda+kk_a=0\\Rightarrow \\omega=140.5,\\ 175.6\\ \\text{rad/s}\\ (22.36,\\ 27.95\\ \\text{Hz})"
+    }
+   ],
+   "answer": "k_a = 2.467 x 10^5 N/m; the primary is stationary and the absorber vibrates 1.62 mm. The old resonance at 25 Hz is replaced by two at 22.4 Hz and 28.0 Hz, so the machine must not run or sweep close to them."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find $\\omega_i$ and $\\boldsymbol\\varphi_i$ from the eigenproblem; check $\\boldsymbol\\varphi_i^T\\mathbf{M}\\boldsymbol\\varphi_j=0$.",
+    "Compute $M_i$ and modal forces $f_i=\\boldsymbol\\varphi_i^T\\mathbf{f}$ and solve each one-DOF equation.",
+    "Rebuild $\\mathbf{x}=\\sum\\boldsymbol\\varphi_iq_i$.",
+    "For an absorber, set $k_a=m_a\\omega_{exc}^2$ and then check the two new resonances."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Limits of the undamped absorber",
+   "text": "It works only at the tuned frequency. Adding it creates two resonances, one below and one above the old one, so a variable-speed machine can run into them. A damped absorber broadens the working band but cannot reduce the primary motion to exactly zero."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Orthogonality of mode shapes with respect to $\\mathbf{M}$ and $\\mathbf{K}$ uncouples the equations into $M_iq_i''+K_iq_i=f_i$.",
+    "Response is $\\mathbf{x}=\\sum\\boldsymbol\\varphi_iq_i$, with $f_i=\\boldsymbol\\varphi_i^T\\mathbf{f}$ and (undamped harmonic) $q_i=f_i/(K_i-\\omega^2M_i)$.",
+    "An undamped absorber with $k_a/m_a=\\omega_{exc}^2$ holds the primary mass stationary, vibrating with $X_2=-F_0/k_a$.",
+    "Attaching an absorber replaces one resonance by two."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a two-degree-of-freedom system with distinct natural frequencies, what does the mass-orthogonality of the mode shapes allow us to do?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Rewrite the coupled equations as independent single-degree-of-freedom equations in the modal coordinates"
+    },
+    {
+     "id": "b",
+     "text": "Make the natural frequencies equal to each other"
+    },
+    {
+     "id": "c",
+     "text": "Remove the stiffness matrix from the problem entirely"
+    },
+    {
+     "id": "d",
+     "text": "Guarantee that both masses move in phase in every mode"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Rewrite the coupled equations as independent single-degree-of-freedom equations in the modal coordinates",
+   "distractorRationale": {
+    "a": "Correct: Substituting x = sum of phi_i q_i and premultiplying by phi_j transposed makes every cross term vanish, because phi_j^T M phi_i and phi_j^T K phi_i are zero for i not equal to j.",
+    "b": "The natural frequencies are fixed by M and K; transformation does not change them.",
+    "c": "The stiffness matrix reappears as the modal stiffnesses K_i.",
+    "d": "Orthogonal modes can have in-phase or out-of-phase motion; that is not what orthogonality ensures."
+   },
+   "explanation": "Substituting x = sum of phi_i q_i and premultiplying by phi_j transposed makes every cross term vanish, because phi_j^T M phi_i and phi_j^T K phi_i are zero for i not equal to j. Each modal coordinate then obeys its own single-degree-of-freedom equation.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A two-mass system has mass matrix diag(3.0, 1.5) kg and one mode shape [1, 2]. Find the modal mass for this mode in kilograms.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o1"
+   ],
+   "correctValue": 9.0,
+   "tolerance": 0.02,
+   "unit": "kg",
+   "explanation": "The modal mass is phi^T M phi = 3.0 x 1^2 + 1.5 x 2^2 = 3.0 + 6.0 = 9.0 kg. Heavier components that move more in the mode contribute in proportion to the square of their shape value.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 2.5 kg absorber mass is to be tuned to cancel a steady disturbance at 30 Hz acting on a machine. Find the required absorber spring stiffness in N/m.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o3"
+   ],
+   "correctValue": 88826.4,
+   "tolerance": 888.264,
+   "unit": "N/m",
+   "explanation": "The tuning condition is k_a/m_a = omega^2 with omega = 2 pi x 30 = 188.50 rad/s. So k_a = 2.5 x 35531 = 88826.4 N/m.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 5 kg absorber is tuned to the 20 Hz frequency of a 120 N amplitude disturbance on a machine. At that frequency, the amplitude of the absorber mass is about",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.76 mm"
+    },
+    {
+     "id": "b",
+     "text": "1.52 mm"
+    },
+    {
+     "id": "c",
+     "text": "0 mm, because only the primary mass is forced"
+    },
+    {
+     "id": "d",
+     "text": "15.2 mm"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "1.52 mm",
+   "distractorRationale": {
+    "a": "That halves F0/k_a; there is no factor of one half in the cancellation condition.",
+    "b": "Correct: At the tuned frequency the absorber spring force on the primary must equal the applied force, so k_a X_2 = F_0 in magnitude.",
+    "c": "The absorber moves with just enough amplitude to cancel the force; it is the primary mass that stays still.",
+    "d": "That is ten times too large."
+   },
+   "explanation": "At the tuned frequency the absorber spring force on the primary must equal the applied force, so k_a X_2 = F_0 in magnitude. With k_a = m_a omega^2 = 78957 N/m, X_2 = 120/78957 = 1.52 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Two 2 kg masses are connected so that the stiffness matrix is [[300, -100], [-100, 100]] N/m. The natural frequencies are 5.412 and 13.066 rad/s with mode shapes [1, 2.4142] and [1, -0.4142]. The system is released from rest with displacements x1 = 0 and x2 = 4 mm. Use modal superposition to find x2 in millimetres at t = 0.05 s (angles in radians).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o2"
+   ],
+   "correctValue": 3.75514,
+   "tolerance": 0.03,
+   "unit": "mm",
+   "explanation": "The modal masses are 2(1 + shape^2): 13.657 and 2.343 kg. Initial modal coordinates (released from rest) are q_i(0) = phi_i^T M x(0)/M_i = 1.4142 mm and -1.4142 mm. Then x2(t) = 2.4142 q_1(0) cos(omega_1 t) + (-0.4142) q_2(0) cos(omega_2 t) = 3.755 mm at t = 0.05 s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A small undamped absorber is added to a machine that was previously a single-degree-of-freedom system. Besides cancelling motion at its tuned frequency, what else changes?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The original resonance is shifted upward but remains a single resonance"
+    },
+    {
+     "id": "b",
+     "text": "All resonances are removed"
+    },
+    {
+     "id": "c",
+     "text": "The single resonance is replaced by two resonances, one below and one above the original"
+    },
+    {
+     "id": "d",
+     "text": "The machine has no resonance at all because the absorber supplies damping"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The single resonance is replaced by two resonances, one below and one above the original",
+   "distractorRationale": {
+    "a": "The system now has two degrees of freedom so two natural frequencies.",
+    "b": "Resonances are not removed by an undamped absorber; they are moved.",
+    "c": "Correct: Adding the absorber mass makes the system two-degree-of-freedom with two natural frequencies, one on each side of the original.",
+    "d": "An undamped absorber supplies no damping."
+   },
+   "explanation": "Adding the absorber mass makes the system two-degree-of-freedom with two natural frequencies, one on each side of the original. The machine must avoid running near them.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why mass- and stiffness-orthogonality of the mode shapes allows the equations of motion of a two-degree-of-freedom system to be decoupled, and outline the steps for finding the response to a force on one mass.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o1",
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o2"
+   ],
+   "markingGuide": [
+    "Assume x = phi_1 q_1 + phi_2 q_2 and substitute in M x'' + K x = f",
+    "Premultiply by phi_i transposed",
+    "Cross terms phi_i^T M phi_j and phi_i^T K phi_j vanish for i not equal to j by orthogonality",
+    "This leaves M_i q_i'' + K_i q_i = f_i with modal mass, stiffness and force f_i = phi_i^T f",
+    "Solve each single-DOF equation (harmonic: q_i = f_i/(K_i - omega^2 M_i))",
+    "Recombine x = sum phi_i q_i",
+    "Initial conditions transform with q_i(0) = phi_i^T M x(0)/M_i"
+   ],
+   "explanation": "Orthogonality removes all coupling between modal coordinates, so each can be solved independently. The physical response is then recovered by summing the modal contributions.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A mode shape [1, 2] belongs to a two-mass system. A force of 10 N acts only on the second mass. The modal force for that mode is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "10 N"
+    },
+    {
+     "id": "b",
+     "text": "5 N"
+    },
+    {
+     "id": "c",
+     "text": "30 N"
+    },
+    {
+     "id": "d",
+     "text": "20 N"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "20 N",
+   "distractorRationale": {
+    "a": "That ignores the weighting by the mode-shape value at the second mass.",
+    "b": "That divides by the mode shape instead of multiplying.",
+    "c": "That adds the components of the mode shape to the force.",
+    "d": "Correct: The modal force is phi^T f = 1 x 0 + 2 x 10 = 20 N."
+   },
+   "explanation": "The modal force is phi^T f = 1 x 0 + 2 x 10 = 20 N. The mode shape weights the force by how much that mass moves in the mode.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A machine with a natural frequency of 25 Hz is excited by a disturbance at 25 Hz. Explain how an undamped vibration absorber eliminates the machine's motion at that frequency, and give two limitations of the device.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o3"
+   ],
+   "markingGuide": [
+    "Absorber natural frequency sqrt(k_a/m_a) is tuned to the excitation frequency",
+    "At that frequency the primary amplitude X1 = F0 (k_a - m_a omega^2)/D is zero",
+    "The absorber vibrates with X2 = -F0/k_a, opposite to the force",
+    "The absorber spring applies a force on the primary equal and opposite to the applied force, so net force on the primary is zero",
+    "Limitation: effective only near the tuned frequency (narrow band)",
+    "Limitation: adds two new resonances either side of the original, which can be excited by speed variation",
+    "Damped absorbers widen the band at the expense of exact cancellation"
+   ],
+   "explanation": "Cancellation comes from the force balance on the primary mass: the absorber spring supplies exactly the force that opposes the load. It is a single-frequency cure and creates two new resonances.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "An undamped vibration absorber tuned to a particular frequency keeps the primary mass stationary at every excitation frequency.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.mdof-modal.modal-superposition.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The cancellation only occurs when the excitation frequency equals the absorber natural frequency, where X1 = 0. At other frequencies the primary mass moves, and near the two new resonances it can move more than before the absorber was fitted.",
+   "board": "internal"
+  }
+ ]
+}

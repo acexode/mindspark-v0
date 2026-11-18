@@ -1,0 +1,399 @@
+{
+ "lessonTitle": "Control Charts: X-bar and R Charts",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A grinding line finishes pump shafts to 25.00 mm plus or minus 0.05 mm. Every half hour the operator measures five consecutive shafts. The latest five average 25.033 mm: which is still inside the tolerance. That does not mean every shaft is in tolerance: a mean inside the limits says nothing about the spread, and with the scatter this process shows (about 0.014 mm, estimated later in this lesson) roughly 11 percent of shafts would now exceed the 25.05 mm upper limit. The process has probably changed. A control chart is the tool that notices the change before the first bad shaft is made."
+  },
+  {
+   "type": "text",
+   "markdown": "A **control chart** plots a statistic from small samples over time against limits calculated from the process's own behaviour. Samples (rational subgroups) are taken so that variation *within* a subgroup reflects only the short-term, natural scatter, and variation *between* subgroups reveals changes. For measured data the standard pair is the **$\\bar{X}$ chart**, which tracks the subgroup mean (is the process centred where it should be?) and the **$R$ chart**, which tracks the subgroup range (is the scatter stable?)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "X-bar and R chart quantities",
+   "text": "For $k$ subgroups of size $n$: the subgroup mean $\\bar{x}_i$ and range $R_i=x_{\\max}-x_{\\min}$. The grand mean $\\bar{\\bar{x}}=\\tfrac1k\\sum\\bar{x}_i$ is the centre line of the $\\bar X$ chart, and the average range $\\bar R=\\tfrac1k\\sum R_i$ is the centre line of the $R$ chart. Control limits are set about 3 standard errors from the centre line and are calculated from data, not from the specification."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathrm{UCL}_{\\bar X}=\\bar{\\bar{x}}+A_2\\bar R,\\quad \\mathrm{LCL}_{\\bar X}=\\bar{\\bar{x}}-A_2\\bar R;\\qquad \\mathrm{UCL}_R=D_4\\bar R,\\quad \\mathrm{LCL}_R=D_3\\bar R",
+   "caption": "A2, D3, D4 are tabulated constants depending on n. For n = 5: A2 = 0.577, D3 = 0, D4 = 2.114. Valid when the process is stable, subgroups are independent, and the individual readings are roughly normal."
+  },
+  {
+   "type": "math",
+   "latex": "\\hat{\\sigma}=\\frac{\\bar R}{d_2}",
+   "caption": "Estimate of the process standard deviation from the average range; d2 = 2.326 for n = 5."
+  },
+  {
+   "type": "worked_example",
+   "title": "Control limits from ten subgroups",
+   "prompt": "Ten subgroups of $n=5$ shaft diameters (mm) gave these subgroup means: 25.010, 25.014, 25.008, 25.016, 25.012, 25.009, 25.013, 25.015, 25.011, 25.012, and these ranges: 0.030, 0.034, 0.028, 0.036, 0.031, 0.033, 0.029, 0.035, 0.032, 0.032. Find the centre lines and limits of both charts, and $\\hat\\sigma$.",
+   "steps": [
+    {
+     "text": "Grand mean of the ten subgroup means: the sum is 250.120.",
+     "latex": "\\bar{\\bar{x}}=\\frac{250.120}{10}=25.012\\ \\text{mm}"
+    },
+    {
+     "text": "Average range: the sum of the ranges is 0.320.",
+     "latex": "\\bar R=\\frac{0.320}{10}=0.032\\ \\text{mm}"
+    },
+    {
+     "text": "The X-bar limits, using $A_2=0.577$ for $n=5$: the half-width is $0.577\\times0.032=0.01846$ mm.",
+     "latex": "\\mathrm{UCL}_{\\bar X}=25.0305,\\quad \\mathrm{LCL}_{\\bar X}=24.9935\\ \\text{mm}"
+    },
+    {
+     "text": "The R-chart limits, using $D_4=2.114$ and $D_3=0$ for $n=5$.",
+     "latex": "\\mathrm{UCL}_R=2.114\\times0.032=0.0676\\ \\text{mm},\\quad \\mathrm{LCL}_R=0"
+    },
+    {
+     "text": "Process standard deviation estimate, $d_2=2.326$.",
+     "latex": "\\hat\\sigma=\\frac{0.032}{2.326}=0.0138\\ \\text{mm}"
+    }
+   ],
+   "answer": "$\\bar X$ chart: centre 25.0120, limits 24.9935 to 25.0305 mm. $R$ chart: centre 0.032, limits 0 to 0.0676 mm. $\\hat\\sigma\\approx0.0138$ mm."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Signal (common rule set)",
+    "What it looks like",
+    "Typical cause"
+   ],
+   "rows": [
+    [
+     "Point beyond a control limit",
+     "Any $\\bar x$ or $R$ above UCL or below LCL",
+     "Sudden change: wrong material, broken tool, set-up error"
+    ],
+    [
+     "Run",
+     "8 consecutive points on one side of the centre line (rule conventions vary between 7 and 9)",
+     "Small sustained shift in mean or scatter"
+    ],
+    [
+     "Trend",
+     "6 consecutive points steadily rising or falling",
+     "Gradual drift, such as tool wear or warm-up"
+    ],
+    [
+     "Pattern or cycles",
+     "Alternating high-low points, or repeating waves",
+     "Alternating operators or machines, temperature cycles"
+    ]
+   ],
+   "caption": "Out-of-control signals on a control chart. A signal means there is evidence of a special cause; it does not say what the cause is."
+  },
+  {
+   "type": "text",
+   "markdown": "**Common cause and special cause.** *Common-cause* variation is the steady, random scatter always present in a stable process from many small effects (material grain, machine vibration, ambient temperature). It is predictable in a statistical sense; the points wander inside the limits with no pattern, and reducing it needs a change to the process itself (management action). *Special-cause* variation arises from a specific, identifiable disturbance that is not always present (a worn tool, a different batch of material, a loose fixture). It shows as signals on the chart and can be found and removed by the operators or engineers close to the process."
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading new points",
+   "prompt": "Using the limits from the previous example (X-bar: 24.9935 to 25.0305; R: 0 to 0.0676), the next two subgroups gave $\\bar x=25.033$ with $R=0.034$ and $\\bar x=25.011$ with $R=0.075$. Interpret.",
+   "steps": [
+    {
+     "text": "Compare the first mean with the X-bar limits.",
+     "latex": "25.033>25.0305\\Rightarrow\\text{beyond UCL}"
+    },
+    {
+     "text": "The first range is inside the R limits, so scatter is stable but the mean has moved up. Compare the second range with the R limit.",
+     "latex": "0.075>0.0676\\Rightarrow\\text{beyond }\\mathrm{UCL}_R"
+    },
+    {
+     "text": "The second mean is inside the limits but the scatter has grown. Both are special-cause signals, so stop and investigate before adjusting.",
+     "latex": "\\text{investigate both}"
+    }
+   ],
+   "answer": "Subgroup 1 signals a shift of the mean; subgroup 2 signals increased scatter, although its mean looks normal. Each needs a search for an assignable cause."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Control limits describe what the process *does*; specification limits describe what the customer *wants*. They are unrelated and must not be mixed.",
+    "Check the $R$ chart first: if scatter is unstable, the $\\bar X$ limits (which are based on $\\bar R$) are not meaningful.",
+    "Do not adjust the process in response to points inside the limits; this tampering adds variation.",
+    "Remove subgroups with known assignable causes and recalculate limits only after the cause is corrected."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Why not just watch the tolerance?",
+   "text": "A mean that has drifted, say from 25.012 to 25.033 mm, may still be within 25.00 plus or minus 0.05 mm, yet that does not mean the individual parts are in tolerance: the spread of the distribution matters. With $\\hat{\\sigma}=0.0138$ mm, about 0.3 percent of shafts exceed the 25.05 mm upper limit at a mean of 25.012 mm, but about 11 percent exceed it at a mean of 25.033 mm. Control charts signal the change before the scrap rate climbs; waiting for parts to fail the tolerance gives a late, costly warning."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Compute $\\bar{\\bar{x}}$ and $\\bar R$, then $\\mathrm{UCL/LCL}=\\bar{\\bar{x}}\\pm A_2\\bar R$ and $\\mathrm{UCL}_R=D_4\\bar R$, $\\mathrm{LCL}_R=D_3\\bar R$ (n=5: A2=0.577, D3=0, D4=2.114).",
+    "A point beyond a limit, a run of 8 on one side of the centre line, or a trend signal a special cause; a stable pattern inside limits is common-cause variation.",
+    "Common-cause variation needs a process change; special-cause variation needs a search for an assignable cause. Do not tamper with a stable process."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A boring operation produces bores measured in subgroups of 5. From many subgroups, the grand mean is $\\bar{\\bar{x}}=50.20$ mm and the average range is $\\bar R=0.45$ mm. Using $A_2=0.577$ for $n=5$, find the upper control limit of the $\\bar X$ chart, in mm.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o1"
+   ],
+   "correctValue": 50.46,
+   "tolerance": 0.002,
+   "unit": "mm",
+   "explanation": "$\\mathrm{UCL}_{\\bar X}=\\bar{\\bar{x}}+A_2\\bar R=50.20+0.577\\times0.45=50.20+0.2597$. This gives 50.4597 mm, which rounds to 50.46 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A surface-roughness process measured in subgroups of 5 has an average range of $\\bar R=3.8$ micrometres. Using $D_4=2.114$ for $n=5$, calculate the upper control limit of the $R$ chart in micrometres.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o1"
+   ],
+   "correctValue": 8.03,
+   "tolerance": 0.05,
+   "unit": "micrometres",
+   "explanation": "$\\mathrm{UCL}_R=D_4\\bar R=2.114\\times3.8=8.03$ micrometres. For $n=5$ the lower limit is $D_3\\bar R=0$, since $D_3=0$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "From a stable $R$ chart with subgroups of 5, the average range is 8.5 micrometres. Using $d_2=2.326$ for $n=5$, estimate the process standard deviation in micrometres.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o1"
+   ],
+   "correctValue": 3.65,
+   "tolerance": 0.03,
+   "unit": "micrometres",
+   "explanation": "$\\hat\\sigma=\\bar R/d_2=8.5/2.326=3.654$ micrometres. This estimate assumes the process is stable and roughly normal.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An $\\bar X$ chart shows nine consecutive subgroup means, all within the control limits but all above the centre line. What is the best interpretation?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A run on one side of the centre line is a special-cause signal, suggesting a small sustained shift in the mean"
+    },
+    {
+     "id": "b",
+     "text": "The process is in control, because every point is within the limits"
+    },
+    {
+     "id": "c",
+     "text": "The process is out of control only if a point crosses the UCL"
+    },
+    {
+     "id": "d",
+     "text": "This is normal common-cause scatter, because the means are always above the centre line half the time"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A run on one side of the centre line is a special-cause signal, suggesting a small sustained shift in the mean",
+   "distractorRationale": {
+    "a": "A run of 8 or more on one side of the centre line is unlikely by chance and is treated as a special-cause signal.",
+    "b": "Points inside the limits can still signal if they form a pattern such as a long run.",
+    "c": "A point beyond the limit is one signal; a long run is another and is equally valid.",
+    "d": "In a stable process a run of this length on one side is very unlikely, so it indicates a change."
+   },
+   "explanation": "In a stable, centred process each point is equally likely to fall on either side of the centre line. Nine in a row on one side has a probability of about $0.5^{9}\\approx0.002$, so a shift is the likely cause.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "On an $R$ chart one point lies above the upper control limit, while the $\\bar X$ chart for the same subgroup is inside its limits. What does this most likely indicate?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The process mean has shifted upward"
+    },
+    {
+     "id": "b",
+     "text": "The scatter within the subgroup has increased, for example from a loose fixture or a damaged tool, even though the mean is normal"
+    },
+    {
+     "id": "c",
+     "text": "The specification limits have been exceeded"
+    },
+    {
+     "id": "d",
+     "text": "Nothing, because a single point never signals"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The scatter within the subgroup has increased, for example from a loose fixture or a damaged tool, even though the mean is normal",
+   "distractorRationale": {
+    "a": "A shift in the mean appears on the X-bar chart; the R chart measures scatter.",
+    "b": "The $R$ chart tracks within-subgroup scatter, so a high range means increased variation.",
+    "c": "Control limits are not specification limits, and the chart does not say a part is out of tolerance.",
+    "d": "A single point beyond a control limit is a defined signal of a special cause."
+   },
+   "explanation": "Range measures how spread out the readings in a subgroup are. A high range with a normal mean means each reading is more scattered, which points to a cause such as vibration or a loose workholding device.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which description best matches common-cause variation?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Steady random scatter always present in a stable process, arising from many small effects"
+    },
+    {
+     "id": "b",
+     "text": "A sudden jump caused by a worn tool being replaced by a new one"
+    },
+    {
+     "id": "c",
+     "text": "Variation that can always be removed by the operator without changing the process"
+    },
+    {
+     "id": "d",
+     "text": "A plotted point beyond the upper control limit"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Steady random scatter always present in a stable process, arising from many small effects",
+   "distractorRationale": {
+    "a": "Common-cause variation is the inherent, predictable scatter of a stable process.",
+    "b": "This is special-cause variation, caused by a specific event.",
+    "c": "Common causes are part of the process design and need management action to reduce.",
+    "d": "A point beyond a control limit is the signature of a special cause."
+   },
+   "explanation": "Many small, always-present influences (material grain, ambient temperature, vibration) give the random scatter within the limits. Reducing it requires redesigning the process or equipment, not hunting for one culprit.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An operator tweaks a machine offset every time a point on the chart lies a little above or below the centre line, though all points are within the control limits. What is the likely effect, and why?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Variation decreases, because each point is corrected back towards the centre"
+    },
+    {
+     "id": "b",
+     "text": "No effect, because points within limits cannot be influenced"
+    },
+    {
+     "id": "c",
+     "text": "The control limits become narrower, because adjustments reduce variance"
+    },
+    {
+     "id": "d",
+     "text": "Variation increases, because adjusting in response to common-cause scatter adds more variation"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Variation increases, because adjusting in response to common-cause scatter adds more variation",
+   "distractorRationale": {
+    "a": "Responding to random scatter pushes the process away from where it would otherwise be, adding variation.",
+    "b": "Adjustments do act on the process, and over-adjustment is a known source of extra variation.",
+    "c": "The limits are set by data; adjusting does not narrow them, and tampering typically widens them.",
+    "d": "Treating common-cause scatter as if it were a special cause is tampering, which makes variation worse."
+   },
+   "explanation": "Points inside the limits with no pattern are normal scatter; correcting each one adds its own variation to the next. The rule is to act only on a signal of special cause.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A student says: 'The $\\bar X$ control limits should be the specification limits, since that is what we want the mean to stay within.' What is the correct response?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The student is right, because control limits are set by the customer"
+    },
+    {
+     "id": "b",
+     "text": "Control limits are calculated from the process's own data and show what it is capable of; specification limits come from the design and are independent of them"
+    },
+    {
+     "id": "c",
+     "text": "The student is right, because the control limits are the specification plus or minus three sigma"
+    },
+    {
+     "id": "d",
+     "text": "The student is wrong, because control limits are always equal to the process mean"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Control limits are calculated from the process's own data and show what it is capable of; specification limits come from the design and are independent of them",
+   "distractorRationale": {
+    "a": "Customers set specifications, not control limits.",
+    "b": "Control limits come from data; specification limits come from design requirements.",
+    "c": "Control limits are calculated from sample statistics; they are not a function of specifications.",
+    "d": "Control limits sit about three standard errors on each side of the centre line, not at the mean."
+   },
+   "explanation": "A process can be in statistical control and still produce parts outside the specification, or be out of control while all parts are within specification. The two sets of limits answer different questions.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A grinding process has the limits from the lesson ($\\bar X$: 24.9935 to 25.0305 mm centre 25.012; $R$: 0 to 0.0676 mm). Five new subgroups give means 25.021, 25.026, 25.033, 25.018 and 25.024 mm with ranges 0.031, 0.029, 0.034, 0.030 and 0.033 mm. Evaluate each chart for signals, state what you conclude and what you should do next.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o1",
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o2"
+   ],
+   "markingGuide": [
+    "$\\bar X$ chart: 25.033 is above UCL 25.0305, a signal; the others are inside",
+    "All five means are above the centre line 25.012, which suggests an upward shift (a run in progress, but fewer than 8 so far)",
+    "$R$ chart: all ranges are below 0.0676, so scatter is stable",
+    "Conclusion: the process mean has shifted upward with stable scatter",
+    "Action: investigate for an assignable cause (set-up, wheel wear, temperature), correct it, do not just adjust blindly",
+    "Notes parts may still be within specification so the chart gives early warning"
+   ],
+   "explanation": "Only the third mean crosses the upper control limit, but all five sit above the centre line, which indicates an upward shift while the ranges remain stable. The correct response is to find and correct the special cause, then continue monitoring.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the difference between common-cause and special-cause variation using a CNC turning process as an example. For each, state how it appears on a control chart, who can usually act on it and what kind of action is appropriate. Explain why treating one as the other wastes effort.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.control-charts.o3"
+   ],
+   "markingGuide": [
+    "Common cause: always-present small random effects (for example material variation, thermal drift) giving scatter inside the limits",
+    "Special cause: an identifiable event (for example tool breakage, wrong bar stock) giving signals such as a point beyond limits or a run",
+    "Common cause shows as random pattern within limits; special cause as a signal",
+    "Operators or local engineers can find and remove special causes; common-cause reduction needs management change to the process (new machine, better material control)",
+    "Treating common causes as special causes (tampering) increases variation",
+    "Treating special causes as common ones lets the problem continue and produces defects"
+   ],
+   "explanation": "A stable process scatters randomly within its limits because of many small causes, and improvement needs a change in the process. Signals reveal special causes that are local and removable, and mixing the two up leads either to tampering or to ignored warnings.",
+   "board": "internal"
+  }
+ ]
+}

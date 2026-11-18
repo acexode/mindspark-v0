@@ -1,0 +1,80 @@
+{
+  "subjectId": "ug.mce-finite-element-analysis",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 15,
+  "summary": "All 15 units were reviewed. Every numeric key and worked example was recomputed independently in Python (weak-form works, Ritz/Galerkin matrices and energy ratios, Q4 Jacobians and corner determinants, Gauss rules, triangle area coordinates, Hermite beam matrix and cantilever, Timoshenko shear ratio, thin-cylinder and edge-bending length, thermal assembly and stability limits, restrained-bar and bi-material thermal stress, consistent and lumped bar eigenvalues, central-difference limits, Newton-Raphson iterates, penalty contact, Richardson/GCI and singularity growth factor). No answer-key or arithmetic errors were found beyond the items below, and no string artefacts (tabs, control characters, format placeholders, stale option references, garbled characters) were found apart from one e-notation answer. The one real factual error is the 2D cost-scaling claim in the transient unit; the rest are small explanatory or consistency problems. Confidence in the numerics is high. This is an AI review only: the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-transient",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Worked example, final step: \"halving L_e halves Delta t (and the run time grows by about 4 in two dimensions)\". Halving h in 2D gives 4 times the elements and 2 times the steps, so cost rises by about 8 (about 16 in 3D). A factor of 4 is the 1D result.",
+      "suggestedFix": "State that halving L_e halves the step and quadruples the element count in 2D, so run time grows by about 8 (about 16 in 3D; about 4 only in 1D)."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.fea-best-practice.fea-verification",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Cantilever hand check: FE deflection 4.07 mm is below the beam-theory 4.096 mm, and the text attributes the shortfall partly to \"shear deformation\". Shear deformation increases deflection (here by about 0.3 percent for L/h = 16), so it cannot explain a lower FE value.",
+      "suggestedFix": "Attribute the shortfall to the 3D root restraint (warping and Poisson restraint at the fixed face) and the discretisation. Say that shear deformation would act in the opposite direction, raising the FE deflection slightly."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Convergence-table example: \"Accept the 32-element mesh (about 1% from the finest result)\". The 32-element value 164.6 differs from the finest 165.0 by 0.24 percent. The 1.0 percent figure is the change from the 16-element mesh.",
+      "suggestedFix": "Say the 32-element mesh is within about 0.2 to 0.3 percent of the 64-element result, or quote the 1.0 percent step change instead."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence",
+      "questionId": "ug.mce-finite-element-analysis.fea-best-practice.mesh-convergence.q005",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Q005 uses exactly the numbers (210, 288, 395 MPa) and the result (about 542 MPa) from the lesson worked example 'Recognising a singularity', so it tests recall rather than the method.",
+      "suggestedFix": "Change the stress values (for example 150, 206, 282 MPa) so the same growth-factor method must be applied afresh."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.plates-shells.shell-modelling",
+      "questionId": "ug.mce-finite-element-analysis.plates-shells.shell-modelling.q007",
+      "severity": "minor",
+      "category": "answer-key",
+      "problem": "The question says to use l_b = 2.44 sqrt(Rt), which gives 219.6 mm (0.2196 m, as the explanation itself states). The key 219.96 corresponds to the unrounded coefficient 2.444. The key is within tolerance but inconsistent with the explanation.",
+      "suggestedFix": "Set the key to 219.6 (tolerance 3), or change the question to use pi/[3(1-nu^2)]^(1/4) with nu = 0.3."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Key-point callout: the stiffer Ritz bar means \"displacements at the load points are underestimated\". This is guaranteed only for the work of the loads (compliance) or for a single point load. Q007 of the same unit has the one-term sine tip displacement 3.2 percent above exact under a distributed load, which appears to contradict the callout.",
+      "suggestedFix": "Say that the strain energy and the work done by the loads (the load-weighted displacement) are underestimated; individual point displacements can be over- or under-estimated."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.isoparametric-elements.higher-order",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The text says a quadratic element (T6 or Q8) \"has a strain field that varies linearly\", but the table lists Q8 strain variation as \"Quadratic\". The Q8 serendipity strain contains quadratic terms, so only T6 is complete linear.",
+      "suggestedFix": "Say that T6 strains are complete linear, Q8 strains are linear plus some higher terms (incomplete quadratic), and use consistent wording in the table."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.modal-dynamic-fe.fe-modal",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "\"a rule of thumb is at least 8 to 10 linear elements per half wavelength (typical guidance)\". The common guidance for linear elements is about 10 or more elements per wavelength. Per half wavelength would be 16 to 20 per wavelength. This is unverified and probably overstated.",
+      "suggestedFix": "Check against a standard reference and restate as about 10 or more linear elements per wavelength (or per half-wave, with the source named), still labelled typical."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.nonlinear-contact.contact",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The worked example says to choose k_p \"from a fraction up to a few times the stiffness of the underlying elements\". Its own result shows k_p = 0.16 k_b (1e9 against 6.4e9 N/m) gives a penetration six times the real elastic shortening, which is unacceptable. The upper end (15 k_b) is also not 'a few'.",
+      "suggestedFix": "Give the usual range (about 1 to 10 times the underlying element stiffness, solver-dependent) and say that the penetration check against the real deformation decides the final value."
+    },
+    {
+      "subtopicId": "ug.mce-finite-element-analysis.isoparametric-elements.higher-order",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Plain-text answer string uses code-style notation: \"eps_x = 2.0e-3, eps_y = 5.0e-4, gamma_xy = 5.0e-4\".",
+      "suggestedFix": "Write the answer in LaTeX, for example $\\varepsilon_x=2.0\\times10^{-3}$, $\\varepsilon_y=5.0\\times10^{-4}$, $\\gamma_{xy}=5.0\\times10^{-4}$."
+    }
+  ]
+}

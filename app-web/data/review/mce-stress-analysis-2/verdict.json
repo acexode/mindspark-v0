@@ -1,0 +1,45 @@
+{
+  "subjectId": "ug.mce-stress-analysis-2",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "Round 2 re-review of all 16 units. Every round-1 fix was verified: the Euler/Johnson transition (lambda1 = pi*sqrt(2E/Sy) = 125.7) is now consistent across euler-buckling and practical-columns, and euler-buckling q004 (105.45), q005, q008 (54.50 kN) and q009 (38.2 mm, 143 kN) recompute correctly; the rosette worked example now says the naive value underestimates; indeterminate-effects q008, brittle q008 (t = 4 mm, 8.0 MPa), the von Mises callout, the ductile note and the equal-leg angle summary are correct. I recomputed every numeric key and worked example in Python (Euler, Johnson, secant, energy and impact, Castigliano and unit-load, redundants and settlement, Lame and shrink fit, rosettes, bridge outputs, uncertainty, Kt, angle-section properties and corner stresses, channel shear flow and shear centre) and found no wrong key, tolerance or unit. No tab or control characters, literal unicode escapes, placeholder steps or stale option-letter references were found. Only minor items remain: e-notation still leaks into LaTeX in two units despite the stated fix, plus one loose marking-guide phrase, one sign slip in a marking guide and one ambiguous phrase. This is an AI review only: the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.shear-centre",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Python e-notation still appears in the lesson LaTeX and a question explanation: 'I=...=1.688e+06+4.05e+06=5.7375e+06 mm^4', 'q_j=...20000(27000)/{5.7375e+06}=94.1', and in q003 'I=th^3/12+2bt(h/2)^2=7.424e+06 mm^4' and '25000(52800)/7.424e+06'. These render as raw 'e+06' inside maths.",
+      "suggestedFix": "Rewrite as 1.688\\times10^{6}+4.050\\times10^{6}=5.738\\times10^{6}\\ \\text{mm}^4 and 7.424\\times10^{6} in q003 (and in the q_j and q_max lines)."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.pressure-vessels.thin-walled-vessels",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Python e-notation remains in the air-receiver worked example LaTeX ('3.825e-04' twice, '9.000e-05'), in q005's explanation ('7.634e-04') and in q008's explanation ('1.750e-04'), inside $...$ maths.",
+      "suggestedFix": "Rewrite as 3.825\\times10^{-4}, 9.000\\times10^{-5}, 7.634\\times10^{-4} and 1.750\\times10^{-4}."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders",
+      "questionId": "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.q007",
+      "severity": "minor",
+      "category": "explanation",
+      "problem": "The explanation was corrected (u = C1 r + C2/r, so u/r = C1 + C2/r^2 falls with r), but the marking guide still contains the loose reasoning 'the inner layers must stretch more circumferentially to accommodate the same radial displacement pattern; the outer layers are restrained by the inner and carry less strain'. A marker could accept or require this non-rigorous point.",
+      "suggestedFix": "Replace that marking-guide line with: radial displacement u = C1 r + C2/r, so eps_theta = u/r = C1 + C2/r^2 decreases with r and, by Hooke's law, so does sigma_theta."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members",
+      "questionId": "ug.mce-stress-analysis-2.indeterminate-structures.redundant-members.q008",
+      "severity": "minor",
+      "category": "answer-key",
+      "problem": "Marking guide: 'If the prop sank by Delta, the condition would become dU/dR = Delta (in the direction of R)'. R is the upward prop reaction (lesson), so a prop sinking downward by Delta means the displacement in the direction of R is -Delta, i.e. dU/dR = -Delta (or equal to Delta only if R is defined downward). The sign as written contradicts the lesson's convention.",
+      "suggestedFix": "State dU/dR = -Delta for an upward R and a downward settlement Delta (equivalently, the deflection of the released beam at the prop equals Delta downward), and note that the settlement reduces the prop reaction."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.column-buckling.euler-buckling",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Lesson text: 'Setting sigma_cr = S_y gives lambda = pi*sqrt(E/S_y) as an absolute upper bound'. This value is the minimum slenderness at which Euler stress does not exceed S_y, i.e. a lower limit on lambda, not an upper bound; the wording is confusing next to the correct statement that Euler is used for lambda >= lambda_1.",
+      "suggestedFix": "Say 'gives lambda = pi*sqrt(E/S_y) as an absolute lower limit on lambda for Euler (below it the Euler stress would exceed S_y)'."
+    }
+  ]
+}

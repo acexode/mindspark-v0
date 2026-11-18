@@ -1,0 +1,397 @@
+{
+ "lessonTitle": "Truss Elements in Two Dimensions: Rotating the Bar Matrix",
+ "estimatedMinutes": 38,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A roof truss on a workshop is drawn with members at many different angles, yet a single piece of code builds its stiffness matrix by calling one routine for every member. The trick is that each member is a one-dimensional bar element whose matrix is rotated into the global x-y frame, and this unit shows exactly how."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** A pin-jointed truss member carries only axial force, so locally it is exactly the two-node bar of the previous unit. In a plane truss, however, each node has two global displacements, $u$ (along $x$) and $v$ (along $y$), and members point in different directions. We therefore need to express the axial elongation of a member in terms of the global displacements of its end nodes, and then rebuild the stiffness matrix in the global axes."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Direction cosines",
+   "text": "For a member from node $i$ at $(x_i,y_i)$ to node $j$ at $(x_j,y_j)$, with length $L=\\sqrt{(x_j-x_i)^2+(y_j-y_i)^2}$, the direction cosines are $c=\\cos\\theta=(x_j-x_i)/L$ and $s=\\sin\\theta=(y_j-y_i)/L$, where $\\theta$ is the angle of the member axis measured anticlockwise from the global $+x$ axis. The member axial stiffness is $k=AE/L$ (N/mm for A in mm$^2$, E in N/mm$^2$, L in mm)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Derivation.** Resolving the displacement of each end node along the member axis, the elongation is $\\delta=c(u_j-u_i)+s(v_j-v_i)$, so the axial force is $N=k\\delta$ (tension positive). The nodal forces are $N$ acting along the axis in opposite senses at the two ends; resolving them to global axes gives the force at node $i$ as $-N(c,s)$ and at node $j$ as $+N(c,s)$. Substituting $\\delta$ gives the $4\\times4$ global element matrix, which is $\\mathbf{T}^{T}\\mathbf{k}_{\\text{local}}\\mathbf{T}$ with $\\mathbf{T}$ the rotation of the displacements into the local axial direction."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{k}=\\frac{AE}{L}\\begin{bmatrix}c^2&cs&-c^2&-cs\\\\cs&s^2&-cs&-s^2\\\\-c^2&-cs&c^2&cs\\\\-cs&-s^2&cs&s^2\\end{bmatrix},\\qquad \\mathbf{u}=\\begin{Bmatrix}u_i\\\\v_i\\\\u_j\\\\v_j\\end{Bmatrix}",
+   "caption": "Global stiffness matrix of a 2D truss element"
+  },
+  {
+   "type": "text",
+   "markdown": "The matrix is symmetric and singular (a rigid translation or rotation of the member creates no force along its axis, to first order). A horizontal member ($\\theta=0$) leaves only the $x$-$x$ terms; a vertical member ($\\theta=90^{\\circ}$) leaves only the $y$-$y$ terms. After the element matrices are added into the global matrix by node, supports are applied and the system is solved exactly as for bars."
+  },
+  {
+   "type": "worked_example",
+   "title": "Global matrix of an inclined member",
+   "prompt": "A steel member ($E=200$ GPa) has $A=250$ mm$^2$, length $L=800$ mm and is inclined at $\\theta=35^{\\circ}$ to the global $x$ axis. Compute its global element stiffness matrix.",
+   "steps": [
+    {
+     "text": "Axial stiffness.",
+     "latex": "k=\\frac{AE}{L}=\\frac{(250)(2.0\\times10^{5})}{800}=62500\\ \\text{N/mm}"
+    },
+    {
+     "text": "Direction cosines.",
+     "latex": "c=\\cos35^{\\circ}=0.8192,\\quad s=\\sin35^{\\circ}=0.5736"
+    },
+    {
+     "text": "Products needed in the matrix.",
+     "latex": "c^2=0.6710,\\ cs=0.4698,\\ s^2=0.3290"
+    },
+    {
+     "text": "Multiply by $k$ and fill the pattern $[c^2, cs; cs, s^2]$ with signs as in the template (N/mm).",
+     "latex": "\\mathbf{k}=\\begin{bmatrix}41938&29365&-41938&-29365\\\\29365&20562&-29365&-20562\\\\-41938&-29365&41938&29365\\\\-29365&-20562&29365&20562\\end{bmatrix}"
+    }
+   ],
+   "answer": "$k=62500$ N/mm and the $4\\times4$ matrix above. Check: each row sums to zero and the diagonal entries are positive, as expected."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Axial force from displacements",
+   "text": "After solving for the global displacements, the member force is $N=\\dfrac{AE}{L}\\left[c(u_j-u_i)+s(v_j-v_i)\\right]$. Positive $N$ is tension, and stress is $N/A$. This avoids having to store a separate local matrix."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Member orientation",
+    "$c$",
+    "$s$",
+    "Non-zero terms of $\\mathbf{k}$"
+   ],
+   "rows": [
+    [
+     "Horizontal ($0^{\\circ}$)",
+     "1",
+     "0",
+     "$x$-$x$ only, $\\pm k$"
+    ],
+    [
+     "Vertical ($90^{\\circ}$)",
+     "0",
+     "1",
+     "$y$-$y$ only, $\\pm k$"
+    ],
+    [
+     "$45^{\\circ}$",
+     "$0.707$",
+     "$0.707$",
+     "all, entries $\\pm k/2$"
+    ],
+    [
+     "General angle",
+     "$c$",
+     "$s$",
+     "$k\\,c^2$, $k\\,cs$, $k\\,s^2$"
+    ]
+   ],
+   "caption": "Special cases of the rotated bar matrix"
+  },
+  {
+   "type": "text",
+   "markdown": "**Solving a truss.** Assemble each member by adding its $4\\times4$ matrix into the $2n\\times2n$ global matrix using the DOF numbers $(2i-1,2i)$ for node $i$ (or $2i,2i+1$ with zero-based numbering). Remove the supported DOFs, solve for the free displacements, then recover member forces and the reactions from the deleted rows."
+  },
+  {
+   "type": "worked_example",
+   "title": "Two-bar truss",
+   "prompt": "Pinned supports at node 1 $(0,0)$ and node 3 $(800,0)$ mm; free node 2 at $(400,300)$ mm. Both members have $A=250$ mm$^2$, $E=200$ GPa. Node 2 carries $F_x=+4000$ N and $F_y=-10\\,000$ N. Find the displacement of node 2, the member forces and verify equilibrium of the reactions.",
+   "steps": [
+    {
+     "text": "Member data: both have $L=500$ mm so $k=AE/L=1.0\\times10^{5}$ N/mm. Member 1-2 has $c=0.8$, $s=0.6$; member 2-3 runs from node 2 down to node 3 with $c=0.8$, $s=-0.6$.",
+     "latex": "k=\\frac{(250)(2.0\\times10^{5})}{500}=1.0\\times10^{5}\\ \\text{N/mm}"
+    },
+    {
+     "text": "Only node 2's DOFs $(u_2,v_2)$ are free, so the reduced matrix adds the $c^2$, $cs$, $s^2$ terms of both members. The $cs$ terms cancel because $s$ changes sign.",
+     "latex": "\\mathbf{K}_{ff}=k\\begin{bmatrix}2c^2&0\\\\0&2s^2\\end{bmatrix}=\\begin{bmatrix}128000&0\\\\0&72000\\end{bmatrix}\\ \\text{N/mm}"
+    },
+    {
+     "text": "Solve $\\mathbf{K}_{ff}\\mathbf{u}_f=\\mathbf{F}$ (diagonal system).",
+     "latex": "u_2=\\frac{4000}{128000}=0.03125\\ \\text{mm},\\quad v_2=\\frac{-10000}{72000}=-0.13889\\ \\text{mm}"
+    },
+    {
+     "text": "Member forces with $N=k[c(u_j-u_i)+s(v_j-v_i)]$.",
+     "latex": "N_{12}=-5833\\ \\text{N},\\quad N_{23}=-10833\\ \\text{N}"
+    },
+    {
+     "text": "Reactions from the deleted rows, then check global equilibrium: the horizontal reactions must sum to $-4000$ N and the vertical reactions to $+10\\,000$ N.",
+     "latex": "R_{1x}=4667,\\ R_{1y}=3500,\\ R_{3x}=-8667,\\ R_{3y}=6500\\ \\text{N}"
+    }
+   ],
+   "answer": "$u_2=0.03125$ mm, $v_2=-0.13889$ mm; both members are in compression ($N_{12}=-5833$ N, $N_{23}=-10833$ N); reactions sum to $(-4000,\\ 10000)$ N, which balances the applied $(4000,-10\\,000)$ N."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Equilibrium check: sum of all reactions plus all applied loads must be zero in $x$, in $y$ and in moment about any point.",
+    "A truss with $n$ nodes has $2n$ DOFs; a stable model needs at least three independent constraints.",
+    "A zero or non-physical displacement pattern (very large movement) signals a mechanism or a missing support.",
+    "Member forces are read from displacements, so any error in a displacement shows up in the force."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Angle convention",
+   "text": "Always measure $\\theta$ from the global $+x$ axis along the direction node $i\\to$ node $j$. Swapping the node order changes the signs of $c$ and $s$ but leaves $c^2$, $cs$ and $s^2$ unchanged, so the matrix is the same; the force sign convention however still needs tension positive."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A 2D truss member has the global $4\\times4$ stiffness $(AE/L)$ times the pattern built from $c^2$, $cs$ and $s^2$, where $c$ and $s$ are the direction cosines.",
+    "Assemble by node DOF, apply supports, solve for displacements, then recover member forces from $N=k[c(u_j-u_i)+s(v_j-v_i)]$.",
+    "Verify the solution by checking that reactions balance the applied loads in both force directions and in moment."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A truss member is perfectly vertical ($\\theta=90^{\\circ}$) with $AE/L=4000$ N/mm. Which entries of its global $4\\times4$ stiffness matrix are non-zero?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Only the $y$-direction terms, equal to $\\pm4000$ N/mm"
+    },
+    {
+     "id": "b",
+     "text": "Only the $x$-direction terms, equal to $\\pm4000$ N/mm"
+    },
+    {
+     "id": "c",
+     "text": "All entries, equal to $\\pm2000$ N/mm"
+    },
+    {
+     "id": "d",
+     "text": "All entries, equal to $\\pm4000$ N/mm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Only the $y$-direction terms, equal to $\\pm4000$ N/mm",
+   "distractorRationale": {
+    "b": "This would be a horizontal member ($c=1$, $s=0$).",
+    "c": "Equal entries of magnitude $k/2$ arise at $45^{\\circ}$, not $90^{\\circ}$.",
+    "d": "Full entries of magnitude $k$ would need $c^2=cs=s^2=1$, which is impossible."
+   },
+   "explanation": "For $\\theta=90^{\\circ}$ we have $c=0$, so $c^2=cs=0$ and only $s^2=1$ remains. The member can resist movement only along $y$, and its stiffness there is $AE/L=4000$ N/mm, with signs $+$ on the diagonal and $-$ on the coupling between the two nodes.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A member runs from node $i$ at $(1.0,\\,2.0)$ m to node $j$ at $(4.0,\\,6.0)$ m. What are its direction cosines $(c,\\,s)$?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$(0.6,\\ 0.8)$"
+    },
+    {
+     "id": "b",
+     "text": "$(0.8,\\ 0.6)$"
+    },
+    {
+     "id": "c",
+     "text": "$(0.75,\\ 1.33)$"
+    },
+    {
+     "id": "d",
+     "text": "$(3.0,\\ 4.0)$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$(0.6,\\ 0.8)$",
+   "distractorRationale": {
+    "b": "Swaps the cosine and sine; $c$ uses the $x$-difference (3 m), $s$ the $y$-difference (4 m).",
+    "c": "Uses the ratio of coordinates $(3/4,4/3)$, which are tangent-type ratios and not direction cosines; they exceed 1 or ignore the length.",
+    "d": "Uses the raw coordinate differences without dividing by the length."
+   },
+   "explanation": "The length is $L=\\sqrt{(4-1)^2+(6-2)^2}=5$ m. Direction cosines are the coordinate differences divided by $L$, so $c=3/5=0.6$ and $s=4/5=0.8$; they must satisfy $c^2+s^2=1$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a plane truss with 6 nodes, the global stiffness matrix before applying supports has which size, and how many free DOFs remain if one node is pinned and another is on a vertical roller (3 constraints in total)?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$12\\times12$ with 9 free DOFs"
+    },
+    {
+     "id": "b",
+     "text": "$6\\times6$ with 3 free DOFs"
+    },
+    {
+     "id": "c",
+     "text": "$12\\times12$ with 3 free DOFs"
+    },
+    {
+     "id": "d",
+     "text": "$6\\times6$ with 9 free DOFs"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$12\\times12$ with 9 free DOFs",
+   "distractorRationale": {
+    "b": "Counts one DOF per node, which is true for bars along a line but not for a plane truss.",
+    "c": "Gets the matrix size right but reports the number of constrained DOFs as the number of free DOFs.",
+    "d": "Counts one DOF per node and then subtracts three constraints."
+   },
+   "explanation": "Each plane-truss node has two translations, so $6$ nodes give a $12\\times12$ matrix. Three constraints (two at the pin and one at the roller) remove three DOFs and leave $12-3=9$ unknowns.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A member has $AE/L=5.0\\times10^{4}$ N/mm, $c=0.6$, $s=0.8$. Node $i$ is fixed. Node $j$ displaces by $u_j=0.020$ mm and $v_j=-0.010$ mm. What is the axial force in the member?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$+200$ N (tension)"
+    },
+    {
+     "id": "b",
+     "text": "$-200$ N (compression)"
+    },
+    {
+     "id": "c",
+     "text": "$+1000$ N (tension)"
+    },
+    {
+     "id": "d",
+     "text": "$+500$ N (tension)"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$+200$ N (tension)",
+   "distractorRationale": {
+    "b": "Wrong sign; the elongation along the axis is positive, so the member is stretched.",
+    "c": "Drops the minus sign of $v_j$, giving an elongation of 0.020 mm instead of 0.004 mm.",
+    "d": "Adds $|u_j|$ and $|v_j|$ weighted wrongly: $0.6(0.020)-0.8(0.010)\\to$ miscomputed as $0.014$."
+   },
+   "explanation": "The elongation is the projection of the node displacement onto the member axis: $\\delta=c\\,u_j+s\\,v_j=0.012-0.008=0.004$ mm. The force is $N=k\\delta=5.0\\times10^{4}\\times0.004=200$ N, positive, so the member is in tension.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "For a statically loaded truss solution to be correct, the reactions at the supports must balance the applied loads in each force direction, and this check is independent of the stiffness values chosen.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Global equilibrium follows from statics alone: the sum of external forces and moments must vanish regardless of $E$ and $A$. If it fails, the solve or the boundary conditions contain an error, which is why the check is such a useful verification of any FE solution.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A member of aluminium ($E=70$ GPa) with $A=400$ mm$^2$ joins node $i$ at $(0,0)$ to node $j$ at $(3.0,4.0)$ m. Compute the coupling term $K_{12}$ (the $u_i$-$v_i$ entry of its global element matrix) in N/mm.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o1"
+   ],
+   "correctValue": 2688.0,
+   "tolerance": 3.0,
+   "unit": "N/mm",
+   "explanation": "The length is 5 m = 5000 mm, so $k=AE/L=5600$ N/mm. With $c=0.6$ and $s=0.8$ the entry is $k\\,cs=5600\\times0.48=2688$ N/mm; it is positive for the $u_i$-$v_i$ pair.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel member ($E=200$ GPa, $A=300$ mm$^2$, length 1.5 m) is oriented at $60^{\\circ}$ to the global $x$ axis. Its lower node is fixed and its upper node moves by $u=0.60$ mm and $v=0.20$ mm. Find the axial force in kN (tension positive).",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o2"
+   ],
+   "correctValue": 18.92820323027551,
+   "tolerance": 0.1,
+   "unit": "kN",
+   "explanation": "With $c=\\cos60^{\\circ}=0.5$ and $s=\\sin60^{\\circ}=0.8660$, the elongation is $\\delta=0.5(0.60)+0.8660(0.20)=0.4732$ mm. The stiffness is $k=300\\times200\\,000/1500=40000$ N/mm, so $N=18928$ N = 18.93 kN.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A simply supported plane truss is pinned at A and on a vertical roller at B, 6.0 m to the right of A. It carries a vertical load of 24 kN downward at 2.0 m from A and a horizontal 10 kN load to the right applied at a node 3.0 m above the supports. Find the vertical reaction at the pin A in kN (upward positive).",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o3"
+   ],
+   "correctValue": 11.0,
+   "tolerance": 0.05,
+   "unit": "kN",
+   "explanation": "Take moments about A: $6R_B-24(2)-10(3)=0$, so $R_B=13$ kN. Vertical equilibrium gives $R_{Ay}=24-13=11$ kN, and horizontal equilibrium gives $R_{Ax}=-10$ kN, so the global check is satisfied.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Starting from the elongation of a truss member expressed through the global nodal displacements, show how the $4\\times4$ global stiffness matrix of the member is obtained and state what $c$ and $s$ represent.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o1"
+   ],
+   "markingGuide": [
+    "Defines $c=\\cos\\theta$, $s=\\sin\\theta$ from nodal coordinates and $L$",
+    "Elongation $\\delta=c(u_j-u_i)+s(v_j-v_i)$ (projection of nodal displacements on the axis)",
+    "Axial force $N=(AE/L)\\delta$",
+    "Nodal forces $\\mp N(c,s)$ at the two ends, giving $\\mathbf{k}=\\mathbf{T}^T\\mathbf{k}_{\\text{local}}\\mathbf{T}$ or the explicit matrix with $c^2,cs,s^2$",
+    "Notes symmetry and singularity of the result"
+   ],
+   "explanation": "The member only resists elongation along its own axis, so global displacements enter only through their projection onto the axis. Writing the nodal forces as the axial force resolved into global components gives the rotated matrix whose entries are $k$ times products of the direction cosines.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "After solving a small truss model, list the checks you would perform on the results to verify global equilibrium and explain what each check detects.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o2",
+    "ug.mce-computational-methods-fea.bar-and-truss-elements.truss-element.o3"
+   ],
+   "markingGuide": [
+    "Sum of reactions plus applied forces is zero in $x$ and in $y$",
+    "Moment equilibrium about a chosen point",
+    "Joint equilibrium: member forces at a free node balance the applied load there",
+    "Detects missing or wrong supports (mechanism / rigid-body motion) and wrong signs or unit errors",
+    "A pass does not prove the model correct, only that the solution satisfies statics; geometry and properties must be checked separately"
+   ],
+   "explanation": "Equilibrium checks use statics only, so they are independent of the element formulation and catch errors in assembly, boundary conditions and post-processing. They cannot, however, detect a wrong geometry or a wrong modulus, which is why they are one step of verification and not a complete validation.",
+   "board": "internal"
+  }
+ ]
+}

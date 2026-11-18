@@ -1,0 +1,405 @@
+{
+ "lessonTitle": "Rayleigh-Ritz and Galerkin Approximation for Bars",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A gearbox housing, a turbine blade and a bridge deck are far too complicated to solve exactly, yet engineers still need their displacements to within a few percent. The Rayleigh-Ritz and Galerkin methods do this by guessing a displacement shape with a few unknown amplitudes and then choosing the amplitudes so that the guess is as good as the chosen shape allows. Finite elements are this idea applied piece by piece."
+  },
+  {
+   "type": "text",
+   "markdown": "**Trial functions.** Take a bar on $0\\le x\\le L$ with $u(0)=0$, constant axial stiffness $EA$ (N), distributed axial load $b(x)$ (N/m) and end force $P$ (N). We approximate the displacement by $u_h(x)=\\sum_j c_j\\varphi_j(x)$, where the $\\varphi_j$ are chosen, known trial functions that each satisfy the essential condition $\\varphi_j(0)=0$, and $c_j$ are unknown amplitudes. The question is how to pick the $c_j$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Rayleigh-Ritz method",
+   "text": "Among all admissible displacement fields, the true one makes the total potential energy $\\Pi$ stationary (a minimum for a stable linear structure). Rayleigh-Ritz restricts the search to the family $u_h=\\sum c_j\\varphi_j$ and finds the $c_j$ that minimise $\\Pi$, i.e. $\\partial\\Pi/\\partial c_i=0$. Here $\\Pi=\\tfrac12\\int_0^L EA\\,(u')^2dx-\\int_0^L b\\,u\\,dx-P\\,u(L)$."
+  },
+  {
+   "type": "math",
+   "latex": "\\Pi(c)=\\frac12\\int_0^L EA\\Big(\\sum_j c_j\\varphi_j'\\Big)^2dx-\\sum_j c_j\\Big[\\int_0^L b\\,\\varphi_j\\,dx+P\\,\\varphi_j(L)\\Big]",
+   "caption": "Total potential energy of the bar in the trial family"
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{\\partial\\Pi}{\\partial c_i}=0\\;\\Rightarrow\\;\\sum_j K_{ij}c_j=f_i,\\quad K_{ij}=\\int_0^L EA\\,\\varphi_i'\\varphi_j'\\,dx,\\quad f_i=\\int_0^L b\\,\\varphi_i\\,dx+P\\,\\varphi_i(L)",
+   "caption": "Matrix equations for the amplitudes ($K_{ij}$ has units of the amplitudes' stiffness, $f_i$ of work)"
+  },
+  {
+   "type": "text",
+   "markdown": "**One trial function.** With $n=1$ the system is a single scalar equation, $K_{11}c_1=f_1$. The method gives the best amplitude for the chosen shape, but the shape itself limits accuracy. A quick check is to compare the approximate displacement, strain and strain energy with the exact solution, because displacement can be good while strain (the derivative) is poor."
+  },
+  {
+   "type": "worked_example",
+   "title": "Single-term Rayleigh-Ritz for a uniformly loaded bar",
+   "prompt": "An aluminium bar ($E=70$ GPa, $A=500$ mm$^2$, so $EA=3.5\\times10^{7}$ N) of length $L=2$ m is fixed at $x=0$, free at $x=L$ and carries a uniform axial load $b_0=8$ kN/m. Use the single trial function $\\varphi_1=x/L$ and compare with the exact solution $u=b_0(Lx-x^2/2)/EA$.",
+   "steps": [
+    {
+     "text": "The trial function is dimensionless and satisfies $\\varphi_1(0)=0$, so $u_h=c\\,x/L$ with $c$ in metres (it is the tip displacement). Its derivative is $\\varphi_1'=1/L$.",
+     "latex": "u_h=c\\,\\frac{x}{L}"
+    },
+    {
+     "text": "Stiffness and load: $K_{11}=\\int_0^L EA\\,(1/L)^2dx=EA/L$ and $f_1=\\int_0^L (x/L)\\,b_0\\,dx=b_0L/2$.",
+     "latex": "K_{11}=\\frac{EA}{L},\\quad f_1=\\frac{b_0L}{2}"
+    },
+    {
+     "text": "Solve $c=f_1/K_{11}=b_0L^2/(2EA)=4.571\\times10^{-4}$ m. So the tip displacement is $4.571\\times10^{-4}$ m, which equals the exact tip value $b_0L^2/(2EA)$."
+    },
+    {
+     "text": "Compare at mid-span $x=L/2$: approximate $u_h=c/2=2.286\\times10^{-4}$ m; exact $u=(3/8)b_0L^2/EA=3.429\\times10^{-4}$ m. The error is $(2.286\\times10^{-4}-3.429\\times10^{-4})/3.429\\times10^{-4}=-33.3\\%$.",
+     "latex": "\\text{error at mid-span}=\\frac{1/4-3/8}{3/8}=-33.3\\%"
+    },
+    {
+     "text": "Compare the strain at the fixed end: approximate $u_h'=c/L=2.286\\times10^{-4}$ (constant); exact $u'(0)=b_0L/EA=4.571\\times10^{-4}$, so the approximation is 50% low there. Strain energy: $U_h=\\tfrac12K_{11}c^2$ equals $0.75$ of the exact $U=b_0^2L^3/(6EA)$.",
+     "latex": "\\frac{U_h}{U}=\\frac{1/8}{1/6}=0.75"
+    }
+   ],
+   "answer": "Tip displacement is exact, mid-span displacement is 33.3% low, strain at the support is 50% low, and the energy is 75% of the exact value."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Energy bound",
+   "text": "For an admissible trial space, the Ritz solution never has more strain energy than the exact one: $U_h\\le U$. The approximate bar is stiffer than the real one, so displacements at the load points are underestimated. Adding trial functions to the family (keeping the old ones) can only improve the answer."
+  },
+  {
+   "type": "text",
+   "markdown": "**Galerkin method.** Rayleigh-Ritz needs a potential-energy functional, which many problems do not have in an obvious form. The **Galerkin method** starts from the weak (weighted residual) form instead and chooses the weight functions from the same family as the trial functions: $w=\\varphi_i$. For the bar this gives $\\int_0^L\\varphi_i'\\,EA\\,u_h'\\,dx=\\int_0^L\\varphi_i b\\,dx+\\varphi_i(L)P$, which is the same set of equations as Rayleigh-Ritz."
+  },
+  {
+   "type": "math",
+   "latex": "K_{ij}=\\int_0^L EA\\,\\varphi_i'\\,\\varphi_j'\\,dx=\\int_0^L EA\\,\\varphi_j'\\,\\varphi_i'\\,dx=K_{ji}",
+   "caption": "Symmetry follows from the self-adjoint form of the bar operator and the choice w = trial function"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Method",
+    "Weight functions $w_i$",
+    "Needs energy functional?",
+    "Matrix symmetric for the bar?"
+   ],
+   "rows": [
+    [
+     "Rayleigh-Ritz",
+     "Variations of the trial family (minimise $\\Pi$)",
+     "Yes",
+     "Yes"
+    ],
+    [
+     "Galerkin",
+     "$w_i=\\varphi_i$ (same as trial)",
+     "No, works from the weak form",
+     "Yes"
+    ],
+    [
+     "Collocation",
+     "Dirac delta at chosen points",
+     "No",
+     "Not in general"
+    ],
+    [
+     "Least squares",
+     "$w_i=\\partial R/\\partial c_i$",
+     "No",
+     "Yes"
+    ]
+   ],
+   "caption": "Four ways to choose the amplitudes"
+  },
+  {
+   "type": "worked_example",
+   "title": "Two-term Galerkin and exact recovery",
+   "prompt": "Same bar as before ($EA=3.5\\times10^{7}$ N, $L=2$ m, $b_0=8$ kN/m). Use $\\varphi_1=x/L$ and $\\varphi_2=(x/L)^2$ with Galerkin weights $w_i=\\varphi_i$. Form the stiffness matrix, show it is symmetric, solve for $c_1,c_2$ and compare with the exact solution.",
+   "steps": [
+    {
+     "text": "Compute the entries $K_{ij}=\\int_0^L EA\\varphi_i'\\varphi_j'dx$ with $\\varphi_1'=1/L$ and $\\varphi_2'=2x/L^2$: $K_{11}=EA/L$, $K_{12}=\\int EA(1/L)(2x/L^2)dx=EA/L$, $K_{22}=\\int EA\\,4x^2/L^4dx=4EA/(3L)$. The matrix has entries $EA/L$, $EA/L$ in the first row and $EA/L$, $4EA/(3L)$ in the second.",
+     "latex": "K=\\frac{EA}{L}\\begin{bmatrix}1&1\\\\1&4/3\\end{bmatrix}"
+    },
+    {
+     "text": "Because $K_{12}=K_{21}$ by construction (the integrand does not change when $i$ and $j$ are swapped), the matrix is symmetric. This would hold for any $EA(x)$ and any pair of trial functions."
+    },
+    {
+     "text": "Load vector: $f_1=\\int (x/L)b_0dx=b_0L/2$ and $f_2=\\int (x/L)^2b_0dx=b_0L/3$.",
+     "latex": "f=b_0L\\begin{Bmatrix}1/2\\\\1/3\\end{Bmatrix}"
+    },
+    {
+     "text": "Solving gives $c_1=b_0L^2/EA=9.143\\times10^{-4}$ m and $c_2=-b_0L^2/(2EA)=-4.571\\times10^{-4}$ m. So $u_h=c_1(x/L)+c_2(x/L)^2=(b_0/EA)(Lx-x^2/2)$, identical to the exact solution.",
+     "latex": "u_h=\\frac{b_0}{EA}\\left(Lx-\\frac{x^2}{2}\\right)"
+    }
+   ],
+   "answer": "The matrix is symmetric, and because the exact solution lies in the span of the two trial functions the error is zero."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Choose trial functions that satisfy every essential boundary condition.",
+    "Form $K_{ij}$ and $f_i$ with either the energy (Ritz) or the weighted-residual (Galerkin) route.",
+    "Solve the small linear system for the amplitudes.",
+    "Compare with the exact solution (or a finer trial space) in displacement, strain and energy, not displacement only."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Good displacement does not mean good stress",
+   "text": "Stress is a derivative of the approximate displacement, so it converges more slowly than displacement and can be badly wrong where the trial shape is poor, as in the one-term example at the fixed end. Always report the error in the quantity of engineering interest."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Rayleigh-Ritz minimises the total potential energy over a family of admissible trial functions and gives $K c=f$ with $K_{ij}=\\int EA\\varphi_i'\\varphi_j'dx$.",
+    "Galerkin takes weight functions from the same family as the trial functions; for the self-adjoint bar problem the resulting matrix is symmetric and equal to the Ritz matrix.",
+    "The Ritz strain energy is a lower bound on the exact energy and improves as the trial space grows.",
+    "Compare approximate and exact displacement, strain and energy: derivatives (stresses) are less accurate than displacement."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A bar is clamped at $x=0$ and free at $x=L$. Which trial function is admissible for a Rayleigh-Ritz approximation of its axial displacement?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\varphi=\\sin\\left(\\dfrac{\\pi x}{2L}\\right)$"
+    },
+    {
+     "id": "b",
+     "text": "$\\varphi=1+x/L$"
+    },
+    {
+     "id": "c",
+     "text": "$\\varphi=\\cos\\left(\\dfrac{\\pi x}{2L}\\right)$"
+    },
+    {
+     "id": "d",
+     "text": "$\\varphi=L-x$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\varphi=\\sin\\left(\\dfrac{\\pi x}{2L}\\right)$",
+   "distractorRationale": {
+    "a": "Correct: it is zero at the clamped end, so it satisfies the essential condition $u(0)=0$ and is smooth.",
+    "b": "It equals 1 at $x=0$, so it violates the clamped condition.",
+    "c": "It equals 1 at $x=0$ (cosine of zero), so it violates the clamped condition.",
+    "d": "It equals $L$ at $x=0$, so it violates the clamped condition; it vanishes at the free end, which is not required."
+   },
+   "explanation": "Trial functions must satisfy the essential (displacement) boundary conditions but not the natural (force) condition. Only the sine shape vanishes at the clamped end.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A steel bar of length $L=3$ m, $EA=6.0\\times10^{6}$ N, is fixed at $x=0$ and carries a uniform load $b=2$ kN/m and an end force $P=5$ kN at $x=L$. Using one Rayleigh-Ritz trial function $u_h=c\\,x$ (with $x$ in metres and $c$ dimensionless), find the approximate displacement at mid-span $x=1.5$ m in mm.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o1"
+   ],
+   "correctValue": 2.0,
+   "tolerance": 0.05,
+   "unit": "mm",
+   "explanation": "For $\\varphi=x$: $K=EA\\,L=1.8\\times10^{7}$ N m and $f=bL^2/2+LP=9000+15000=24000$ N m, so $c=24000/(1.8\\times10^{7})=1.333\\times10^{-3}$. Then $u_h(1.5)=1.333\\times10^{-3}\\times1.5=2.0\\times10^{-3}$ m, i.e. 2.0 mm. The exact mid-span value is 2.375 mm, so a single linear shape is somewhat too stiff.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why does the Galerkin method give a symmetric stiffness matrix for the axial bar problem?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The bar operator is self-adjoint and the weight functions are taken equal to the trial functions, so $K_{ij}=\\int EA\\varphi_i'\\varphi_j'dx$ is unchanged when $i$ and $j$ are swapped"
+    },
+    {
+     "id": "b",
+     "text": "Because the axial stiffness $EA$ is constant along the bar"
+    },
+    {
+     "id": "c",
+     "text": "Because the trial functions are orthogonal to each other"
+    },
+    {
+     "id": "d",
+     "text": "Because the loading is applied symmetrically about mid-span"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The bar operator is self-adjoint and the weight functions are taken equal to the trial functions, so $K_{ij}=\\int EA\\varphi_i'\\varphi_j'dx$ is unchanged when $i$ and $j$ are swapped",
+   "distractorRationale": {
+    "a": "Correct: the bilinear form is symmetric, and using the same functions for weighting and trial makes the matrix inherit that symmetry.",
+    "b": "Symmetry survives for a variable $EA(x)$ because only the product $\\varphi_i'\\varphi_j'$ matters, so constant stiffness is not the reason.",
+    "c": "Orthogonality would make the matrix diagonal; symmetric matrices need no such property, and the example trial functions were not orthogonal.",
+    "d": "The load vector does not enter the matrix, so the loading pattern has no bearing on its symmetry."
+   },
+   "explanation": "Symmetry is a property of the operator and the choice of weights, not of the particular geometry or load. With $w_i=\\varphi_i$ and a self-adjoint operator the matrix entries $K_{ij}$ and $K_{ji}$ are the same integral.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "If the weight functions are chosen differently from the trial functions (a Petrov-Galerkin choice), the resulting matrix for a self-adjoint problem is in general no longer symmetric.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. Symmetry relies on weighting with the same functions used for the trial space. With different weights $K_{ij}=\\int EA\\,w_i'\\varphi_j'dx$ is generally not equal to $K_{ji}$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "For a bar with $EA=4.0\\times10^{6}$ N and $L=2$ m, use the dimensionless trial function $\\varphi_2=(x/L)^2$. Compute the Galerkin stiffness entry $K_{22}=\\int_0^L EA\\,(\\varphi_2')^2dx$ in kN/m.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o2"
+   ],
+   "correctValue": 2666.667,
+   "tolerance": 10.0,
+   "unit": "kN/m",
+   "explanation": "The derivative is $\\varphi_2'=2x/L^2$, so $K_{22}=EA\\int_0^L 4x^2/L^4\\,dx=4EA/(3L)$. With the given numbers $4\\times4.0\\times10^{6}/(3\\times2)=2.667\\times10^{6}$ N/m, which is 2667 kN/m. The entry is a stiffness because the amplitude of this dimensionless function is a displacement in metres.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A Rayleigh-Ritz solution is computed with an admissible trial space, and the strain energy of the approximate solution is compared with the exact strain energy. Which statement is true?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The approximate energy is less than or equal to the exact energy, because the restricted trial space makes the model stiffer"
+    },
+    {
+     "id": "b",
+     "text": "The approximate energy is always greater than or equal to the exact energy"
+    },
+    {
+     "id": "c",
+     "text": "The approximate energy equals the exact energy because both solve the same equation"
+    },
+    {
+     "id": "d",
+     "text": "No general statement can be made about the energy"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The approximate energy is less than or equal to the exact energy, because the restricted trial space makes the model stiffer",
+   "distractorRationale": {
+    "a": "Correct: minimising $\\Pi$ over a subspace cannot do better than over the full space, and $U=-\\Pi$ at equilibrium, so the approximate $U$ is not larger.",
+    "b": "This reverses the bound; a subspace gives a stiffer, not a more flexible, structure.",
+    "c": "The approximate solution only satisfies the equations within the trial family, so the energies agree only if the exact solution lies in that family.",
+    "d": "A definite bound exists for admissible trial functions in a linear problem; this is one of the strengths of the method."
+   },
+   "explanation": "Because $\\Pi=-U$ at equilibrium and the approximate $\\Pi$ is at least the exact minimum, we get $U_h\\le U$. In the lesson example the one-term solution carried 75% of the exact energy.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A bar of length $L=2.5$ m, $EA=2.0\\times10^{7}$ N, is fixed at $x=0$ and carries a uniform load $b=5$ kN/m. A single-term Rayleigh-Ritz solution uses $u_h=c\\sin(\\pi x/2L)$, giving $c=16\\,bL^2/(\\pi^3EA)$. Find the percentage error of its tip displacement $u_h(L)$ relative to the exact tip value $bL^2/(2EA)$, using the sign convention (approximate minus exact) over exact.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o3"
+   ],
+   "correctValue": 3.2049,
+   "tolerance": 0.1,
+   "unit": "%",
+   "explanation": "Compute $bL^2/EA=5000\\times6.25/(2.0\\times10^{7})=1.5625\\times10^{-3}$ m. Then $c=16/\\pi^3\\times1.5625\\times10^{-3}=0.51602\\times1.5625\\times10^{-3}=8.063\\times10^{-4}$ m. The exact tip value is $0.5\\times1.5625\\times10^{-3}=7.8125\\times10^{-4}$ m, so the error is $(8.063-7.8125)/7.8125=+3.2\\%$. A smooth shape that resembles the true curve gives a few percent of error with a single term.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A one-term Ritz approximation of a bar under uniform load gives a poor mid-span displacement. Which modification is guaranteed not to increase the energy error?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Add a second admissible, linearly independent trial function while keeping the first one"
+    },
+    {
+     "id": "b",
+     "text": "Replace the trial function with another single function of a different shape and hope it is better"
+    },
+    {
+     "id": "c",
+     "text": "Remove the essential boundary condition from the trial function"
+    },
+    {
+     "id": "d",
+     "text": "Multiply the load vector by a factor to match the tip displacement"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Add a second admissible, linearly independent trial function while keeping the first one",
+   "distractorRationale": {
+    "a": "Correct: the enlarged family contains the old one, so the minimum of $\\Pi$ over it cannot be larger.",
+    "b": "A different single shape may be better or worse, so there is no guarantee.",
+    "c": "Dropping the essential condition makes the trial functions inadmissible and invalidates the energy argument.",
+    "d": "Scaling the load changes the problem being solved rather than improving the approximation."
+   },
+   "explanation": "Nested trial spaces give a non-increasing minimum of $\\Pi$, so the approximate energy approaches the exact value from below as terms are added. This monotone behaviour is what makes systematic refinement possible.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Show that the Galerkin method applied to the bar equation $\\frac{d}{dx}(EA\\,u')+b=0$ with $u_h=\\sum_j c_j\\varphi_j$ and weights $w_i=\\varphi_i$ produces a symmetric stiffness matrix. State clearly where the choice of weights and the form of the operator are used.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o2"
+   ],
+   "markingGuide": [
+    "Multiply the residual by $\\varphi_i$ and integrate: $\\int \\varphi_i[(EA\\,u_h')'+b]dx=0$",
+    "Integrate by parts once to get $\\int \\varphi_i' EA\\,u_h'dx=\\int \\varphi_i b\\,dx+\\varphi_i(L)P$ with $\\varphi_i(0)=0$",
+    "Substitute $u_h=\\sum c_j\\varphi_j$ to obtain $K_{ij}=\\int EA\\,\\varphi_i'\\varphi_j'dx$",
+    "Because the weights equal the trial functions the integrand is a product of $\\varphi_i'$ and $\\varphi_j'$ that is unchanged by swapping $i$ and $j$, so $K_{ij}=K_{ji}$",
+    "Link to self-adjointness: the symmetric second-order operator becomes a symmetric bilinear form after one integration by parts"
+   ],
+   "explanation": "The weighted-residual statement, after one integration by parts, has the same function type on both sides of the bilinear form. This symmetry is inherited by the matrix when weights and trial functions coincide.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A colleague models a uniformly loaded cantilever bar with one trial function $u_h=c\\,x$ and reports that the tip displacement agrees exactly with the closed-form solution, concluding that the model is validated. Evaluate this conclusion and describe two further comparisons you would make.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.variational-formulation.rayleigh-ritz-galerkin.o3"
+   ],
+   "markingGuide": [
+    "Tip agreement alone does not validate the model: a single point in one quantity can coincide by chance of the shape",
+    "Linear trial function gives constant strain, so strain and stress differ from the exact linearly varying values, with the largest error at the fixed end",
+    "Displacement at interior points (for example mid-span) is also in error",
+    "Compare strain energy: the Ritz value is a lower bound and a ratio below 1 reveals a stiff model",
+    "Suggest refining the trial space (add $x^2$) and watching convergence of displacement, stress and energy"
+   ],
+   "explanation": "A single exact value does not demonstrate convergence of the full field. Derivative quantities such as stress converge more slowly, so error should be checked at several points and in energy.",
+   "board": "internal"
+  }
+ ]
+}

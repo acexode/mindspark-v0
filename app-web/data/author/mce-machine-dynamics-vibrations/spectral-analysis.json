@@ -1,0 +1,390 @@
+{
+ "lessonTitle": "Spectra and Modal Testing",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A maintenance engineer clips an accelerometer to a pump casing and sees a jagged line of peaks on the analyser. Some peaks belong to the shaft, some to the casing, and some are phantoms created by the measurement itself. Reading the spectrum correctly, and setting up the analyser so that it is right, is the skill in this unit."
+  },
+  {
+   "type": "text",
+   "markdown": "A time record $x(t)$ is converted by the Fourier transform into a **spectrum**, amplitude (and phase) against frequency in Hz. A pure tone appears as a single peak. Machines produce two kinds of peak. **Harmonics** are integer multiples of a fundamental frequency, usually the shaft rotation frequency $f_{1X}=N/60$ (Hz, with $N$ in rpm): $2X$, $3X$ and so on, caused by repeating forces such as unbalance (1X), misalignment (often 2X) and gear or blade passing. **Resonant peaks** are fixed by the structure's natural frequencies and do not move when the running speed changes."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Resolution, Nyquist and aliasing",
+   "text": "A record of $N$ samples taken at sampling rate $f_s$ (samples per second) lasts $T=N/f_s$ seconds. The frequency resolution is $\\Delta f=1/T=f_s/N$ (Hz). The highest frequency that can be represented is the Nyquist frequency $f_s/2$. A component above $f_s/2$ is not lost but **aliased**: it appears at a false lower frequency, $|f-kf_s|$ for the integer $k$ that brings the result into $0$ to $f_s/2$."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta f=\\frac{1}{T}=\\frac{f_s}{N},\\qquad f_s>2f_{max},\\qquad f_{alias}=|f-kf_s|",
+   "caption": "Resolution, sampling criterion and alias frequency (Hz)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Reading a pump spectrum",
+   "prompt": "A pump runs at 1485 rpm. Its spectrum has peaks at 24.75, 49.50, 74.25 and 120 Hz. Classify the peaks.",
+   "steps": [
+    {
+     "text": "Shaft rotation frequency in Hz.",
+     "latex": "f_{1X}=\\frac{1485}{60}=24.75\\ \\text{Hz}"
+    },
+    {
+     "text": "Check each peak as a multiple of f_1X.",
+     "latex": "49.50/24.75=2,\\quad 74.25/24.75=3"
+    },
+    {
+     "text": "The peak at 120 Hz divided by 24.75 is 4.85, which is not an integer, so it is not a harmonic. It is a candidate structural resonance; changing the speed slightly would show whether it stays at 120 Hz.",
+     "latex": null
+    }
+   ],
+   "answer": "Peaks at 1X, 2X and 3X are harmonics of the running speed; the 120 Hz peak is probably a resonance, to be confirmed by a speed change."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Feature",
+    "Harmonic",
+    "Resonant peak",
+    "Alias (false) peak"
+   ],
+   "rows": [
+    [
+     "Frequency",
+     "Integer multiple of fundamental",
+     "Fixed by structure",
+     "$|f-kf_s|$"
+    ],
+    [
+     "Moves with speed?",
+     "Yes, proportionally",
+     "No",
+     "Moves in a mirrored, confusing way"
+    ],
+    [
+     "Cure if unwanted",
+     "Fix the source (balance, alignment)",
+     "Change stiffness or mass, or avoid the speed",
+     "Anti-alias filter, higher $f_s$"
+    ],
+    [
+     "Width",
+     "Narrow",
+     "Wider (damping)",
+     "As the true tone"
+    ]
+   ],
+   "caption": "Telling peak types apart"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing sampling rate and record length",
+   "prompt": "Two vibration components at 100 Hz and 101.5 Hz must be resolved, with content up to 500 Hz. Choose $f_s$ and $N$.",
+   "steps": [
+    {
+     "text": "Resolution must be finer than the separation of the tones: Delta f at most 1.5 Hz, so T at least 1/1.5 s = 0.667 s. A safety margin and a window (which widens each peak) suggest a record of about 1 s.",
+     "latex": null
+    },
+    {
+     "text": "Sampling rate must exceed twice 500 Hz; practical analysers use about 2.56 times to leave room for the anti-alias filter roll-off.",
+     "latex": "f_s\\ge2.56\\times500=1280\\ \\text{Hz}\\Rightarrow\\ \\text{choose}\\ f_s=2048\\ \\text{Hz}"
+    },
+    {
+     "text": "Samples needed for T = 1 s.",
+     "latex": "N=f_sT=2048\\times1=2048\\ \\text{samples},\\quad \\Delta f=1.0\\ \\text{Hz}"
+    }
+   ],
+   "answer": "Use f_s = 2048 Hz and N = 2048 samples (T = 1 s): resolution 1 Hz, Nyquist 1024 Hz, enough to separate 100 and 101.5 Hz."
+  },
+  {
+   "type": "text",
+   "markdown": "**Impact hammer test.** To find a structure's natural frequencies and damping, strike it with an instrumented hammer whose tip contains a force sensor, and measure the response with an accelerometer. The short impact excites a broad range of frequencies at once. The analyser transforms both signals and forms the **frequency response function** $H(f)=X(f)/F(f)$ (response spectrum divided by force spectrum, here accelerance if the response is acceleration, units m/s$^2$ per N). Peaks of $|H|$ mark natural frequencies, the phase changes by about $180^\\circ$ across each, and the half-power method on a peak gives the damping ratio. Good practice is to average several hits, check **coherence** (close to 1 where the measurement is reliable), avoid double hits, and apply a force window or an exponential window to the response so that it decays to zero within the record."
+  },
+  {
+   "type": "math",
+   "latex": "H(f)=\\frac{X(f)}{F(f)},\\qquad \\text{coherence }\\gamma^2(f)=\\frac{|G_{FX}|^2}{G_{FF}G_{XX}}",
+   "caption": "FRF and coherence (G are averaged auto and cross spectra)"
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Identify harmonics by dividing peak frequencies by $f_{1X}$; non-integer peaks are resonances or other sources.",
+    "Set $f_s$ above twice (typically 2.56 times) the highest frequency of interest, with an anti-alias filter.",
+    "Set record length $T\\ge1/\\delta f$ for the closest pair to be resolved, more with a window.",
+    "For an FRF, average hits, check coherence, then pick peaks for $f_n$ and use half-power for $\\zeta$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Resolution and sampling are linked",
+   "text": "For a fixed number of samples $N$, raising $f_s$ widens the frequency range but coarsens the resolution, $\\Delta f=f_s/N$. To keep the resolution you must record longer, which means more samples."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Aliasing cannot be undone",
+   "text": "Once a signal is sampled too slowly, the aliased peaks look exactly like real ones. The anti-alias low-pass filter must act before sampling. Hanning windows reduce leakage but widen peaks, so two close peaks may need a longer record than $1/\\delta f$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Harmonics are integer multiples of the running-speed frequency; resonances stay fixed when speed changes.",
+    "Resolution is $\\Delta f=1/T=f_s/N$; sampling must exceed twice the highest frequency, otherwise aliasing occurs at $|f-kf_s|$.",
+    "To resolve two tones separated by $\\delta f$, record for at least $1/\\delta f$ seconds.",
+    "An impact test forms $H=X/F$ from hammer and response; peaks give $f_n$, phase and half-power width give damping, and coherence checks quality."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A fan runs at 1800 rpm and its spectrum shows peaks at 30, 60, 90 and 135 Hz. Which peaks are harmonics of the running speed?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "30, 60 and 90 Hz, which are 1X, 2X and 3X"
+    },
+    {
+     "id": "b",
+     "text": "All four, since 135 Hz is also a multiple of 15 Hz"
+    },
+    {
+     "id": "c",
+     "text": "Only 30 Hz"
+    },
+    {
+     "id": "d",
+     "text": "60, 90 and 135 Hz"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "30, 60 and 90 Hz, which are 1X, 2X and 3X",
+   "distractorRationale": {
+    "a": "Correct: The shaft frequency is 1800/60 = 30 Hz.",
+    "b": "135 Hz is 4.5 times 30 Hz, so it is not an integer harmonic of the running speed (it is not a multiple of 30 Hz).",
+    "c": "The 60 and 90 Hz peaks are integer multiples of 30 Hz.",
+    "d": "The 30 Hz peak is the fundamental, 1X, and is itself a harmonic number 1."
+   },
+   "explanation": "The shaft frequency is 1800/60 = 30 Hz. Peaks at 60 and 90 Hz are exactly 2 and 3 times it, while 135/30 = 4.5 is not an integer, so that peak comes from another source such as a resonance.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A signal is sampled at 5120 samples per second and 8192 samples are recorded. Find the frequency resolution of the spectrum in Hz.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o2"
+   ],
+   "correctValue": 0.625,
+   "tolerance": 0.005,
+   "unit": "Hz",
+   "explanation": "The record length is N/f_s = 8192/5120 = 1.60 s. The resolution is its reciprocal, 0.625 Hz, which is also f_s/N.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two closely spaced tones at 12.0 Hz and 12.8 Hz must be resolved in a spectrum. Find the minimum record length in seconds, taking the resolution to equal the tone separation (no window).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o2"
+   ],
+   "correctValue": 1.25,
+   "tolerance": 0.02,
+   "unit": "s",
+   "explanation": "The separation is 0.8 Hz, so the resolution must be at most this: T = 1/Delta f = 1/0.8 = 1.25 s. In practice a window widens peaks so a somewhat longer record would be used.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 900 Hz tone is sampled at 1200 samples per second without an anti-alias filter. At what frequency does it appear in the spectrum?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "900 Hz"
+    },
+    {
+     "id": "b",
+     "text": "300 Hz"
+    },
+    {
+     "id": "c",
+     "text": "600 Hz"
+    },
+    {
+     "id": "d",
+     "text": "1200 Hz"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "300 Hz",
+   "distractorRationale": {
+    "a": "900 Hz exceeds the Nyquist frequency of 600 Hz, so it cannot appear there.",
+    "b": "Correct: The Nyquist frequency is 600 Hz, so 900 Hz is aliased.",
+    "c": "600 Hz is the Nyquist frequency, not the alias.",
+    "d": "1200 Hz is the sampling rate and cannot appear in the spectrum."
+   },
+   "explanation": "The Nyquist frequency is 600 Hz, so 900 Hz is aliased. The alias is |900 - 1200| = 300 Hz, and it looks identical to a genuine 300 Hz component.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The running speed of a machine is changed by 10 per cent. A spectral peak moves by 10 per cent, while another peak at a different frequency stays exactly where it was. What can be concluded?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The fixed peak is a harmonic and the moving peak is a resonance"
+    },
+    {
+     "id": "b",
+     "text": "Both are aliases"
+    },
+    {
+     "id": "c",
+     "text": "The moving peak is related to the running speed (a harmonic); the fixed peak is probably a structural resonance"
+    },
+    {
+     "id": "d",
+     "text": "Neither can be classified without a longer record"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The moving peak is related to the running speed (a harmonic); the fixed peak is probably a structural resonance",
+   "distractorRationale": {
+    "a": "Harmonics scale with speed, resonances do not, so the reasoning is reversed.",
+    "b": "Aliases also shift with sampling changes, but the speed-dependence tells which source is which; both being aliases is unsupported.",
+    "c": "Correct: Harmonics are tied to the rotation frequency so they move in proportion when speed changes.",
+    "d": "A speed change is a direct test; no longer record is needed."
+   },
+   "explanation": "Harmonics are tied to the rotation frequency so they move in proportion when speed changes. Resonances are properties of the structure so they stay at the same frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "An analyser must cover content up to 2000 Hz using a sampling rate of 2.56 times the highest frequency, and must resolve components 0.5 Hz apart (resolution equal to the separation). How many samples must be recorded?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o2"
+   ],
+   "correctValue": 10240.0,
+   "tolerance": 102.4,
+   "unit": "samples",
+   "explanation": "The sampling rate is 2.56 x 2000 = 5120 Hz. A resolution of 0.5 Hz needs a record of T = 1/0.5 = 2 s. The number of samples is N = f_s T = 5120 x 2 = 10240.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In an impact hammer test, the frequency response function is formed as",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "the spectrum of the force divided by the spectrum of the response"
+    },
+    {
+     "id": "b",
+     "text": "the time-domain response multiplied by the time-domain force"
+    },
+    {
+     "id": "c",
+     "text": "the sum of the two spectra"
+    },
+    {
+     "id": "d",
+     "text": "the spectrum of the measured response divided by the spectrum of the hammer force"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "the spectrum of the measured response divided by the spectrum of the hammer force",
+   "distractorRationale": {
+    "a": "That inverts the definition and gives the mechanical impedance (dynamic stiffness) rather than the FRF.",
+    "b": "Multiplying in the time domain does not give a transfer function.",
+    "c": "A transfer function is a ratio, not a sum.",
+    "d": "Correct: The FRF is H(f) = X(f)/F(f), the output per unit input, so that the force spectrum, which is broad and fairly flat, normalises the measured response."
+   },
+   "explanation": "The FRF is H(f) = X(f)/F(f), the output per unit input, so that the force spectrum, which is broad and fairly flat, normalises the measured response. Peaks of |H| mark natural frequencies.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how an impact hammer test is performed on a structure and how a frequency response function and the modal parameters are obtained from it.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o3"
+   ],
+   "markingGuide": [
+    "Strike the structure with an instrumented hammer (force sensor in the tip) at a chosen point; measure response with an accelerometer",
+    "Short impact gives broadband excitation",
+    "Record force and response; apply windows (force window, exponential window on response) to reduce noise and leakage",
+    "Fourier transform both and form H(f) = X(f)/F(f); average several impacts",
+    "Check coherence close to 1 and avoid double hits",
+    "Peaks of |H| give natural frequencies; phase changes by about 180 degrees through each",
+    "Half-power bandwidth of a peak gives damping ratio; mode shapes from comparing peak heights over several measurement points"
+   ],
+   "explanation": "The hammer excites many frequencies at once, and dividing the response by the force normalises out the excitation. Natural frequencies and damping are then read from the peaks of the FRF.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A student records a vibration signal at 1000 samples per second for 0.4 s. She sees a peak at 280 Hz and a pair of poorly separated peaks near 50 Hz that are 1.2 Hz apart, and the machine also has a 750 Hz component. Explain what is wrong with the setup for each observation and how you would correct it.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o1",
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o2"
+   ],
+   "markingGuide": [
+    "Nyquist frequency is 500 Hz; the 750 Hz component is aliased and appears at |750 - 1000| = 250 Hz",
+    "The 280 Hz peak might be real or an alias of 720 Hz (1000 - 280); an anti-alias filter or a higher sampling rate settles it",
+    "Resolution is 1/0.4 = 2.5 Hz, coarser than the 1.2 Hz separation, so the peaks merge",
+    "Need a record of at least 1/1.2 = 0.83 s (longer with a window), say 1 s or more",
+    "Increase f_s above 2 x 750 = 1500 (e.g. 1920 Hz for 2.56 times 750) and use an anti-alias filter before sampling",
+    "Note that raising f_s alone does not improve resolution; the record length must increase"
+   ],
+   "explanation": "Sampling at 1000 samples per second aliases anything above 500 Hz, and the 0.4 s record gives only 2.5 Hz resolution. A faster sampling rate with an anti-alias filter and a longer record fixes both.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "To avoid aliasing, the sampling rate must be greater than twice the highest frequency present in the signal.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.vibration-measurement.spectral-analysis.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "This is the Nyquist criterion: components above half the sampling rate fold back to lower frequencies. In practice the rate is chosen higher still, for example 2.56 times the highest frequency of interest, with an anti-alias filter before the sampler.",
+   "board": "internal"
+  }
+ ]
+}

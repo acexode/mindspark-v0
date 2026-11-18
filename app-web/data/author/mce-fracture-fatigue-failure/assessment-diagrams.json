@@ -1,0 +1,395 @@
+{
+ "lessonTitle": "Failure Assessment Diagrams",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A steel pressure vessel holds a weld flaw. If the metal were perfectly brittle the flaw would be judged by K alone; if it were perfectly ductile the flaw would be judged by whether the remaining section yields. Real steels sit in between, and a single chart lets engineers check both failure modes together."
+  },
+  {
+   "type": "text",
+   "markdown": "A cracked component can fail in two limiting ways. If the material is brittle, the crack runs when $K_I$ reaches the material's toughness $K_{mat}$. If the material is very tough, the crack does not run, but the remaining ligament **plastically collapses** once the stress over it reaches roughly the yield strength. Most structural steels fail by a mixture of the two. A **failure assessment diagram (FAD)** plots one point per flaw and compares it with a boundary curve that blends both limits."
+  },
+  {
+   "type": "math",
+   "latex": "K_r = \\frac{K_I}{K_{mat}}",
+   "caption": "Toughness ratio (vertical axis): applied stress intensity factor over the material toughness. $K_r\\to1$ means pure brittle fracture."
+  },
+  {
+   "type": "math",
+   "latex": "L_r = \\frac{\\sigma_{ref}}{\\sigma_y}",
+   "caption": "Load ratio (horizontal axis): the reference stress (the net-section stress in the ligament, an estimate of the stress that drives plastic collapse) over the yield strength. $L_r\\to1$ means plastic collapse. For a central crack of half-length $a$ in a plate of width $W$, $\\sigma_{ref}\\approx\\sigma W/(W-2a)$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Assessment point and failure assessment curve",
+   "text": "The assessment point is $(L_r, K_r)$ for the flaw under the given loads. The failure assessment curve $K_r=f(L_r)$, valid for $L_r\\le L_{r,max}=(\\sigma_y+\\sigma_u)/(2\\sigma_y)$ ($\\sigma_u$ is the ultimate tensile strength), bounds the safe region. A point on or inside the curve is acceptable; a point outside it is not."
+  },
+  {
+   "type": "math",
+   "latex": "f(L_r) = \\left(1 - 0.14L_r^2\\right)\\left[0.3 + 0.7\\exp\\left(-0.65L_r^6\\right)\\right]",
+   "caption": "A widely used generic (Option 1 style) failure assessment curve; a representative form for teaching. Real assessments follow the governing procedure."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$L_r$",
+    "$f(L_r)$ (allowable $K_r$)"
+   ],
+   "rows": [
+    [
+     "0",
+     "1"
+    ],
+    [
+     "0.4",
+     "0.976"
+    ],
+    [
+     "0.8",
+     "0.811"
+    ],
+    [
+     "1",
+     "0.572"
+    ],
+    [
+     "1.2",
+     "0.32"
+    ]
+   ],
+   "caption": "Selected values of the curve. The allowable $K_r$ starts at 1 for $L_r=0$ and falls as plasticity increases."
+  },
+  {
+   "type": "worked_example",
+   "title": "Is a flaw acceptable?",
+   "prompt": "A wide plate of width $W = 200$ mm has a central through-crack of total length 40 mm ($a = 20$ mm) and carries $\\sigma = 150$ MPa. Assumed properties: $\\sigma_y = 350$ MPa, $\\sigma_u = 480$ MPa, $K_{mat}=80$ MPa$\\sqrt{\\text{m}}$. Take $Y=1$. Assess the flaw.",
+   "steps": [
+    {
+     "text": "Applied stress intensity factor.",
+     "latex": "K_I = 150\\sqrt{\\pi\\times0.020} = 37.6\\ \\text{MPa}\\sqrt{\\text{m}}"
+    },
+    {
+     "text": "Toughness ratio.",
+     "latex": "K_r = \\frac{37.6}{80} = 0.47"
+    },
+    {
+     "text": "Net-section (reference) stress and load ratio.",
+     "latex": "\\sigma_{ref} = \\frac{150\\times200}{200-40} = 187.5\\ \\text{MPa}, \\quad L_r = \\frac{187.5}{350} = 0.536"
+    },
+    {
+     "text": "Compare with the curve: $L_{r,max}=(350+480)/(2\\times350)=1.19$, and $f(0.536)=0.95$.",
+     "latex": "K_r = 0.47 < f(L_r) = 0.95"
+    }
+   ],
+   "answer": "The point $(L_r, K_r)=(0.536, 0.47)$ lies inside the curve, so the flaw is acceptable."
+  },
+  {
+   "type": "text",
+   "markdown": "**How the curve interpolates.** The ends of the curve are the two limiting cases: at $L_r=0$ (negligible plasticity) the allowable $K_r$ is 1, meaning fracture occurs when $K_I=K_{mat}$; at the cut-off $L_{r,max}$ the structure collapses plastically regardless of toughness. In between, plasticity spreading through the ligament steadily lowers the allowable $K_r$: the curve stays close to 1 at small $L_r$ and falls quickly as $L_r$ approaches 1. A flaw that is moderately close to both limits (for example $K_r$ and $L_r$ both near 0.9) passes each single check, since $K_r<1$ and $L_r<1$, yet lies outside the curve because the two modes interact."
+  },
+  {
+   "type": "worked_example",
+   "title": "Raising the stress moves the point to the right and up",
+   "prompt": "The same plate is now loaded to $\\sigma = 270$ MPa. Assess the flaw again using the same properties.",
+   "steps": [
+    {
+     "text": "Stress intensity factor and ratio.",
+     "latex": "K_I = 270\\sqrt{\\pi\\times0.020} = 67.68\\ \\text{MPa}\\sqrt{\\text{m}}, \\quad K_r = 0.846"
+    },
+    {
+     "text": "Reference stress and load ratio.",
+     "latex": "\\sigma_{ref} = \\frac{270\\times200}{160} = 337.5\\ \\text{MPa}, \\quad L_r = 0.964"
+    },
+    {
+     "text": "The allowable value is $f(0.964)=0.622$. Since $L_r<L_{r,max}=1.19$ the curve applies and $K_r=0.846>f$, so the point lies outside."
+    }
+   ],
+   "answer": "The flaw is NOT acceptable at 270 MPa: $K_r=0.846$ exceeds the allowable 0.622."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Increasing the stress increases both $K_r$ and $L_r$, moving the point right and up.",
+    "Increasing the material toughness lowers $K_r$ only, moving the point straight down.",
+    "Increasing the yield strength lowers $L_r$ only, moving the point to the left.",
+    "A point with $L_r>L_{r,max}$ is outside the safe region regardless of $K_r$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Use real material data and the full procedure",
+   "text": "This chapter uses a simplified reference stress and a generic curve. Real assessments use the governing procedure's reference-stress solutions, secondary stresses and partial safety factors."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$K_r=K_I/K_{mat}$ and $L_r=\\sigma_{ref}/\\sigma_y$; a point inside the failure assessment curve is acceptable, one outside is not.",
+    "The curve runs from $K_r=1$ at $L_r=0$ (brittle fracture) to the cut-off $L_{r,max}$ (plastic collapse), blending the two modes.",
+    "Raising stress moves the point right and up; raising toughness lowers it; raising yield strength moves it left."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a failure assessment diagram, how is the toughness ratio $K_r$ defined?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The reference stress divided by the yield strength"
+    },
+    {
+     "id": "b",
+     "text": "The yield strength divided by the toughness"
+    },
+    {
+     "id": "c",
+     "text": "The crack length divided by the plate thickness"
+    },
+    {
+     "id": "d",
+     "text": "The applied stress intensity factor divided by the material toughness"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The applied stress intensity factor divided by the material toughness",
+   "distractorRationale": {
+    "a": "That is the load ratio $L_r$.",
+    "b": "That ratio has no meaning on the diagram.",
+    "c": "That is a geometry ratio, not an axis.",
+    "d": "Correct: $K_r=K_I/K_{mat}$."
+   },
+   "explanation": "The vertical axis measures how close the applied stress intensity factor is to the toughness. When $K_r$ reaches one, brittle fracture is expected unless plasticity reduces the allowable value.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An assessment point lies inside the failure assessment curve. What is the correct conclusion?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The flaw will fail immediately"
+    },
+    {
+     "id": "b",
+     "text": "The flaw is acceptable for the loading and material data used"
+    },
+    {
+     "id": "c",
+     "text": "The flaw must be repaired in all cases"
+    },
+    {
+     "id": "d",
+     "text": "The diagram cannot be used"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The flaw is acceptable for the loading and material data used",
+   "distractorRationale": {
+    "a": "Failure is predicted outside the curve.",
+    "b": "Correct: inside means acceptable.",
+    "c": "Repair is not required inside.",
+    "d": "The diagram applies when the point can be plotted."
+   },
+   "explanation": "Points on or inside the curve represent combinations of toughness ratio and load ratio that the assessment accepts. A point outside the curve would require repair, re-rating or better data.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "On a failure assessment diagram, what does a point that is far to the right with a very small $K_r$ indicate?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The flaw is limited by brittle fracture only"
+    },
+    {
+     "id": "b",
+     "text": "The flaw is perfectly safe at any load"
+    },
+    {
+     "id": "c",
+     "text": "The flaw has zero length"
+    },
+    {
+     "id": "d",
+     "text": "The flaw is limited by plastic collapse of the ligament rather than brittle fracture"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The flaw is limited by plastic collapse of the ligament rather than brittle fracture",
+   "distractorRationale": {
+    "a": "Brittle fracture governs where $K_r$ is high.",
+    "b": "$L_r$ near cut-off is not safe.",
+    "c": "Zero length would give $K_r$ near zero but also low $L_r$.",
+    "d": "Correct: high $L_r$ with low $K_r$ means collapse governs."
+   },
+   "explanation": "A large $L_r$ means the ligament stress is close to yield and collapse is approached. A small $K_r$ means brittle fracture is not the issue, so the point lies near the collapse end of the curve.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A tougher steel (higher $K_{mat}$) is substituted for the same cracked plate under the same load. How does the assessment point move on the diagram?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Straight to the right"
+    },
+    {
+     "id": "b",
+     "text": "Straight up"
+    },
+    {
+     "id": "c",
+     "text": "It does not move"
+    },
+    {
+     "id": "d",
+     "text": "Straight down, because $K_r$ falls while $L_r$ is unchanged"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Straight down, because $K_r$ falls while $L_r$ is unchanged",
+   "distractorRationale": {
+    "a": "$L_r$ does not depend on toughness.",
+    "b": "$K_r$ decreases, not increases.",
+    "c": "$K_r$ changes with toughness.",
+    "d": "Correct: only $K_r$ depends on toughness."
+   },
+   "explanation": "$K_r=K_I/K_{mat}$, so raising the toughness lowers $K_r$. The load ratio $L_r$ depends on stress and yield strength, so it is unchanged and the point moves vertically downward, further from the curve.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A flaw has $L_r = 1.30$, $K_r = 0.20$, and the material has $\\sigma_y=350$ MPa and $\\sigma_u=480$ MPa. What is the conclusion?",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is safe because $K_r$ is small"
+    },
+    {
+     "id": "b",
+     "text": "It is outside the safe region because $L_r$ exceeds the cut-off $L_{r,max}\\approx1.19$"
+    },
+    {
+     "id": "c",
+     "text": "It is safe because $L_r$ is above 1"
+    },
+    {
+     "id": "d",
+     "text": "No conclusion is possible"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "It is outside the safe region because $L_r$ exceeds the cut-off $L_{r,max}\\approx1.19$",
+   "distractorRationale": {
+    "a": "Low $K_r$ does not rescue a point beyond the cut-off.",
+    "b": "Correct: past $L_{r,max}$ collapse is predicted regardless of $K_r$.",
+    "c": "Above the cut-off the point is unsafe.",
+    "d": "The cut-off decides this case."
+   },
+   "explanation": "The cut-off is $L_{r,max}=(\\sigma_y+\\sigma_u)/(2\\sigma_y)=(350+480)/700=1.19$. A load ratio of 1.30 is beyond it, meaning the ligament is predicted to collapse irrespective of toughness.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A flaw has applied $K_I = 30$ MPa$\\sqrt{\\text{m}}$ in a material of toughness $K_{mat}=75$ MPa$\\sqrt{\\text{m}}$. Compute the toughness ratio $K_r$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o1"
+   ],
+   "correctValue": 0.4,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "$K_r=K_I/K_{mat}=30/75=0.4$. Both quantities must be in the same unit.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A plate of width 100 mm has a central crack of total length 30 mm under a remote stress of 120 MPa. Yield strength is 420 MPa. Using the net-section reference stress $\\sigma_{ref}=\\sigma W/(W-2a)$, find the load ratio $L_r$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o1"
+   ],
+   "correctValue": 0.408163,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "$\\sigma_{ref}=120\\times100/(100-30)=171.4$ MPa, so $L_r=171.4/420=0.408$. The ligament is the width minus the total crack length.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Using $f(L_r)=(1-0.14L_r^2)[0.3+0.7\\exp(-0.65L_r^6)]$, find the maximum allowable toughness ratio $K_r$ at $L_r=0.7$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o2"
+   ],
+   "correctValue": 0.883401,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "At $L_r=0.7$: $1-0.14(0.49)=0.9314$ and $0.7^6=0.1176$, so $\\exp(-0.65\\times0.1176)=0.9264$ and the bracket is $0.3+0.7\\times0.9264=0.9485$. The product is $0.883$. A point with $K_r$ above this is outside the safe region.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how a failure assessment diagram interpolates between brittle fracture and plastic collapse, and why a single check on either $K_I$ or net-section stress is not enough.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o3"
+   ],
+   "markingGuide": [
+    "Vertical axis $K_r$ measures proximity to brittle fracture; horizontal axis $L_r$ measures proximity to plastic collapse",
+    "At $L_r=0$ the allowable $K_r$ is 1 (pure fracture); at the cut-off $L_{r,max}$ collapse governs",
+    "In between, plasticity reduces the allowable $K_r$, so the curve interpolates and includes interaction of the two modes",
+    "A check on one mode alone can be unconservative for flaws close to both limits"
+   ],
+   "explanation": "Real structures often fail by a mixture of fracture and collapse. The curve blends the two limits and so catches intermediate cases where neither check alone is violated but the combination is unsafe.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A flaw has $K_I=62$ MPa$\\sqrt{\\text{m}}$, $K_{mat}=70$ MPa$\\sqrt{\\text{m}}$, $\\sigma_{ref}=300$ MPa, $\\sigma_y=400$ MPa and $\\sigma_u=520$ MPa. (a) Compute $K_r$ and $L_r$. (b) Use the curve $f(L_r)$ given in the lesson to decide whether the flaw is acceptable. (c) Suggest two actions if it is not.",
+   "objectiveIds": [
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o1",
+    "ug.mce-fracture-fatigue-failure.fitness-for-service.assessment-diagrams.o2"
+   ],
+   "markingGuide": [
+    "$K_r=62/70\\approx0.886$",
+    "$L_r=300/400=0.75$",
+    "$f(0.75)\\approx0.851$ and $K_r>f$, so the point is outside and unacceptable ($L_{r,max}=(400+520)/800=1.15$, so the curve applies)",
+    "Suggests lowering stress or pressure (moves point left and down) or repairing the flaw",
+    "Suggests obtaining better toughness data, or inspecting to confirm flaw size, as other valid actions"
+   ],
+   "explanation": "The point $(L_r,K_r)=(0.75,0.886)$ lies above the allowable 0.851, so it is outside the safe region. Lowering the load, repairing the flaw or showing with better data that toughness is higher are the routes back inside.",
+   "board": "internal"
+  }
+ ]
+}

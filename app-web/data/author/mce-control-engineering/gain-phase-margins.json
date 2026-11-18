@@ -1,0 +1,402 @@
+{
+ "lessonTitle": "Gain, Phase and Sensitivity",
+ "estimatedMinutes": 34,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hydraulic press controller tracks its pressure setpoint beautifully in simulation. In service, the pump wears and its gain drifts upward by 40% over a year, and one morning the pressure begins to oscillate violently. The designer's mistake was not the nominal design but the lack of a number saying how much gain drift the loop could tolerate. Gain margin, phase margin and the sensitivity function supply exactly that."
+  },
+  {
+   "type": "text",
+   "markdown": "Take the open-loop transfer function $L(j\\omega)=G(j\\omega)C(j\\omega)$ of a loop that is stable and whose Nyquist plot passes the critical point $-1$ at some distance. Two frequencies on the Bode plot matter. The **gain crossover frequency** $\\omega_{gc}$ is where $|L(j\\omega)|=1$ (0 dB, with dB $=20\\log_{10}$ of magnitude). The **phase crossover frequency** $\\omega_{pc}$ is where $\\angle L(j\\omega)=-180^\\circ$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Gain margin and phase margin",
+   "text": "Phase margin: $\\mathrm{PM}=180^\\circ+\\angle L(j\\omega_{gc})$, the extra phase lag the loop could take at $\\omega_{gc}$ before the plot reaches $-1$. Gain margin: $\\mathrm{GM}=1/|L(j\\omega_{pc})|$, the factor by which the loop gain could be multiplied before the plot reaches $-1$; in decibels $\\mathrm{GM}_{dB}=-20\\log_{10}|L(j\\omega_{pc})|$. Both must be positive (GM above 1, PM above $0^\\circ$) for a loop that is stable and has the usual shape."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathrm{PM}=180^\\circ+\\angle L(j\\omega_{gc}),\\qquad \\mathrm{GM}=\\frac{1}{|L(j\\omega_{pc})|},\\qquad \\mathrm{GM}_{dB}=-20\\log_{10}|L(j\\omega_{pc})|",
+   "caption": "Margins read from the Bode plot (magnitude 0 dB crossing and $-180^\\circ$ phase crossing)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Margins of a third-order loop",
+   "prompt": "For $L(s)=\\dfrac{5}{s(s+1)(s+4)}$ (units: rad/s) find the phase crossover frequency, gain margin and phase margin.",
+   "steps": [
+    {
+     "text": "Phase crossover: expand the denominator at $s=j\\omega$: $j\\omega(j\\omega+1)(j\\omega+4)=-5\\omega^2+j(4\\omega-\\omega^3)$. The phase is $-180^\\circ$ when the imaginary part is zero (and the real part is negative).",
+     "latex": "4\\omega-\\omega^3=0\\Rightarrow\\omega_{pc}=2\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "At $\\omega_{pc}$ the real part is $-5(4)=-20$, so $L(j2)=-K/20$.",
+     "latex": "|L(j2)|=5/20=0.25"
+    },
+    {
+     "text": "Gain margin:",
+     "latex": "\\mathrm{GM}=1/0.25=4\\ \\ (12.0\\ \\mathrm{dB})"
+    },
+    {
+     "text": "Gain crossover: solve $|L(j\\omega)|=1$ numerically (the magnitude falls monotonically). The solution is",
+     "latex": "\\omega_{gc}\\approx0.904\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "The phase there is $-90^\\circ-\\arctan\\omega-\\arctan(\\omega/4)$.",
+     "latex": "\\angle L(j\\omega_{gc})\\approx-144.9^\\circ\\ \\Rightarrow\\ \\mathrm{PM}\\approx35.1^\\circ"
+    }
+   ],
+   "answer": "$\\omega_{pc}=2$ rad/s, GM = 4 (12.0 dB), PM about 35 degrees at $\\omega_{gc}\\approx0.90$ rad/s."
+  },
+  {
+   "type": "text",
+   "markdown": "**Sensitivity.** The sensitivity function $S(s)=1/(1+L(s))$ is the transfer function from an output disturbance to the output, and from the reference to the tracking error. At frequency $\\omega$, $|S(j\\omega)|<1$ means feedback attenuates disturbances there; $|S|>1$ means feedback amplifies them. The distance of the Nyquist plot from $-1$ at that frequency is $|1+L(j\\omega)|=1/|S(j\\omega)|$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Evaluating S at one frequency",
+   "prompt": "At a frequency of 3 rad/s the open-loop frequency response of a loop is $L=2.5\\angle-150^\\circ$. Find $S=1/(1+L)$ and interpret it.",
+   "steps": [
+    {
+     "text": "Convert to rectangular form.",
+     "latex": "L=2.5(\\cos150^\\circ-j\\sin150^\\circ)\\ \\Rightarrow\\ L=-2.165-1.250j"
+    },
+    {
+     "text": "Add 1 and take the magnitude.",
+     "latex": "1+L=-1.165-1.250j\\ \\Rightarrow\\ |1+L|=1.709"
+    },
+    {
+     "text": "Invert to get the sensitivity magnitude; the phase is the negative of the phase of $1+L$.",
+     "latex": "|S|=1/1.709=0.585,\\quad \\angle S=133.0^\\circ"
+    },
+    {
+     "text": "Since $|S|<1$, feedback reduces a disturbance at this frequency to about 58% of its open-loop size.",
+     "latex": "|S|\\approx0.585<1"
+    }
+   ],
+   "answer": "$|S|\\approx0.585$ (about -4.7 dB): disturbances at 3 rad/s are attenuated."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathrm{GM}\\ge\\frac{M_s}{M_s-1},\\qquad \\mathrm{PM}\\ge2\\arcsin\\!\\Big(\\frac{1}{2M_s}\\Big),\\qquad M_s=\\max_\\omega|S(j\\omega)|",
+   "caption": "Peak sensitivity $M_s$ guarantees minimum margins."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Peak sensitivity $M_s$",
+    "Guaranteed GM",
+    "Guaranteed PM (degrees)"
+   ],
+   "rows": [
+    [
+     "1.2",
+     "6.00 (15.6 dB)",
+     "49"
+    ],
+    [
+     "1.5",
+     "3.00 (9.5 dB)",
+     "39"
+    ],
+    [
+     "2",
+     "2.00 (6.0 dB)",
+     "29"
+    ]
+   ],
+   "caption": "Margins implied by a given peak sensitivity."
+  },
+  {
+   "type": "text",
+   "markdown": "The reasoning is geometric: $M_s$ is the reciprocal of the smallest distance from the Nyquist plot to $-1$. A plot that stays at least $1/M_s$ away from $-1$ cannot approach the critical point closely along the real axis (giving the GM bound) or along the unit circle (giving the PM bound). A good design has $M_s$ below roughly 1.5 to 2, GM above about 2 (6 dB) and PM between $30^\\circ$ and $60^\\circ$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Allowable plant-gain variation",
+   "prompt": "A loop has a gain margin of 7.5 dB. A pump's gain is expected to vary between 0.7 and 2.0 times the design value. Is the loop guaranteed stable across this range if only the gain changes?",
+   "steps": [
+    {
+     "text": "Convert the margin to a factor.",
+     "latex": "\\mathrm{GM}=10^{7.5/20}=2.371"
+    },
+    {
+     "text": "Compare with the largest expected gain ratio of 2.0. An increase by any factor below GM keeps the plot from reaching $-1$ (for a loop of the usual shape).",
+     "latex": "2.0<2.371"
+    },
+    {
+     "text": "A decrease to 0.7 of nominal only shrinks the plot toward the origin, and does not move the crossing past $-1$ for this type of loop, so it cannot destabilise it.",
+     "latex": "0.7<1"
+    }
+   ],
+   "answer": "Yes: the gain can rise by a factor of up to 2.37 before instability, comfortably above 2.0. (A margin of safety remains of about 1.19 times.)"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Delay margin",
+   "text": "A phase margin $\\mathrm{PM}$ (in radians) at gain crossover $\\omega_{gc}$ tolerates an extra pure time delay of $\\tau_{max}=\\mathrm{PM}/\\omega_{gc}$ before instability, because a delay $\\tau$ adds phase lag $\\omega_{gc}\\tau$ at that frequency without changing the magnitude. This links margins to real hardware effects such as sampling and computation delay."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "One margin is not enough",
+   "text": "A loop can have a large gain margin but a poor phase margin (or the reverse), and neither captures a plot that passes close to $-1$ at an intermediate frequency. The peak sensitivity $M_s$ checks the whole curve; report GM, PM and $M_s$ together."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Phase margin is $180^\\circ+\\angle L(j\\omega_{gc})$ at the 0 dB crossing; gain margin is $1/|L(j\\omega_{pc})|$ at the $-180^\\circ$ crossing, in dB $=-20\\log_{10}|L(j\\omega_{pc})|$.",
+    "The sensitivity $S=1/(1+L)$ at a frequency measures how disturbances are attenuated ($|S|<1$) or amplified ($|S|>1$); its peak $M_s$ bounds GM and PM from below.",
+    "The gain margin gives the factor by which plant gain can rise before instability, and PM$/\\omega_{gc}$ gives the tolerable extra time delay."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The phase margin of a stable loop is defined as",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$180^\\circ$ plus the phase of $L(j\\omega)$ at the gain crossover frequency"
+    },
+    {
+     "id": "b",
+     "text": "$180^\\circ$ plus the phase of $L(j\\omega)$ at the phase crossover frequency"
+    },
+    {
+     "id": "c",
+     "text": "The magnitude of $L$ at the gain crossover frequency, in degrees"
+    },
+    {
+     "id": "d",
+     "text": "The reciprocal of the magnitude of $L$ at the phase crossover"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$180^\\circ$ plus the phase of $L(j\\omega)$ at the gain crossover frequency",
+   "distractorRationale": {
+    "a": "At the 0 dB frequency the margin is the remaining lag before $-180^\\circ$.",
+    "b": "At the phase crossover the phase is already $-180^\\circ$, giving zero.",
+    "c": "The magnitude at the gain crossover is 1 by definition and is not an angle.",
+    "d": "This is the gain margin, not the phase margin."
+   },
+   "explanation": "The phase margin is evaluated where $|L|=1$ and equals the phase there minus $-180^\\circ$, i.e. $180^\\circ+\\angle L$. The reciprocal of the magnitude at the $-180^\\circ$ frequency is the gain margin.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "At which frequency is the gain margin read from a Bode plot?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Where the magnitude equals 0 dB"
+    },
+    {
+     "id": "b",
+     "text": "Where the phase equals $-180^\\circ$"
+    },
+    {
+     "id": "c",
+     "text": "At the lowest frequency of the plot"
+    },
+    {
+     "id": "d",
+     "text": "Where the phase equals $-90^\\circ$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Where the phase equals $-180^\\circ$",
+   "distractorRationale": {
+    "a": "This is where the phase margin is read.",
+    "b": "The margin is the distance of the magnitude from 0 dB at that frequency.",
+    "c": "The low-frequency gain tells about steady-state error, not margins.",
+    "d": "There is no special significance for the margin at $-90^\\circ$."
+   },
+   "explanation": "The gain margin asks how much more gain would put the magnitude at 0 dB at the frequency where the phase is $-180^\\circ$. It is therefore read at the phase crossover, not the gain crossover.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A Bode plot shows $|L|=0$ dB at $\\omega=4$ rad/s where the phase is $-135^\\circ$. What is the phase margin?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$135^\\circ$"
+    },
+    {
+     "id": "b",
+     "text": "$-45^\\circ$"
+    },
+    {
+     "id": "c",
+     "text": "$45^\\circ$"
+    },
+    {
+     "id": "d",
+     "text": "$225^\\circ$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$45^\\circ$",
+   "distractorRationale": {
+    "a": "This forgets to add $180^\\circ$ to the negative phase.",
+    "b": "The sign is wrong: the loop still has positive margin before $-180^\\circ$.",
+    "c": "$180^\\circ-135^\\circ=45^\\circ$ at the gain crossover.",
+    "d": "This subtracts the phase from $90^\\circ$ instead of using $180^\\circ$."
+   },
+   "explanation": "PM $=180^\\circ+(-135^\\circ)=45^\\circ$ at the frequency where the magnitude crosses 0 dB. A positive value means the loop is stable with $45^\\circ$ of spare lag.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Where $|S(j\\omega)|>1$, what does the feedback loop do to a disturbance at that frequency?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It attenuates the disturbance"
+    },
+    {
+     "id": "b",
+     "text": "It leaves the disturbance exactly unchanged at every frequency"
+    },
+    {
+     "id": "c",
+     "text": "It makes the loop unstable"
+    },
+    {
+     "id": "d",
+     "text": "It amplifies the disturbance compared with the open-loop case"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It amplifies the disturbance compared with the open-loop case",
+   "distractorRationale": {
+    "a": "This would be $|S|<1$.",
+    "b": "Unchanged means $|S|=1$ and applies only if $L=0$.",
+    "c": "Amplification at some frequencies is normal and unavoidable; instability is a separate matter.",
+    "d": "$S=1/(1+L)$ is the factor by which feedback changes the disturbance effect."
+   },
+   "explanation": "The sensitivity gives the ratio of the closed-loop to the open-loop effect of an output disturbance, so values above 1 mean amplification. A peak above 1 is unavoidable in practice near the crossover region.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: a gain margin of 6 dB means the loop gain can be multiplied by about 2 before the plot reaches $-1$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "$20\\log_{10}2=6.02$ dB, so a 6 dB margin corresponds to a factor of about 2. Once the gain is multiplied by this factor the magnitude at the phase crossover reaches 1.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "At the phase crossover frequency a loop has $|L(j\\omega_{pc})|=0.25$. Find the gain margin in dB.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o1"
+   ],
+   "correctValue": 12.0412,
+   "tolerance": 0.05,
+   "unit": "dB",
+   "explanation": "The gain margin is $1/0.25=4$, which in decibels is $20\\log_{10}4=12.04$ dB. The loop gain can rise four-fold before the plot reaches $-1$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "At one frequency a loop has $L=1.5\\angle-120^\\circ$. Find the magnitude of the sensitivity $|S|=|1/(1+L)|$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o2"
+   ],
+   "correctValue": 0.755929,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "In rectangular form $L=1.5(\\cos120^\\circ-j\\sin120^\\circ)=-0.75-1.299j$, so $1+L=0.25-1.299j$ and $|1+L|=1.3229$. Then $|S|=1/1.3229=0.7559$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A design requires peak sensitivity no larger than $M_s=1.6$. Using $\\mathrm{GM}\\ge M_s/(M_s-1)$, find the minimum gain margin guaranteed, in dB.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o3",
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o2"
+   ],
+   "correctValue": 8.519375,
+   "tolerance": 0.05,
+   "unit": "dB",
+   "explanation": "$M_s/(M_s-1)=1.6/0.6=2.667$, and $20\\log_{10}2.667=8.52$ dB. So any loop with $M_s\\le1.6$ can tolerate at least a factor 2.67 gain increase.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A loop has a phase margin of $40^\\circ$ at a gain crossover frequency of 5 rad/s. (i) Explain the physical meaning of the phase margin. (ii) Estimate the largest additional pure time delay the loop can tolerate. (iii) Explain why a gain margin alone would not reveal this.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o1",
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o3"
+   ],
+   "markingGuide": [
+    "Phase margin is the additional phase lag at $\\omega_{gc}$ that would put the plot through $-1$ (instability).",
+    "A delay $\\tau$ adds lag $\\omega_{gc}\\tau$ rad, so $\\tau_{max}=\\mathrm{PM}/\\omega_{gc}=(40\\pi/180)/5\\approx0.14$ s.",
+    "Delay changes only phase, not magnitude, so it erodes the phase margin and not the gain margin.",
+    "Gain margin is measured at a different frequency, so a large GM can coexist with a small PM and little delay tolerance."
+   ],
+   "explanation": "The phase margin is the extra lag at gain crossover that would drive the loop unstable. A delay $\\tau$ adds $\\omega_{gc}\\tau$ radians of lag, so the tolerable delay is $(40\\pi/180)/5\\approx0.14$ s; this is a phase effect and is not indicated by the gain margin, which is read at another frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A pressure loop has a gain margin of 3 dB and a phase margin of $50^\\circ$. The plant gain is known to drift upward by up to 40%. Decide whether the design is acceptable and justify your answer using the peak sensitivity bound $M_s\\ge \\mathrm{GM}/(\\mathrm{GM}-1)$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o3",
+    "ug.mce-control-engineering.nyquist-margins.gain-phase-margins.o2"
+   ],
+   "markingGuide": [
+    "Converts 3 dB to a factor $10^{3/20}\\approx1.41$.",
+    "Notes a 40% increase (factor 1.4) is just below 1.41, so stability is barely retained with essentially no safety margin.",
+    "Computes $M_s\\ge1.41/0.41\\approx3.4$, a very large peak showing poor robustness near $-1$.",
+    "Concludes the design is unacceptable and suggests reducing loop gain or adding lead compensation, targeting GM of at least 6 dB and $M_s$ near 2 or lower."
+   ],
+   "explanation": "A gain margin of 3 dB is a factor of 1.41, so a 40% gain increase leaves almost no allowance. The bound gives $M_s\\ge1.41/0.41\\approx3.4$, indicating the plot comes dangerously close to $-1$; the loop gain should be reduced or the loop reshaped to obtain at least 6 dB of margin.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,405 @@
+{
+ "lessonTitle": "Tresca and von Mises Yield Criteria",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hydraulic cylinder wall is squeezed radially, pulled around the circumference and twisted by a side load all at once, yet the material has only one yield strength from a simple tension test. How do we decide whether this multiaxial state is safe? The answer is an equivalent stress."
+  },
+  {
+   "type": "text",
+   "markdown": "A tension test gives a single number, the yield strength $S_y$ (MPa), for a ductile metal loaded in **one** direction. Real components see several stress components together. A *yield criterion* is a rule that collapses a general stress state into one **equivalent stress** that can be compared with $S_y$. Throughout this unit we assume **plane stress** (the out-of-plane principal stress $\\sigma_3=0$), isotropic ductile metal and static loading. The three principal stresses (including $\\sigma_3=0$) are what the criteria work with."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Tresca (maximum shear stress) criterion",
+   "text": "Yield starts when the largest shear stress in the material reaches the shear stress at yield in a tension test, $\\tau_{max}=S_y/2$. Equivalently, the largest difference between any two of the three principal stresses (including $\\sigma_3=0$) equals $S_y$."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_{T}=\\max\\left(|\\sigma_1-\\sigma_2|,\\;|\\sigma_2-\\sigma_3|,\\;|\\sigma_3-\\sigma_1|\\right),\\qquad n_T=\\frac{S_y}{\\sigma_{T}}",
+   "caption": "Tresca equivalent stress and factor of safety n_T"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "von Mises (distortion energy) criterion",
+   "text": "Yield starts when the strain energy of shape change (distortion) per unit volume reaches its value at yield in a tension test. Hydrostatic stress changes volume only and does not cause yield in ductile metals, so only the deviatoric part matters."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma_{vM}=\\sqrt{\\sigma_x^2-\\sigma_x\\sigma_y+\\sigma_y^2+3\\tau_{xy}^2}=\\sqrt{\\sigma_1^2-\\sigma_1\\sigma_2+\\sigma_2^2},\\qquad n_{vM}=\\frac{S_y}{\\sigma_{vM}}",
+   "caption": "von Mises equivalent stress for plane stress; the second form uses principal stresses"
+  },
+  {
+   "type": "worked_example",
+   "title": "von Mises stress from a plane stress state",
+   "prompt": "A point on a steel bracket carries $\\sigma_x=120$ MPa, $\\sigma_y=-40$ MPa and $\\tau_{xy}=50$ MPa. Yield strength (typical) $S_y=350$ MPa. Find the von Mises stress and factor of safety.",
+   "steps": [
+    {
+     "text": "Substitute into the Cartesian form.",
+     "latex": "\\sigma_{vM}^2=120^2-(120)(-40)+(-40)^2+3(50)^2=14400+4800+1600+7500=28300"
+    },
+    {
+     "text": "Take the square root.",
+     "latex": "\\sigma_{vM}=\\sqrt{28300}=168.2\\ \\text{MPa}"
+    },
+    {
+     "text": "Cross-check with principal stresses: centre = 40 MPa, radius = 94.34 MPa, so $\\sigma_1=134.34$ and $\\sigma_2=-54.34$ MPa.",
+     "latex": "\\sqrt{\\sigma_1^2-\\sigma_1\\sigma_2+\\sigma_2^2}=168.2\\ \\text{MPa}"
+    },
+    {
+     "text": "Factor of safety against yield.",
+     "latex": "n_{vM}=350/168.2=2.08"
+    }
+   ],
+   "answer": "$\\sigma_{vM}\\approx 168.2$ MPa, $n_{vM}\\approx 2.08$."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "The **Tresca** criterion plots as a hexagon in principal stress space and the **von Mises** criterion as an ellipse. Drawing both in the $\\sigma_1$-$\\sigma_2$ plane (with $\\sigma_3=0$), the Tresca hexagon is *inscribed* in the von Mises ellipse: they touch at six points and elsewhere von Mises is the more generous (lies outside). They agree for **uniaxial tension or compression** (e.g. $\\sigma_1=S_y,\\sigma_2=0$) and for **equibiaxial** stress ($\\sigma_1=\\sigma_2=S_y$). They differ most for **pure shear** ($\\sigma_1=-\\sigma_2$), where von Mises predicts a shear yield strength of $S_y/\\sqrt3\\approx0.577S_y$ and Tresca $0.5S_y$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "State",
+    "Tresca equivalent",
+    "von Mises equivalent",
+    "Agree?"
+   ],
+   "rows": [
+    [
+     "Uniaxial, $\\sigma_1=\\sigma$",
+     "$\\sigma$",
+     "$\\sigma$",
+     "Yes"
+    ],
+    [
+     "Equibiaxial, $\\sigma_1=\\sigma_2=\\sigma$",
+     "$\\sigma$",
+     "$\\sigma$",
+     "Yes"
+    ],
+    [
+     "Pure shear, $\\sigma_1=-\\sigma_2=\\tau$",
+     "$2\\tau$",
+     "$\\sqrt3\\,\\tau$",
+     "No: Tresca 15.5% more conservative"
+    ],
+    [
+     "Biaxial, $\\sigma_1=\\sigma$, $\\sigma_2=-\\sigma$",
+     "$2\\sigma$",
+     "$\\sqrt3\\,\\sigma$",
+     "No: this is pure shear again"
+    ]
+   ],
+   "caption": "Equivalent stresses for common biaxial states"
+  },
+  {
+   "type": "worked_example",
+   "title": "Tresca factor of safety for a biaxial state",
+   "prompt": "A thin plate has principal stresses $\\sigma_1=150$ MPa and $\\sigma_2=-60$ MPa, $\\sigma_3=0$ (typical $S_y=350$ MPa). Find the Tresca factor of safety. Then repeat with $\\sigma_2=+60$ MPa.",
+   "steps": [
+    {
+     "text": "Opposite signs: the largest difference is between $\\sigma_1$ and $\\sigma_2$.",
+     "latex": "\\sigma_T=|150-(-60)|=210\\ \\text{MPa}"
+    },
+    {
+     "text": "Factor of safety.",
+     "latex": "n_T=350/210=1.67"
+    },
+    {
+     "text": "Same signs: now $\\sigma_3=0$ lies outside the pair, and the largest difference is $|\\sigma_1-\\sigma_3|$, not $\\sigma_1-\\sigma_2$.",
+     "latex": "\\sigma_T=\\max(|150-60|,\\,|60-0|,\\,|0-150|)=150\\ \\text{MPa}"
+    },
+    {
+     "text": "Factor of safety, same-sign case.",
+     "latex": "n_T=350/150=2.33"
+    },
+    {
+     "text": "For comparison, von Mises gives 187.3 MPa (n = 1.87) for the opposite-sign case; its factor of safety is larger than Tresca's 1.67.",
+     "latex": "\\sigma_{vM}=\\sqrt{150^2-(150)(-60)+60^2}=187.3"
+    }
+   ],
+   "answer": "Tresca: $n_T=1.67$ for $\\sigma_2=-60$ MPa and $n_T=2.33$ for $\\sigma_2=+60$ MPa."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find principal stresses first (or use the Cartesian von Mises formula directly).",
+    "Always include $\\sigma_3=0$ when applying Tresca in plane stress.",
+    "Compute the equivalent stress and divide into $S_y$ to get $n$.",
+    "If $n<1$ yielding is predicted; the von Mises result is between 0 and 15.5% less conservative than Tresca."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "The most common Tresca slip",
+   "text": "Do not just take $\\sigma_1-\\sigma_2$. If both in-plane principal stresses have the same sign, the largest difference involves the zero out-of-plane stress, so the answer is the larger magnitude, e.g. $\\sigma_1$ alone."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Which criterion to use",
+   "text": "Von Mises fits ductile-metal test data best and is the default for analysis. Tresca is simpler by hand, never less safe, and is often used as a conservative choice. Both reduce to $S_y$ for a simple tension test."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Both criteria convert a multiaxial stress state into an equivalent stress compared with the tensile yield strength $S_y$.",
+    "Tresca uses the largest principal stress difference including $\\sigma_3=0$; von Mises uses $\\sqrt{\\sigma_1^2-\\sigma_1\\sigma_2+\\sigma_2^2}$ in plane stress.",
+    "The Tresca hexagon is inscribed in the von Mises ellipse; they agree for uniaxial and equibiaxial states and differ most (15.5%) in pure shear.",
+    "Factor of safety is $n=S_y/\\sigma_{eq}$; Tresca is never less conservative than von Mises."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A thin steel plate is loaded in pure shear only, with $\\tau_{xy}=60$ MPa and $\\sigma_x=\\sigma_y=0$. What is the von Mises equivalent stress?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "60 MPa"
+    },
+    {
+     "id": "b",
+     "text": "104 MPa"
+    },
+    {
+     "id": "c",
+     "text": "120 MPa"
+    },
+    {
+     "id": "d",
+     "text": "42 MPa"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "104 MPa",
+   "distractorRationale": {
+    "a": "Treats the shear stress as if it were the equivalent tensile stress, forgetting the factor $\\sqrt3$.",
+    "b": "Correct: $\\sqrt{3\\times60^2}=103.9$ MPa.",
+    "c": "This is the Tresca value ($2\\tau$) for pure shear, not the von Mises value.",
+    "d": "Divides by $\\sqrt2$ instead of multiplying by $\\sqrt3$."
+   },
+   "explanation": "With only shear, $\\sigma_{vM}=\\sqrt{3\\tau^2}=\\sqrt3\\,\\tau=103.9$ MPa. Equivalently the principal stresses are $\\pm60$ MPa and $\\sqrt{60^2+60^2+60^2}=103.9$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the $\\sigma_1$-$\\sigma_2$ plane, at which of these states do the Tresca and von Mises yield loci give exactly the same yield stress?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Equal biaxial tension, $\\sigma_1=\\sigma_2=S_y$"
+    },
+    {
+     "id": "b",
+     "text": "Pure shear, $\\sigma_1=-\\sigma_2$"
+    },
+    {
+     "id": "c",
+     "text": "Equal and opposite principal stresses, $\\sigma_1=S_y$, $\\sigma_2=-S_y$"
+    },
+    {
+     "id": "d",
+     "text": "Any state with $\\sigma_1=2\\sigma_2$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Equal biaxial tension, $\\sigma_1=\\sigma_2=S_y$",
+   "distractorRationale": {
+    "a": "Correct: both give $\\sigma_{eq}=S_y$ here, one of the six contact points of hexagon and ellipse.",
+    "b": "In pure shear the criteria differ by $2/\\sqrt3$, the largest gap.",
+    "c": "Here Tresca says $2S_y$ and von Mises $\\sqrt3 S_y$, so they differ (this is pure shear again).",
+    "d": "At a 2:1 ratio of same-sign stresses Tresca gives $2\\sigma_2$ and von Mises $\\sqrt3\\sigma_2$, so they differ."
+   },
+   "explanation": "The hexagon touches the ellipse at uniaxial tension, uniaxial compression and equal biaxial tension and compression. Equal biaxial tension gives a Tresca difference of $|\\sigma_1-0|=S_y$ and a von Mises value of $\\sqrt{S_y^2-S_y^2+S_y^2}=S_y$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "At a point on a machine frame the plane stress state is $\\sigma_x=-90$ MPa, $\\sigma_y=35$ MPa, $\\tau_{xy}=40$ MPa. Calculate the von Mises equivalent stress in MPa.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o1"
+   ],
+   "correctValue": 131.434394,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "$\\sigma_{vM}^2=(-90)^2-(-90)(35)+35^2+3(40)^2=8100+3150+1225+4800=17275$, so $\\sigma_{vM}=131.4$ MPa. Note the cross term $-\\sigma_x\\sigma_y$ is positive here because the normal stresses have opposite signs.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A pressure-vessel end plate has principal in-plane stresses $\\sigma_1=210$ MPa and $\\sigma_2=-80$ MPa. The material has $S_y=420$ MPa (typical). Using the Tresca criterion, what is the factor of safety? Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o2"
+   ],
+   "correctValue": 1.448276,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "The principal stresses have opposite signs, so $\\sigma_T=210-(-80)=290$ MPa. Hence $n_T=420/290=1.448$. Using only $\\sigma_1=210$ MPa would wrongly give 2.0.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A flat plate carries in-plane principal stresses $\\sigma_1=180$ MPa and $\\sigma_2=90$ MPa (both tensile), $\\sigma_3=0$. With $S_y=360$ MPa, the Tresca factor of safety is",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "4.0"
+    },
+    {
+     "id": "b",
+     "text": "1.33"
+    },
+    {
+     "id": "c",
+     "text": "2.0"
+    },
+    {
+     "id": "d",
+     "text": "1.0"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "2.0",
+   "distractorRationale": {
+    "a": "Uses $\\sigma_1-\\sigma_2=90$ MPa, ignoring that $\\sigma_3=0$ makes the largest difference 180 MPa.",
+    "b": "Uses $\\sigma_1+\\sigma_2=270$ MPa, which has no meaning in Tresca.",
+    "c": "Correct: the largest difference is $|\\sigma_1-\\sigma_3|=180$ MPa, so $n=360/180=2.0$.",
+    "d": "Would need an equivalent stress of 360 MPa, which is not what the criterion gives."
+   },
+   "explanation": "For same-sign principal stresses the three differences are 90, 90 and 180 MPa. Tresca takes the largest, 180 MPa, giving $n_T=360/180=2.0$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A shaft surface has a bending stress $\\sigma=140$ MPa (axial direction) and a torsional shear stress $\\tau=55$ MPa, with no other stress components. Taking $S_y=300$ MPa (typical), calculate the von Mises factor of safety. Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o1"
+   ],
+   "correctValue": 1.771616,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "$\\sigma_{vM}=\\sqrt{140^2+3(55)^2}=\\sqrt{19600+9075}=169.34$ MPa, so $n_{vM}=300/169.34=1.772$. The Tresca value for the same state would be 1.68, slightly lower.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe in words the Tresca and von Mises yield loci for plane stress in the $\\sigma_1$-$\\sigma_2$ plane. State where the two criteria agree, where they differ most, and which is more conservative.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o3"
+   ],
+   "markingGuide": [
+    "Von Mises locus is an ellipse centred on the origin, passing through $(S_y,0)$, $(0,S_y)$, $(S_y,S_y)$ and their negatives.",
+    "Tresca locus is a hexagon inscribed in the ellipse, with vertices at those six points.",
+    "They agree at uniaxial tension/compression and at equal biaxial tension/compression (the six contact points).",
+    "The largest difference is in pure shear ($\\sigma_1=-\\sigma_2$), where Tresca gives $\\tau_y=0.5S_y$ and von Mises $0.577S_y$ (15.5%).",
+    "Tresca lies inside the ellipse, so it is never less conservative than von Mises."
+   ],
+   "explanation": "The hexagon sits inside the ellipse and touches it at six points, so any stress state inside the hexagon is also inside the ellipse. The gap is widest midway between touching points, which is the pure shear direction.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A ductile steel has tensile yield strength $S_y=300$ MPa. According to the von Mises criterion, what shear stress causes yield in pure torsion?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "150 MPa"
+    },
+    {
+     "id": "b",
+     "text": "300 MPa"
+    },
+    {
+     "id": "c",
+     "text": "520 MPa"
+    },
+    {
+     "id": "d",
+     "text": "173 MPa"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "173 MPa",
+   "distractorRationale": {
+    "a": "This is the Tresca prediction $S_y/2$, not von Mises.",
+    "b": "Equates shear yield with tensile yield, ignoring the factor in either criterion.",
+    "c": "Multiplies by $\\sqrt3$ instead of dividing.",
+    "d": "Correct: $\\tau_y=S_y/\\sqrt3=300/1.732=173.2$ MPa."
+   },
+   "explanation": "In pure shear $\\sigma_{vM}=\\sqrt3\\tau$, and setting this equal to $S_y$ gives $\\tau_y=S_y/\\sqrt3=173.2$ MPa. Tresca would give 150 MPa, which is lower, confirming Tresca is the more conservative criterion.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A torsion test specimen reaches a shear stress $\\tau=80$ MPa with no other stress; $S_y=250$ MPa (typical). Compute the factor of safety using each criterion and show that the von Mises value is $2/\\sqrt3$ times the Tresca value.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o2",
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o3"
+   ],
+   "markingGuide": [
+    "Principal stresses $+80$ and $-80$ MPa, with $\\sigma_3=0$.",
+    "Tresca: $\\sigma_T=160$ MPa, so $n_T=250/160=1.5625$.",
+    "von Mises: $\\sigma_{vM}=\\sqrt3\\times80=138.6$ MPa, so $n_{vM}=250/138.6=1.804$.",
+    "Ratio $n_{vM}/n_T=1.804/1.5625=1.155=2/\\sqrt3$.",
+    "Conclusion: Tresca is the more conservative criterion in pure shear, by 15.5% of its own factor of safety."
+   ],
+   "explanation": "Both equivalents come from principal stresses $\\pm\\tau$: Tresca is $2\\tau$ and von Mises $\\sqrt3\\tau$, so the ratio of factors of safety is $2/\\sqrt3=1.1547$. This is the maximum discrepancy between the criteria.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: for plane stress with $\\sigma_1>0>\\sigma_2$, the Tresca equivalent stress is $\\sigma_1-\\sigma_2$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.failure-criteria.yield-criteria.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "With opposite-sign principal stresses, the difference $\\sigma_1-\\sigma_2$ exceeds both $|\\sigma_1|$ and $|\\sigma_2|$, so it is the largest of the three principal differences. The zero $\\sigma_3$ only matters when $\\sigma_1$ and $\\sigma_2$ have the same sign.",
+   "board": "internal"
+  }
+ ]
+}

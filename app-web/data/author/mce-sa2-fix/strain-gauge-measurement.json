@@ -1,0 +1,392 @@
+{
+ "lessonTitle": "Strain Gauge Measurement and Bridge Circuits",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A wind-turbine blade in a test hall is bent by hydraulic rams while a few dozen strain gauges, each a foil grid the size of a postage stamp, stretch and squeeze with the blade skin. The change in a gauge's resistance is only about 0.1%, so to read it the gauge is wired into a Wheatstone bridge that turns a tiny resistance change into a measurable voltage."
+  },
+  {
+   "type": "text",
+   "markdown": "An electrical resistance **strain gauge** is a metal foil grid bonded to a surface. When the surface strains by $\\varepsilon$, the gauge strains with it and its resistance $R$ changes by $\\Delta R/R=\\mathrm{GF}\\,\\varepsilon$, where the **gauge factor** $\\mathrm{GF}$ (typically about 2.0 for metal foil) is supplied by the manufacturer. Because $\\Delta R/R$ is of order $10^{-3}$, gauges are connected as arms of a **Wheatstone bridge**, whose output voltage $V_{out}$ is proportional to the strain and to the **excitation voltage** $V_{ex}$ (V). We assume equal nominal resistances in all four arms, small strains ($\\varepsilon\\ll1$) and negligible lead-wire effects."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{V_{out}}{V_{ex}}=\\frac{\\mathrm{GF}\\,\\varepsilon}{4}\\quad\\text{(quarter bridge: one active gauge)}",
+   "caption": "Bridge output for a single active gauge in a bridge with four equal arms, small strain"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Bridge configurations",
+   "text": "In a **quarter bridge** one arm is an active gauge and the other three are fixed resistors. In a **half bridge** two arms (adjacent arms) are active. In a **full bridge** all four arms are active gauges. Gauges in adjacent arms subtract their effects, while gauges in opposite arms add."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Configuration",
+    "Active gauges and placement",
+    "$V_{out}/V_{ex}$",
+    "Temperature compensation?"
+   ],
+   "rows": [
+    [
+     "Quarter bridge",
+     "One active gauge",
+     "$\\mathrm{GF}\\varepsilon/4$",
+     "No (needs a dummy gauge)"
+    ],
+    [
+     "Half bridge, bending",
+     "Top (tension) and bottom (compression) gauges in adjacent arms",
+     "$\\mathrm{GF}\\varepsilon/2$",
+     "Yes (same $\\Delta T$ in adjacent arms cancels)"
+    ],
+    [
+     "Full bridge, bending",
+     "Two top, two bottom, in the proper arms",
+     "$\\mathrm{GF}\\varepsilon$",
+     "Yes"
+    ],
+    [
+     "Half bridge, Poisson (axial load)",
+     "One axial and one transverse gauge, adjacent arms",
+     "$\\mathrm{GF}\\varepsilon(1+\\nu)/4$",
+     "Yes"
+    ]
+   ],
+   "caption": "Strain gauge bridge configurations ($\\varepsilon$ is the magnitude of the surface strain in the axial gauge)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Strain from bridge output (quarter bridge)",
+   "prompt": "A single active gauge ($\\mathrm{GF}=2.10$) in a quarter bridge with $V_{ex}=5.0$ V produces $V_{out}=1.05$ mV on a steel member ($E=200$ GPa). Find the strain and stress.",
+   "steps": [
+    {
+     "text": "Rearrange the quarter-bridge relation.",
+     "latex": "\\varepsilon=\\frac{4V_{out}}{\\mathrm{GF}\\,V_{ex}}=\\frac{4(1.05\\times10^{-3})}{2.10\\times5.0}"
+    },
+    {
+     "text": "Evaluate.",
+     "latex": "\\varepsilon=4.0\\times10^{-4}=400\\ \\mu\\varepsilon"
+    },
+    {
+     "text": "Stress from Hooke's law (uniaxial).",
+     "latex": "\\sigma=E\\varepsilon=200000\\times4.0\\times10^{-4}=80\\ \\text{MPa}"
+    }
+   ],
+   "answer": "$\\varepsilon\\approx400$ $\\mu\\varepsilon$ and $\\sigma\\approx80$ MPa."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Temperature effects.** A change in temperature causes an **apparent strain** because the gauge resistance changes with temperature and because the gauge and specimen expand differently. In a quarter bridge this appears as strain that is not real. In a **bending** test, a half bridge with one gauge on the tension face and one on the compression face, placed in **adjacent arms**, has equal apparent strains from temperature which cancel in the bridge (since adjacent arms subtract), whereas the bending strains are equal and opposite and add. The sensitivity is also doubled."
+  },
+  {
+   "type": "worked_example",
+   "title": "Temperature compensation in a bending test",
+   "prompt": "A steel cantilever has gauges ($\\mathrm{GF}=2.0$) at the top and bottom surfaces at the same section. The true bending strain is $\\pm500\\ \\mu\\varepsilon$ and $V_{ex}=10$ V. The apparent thermal strain is $12\\ \\mu\\varepsilon$ per K and the beam warms by 10 K. Compare a quarter bridge and a half bridge.",
+   "steps": [
+    {
+     "text": "Apparent strain from the temperature rise.",
+     "latex": "\\varepsilon_{app}=12\\times10^{-6}\\times10=120\\ \\mu\\varepsilon"
+    },
+    {
+     "text": "Quarter bridge, top gauge only: the indicated strain includes the apparent strain.",
+     "latex": "\\varepsilon_{ind}=500+120=620\\ \\mu\\varepsilon\\quad(24.0\\%\\ \\text{error})"
+    },
+    {
+     "text": "Half bridge, adjacent arms: output depends on the difference of the two gauge strains.",
+     "latex": "\\varepsilon_{ind}=\\frac{(500+120)-(-500+120)}{2}=500\\ \\mu\\varepsilon"
+    },
+    {
+     "text": "Output voltages for the true strain.",
+     "latex": "V_{out}^{quarter}=\\frac{2.0(500\\times10^{-6})(10)}{4}=2.5\\ \\text{mV},\\quad V_{out}^{half}=\\frac{2.0(500\\times10^{-6})(10)}{2}=5.0\\ \\text{mV}"
+    }
+   ],
+   "answer": "The half bridge gives 5.0 mV (double the 2.5 mV from a quarter bridge) and no temperature error; the quarter bridge reads 24% high."
+  },
+  {
+   "type": "text",
+   "markdown": "**Uncertainty.** Every measurement has an uncertainty. Contributions we treat as independent include **calibration** (the shunt-calibration or amplifier gain), the **gauge factor tolerance**, and **noise** in the signal. Each is expressed as a standard uncertainty $u_i$ (in $\\mu\\varepsilon$); a tolerance quoted as $\\pm a$ with no further information is treated as a rectangular distribution with $u=a/\\sqrt3$. Independent contributions combine in quadrature, and the **expanded uncertainty** with coverage factor $k=2$ (about 95% confidence) is $U=2u_c$."
+  },
+  {
+   "type": "math",
+   "latex": "u_c=\\sqrt{u_1^2+u_2^2+\\cdots},\\qquad U=k\\,u_c\\ (k=2)",
+   "caption": "Combined standard uncertainty and expanded uncertainty"
+  },
+  {
+   "type": "worked_example",
+   "title": "Uncertainty in a strain reading",
+   "prompt": "A strain reading is 800 $\\mu\\varepsilon$. Calibration uncertainty is 0.5% of reading, gauge factor uncertainty is 1.0% of reading (both treated as standard uncertainties here) and noise is 2.0 $\\mu\\varepsilon$ rms. Find the combined and expanded uncertainty.",
+   "steps": [
+    {
+     "text": "Convert each to $\\mu\\varepsilon$.",
+     "latex": "u_{cal}=0.005\\times800=4.0,\\quad u_{GF}=0.010\\times800=8.0,\\quad u_{noise}=2.0"
+    },
+    {
+     "text": "Combine in quadrature.",
+     "latex": "u_c=\\sqrt{4.0^2+8.0^2+2.0^2}=9.17\\ \\mu\\varepsilon"
+    },
+    {
+     "text": "Expanded uncertainty, $k=2$.",
+     "latex": "U=2\\times9.17=18.3\\ \\mu\\varepsilon\\ (2.3\\%\\ \\text{of reading})"
+    }
+   ],
+   "answer": "Strain $=800\\pm18$ $\\mu\\varepsilon$ (95% confidence); the gauge factor dominates the uncertainty."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Identify the bridge configuration and the corresponding output relation.",
+    "Convert the output voltage to strain using $\\mathrm{GF}$ and $V_{ex}$, then to stress using Hooke's law.",
+    "Choose adjacent-arm active gauges to cancel temperature effects in bending.",
+    "List independent uncertainty sources, combine in quadrature and state the coverage factor."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Using $\\mathrm{GF}\\varepsilon V_{ex}$ without the factor of $1/4$ for a quarter bridge; placing the compensating gauge in an **opposite** arm (which adds, not cancels, the temperature effect); and adding uncertainties linearly rather than in quadrature."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Design the bridge to do the work",
+   "text": "Choose the gauge arrangement so that the quantity you want adds (bending strain) and the quantity you do not want subtracts (temperature, axial load in a bending test)."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Gauge resistance changes as $\\Delta R/R=\\mathrm{GF}\\varepsilon$; a quarter-bridge output is $V_{out}=\\mathrm{GF}\\,\\varepsilon\\,V_{ex}/4$, a half bridge doubles it and a full bridge gives $\\mathrm{GF}\\varepsilon V_{ex}$ in bending.",
+    "Adjacent-arm gauges cancel common effects such as temperature; opposite-arm gauges add.",
+    "A top and bottom half bridge in bending is temperature-compensated and doubles sensitivity.",
+    "Combine independent uncertainty contributions in quadrature and report an expanded uncertainty ($k=2$)."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A single active gauge in a quarter bridge (equal resistors, small strains) with gauge factor GF and excitation $V_{ex}$ has output $V_{out}$. The strain is",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\varepsilon=4V_{out}/(\\mathrm{GF}\\,V_{ex})$"
+    },
+    {
+     "id": "b",
+     "text": "$\\varepsilon=V_{out}/(\\mathrm{GF}\\,V_{ex})$"
+    },
+    {
+     "id": "c",
+     "text": "$\\varepsilon=V_{out}\\,\\mathrm{GF}/(4V_{ex})$"
+    },
+    {
+     "id": "d",
+     "text": "$\\varepsilon=2V_{out}/(\\mathrm{GF}\\,V_{ex})$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\varepsilon=4V_{out}/(\\mathrm{GF}\\,V_{ex})$",
+   "distractorRationale": {
+    "a": "Correct: rearranging $V_{out}=\\mathrm{GF}\\varepsilon V_{ex}/4$.",
+    "b": "Omits the factor of 4 of the quarter bridge (this applies to the full bridge).",
+    "c": "Multiplies by GF instead of dividing.",
+    "d": "This applies to a half bridge, not a quarter bridge."
+   },
+   "explanation": "The bridge output for one active arm is a quarter of the arm's fractional resistance change times $V_{ex}$. Solving for the strain gives $\\varepsilon=4V_{out}/(\\mathrm{GF}V_{ex})$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A quarter bridge with a gauge of $\\mathrm{GF}=2.0$ and $V_{ex}=10$ V is used to measure a strain of $600\\ \\mu\\varepsilon$. The expected output is",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "12 mV"
+    },
+    {
+     "id": "b",
+     "text": "3.0 mV"
+    },
+    {
+     "id": "c",
+     "text": "1.2 mV"
+    },
+    {
+     "id": "d",
+     "text": "6.0 mV"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "3.0 mV",
+   "distractorRationale": {
+    "a": "Omits the divide-by-four and uses $\\mathrm{GF}\\varepsilon V_{ex}$, which is the full bridge.",
+    "b": "Correct: $2.0\\times600\\times10^{-6}\\times10/4=3.0$ mV.",
+    "c": "Divides by 10 instead of 4, a slip in handling the excitation.",
+    "d": "This is the half-bridge value for the same strain."
+   },
+   "explanation": "The quarter-bridge output is $\\mathrm{GF}\\varepsilon V_{ex}/4$, so $V_{out}=2.0\\times6\\times10^{-4}\\times10/4=3\\times10^{-3}$ V.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A quarter bridge has $V_{ex}=5.0$ V, $\\mathrm{GF}=2.12$ and measures an output of 0.85 mV on a loaded member. Find the strain in microstrain ($\\mu\\varepsilon$).",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o1"
+   ],
+   "correctValue": 320.754717,
+   "tolerance": 1.5,
+   "unit": "microstrain",
+   "explanation": "$\\varepsilon=4V_{out}/(\\mathrm{GF}V_{ex})=4(0.85\\times10^{-3})/(2.12\\times5.0)=320.8\\times10^{-6}$, i.e. about 321 $\\mu\\varepsilon$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a cantilever bending test, which gauge arrangement cancels the effect of a uniform temperature change while increasing sensitivity?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A quarter bridge with a single gauge on the tension face"
+    },
+    {
+     "id": "b",
+     "text": "A half bridge with both gauges on the tension face in adjacent arms"
+    },
+    {
+     "id": "c",
+     "text": "A half bridge with one gauge on the tension face and one on the compression face, in adjacent bridge arms"
+    },
+    {
+     "id": "d",
+     "text": "A half bridge with the tension and compression gauges in opposite arms"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "A half bridge with one gauge on the tension face and one on the compression face, in adjacent bridge arms",
+   "distractorRationale": {
+    "a": "A quarter bridge has no compensation and a lower output.",
+    "b": "Two tension gauges in adjacent arms would cancel the bending signal, not the temperature effect.",
+    "c": "Correct: bending strains add (equal and opposite in adjacent arms) and temperature effects cancel.",
+    "d": "Opposite arms add the temperature effect rather than cancelling it, and in opposite arms equal and opposite strains would also cancel the bending signal."
+   },
+   "explanation": "Adjacent arms subtract. Top and bottom gauges see equal and opposite bending strain, so the difference doubles the signal, while the common apparent thermal strain subtracts to zero.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A full bridge with four active gauges on a bending beam (two on the tension face, two on the compression face, wired for maximum output) has $\\mathrm{GF}=2.1$, $V_{ex}=5.0$ V and a bending strain of magnitude $450\\ \\mu\\varepsilon$. Find the output voltage in mV.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o2"
+   ],
+   "correctValue": 4.725,
+   "tolerance": 0.02,
+   "unit": "mV",
+   "explanation": "For a full bending bridge, $V_{out}=\\mathrm{GF}\\varepsilon V_{ex}=2.1\\times450\\times10^{-6}\\times5.0=4.725$ mV. This is four times the quarter-bridge value and it is temperature-compensated.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A quarter bridge ($\\mathrm{GF}=2.10$, $V_{ex}=5.0$ V) indicates $V_{out}=0.88$ mV after the specimen warmed by 8 K. The combination of gauge and specimen has an apparent thermal strain of $15\\ \\mu\\varepsilon$ per K. Find the true mechanical strain in microstrain.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o1",
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o2"
+   ],
+   "correctValue": 215.238095,
+   "tolerance": 1.5,
+   "unit": "microstrain",
+   "explanation": "The indicated strain is $4(0.88\\times10^{-3})/(2.10\\times5.0)=335.2$ $\\mu\\varepsilon$. The apparent strain is $15\\times8=120$ $\\mu\\varepsilon$, so the true strain is $335.2-120=215.2$ $\\mu\\varepsilon$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A strain measurement has independent standard uncertainties of 3 $\\mu\\varepsilon$ from calibration, 4 $\\mu\\varepsilon$ from noise and 6 $\\mu\\varepsilon$ from the gauge factor tolerance. Find the combined standard uncertainty in $\\mu\\varepsilon$.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o3"
+   ],
+   "correctValue": 7.81025,
+   "tolerance": 0.05,
+   "unit": "microstrain",
+   "explanation": "Independent contributions add in quadrature: $u_c=\\sqrt{3^2+4^2+6^2}=\\sqrt{61}=7.81$ $\\mu\\varepsilon$. A linear sum (13 $\\mu\\varepsilon$) would overstate the uncertainty.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A strain reading is $600\\ \\mu\\varepsilon$. The calibration uncertainty is 0.4% of reading (standard uncertainty), the gauge factor is quoted as $\\pm1.0\\%$ with no distribution stated, and the noise is $3.0\\ \\mu\\varepsilon$ rms. Evaluate the combined standard uncertainty and the expanded uncertainty ($k=2$), and state which source dominates.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o3"
+   ],
+   "markingGuide": [
+    "Calibration: $u=0.004\\times600=2.4$ $\\mu\\varepsilon$.",
+    "Gauge factor: rectangular distribution, $u=(0.010\\times600)/\\sqrt3=3.46$ $\\mu\\varepsilon$.",
+    "Noise: $u=3.0$ $\\mu\\varepsilon$.",
+    "Combine in quadrature: $u_c=\\sqrt{2.4^2+3.46^2+3.0^2}=5.17$ $\\mu\\varepsilon$.",
+    "Expanded: $U=2u_c=10.3$ $\\mu\\varepsilon$, i.e. about 1.7% of the reading.",
+    "The gauge factor tolerance dominates."
+   ],
+   "explanation": "Independent contributions combine as the square root of the sum of squares, and a bare tolerance is treated as a rectangular distribution, which divides it by $\\sqrt3$. The largest contributor, here the gauge factor, sets the overall uncertainty.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why a half bridge with gauges on the top and bottom faces of a beam (adjacent arms) gives temperature compensation and twice the output of a quarter bridge. Say what would happen if the two gauges were instead placed in opposite arms.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o2"
+   ],
+   "markingGuide": [
+    "Bending strain is equal and opposite on the two faces, and bridge arms adjacent to each other subtract: the two signals add, doubling the output.",
+    "A uniform temperature change gives the same apparent strain in both gauges (same material, same $\\Delta T$), so the equal changes in adjacent arms cancel.",
+    "Output $=\\mathrm{GF}\\varepsilon V_{ex}/2$ compared with $\\mathrm{GF}\\varepsilon V_{ex}/4$ for a quarter bridge.",
+    "In opposite arms the contributions add: the equal-and-opposite bending signals would cancel and the temperature signals would add, the opposite of what is wanted."
+   ],
+   "explanation": "The bridge responds to the difference between adjacent arms and the sum of opposite arms. Arranging bending to appear as a difference and temperature as a common signal makes the bridge sensitive to the first and blind to the second.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: for a quarter bridge with equal arm resistances and small strains, the output voltage is proportional to the excitation voltage, so doubling $V_{ex}$ doubles $V_{out}$ for the same strain.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The relation is $V_{out}=\\mathrm{GF}\\,\\varepsilon\\,V_{ex}/4$, linear in $V_{ex}$. In practice $V_{ex}$ is limited by the self-heating of the gauge, which causes drift, so it cannot be raised without limit.",
+   "board": "internal"
+  }
+ ]
+}

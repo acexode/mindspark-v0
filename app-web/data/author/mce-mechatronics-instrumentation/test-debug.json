@@ -1,0 +1,448 @@
+{
+ "lessonTitle": "Testing and Debugging",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A student's solenoid valve driver does nothing. The code looks right, the wiring looks right and an hour of staring at both has not helped. One measurement with an oscilloscope on the driver input, then one with a signal generator in its place, would have located the fault in five minutes. Systematic testing beats guessing."
+  },
+  {
+   "type": "text",
+   "markdown": "Debugging an embedded system means finding which block in a chain (sensor, conditioning, microcontroller, driver, actuator) first produces a wrong result. Three habits make this fast: **measure** real signals with an oscilloscope, **isolate** by replacing one block's input or output with a known-good signal, and **record** every test with the expected and measured result so that nothing is forgotten and the fix can be proved."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Reading a PWM signal on an oscilloscope",
+   "text": "An oscilloscope plots voltage against time. The horizontal scale is **time per division** (s/div), the vertical scale is **volts per division**. For a PWM signal, the **period** $T$ is the horizontal distance between two like edges times s/div. The **high time** $t_{on}$ is the width of the high portion. Then frequency and duty cycle follow directly."
+  },
+  {
+   "type": "math",
+   "latex": "f=\\frac{1}{T},\\qquad D=\\frac{t_{on}}{T}\\times100\\%",
+   "caption": "Frequency and duty cycle from scope measurements (T and t_on in seconds)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Verifying a PWM output",
+   "prompt": "The firmware is meant to produce 20 kHz PWM at 35 percent duty, 3.3 V amplitude. The scope is set to 10 microseconds per division. One period spans 5.0 divisions and the high portion spans 1.8 divisions. Is the signal correct, allowing for reading uncertainty of 0.1 division?",
+   "steps": [
+    {
+     "text": "Period in time.",
+     "latex": "T=5.0\\times10\\ \\mu\\text{s}=50\\ \\mu\\text{s}"
+    },
+    {
+     "text": "Frequency.",
+     "latex": "f=\\frac{1}{50\\ \\mu\\text{s}}=20\\ \\text{kHz}"
+    },
+    {
+     "text": "High time and duty cycle.",
+     "latex": "t_{on}=1.8\\times10=18\\ \\mu\\text{s},\\quad D=\\frac{18}{50}=36\\%"
+    },
+    {
+     "text": "Reading uncertainty: 0.1 division is 1 microsecond, which is 2 percent of the period, so 36 percent is consistent with 35 percent."
+    },
+    {
+     "text": "Compare with expected values: frequency matches, duty matches within reading uncertainty. The signal passes."
+    }
+   ],
+   "answer": "20 kHz and 36 percent (within 2 percent of 35 percent): the PWM output is correct."
+  },
+  {
+   "type": "text",
+   "markdown": "**Measurement good practice.** Check the probe attenuation: a 10x probe divides the signal by 10, and the scope channel must be set to 10x so that it reads true volts. Compensate the probe on the calibration output, connect the ground clip close to the measurement point (a long ground lead rings), and trigger on the rising edge so the display is stable. Cursors or automatic measurements give frequency and duty with better precision than counting divisions."
+  },
+  {
+   "type": "text",
+   "markdown": "**Isolating a fault by substitution.** Divide the signal chain into blocks and apply a **known-good signal** at a block boundary. If the downstream blocks then work, the fault lies upstream; if they still fail, the fault is at or downstream of that boundary. Repeat on the faulty half until one block remains. A function generator, a bench supply, a known-good board or a loop-back wire can supply the known-good signal."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Test",
+    "Observation",
+    "Conclusion"
+   ],
+   "rows": [
+    [
+     "Scope at MCU output pin",
+     "No PWM present",
+     "Fault in firmware, timer configuration or pin setup (upstream of the driver)"
+    ],
+    [
+     "Scope at MCU output pin",
+     "Correct PWM present",
+     "MCU output works; move downstream"
+    ],
+    [
+     "Function generator into driver input",
+     "Motor runs",
+     "Driver, supply and motor are good; fault upstream (MCU, firmware or wiring to driver)"
+    ],
+    [
+     "Function generator into driver input",
+     "Motor does not run",
+     "Fault at or after the driver: supply, driver, wiring or motor"
+    ],
+    [
+     "Swap in known-good driver board",
+     "Motor now runs",
+     "Original driver board was faulty"
+    ]
+   ],
+   "caption": "Substitution tests and what they tell you"
+  },
+  {
+   "type": "worked_example",
+   "title": "Isolating a fault",
+   "prompt": "A heater driver board (MOSFET switch) fails to heat. The microcontroller should output 1 kHz PWM at 50 percent. The scope shows a clean 1 kHz, 50 percent, 3.3 V signal at the driver's input pin. Using a bench supply, the heater element, powered directly with 12 V, warms normally. Where is the fault, and what is the next test?",
+   "steps": [
+    {
+     "text": "The signal at the driver input is correct, so the microcontroller and firmware are not the cause."
+    },
+    {
+     "text": "The heater works when powered directly, so the heater itself is good."
+    },
+    {
+     "text": "The remaining blocks are the driver board and its supply. Next test: measure the driver output with the scope and measure the supply voltage at the driver."
+    },
+    {
+     "text": "If the supply is 0 V, trace the supply fuse and wiring; if the supply is present but the output is flat, replace the driver with a known-good board."
+    }
+   ],
+   "answer": "The fault is in the driver stage or its supply; the next test is measuring the driver's supply and output."
+  },
+  {
+   "type": "text",
+   "markdown": "**The test log.** For each function record the test number, the function under test, the input or condition, the **expected** result with its tolerance, the **measured** result, pass or fail, and the date, firmware version and tester. A log lets you reproduce failures, avoid re-testing what already passed, and prove that a repair worked. Expected values come from the requirement or design calculation, set *before* measuring."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "ID",
+    "Function",
+    "Condition",
+    "Expected",
+    "Measured",
+    "Result"
+   ],
+   "rows": [
+    [
+     "T1",
+     "PWM frequency",
+     "Duty 50%",
+     "20 kHz $\\pm$ 1%",
+     "20.02 kHz",
+     "Pass"
+    ],
+    [
+     "T2",
+     "PWM duty",
+     "Command 35%",
+     "35% $\\pm$ 2%",
+     "36%",
+     "Pass"
+    ],
+    [
+     "T3",
+     "Motor speed",
+     "Duty 35%, no load",
+     "About 1200 rpm $\\pm$ 5%",
+     "1090 rpm",
+     "Fail"
+    ],
+    [
+     "T4",
+     "Stop on fault",
+     "Unplug sensor",
+     "Output 0%",
+     "0%",
+     "Pass"
+    ]
+   ],
+   "caption": "Part of a test log (example entries)"
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Change one thing at a time",
+   "text": "Change one variable, re-test, and record the result. Several changes at once make it impossible to know which one fixed (or caused) the problem."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not fit a long ground lead",
+   "text": "A long probe ground lead adds inductance and shows ringing on edges that is not on the real circuit. Use the short spring ground on the probe tip."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "From the scope, frequency is $1/T$ and duty is $t_{on}/T$; account for reading uncertainty of about 0.1 division.",
+    "Set the probe attenuation correctly (for example 10x) and compensate the probe.",
+    "Isolate faults by injecting a known-good signal at a block boundary and checking whether downstream blocks work.",
+    "A test log records expected values with tolerance, measured values and pass or fail for every function."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "On an oscilloscope a PWM signal has a period of 8 divisions and is high for 2 divisions. What is the duty cycle?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "75 percent"
+    },
+    {
+     "id": "b",
+     "text": "25 percent"
+    },
+    {
+     "id": "c",
+     "text": "50 percent"
+    },
+    {
+     "id": "d",
+     "text": "40 percent"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "25 percent",
+   "distractorRationale": {
+    "a": "This is the low-time fraction, 6/8.",
+    "b": "Correct: 2 divided by 8.",
+    "c": "This would need 4 divisions high.",
+    "d": "This does not follow from the 2 and 8 division counts."
+   },
+   "explanation": "The duty cycle is the high time divided by the period, $2/8=0.25$ or 25 percent. The scale (time per division) cancels out in the ratio.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 3.3 V logic signal is displayed as only 0.33 V on the scope. The probe is a 10x probe. What is the most likely cause?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The scope channel is set to 1x attenuation, so the display is not scaled to match the probe"
+    },
+    {
+     "id": "b",
+     "text": "The signal is 0.33 V"
+    },
+    {
+     "id": "c",
+     "text": "The time-per-division is wrong"
+    },
+    {
+     "id": "d",
+     "text": "The trigger level is too low"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The scope channel is set to 1x attenuation, so the display is not scaled to match the probe",
+   "distractorRationale": {
+    "a": "Correct: attenuation setting mismatch.",
+    "b": "The signal is known to be 3.3 V logic, so this is a display problem.",
+    "c": "Time per division affects horizontal scale, not amplitude.",
+    "d": "Trigger level affects stability, not displayed amplitude."
+   },
+   "explanation": "A 10x probe reduces the signal by ten times, and the channel must be set to 10x to multiply it back. With the channel at 1x, the displayed value is a tenth of the true voltage.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the purpose of replacing a block's input with a known-good signal during debugging?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "To increase the speed of the system"
+    },
+    {
+     "id": "b",
+     "text": "To avoid recording a test log"
+    },
+    {
+     "id": "c",
+     "text": "To determine whether the fault lies upstream or downstream of that block"
+    },
+    {
+     "id": "d",
+     "text": "To reduce noise on the scope"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "To determine whether the fault lies upstream or downstream of that block",
+   "distractorRationale": {
+    "a": "Substitution does not make the system faster.",
+    "b": "Records are still needed.",
+    "c": "Correct: it splits the chain into good and suspect parts.",
+    "d": "Noise reduction is not the purpose."
+   },
+   "explanation": "If the downstream blocks work correctly with a known-good input, the original input was bad, so the fault is upstream. If they still fail, the fault is at or after that block, which halves the search area.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which entry set is most useful in each row of a test log?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Only the measured value"
+    },
+    {
+     "id": "b",
+     "text": "Only a pass or fail tick"
+    },
+    {
+     "id": "c",
+     "text": "Function, condition, expected value with tolerance, measured value, pass or fail"
+    },
+    {
+     "id": "d",
+     "text": "The name of the tester only"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Function, condition, expected value with tolerance, measured value, pass or fail",
+   "distractorRationale": {
+    "a": "A measurement alone cannot be judged.",
+    "b": "A tick without numbers cannot be audited.",
+    "c": "Correct: expected, measured and verdict with conditions.",
+    "d": "The tester name does not record the result."
+   },
+   "explanation": "A log row needs the expected result (with tolerance) to judge the measurement, the measured result and the verdict, plus the condition so the test can be repeated. Pass or fail alone, or a measurement without the expected value, cannot prove anything.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A motor does not spin. The MCU pin shows correct PWM on the scope. Injecting a 1 kHz, 3.3 V square wave from a function generator into the driver input makes the motor run. What is the most likely location of the fault?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The motor winding"
+    },
+    {
+     "id": "b",
+     "text": "The connection between the MCU pin and the driver input, or a pin or level problem"
+    },
+    {
+     "id": "c",
+     "text": "The driver supply"
+    },
+    {
+     "id": "d",
+     "text": "The function generator"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The connection between the MCU pin and the driver input, or a pin or level problem",
+   "distractorRationale": {
+    "a": "The motor ran with the substitute signal.",
+    "b": "Correct: the only remaining untested part is the link between pin and driver input.",
+    "c": "The driver and its supply worked under the substitute signal.",
+    "d": "The generator is the known-good source."
+   },
+   "explanation": "The function generator signal made the driver, supply and motor work, so those are good. The MCU pin has a correct signal, so the break is between the pin and the driver (wiring, connector, level or ground reference), which should be checked next.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A PWM period spans 4.2 divisions on a scope set to 5 microseconds per division. Calculate the PWM frequency in kilohertz.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o1"
+   ],
+   "correctValue": 47.62,
+   "tolerance": 0.3,
+   "unit": "kHz",
+   "explanation": "The period is $4.2\\times5=21$ microseconds, so $f=1/21\\,\\mu\\text{s}=47.6$ kHz. The result is limited by how precisely the edges can be read.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A scope shows one PWM period of 6.4 divisions with a high time of 2.4 divisions. Calculate the duty cycle in percent.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o1"
+   ],
+   "correctValue": 37.5,
+   "tolerance": 0.5,
+   "unit": "percent",
+   "explanation": "The duty cycle is $2.4/6.4=0.375$, which is 37.5 percent. The scale factor is not needed because it cancels.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A PWM is expected at 25 kHz. On the scope (10 microseconds per division) one period reads 4.0 divisions with an uncertainty of 0.1 division. What is the largest frequency, in kilohertz, consistent with this reading?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o1",
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o3"
+   ],
+   "correctValue": 25.64,
+   "tolerance": 0.1,
+   "unit": "kHz",
+   "explanation": "The nominal period is $4.0\\times10=40$ microseconds (25 kHz). The shortest period consistent with the reading is $3.9\\times10=39$ microseconds, giving $1/39\\,\\mu\\text{s}=25.64$ kHz, so the true frequency lies between 24.4 and 25.6 kHz.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how to use an oscilloscope to verify the frequency and duty cycle of a microcontroller PWM output. Cover probe settings, triggering, the measurements to make, and how to decide whether the signal passes.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o1",
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o3"
+   ],
+   "markingGuide": [
+    "Probe attenuation set to match, probe compensated, short ground connection (2 marks)",
+    "Trigger on a rising edge and set time per division so 1 to 3 periods are visible (1 mark)",
+    "Measures period for frequency ($1/T$) and high time for duty ($t_{on}/T$), using cursors or automatic measurement (2 marks)",
+    "Compares with the expected values stated in the design, with tolerance and reading uncertainty (2 marks)",
+    "Also checks amplitude and logic levels, and records the result in the test log (1 mark)"
+   ],
+   "explanation": "Set up the probe and trigger correctly, measure period and high time, then compare with the expected frequency and duty within reading uncertainty.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A robot joint does not move. The chain is: encoder, microcontroller, PWM output, motor driver, motor. Write a fault-isolation plan using measurements and known-good substitutions, and show the test log entries you would record.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o2",
+    "ug.mce-mechatronics-instrumentation.integration-lab.test-debug.o3"
+   ],
+   "markingGuide": [
+    "Divides the chain into blocks and tests at boundaries, for example bisecting (2 marks)",
+    "Scope on MCU PWM pin to check frequency and duty (1 mark)",
+    "Substitutes a known-good signal (function generator) at the driver input and observes the motor (2 marks)",
+    "Interprets both outcomes, working upstream or downstream accordingly, and checks the supply and enable pins (2 marks)",
+    "Log entries with function, condition, expected, measured and pass or fail; changes made one at a time (2 marks)"
+   ],
+   "explanation": "Bisect the chain with scope measurements and substitution of a known-good signal, interpret each result, and record expected and measured values for every test.",
+   "board": "internal"
+  }
+ ]
+}

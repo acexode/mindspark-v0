@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Observer Design",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A magnetic-bearing test rig has a position sensor but no velocity sensor, yet the state-feedback design needs velocity to damp the rotor. A designer does not buy a second sensor. Instead a software model of the rotor runs alongside the real one, corrected by the position error, and its velocity estimate is fed to the controller. That model is a Luenberger observer, and the whole design question is how fast to make it."
+  },
+  {
+   "type": "text",
+   "markdown": "State feedback $u=-Kx$ needs the full state, but usually only $y=Cx$ is measured. An **observer** runs a copy of the plant model driven by the same input and corrected by the output mismatch:"
+  },
+  {
+   "type": "math",
+   "latex": "\\dot{\\hat x}=A\\hat x+Bu+L\\,(y-C\\hat x),\\qquad u=-K\\hat x",
+   "caption": "Luenberger observer with gain $L$ ($n\\times p$) combined with state feedback through the estimate $\\hat x$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Estimation error dynamics",
+   "text": "Define the estimation error $e=x-\\hat x$. Subtracting the observer from the plant gives $\\dot e=(A-LC)e$, independent of $u$ and of $x$. If $(A,C)$ is observable, $L$ can place the eigenvalues of $A-LC$ anywhere, so the error decays at a rate of our choosing from any initial estimation error."
+  },
+  {
+   "type": "text",
+   "markdown": "Designing $L$ is the dual of designing $K$: choose $L$ so that $\\det(sI-A+LC)$ equals a desired polynomial whose roots (the observer poles) lie in the left half-plane. Matching coefficients works exactly as in pole placement."
+  },
+  {
+   "type": "worked_example",
+   "title": "Observer gain for a position-only sensor",
+   "prompt": "A plant has $A=\\begin{bmatrix}0&1\\\\3&-1\\end{bmatrix}$ and $C=[1\\;\\;0]$ (position measured). Find $L=[l_1\\;\\;l_2]^T$ so that the estimation error has a double pole at $-10$ s$^{-1}$.",
+   "steps": [
+    {
+     "text": "Form $A-LC$: $LC=\\begin{bmatrix}l_1&0\\\\l_2&0\\end{bmatrix}$, so $A-LC=\\begin{bmatrix}-l_1&1\\\\3-l_2&-1\\end{bmatrix}$.",
+     "latex": "\\det(sI-A+LC)=(s+l_1)(s+1)+(l_2-3)=s^2+(l_1+1)s+(l_1+l_2-3)"
+    },
+    {
+     "text": "Desired polynomial for a double pole at $-10$:",
+     "latex": "(s+10)^2=s^2+20s+100"
+    },
+    {
+     "text": "Match $s$ coefficients: $l_1+1=20$; then match constants: $l_1+l_2-3=100$.",
+     "latex": "l_1=19,\\quad l_2=100-19+3=84"
+    },
+    {
+     "text": "The error therefore decays like $e^{-10t}$ (times a polynomial factor from the repeated pole), with 2% settling time of roughly $4/10=0.4$ s or slightly longer for the repeated pole.",
+     "latex": "L=\\begin{bmatrix}19\\\\84\\end{bmatrix}"
+    }
+   ],
+   "answer": "$L=[19\\;\\;84]^T$."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Separation principle",
+   "text": "For the combined controller $u=-K\\hat x$ with observer gain $L$, the closed-loop poles are exactly the eigenvalues of $A-BK$ together with the eigenvalues of $A-LC$. In coordinates $(x,e)$ the system matrix is block triangular, $\\begin{bmatrix}A-BK&BK\\\\0&A-LC\\end{bmatrix}$, so $K$ and $L$ can be designed independently."
+  },
+  {
+   "type": "worked_example",
+   "title": "Combined design",
+   "prompt": "For the plant of the previous example with $B=[0\\;\\;1]^T$, design $K$ for regulator poles at $-2\\pm j2$ and combine it with the observer ($L=[19\\;\\;84]^T$). List the closed-loop poles.",
+   "steps": [
+    {
+     "text": "The regulator polynomial is $(s+2)^2+4=s^2+4s+8$. With $B=[0\\;1]^T$, $A-BK$ has polynomial $s^2+(1+k_2)s+(k_1-3)$.",
+     "latex": "k_2=3,\\quad k_1=11"
+    },
+    {
+     "text": "The observer contributes the roots of $s^2+20s+100$.",
+     "latex": "s=-10,\\;-10"
+    },
+    {
+     "text": "By the separation principle the four closed-loop poles are the union of the two sets.",
+     "latex": "\\{-2+j2,\\;-2-j2,\\;-10,\\;-10\\}"
+    }
+   ],
+   "answer": "Four poles: $-2\\pm j2$ (regulator) and $-10,-10$ (observer), with $K=[11\\;\\;3]$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Observer pole speed (relative to regulator)",
+    "Error decay",
+    "Size of $L$",
+    "Noise sensitivity"
+   ],
+   "rows": [
+    [
+     "About equal",
+     "Slow: estimation error limits performance",
+     "Small",
+     "Low"
+    ],
+    [
+     "2 to 5 times faster (usual choice)",
+     "Error decays before it matters",
+     "Moderate",
+     "Moderate"
+    ],
+    [
+     "10 times faster or more",
+     "Very quick",
+     "Large",
+     "High: sensor noise is amplified into the estimate"
+    ]
+   ],
+   "caption": "Rule of thumb for choosing observer poles."
+  },
+  {
+   "type": "text",
+   "markdown": "**Effect of an initial estimation error.** At start-up $\\hat x(0)$ is usually a guess, so $e(0)\\ne0$. The error decays as $e^{(A-LC)t}e(0)$ and, because the controller uses $\\hat x$, it enters the plant as a disturbance: $\\dot x=(A-BK)x+BKe$. The plant response therefore contains a transient at the observer's speed on top of the regulator's response."
+  },
+  {
+   "type": "worked_example",
+   "title": "A scalar example of start-up error",
+   "prompt": "The plant $\\dot x=2x+u$, $y=x$ has $K=5$ (regulator pole $2-5=-3$) and observer gain $L=8$ (error pole $2-8=-6$). Start with $x(0)=1$ and $\\hat x(0)=0$. Find $x(t)$ and its peak.",
+   "steps": [
+    {
+     "text": "Error dynamics: $\\dot e=(2-8)e=-6e$ with $e(0)=1-0=1$.",
+     "latex": "e(t)=e^{-6t}"
+    },
+    {
+     "text": "Plant with $u=-K\\hat x=-K(x-e)$: $\\dot x=2x-5x+5e=-3x+5e^{-6t}$.",
+     "latex": "\\dot x=-3x+5e^{-6t}"
+    },
+    {
+     "text": "Particular solution $c\\,e^{-6t}$ needs $-6c=-3c+5$, so $c=-5/3$; the homogeneous part is fixed by $x(0)=1$.",
+     "latex": "x(t)=\\tfrac{8}{3}e^{-3t}-\\tfrac{5}{3}e^{-6t}"
+    },
+    {
+     "text": "Setting $\\dot x=0$ gives $e^{-3t}=0.8$, so $t_{pk}=0.0744$ s and the peak value is",
+     "latex": "x_{pk}=1.0667"
+    }
+   ],
+   "answer": "The state first rises to about 1.067 (a 6.7% overshoot at about 0.074 s) before decaying at the regulator rate; with a perfect start, $x=e^{-3t}$ would fall monotonically."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "A fast observer is not free",
+   "text": "Raising observer speed shrinks the start-up transient but increases $L$, so measurement noise reaches $\\hat x$ and then the control signal. Choose observer poles fast enough that estimation error is negligible within the regulator's settling time, and no faster than the sensor noise and sampling rate allow."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The estimation error obeys $\\dot e=(A-LC)e$; if $(A,C)$ is observable, $L$ places its poles by coefficient matching, the dual of pole placement.",
+    "Separation principle: closed-loop poles are those of $A-BK$ together with those of $A-LC$, so $K$ and $L$ are designed independently.",
+    "An initial estimation error appears as a transient at observer speed in the plant response; observers are typically 2 to 5 times faster than the regulator, trading start-up error against noise."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What differential equation does the estimation error $e=x-\\hat x$ of a Luenberger observer satisfy?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\dot e=(A-LC)e$"
+    },
+    {
+     "id": "b",
+     "text": "$\\dot e=(A-BK)e$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dot e=Ae+Bu$"
+    },
+    {
+     "id": "d",
+     "text": "$\\dot e=LCe$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$\\dot e=(A-LC)e$",
+   "distractorRationale": {
+    "a": "Subtracting the observer from the plant cancels $u$ and leaves the error propagating through $A-LC$.",
+    "b": "These are the regulator dynamics, not the estimator dynamics.",
+    "c": "This ignores the correction term and would grow with the input.",
+    "d": "This omits the plant dynamics $A$, which are present in both plant and estimator."
+   },
+   "explanation": "The plant is $\\dot x=Ax+Bu$ and the estimator is $\\dot{\\hat x}=A\\hat x+Bu+L(y-C\\hat x)$, with $y=Cx$. Subtracting gives $\\dot e=Ae-LCe=(A-LC)e$, so $u$ drops out.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement is the separation principle?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The observer must be designed first and then the regulator must be retuned to compensate"
+    },
+    {
+     "id": "b",
+     "text": "The regulator gain $K$ and the observer gain $L$ can be designed independently, and the closed-loop poles are the union of the two sets"
+    },
+    {
+     "id": "c",
+     "text": "The observer poles must equal the regulator poles"
+    },
+    {
+     "id": "d",
+     "text": "The sensor and actuator must be placed far apart"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The regulator gain $K$ and the observer gain $L$ can be designed independently, and the closed-loop poles are the union of the two sets",
+   "distractorRationale": {
+    "a": "No retuning is required in the linear case; the structure decouples.",
+    "b": "The block-triangular structure in $(x,e)$ coordinates gives this union.",
+    "c": "They are free to differ, and are normally chosen faster.",
+    "d": "This is a hardware layout statement and has no connection with the principle."
+   },
+   "explanation": "In $(x,e)$ coordinates the combined matrix is block triangular, so its eigenvalues are those of $A-BK$ and $A-LC$. Hence the two gains do not interact in the linear model.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A regulator is designed with poles at $-3\\pm j3$. Which observer pole choice follows the usual guideline?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A pair near $-0.3$, ten times slower"
+    },
+    {
+     "id": "b",
+     "text": "A pair at $-3\\pm j3$, identical to the regulator"
+    },
+    {
+     "id": "c",
+     "text": "A pair near $-12$, several times faster than the regulator"
+    },
+    {
+     "id": "d",
+     "text": "A pair at $-1000$, as fast as possible"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "A pair near $-12$, several times faster than the regulator",
+   "distractorRationale": {
+    "a": "A slow observer lets the estimation error dominate the response.",
+    "b": "Equal speed leaves a noticeable estimation error during the regulator transient.",
+    "c": "Estimation error then decays well before the regulator settles, without extreme gain.",
+    "d": "The gain $L$ would be huge and sensor noise would be amplified into the control signal."
+   },
+   "explanation": "The error should disappear quickly compared with the regulator transient, so the observer is made roughly 2 to 5 times faster. Much faster observers need large $L$, which amplifies measurement noise.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "With a wrong initial estimate, $\\hat x(0)\\ne x(0)$, what appears in the closed-loop state response?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A permanent steady-state offset"
+    },
+    {
+     "id": "b",
+     "text": "No effect, because the controller uses the measured output"
+    },
+    {
+     "id": "c",
+     "text": "Instability, whenever the initial error is large"
+    },
+    {
+     "id": "d",
+     "text": "A transient that decays at the observer's rate, superposed on the regulator response"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "A transient that decays at the observer's rate, superposed on the regulator response",
+   "distractorRationale": {
+    "a": "In a stable observer the error decays to zero.",
+    "b": "The controller uses the estimate, so a wrong estimate drives wrong control action.",
+    "c": "In a linear system with stable observer poles any finite initial error still decays.",
+    "d": "The error enters the plant through $BKe$, and $e$ decays with the observer poles."
+   },
+   "explanation": "The state obeys $\\dot x=(A-BK)x+BKe$ and $e$ decays as $e^{(A-LC)t}e(0)$. The wrong start therefore produces a decaying transient, not a persistent offset, and the final state is unaffected in the linear model.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: if both $A-BK$ and $A-LC$ are stable, the combined observer-based controller is stable.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The closed-loop poles are the union of the eigenvalues of $A-BK$ and $A-LC$, so if both sets are in the left half-plane the whole system is stable. This is exactly what the separation principle states for linear time-invariant models.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "The estimation-error poles of an observer are at $-12$ s$^{-1}$ (dominant). Estimate the 2% settling time of the estimation error in seconds using $t_s\\approx4/\\sigma$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o1"
+   ],
+   "correctValue": 0.333333,
+   "tolerance": 0.01,
+   "unit": "s",
+   "explanation": "With a dominant pole at $-12$ the error decays like $e^{-12t}$, so the 2% settling time is $4/12\\approx0.333$ s. The estimator is therefore settled long before a regulator with a slower settling time.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A plant has $A=\\begin{bmatrix}0&1\\\\-4&-2\\end{bmatrix}$, $C=[1\\;\\;0]$. Find the observer gain component $l_2$ (units consistent with the model) that places both observer poles at $-8$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o1"
+   ],
+   "correctValue": 32.0,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "With $A-LC=\\begin{bmatrix}-l_1&1\\\\-4-l_2&-2\\end{bmatrix}$ the polynomial is $s^2+(2+l_1)s+(2l_1+4+l_2)$. Matching $s^2+16s+64$ gives $l_1=14$ and $l_2=64-28-4=32$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A scalar plant $\\dot x=x+u$, $y=x$ uses $u=-4\\hat x$ with an observer gain $L=7$ (error pole $1-7=-6$ s$^{-1}$, regulator pole $1-4=-3$ s$^{-1}$). Initial conditions are $x(0)=2$ and $\\hat x(0)=0$. Find $x(0.5)$ (in the same units as $x$).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o3"
+   ],
+   "correctValue": 0.9085,
+   "tolerance": 0.01,
+   "unit": "state units",
+   "explanation": "The error is $e=2e^{-6t}$ and $\\dot x=-3x+4e=-3x+8e^{-6t}$. The particular solution is $c\\,e^{-6t}$ with $c=-8/3$, so $x(t)=(2+8/3)e^{-3t}-(8/3)e^{-6t}$, and at $t=0.5$ s this is $4.667\\times0.2231-2.667\\times0.0498\\approx0.9085$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive the error dynamics of a Luenberger observer and explain why they do not depend on the control input $u$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o1",
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o2"
+   ],
+   "markingGuide": [
+    "States the plant $\\dot x=Ax+Bu$, $y=Cx$ and observer $\\dot{\\hat x}=A\\hat x+Bu+L(y-C\\hat x)$.",
+    "Subtracts to obtain $\\dot e=Ae-LCe=(A-LC)e$.",
+    "Observes that $Bu$ appears identically in both and cancels, so $u$ does not affect the error.",
+    "Notes that $L$ can place the poles of $A-LC$ if $(A,C)$ is observable."
+   ],
+   "explanation": "Subtracting the observer from the plant, the $Bu$ terms cancel and $y-C\\hat x=Ce$ leaves $\\dot e=(A-LC)e$. Because the input drives plant and observer identically, the estimation error depends only on the initial mismatch and the choice of $L$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A drive-system regulator has poles at $-5\\pm j5$ rad/s. A colleague proposes placing the observer poles at $-500$ to \"remove the estimation error entirely\". Discuss, with reference to start-up behaviour and measurement noise, how you would choose the observer speed.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o1",
+    "ug.mce-control-engineering.state-feedback-observers.observer-design.o3"
+   ],
+   "markingGuide": [
+    "Notes estimation error decays as $e^{(A-LC)t}$ so faster poles reduce the start-up transient entering through $BKe$.",
+    "Notes a very fast observer requires very large $L$, which amplifies sensor noise into $\\hat x$ and the control input.",
+    "Mentions practical limits: sampling rate, sensor bandwidth and actuator saturation.",
+    "Recommends a moderate choice such as 2 to 5 times the regulator speed (for example near $-15$ to $-25$) and validating it in simulation including noise."
+   ],
+   "explanation": "A faster observer shortens the start-up transient that the estimation error injects through $BKe$, but it demands a large gain $L$ that passes measurement noise into the control signal. A moderate choice a few times faster than the regulator keeps the error short-lived without amplifying noise, and should be checked in simulation.",
+   "board": "internal"
+  }
+ ]
+}

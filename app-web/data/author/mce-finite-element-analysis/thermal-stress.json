@@ -1,0 +1,416 @@
+{
+ "lessonTitle": "Thermal Stress Analysis",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "Pour molten aluminium into a cold steel die, or run a turbine disc from cold start to full power, and the metal wants to change size while the surrounding structure refuses to let it. The unrealised expansion turns into stress, and the stress can reach yield without any mechanical load at all. Computing it is a two-step task: first find the temperature field, then use it as a load on the structure."
+  },
+  {
+   "type": "text",
+   "markdown": "**Thermal strain.** A material element whose temperature changes by $\\Delta T=T-T_{ref}$ (K) from a stress-free reference temperature $T_{ref}$ tries to strain by $\\varepsilon_{th}=\\alpha\\Delta T$, where $\\alpha$ is the coefficient of thermal expansion (1/K). This strain is isotropic and produces **no stress by itself**. Stress arises only from the part of the strain that is prevented: $\\sigma=E(\\varepsilon_{total}-\\alpha\\Delta T)$, where $\\varepsilon_{total}$ is the real (compatible) strain and $E$ is Young's modulus (Pa)."
+  },
+  {
+   "type": "math",
+   "latex": "\\sigma=E\\left(\\varepsilon-\\alpha\\,\\Delta T\\right),\\qquad\\text{fully restrained bar: }\\varepsilon=0\\Rightarrow\\sigma=-E\\alpha\\Delta T",
+   "caption": "Thermal stress in one dimension (compression is negative)"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Free expansion is stress-free",
+   "text": "A bar that is free to expand, or an isostatic structure, has $\\varepsilon=\\alpha\\Delta T$ and zero stress, however large $\\Delta T$ is. Stress needs restraint: fixed supports, a redundant structure, a temperature gradient that makes neighbouring fibres expand differently, or a joint between materials with different $\\alpha$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Fully restrained steel bar",
+   "prompt": "A steel bar of length $L=1.2$ m and area $A=600$ mm$^2$ ($E=200$ GPa, $\\alpha=12\\times10^{-6}$ 1/K, typical values) is rigidly fixed at both ends and heated uniformly by $\\Delta T=80$ K. Find the free expansion, the compressive stress and the end force.",
+   "steps": [
+    {
+     "text": "Free expansion if unrestrained: $\\delta=\\alpha\\Delta TL=12\\times10^{-6}\\times80\\times1.2=1.152$ mm. The supports prevent all of it."
+    },
+    {
+     "text": "Total strain is zero, so $\\sigma=-E\\alpha\\Delta T=-200\\times10^{9}\\times12\\times10^{-6}\\times80=-1.92\\times10^{8}$ Pa, i.e. -192 MPa (compression).",
+     "latex": "\\sigma=-E\\alpha\\Delta T=-192\\ \\text{MPa}"
+    },
+    {
+     "text": "Force: $F=\\sigma A=-192\\times10^{6}\\times600\\times10^{-6}=-115200$ N, about -115.2 kN, independent of the bar length."
+    },
+    {
+     "text": "The stress is independent of $L$ because the unrealised strain $\\alpha\\Delta T$ does not depend on length. If this exceeded yield, the bar would yield in compression."
+    }
+   ],
+   "answer": "Free expansion would be 1.152 mm; the restrained stress is -192 MPa, force 115.2 kN compression."
+  },
+  {
+   "type": "text",
+   "markdown": "**Finite element form.** For an element the thermal strain acts like an initial strain, giving an equivalent nodal load $\\mathbf F_{th}=\\int\\mathbf B^{T}\\mathbf D\\,\\boldsymbol\\varepsilon_{th}\\,dV$. For a two-node bar this is $EA\\alpha\\Delta T\\{-1,\\;+1\\}^{T}$ (N): the element is pushed outwards at both ends. The solver then computes $\\mathbf K\\mathbf u=\\mathbf F_{mech}+\\mathbf F_{th}$ and the stress from the mechanical part of the strain, $\\sigma=E(\\mathbf B\\mathbf u-\\alpha\\Delta T)$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Two materials in series, fully restrained",
+   "prompt": "A steel segment ($E_1=200$ GPa, $\\alpha_1=12\\times10^{-6}$ 1/K, $L_1=0.4$ m) is joined end to end to an aluminium segment ($E_2=70$ GPa, $\\alpha_2=23\\times10^{-6}$ 1/K, $L_2=0.6$ m), both with area $A=400$ mm$^2$. The ends are fixed and the temperature rises by 60 K. Find the common force and the stresses.",
+   "steps": [
+    {
+     "text": "Unrestrained expansion of the assembly: $\\Delta_{free}=\\Delta T(\\alpha_1L_1+\\alpha_2L_2)=60(4.8\\times10^{-6}+13.8\\times10^{-6})=1.116$ mm."
+    },
+    {
+     "text": "The restraint compresses both segments by the same force $F$. Compatibility: total shortening equals free expansion, $F\\left(\\dfrac{L_1}{E_1A}+\\dfrac{L_2}{E_2A}\\right)=\\Delta_{free}$.",
+     "latex": "F\\,\\frac{1}{A}\\left(\\frac{L_1}{E_1}+\\frac{L_2}{E_2}\\right)=\\Delta T(\\alpha_1L_1+\\alpha_2L_2)"
+    },
+    {
+     "text": "Flexibility: $\\dfrac1A\\left(\\dfrac{0.4}{200\\times10^{9}}+\\dfrac{0.6}{70\\times10^{9}}\\right)=2.643\\times10^{-8}$ m/N, so $F=42227$ N."
+    },
+    {
+     "text": "The stress is the same in both segments, $\\sigma=F/A=105.6$ MPa (compression), but the strains differ: steel $528\\times10^{-6}$ and aluminium $1508\\times10^{-6}$ (mechanical strain, in magnitude)."
+    }
+   ],
+   "answer": "F is about 42.2 kN (compression), stress about 105.6 MPa in both segments."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Material (typical)",
+    "$E$ (GPa)",
+    "$\\alpha$ ($10^{-6}$ 1/K)"
+   ],
+   "rows": [
+    [
+     "Structural steel",
+     "200",
+     "12"
+    ],
+    [
+     "Aluminium alloy",
+     "70",
+     "23"
+    ],
+    [
+     "Copper",
+     "110",
+     "17"
+    ],
+    [
+     "Titanium alloy",
+     "115",
+     "9"
+    ],
+    [
+     "Alumina ceramic",
+     "350",
+     "7"
+    ]
+   ],
+   "caption": "Typical properties; use the values for your own material"
+  },
+  {
+   "type": "text",
+   "markdown": "**Sequentially coupled analysis.** In a sequential (one-way) coupled analysis the temperature field is computed first with thermal elements, and then passed to a structural model as a body load. The coupling is justified when the structure does not change the heat flow, for example because deformations are small and heat generation from straining is negligible. The steps are: (1) solve the thermal model (steady or transient); (2) switch to the structural element type with the same, or a mapped, mesh; (3) read the temperatures as nodal loads; (4) specify the stress-free reference temperature and temperature-dependent $E$ and $\\alpha$; (5) apply mechanical loads and constraints; (6) solve and, for transients, select the time points of interest, usually the instant of maximum gradient."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Step",
+    "What to pass or set",
+    "Common error"
+   ],
+   "rows": [
+    [
+     "Thermal solution",
+     "Nodal temperatures $T(\\mathbf x,t)$",
+     "Using a steady result when the peak stress occurs in the transient"
+    ],
+    [
+     "Mesh transfer",
+     "Same mesh or mapped temperatures",
+     "Interpolating onto a coarser mesh and losing the gradient"
+    ],
+    [
+     "Reference temperature",
+     "Stress-free temperature $T_{ref}$",
+     "Forgetting it, so stresses start from the wrong state"
+    ],
+    [
+     "Material data",
+     "$E(T)$, $\\alpha(T)$",
+     "Using room-temperature values for a hot component"
+    ]
+   ],
+   "caption": "Checklist for a sequentially coupled analysis"
+  },
+  {
+   "type": "text",
+   "markdown": "**Bi-material joints.** When two materials with different expansion coefficients are bonded, the free mismatch strain is $(\\alpha_1-\\alpha_2)\\Delta T$. The interface must carry shear to force both parts to deform together. That shear is zero at the symmetry plane of a long joint and rises towards the **free edge** at the end of the interface, where the stresses peak (the interface-corner singularity). A steep temperature gradient adds further stress because neighbouring fibres expand by different amounts. Mesh refinement at the corner will raise the computed peak without limit, so judge the result by a stress at a fixed distance or by fracture-mechanics measures."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find $\\Delta T=T-T_{ref}$ and the thermal strain $\\alpha\\Delta T$ of each region.",
+    "Identify what restrains the expansion: supports, redundant members, gradients, or the other material.",
+    "Predict the sign (heating restrained: compression; cooling restrained: tension).",
+    "Check the FE result against a closed-form hand calculation for a simple restrained bar."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Reference temperature",
+   "text": "The thermal strain is relative to the stress-free temperature, not to room temperature. A brazed joint that is stress-free at the brazing temperature, say 800 degrees Celsius, develops its residual stress during cooling: $\\Delta T=T-800$, not $T-20$."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Thermal strain is $\\alpha\\Delta T$; stress arises only where the strain is restrained: $\\sigma=E(\\varepsilon-\\alpha\\Delta T)$, giving $-E\\alpha\\Delta T$ for a fully restrained bar.",
+    "In FE the thermal load is $\\mathbf F_{th}=\\int\\mathbf B^T\\mathbf D\\varepsilon_{th}dV$, which is $EA\\alpha\\Delta T\\{-1,1\\}^T$ for a bar element.",
+    "A sequential analysis solves temperatures first and applies them as loads on the structural model, with reference temperature and temperature-dependent properties set.",
+    "In a bi-material joint the highest stress occurs at the free edge of the interface, where mismatch strain is resisted by interface shear."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "An aluminium component with $\\alpha=23\\times10^{-6}$ 1/K is heated uniformly by $\\Delta T=45$ K. Find the free thermal strain in microstrain ($10^{-6}$).",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o1"
+   ],
+   "correctValue": 1035.0,
+   "tolerance": 1.0,
+   "unit": "microstrain",
+   "explanation": "The thermal strain is $\\varepsilon_{th}=\\alpha\\Delta T=23\\times10^{-6}\\times45=1.035\\times10^{-3}$, or 1035 microstrain. If the part is free to expand this strain produces no stress.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A brass bar ($E=100$ GPa, $\\alpha=19\\times10^{-6}$ 1/K, typical values) is rigidly fixed at both ends at the stress-free temperature and then cooled by 50 K. Find the axial stress, taking tension as positive, in MPa.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o1"
+   ],
+   "correctValue": 95.0,
+   "tolerance": 1.0,
+   "unit": "MPa",
+   "explanation": "With zero total strain, $\\sigma=-E\\alpha\\Delta T=-100\\times10^{9}\\times19\\times10^{-6}\\times(-50)=+9.5\\times10^{7}$ Pa. The bar wants to shorten but is held, so the stress is tensile, +95 MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A steel bar is fixed at one end and completely free at the other, and is heated uniformly by 100 K. What axial stress develops (ignore the bar's own weight)?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Zero, because the bar can expand freely"
+    },
+    {
+     "id": "b",
+     "text": "$-E\\alpha\\Delta T$ in compression"
+    },
+    {
+     "id": "c",
+     "text": "$+E\\alpha\\Delta T$ in tension"
+    },
+    {
+     "id": "d",
+     "text": "$E\\alpha\\Delta T/2$ in compression"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Zero, because the bar can expand freely",
+   "distractorRationale": {
+    "a": "Correct: with no restraint the total strain equals the thermal strain, so the mechanical strain and stress vanish.",
+    "b": "This is the stress for a fully restrained bar, but here one end is free.",
+    "c": "Tension would arise on cooling a fully restrained bar, not on heating a free one.",
+    "d": "There is no mechanism for a half value; stress is either fully developed by restraint or absent."
+   },
+   "explanation": "Stress equals $E(\\varepsilon-\\alpha\\Delta T)$ and the free bar has $\\varepsilon=\\alpha\\Delta T$. Expansion only causes stress when it is prevented.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A copper segment ($E=110$ GPa, $\\alpha=17\\times10^{-6}$ 1/K, $L=0.3$ m) is joined end to end to a steel segment ($E=200$ GPa, $\\alpha=12\\times10^{-6}$ 1/K, $L=0.5$ m) with the same cross-section. The assembly is fixed rigidly at both ends and cooled by 40 K from its stress-free state. Find the axial stress, in MPa (tension positive).",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o1"
+   ],
+   "correctValue": 84.94,
+   "tolerance": 1.0,
+   "unit": "MPa",
+   "explanation": "Free contraction is $40(17\\times10^{-6}\\times0.3+12\\times10^{-6}\\times0.5)=4.44\\times10^{-4}$ m, prevented by the supports. The flexibility per unit area is $0.3/110\\times10^{9}+0.5/200\\times10^{9}=5.227\\times10^{-12}$ m/Pa. So $\\sigma=4.44\\times10^{-4}/5.227\\times10^{-12}=8.49\\times10^{7}$ Pa, tension, about 84.9 MPa. The same stress acts in both segments because the force is common.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In a sequentially (one-way) coupled thermal-structural analysis, which description is correct?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A thermal solution is obtained first and its nodal temperatures are applied as loads on the structural model; the structure does not influence the temperature field"
+    },
+    {
+     "id": "b",
+     "text": "Temperatures and displacements are solved together in one matrix equation at each step"
+    },
+    {
+     "id": "c",
+     "text": "The structural model is solved first and its deformation changes the thermal boundary conditions"
+    },
+    {
+     "id": "d",
+     "text": "Only the final steady-state temperature can be passed to the structural model"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A thermal solution is obtained first and its nodal temperatures are applied as loads on the structural model; the structure does not influence the temperature field",
+   "distractorRationale": {
+    "a": "Correct: one-way coupling solves the thermal problem independently and transfers temperatures to the structural model.",
+    "b": "That is a fully (monolithic) coupled analysis, needed when strong two-way effects exist.",
+    "c": "This is the reverse of the one-way order and describes a two-way coupling.",
+    "d": "Transient temperatures at any chosen time can be transferred, which is often essential."
+   },
+   "explanation": "In one-way coupling heat flow is independent of deformation, so the two problems can be solved sequentially. This is cheaper and usually accurate for small deformations without frictional or contact heating.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A component is quenched and the peak stress is expected at the instant of the steepest temperature gradient. Which time point should be passed to the structural analysis?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The time of maximum temperature gradient in the transient solution, not only the final steady state"
+    },
+    {
+     "id": "b",
+     "text": "Only the final steady-state temperatures, because they are the most accurate"
+    },
+    {
+     "id": "c",
+     "text": "The initial time, when all temperatures are equal"
+    },
+    {
+     "id": "d",
+     "text": "Only the average temperature of the whole part"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The time of maximum temperature gradient in the transient solution, not only the final steady state",
+   "distractorRationale": {
+    "a": "Correct: thermal stress is driven by gradients, which peak during the transient and vanish at steady uniform temperature.",
+    "b": "At the steady state the gradients may be small, so the peak would be missed.",
+    "c": "At the initial time the temperature is uniform and gives no thermal stress.",
+    "d": "An average removes the gradient, which is the source of the stress."
+   },
+   "explanation": "Stress follows the gradient of temperature, so the critical time is usually partway through the transient. Output several time points and examine the stress history.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "In a thermal stress analysis, the stress-free reference temperature of the structure must be specified, because thermal strain is computed relative to it.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "True. The thermal strain is $\\alpha(T-T_{ref})$, so a wrong reference temperature changes every stress. For a brazed or welded joint the reference is the temperature at which the joint became stress-free, not room temperature.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two dissimilar plates are bonded face to face and the assembly is cooled uniformly. Where is the highest stress expected in the joint?",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "At the free edge or corner of the interface, where mismatch is resisted by interface shear that peaks"
+    },
+    {
+     "id": "b",
+     "text": "At the centre of the interface, far from the edges"
+    },
+    {
+     "id": "c",
+     "text": "Uniformly along the whole interface"
+    },
+    {
+     "id": "d",
+     "text": "At the centre of the thicker plate on its outer face"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "At the free edge or corner of the interface, where mismatch is resisted by interface shear that peaks",
+   "distractorRationale": {
+    "a": "Correct: the interface shear and peel stresses concentrate at the free ends of the interface.",
+    "b": "At the centre of a long joint the interface shear is zero by symmetry.",
+    "c": "The mismatch is not transmitted uniformly; it is transferred over a length near the ends.",
+    "d": "Outer-face stresses are mainly bending stresses and are lower than those at the interface corner."
+   },
+   "explanation": "The two plates must be forced to the same length at the interface, and the force transfer takes place by shear near the free edge. This corner is a stress singularity and its computed value depends on the mesh.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A ceramic part ($\\alpha=7\\times10^{-6}$ 1/K) is brazed to a steel part ($\\alpha=12\\times10^{-6}$ 1/K) at 800 degrees Celsius and cooled to 20 degrees Celsius. Estimate the mismatch strain, say where the highest stress is expected and explain why mesh refinement may not give a converged peak there.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o3"
+   ],
+   "markingGuide": [
+    "Mismatch strain $=(\\alpha_{steel}-\\alpha_{ceramic})\\Delta T=5\\times10^{-6}\\times780\\approx3.9\\times10^{-3}$ (reference is the brazing temperature)",
+    "Steel contracts more than ceramic, so the ceramic is put in compression and the steel in tension near the interface",
+    "Highest stress at the free edge or corner of the interface where interface shear and peel peak",
+    "The corner is a stress singularity (re-entrant material junction): refinement raises the computed peak without limit",
+    "Assess by stress at a fixed distance, a stress-intensity measure or the singularity exponent, and ensure plasticity or a fillet is represented"
+   ],
+   "explanation": "The mismatch strain is of order $10^{-3}$, large enough to cause failure in a brittle ceramic. The corner behaves as a singularity, so judge the result by a mesh-independent measure.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Outline how you would set up a sequentially coupled thermal-stress analysis of a turbine casing that is heated from cold start to operating temperature, naming the data that must be transferred and the checks you would make.",
+   "objectiveIds": [
+    "ug.mce-finite-element-analysis.coupled-thermal-structural.thermal-stress.o2"
+   ],
+   "markingGuide": [
+    "Run the transient thermal analysis with convection and heat-flux boundary conditions and temperature-dependent conductivity",
+    "Re-use the mesh with structural elements, or map the temperatures onto the structural mesh and check the mapping",
+    "Apply the nodal temperatures as a body load at selected time points, especially the maximum-gradient instant",
+    "Set the stress-free reference temperature, $E(T)$ and $\\alpha(T)$, and mechanical constraints without over-restraining expansion",
+    "Checks: compare reaction forces or a simple restrained-bar hand calculation $\\sigma=-E\\alpha\\Delta T$, verify mapped temperatures, and examine stress history"
+   ],
+   "explanation": "The workflow goes from the thermal solution to the structural analysis, with the reference temperature and material variation being the usual sources of error. A simple hand check validates the setup.",
+   "board": "internal"
+  }
+ ]
+}

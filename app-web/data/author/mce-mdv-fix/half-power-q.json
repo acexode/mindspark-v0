@@ -1,0 +1,401 @@
+{
+ "lessonTitle": "Half-Power Bandwidth and the Quality Factor",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A machine-tool engineer taps a spindle housing with an instrumented hammer and plots the response against frequency: one sharp, narrow peak near 52 Hz. The width of that peak, read straight off the plot, tells her the damping without any decay record."
+  },
+  {
+   "type": "text",
+   "markdown": "A harmonically forced SDOF system responds most strongly near its natural frequency $f_n$ (Hz). How sharp that peak is depends on the damping ratio $\\zeta$. The **quality factor** $Q$ is a dimensionless measure of sharpness: the ratio of the response at resonance to the response at zero frequency, i.e. the peak dynamic magnification. In energy terms $Q=2\\pi U/\\Delta W$, where $U$ is the peak stored energy and $\\Delta W$ the loss per cycle, so a high $Q$ means little loss per cycle."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Quality factor",
+   "text": "For light damping, $Q\\approx\\dfrac{1}{2\\zeta}$ (dimensionless). The resonant amplitude is $X_{res}\\approx Q\\,\\delta_{st}$, where $\\delta_{st}=F_0/k$ (m) is the static deflection under the force amplitude $F_0$ (N)."
+  },
+  {
+   "type": "math",
+   "latex": "Q\\approx\\frac{1}{2\\zeta}\\approx\\frac{f_n}{f_2-f_1},\\qquad \\zeta\\approx\\frac{f_2-f_1}{2f_n},\\qquad X_{res}\\approx Q\\frac{F_0}{k}",
+   "caption": "Quality factor, half-power bandwidth and resonant amplitude (small damping)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Half-power bandwidth method.** On a plot of response amplitude against frequency, find the peak value $X_{max}$ at $f_n$. Draw a horizontal line at $X_{max}/\\sqrt2\\approx0.707X_{max}$ (this is $-3$ dB). It cuts the curve at two frequencies, $f_1$ below and $f_2$ above the peak. These are the **half-power points** because power in the response goes with amplitude squared, and $(1/\\sqrt2)^2=\\tfrac12$. The width $\\Delta f=f_2-f_1$ is the half-power bandwidth. The points where the amplitude falls to $0.707$ of the resonant amplitude $1/(2\\zeta)$ satisfy exactly $r^2=1-2\\zeta^2\\pm2\\zeta\\sqrt{1+\\zeta^2}$; for light damping this level is practically the true peak, and $r_2-r_1\\approx2\\zeta$ and hence $\\zeta\\approx\\Delta f/(2f_n)$. The narrower the peak, the lower the damping."
+  },
+  {
+   "type": "worked_example",
+   "title": "Damping from a measured peak",
+   "prompt": "A frequency response plot of a spindle housing shows a peak at 52.0 Hz. The amplitude falls to 0.707 of the peak at 50.7 Hz and 53.3 Hz. Estimate the damping ratio and Q.",
+   "steps": [
+    {
+     "text": "Half-power bandwidth: subtract the two crossing frequencies.",
+     "latex": "\\Delta f=53.3-50.7=2.6\\ \\text{Hz}"
+    },
+    {
+     "text": "Damping ratio from the half-power formula, using the peak frequency as the natural frequency.",
+     "latex": "\\zeta\\approx\\frac{\\Delta f}{2f_n}=\\frac{2.6}{2\\times52.0}=0.0250"
+    },
+    {
+     "text": "Quality factor from the damping ratio. As a check, f_n divided by the bandwidth gives the same value.",
+     "latex": "Q=\\frac{1}{2\\zeta}=20.0\\ \\ (f_n/\\Delta f=20.0)"
+    }
+   ],
+   "answer": "zeta is about 0.025 (2.5 %) and Q is about 20."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Symbol / formula",
+    "Low damping",
+    "High damping"
+   ],
+   "rows": [
+    [
+     "Damping ratio",
+     "$\\zeta$",
+     "0.01",
+     "0.2"
+    ],
+    [
+     "Quality factor",
+     "$Q=1/(2\\zeta)$",
+     "50",
+     "2.5"
+    ],
+    [
+     "Half-power bandwidth",
+     "$\\Delta f\\approx2\\zeta f_n$",
+     "$0.02f_n$",
+     "$0.4f_n$"
+    ],
+    [
+     "Peak shape",
+     "",
+     "Tall and narrow",
+     "Low and broad"
+    ],
+    [
+     "Free-decay envelope",
+     "$e^{-\\zeta\\omega_nt}$",
+     "Slow decay",
+     "Fast decay"
+    ],
+    [
+     "Reliability of $\\Delta f/2f_n$",
+     "",
+     "Good",
+     "Poor (error grows)"
+    ]
+   ],
+   "caption": "How damping controls the shape of a resonance peak (typical values)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Resonant amplitude from Q",
+   "prompt": "A 200000 N/m support is excited by an 80 N amplitude harmonic force at its natural frequency. Its Q has been measured as 25. Find the resonant amplitude. If a second mode at 120 Hz has Q = 40, find its half-power bandwidth.",
+   "steps": [
+    {
+     "text": "Static deflection under the force amplitude.",
+     "latex": "\\delta_{st}=F_0/k=80/(2\\times10^{5})=4.0\\times10^{-4}\\ \\text{m}=0.40\\ \\text{mm}"
+    },
+    {
+     "text": "Resonant amplitude is Q times the static deflection.",
+     "latex": "X_{res}=Q\\delta_{st}=25\\times0.40=10.0\\ \\text{mm}"
+    },
+    {
+     "text": "Bandwidth from Q and the natural frequency.",
+     "latex": "\\Delta f=f_n/Q=120/40=3.0\\ \\text{Hz}"
+    }
+   ],
+   "answer": "X_res = 10.0 mm; the second mode has a bandwidth of 3.0 Hz."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Read the peak frequency $f_n$ and peak amplitude $X_{max}$ from the response curve.",
+    "Compute $0.707X_{max}$ and find the two crossings $f_1$ and $f_2$ (a $3$ dB drop on a decibel scale).",
+    "Take $\\zeta\\approx(f_2-f_1)/(2f_n)$ and $Q=1/(2\\zeta)$.",
+    "Predict the resonant amplitude from $X_{res}\\approx Q\\,F_0/k$."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Check the assumptions",
+   "text": "The method needs (i) light damping ($\\zeta$ below about 0.1), (ii) one isolated mode so the neighbouring modes do not distort the peak flanks, and (iii) frequency resolution much finer than $\\Delta f$. Violating (iii) is common: a spectrum with 1 Hz bins cannot resolve a 2 Hz bandwidth."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Amplitude, not power, scale",
+   "text": "The half-power level is $1/\\sqrt2=0.707$ of the peak amplitude, not 0.5. Using half of the amplitude gives the wrong points and wrongly large bandwidths."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$Q\\approx1/(2\\zeta)$ is the peak dynamic magnification; a high $Q$ is a lightly damped, sharp resonance.",
+    "Half-power points are where the amplitude is $0.707$ of the peak; their separation gives $\\zeta\\approx(f_2-f_1)/(2f_n)$ and $Q\\approx f_n/(f_2-f_1)$.",
+    "Resonant amplitude is $X_{res}\\approx QF_0/k$, i.e. Q times the static deflection.",
+    "The approximations degrade for heavy damping or closely spaced modes."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A structural mode has a damping ratio of 0.02. Its quality factor is approximately",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "25"
+    },
+    {
+     "id": "b",
+     "text": "50"
+    },
+    {
+     "id": "c",
+     "text": "0.04"
+    },
+    {
+     "id": "d",
+     "text": "12.5"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "25",
+   "distractorRationale": {
+    "a": "Correct: Q is approximately 1/(2 zeta), so with zeta = 0.02 Q = 1/0.04 = 25.",
+    "b": "That would correspond to a damping ratio of 0.01; Q is 1/(2 zeta), not 1/zeta.",
+    "c": "That is 2 zeta, the inverse of Q.",
+    "d": "That is 1/(4 zeta); the factor of two is already in the formula."
+   },
+   "explanation": "Q is approximately 1/(2 zeta), so with zeta = 0.02 Q = 1/0.04 = 25. This means the resonant amplitude is about 25 times the static deflection under the same force amplitude.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A response curve peaks at 80 Hz. The amplitude is 0.707 of the peak at 78 Hz and at 82 Hz. Estimate the damping ratio (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o1"
+   ],
+   "correctValue": 0.025,
+   "tolerance": 0.001,
+   "unit": "dimensionless",
+   "explanation": "The half-power bandwidth is 82 - 78 = 4 Hz. Then zeta = Delta f / (2 f_n) = 4 / (2(80)) = 0.0250.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A lightly damped bracket has a damping ratio of 0.008. A harmonic force of amplitude 15 N is applied at its natural frequency. The bracket stiffness is 40000 N/m. Find the resonant amplitude in millimetres.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o2",
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o3"
+   ],
+   "correctValue": 23.4375,
+   "tolerance": 0.46875,
+   "unit": "mm",
+   "explanation": "Q = 1/(2 zeta) = 1/(2(0.008)) = 62.5. The static deflection is F0/k = 15/40000 = 3.75e-4 m = 0.375 mm. The resonant amplitude is Q x static deflection = 23.44 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two resonances of the same structure are compared on a measured response plot. The first is tall and narrow, the second low and broad. What can be concluded?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o1",
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The first mode has the higher damping ratio and the lower Q"
+    },
+    {
+     "id": "b",
+     "text": "Both modes have the same Q because both peaks are at resonance"
+    },
+    {
+     "id": "c",
+     "text": "The first mode has the higher Q and the smaller damping ratio"
+    },
+    {
+     "id": "d",
+     "text": "The second mode has the higher Q because its bandwidth is larger"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The first mode has the higher Q and the smaller damping ratio",
+   "distractorRationale": {
+    "a": "Heavy damping gives a low, broad peak, not a tall narrow one.",
+    "b": "Q depends on the sharpness of the peak, so the two modes differ.",
+    "c": "Correct: Q is f_n divided by the half-power bandwidth, so a narrow tall peak has a large Q and therefore a small damping ratio.",
+    "d": "Bandwidth is inversely related to Q: a broader peak means a lower Q."
+   },
+   "explanation": "Q is f_n divided by the half-power bandwidth, so a narrow tall peak has a large Q and therefore a small damping ratio. The broad low peak belongs to the more heavily damped mode.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the half-power bandwidth method, the two frequencies that define the bandwidth are the points at which the response amplitude has fallen to",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.5 of its peak value"
+    },
+    {
+     "id": "b",
+     "text": "0.25 of its peak value"
+    },
+    {
+     "id": "c",
+     "text": "0.9 of its peak value"
+    },
+    {
+     "id": "d",
+     "text": "0.707 of its peak value"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "0.707 of its peak value",
+   "distractorRationale": {
+    "a": "Half of the power corresponds to 0.707 of the amplitude, not half of the amplitude.",
+    "b": "A quarter of the amplitude is far below the half-power level.",
+    "c": "A 10 % drop is not the half-power condition.",
+    "d": "Correct: Power in a vibration response is proportional to amplitude squared, so half power means an amplitude of 1/sqrt(2), about 0.707 of the peak."
+   },
+   "explanation": "Power in a vibration response is proportional to amplitude squared, so half power means an amplitude of 1/sqrt(2), about 0.707 of the peak. This is also a drop of about 3 dB.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A force of amplitude 40 N is applied at the natural frequency of 15.0 Hz to a system of stiffness 16000 N/m. The measured resonant amplitude is 18 mm. Using Q = peak amplitude divided by the static deflection and the relation between Q and bandwidth, find the half-power bandwidth in Hz.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o1",
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o2",
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o3"
+   ],
+   "correctValue": 2.08333,
+   "tolerance": 0.0416667,
+   "unit": "Hz",
+   "explanation": "The static deflection is F0/k = 40/16000 = 2.5e-3 m = 2.5 mm, so Q = 18/2.5 = 7.2. The bandwidth is f_n/Q = 15.0/7.2 = 2.083 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how you would estimate the damping ratio of a lightly damped mode from a measured frequency response curve using the half-power method, and list the assumptions on which the estimate depends.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o1"
+   ],
+   "markingGuide": [
+    "Locate the peak and read its frequency f_n and amplitude X_max",
+    "Find the two frequencies where amplitude equals X_max/sqrt(2) (0.707 X_max, minus 3 dB)",
+    "Bandwidth is f2 - f1; zeta is approximately (f2 - f1)/(2 f_n) and Q is f_n/(f2 - f1)",
+    "Assumes light damping (zeta below about 0.1)",
+    "Assumes an isolated mode, with no overlap from neighbouring modes",
+    "Requires frequency resolution fine enough to resolve the bandwidth"
+   ],
+   "explanation": "The method reads damping from the width of the peak at 0.707 of its height. It is an approximation which breaks down if the mode is heavily damped, overlapped by another mode or poorly resolved.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A mode is measured to have Q = 40. Its damping ratio is approximately",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.025"
+    },
+    {
+     "id": "b",
+     "text": "0.0125"
+    },
+    {
+     "id": "c",
+     "text": "0.05"
+    },
+    {
+     "id": "d",
+     "text": "0.0063"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "0.0125",
+   "distractorRationale": {
+    "a": "That is 1/Q, missing the factor of two in Q = 1/(2 zeta).",
+    "b": "Correct: Rearranging Q = 1/(2 zeta) gives zeta = 1/(2Q) = 1/80 = 0.0125.",
+    "c": "That is 2/Q, inverting the factor of two.",
+    "d": "That is 1/(2Q), doubling the factor of two."
+   },
+   "explanation": "Rearranging Q = 1/(2 zeta) gives zeta = 1/(2Q) = 1/80 = 0.0125. A Q of 40 corresponds to a very lightly damped mode with a sharp peak.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A mode has a damping ratio of 0.3. Its exact magnification peaks at r = 0.906 with a value of 1.747, whereas 1/(2 zeta) = 1.667. The points where the amplitude is 0.707 of 1/(2 zeta) lie at r = 0.440 and 1.203 (from r^2 = 1 - 2 zeta^2 plus or minus 2 zeta sqrt(1 + zeta^2)), while the points at 0.707 of the true peak lie at r = 0.498 and 1.180. Use these to assess the accuracy of the half-power method as it is actually applied to a measured peak, and explain physically why it is unreliable for heavily damped modes.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o1",
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o2"
+   ],
+   "markingGuide": [
+    "In practice the 0.707 level is taken from the measured (true) peak 1.747: the crossings are r = 0.498 and 1.180, so the bandwidth ratio is 0.682 and the estimate is zeta = 0.682/2 = 0.341, an overestimate of about 14 per cent",
+    "Using the level 0.707 of 1/(2 zeta) = 1.667 instead gives crossings 0.440 and 1.203, bandwidth 0.763 and zeta = 0.381, about 27 per cent high; the reference peak must therefore be stated",
+    "The approximation r2 - r1 = 2 zeta relies on small zeta",
+    "The peak shape becomes asymmetric and the peak shifts below the natural frequency (sqrt(1 - 2 zeta^2))",
+    "Q = 1/(2 zeta) no longer gives the exact peak magnification; neighbouring modes overlap",
+    "For heavy damping use curve fitting or the time-domain method instead"
+   ],
+   "explanation": "With zeta = 0.3 the true bandwidth is 0.763 natural frequencies against 0.6 predicted, so (using 0.707 of 1/(2 zeta)) the bandwidth-based estimate is 0.381, about 27 per cent high. With the 0.707 level taken from the true peak, as in a real measurement, the points are 0.498 and 1.180, the bandwidth is 0.682 and zeta is estimated as 0.341, about 14 per cent high. Either way the method overestimates. The approximation needs a symmetric peak, which only occurs for light damping.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "The quality factor Q of a lightly damped SDOF system is approximately equal to the ratio of its resonant amplitude to the static deflection under the same force amplitude.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o2",
+    "ug.mce-machine-dynamics-vibrations.damping-q.half-power-q.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "At r = 1 the magnification is 1/(2 zeta), which equals Q and equals resonant amplitude divided by static deflection F0/k. This is why a high-Q system is so sensitive to excitation near its natural frequency.",
+   "board": "internal"
+  }
+ ]
+}

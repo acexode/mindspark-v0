@@ -1,0 +1,400 @@
+{
+ "lessonTitle": "Beam Bending Vibration and Rayleigh's Method",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A thin steel boom carries a small sensor at its free end and is clamped at the other end. When the vehicle hits a bump the sensor wobbles at one particular frequency, and adding a heavier sensor lowers that frequency noticeably. Beam vibration theory predicts this frequency from the beam's stiffness, mass and end conditions."
+  },
+  {
+   "type": "text",
+   "markdown": "Unlike a spring-mass system, a beam has mass and stiffness spread along its length, so it has an infinite number of natural frequencies. For a uniform slender beam with bending stiffness $EI$ (N m$^2$) and mass per unit length $\\rho A$ (kg/m), the **Euler-Bernoulli** equation for the transverse deflection $y(x,t)$ (m) is $EI\\,\\partial^4y/\\partial x^4+\\rho A\\,\\partial^2y/\\partial t^2=0$. It ignores shear deformation and rotary inertia, so it is accurate for slender beams (length at least about 10 times the depth) and low modes."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Beam natural frequencies",
+   "text": "Substituting $y=Y(x)\\cos\\omega t$ gives $Y''''=\\beta^4Y$ with $\\beta^4=\\rho A\\omega^2/(EI)$. Applying the boundary conditions leaves a set of allowed values $\\beta_nL$, so the natural frequencies are $\\omega_n=(\\beta_nL)^2\\sqrt{EI/(\\rho AL^4)}$ rad/s. The factor $(\\beta_nL)^2$ depends only on the end conditions and mode number."
+  },
+  {
+   "type": "math",
+   "latex": "\\omega_n=(\\beta_nL)^2\\sqrt{\\frac{EI}{\\rho AL^4}},\\qquad \\text{cantilever: }\\beta_1L=1.875,\\ \\beta_2L=4.694;\\quad\\text{pinned-pinned: }\\beta_nL=n\\pi",
+   "caption": "Natural frequencies of a uniform Euler-Bernoulli beam (rad/s)"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "End conditions",
+    "$\\beta_1L$",
+    "$(\\beta_1L)^2$",
+    "$\\beta_2L$",
+    "Comment"
+   ],
+   "rows": [
+    [
+     "Fixed-free (cantilever)",
+     "1.875",
+     "3.516",
+     "4.694",
+     "Most flexible support"
+    ],
+    [
+     "Pinned-pinned",
+     "3.142",
+     "9.870",
+     "6.283",
+     "Exact $n\\pi$"
+    ],
+    [
+     "Fixed-fixed",
+     "4.730",
+     "22.37",
+     "7.853",
+     "Stiffest support"
+    ],
+    [
+     "Free-free",
+     "4.730",
+     "22.37",
+     "7.853",
+     "Same as fixed-fixed, plus two rigid-body modes at zero frequency"
+    ]
+   ],
+   "caption": "Frequency coefficients for uniform beams (standard values)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Cantilever fundamental frequency",
+   "prompt": "A steel strip (200 GPa, 7850 kg/m^3) is 20 mm wide and 6 mm thick and projects 0.5 m from a clamp. Find its first bending natural frequency.",
+   "steps": [
+    {
+     "text": "Second moment of area about the bending axis and cross-section area.",
+     "latex": "I=\\frac{bh^3}{12}=3.600 x 10^{-10}\\ \\text{m}^4,\\quad A=bh=1.20 x 10^{-4}\\ \\text{m}^2"
+    },
+    {
+     "text": "Bending stiffness and mass per unit length.",
+     "latex": "EI=72.0\\ \\text{N m}^2,\\quad \\rho A=0.942\\ \\text{kg/m}"
+    },
+    {
+     "text": "Frequency parameter: use the cantilever value (beta_1 L)^2 = 3.516.",
+     "latex": "\\omega_1=3.516\\sqrt{\\frac{72.0}{0.942\\times0.5^4}}=123.0\\ \\text{rad/s}"
+    },
+    {
+     "text": "Convert to hertz.",
+     "latex": "f_1=\\omega_1/2\\pi=19.57\\ \\text{Hz}"
+    }
+   ],
+   "answer": "omega_1 = 123.0 rad/s, f_1 = 19.57 Hz."
+  },
+  {
+   "type": "text",
+   "markdown": "**Rayleigh's method.** Exact solutions exist only for simple cases. Rayleigh's method estimates the fundamental frequency from an assumed shape $Y(x)$ that satisfies the geometric boundary conditions (zero deflection and slope at a clamp). Equating the maximum strain energy $\\tfrac12\\int EI(Y'')^2dx$ to the maximum kinetic energy $\\tfrac12\\omega^2[\\int\\rho AY^2dx+\\sum M_iY(x_i)^2]$ gives the Rayleigh quotient below. A better shape gives a better estimate, and the estimate is never below the true fundamental frequency, because any assumed shape adds a constraint to the system."
+  },
+  {
+   "type": "math",
+   "latex": "\\omega^2\\approx\\frac{\\int_0^LEI\\,(Y'')^2\\,dx}{\\int_0^L\\rho A\\,Y^2\\,dx+\\sum_iM_iY(x_i)^2}",
+   "caption": "Rayleigh quotient (M_i are added point masses at x_i)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Rayleigh estimate for the same cantilever",
+   "prompt": "Use Rayleigh's method for the 0.5 m steel cantilever above with the simple shape Y = (x/L)^2, then with the static tip-load shape Y = (3Lx^2 - x^3)/(2L^3) (whose integrals give a mass factor of 33/140), and finally with a 0.3 kg tip mass added.",
+   "steps": [
+    {
+     "text": "Simple shape: Y'' = 2/L^2, so the strain energy integral is 4EI/L^3, and the integral of Y^2 is L/5.",
+     "latex": "\\omega^2=\\frac{4EI/L^3}{\\rho AL/5}=20\\frac{EI}{\\rho AL^4}\\Rightarrow\\omega=156.4\\ \\text{rad/s}\\ (27\\%\\ \\text{above exact})"
+    },
+    {
+     "text": "Static tip-load shape: numerator 3EI/L^3, denominator (33/140) times the beam mass m_b = rho A L.",
+     "latex": "\\omega^2=\\frac{3EI/L^3}{(33/140)m_b}=\\frac{1728.0}{0.1110}\\Rightarrow\\omega=124.8\\ \\text{rad/s}\\ (1.5\\%\\ \\text{above exact})"
+    },
+    {
+     "text": "Add a tip mass of 0.3 kg. Y at the tip equals 1, so M_t simply adds to the effective mass.",
+     "latex": "\\omega^2=\\frac{3EI/L^3}{(33/140)m_b+M_t}=\\frac{1728.0}{0.4110}\\Rightarrow\\omega=64.8\\ \\text{rad/s}=10.32\\ \\text{Hz}"
+    }
+   ],
+   "answer": "Rayleigh estimates: 156.4 rad/s (quadratic shape), 124.8 rad/s (static shape), against the exact 123.0 rad/s. With the 0.3 kg tip mass the frequency falls to 64.8 rad/s (10.32 Hz)."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find $EI$ and $\\rho A$ (kg/m) from the section and material; use $I=bh^3/12$ or $\\pi d^4/64$.",
+    "Pick the coefficient $(\\beta_nL)^2$ for the end conditions and mode, then $\\omega_n=(\\beta_nL)^2\\sqrt{EI/(\\rho AL^4)}$.",
+    "When the beam is non-uniform or carries masses, use Rayleigh's quotient with a shape satisfying the geometric boundary conditions; the static deflection shape is a good choice.",
+    "Added mass lowers the frequency, extra constraint raises it."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Scaling rules",
+   "text": "For a given uniform beam, $\\omega\\propto\\sqrt{E/\\rho}\\,(h/L^2)$ for a rectangular section: doubling the length cuts every frequency by a factor of 4, while doubling the thickness doubles it. Frequency does not depend on the width of a rectangular section, since width cancels between $I$ and $A$."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Effects of boundary conditions and added mass",
+   "text": "Adding a support or making an end clamped raises the frequencies (stiffening); adding mass lowers them, most strongly where the deflection is largest, because the added kinetic energy scales with $Y(x_i)^2$. A mass at the clamp does almost nothing; a mass at the tip of a cantilever does most."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Uniform beam frequencies: $\\omega_n=(\\beta_nL)^2\\sqrt{EI/(\\rho AL^4)}$ with $(\\beta_1L)^2=3.516$ for a cantilever, $9.870$ pinned-pinned and $22.37$ fixed-fixed.",
+    "Rayleigh's quotient estimates the fundamental frequency from an assumed shape and is an upper bound; the static deflection shape is accurate.",
+    "Point masses add $M_iY(x_i)^2$ to the denominator, so a tip mass lowers the cantilever frequency most.",
+    "Constraints raise frequencies; added mass lowers them."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "The first natural frequency of a uniform cantilever beam is given by which expression?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "omega_1 = 3.52 sqrt(EI/(rho A L^4)) rad/s"
+    },
+    {
+     "id": "b",
+     "text": "omega_1 = 9.87 sqrt(EI/(rho A L^4)) rad/s"
+    },
+    {
+     "id": "c",
+     "text": "omega_1 = 3.52 sqrt(EI/(rho A L^2)) rad/s"
+    },
+    {
+     "id": "d",
+     "text": "omega_1 = 3.52 sqrt(rho A L^4/(EI)) rad/s"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "omega_1 = 3.52 sqrt(EI/(rho A L^4)) rad/s",
+   "distractorRationale": {
+    "a": "Correct: The cantilever coefficient is (beta_1 L)^2 = 1.875^2 = 3.52, and the frequency scales as sqrt(EI/(rho A L^4)).",
+    "b": "9.87 is the pinned-pinned coefficient, not the cantilever one.",
+    "c": "The dimension is wrong: L enters to the fourth power inside the root.",
+    "d": "That inverts stiffness and mass: a stiffer beam would then be slower."
+   },
+   "explanation": "The cantilever coefficient is (beta_1 L)^2 = 1.875^2 = 3.52, and the frequency scales as sqrt(EI/(rho A L^4)). Stiffness raises the frequency, mass and length lower it.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "An aluminium rod of diameter 10 mm (E = 70 GPa, density 2700 kg/m^3) projects 0.3 m from a rigid clamp and is free at its other end. Find its first bending natural frequency in Hz, taking (beta_1 L)^2 = 3.516.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o1"
+   ],
+   "correctValue": 79.1469,
+   "tolerance": 0.791469,
+   "unit": "Hz",
+   "explanation": "I = pi d^4/64 = 4.909 x 10^{-10} m^4 and A = pi d^2/4 = 7.854 x 10^{-5} m^2, so EI = 34.36 N m^2 and rho A = 0.2121 kg/m. Then omega_1 = 3.516 sqrt(34.36/(0.2121 x 0.3^4)) = 497.3 rad/s, i.e. 79.15 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A cantilever beam is replaced by an identical one of twice the length, with the same section and material. Its first natural frequency becomes",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "one half of the original"
+    },
+    {
+     "id": "b",
+     "text": "one quarter of the original"
+    },
+    {
+     "id": "c",
+     "text": "one eighth of the original"
+    },
+    {
+     "id": "d",
+     "text": "unchanged, because the section is the same"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "one quarter of the original",
+   "distractorRationale": {
+    "a": "Frequency goes as 1/L^2, not 1/L.",
+    "b": "Correct: In omega = 3.516 sqrt(EI/(rho A L^4)) the length appears as 1/L^2 after the root.",
+    "c": "1/L^3 would arise for a different scaling; the relation here is inverse square of the length.",
+    "d": "The length enters through L^4 under the root, so it matters."
+   },
+   "explanation": "In omega = 3.516 sqrt(EI/(rho A L^4)) the length appears as 1/L^2 after the root. Doubling L therefore divides the frequency by 4.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A pinned-pinned beam of length 1.0 m has bending stiffness EI = 2.0 x 10^4 N m^2 and mass per unit length 5.0 kg/m. Find its fundamental natural frequency in Hz.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o1",
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o3"
+   ],
+   "correctValue": 99.3459,
+   "tolerance": 0.993459,
+   "unit": "Hz",
+   "explanation": "For pinned-pinned ends beta_1 L = pi, so omega_1 = pi^2 sqrt(EI/(rho A L^4)) = 9.8696 x sqrt(20000/5.0) = 624.2 rad/s. Dividing by 2 pi gives 99.35 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A small instrument mass can be bolted either close to the clamped root or at the free tip of a cantilever beam. Which position lowers the fundamental frequency more, and why?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The root, because the bending moment there is largest"
+    },
+    {
+     "id": "b",
+     "text": "Both positions have the same effect, since the mass is the same"
+    },
+    {
+     "id": "c",
+     "text": "The tip, because the deflection there is largest and the added kinetic energy scales with the square of the local deflection"
+    },
+    {
+     "id": "d",
+     "text": "Neither, because added mass changes the damping only"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The tip, because the deflection there is largest and the added kinetic energy scales with the square of the local deflection",
+   "distractorRationale": {
+    "a": "The strain energy in the beam is not what changes; the added mass changes the kinetic energy term, which depends on local deflection.",
+    "b": "The effect scales as M Y(x)^2, so position matters.",
+    "c": "Correct: In Rayleigh's quotient an added mass M at x contributes M Y(x)^2 to the denominator.",
+    "d": "Mass changes the inertia and so the natural frequency, not only the damping."
+   },
+   "explanation": "In Rayleigh's quotient an added mass M at x contributes M Y(x)^2 to the denominator. At the clamp Y is zero, so the mass is almost irrelevant; at the tip Y is largest so the frequency falls most.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A uniform cantilever of length 0.4 m, bending stiffness 45 N m^2 and mass per unit length 1.5 kg/m carries a 0.25 kg point mass at its free tip. Use Rayleigh's method with the static tip-load shape Y = (3Lx^2 - x^3)/(2L^3), for which the integral of rho A Y^2 equals (33/140) times the beam mass, to estimate the fundamental frequency in Hz.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o2",
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o3"
+   ],
+   "correctValue": 11.6834,
+   "tolerance": 0.116834,
+   "unit": "Hz",
+   "explanation": "The beam mass is 1.5 x 0.4 = 0.6 kg. The numerator is 3EI/L^3 = 2109.4 N/m. The effective mass is (33/140) x 0.6 + 0.25 = 0.3914 kg, since Y(L) = 1. So omega^2 = 5389 and omega = 73.41 rad/s = 11.68 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how Rayleigh's method is used to estimate the fundamental frequency of a beam, how a suitable shape function is chosen, and why the answer is never below the true frequency.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o2"
+   ],
+   "markingGuide": [
+    "Assume a shape Y(x) satisfying the geometric boundary conditions (zero deflection and slope at a clamp, zero deflection at a pin)",
+    "Maximum strain energy (1/2) integral EI (Y'')^2 dx equals maximum kinetic energy (1/2) omega^2 [integral rho A Y^2 dx + sum M_i Y(x_i)^2]",
+    "Solve for omega^2: Rayleigh quotient",
+    "Good shape choice: static deflection under a representative load, which is close to the true mode",
+    "Upper bound: an assumed shape forces the beam to deform in a particular way, an extra constraint that makes the system stiffer, so frequency can only rise",
+    "Point masses add M Y(x_i)^2 to the denominator"
+   ],
+   "explanation": "Rayleigh's method equates strain and kinetic energy for a trial shape. Because any trial shape is a constraint on the true motion, the quotient is never lower than the true fundamental frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Rayleigh's method is applied to a beam with an assumed deflection shape that satisfies the geometric boundary conditions. Compared with the true fundamental frequency, the estimate is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "always lower"
+    },
+    {
+     "id": "b",
+     "text": "equal or lower, never higher"
+    },
+    {
+     "id": "c",
+     "text": "unrelated to the true value"
+    },
+    {
+     "id": "d",
+     "text": "equal or higher, never lower"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "equal or higher, never lower",
+   "distractorRationale": {
+    "a": "The assumed shape stiffens the system, so the estimate cannot fall below the true value.",
+    "b": "Underestimates are not possible for the fundamental mode.",
+    "c": "The estimate approaches the true value as the shape approaches the true mode.",
+    "d": "Correct: An assumed shape is a constraint on the motion, which can only raise the frequency in comparison with the unconstrained beam."
+   },
+   "explanation": "An assumed shape is a constraint on the motion, which can only raise the frequency in comparison with the unconstrained beam. The estimate equals the true value only if the shape is exactly the true mode.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A cantilever beam has a fundamental frequency of 40 Hz. Using the standard coefficients for uniform beams, find the approximate fundamental frequency if it is instead pinned at both ends, and when fixed at both ends (same beam, same length). Explain physically why the order of the three frequencies is as found, and say what happens to each if a heavy mass is attached at midspan.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o1",
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o3"
+   ],
+   "markingGuide": [
+    "Frequency scales with the coefficient (beta_1 L)^2: 3.516 cantilever, 9.870 pinned-pinned, 22.37 fixed-fixed",
+    "Pinned-pinned: 40 x 9.870/3.516 = 112 Hz",
+    "Fixed-fixed: 40 x 22.37/3.516 = 254 Hz",
+    "More constraint means more bending stiffness for the same mass, so frequency rises",
+    "Mass at midspan lowers all three, with greatest effect for the pinned-pinned and fixed-fixed beams where midspan deflection is largest in the fundamental",
+    "Effect is via M Y(x)^2 in the Rayleigh denominator"
+   ],
+   "explanation": "The coefficients scale as 3.516 : 9.870 : 22.37, giving 40, 112 and 254 Hz. Midspan is where the deflection of the pinned and fixed beams is greatest, so mass there lowers their frequency the most.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Fixing a previously free support so that a beam is more strongly restrained at its ends raises its natural frequencies, other things being equal.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.continuous-systems.beam-vibration.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Extra restraint stiffens the beam without adding mass, so each natural frequency increases. This is why the fixed-fixed coefficient (22.37) is higher than the pinned-pinned (9.87) and the cantilever (3.52).",
+   "board": "internal"
+  }
+ ]
+}

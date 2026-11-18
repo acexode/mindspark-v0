@@ -1,0 +1,75 @@
+{
+  "subjectId": "ug.mce-stress-analysis-2",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "I recomputed every numeric key and worked example in Python (yield and brittle criteria, thin and thick vessels, shrink fit, strain energy and impact, Castigliano and unit-load, redundant bars and settlement, Euler, Johnson and secant, rosettes, bridge outputs, Kt, angle-section corner stresses, channel shear centre). All numeric keys, tolerances and units are correct. The angle-section sign claim is also correct: for a sagging Mx the horizontal-leg tip is in compression (-22.6 and -39.3 MPa) because it lies above the sloping neutral axis, and the shear centre of the channel is correctly placed outside the web on the side away from the flanges, with e = 3b^2/(h+6b) re-derived. I found no wrong keys. Two real problems need fixing: a wrong direction statement in the rosette worked example, and a cross-unit inconsistency in the Euler validity limit versus the Johnson transition. The remaining issues are minor clarity and consistency points. No tab or control characters, literal unicode escape text, placeholder steps, stale option-letter references, '[object Object]' or garbled characters were found. This is an AI review only: the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.strain-gauge-experiments.rosettes-and-comparison",
+      "severity": "major",
+      "category": "explanation",
+      "problem": "In the worked example 'Principal stresses from the same rosette' the last step says 'Compare with the naive E*eps1=162.2 MPa, which overestimates sigma1 because it ignores the compressive Poisson contribution of eps2.' The naive value 162.2 MPa is LOWER than the correct sigma1 = 170.9 MPa, so it underestimates. The reason given is also wrong: the factor 1/(1-nu^2) raises the result by more than the negative nu*eps2 term lowers it. This contradicts q005 in the same unit ('Using E*eps1 alone would give 184.5 MPa, which is too low').",
+      "suggestedFix": "State that E*eps1 = 162.2 MPa underestimates sigma1 = 170.9 MPa (about 5% low) in this case, because the plane-stress factor E/(1-nu^2) outweighs the negative nu*eps2 term. Do not give a general over- or under-estimate rule, since the direction depends on eps2/eps1."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.column-buckling.euler-buckling",
+      "questionId": "ug.mce-stress-analysis-2.column-buckling.euler-buckling.q004",
+      "severity": "major",
+      "category": "consistency",
+      "problem": "The Euler unit teaches that Euler applies for lambda >= pi*sqrt(E/Sy) (q004 key 74.6 for Sy=355 MPa; q005 and q009 use 88.9 for Sy=250 MPa; 'Below lambda_c ... Euler overestimates'). The next unit (practical-columns) says Euler is used only for lambda >= pi*sqrt(2E/Sy) (106 for Sy=350 MPa, 125.7 for Sy=250 MPa), with Johnson below, and its own worked example states 'the Euler limit of 125.7'. For 88.9 < lambda < 125.7 (Sy=250 MPa) the first unit says Euler is valid but the second says use Johnson, which gives a materially lower stress (for example lambda=90 gives 244 MPa from Euler but 186 MPa from Johnson; lambda=100 gives 197 versus 171 MPa). A student following q004/q009 would size a column non-conservatively in this range.",
+      "suggestedFix": "In the Euler unit, say that sigma_cr = Sy (lambda = pi*sqrt(E/Sy)) is only a necessary upper bound; in practice Euler is trusted only when sigma_cr <= Sy/2, i.e. lambda >= pi*sqrt(2E/Sy), which is the transition used by Johnson in the next unit. Update q004, q005, q009 and the Euler worked example wording to use or reference that limit (or explicitly flag that 88.9 is the yield bound and that the range up to 125.7 is covered by Johnson)."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.strain-gauge-experiments.strain-gauge-measurement",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Python number formatting leaked into LaTeX and explanations, for example 'f_1=6.250e-06', 'M_x=3.46e+06, M_y=2e+06', 'sigma=E*4.0e-04', 'I_x=I_y=7.37e+05', '1.26e+05 mm^4'. These render as raw 'e+06' notation inside maths and are hard to read.",
+      "suggestedFix": "Rewrite as 6.25\\times10^{-6}, 3.46\\times10^{6}, etc. Same problem appears in indeterminate-effects (f_1, f_2), strain-gauge and unsymmetric-bending lessons and in column-buckling practical-columns q008 explanation."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects",
+      "questionId": "ug.mce-stress-analysis-2.indeterminate-structures.indeterminate-effects.q008",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "The stem refers to 'a simply supported beam and a two-span continuous beam ... each subjected to a 5 mm settlement of one interior support'. A simply supported beam has no interior support, so the premise is inconsistent.",
+      "suggestedFix": "Say 'a 5 mm settlement of one support' (an end support for the simply supported beam, the central support for the continuous beam), or compare a simply supported single span with a two-span beam whose middle support settles."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria",
+      "questionId": "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria.q008",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The pipe has mean radius 50 mm and wall 8 mm, so t/D = 0.08, beyond the t/D <~ 1/20 thin-wall limit taught in the pressure-vessels module. The key (16 MPa) is correct under the stated thin-wall model (the Lame inner-surface value is within about 1%), but the geometry contradicts the lesson's own validity limit.",
+      "suggestedFix": "Use a thinner wall (for example t = 4 mm at mean radius 50 mm, t/D = 0.04) and recompute, or add a note that t/D is slightly outside the thin-wall range and the result is approximate."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "In 'The same hole in a ductile and a brittle plate' the ductile factor of safety is reported as n = Sy/sigma_nom = 3.33 immediately after noting the elastic peak (225 MPa) gives only 300/225 = 1.33. The lesson and summary also state that Kt is 'normally ignored' for static ductile strength without limiting this to materials with real ductility (it does not hold for low-ductility, cold-worked or low-temperature material, or for crack-like notches). A reader may take 3.33 as a general margin against local failure.",
+      "suggestedFix": "Label 3.33 as the net-section yielding margin, mention the 1.33 elastic-peak margin for comparison, and add the caveat that ignoring Kt applies only to adequately ductile material under static load."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders",
+      "questionId": "ug.mce-stress-analysis-2.pressure-vessels.thick-cylinders.q007",
+      "severity": "minor",
+      "category": "explanation",
+      "problem": "The marking guide and explanation say the circumferential strain is largest at the bore 'since the circumferential strain is u/r and u varies slowly across the wall' and that 'the inner layers must stretch more ... to accommodate the same radial displacement pattern'. This is loose and not a rigorous reason; the stress statement B/r^2 decreasing with r is the actual justification.",
+      "suggestedFix": "State that the radial displacement has the form u = Cr + D/r, so eps_theta = u/r = C + D/r^2 decreases with r, and by Hooke's law sigma_theta does too; drop the 'varies slowly' wording."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.unsymmetric-bending-and-shear-centre.unsymmetric-bending",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "The summary says 'For an angle section the principal axes lie at 45 degrees to the legs'. This holds only for an equal-leg angle; for an unequal-leg angle the principal axes are at another angle.",
+      "suggestedFix": "Change to 'For an equal-leg angle the principal axes lie at 45 degrees to the legs'."
+    },
+    {
+      "subtopicId": "ug.mce-stress-analysis-2.failure-criteria.brittle-failure-criteria",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Warning callout: 'Von Mises would treat compression and tension symmetrically and so would overpredict tensile capacity.' Whether tensile capacity is over- or under-predicted depends on which single strength is used; with Suc as the strength it overpredicts, with Sut it does not.",
+      "suggestedFix": "Reword to 'Von Mises (with one strength) treats tension and compression symmetrically, so it overpredicts tensile capacity if the compressive strength is used and badly underpredicts compressive capacity if the tensile strength is used.'"
+    }
+  ]
+}

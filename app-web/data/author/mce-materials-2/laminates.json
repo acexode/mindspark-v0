@@ -1,0 +1,427 @@
+{
+ "lessonTitle": "Laminates",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A carbon-fibre drive shaft transmits the torque of a racing car at under half the mass of a steel shaft. Yet a single sheet of the same carbon-fibre prepreg, pulled across the fibres, is barely stiffer than a plastic. The shaft works because the fibres are laid at carefully chosen angles and stacked in a carefully chosen order: a laminate is designed ply by ply."
+  },
+  {
+   "type": "text",
+   "markdown": "A **lamina** (ply) is a thin layer of unidirectional fibres in a matrix, with very different properties along and across the fibres. A **laminate** is a stack of plies, each at its own angle $\\theta$ to a reference axis $x$. Its in-plane behaviour is controlled by the angles and thicknesses of the plies; its out-of-plane (bending and coupling) behaviour is also controlled by the order in which they are stacked."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Ply axes, angle and stacking notation",
+   "text": "The **1-axis** runs along the fibres and the **2-axis** across them. The ply angle $\\theta$ is measured from the laminate $x$-axis to the fibre direction. A laminate code lists the plies from the top, in degrees: $[0/90/90/0]$. A subscript s ($[0/45/-45]_s$) means the sequence is repeated in mirror order about the mid-plane, giving $0, 45, -45, -45, 45, 0$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Ply property (CFRP, typical)",
+    "Value"
+   ],
+   "rows": [
+    [
+     "Fibre-direction modulus E1",
+     "140 GPa"
+    ],
+    [
+     "Transverse modulus E2",
+     "10 GPa"
+    ],
+    [
+     "In-plane shear modulus G12",
+     "5 GPa"
+    ],
+    [
+     "Major Poisson's ratio nu12",
+     "0.30"
+    ]
+   ],
+   "caption": "Unidirectional carbon/epoxy ply used in the worked examples of this unit."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{1}{E_x(\\theta)}=\\frac{\\cos^{4}\\theta}{E_1}+\\left(\\frac{1}{G_{12}}-\\frac{2\\nu_{12}}{E_1}\\right)\\sin^{2}\\theta\\cos^{2}\\theta+\\frac{\\sin^{4}\\theta}{E_2}",
+   "caption": "Modulus of a single unidirectional ply loaded at an angle theta to the fibres. At theta = 0 it equals E1 and at theta = 90 degrees it equals E2."
+  },
+  {
+   "type": "worked_example",
+   "title": "Stiffness of a single ply loaded off-axis",
+   "prompt": "For the CFRP ply in the table, find the modulus $E_x$ when the load axis is at $\\theta=30^\\circ$ to the fibres, and compare with $E_1$.",
+   "steps": [
+    {
+     "text": "Compute the trigonometric terms: $\\cos^4 30^\\circ=0.5625$, $\\sin^2 30^\\circ\\cos^2 30^\\circ=0.1875$ and $\\sin^4 30^\\circ=0.0625$."
+    },
+    {
+     "text": "Compute the shear coupling bracket $1/G_{12}-2\\nu_{12}/E_1$ in GPa$^{-1}$.",
+     "latex": "\\frac{1}{5}-\\frac{2\\times0.30}{140}=0.2-0.00429=0.19571"
+    },
+    {
+     "text": "Add the three terms.",
+     "latex": "\\frac{1}{E_x}=\\frac{0.5625}{140}+0.19571\\times0.1875+\\frac{0.0625}{10}=0.004018+0.036696+0.00625=0.046964\\ \\mathrm{GPa^{-1}}"
+    },
+    {
+     "text": "Invert to obtain the modulus and compare.",
+     "latex": "E_x=21.3\\ \\mathrm{GPa}\\approx0.15\\,E_1"
+    }
+   ],
+   "answer": "At 30 degrees the ply has a modulus of only 21.3 GPa, about 15 % of its fibre-direction value; a 30 degree misalignment costs most of the stiffness."
+  },
+  {
+   "type": "text",
+   "markdown": "**In-plane stiffness of a laminate.** If the plies are thin and the stress is uniform through the thickness, the laminate behaves as the thickness-weighted average of the plies' reduced stiffnesses transformed to the laminate axes. The in-plane stiffness matrix $\\mathbf{A}$ therefore depends on the **angles and the fraction of thickness at each angle**, but *not* on the order in which the plies are stacked. Bending stiffness is different: plies far from the mid-plane contribute most, so the stacking sequence strongly affects it."
+  },
+  {
+   "type": "math",
+   "latex": "\\mathbf{A}=\\sum_{k=1}^{N}\\overline{\\mathbf{Q}}_k\\,t_k\\ \\Rightarrow\\ \\frac{\\mathbf{A}}{h}=\\text{thickness-weighted average of }\\overline{\\mathbf{Q}}",
+   "caption": "Q-bar is the ply stiffness transformed to the laminate axes, t_k the thickness of ply k and h the total thickness. The sum does not depend on the stacking order."
+  },
+  {
+   "type": "worked_example",
+   "title": "In-plane modulus of a cross-ply laminate",
+   "prompt": "A $[0/90]_s$ laminate is made from the CFRP ply (equal thickness plies, half at $0^\\circ$ and half at $90^\\circ$). Estimate the laminate modulus $E_x$ (a) by simple averaging of $E_1$ and $E_2$, and (b) from the full average of the reduced stiffnesses, given $Q_{11}=140.9$ GPa, $Q_{22}=10.06$ GPa and $Q_{12}=3.02$ GPa.",
+   "steps": [
+    {
+     "text": "Simple estimate: half the thickness has modulus $E_1$ along $x$ and half has $E_2$.",
+     "latex": "E_x\\approx\\frac{140+10}{2}=75\\ \\mathrm{GPa}"
+    },
+    {
+     "text": "Full average of the ply stiffnesses along $x$ (the $0^\\circ$ ply contributes $Q_{11}$ to $A_{11}$ and the $90^\\circ$ ply $Q_{22}$), and the cross term is $Q_{12}$ for both plies.",
+     "latex": "\\frac{A_{11}}{h}=\\frac{140.9+10.06}{2}=75.49,\\quad\\frac{A_{12}}{h}=3.02,\\quad\\frac{A_{22}}{h}=75.49\\ \\mathrm{GPa}"
+    },
+    {
+     "text": "Apply the plane-stress relation with zero lateral stress, $E_x=\\left(A_{11}A_{22}-A_{12}^{2}\\right)/(A_{22}h)$.",
+     "latex": "E_x=\\frac{75.49^{2}-3.02^{2}}{75.49}=\\frac{5698.6-9.1}{75.49}=75.4\\ \\mathrm{GPa}"
+    }
+   ],
+   "answer": "The laminate has an in-plane modulus of about 75 GPa along both x and y (the simple average is within 0.5 %); the stacking order does not change it."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Laminate (CFRP ply above)",
+    "In-plane Ex (GPa)",
+    "In-plane Gxy (GPa)",
+    "Remarks"
+   ],
+   "rows": [
+    [
+     "[0] unidirectional",
+     "140",
+     "5",
+     "Very stiff along fibres, weak across them and in shear"
+    ],
+    [
+     "[0/90]s cross-ply",
+     "75",
+     "5",
+     "Equal stiffness in x and y; poor in shear"
+    ],
+    [
+     "[+45/-45]s angle-ply",
+     "17.7",
+     "36.2",
+     "Poor axial stiffness but high shear stiffness"
+    ],
+    [
+     "[0/+45/-45/90]s quasi-isotropic",
+     "54",
+     "20.6",
+     "Same in-plane stiffness in every direction"
+    ]
+   ],
+   "caption": "Computed with classical lamination theory (CFRP ply: E1 = 140 GPa, E2 = 10 GPa, G12 = 5 GPa, nu12 = 0.30)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Why a symmetric laminate does not warp.** In general, an in-plane load can cause curvature, and a bending moment can cause in-plane strain, through the coupling matrix $\\mathbf{B}=\\sum\\overline{\\mathbf{Q}}_k t_k z_k$, where $z_k$ is the distance of ply $k$ from the mid-plane. If the laminate is **symmetric** (every ply above the mid-plane has an identical ply, same material, thickness and angle, at the mirror position below), the contributions of the pairs have the same $\\overline{\\mathbf{Q}}t$ but opposite $z$, and cancel: $\\mathbf{B}=\\mathbf{0}$. An in-plane load then produces no curvature, so the laminate stays flat. An unsymmetric laminate such as $[0/90]$ has $\\mathbf{B}\\ne\\mathbf{0}$, and warps both under load and after the heat of curing."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Symmetric versus balanced",
+   "text": "**Symmetric** (mirror about the mid-plane) makes $\\mathbf{B}=\\mathbf{0}$ and prevents bending-extension coupling and cure warping. **Balanced** (every $+\\theta$ ply has a matching $-\\theta$ ply) makes the shear-extension terms $A_{16}=A_{26}=0$, so a tensile load produces no shear distortion. Good practice uses both."
+  },
+  {
+   "type": "text",
+   "markdown": "**A tube in torsion.** For a thin-walled tube of mean radius $r$ and wall thickness $t$, a torque $T$ gives a pure shear stress $\\tau=T/(2\\pi r^{2}t)$. Pure shear is equivalent to a tension $\\tau$ at $+45^\\circ$ and a compression $\\tau$ at $-45^\\circ$ to the tube axis. Plies with fibres at $\\pm45^\\circ$ therefore carry the load along their fibres, which is the stiffest, strongest direction, while a $0^\\circ$ ply would carry almost none of the shear. The $[\\pm45]$ laminate in the table has a shear modulus of 36 GPa against 5 GPa for a unidirectional ply."
+  },
+  {
+   "type": "math",
+   "latex": "\\tau=\\frac{T}{2\\pi r^{2}t}\\qquad\\sigma_{\\pm45^\\circ}=\\pm\\tau",
+   "caption": "T is the torque, r the mean radius and t the wall thickness of a thin tube; the principal stresses are tension and compression of magnitude tau at plus and minus 45 degrees to the axis."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A ply is much stiffer along the fibres than across them, and its modulus drops rapidly with off-axis angle: 21.3 GPa at 30 degrees for a ply with $E_1=140$ GPa.",
+    "In-plane laminate stiffness depends on the ply angles and thickness fractions, not on the stacking order; bending stiffness and coupling do depend on order.",
+    "A symmetric laminate has $\\mathbf{B}=\\mathbf{0}$, so it does not warp under in-plane load; a torsion tube should have its fibres at $\\pm45^\\circ$, aligned with the principal stresses."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two laminates are made from the same unidirectional plies, both symmetric: [0/45/-45/90]s and [45/0/90/-45]s. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "They have different in-plane stiffness because the outer ply differs"
+    },
+    {
+     "id": "b",
+     "text": "They have the same in-plane and bending stiffness because the plies are the same"
+    },
+    {
+     "id": "c",
+     "text": "They have the same in-plane stiffness but different bending stiffness"
+    },
+    {
+     "id": "d",
+     "text": "They have different in-plane stiffness but the same bending stiffness"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "They have the same in-plane stiffness but different bending stiffness",
+   "distractorRationale": {
+    "a": "Wrong: the outer ply does not change A, only the distribution of ply positions.",
+    "b": "Wrong: bending stiffness weights the outer plies more heavily, so the sequence matters.",
+    "c": "Correct: the in-plane matrix A depends only on the angles and the thickness fractions, and bending stiffness depends on how far each ply lies from the mid-plane.",
+    "d": "Wrong: the sequence leaves the in-plane stiffness unchanged, and it is the bending stiffness that differs."
+   },
+   "explanation": "The in-plane stiffness is a thickness-weighted average of the ply stiffnesses and is independent of order. The bending stiffness involves the square of the distance from the mid-plane, so plies on the outside contribute more, and a different sequence gives a different bending stiffness.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A unidirectional carbon/epoxy ply with $E_1=140$ GPa and $E_2=10$ GPa is loaded along the x-axis. For which fibre angle $\\theta$ from the x-axis is the ply modulus $E_x$ smallest?",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$90^\\circ$, with fibres perpendicular to the load"
+    },
+    {
+     "id": "b",
+     "text": "$0^\\circ$, with fibres along the load"
+    },
+    {
+     "id": "c",
+     "text": "$45^\\circ$"
+    },
+    {
+     "id": "d",
+     "text": "All angles give the same modulus"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$90^\\circ$, with fibres perpendicular to the load",
+   "distractorRationale": {
+    "a": "Correct: loading across the fibres uses the weak matrix-dominated modulus, $E_2=10$ GPa, which is the minimum for this ply.",
+    "b": "Wrong: the modulus is greatest, equal to $E_1$, with the fibres along the load.",
+    "c": "Wrong: at 45 degrees the modulus is about 13 GPa, larger than $E_2$.",
+    "d": "Wrong: a unidirectional ply is strongly anisotropic."
+   },
+   "explanation": "The off-axis modulus falls from $E_1=140$ GPa at 0 degrees to $E_2=10$ GPa at 90 degrees. For this ply it is about 21 GPa at 30 degrees, 13 GPa at 45 degrees and 10.7 GPa at 60 degrees.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A glass/epoxy ply has $E_1=40$ GPa, $E_2=8$ GPa, $G_{12}=4$ GPa and $\\nu_{12}=0.25$. Find its modulus $E_x$ when it is loaded at $60^\\circ$ to the fibres, using $1/E_x=\\cos^4\\theta/E_1+(1/G_{12}-2\\nu_{12}/E_1)\\sin^2\\theta\\cos^2\\theta+\\sin^4\\theta/E_2$. Give the answer in GPa.",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o1"
+   ],
+   "correctValue": 8.59,
+   "tolerance": 0.1,
+   "unit": "GPa",
+   "explanation": "At $60^\\circ$: $\\cos^4\\theta=0.0625$, $\\sin^2\\theta\\cos^2\\theta=0.1875$ and $\\sin^4\\theta=0.5625$. The bracket is $1/4-2\\times0.25/40=0.2375$, so $1/E_x=0.0625/40+0.2375\\times0.1875+0.5625/8=0.001563+0.044531+0.070313=0.116406$ GPa$^{-1}$, giving $E_x=8.59$ GPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A $[0/90]_s$ laminate is made from equal-thickness glass/epoxy plies with $E_1=40$ GPa and $E_2=8$ GPa. Estimate the laminate in-plane modulus $E_x$ as the thickness-weighted average of the ply moduli along $x$ (half the thickness at $0^\\circ$ and half at $90^\\circ$), in GPa.",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o1"
+   ],
+   "correctValue": 24,
+   "tolerance": 0.5,
+   "unit": "GPa",
+   "explanation": "Half the thickness is at $0^\\circ$ with modulus 40 GPa along $x$ and half is at $90^\\circ$ with 8 GPa, so $E_x\\approx(40+8)/2=24$ GPa. The full classical lamination calculation, including the Poisson coupling, gives 24.1 GPa, so the average is a close estimate.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which of the following laminates will warp (curl) when cooled from the cure temperature, or when an in-plane load is applied?",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "[0/90]s, a symmetric laminate"
+    },
+    {
+     "id": "b",
+     "text": "[0/45/-45]s, a symmetric laminate"
+    },
+    {
+     "id": "c",
+     "text": "[45/-45/-45/45], a symmetric laminate"
+    },
+    {
+     "id": "d",
+     "text": "[0/90], an unsymmetric laminate"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "[0/90], an unsymmetric laminate",
+   "distractorRationale": {
+    "a": "Wrong: the stack 0, 90, 90, 0 is mirrored about the mid-plane, so B = 0.",
+    "b": "Wrong: the stack 0, 45, -45, -45, 45, 0 is symmetric, so B = 0.",
+    "c": "Wrong: the stack 45, -45, -45, 45 is mirrored about the mid-plane, so B = 0.",
+    "d": "Correct: the plies are not mirrored about the mid-plane, so the coupling matrix B is non-zero."
+   },
+   "explanation": "A laminate is symmetric if each ply above the mid-plane is repeated at the mirror position below it. Only the laminate whose stack lacks such mirror pairs has bending-extension coupling and therefore curls with temperature change or in-plane load.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why does a symmetric laminate show no curvature under an in-plane load?",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Because all plies in a symmetric laminate have the same fibre angle"
+    },
+    {
+     "id": "b",
+     "text": "For every ply there is an identical ply at the same distance on the opposite side of the mid-plane, so the coupling terms cancel and B = 0"
+    },
+    {
+     "id": "c",
+     "text": "Because a symmetric laminate has no stiffness in bending"
+    },
+    {
+     "id": "d",
+     "text": "Because the Poisson's ratio of every ply is zero"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "For every ply there is an identical ply at the same distance on the opposite side of the mid-plane, so the coupling terms cancel and B = 0",
+   "distractorRationale": {
+    "a": "Wrong: symmetric laminates generally contain plies at several angles.",
+    "b": "Correct: the coupling terms are weighted by distance from the mid-plane, which is of opposite sign for mirrored plies.",
+    "c": "Wrong: a symmetric laminate has a well-defined bending stiffness.",
+    "d": "Wrong: the Poisson's ratio of CFRP plies is non-zero and does not govern warping."
+   },
+   "explanation": "The coupling matrix is the sum of ply stiffness times thickness times distance from the mid-plane, so contributions from mirrored plies have equal magnitude and opposite sign. With $\\mathbf{B}=\\mathbf{0}$, in-plane forces produce only in-plane strains.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A thin-walled carbon-fibre tube must carry a pure torque. Which ply arrangement is most effective?",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "All plies at 0 degrees to the tube axis"
+    },
+    {
+     "id": "b",
+     "text": "All plies at 90 degrees to the tube axis"
+    },
+    {
+     "id": "c",
+     "text": "A single unidirectional ply wound at 0 degrees with a thicker wall"
+    },
+    {
+     "id": "d",
+     "text": "Plies at plus and minus 45 degrees to the tube axis, aligned with the principal stresses"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Plies at plus and minus 45 degrees to the tube axis, aligned with the principal stresses",
+   "distractorRationale": {
+    "a": "Wrong: fibres along the axis carry almost no shear and the matrix would have to resist it.",
+    "b": "Wrong: hoop fibres are not aligned with the principal stresses in a torsion tube.",
+    "c": "Wrong: a thicker wall of axial fibres still has the weak shear modulus of the ply, 5 GPa.",
+    "d": "Correct: pure shear produces tension and compression at 45 degrees, so fibres there are loaded along their length."
+   },
+   "explanation": "A torque on a thin tube produces pure shear, which equals a tension and a compression of the same size at 45 degrees. Fibres at $\\pm45^\\circ$ carry these directly and give a shear modulus of about 36 GPa for the ply used here, against 5 GPa for a unidirectional ply.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A thin-walled composite tube of mean radius 40 mm and wall thickness 2.0 mm carries a torque of 800 N m. Using $\\tau=T/(2\\pi r^{2}t)$, find the magnitude of the principal stress, in MPa, carried along the fibres of the plus and minus 45 degree plies (take it equal to the shear stress).",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o3"
+   ],
+   "correctValue": 39.8,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "The shear stress is $\\tau=800/(2\\pi\\times0.040^{2}\\times0.002)=800/(2.011\\times10^{-5})=3.98\\times10^{7}$ Pa, or 39.8 MPa. In pure shear the principal stresses have this same magnitude, in tension at $+45^\\circ$ and in compression at $-45^\\circ$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain how the ply angle and the stacking sequence of a laminate affect its in-plane stiffness. Use the figures for a CFRP ply with $E_1=140$ GPa and $E_2=10$ GPa to illustrate the effect of angle, and say what the stacking sequence changes and what it does not.",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o1"
+   ],
+   "markingGuide": [
+    "A ply is much stiffer along fibres than across: $E_1=140$ GPa at 0 degrees falling to about 21 GPa at 30 degrees and $E_2=10$ GPa at 90 degrees",
+    "In-plane laminate stiffness is the thickness-weighted average of the transformed ply stiffnesses, so it depends on the angles and the fraction of thickness at each angle",
+    "Illustrates a laminate example (for example [0/90]s about 75 GPa, quasi-isotropic about 54 GPa, [+45/-45] about 17.7 GPa in Ex)",
+    "The order of the plies does not change the in-plane stiffness (matrix A)",
+    "The order does change the bending stiffness (D) and the coupling (B), because outer plies contribute most to bending"
+   ],
+   "explanation": "In-plane stiffness is controlled by how much material lies at each angle. Stacking order governs behaviour out of plane, so it matters for bending and warping but not for in-plane extension.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why a symmetric laminate does not warp under in-plane loading, and select and justify a layup for a thin-walled tube loaded in torsion. State whether your layup is symmetric and balanced.",
+   "objectiveIds": [
+    "ug.mce-materials-2.composites.laminates.o2",
+    "ug.mce-materials-2.composites.laminates.o3"
+   ],
+   "markingGuide": [
+    "Coupling matrix $\\mathbf{B}=\\sum\\overline{\\mathbf{Q}}_k t_k z_k$ weights each ply by its distance from the mid-plane",
+    "In a symmetric laminate each ply has an identical mirror ply at $-z$, so the contributions cancel and $\\mathbf{B}=\\mathbf{0}$; in-plane loads then produce no curvature",
+    "Torsion produces pure shear, equivalent to tension at +45 degrees and compression at -45 degrees to the axis",
+    "Select plies at +45 and -45 degrees (an angle-ply, for example [+45/-45]s), with fibres aligned with the principal stresses; high shear modulus (about 36 GPa for the CFRP ply)",
+    "The layup is balanced (equal +45 and -45 plies), preventing shear-extension coupling, and symmetric if mirrored about the mid-plane",
+    "May add a few 0 or 90 degree plies for axial or hoop stiffness, if needed"
+   ],
+   "explanation": "Mirrored plies cancel each other's coupling terms, so a symmetric laminate remains flat. A tube under torque has tension and compression at 45 degrees, so the efficient layup places its fibres along those directions.",
+   "board": "internal"
+  }
+ ]
+}

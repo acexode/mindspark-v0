@@ -1,0 +1,413 @@
+{
+ "lessonTitle": "Design for Assembly: Fewer Parts, Easier Assembly",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A hand-held drill has 31 parts, including 9 screws, and an operator needs almost two minutes to assemble it. A redesign with two moulded housing halves that snap together and 16 parts cuts that to under 50 seconds. Nothing about the drill's function changed: the saving came from asking which parts really have to exist."
+  },
+  {
+   "type": "text",
+   "markdown": "**Design for assembly (DFA)** looks at a design from the assembler's point of view. Every part must be fetched, oriented, brought to its place and secured, and each of those actions costs time and creates a chance of error. The cheapest part to assemble is the one that does not exist, so DFA starts with *reducing part count* and then makes the remaining parts easy to handle and impossible to fit wrongly. We follow the widely taught Boothroyd-Dewhurst style of analysis; the times quoted below are typical teaching values, not data for a particular factory."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Theoretical minimum part count",
+   "text": "A part is a candidate for separate existence only if at least one of three criteria holds: (1) it moves relative to all other parts already assembled; (2) it must be made from a different material, or be isolated from the others, for a functional reason; (3) it must be separate so that assembly or disassembly of other parts is possible (including service access). If none holds, the part can in principle be combined with a neighbour. The count of parts that survive is $N_{\\min}$. Fasteners almost never pass the test, because they are only a means of joining other parts."
+  },
+  {
+   "type": "math",
+   "latex": "E_{\\mathrm{DFA}}=\\frac{t_{\\mathrm{ideal}}\\,N_{\\min}}{t_{\\mathrm{actual}}}=\\frac{3\\,N_{\\min}}{t_{\\mathrm{actual}}}",
+   "caption": "DFA efficiency (dimensionless). t_ideal is the typical 3 s allowed for one ideal part that is easy to grasp, orient and insert; t_actual is the sum of the estimated handling and insertion times of all parts, in seconds."
+  },
+  {
+   "type": "worked_example",
+   "title": "Efficiency of a pump bracket assembly",
+   "prompt": "A bracket assembly has 14 parts. Applying the three criteria, 6 parts can justify separate existence. The estimated handling plus insertion times of all 14 parts add to 126 s. Find the DFA efficiency.",
+   "steps": [
+    {
+     "text": "Ideal time: each of the $N_{\\min}=6$ essential parts is allowed 3 s, so the ideal total is $3\\times6=18$ s.",
+     "latex": "t_{\\mathrm{ideal,total}}=3\\times 6=18\\ \\mathrm{s}"
+    },
+    {
+     "text": "Divide by the actual time of 126 s.",
+     "latex": "E_{\\mathrm{DFA}}=\\frac{18}{126}=0.143"
+    },
+    {
+     "text": "Interpret: only about 14% of the assembly effort is spent on essential parts; the rest is overhead from 8 avoidable parts and awkward handling."
+    }
+   ],
+   "answer": "$E_{\\mathrm{DFA}}\\approx0.14$, a poor design that invites part consolidation."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Part",
+    "Moves relative to others?",
+    "Different material needed?",
+    "Must be separate for access?",
+    "Verdict"
+   ],
+   "rows": [
+    [
+     "Rotating shaft",
+     "Yes",
+     "No",
+     "No",
+     "Keep (criterion 1)"
+    ],
+    [
+     "Rubber seal",
+     "No",
+     "Yes",
+     "No",
+     "Keep (criterion 2)"
+    ],
+    [
+     "Access cover for greasing",
+     "No",
+     "No",
+     "Yes",
+     "Keep (criterion 3)"
+    ],
+    [
+     "Spacer sleeve of same steel as the shaft",
+     "No",
+     "No",
+     "No",
+     "Combine into shaft shoulder"
+    ],
+    [
+     "Retaining screw",
+     "No",
+     "No",
+     "No",
+     "Eliminate by snap or press fit"
+    ]
+   ],
+   "caption": "Applying the three criteria to typical machine parts."
+  },
+  {
+   "type": "text",
+   "markdown": "**Making parts self-locating.** Once the part count is fixed, make each remaining part go into place without the assembler having to search for the position. Useful features include a tapered or chamfered lead-in on pegs and holes, so that a misalignment of a few millimetres is corrected by the insertion motion itself; a base with a locating recess so the part drops into position under gravity; and design for assembly from one direction (all parts stacked in a vertical *z-axis* order) so that no re-orientation of the product is required."
+  },
+  {
+   "type": "text",
+   "markdown": "**Preventing incorrect assembly.** Parts that can be inserted in several orientations cost time to orient and can be fitted wrongly. Two strategies apply. First, make the part symmetric, so that every orientation is correct. Second, if the part cannot be symmetric for functional reasons, make it clearly asymmetric: an offset hole, a keyway or a notch that physically prevents the wrong orientation (a *poka-yoke*, or mistake-proofing feature). Half-hearted asymmetry, such as a slight taper that can be missed by eye, is worse than none because it leads to forced assembly."
+  },
+  {
+   "type": "worked_example",
+   "title": "Redesign of the pump bracket",
+   "prompt": "The 14-part bracket is redesigned: a moulded cover replaces three separate plates and four screws are replaced by two snap hooks. The new design has $14-3+1-4+2=10$ parts, still $N_{\\min}=6$, and the estimated actual time is 49 s. Compute the new efficiency and the time saved.",
+   "steps": [
+    {
+     "text": "Part count: $14-3+1=12$ after the cover replaces three plates, then $12-4+2=10$ after two snap hooks replace four screws. Of these, $N_{\\min}=6$ are still essential, so 4 avoidable parts remain. Ideal time is unchanged, since essential parts are unchanged: 18 s."
+    },
+    {
+     "text": "Divide the ideal time by the new actual time to get the redesigned efficiency.",
+     "latex": "E_{\\mathrm{DFA}}=\\frac{18}{49}=0.367"
+    },
+    {
+     "text": "Time saved: $126-49=77$ s, a reduction of $77/126=61\\%$.",
+     "latex": "\\frac{126-49}{126}=0.611"
+    }
+   ],
+   "answer": "$E_{\\mathrm{DFA}}\\approx0.37$ (from 0.14); assembly time falls by about 61%."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "List every part and apply the three criteria in order; challenge each part that fails them.",
+    "Replace screws with snap fits, press fits or integral features where the loads allow.",
+    "Add lead-in chamfers and locating recesses to remaining parts.",
+    "Make parts symmetric, or unmistakably asymmetric.",
+    "Estimate actual times and compute $E_{\\mathrm{DFA}}$ before and after; keep the design that scores higher without breaking function."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Efficiency compares against an ideal, not against zero",
+   "text": "Because $t_{\\mathrm{ideal}}$ depends on $N_{\\min}$, efficiency rewards both removing parts and speeding up the ones that remain. A value of 1 would mean every part is essential and takes only 3 s, which real products essentially never reach; typical redesign targets are values moving from below 0.2 to around 0.3-0.5 (typical figures)."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not combine parts blindly",
+   "text": "Merging parts can make a moulding or casting more complex and costly, or can ruin serviceability. Criterion 3 exists for this reason: a part needed for maintenance access stays separate. Always weigh the assembly saving against the extra tooling cost of the merged part."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Parts that fail all three criteria (relative motion, different material, access) are candidates for combination; fasteners rarely pass.",
+    "Lead-in features, locating recesses and single-direction assembly make parts self-locating; symmetry or unmistakable asymmetry prevents wrong assembly.",
+    "$E_{\\mathrm{DFA}}=3N_{\\min}/t_{\\mathrm{actual}}$, and it rises when parts are removed or when handling and insertion times drop."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a gearbox, a steel spacer sleeve of the same steel as the shaft sits between two bearings. It does not move relative to the shaft, needs no electrical or thermal isolation, and does not have to be removed for assembly access. What does the part-count test conclude?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is a candidate to be combined into a shoulder machined on the shaft"
+    },
+    {
+     "id": "b",
+     "text": "It must stay separate because every part has its own part number"
+    },
+    {
+     "id": "c",
+     "text": "It must stay separate because bearings need a separate spacer to rotate"
+    },
+    {
+     "id": "d",
+     "text": "It should be replaced by an extra screw to hold the bearings"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is a candidate to be combined into a shoulder machined on the shaft",
+   "distractorRationale": {
+    "a": "Correct: it fails all three criteria so it can be merged into the shaft.",
+    "b": "A separate part number is administrative, not a functional reason.",
+    "c": "The bearing inner rings turn with the shaft; a shoulder spaces them equally well.",
+    "d": "Adding a fastener increases part count, the opposite of the goal."
+   },
+   "explanation": "The three criteria ask for relative motion, a different material or isolation, or a need for separation to assemble or service other parts. The sleeve meets none of them, so a machined shoulder removes one part and its handling and insertion time.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A peg must be inserted into a hole with only about 1 mm clearance, and operators often have to wiggle it. Which feature most directly makes the peg self-locating?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A chamfered or tapered lead-in on the tip of the peg"
+    },
+    {
+     "id": "b",
+     "text": "A tighter tolerance on the peg length"
+    },
+    {
+     "id": "c",
+     "text": "A rougher surface finish on the peg shank"
+    },
+    {
+     "id": "d",
+     "text": "A larger head on the other end of the peg"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A chamfered or tapered lead-in on the tip of the peg",
+   "distractorRationale": {
+    "a": "Correct: a lead-in guides a slightly misaligned peg into the hole during insertion.",
+    "b": "Length tolerance does not help alignment of the tip with the hole.",
+    "c": "A rougher finish adds friction and makes insertion harder.",
+    "d": "A larger head helps grasping at most, not alignment."
+   },
+   "explanation": "Self-location means the insertion motion itself corrects small misalignments. A tapered tip converts a lateral error into a centring action, so the assembler does not have to search for the hole position.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A mounting plate has two identical holes spaced evenly on its centre line and can be turned end for end. Fitting it the wrong way round connects the wrong output port. For functional reasons the plate cannot be made symmetric. What is the best DFA change?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Offset one mounting hole so the plate only fits in the correct orientation"
+    },
+    {
+     "id": "b",
+     "text": "Print an arrow on the plate and train the assemblers"
+    },
+    {
+     "id": "c",
+     "text": "Make the plate slightly thicker at one end"
+    },
+    {
+     "id": "d",
+     "text": "Add a second identical plate on the other side"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Offset one mounting hole so the plate only fits in the correct orientation",
+   "distractorRationale": {
+    "a": "Correct: an offset hole is an unmistakable physical asymmetry that blocks the wrong orientation.",
+    "b": "A printed arrow relies on human attention and can be missed.",
+    "c": "A slight thickness change is a weak cue that may not stop wrong fitting.",
+    "d": "A second plate adds a part and does not address orientation."
+   },
+   "explanation": "When symmetry is impossible the part must be made clearly asymmetric, so that the wrong orientation is physically prevented. Such mistake-proofing removes the orientation decision from the assembler.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An electric motor housing has a rear cover held by clips. The brushes must be replaced every 2000 operating hours by removing that cover. In a part-count review, which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The cover meets the access criterion, so it justifies a separate part"
+    },
+    {
+     "id": "b",
+     "text": "The cover should be welded to the housing to remove one part"
+    },
+    {
+     "id": "c",
+     "text": "The cover fails all criteria because it does not move"
+    },
+    {
+     "id": "d",
+     "text": "The cover should be combined, and the brushes accessed through the shaft"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The cover meets the access criterion, so it justifies a separate part",
+   "distractorRationale": {
+    "a": "Correct: it must be separable to allow service of the brushes, which is criterion 3.",
+    "b": "Welding would make servicing impossible.",
+    "c": "Not moving is only one of three tests; separability for access also counts.",
+    "d": "Brushes cannot be reached through the shaft."
+   },
+   "explanation": "The third criterion protects parts that must come apart so that other parts can be assembled or serviced. Because the brushes wear out, the cover must be removable, and the count of essential parts includes it.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two designs of the same product both have $N_{\\min}=10$. Design X has an actual assembly time of 150 s, design Y has 100 s. Using $E=3N_{\\min}/t_{\\mathrm{actual}}$, which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Design Y has the higher efficiency, 0.30 compared with 0.20 for design X"
+    },
+    {
+     "id": "b",
+     "text": "Design X has the higher efficiency because it takes longer"
+    },
+    {
+     "id": "c",
+     "text": "Both have equal efficiency because $N_{\\min}$ is equal"
+    },
+    {
+     "id": "d",
+     "text": "Design Y has efficiency 0.67 and design X has 1.0"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Design Y has the higher efficiency, 0.30 compared with 0.20 for design X",
+   "distractorRationale": {
+    "a": "Correct: 30/100 = 0.30 and 30/150 = 0.20.",
+    "b": "Efficiency falls as actual time rises.",
+    "c": "Equal numerator does not give equal efficiency; the denominators differ.",
+    "d": "These values do not follow from the formula."
+   },
+   "explanation": "With a fixed ideal time of 30 s, a shorter actual time gives a higher ratio: 30/100 is 0.30 and 30/150 is 0.20. Efficiency rises whenever the actual time falls for the same essential parts.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A coupling assembly has a theoretical minimum of $N_{\\min}=8$ parts. Using the typical ideal time of 3 s per essential part, and a total estimated actual assembly time of 96 s, compute the DFA efficiency (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o3"
+   ],
+   "correctValue": 0.25,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "The ideal time is $3\\times8=24$ s, so $E=24/96=0.25$. This means a quarter of the effort goes to essential parts.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A product team has set a target DFA efficiency of 0.30 for a design with $N_{\\min}=9$ essential parts (3 s ideal time per essential part). What is the largest total actual assembly time, in seconds, that meets the target?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o3"
+   ],
+   "correctValue": 90.0,
+   "tolerance": 0.5,
+   "unit": "s",
+   "explanation": "Rearranging $E=3N_{\\min}/t$ gives $t=3N_{\\min}/E=27/0.30=90$ s. Any longer time pushes the efficiency below the target.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A hinge-and-latch module originally has 22 parts of which $N_{\\min}=9$ are essential, and an actual assembly time of 176 s. A redesign using integral snap features removes 6 parts, leaves 16 parts with an average of 7 s each for handling and insertion, and keeps $N_{\\min}=9$. Using 3 s ideal time per essential part, compute the new DFA efficiency (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o1",
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o3"
+   ],
+   "correctValue": 0.241071,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "The redesigned time is $16\\times7=112$ s and the ideal time is $3\\times9=27$ s, so $E=27/112=0.241$. The original was $27/176=0.153$, so removing avoidable parts raised efficiency by about 57%.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A student proposes a battery cover for a handheld meter held by four screws plus a separate rubber gasket and a separate plastic label plate. Apply the three part-count criteria to each of these items and propose a redesign, stating what must remain separate.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o1",
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o2"
+   ],
+   "markingGuide": [
+    "States the three criteria: relative motion, different material or isolation, separation for access",
+    "Screws fail all criteria and are replaced by snap hooks or a clip moulded into the cover",
+    "Gasket may be justified by the different-material (sealing) criterion, unless an over-moulded seal can combine it",
+    "Label plate fails the criteria and is replaced by a moulded or printed marking on the cover",
+    "Cover remains separate for battery access (criterion 3)",
+    "Mentions a self-locating or anti-misassembly feature such as a lead-in or asymmetric tab"
+   ],
+   "explanation": "The cover is the one part that must stay separate for battery changes. The screws, label plate and possibly the gasket serve only to join or mark, so they are candidates for integral snaps, moulded text and an over-moulded seal.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A designer reports a DFA efficiency of 0.95 for a new gearbox cover assembly. Explain why such a value should be questioned, using the definition of $E_{\\mathrm{DFA}}$, and say which two inputs you would audit first.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o2",
+    "ug.mce-machine-design-project.dfm-dfa.dfa.o3"
+   ],
+   "markingGuide": [
+    "Efficiency 0.95 means actual time is nearly equal to the ideal 3 s per essential part, which is unrealistic for real parts needing alignment and securing",
+    "Audit $N_{\\min}$: wrongly high count raises the ideal time and efficiency",
+    "Audit $t_{\\mathrm{actual}}$: underestimated handling and insertion times (for example ignoring orientation or fasteners)",
+    "Notes that self-locating and anti-misassembly features lower t_actual but cannot reduce it below the ideal",
+    "Concludes the claim needs evidence from itemised time estimates"
+   ],
+   "explanation": "Because every part needs at least some grasping and insertion, $t_{\\mathrm{actual}}$ is almost always well above $3N_{\\min}$. A value near 1 therefore usually reveals either an inflated count of essential parts or optimistic time estimates.",
+   "board": "internal"
+  }
+ ]
+}

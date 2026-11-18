@@ -1,0 +1,469 @@
+{
+ "lessonTitle": "Deriving Performance Indices",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A bicycle designer must choose a tube for the top bar. Carbon fibre, titanium, aluminium and even bamboo all work, and each is the best choice for some definition of 'best'. Instead of guessing, the engineer writes down what the bar must do, what must not be exceeded and what is to be minimised. Algebra then turns the answer into a single combination of material properties: a performance index."
+  },
+  {
+   "type": "text",
+   "markdown": "A **performance index** is a group of material properties that measures how well a material performs a particular function when mass (or cost) is minimised. It is derived, not looked up. Every derivation uses the same four ingredients, and each is identified before any equation is written."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Function, constraint, objective, free variable",
+   "text": "**Function**: what the component does (carry a tie load, resist bending). **Constraint**: a requirement that must be met (a given stiffness or strength). **Objective**: the quantity to minimise (mass $m$). **Free variable**: a design dimension the designer may choose (for example the section size), which is eliminated between the constraint equation and the objective equation."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Write the objective function (for example mass $m=\\rho A L$).",
+    "Write the constraint equation (for example stiffness $S=C E I/L^{3}$).",
+    "Find the free variable (for example the section side $b$) and solve the constraint for it.",
+    "Substitute into the objective so that the free variable is gone; collect all material properties into one group $M$, with geometry and loads in a separate group."
+   ]
+  },
+  {
+   "type": "math",
+   "latex": "\\begin{aligned}S&=\\frac{C\\,E\\,I}{L^{3}},\\quad I=\\frac{b^{4}}{12}\\ \\Rightarrow\\ b^{4}=\\frac{12\\,S\\,L^{3}}{C\\,E}\\\\ A&=b^{2}=\\left(\\frac{12\\,S\\,L^{3}}{C\\,E}\\right)^{1/2}\\\\ m&=\\rho A L=\\left(\\frac{12\\,S}{C}\\right)^{1/2}L^{5/2}\\,\\frac{\\rho}{E^{1/2}}\\end{aligned}",
+   "caption": "Minimum-mass beam of square section b by b, of length L, required stiffness S (force per unit deflection). C is a constant fixed by the loading (3 for an end-loaded cantilever). Mass is smallest when E^(1/2)/rho is largest."
+  },
+  {
+   "type": "worked_example",
+   "title": "Cantilever mass for a required stiffness",
+   "prompt": "A cantilever of length $L=0.8$ m with a square section must have an end stiffness $S=1.0\\times10^{5}$ N m$^{-1}$ (so $C=3$). Compare the beam mass if it is aluminium alloy ($E=69$ GPa, $\\rho=2700$ kg m$^{-3}$) and if it is steel ($E=210$ GPa, $\\rho=7850$ kg m$^{-3}$).",
+   "steps": [
+    {
+     "text": "Find the required second moment of area $I=S L^{3}/(3E)$ for aluminium.",
+     "latex": "I=\\frac{1.0\\times10^{5}\\times0.8^{3}}{3\\times69\\times10^{9}}=2.47\\times10^{-7}\\ \\mathrm{m^{4}}"
+    },
+    {
+     "text": "The area of the square section follows from $A=\\sqrt{12I}$, and the mass from $m=\\rho A L$.",
+     "latex": "A=\\sqrt{12\\times2.47\\times10^{-7}}=1.72\\times10^{-3}\\ \\mathrm{m^{2}},\\quad m=2700\\times1.72\\times10^{-3}\\times0.8=3.72\\ \\mathrm{kg}"
+    },
+    {
+     "text": "Repeat for steel: the larger modulus gives a smaller section but the density is much higher.",
+     "latex": "I=8.13\\times10^{-8},\\ A=9.88\\times10^{-4}\\ \\mathrm{m^{2}},\\ m=7850\\times9.88\\times10^{-4}\\times0.8=6.20\\ \\mathrm{kg}"
+    },
+    {
+     "text": "Check against the index: $M=E^{1/2}/\\rho$ is 3.08 for aluminium and 1.85 for steel, so the steel mass should be 3.08/1.85 = 1.67 times larger; indeed 6.20/3.72 = 1.67."
+    }
+   ],
+   "answer": "Aluminium beam 3.72 kg, steel beam 6.20 kg: steel is 1.67 times heavier, as the index E^(1/2)/rho predicts."
+  },
+  {
+   "type": "text",
+   "markdown": "**Light, strong tie.** For a tie of length $L$ carrying a tensile force $F$ without yielding, the free variable is the cross-sectional area $A$. The constraint is $F\\le\\sigma_yA$, so $A=F/\\sigma_y$, and the mass follows directly. A material is better the larger its **specific strength**, $\\sigma_y/\\rho$. Here no stiffness requirement enters, and the shape of the section does not matter for a tension member."
+  },
+  {
+   "type": "math",
+   "latex": "m=\\rho A L=\\rho\\,\\frac{F}{\\sigma_y}\\,L=F L\\,\\frac{\\rho}{\\sigma_y}\\qquad\\Rightarrow\\qquad M_{\\text{tie}}=\\frac{\\sigma_y}{\\rho}",
+   "caption": "The force F and length L are fixed by the design, so only rho/sigma_y depends on the material."
+  },
+  {
+   "type": "worked_example",
+   "title": "Mass of a tie in two materials",
+   "prompt": "A tie must carry $F=20$ kN over $L=1.5$ m with no safety factor (design stress equal to yield). Compare aluminium alloy ($\\sigma_y=275$ MPa, $\\rho=2700$ kg m$^{-3}$) with Ti-6Al-4V ($\\sigma_y=880$ MPa, $\\rho=4430$ kg m$^{-3}$).",
+   "steps": [
+    {
+     "text": "Required area for each material from $A=F/\\sigma_y$.",
+     "latex": "A_{\\text{Al}}=\\frac{20000}{275\\times10^{6}}=7.27\\times10^{-5}\\ \\mathrm{m^{2}},\\quad A_{\\text{Ti}}=\\frac{20000}{880\\times10^{6}}=2.27\\times10^{-5}\\ \\mathrm{m^{2}}"
+    },
+    {
+     "text": "Mass from $m=\\rho A L$.",
+     "latex": "m_{\\text{Al}}=2700\\times7.27\\times10^{-5}\\times1.5=0.295\\ \\mathrm{kg},\\quad m_{\\text{Ti}}=4430\\times2.27\\times10^{-5}\\times1.5=0.151\\ \\mathrm{kg}"
+    },
+    {
+     "text": "Compare with the index $\\sigma_y/\\rho$: 101.9 for aluminium and 198.6 for titanium (in MPa per Mg m$^{-3}$), a ratio of 1.95; and $0.295/0.151=1.95$."
+    }
+   ],
+   "answer": "Titanium tie 0.151 kg versus aluminium 0.295 kg, about half the mass, consistent with the larger specific strength."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Material (typical)",
+    "E (GPa)",
+    "Density (Mg/m^3)",
+    "Strength (MPa)",
+    "Beam index E^(1/2)/rho",
+    "Tie index strength/rho"
+   ],
+   "rows": [
+    [
+     "Steel",
+     "210",
+     "7.85",
+     "400",
+     "1.85",
+     "51"
+    ],
+    [
+     "Aluminium alloy",
+     "69",
+     "2.70",
+     "275",
+     "3.08",
+     "102"
+    ],
+    [
+     "Ti-6Al-4V",
+     "114",
+     "4.43",
+     "880",
+     "2.41",
+     "199"
+    ],
+    [
+     "CFRP laminate",
+     "100",
+     "1.55",
+     "600",
+     "6.45",
+     "387"
+    ],
+    [
+     "Wood along grain",
+     "11",
+     "0.45",
+     "40",
+     "7.37",
+     "89"
+    ],
+    [
+     "Magnesium alloy",
+     "45",
+     "1.77",
+     "150",
+     "3.79",
+     "85"
+    ]
+   ],
+   "caption": "Typical values. Beam index in GPa^(1/2)/(Mg/m^3), tie index in MPa/(Mg/m^3). Rankings differ between the two columns."
+  },
+  {
+   "type": "text",
+   "markdown": "**The best beam is not the best tie.** In the table, timber has the highest beam index (7.37) but a middling tie index (89, below aluminium at 102), while titanium has a good tie index (199) but a poor beam index (2.41, below aluminium). This is because the two functions impose different constraints and so eliminate the free variable differently: the stiff beam is stiffness-limited, with mass proportional to $\\rho/E^{1/2}$, while the tie is strength-limited, with mass proportional to $\\rho/\\sigma_y$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Function (constraint)",
+    "Free variable eliminated",
+    "Index (minimum mass)"
+   ],
+   "rows": [
+    [
+     "Tie, strength-limited",
+     "Area A",
+     "sigma_y / rho"
+    ],
+    [
+     "Tie, stiffness-limited",
+     "Area A",
+     "E / rho"
+    ],
+    [
+     "Beam, stiffness-limited, square section",
+     "Section side b",
+     "E^(1/2) / rho"
+    ],
+    [
+     "Beam, strength-limited, square section",
+     "Section side b",
+     "sigma_y^(2/3) / rho"
+    ],
+    [
+     "Panel, stiffness-limited",
+     "Thickness t",
+     "E^(1/3) / rho"
+    ]
+   ],
+   "caption": "Standard indices from the recipe: function, constraint, free variable."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Indices depend on the free variable",
+   "text": "An index is valid only for the stated function, constraint and objective. Forgetting to eliminate the free variable, or eliminating the wrong one, gives an index that ranks materials wrongly; for example using $E/\\rho$ for a bending beam instead of $E^{1/2}/\\rho$ would greatly overrate dense stiff metals and underrate light, lower-stiffness materials such as wood."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A performance index follows from the objective, the constraint and the free variable: write the objective, solve the constraint for the free variable, substitute, then group the material properties.",
+    "For a minimum-mass stiff beam of square section the free variable is the section side $b$ and the index is $E^{1/2}/\\rho$; for a strength-limited tie the free variable is the area $A$ and the index is $\\sigma_y/\\rho$.",
+    "Different functions give different indices, so the best material for a beam is generally not the best for a tie; the free variable eliminated is what changes the exponent."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In the derivation of the performance index for a minimum-mass beam of given stiffness and square section, which quantity is the free variable that is eliminated?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The length of the beam"
+    },
+    {
+     "id": "b",
+     "text": "The required stiffness"
+    },
+    {
+     "id": "c",
+     "text": "The side length of the square section"
+    },
+    {
+     "id": "d",
+     "text": "The density of the material"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The side length of the square section",
+   "distractorRationale": {
+    "a": "Wrong: the length is fixed by the design brief, so it stays in the geometry group.",
+    "b": "Wrong: the stiffness is the constraint, which is specified rather than chosen.",
+    "c": "Correct: the section size is the designer's free choice and is eliminated between the stiffness constraint and the mass objective.",
+    "d": "Wrong: density is a material property that remains in the index."
+   },
+   "explanation": "The stiffness constraint ties the second moment of area, hence the section side $b$, to the modulus. Solving for $b$ and substituting it into $m=\\rho b^{2}L$ leaves only $\\rho/E^{1/2}$ as the material group, so $b$ has been eliminated.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which material property group is the performance index for the lightest end-loaded beam of square section with a specified stiffness?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$E^{1/2}/\\rho$"
+    },
+    {
+     "id": "b",
+     "text": "$E/\\rho$"
+    },
+    {
+     "id": "c",
+     "text": "$E^{1/3}/\\rho$"
+    },
+    {
+     "id": "d",
+     "text": "$\\sigma_y/\\rho$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$E^{1/2}/\\rho$",
+   "distractorRationale": {
+    "a": "Correct: eliminating the section side from $S=3EI/L^{3}$ with $I=b^{4}/12$ gives $m\\propto\\rho/E^{1/2}$.",
+    "b": "Wrong: $E/\\rho$ is the index for a stiffness-limited tie, where mass is proportional to $\\rho/E$.",
+    "c": "Wrong: $E^{1/3}/\\rho$ applies to a panel whose thickness is the free variable.",
+    "d": "Wrong: $\\sigma_y/\\rho$ governs a strength-limited tie."
+   },
+   "explanation": "The square section gives $I=b^{4}/12$, so the required $b$ scales as $(S L^{3}/E)^{1/4}$ and the area $b^{2}$ as $E^{-1/2}$. The mass $\\rho b^{2}L$ is then proportional to $\\rho/E^{1/2}$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A tension member of fixed length must carry a given axial force without yielding, and its mass is to be minimised. Which statement describes the derivation and the result?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The area is the free variable, set by the stiffness, so mass is proportional to $\\rho/E$"
+    },
+    {
+     "id": "b",
+     "text": "The thickness is the free variable, so the index is $\\sigma_y^{2/3}/\\rho$"
+    },
+    {
+     "id": "c",
+     "text": "No free variable is needed, because the mass depends only on the density"
+    },
+    {
+     "id": "d",
+     "text": "The area is the free variable, set by $A=F/\\sigma_y$, so mass is proportional to $\\rho/\\sigma_y$ and the index is $\\sigma_y/\\rho$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The area is the free variable, set by $A=F/\\sigma_y$, so mass is proportional to $\\rho/\\sigma_y$ and the index is $\\sigma_y/\\rho$",
+   "distractorRationale": {
+    "a": "Wrong: this is the stiffness-limited tie; here the limit is yield.",
+    "b": "Wrong: the exponent 2/3 belongs to a strength-limited beam of square section, not a tie.",
+    "c": "Wrong: the area is not free; it must be chosen to satisfy the strength constraint, which brings in $\\sigma_y$.",
+    "d": "Correct: yield sets the minimum area for a given force, so the lightest tie maximises $\\sigma_y/\\rho$."
+   },
+   "explanation": "The constraint $F\\le\\sigma_yA$ gives $A=F/\\sigma_y$. Substituting in $m=\\rho AL$ gives $m=FL\\,\\rho/\\sigma_y$, so the material group to maximise is $\\sigma_y/\\rho$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Material X has $E=25$ GPa, $\\rho=0.8$ Mg m$^{-3}$ and strength 60 MPa. Material Y has $E=70$ GPa, $\\rho=2.7$ Mg m$^{-3}$ and strength 300 MPa. Which statement about the minimum-mass design in each function is correct?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o1",
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "X is better in both functions, since its density is lower"
+    },
+    {
+     "id": "b",
+     "text": "X is better as a stiffness-limited square beam (6.25 against 3.10), while Y is better as a strength-limited tie (111 against 75)"
+    },
+    {
+     "id": "c",
+     "text": "Y is better in both functions, since its modulus and strength are larger"
+    },
+    {
+     "id": "d",
+     "text": "Y is better as a stiffness-limited beam, while X is better as a strength-limited tie"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "X is better as a stiffness-limited square beam (6.25 against 3.10), while Y is better as a strength-limited tie (111 against 75)",
+   "distractorRationale": {
+    "a": "Wrong: X wins as a beam but its low strength makes it worse for the tie.",
+    "b": "Correct: $E^{1/2}/\\rho$ is 6.25 for X and 3.10 for Y, while $\\sigma_y/\\rho$ is 75 for X and 111 for Y.",
+    "c": "Wrong: Y wins as a tie but loses as a beam on the beam index.",
+    "d": "Wrong: the two rankings are reversed in this option."
+   },
+   "explanation": "The beam index is $\\sqrt{25}/0.8=6.25$ for X and $\\sqrt{70}/2.7=3.10$ for Y, so X gives the lighter beam. The tie index $\\sigma_y/\\rho$ is $60/0.8=75$ for X and $300/2.7=111$ for Y, so Y gives the lighter tie.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For the minimum-mass square-section beam with fixed material and length, the required stiffness $S$ is doubled. By what factor does the mass change?",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o1",
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It doubles"
+    },
+    {
+     "id": "b",
+     "text": "It increases by a factor of 4"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged, since the material stays the same"
+    },
+    {
+     "id": "d",
+     "text": "It increases by a factor of $\\sqrt2\\approx1.41$"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "It increases by a factor of $\\sqrt2\\approx1.41$",
+   "distractorRationale": {
+    "a": "Wrong: this assumes mass proportional to stiffness, but the section area grows only as the square root of the stiffness.",
+    "b": "Wrong: a factor of 4 would apply if mass were proportional to $S^{2}$.",
+    "c": "Wrong: the section must grow to give more stiffness, so mass changes.",
+    "d": "Correct: $m\\propto S^{1/2}$ from the derivation, so doubling $S$ multiplies the mass by $\\sqrt2$."
+   },
+   "explanation": "The derivation gives $m=(12S/C)^{1/2}L^{5/2}\\rho/E^{1/2}$, so mass is proportional to $S^{1/2}$. Doubling the required stiffness therefore raises the mass by $\\sqrt2=1.41$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two alloys are compared for a stiff, light beam with square section. Alloy P has $E=120$ GPa and $\\rho=4.5$ Mg m$^{-3}$; alloy Q has $E=30$ GPa and $\\rho=1.6$ Mg m$^{-3}$. For the same stiffness and length, what is the ratio of the mass of the P beam to the mass of the Q beam? Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o1"
+   ],
+   "correctValue": 1.41,
+   "tolerance": 0.02,
+   "unit": "(dimensionless)",
+   "explanation": "Mass is proportional to $\\rho/E^{1/2}$. For P this is $4.5/\\sqrt{120}=0.411$ and for Q it is $1.6/\\sqrt{30}=0.292$, so the ratio is $0.411/0.292=1.41$; Q gives the lighter beam.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A tie of length 2.2 m must carry a tensile force of 35 kN. It is made of an alloy with design stress 450 MPa and density 4500 kg m$^{-3}$. Using $m=FL\\rho/\\sigma$, find the mass of the tie in kg.",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o2"
+   ],
+   "correctValue": 0.77,
+   "tolerance": 0.01,
+   "unit": "kg",
+   "explanation": "The area is $A=F/\\sigma=35000/(450\\times10^{6})=7.78\\times10^{-5}$ m$^{2}$. The mass is $m=\\rho A L=4500\\times7.78\\times10^{-5}\\times2.2=0.770$ kg.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An end-loaded cantilever ($C=3$) of length 0.6 m with a square section must have an end stiffness of $4.0\\times10^{4}$ N m$^{-1}$. It is made of an aluminium alloy with $E=70$ GPa. Using $I=b^{4}/12$, find the side length $b$ of the section in mm.",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o1",
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o3"
+   ],
+   "correctValue": 26.5,
+   "tolerance": 0.3,
+   "unit": "mm",
+   "explanation": "The second moment of area is $I=SL^{3}/(3E)=4.0\\times10^{4}\\times0.6^{3}/(3\\times70\\times10^{9})=4.11\\times10^{-8}$ m$^{4}$. Then $b=(12I)^{1/4}=(4.94\\times10^{-7})^{1/4}=0.0265$ m, which is 26.5 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the performance index for a minimum-mass beam of length $L$ and square cross-section $b\\times b$ that must have a given bending stiffness $S=CEI/L^{3}$. State the objective, the constraint and the free variable, and show how the free variable is eliminated.",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o1",
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o3"
+   ],
+   "markingGuide": [
+    "Objective: minimise mass $m=\\rho A L=\\rho b^{2}L$",
+    "Constraint: stiffness $S=CEI/L^{3}$ with $I=b^{4}/12$",
+    "Free variable: the section side $b$ (or area $A$), chosen by the designer",
+    "Solves the constraint: $b^{4}=12SL^{3}/(CE)$, so $A=b^{2}=(12SL^{3}/(CE))^{1/2}$",
+    "Substitutes: $m=(12S/C)^{1/2}L^{5/2}\\,\\rho/E^{1/2}$",
+    "Identifies the index $M=E^{1/2}/\\rho$, to be maximised; geometry and loading are separated from the material group"
+   ],
+   "explanation": "The derivation follows the standard recipe: the constraint fixes the free variable, and substituting into the objective leaves the mass proportional to a single material group. The result is that the lightest stiff beam is the one with the largest $E^{1/2}/\\rho$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the performance index for a light, strong tie of fixed length carrying a given tensile force, and compare it with the beam index $E^{1/2}/\\rho$. Explain, using data for timber ($E=11$ GPa, $\\rho=0.45$ Mg m$^{-3}$, strength 40 MPa) and Ti-6Al-4V ($E=114$ GPa, $\\rho=4.43$ Mg m$^{-3}$, strength 880 MPa), why the best material for a beam is not the best for a tie.",
+   "objectiveIds": [
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o1",
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o2",
+    "ug.mce-materials-2.selection-with-performance-indices.deriving-indices.o3"
+   ],
+   "markingGuide": [
+    "Objective: minimise $m=\\rho A L$; constraint: $F\\le\\sigma_yA$; free variable: area $A$",
+    "Eliminates $A=F/\\sigma_y$: $m=FL\\,\\rho/\\sigma_y$, so the tie index is $\\sigma_y/\\rho$ (maximise)",
+    "Notes that the beam index $E^{1/2}/\\rho$ results from a stiffness constraint with a different free-variable relationship, and the exponents differ",
+    "Timber: beam index $\\sqrt{11}/0.45=7.37$ and tie index $40/0.45=89$",
+    "Titanium: beam index $\\sqrt{114}/4.43=2.41$ and tie index $880/4.43=199$",
+    "Conclusion: timber ranks higher as a beam, titanium higher as a tie, because stiffness-limited and strength-limited functions weight the properties differently"
+   ],
+   "explanation": "A tie is strength-limited, so mass is proportional to $\\rho/\\sigma_y$; a stiff beam is limited by the stiffness of a section that scales with $E^{1/2}$. Timber is light and moderately stiff, which suits the beam, whereas titanium is much stronger per mass, which suits the tie.",
+   "board": "internal"
+  }
+ ]
+}

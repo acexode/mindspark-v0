@@ -1,0 +1,387 @@
+{
+ "lessonTitle": "Mitigating Stress Concentration",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A crankshaft journal breaks at the corner where its web meets the bearing, not in the middle of the shaft where the bending moment is largest. The corner radius there is often only a millimetre or two. Because a larger radius would cost almost nothing to machine, an engineer who understands stress concentration can double the fatigue life of the part by changing one number on the drawing."
+  },
+  {
+   "type": "text",
+   "markdown": "Stress concentration cannot be removed, but it can be **mitigated**. The principle is to give the force flow a gentler path: the lines of force that crowd around a sharp discontinuity are spread out when the geometry changes gradually. The peak stress is $\\sigma_{max}=K_t\\sigma_{nom}$ (with $\\sigma_{nom}$ on the section stated by the chart), so mitigation means finding geometry with a smaller $K_t$. We assume static or slowly varying loads on linear-elastic material for the stress calculation, and treat ductile and brittle materials separately for the strength check."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Force-flow rule",
+   "text": "Smooth, gradual changes of section lower $K_t$; abrupt changes, sharp internal corners and small radii raise it. Picture lines of force flowing like water: sharp corners create eddies of high stress."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Design change",
+    "Why it helps",
+    "Typical effect"
+   ],
+   "rows": [
+    [
+     "Increase fillet radius at a shoulder",
+     "Gentler transition of force flow",
+     "$K_t$ falls steeply as $r/d$ rises from 0.02 to 0.2"
+    ],
+    [
+     "Add an undercut or relief groove",
+     "Moves the high-stress zone into a larger effective radius",
+     "Lowers $K_t$ when a large radius cannot be used (e.g. bearing seat)"
+    ],
+    [
+     "Use a stepped (multi-radius) or elliptical fillet",
+     "Spreads curvature",
+     "Lower $K_t$ than a single circular arc"
+    ],
+    [
+     "Taper the step (smaller $D/d$)",
+     "Reduces the size of the jump",
+     "$K_t$ falls as $D/d\\to1$"
+    ],
+    [
+     "Orient elliptical holes with the long axis along the load",
+     "Smaller transverse dimension",
+     "$K_t=1+2a/b$ with $a$ across the load"
+    ]
+   ],
+   "caption": "Common geometric measures to reduce concentration"
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing a fillet radius.** For a shouldered shaft in bending with $D/d=1.5$, typical chart readings of $K_t$ (nominal stress $32M/\\pi d^3$ on the small diameter) are given below. They show strongly diminishing returns above $r/d\\approx0.2$, and a practical limit often exists where the fillet must clear a bearing or seal that has its own corner radius. These are approximate, representative readings, not a code table."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "$r/d$",
+    "0.025",
+    "0.05",
+    "0.10",
+    "0.20"
+   ],
+   "rows": [
+    [
+     "$K_t$ (bending, $D/d=1.5$)",
+     "2.5",
+     "2.0",
+     "1.65",
+     "1.4"
+    ]
+   ],
+   "caption": "Approximate chart readings, bending of a shouldered shaft (typical)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Selecting a fillet radius for a bearing shoulder",
+   "prompt": "A stepped shaft, $d=40$ mm and $D=60$ mm, carries a bending moment $M=500$ N m at the shoulder. The local stress must not exceed 120 MPa. Using the bending table, find the smallest fillet radius that is acceptable and compare it with $r=2$ mm.",
+   "steps": [
+    {
+     "text": "Nominal bending stress on the small diameter.",
+     "latex": "\\sigma_{nom}=\\frac{32M}{\\pi d^3}=\\frac{32(500000)}{\\pi(40)^3}=79.58\\ \\text{MPa}"
+    },
+    {
+     "text": "With $r=2$ mm, $r/d=0.05$, $K_t=2.0$.",
+     "latex": "\\sigma_{max}=2.0\\times79.58=159\\ \\text{MPa}>120"
+    },
+    {
+     "text": "Allowed concentration factor.",
+     "latex": "K_{t,max}=\\frac{120}{79.58}=1.508"
+    },
+    {
+     "text": "Interpolate linearly between $r/d=0.10$ ($K_t=1.65$) and $0.20$ ($K_t=1.4$): $r/d\\approx0.157$, so $r\\approx6.3$ mm. Choose the next convenient value, 7 mm.",
+     "latex": "r/d=0.10+0.10\\frac{1.65-1.508}{1.65-1.40}=0.157"
+    },
+    {
+     "text": "Check with the table at $r=8$ mm ($r/d=0.20$): $\\sigma_{max}=1.4\\times79.58=111$ MPa, a 30% reduction from the 2 mm radius."
+    }
+   ],
+   "answer": "A fillet of about 7 mm (at least 6.3 mm) is needed; with $r=8$ mm, $\\sigma_{max}\\approx111$ MPa versus 159 MPa at $r=2$ mm."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Ductile versus brittle under static load.** In a ductile metal, the peak stress at a notch can exceed the yield strength $S_y$ without catastrophe. A small plastic zone forms, the peak stress is capped near $S_y$, and the load redistributes to neighbouring material. For **static** loading the net-section nominal stress governs, and $K_t$ is normally **ignored** for static strength. A brittle material cannot yield, so the elastic peak stress $K_t\\sigma_{nom}$ is the stress that must be compared with the tensile strength $S_{ut}$, and the concentration is retained in full. (Grey cast iron is a partial exception: its internal flakes are already stress raisers, so its sensitivity to additional notches is less than $K_t$ suggests.) Under **fatigue** loading, a (fatigue) concentration factor applies to both classes."
+  },
+  {
+   "type": "worked_example",
+   "title": "The same hole in a ductile and a brittle plate",
+   "prompt": "A plate with a hole has $K_t=2.5$ and a nominal net-section stress of 90 MPa under a static load. Compare a ductile steel ($S_y=300$ MPa) with a grey cast iron ($S_{ut}=200$ MPa, typical).",
+   "steps": [
+    {
+     "text": "Elastic peak stress.",
+     "latex": "\\sigma_{max}=K_t\\sigma_{nom}=2.5\\times90=225\\ \\text{MPa}"
+    },
+    {
+     "text": "Ductile steel: the peak is below $S_y$, so even the elastic check passes. For static strength with yielding allowed, the governing figure is the nominal stress; $K_t$ is ignored here because local yielding at the hole caps the peak stress and redistributes the load.",
+     "latex": "n_{ductile}=\\frac{S_y}{\\sigma_{nom}}=\\frac{300}{90}=3.33"
+    },
+    {
+     "text": "Brittle iron: the peak stress is above $S_{ut}$, so a crack is predicted.",
+     "latex": "n_{brittle}=\\frac{S_{ut}}{K_t\\sigma_{nom}}=\\frac{200}{225}=0.89"
+    },
+    {
+     "text": "Conclusion: the hole is harmless statically in the ductile steel but unacceptable in the brittle casting without a lower $K_t$ or more material."
+    }
+   ],
+   "answer": "Ductile: $n\\approx3.33$ (nominal basis); brittle: $n\\approx0.89<1$, fracture predicted."
+  },
+  {
+   "type": "text",
+   "markdown": "**Cut-outs and holes.** For an elliptical hole in a plate, with semi-axis $a$ across the load and $b$ along it, Inglis gives $K_t=1+2a/b$. A circular hole ($a=b$) has $K_t=3$. An ellipse with its **long axis along the load** has a small $a/b$ and so a *lower* $K_t$ (for $a/b=1/2$, $K_t=2$), while the same ellipse turned across the load has $K_t=5$. Further measures: generous corner radii on rectangular cut-outs, local reinforcing rings or doublers (to restore the lost section), and small relief holes placed in the force flow ahead of a hole, which share the flow and flatten the stress gradient."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Replace sharp internal corners with generous radii (or elliptical/blended profiles).",
+    "Orient slots and elliptical holes with the long axis parallel to the principal tensile stress.",
+    "Reinforce with a doubler, boss or flange to restore the lost stiffness around a cut-out.",
+    "Add relief holes or relief grooves to bring the high stress into a larger effective radius.",
+    "Move cut-outs away from edges, welds and other discontinuities so their stress fields do not overlap."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not trade one concentration for another",
+   "text": "A deep relief groove, an unrounded keyway end or a sharp weld toe can introduce a new, worse $K_t$. Check each modification with its own chart or analysis."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Mitigate concentration by smoothing the force flow: larger fillet radii, undercuts, tapers and blended profiles lower $K_t$.",
+    "For static loads, ductile materials yield locally and can be checked against nominal stress; brittle materials must be checked against $K_t\\sigma_{nom}\\le S_{ut}$.",
+    "An elliptical hole oriented with its long axis along the load has $K_t=1+2a/b$ smaller than a circular hole; turned across the load it is much worse.",
+    "Reinforcement, relief holes and generous corner radii are practical cut-out modifications; every change must be re-checked for new concentrations."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A stepped shaft with a sharp shoulder fails by fatigue cracking at the corner. Which single geometric change at that corner is the most effective way to lower the stress concentration factor?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Increase the fillet radius at the shoulder"
+    },
+    {
+     "id": "b",
+     "text": "Reduce the fillet radius to save material"
+    },
+    {
+     "id": "c",
+     "text": "Increase the length of the large-diameter section"
+    },
+    {
+     "id": "d",
+     "text": "Add a sharp-cornered keyway to relieve the stress"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Increase the fillet radius at the shoulder",
+   "distractorRationale": {
+    "a": "Correct: $K_t$ falls steeply as the ratio $r/d$ increases.",
+    "b": "A smaller radius makes the force-flow bend sharper and raises $K_t$.",
+    "c": "The length of the large section does not change the local geometry of the corner.",
+    "d": "A keyway end with a sharp corner would add another concentration, not relieve this one."
+   },
+   "explanation": "Peak stress at a shoulder is $K_t\\sigma_{nom}$, and $K_t$ depends on $r/d$ and $D/d$. Raising $r$ gives the force flow a smoother path and lowers $K_t$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A stepped shaft has $d=50$ mm and $D=75$ mm, with fillet radius $r=5$ mm and carries a bending moment of 800 N m. Use the lesson's bending table ($D/d=1.5$) to find the peak stress at the fillet in MPa.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o1"
+   ],
+   "correctValue": 107.563277,
+   "tolerance": 0.5,
+   "unit": "MPa",
+   "explanation": "Here $r/d=0.10$, so $K_t=1.65$. The nominal bending stress is $32M/(\\pi d^3)=32(800000)/(\\pi\\cdot125000)=65.19$ MPa, so $\\sigma_{max}=1.65\\times65.19=107.6$ MPa.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A bending shaft with $d=30$ mm, $D=45$ mm needs $K_t\\le1.7$ at its shoulder. From the lesson's bending table, what is the smallest fillet radius listed that satisfies this, in mm?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o1"
+   ],
+   "correctValue": 3.0,
+   "tolerance": 0.01,
+   "unit": "mm",
+   "explanation": "The table shows $K_t=2.0$ at $r/d=0.05$ (too high) and $1.65$ at $r/d=0.10$ (acceptable). So $r/d=0.10$ and $r=0.10\\times30=3.0$ mm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A mild steel bracket with a drilled hole is loaded statically in tension, and the elastic peak stress at the hole exceeds the yield strength while the net-section nominal stress is well below it. What is the correct static assessment?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The part will fracture immediately because the peak exceeds $S_y$"
+    },
+    {
+     "id": "b",
+     "text": "The material yields locally and redistributes load, so the static strength is governed by the nominal (net-section) stress"
+    },
+    {
+     "id": "c",
+     "text": "$K_t$ must be applied in full for static strength of a ductile material"
+    },
+    {
+     "id": "d",
+     "text": "The yield strength has been reduced by $K_t$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The material yields locally and redistributes load, so the static strength is governed by the nominal (net-section) stress",
+   "distractorRationale": {
+    "a": "Local yielding does not cause fracture of a ductile metal under static load.",
+    "b": "Correct: ductile yielding caps the peak and spreads load to adjacent material.",
+    "c": "Applying $K_t$ in full to static ductile strength is over-conservative; it is needed for brittle materials and for fatigue.",
+    "d": "Yield strength is a material property and is not changed by geometry."
+   },
+   "explanation": "A small plastic zone forms at the hole and the load redistributes, so net-section yielding governs. This is why a static ductile check uses $\\sigma_{nom}$, while $K_t$ is retained for fatigue and for brittle materials.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cast iron component with a notch has $K_t=2.4$ and a nominal stress of 70 MPa under static load. With $S_{ut}=220$ MPa (typical), what is the factor of safety against fracture using the full elastic peak stress? Give a dimensionless number.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o2"
+   ],
+   "correctValue": 1.309524,
+   "tolerance": 0.02,
+   "unit": "dimensionless",
+   "explanation": "The elastic peak stress is $2.4\\times70=168$ MPa, and brittle fracture is governed by this peak value, so $n=S_{ut}/(K_t\\sigma_{nom})=220/168=1.31$. A ductile steel could use the nominal stress instead.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why a stress concentration factor is usually ignored when checking the static strength of a ductile component, but must be retained for a brittle component and for fatigue loading.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o2"
+   ],
+   "markingGuide": [
+    "Ductile materials yield locally at the notch; the peak stress is capped near $S_y$ and the load is shared with neighbouring material.",
+    "Static failure of a ductile part requires net-section yielding, governed by the nominal stress.",
+    "Brittle materials cannot yield, so the elastic peak stress $K_t\\sigma_{nom}$ acts until fracture begins.",
+    "Fatigue cracks initiate at the local peak stress even in ductile materials, where there is no overall yielding, so a (fatigue) concentration factor applies.",
+    "Notch sensitivity varies by material (for example cast iron is less sensitive than $K_t$ suggests because of its internal flaws)."
+   ],
+   "explanation": "The question is whether the material can redistribute load by plastic flow. Ductile metals can do so once under static load, but cannot avoid local peak stress under cyclic load because crack initiation depends on the local stress range.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer must cut an elliptical access hole in a plate loaded in uniform tension in the $x$ direction. The hole has semi-axes of 10 mm and 20 mm. Which orientation gives the lower stress concentration?",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The 20 mm semi-axis along $x$ (parallel to the load), giving $K_t=2$"
+    },
+    {
+     "id": "b",
+     "text": "The 20 mm semi-axis across the load, giving $K_t=2$"
+    },
+    {
+     "id": "c",
+     "text": "The 20 mm semi-axis across the load, giving $K_t=5$"
+    },
+    {
+     "id": "d",
+     "text": "Orientation makes no difference, $K_t=3$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The 20 mm semi-axis along $x$ (parallel to the load), giving $K_t=2$",
+   "distractorRationale": {
+    "a": "Correct: $a=10$ across the load and $b=20$ along it gives $K_t=1+2(10)/20=2$.",
+    "b": "With 20 mm across the load, $K_t=1+2(20)/10=5$, not 2.",
+    "c": "This identifies the worse orientation but with the right value of 5, so the pairing is wrong for the question asked.",
+    "d": "Orientation matters greatly; only a circle has $K_t=3$."
+   },
+   "explanation": "The Inglis formula $K_t=1+2a/b$ uses $a$ for the semi-axis perpendicular to the load. Keeping the long axis along the load keeps $a$ small and gives $K_t=2$, while turning it across the load gives $K_t=5$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A plate under a remote tensile stress of 50 MPa contains an elliptical cut-out with semi-axes 30 mm and 15 mm. It is installed with the 30 mm semi-axis perpendicular to the load. Using $K_t=1+2a/b$ with $a$ across the load, calculate the maximum stress at the ends of the ellipse in MPa.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o3"
+   ],
+   "correctValue": 250.0,
+   "tolerance": 1,
+   "unit": "MPa",
+   "explanation": "Here $a=30$ mm (across the load) and $b=15$ mm (along it), so $K_t=1+2(30)/15=5$ and $\\sigma_{max}=5\\times50=250$ MPa. Rotating it through $90^\\circ$ gives $K_t=2$ and 100 MPa, a 60% reduction.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "An access cut-out in a thin tension panel is to be a rectangle with sharp corners. Propose at least four design modifications to reduce the stress concentration and explain the mechanism of each.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o3"
+   ],
+   "markingGuide": [
+    "Round the corners with generous radii (or use a rounded-rectangle or elliptical outline): stress concentration at a corner depends strongly on radius.",
+    "Align the long dimension of the cut-out with the load direction: smaller transverse size across the force flow.",
+    "Add a reinforcing doubler or flanged rim (or thicken around the cut-out): restores lost section and stiffness.",
+    "Add relief holes in the force flow near the corners or use tapered edges: share and smooth the flow.",
+    "Move the cut-out away from edges and other features to avoid overlapping stress fields.",
+    "Check each modification for new concentrations (e.g. weld or rivet holes)."
+   ],
+   "explanation": "A sharp corner has an effective radius near zero and a very high $K_t$. Every proposed change either lengthens the load path around the hole, gives it a larger effective radius, or adds material where the stress is high.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: for a ductile steel under a static tensile load, the stress concentration factor $K_t$ should always be applied in full to the nominal stress when checking static strength against the yield strength.",
+   "objectiveIds": [
+    "ug.mce-stress-analysis-2.stress-concentration.mitigating-concentration.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "A ductile steel yields locally at the notch and redistributes load, so for static strength the nominal stress on the net section is normally used. The full $K_t$ is retained for brittle materials and for fatigue.",
+   "board": "internal"
+  }
+ ]
+}

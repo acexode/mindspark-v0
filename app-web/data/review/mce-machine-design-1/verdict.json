@@ -1,0 +1,78 @@
+{
+  "subjectId": "ug.mce-machine-design-1",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "All numeric keys and worked examples were recomputed independently in Python (about 120 values across static failure, S-N/Marin, Goodman/Gerber/Soderberg/Miner, DE-Goodman shafts, keys, bolts, joint stiffness, springs, gears, bearings, clutches and brakes). Every key, tolerance, unit and direction of effect checked out. The standard tables match Shigley as I know them: Marin ka/kb/kc/ke, Kt for shoulders and keyseats, slope limits, Zimmerli 241/379 MPa and 398/534 MPa peened, Ssy=0.45Sut, Ssu=0.67Sut, 2.63D/alpha buckling constants, the rack and pinion-gear undercut formulas, the Lewis Y values, Kv=(6.1+V)/6.1 and the Petroff equations. Remaining problems are only minor: e+04-style number formatting in LaTeX, a mis-described Zimmerli cycle, one torque-coefficient set that differs from Shigley, a Wahl/Ks inconsistency, and a few clarity gaps. No tab or control characters, literal \\uXXXX text, placeholder step text, stale option-letter references, [object Object] or non-Latin garbling were found. Confidence is high on arithmetic and formulas and moderate on typical-value tables. This is an AI review only: the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-machine-design-1.fatigue-design.sn-curve-and-endurance-limit",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Programming-style number formatting appears inside LaTeX and in the answer text of the worked example 'Reading life and strength from the S-N line': 'N=...=5.42e+04\\ \\text{cycles}' and 'about 5.42e+04 cycles'. It renders as the literal string 5.42e+04.",
+      "suggestedFix": "Write 5.42\\times10^{4} cycles in LaTeX and '5.4 x 10^4 cycles' (or 54 200 cycles) in the answer text. The value itself is correct (54 062)."
+    },
+    {
+      "subtopicId": "ug.mce-machine-design-1.fatigue-design.mean-stress-and-goodman",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "The Miner worked example ('Cumulative damage under three load levels') uses e+06-style formatting inside LaTeX: 'N_{300}=1.95e+05, N_{260}=7.03e+05' and '4000/1.95e+05 = 0.021, 60000/7.03e+05 = 0.085'.",
+      "suggestedFix": "Use 1.95\\times10^{5} and 7.03\\times10^{5} (recomputed values 1.949e5 and 7.034e5, D = 0.106, 9.4 blocks all confirmed)."
+    },
+    {
+      "subtopicId": "ug.mce-machine-design-1.springs.spring-fatigue-and-other",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "The Zimmerli stress pair is described as 'the amplitude and the mean of a cycle from zero stress to the fatigue limit'. A zero-to-maximum cycle has equal amplitude and mean, so 241 and 379 MPa cannot describe one (Ssmin = 379 - 241 = 138 MPa is not zero). The values 241/379 MPa (unpeened) and 398/534 MPa (peened) are themselves correct for Shigley.",
+      "suggestedFix": "Say that Ssa = 241 MPa and Ssm = 379 MPa are the alternating and mean shear strengths at the fatigue limit measured in Zimmerli's tests (a pulsating cycle that does not go to zero), used as a point through which the Goodman line is drawn."
+    },
+    {
+      "subtopicId": "ug.mce-machine-design-1.springs.helical-compression-springs",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Lesson says of the Wahl factor 'The same factor is used for static design in this unit', but the next unit's static check (n_s = 855/208) uses Ks = 1 + 0.5/C, not Kw. A student gets two different static stress corrections in the same course.",
+      "suggestedFix": "State that Kw is a conservative static choice here, that Shigley uses Ks for static yield (local yielding relieves the curvature effect), and that the following unit uses Ks, or make the two units consistent."
+    },
+    {
+      "subtopicId": "ug.mce-machine-design-1.springs.spring-fatigue-and-other",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Surge is named (key-point callout 'then check yield at the maximum load, solid height and surge' and the Q009 marking guide) but never defined and no natural-frequency relation is given. The unit objectives do not cover it either.",
+      "suggestedFix": "Add a one-line definition (spring surge is a resonance of coil wave motion, with the natural frequency kept well above the forcing frequency), or drop the word from the callout and marking guide."
+    },
+    {
+      "subtopicId": "ug.mce-machine-design-1.springs.spring-fatigue-and-other",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Series/parallel worked-example answer ends with a dangling fragment: 'total deflection 6.94 mm under 100 N, check: $100/14.4$)'. It is an unfinished check statement.",
+      "suggestedFix": "Write 'check: 100/14.4 = 6.94 mm' or delete the parenthesis."
+    },
+    {
+      "subtopicId": "ug.mce-machine-design-1.threaded-fasteners-and-joints.bolt-preload-and-torque",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Torque coefficients are quoted as 'about 0.2 for plain dry black bolts, about 0.18 for zinc-plated and about 0.15 for lubricated'. They are labelled representative, but Shigley Table 8-15 gives about 0.30 for non-plated black finish, 0.20 zinc-plated and 0.18 lubricated. Using 0.2 for dry black bolts overpredicts preload from a given torque (non-conservative for clamping).",
+      "suggestedFix": "Either align with the Shigley values (0.30 black, 0.20 zinc, 0.18 lubricated) or keep the present set and say that dry black finish can be 0.2 to 0.3 and that the manufacturer's value must be used. The worked examples remain arithmetically correct for whatever K is stated."
+    },
+    {
+      "subtopicId": "ug.mce-machine-design-1.threaded-fasteners-and-joints.joint-stiffness-and-loading",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Hook says wind-turbine blade-root bolts 'rarely fail in fatigue'. Blade-root and tower-flange bolt fatigue is a well-known design driver and has produced failures; the claim is unverified and could mislead.",
+      "suggestedFix": "Reword, for example: 'Fatigue of the blade-root bolts is controlled largely by arranging the joint so the bolt feels only a small slice of each load swing' (source check recommended)."
+    },
+    {
+      "subtopicId": "ug.mce-machine-design-1.bearings.journal-bearings",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Lesson says the radial clearance c is 'typically about 0.001 times the journal diameter'. The usual Shigley guidance is a clearance ratio c/r of about 0.001 (r/c about 1000), i.e. radial clearance about 0.001 r, or a diametral clearance of about 0.001 D. The worked example (c = 0.05 mm, D = 50 mm, r/c = 500) uses a value 2 times larger than that.",
+      "suggestedFix": "Say 'radial clearance of the order of 0.001 times the journal radius (r/c about 500 to 1000)'. The Sommerfeld arithmetic itself (S = 0.1875) is correct."
+    },
+    {
+      "subtopicId": "ug.mce-machine-design-1.bearings.rolling-element-bearings",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Combined-load worked example says the ratio 0.44 'is above the limit used here' but never gives e. A student cannot check the F_a/(V F_r) > e test, and X = 0.56 with Y = 1.6 is paired with an unstated e.",
+      "suggestedFix": "State an illustrative e (for example e = 0.3 for these X and Y) so the condition F_a/(VF_r) = 0.44 > e is explicit."
+    }
+  ]
+}

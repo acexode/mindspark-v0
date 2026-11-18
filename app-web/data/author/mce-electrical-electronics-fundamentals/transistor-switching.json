@@ -1,0 +1,394 @@
+{
+ "lessonTitle": "Transistor Switching",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A microcontroller pin can source about 20 mA at 3.3 V, yet it can start a 12 V, 5 A pump motor. The trick is to let the pin control a transistor that does the heavy lifting: a switch with a tiny control current in and a large load current through. Choosing the right component values decides whether the transistor runs cool or cooks itself."
+  },
+  {
+   "type": "text",
+   "markdown": "A **transistor switch** operates in only two states: fully **off** (almost no current, large voltage across it) and fully **on** (large current, small voltage across it). Power dissipated in the transistor is $v\\times i$, so in either state it is small; the danger is the transitional or half-on region where both are significant. Two families dominate: the **bipolar junction transistor (BJT)**, controlled by base current, and the **MOSFET**, controlled by gate voltage."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "BJT saturation",
+   "text": "An NPN BJT used as a switch has the load in the collector and the emitter at ground. To turn it **fully on (saturation)** the base current must be more than the collector current requires in the active region: $I_B>I_C/\\beta_{min}$, where $\\beta_{min}$ is the minimum guaranteed current gain on the datasheet. In saturation the collector-emitter voltage falls to $V_{CE(sat)}\\approx0.1$ to 0.3 V (typical) and the base-emitter voltage is $V_{BE}\\approx0.7$ V."
+  },
+  {
+   "type": "math",
+   "latex": "I_B=k\\,\\frac{I_C}{\\beta_{min}},\\qquad R_B=\\frac{V_{in}-V_{BE}}{I_B},\\qquad P_{BJT}\\approx I_C\\,V_{CE(sat)}",
+   "caption": "Base resistor design with overdrive factor k (typically 3 to 5), and on-state power in the BJT"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing the base resistor",
+   "prompt": "A relay coil draws $I_C=80$ mA from a 12 V supply. An NPN BJT has $\\beta_{min}=100$. A 5 V logic output drives its base through a resistor. Choose the resistor with an overdrive factor of 5.",
+   "steps": [
+    {
+     "text": "Base current to just saturate, then with overdrive.",
+     "latex": "I_{B,min}=\\frac{80}{100}=0.80\\ \\mathrm{mA},\\qquad I_B=5\\times0.80=4.0\\ \\mathrm{mA}"
+    },
+    {
+     "text": "Base resistor from KVL around the input loop, with $V_{BE}=0.7$ V.",
+     "latex": "R_B=\\frac{5.0-0.7}{4.0\\times10^{-3}}=1075\\ \\Omega"
+    },
+    {
+     "text": "Choose the nearest standard value below (so the base current is at least that wanted) and check.",
+     "latex": "R_B=1.0\\ \\mathrm{k\\Omega}\\ \\Rightarrow\\ I_B=\\frac{4.3}{1000}=4.3\\ \\mathrm{mA}"
+    }
+   ],
+   "answer": "Use 1.0 kohm: the base current is 4.3 mA, more than five times the 0.8 mA minimum, so the transistor saturates. A flyback diode across the relay coil is also needed."
+  },
+  {
+   "type": "text",
+   "markdown": "**MOSFET as a low-side switch.** An N-channel enhancement MOSFET has a **gate**, **drain** and **source**. In a **low-side** configuration the load sits between the positive supply and the drain, and the source is grounded. When the gate-source voltage $V_{GS}$ exceeds the threshold $V_{th}$ (and, for a switch, is well above it, e.g. 4.5 V for a 'logic-level' device) a conducting channel forms and the drain-source path acts as a small resistor $R_{DS(on)}$ (milliohms to tens of milliohms). The gate draws essentially no steady current, so the microcontroller needs only to charge a small capacitance. Below $V_{th}$ the channel is off."
+  },
+  {
+   "type": "math",
+   "latex": "P_{MOSFET}=I_D^{2}\\,R_{DS(on)},\\qquad V_{DS}=I_D\\,R_{DS(on)}",
+   "caption": "On-state dissipation in a MOSFET switch"
+  },
+  {
+   "type": "worked_example",
+   "title": "Conduction loss comparison",
+   "prompt": "A 12 V DC motor draws 5.0 A. Compare the on-state power in a logic-level MOSFET with $R_{DS(on)}=40$ mohm and in a BJT with $V_{CE(sat)}=0.30$ V.",
+   "steps": [
+    {
+     "text": "MOSFET: $I^2R$.",
+     "latex": "P=5.0^2\\times0.040=1.0\\ \\mathrm{W}"
+    },
+    {
+     "text": "BJT: $I\\,V_{CE(sat)}$.",
+     "latex": "P=5.0\\times0.30=1.5\\ \\mathrm{W}"
+    },
+    {
+     "text": "Voltage lost across each switch.",
+     "latex": "V_{DS}=5.0\\times0.040=0.20\\ \\mathrm{V},\\qquad V_{CE}=0.30\\ \\mathrm{V}"
+    }
+   ],
+   "answer": "The MOSFET dissipates 1.0 W against 1.5 W for the BJT, and its loss scales with current squared, so at lower current it wins even more; the BJT also needs a large base current (about 0.5 A at a forced gain of 10)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "NPN BJT",
+    "N-channel MOSFET"
+   ],
+   "rows": [
+    [
+     "Control signal",
+     "Base current",
+     "Gate voltage"
+    ],
+    [
+     "Control power",
+     "Continuous base current",
+     "Almost none (charges gate capacitance)"
+    ],
+    [
+     "On-state model",
+     "Voltage source $V_{CE(sat)}$",
+     "Resistor $R_{DS(on)}$"
+    ],
+    [
+     "On-state loss",
+     "$I_CV_{CE(sat)}$",
+     "$I_D^2R_{DS(on)}$"
+    ],
+    [
+     "Typical use",
+     "Small loads, relays, LEDs",
+     "Motors, solenoids, PWM at higher currents"
+    ]
+   ],
+   "caption": "BJT versus MOSFET as low-side switches"
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Always add a flyback diode across an inductive load (relay, motor, solenoid).",
+    "A BJT needs a series base resistor; a MOSFET benefits from a gate series resistor (tens of ohms) and a pull-down resistor (about 10 k$\\Omega$) to keep it off when the pin floats.",
+    "Check that $V_{GS}$ from the logic output reaches the voltage at which $R_{DS(on)}$ is specified.",
+    "Check power: $P=I^2R_{DS(on)}$ and compare with the device's rating and heatsinking."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Underdriving a BJT or MOSFET",
+   "text": "A BJT given too little base current, or a MOSFET with too little gate voltage, sits in its active (linear) region with both a large voltage and a large current, so it dissipates far more power and can overheat. A switch must be driven hard on or fully off."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Saturate a BJT with $I_B\\ge k\\,I_C/\\beta_{min}$ and set $R_B=(V_{in}-0.7)/I_B$.",
+    "An N-MOSFET low-side switch conducts when $V_{GS}$ is well above $V_{th}$ and behaves as a small resistor $R_{DS(on)}$.",
+    "On-state power is $I_CV_{CE(sat)}$ for a BJT and $I_D^2R_{DS(on)}$ for a MOSFET."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A BJT switches a 50 mA relay coil. Its minimum current gain is 100. What is the smallest base current that just supports saturation?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.5 mA"
+    },
+    {
+     "id": "b",
+     "text": "5 mA"
+    },
+    {
+     "id": "c",
+     "text": "50 mA"
+    },
+    {
+     "id": "d",
+     "text": "0.05 mA"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.5 mA",
+   "distractorRationale": {
+    "a": "Correct: I_B = I_C/beta_min = 50/100 = 0.5 mA.",
+    "b": "Wrong: this is a factor of 10 too large.",
+    "c": "Wrong: this equates base and collector currents.",
+    "d": "Wrong: a factor of 10 too small."
+   },
+   "explanation": "The minimum base current is $I_C/\\beta_{min}=50/100=0.5$ mA. In practice a margin of 3 to 5 times is used to make sure saturation is reached.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "How is an N-channel MOSFET connected as a low-side switch for a load?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Load between the supply and drain, source to ground, gate driven by the logic signal"
+    },
+    {
+     "id": "b",
+     "text": "Load between the source and ground, drain to the supply"
+    },
+    {
+     "id": "c",
+     "text": "Load between gate and source"
+    },
+    {
+     "id": "d",
+     "text": "Gate connected to the supply through the load"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Load between the supply and drain, source to ground, gate driven by the logic signal",
+   "distractorRationale": {
+    "a": "Correct: the load is on the high side of the MOSFET and the MOSFET is between load and ground.",
+    "b": "Wrong: this is a source-follower (high-side) arrangement and needs a higher gate voltage.",
+    "c": "Wrong: the gate is the control terminal and carries no load current.",
+    "d": "Wrong: the gate must be driven by the control signal."
+   },
+   "explanation": "A low-side switch interrupts the return path: the load connects to the positive supply, and the MOSFET connects the load's other end (drain) to ground via the source.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A MOSFET with $R_{DS(on)}=0.05$ ohm conducts 3.0 A continuously. What is the power dissipated in it?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.45 W"
+    },
+    {
+     "id": "b",
+     "text": "0.15 W"
+    },
+    {
+     "id": "c",
+     "text": "9.0 W"
+    },
+    {
+     "id": "d",
+     "text": "60 W"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.45 W",
+   "distractorRationale": {
+    "a": "Correct: I^2 R = 9 x 0.05 = 0.45 W.",
+    "b": "Wrong: this is I x R = 0.15 V, the drop in volts, not power.",
+    "c": "Wrong: this is I^2 with no R.",
+    "d": "Wrong: this is I^2/R."
+   },
+   "explanation": "$P=I^2R_{DS(on)}=3.0^2\\times0.05=0.45$ W. Equivalently, the drop is $V=IR=0.15$ V and $P=VI=0.15\\times3.0=0.45$ W.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 3.3 V logic pin drives an NPN BJT through $R_B$ to switch a 200 mA load. $\\beta_{min}=50$, $V_{BE}=0.7$ V and the overdrive factor is 3. Which base resistor is suitable?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "217 ohm (use 220 ohm)"
+    },
+    {
+     "id": "b",
+     "text": "650 ohm"
+    },
+    {
+     "id": "c",
+     "text": "275 ohm"
+    },
+    {
+     "id": "d",
+     "text": "2.6 kohm"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "217 ohm (use 220 ohm)",
+   "distractorRationale": {
+    "a": "Correct: I_B = 3 x 200/50 = 12 mA; R_B = 2.6/0.012 = 217 ohm.",
+    "b": "Wrong: this omits the overdrive factor (I_B = 4 mA).",
+    "c": "Wrong: this forgets to subtract V_BE (3.3/12 mA).",
+    "d": "Wrong: this uses I_B = 1 mA, ignoring the required current."
+   },
+   "explanation": "Base current is $3\\times0.200/50=12$ mA. The resistor drops $3.3-0.7=2.6$ V, so $R_B=2.6/0.012=217$ ohm. A 220 ohm standard value gives 11.8 mA.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why is a pull-down resistor (about 10 k$\\Omega$) often fitted between the gate and ground of a low-side MOSFET driven by a microcontroller?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "To hold the gate low, keeping the MOSFET off while the pin is floating (e.g. at reset)"
+    },
+    {
+     "id": "b",
+     "text": "To increase the gate voltage"
+    },
+    {
+     "id": "c",
+     "text": "To reduce the drain current in the on state"
+    },
+    {
+     "id": "d",
+     "text": "To protect the load from reverse voltage"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "To hold the gate low, keeping the MOSFET off while the pin is floating (e.g. at reset)",
+   "distractorRationale": {
+    "a": "Correct: a floating gate may drift above threshold and switch the load on unintentionally.",
+    "b": "Wrong: a pull-down cannot raise the voltage.",
+    "c": "Wrong: drain current is set by the load and R_DS(on).",
+    "d": "Wrong: reverse voltage protection is by a diode."
+   },
+   "explanation": "The gate is a high-impedance node. If the controller pin is floating, charge or noise can turn the MOSFET on. A pull-down resistor defines the gate at 0 V by default.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An NPN BJT must switch 120 mA with $\\beta_{min}=80$. A 5.0 V output drives the base resistor, $V_{BE}=0.7$ V, and the overdrive factor is 5. What base resistance is needed, in ohms?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o1"
+   ],
+   "correctValue": 573,
+   "tolerance": 5,
+   "unit": "ohm",
+   "explanation": "$I_B=5\\times0.120/80=7.5$ mA. $R_B=(5.0-0.7)/0.0075=573$ ohm. A standard 560 ohm resistor gives 7.7 mA.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A BJT switch carries 0.50 A with $V_{CE(sat)}=0.25$ V. What power does it dissipate in the on state, in milliwatts? (Ignore base drive power.)",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o3"
+   ],
+   "correctValue": 125,
+   "tolerance": 1,
+   "unit": "mW",
+   "explanation": "$P=I_CV_{CE(sat)}=0.50\\times0.25=0.125$ W = 125 mW.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 24 V supply drives a 6.0 ohm resistive load through a MOSFET low-side switch whose $R_{DS(on)}$ is 0.15 ohm. What power (in watts) is dissipated in the MOSFET?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o3"
+   ],
+   "correctValue": 2.28,
+   "tolerance": 0.03,
+   "unit": "W",
+   "explanation": "The on-state circuit has total resistance $6.0+0.15=6.15$ ohm, so $I=24/6.15=3.902$ A. Then $P=I^2R_{DS(on)}=3.902^2\\times0.15=2.28$ W. Note the current is not $24/6=4$ A because the switch resistance is in series.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the difference between the active and saturation regions of a BJT switch, and why the base current is chosen larger than $I_C/\\beta_{min}$. What happens if the base resistor is too large?",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o1"
+   ],
+   "markingGuide": [
+    "Active region: I_C = beta I_B and V_CE is large; saturation: V_CE small (about 0.1 to 0.3 V) and I_C limited by the load",
+    "Switch must be in saturation to dissipate little power",
+    "Beta varies with temperature and between devices, so a margin (overdrive 3 to 5) ensures saturation",
+    "If R_B too large, I_B too small: transistor stays in active region with large V_CE",
+    "Large V_CE x I_C gives high dissipation, overheating, and the load receives less voltage"
+   ],
+   "explanation": "In the active region the collector current is $\\beta I_B$ and the collector-emitter voltage is large, while in saturation $V_{CE}$ is only about 0.2 V and the load sets the current. Because $\\beta$ varies from device to device and with temperature, the base current is made several times $I_C/\\beta_{min}$ to ensure saturation. If $R_B$ is too large the transistor falls into the active region with both high $V_{CE}$ and high $I_C$, dissipating a lot of heat and starving the load.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A 12 V solenoid taking 2.0 A is switched by a logic-level N-MOSFET with $R_{DS(on)}=40$ mohm at 4.5 V gate drive. Describe the low-side circuit connections, explain how the MOSFET turns the solenoid on and off, calculate the on-state MOSFET power, and state any protection component needed.",
+   "objectiveIds": [
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o2",
+    "ug.mce-electrical-electronics-fundamentals.diodes-and-transistors.transistor-switching.o3"
+   ],
+   "markingGuide": [
+    "Solenoid between +12 V and drain; source to ground; gate driven by logic output (with series resistor and pull-down)",
+    "V_GS above threshold forms a channel, resistance R_DS(on): current flows; V_GS = 0 turns it off",
+    "P = I^2 R_DS(on) = 2.0^2 x 0.040 = 0.16 W",
+    "Voltage drop across the MOSFET on-state = 0.08 V so the solenoid receives almost the full 12 V",
+    "Flyback diode across the solenoid (cathode to +12 V) to clamp the inductive turn-off spike"
+   ],
+   "explanation": "The solenoid connects between +12 V and the drain, and the source is grounded; the logic signal drives the gate (with a small series resistor and a pull-down). When $V_{GS}$ exceeds the threshold a channel forms with resistance $R_{DS(on)}=40$ mohm, so the on-state loss is $2.0^2\\times0.040=0.16$ W and the voltage drop only 0.08 V. At turn-off the solenoid's inductance would create a voltage spike, so a flyback diode with its cathode at +12 V is placed across it.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,392 @@
+{
+ "lessonTitle": "Heat Sinks and Airflow: Fin Arrays, Cooling Air and Fan Operating Points",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 65 W desktop processor sits under an aluminium heat sink the size of a matchbox, with a fan that costs 0.8 W. Remove the fan and the chip throttles within seconds; fit a larger fan and the noise becomes unacceptable. The art of the design lies in extended surface, the airflow needed, and where the fan's capability meets the heat sink's resistance."
+  },
+  {
+   "type": "text",
+   "markdown": "Air is a poor coolant, with a heat transfer coefficient $h$ (W/m$^2$K) of order 10 to 100 for forced convection. Since $Q=hA\\Delta T$, the practical way to dissipate more power at a limited temperature difference is to enlarge the area $A$ using fins. A fin conducts heat from the base into a thin plate that is cooled on both faces. Because the fin material has finite conductivity $k$ (W/m K), the fin is cooler toward its tip, so extra area is less effective than base area."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Fin efficiency",
+   "text": "Fin efficiency $\\eta_f$ is the ratio of the actual heat transferred by a fin to the heat it would transfer if the whole fin were at the base temperature: $\\eta_f=Q_{fin}/(hA_f\\Delta T_b)$, with $A_f$ the fin surface area (m$^2$) and $\\Delta T_b=T_b-T_\\infty$ (K)."
+  },
+  {
+   "type": "math",
+   "latex": "m=\\sqrt{\\frac{2h}{kt}},\\qquad \\eta_f=\\frac{\\tanh(mL_c)}{mL_c},\\qquad Q=h\\left(N\\eta_fA_f+A_b\\right)(T_b-T_\\infty)",
+   "caption": "Straight rectangular fin of thickness $t$ and corrected length $L_c$ (m); $N$ fins, $A_b$ exposed base area between the fins (m$^2$)"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Which way does efficiency move?",
+   "text": "Efficiency falls as $mL_c$ increases. So a longer fin, a thinner fin, a lower-conductivity material, or a higher $h$ all reduce $\\eta_f$ because the tip runs cooler. Total heat per fin still rises with length, but with diminishing returns, since $Q_{fin}\\propto\\tanh(mL_c)$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Heat dissipated by a fin array",
+   "prompt": "An aluminium heat sink ($k=200$ W/m K, typical) has 15 straight fins, each 1.0 mm thick, 25 mm tall and 60 mm long in the flow direction, separated by 4 mm gaps. With $h=40$ W/m$^2$K, base temperature 70 $^\\circ$C and air at 35 $^\\circ$C, find the total heat dissipated. Neglect fin tips.",
+   "steps": [
+    {
+     "text": "Fin parameter and $mL$.",
+     "latex": "m=\\sqrt{\\frac{2\\times40}{200\\times0.001}}=20.0\\ \\mathrm{m^{-1}},\\quad mL=0.50"
+    },
+    {
+     "text": "Fin efficiency.",
+     "latex": "\\eta_f=\\frac{\\tanh(0.5)}{0.5}=0.924"
+    },
+    {
+     "text": "Areas: each fin has two faces, $A_f=2\\times0.025\\times0.060$; the base has 14 gaps.",
+     "latex": "A_f=0.0030\\ \\mathrm{m^2},\\quad A_b=14\\times0.004\\times0.060=0.00336\\ \\mathrm{m^2}"
+    },
+    {
+     "text": "Add fin and base contributions.",
+     "latex": "Q=40\\,[15\\times0.924\\times0.0030+0.00336]\\times35=62.9\\ \\mathrm{W}"
+    }
+   ],
+   "answer": "The heat sink dissipates about 63 W; the fins carry 58 W and the exposed base 4.7 W. An isothermal fin would give 68 W, so the 8 % loss in fin efficiency costs about 5 W."
+  },
+  {
+   "type": "text",
+   "markdown": "The heat leaving the sink must be carried away by the air. If a power $Q$ (W) is absorbed by a stream of volumetric flow $\\dot V$ (m$^3$/s), density $\\rho$ and specific heat $c_p$, the energy balance fixes the air temperature rise. The outlet air temperature, not the inlet, is what limits how well the downstream part of the sink works, so the allowed rise is set by the design."
+  },
+  {
+   "type": "math",
+   "latex": "Q=\\rho\\dot Vc_p\\Delta T_{air}\\ \\Rightarrow\\ \\dot V=\\frac{Q}{\\rho c_p\\Delta T_{air}}",
+   "caption": "Air at about 1.15 kg/m$^3$ and 1007 J/kg K (typical for 30 to 40 degrees Celsius)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Airflow for a limited temperature rise",
+   "prompt": "Electronics in an enclosure dissipate 85 W. The exhaust air may rise by only 10 K. Find the required flow rate.",
+   "steps": [
+    {
+     "text": "Insert numbers into the energy balance.",
+     "latex": "\\dot V=\\frac{85}{1.15\\times1007\\times10}=0.00734\\ \\mathrm{m^3/s}"
+    },
+    {
+     "text": "Convert to litres per second for fan datasheets.",
+     "latex": "7.34\\ \\mathrm{L/s}\\ (\\approx15.6\\ \\mathrm{CFM})"
+    }
+   ],
+   "answer": "The enclosure needs about 7.3 L/s of air. Halving the allowed rise to 5 K would double the flow."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Item",
+    "Fan curve",
+    "System (heat-sink) curve"
+   ],
+   "rows": [
+    [
+     "Shape",
+     "Pressure falls as flow rises; maximum at zero flow (shut-off)",
+     "Pressure drop rises roughly as $\\dot V^2$"
+    ],
+    [
+     "Zero flow",
+     "Highest pressure, no cooling",
+     "Zero pressure drop"
+    ],
+    [
+     "Free delivery",
+     "Maximum flow, zero pressure",
+     "Large pressure drop"
+    ],
+    [
+     "Effect of narrower fin gaps",
+     "Unchanged",
+     "Curve becomes steeper, so operating flow falls"
+    ]
+   ],
+   "caption": "Fan and system curves; the operating point is where they intersect."
+  },
+  {
+   "type": "text",
+   "markdown": "A fan will deliver the flow at which the pressure it can generate equals the pressure drop of the heat sink and enclosure. Plotting both curves, the **operating point** is their intersection. A steeper system curve (more fins, narrower gaps, filter) moves the intersection to a smaller flow, which reduces cooling. Suppose the fan curve is $\\Delta p=50(1-(\\dot V/0.010)^2)$ Pa and the system curve is $\\Delta p=3.0\\times10^5\\dot V^2$ Pa."
+  },
+  {
+   "type": "worked_example",
+   "title": "Fan operating point",
+   "prompt": "Find the operating flow and pressure for the fan and system curves above.",
+   "steps": [
+    {
+     "text": "Expand the fan curve.",
+     "latex": "\\Delta p_{fan}=50-5.0\\times10^{5}\\dot V^2"
+    },
+    {
+     "text": "Equate with the system curve.",
+     "latex": "50-5.0\\times10^{5}\\dot V^2=3.0\\times10^{5}\\dot V^2\\ \\Rightarrow\\ \\dot V^2=\\frac{50}{8.0\\times10^{5}}=6.25\\times10^{-5}"
+    },
+    {
+     "text": "Solve for flow and pressure.",
+     "latex": "\\dot V=0.00791\\ \\mathrm{m^3/s},\\quad \\Delta p=3.0\\times10^{5}\\times6.25\\times10^{-5}=18.75\\ \\mathrm{Pa}"
+    }
+   ],
+   "answer": "The operating point is 7.91 L/s at 18.7 Pa, about 79 % of the fan's free-delivery flow."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Thin, closely spaced fins give more area but a higher pressure drop and a risk of choking the boundary layers.",
+    "Specify airflow from $Q=\\rho\\dot Vc_p\\Delta T_{air}$ before choosing a fan.",
+    "Always check the fan at its operating point, not at its free-delivery rating.",
+    "Filters and dust raise the system curve and cut flow."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Free delivery is not the operating flow",
+   "text": "A fan sold as 0.010 m$^3$/s is rated at zero back-pressure. Against a heat sink it delivers far less, so sizing a fan from its headline flow overstates cooling."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Fins add surface area; fin efficiency $\\eta_f=\\tanh(mL)/(mL)$ accounts for the cooler fin tip, and total heat is $Q=h(N\\eta_fA_f+A_b)\\Delta T$.",
+    "Airflow for a given power and allowed air temperature rise is $\\dot V=Q/(\\rho c_p\\Delta T_{air})$.",
+    "The fan operating point is where the fan curve crosses the system pressure-drop curve.",
+    "A denser fin array increases area but also system resistance, which lowers airflow."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A straight aluminium fin (typical k = 180 W/m K) is 1.5 mm thick and has an effective length of 30 mm. The heat transfer coefficient is 25 W/m^2 K. Use the rectangular fin efficiency formula with m = sqrt(2h/(kt)) and find the fin efficiency as a dimensionless fraction.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o1"
+   ],
+   "correctValue": 0.947914,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "m = sqrt(2 x 25/(180 x 0.0015)) = 13.61 per metre, so mL = 0.408 and efficiency = tanh(0.408)/0.408 = 0.948. The efficiency is close to one because the fin is short and well conducting.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A heat sink has 20 fins with a total fin surface area of 0.0042 m^2 each, fin efficiency 0.88, and a further 0.0025 m^2 of exposed base. With h = 30 W/m^2 K and a base-to-air temperature difference of 45 K, find the total heat dissipated in W.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o1"
+   ],
+   "correctValue": 103.167,
+   "tolerance": 1.5,
+   "unit": "W",
+   "explanation": "Fins contribute 20 x 0.88 x 30 x 0.0042 x 45 = 99.8 W and the base 30 x 0.0025 x 45 = 3.38 W. The total is 103.2 W, almost all through the fins.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 150 W electronics box has an exhaust air temperature rise limited to 8 K. Using air density 1.18 kg/m^3 and specific heat 1007 J/kg K, find the required volumetric flow rate in m^3/s.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o2"
+   ],
+   "correctValue": 0.0157794,
+   "tolerance": 0.0004,
+   "unit": "m^3/s",
+   "explanation": "The energy balance gives V = Q/(rho cp dT) = 150/(1.18 x 1007 x 8) = 0.01578 m^3/s, about 15.8 L/s. A smaller allowed rise would require proportionally more airflow.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A fan has the curve dp = 80[1 - (V/0.020)^2] Pa, where V is flow in m^3/s. The heat sink and duct have the system curve dp = 1.0e5 V^2 Pa. Find the operating flow rate in m^3/s.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o3"
+   ],
+   "correctValue": 0.0163299,
+   "tolerance": 0.0004,
+   "unit": "m^3/s",
+   "explanation": "Equate 80 - 2.0e5 V^2 = 1.0e5 V^2, so V^2 = 80/3.0e5 = 2.667e-4 and V = 0.0163 m^3/s. The pressure at this point is 26.7 Pa, about 82 % of the fan's free-delivery flow of 0.020 m^3/s.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a straight fin, the parameter $mL$ increases from 0.6 to 1.2 because the fin is made longer. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Efficiency rises from about 0.69 to about 0.90, because a longer fin has more area"
+    },
+    {
+     "id": "b",
+     "text": "Efficiency falls from about 0.90 to about 0.69, while heat per fin rises by about 55 %"
+    },
+    {
+     "id": "c",
+     "text": "Efficiency is unchanged at about 0.90, and heat per fin doubles"
+    },
+    {
+     "id": "d",
+     "text": "Efficiency falls from about 0.90 to about 0.69, and heat per fin also falls"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Efficiency falls from about 0.90 to about 0.69, while heat per fin rises by about 55 %",
+   "distractorRationale": {
+    "a": "Efficiency falls with $mL$ since the tip gets cooler; the reversal would apply to a shorter fin.",
+    "c": "Efficiency depends on $mL$, and heat per fin goes as $\\tanh(mL)$ so it cannot double.",
+    "d": "Heat per fin rises with $\\tanh(mL)$ even though efficiency falls, because the area increases."
+   },
+   "explanation": "Efficiency is $\\tanh(mL)/mL$, which is 0.895 at 0.6 and 0.695 at 1.2. Heat per fin is proportional to $\\tanh(mL)$, so it rises by a factor of $\\tanh(1.2)/\\tanh(0.6)=1.55$ - more heat, but with a worse return on every added millimetre.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An enclosure's exhaust air temperature rise is 6 K at a flow of 0.012 m$^3$/s and fixed power. If the flow is cut to 0.006 m$^3$/s by a clogged filter, the temperature rise becomes about",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "12 K, because the rise is inversely proportional to flow"
+    },
+    {
+     "id": "b",
+     "text": "3 K, because the rise is proportional to flow"
+    },
+    {
+     "id": "c",
+     "text": "6 K, because the power is unchanged"
+    },
+    {
+     "id": "d",
+     "text": "8.5 K, because the rise varies as the square root of flow"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "12 K, because the rise is inversely proportional to flow",
+   "distractorRationale": {
+    "b": "Less flow carries the same heat with a larger, not smaller, temperature rise.",
+    "c": "The energy balance $Q=\\rho\\dot Vc_p\\Delta T$ ties the rise to the flow at fixed power.",
+    "d": "The energy balance is linear in flow, so halving gives double the rise."
+   },
+   "explanation": "From $Q=\\rho\\dot Vc_p\\Delta T_{air}$, at fixed power $\\Delta T_{air}\\propto1/\\dot V$, so halving the flow doubles the rise to 12 K. A hot exhaust also raises the air temperature seen by components downstream.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer replaces a heat sink with one having narrower fin gaps and twice as many fins. Which effect on the fan operating point is expected?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The system curve becomes steeper, so the intersection moves to a lower airflow"
+    },
+    {
+     "id": "b",
+     "text": "The fan curve moves upward so airflow increases"
+    },
+    {
+     "id": "c",
+     "text": "The system curve becomes flatter so airflow increases"
+    },
+    {
+     "id": "d",
+     "text": "Nothing changes because the fan produces a fixed flow"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The system curve becomes steeper, so the intersection moves to a lower airflow",
+   "distractorRationale": {
+    "b": "The fan curve is a property of the fan and does not move when the sink changes.",
+    "c": "Narrow gaps raise, not lower, the pressure drop at a given flow.",
+    "d": "A fan has a pressure-flow curve, and the flow it delivers depends on the system resistance."
+   },
+   "explanation": "Narrower gaps raise the pressure drop for any given flow, making the system curve steeper. The intersection with the fixed fan curve then occurs at a lower flow, so the extra area has to outweigh the loss of airflow to be worthwhile.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which change raises the efficiency of a given straight fin, with everything else unchanged?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Using a thinner fin so that less material is used"
+    },
+    {
+     "id": "b",
+     "text": "Raising the airflow so that $h$ increases"
+    },
+    {
+     "id": "c",
+     "text": "Using copper instead of aluminium, because higher $k$ lowers $m$ and so $mL$"
+    },
+    {
+     "id": "d",
+     "text": "Increasing the fin length"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Using copper instead of aluminium, because higher $k$ lowers $m$ and so $mL$",
+   "distractorRationale": {
+    "a": "Thinner fins increase $m=\\sqrt{2h/kt}$ and reduce efficiency.",
+    "b": "A larger $h$ increases $m$ and reduces efficiency, though it increases heat per area.",
+    "d": "Longer fins increase $mL$ and reduce efficiency."
+   },
+   "explanation": "Efficiency is $\\tanh(mL)/mL$, which falls as $mL$ rises. Since $m=\\sqrt{2h/(kt)}$, increasing the conductivity $k$ lowers $m$ and keeps the fin tip warmer, raising efficiency.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A 120 W component must be cooled by air drawn through a sealed cabinet. The inlet air is 30 degrees Celsius and the exhaust must not exceed 40 degrees Celsius. Show how you would find the required flow rate, and say what happens to the air temperature at the component if the airflow is reduced.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o2"
+   ],
+   "markingGuide": [
+    "Applies the energy balance $Q=\\rho\\dot Vc_p\\Delta T_{air}$ with $\\Delta T_{air}\\le10$ K",
+    "Substitutes typical properties (about 1.15 kg/m$^3$ and 1007 J/kg K) to find about 0.010 m$^3$/s",
+    "Notes that flow required scales inversely with allowed air rise",
+    "States that if flow is reduced the temperature rise increases in inverse proportion",
+    "Concludes the component sees hotter air and the junction/surface temperature rises accordingly"
+   ],
+   "explanation": "The first step is always the energy balance, which links power, flow and the air temperature rise. With the numbers given the flow is 120/(1.15 x 1007 x 10) = 0.0104 m^3/s, and any reduction in flow gives a proportionally larger rise.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain what is meant by the operating point of a fan on a heat sink, and discuss two ways that a design can be changed to increase the airflow without changing the fan model.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.electronics-cooling.heat-sinks.o3"
+   ],
+   "markingGuide": [
+    "Operating point is the intersection of the fan pressure-flow curve and the system pressure-drop curve",
+    "At that flow the pressure produced by the fan equals the system pressure drop",
+    "Reduce system resistance, e.g. wider fin pitch, fewer fins, shorter flow length, larger inlet, remove filter",
+    "Mentions the trade-off with surface area and thermal performance",
+    "Alternatively, use two fans in parallel to increase flow, or in series to raise pressure - or ducting to reduce bypass"
+   ],
+   "explanation": "The fan can only deliver a flow at which its pressure matches the system's pressure drop. Lowering that drop (wider pitch, lower inlet resistance) moves the intersection to higher flow, but at the cost of the area that the fins provide.",
+   "board": "internal"
+  }
+ ]
+}

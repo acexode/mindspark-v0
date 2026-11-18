@@ -1,0 +1,378 @@
+{
+ "lessonTitle": "Mesh Refinement and Element Order: h- and p-Refinement",
+ "estimatedMinutes": 38,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A fillet radius in a crankshaft web is meshed with 500 elements and the solver reports a peak stress of 212 MPa; with 2000 elements it reports 238 MPa; with 8000, 247 MPa. Which number goes in the fatigue assessment? The answer is none of them yet: the sequence is still rising, and the engineer's real task is to decide how far to refine and where."
+  },
+  {
+   "type": "text",
+   "markdown": "**Idea.** A finite element solution approaches the exact solution of the mathematical model as the mesh is refined, but only if the refinement is done correctly. **Mesh refinement** reduces the discretisation error: the difference between the FE answer and the exact solution of the same model. There are two basic ways to do it: use more, smaller elements (*h-refinement*, because $h$ is the element size), or raise the polynomial degree of the shape functions (*p-refinement*, because $p$ is the degree)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "h-refinement and p-refinement",
+   "text": "**h-refinement**: keep the element type (polynomial degree $p$) and reduce the element size $h$; the number of elements rises. **p-refinement**: keep the mesh and raise the polynomial degree of each element (for example from linear to quadratic to cubic); the number of nodes and DOFs per element rises. Combining both gives **hp-refinement**. For a smooth solution the error in displacement scales as $h^{p+1}$ and in strain and stress as $h^{p}$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Aspect",
+    "h-refinement",
+    "p-refinement"
+   ],
+   "rows": [
+    [
+     "What changes",
+     "Element size",
+     "Polynomial degree of shape functions"
+    ],
+    [
+     "Convergence for a smooth solution",
+     "Algebraic: error $\\propto h^{p}$ (stress)",
+     "Exponential in $p$ for smooth fields"
+    ],
+    [
+     "Best for",
+     "Singularities, sharp gradients, complex geometry",
+     "Smooth fields, thin bodies, bending"
+    ],
+    [
+     "Cost",
+     "Many elements, remeshing",
+     "More DOFs per element, higher-order geometry needed"
+    ],
+    [
+     "Typical software use",
+     "Most general-purpose codes",
+     "Some codes (p-version) and 'quadratic' elements"
+    ]
+   ],
+   "caption": "Comparison of refinement strategies"
+  },
+  {
+   "type": "worked_example",
+   "title": "Convergence of a tapered-bar model",
+   "prompt": "A tapered aluminium bar ($E=70$ GPa) has length $L=1000$ mm and area $A(x)=400(1-0.5x/L)$ mm$^2$, fixed at $x=0$ and loaded by an axial 10 kN at $x=L$. Each linear element uses the area at its midpoint. The exact tip displacement is $\\delta=\\int_0^L P\\,\\mathrm{d}x/(EA)=2PL\\ln2/(EA_0)$. Study the FE tip displacement as the number of elements $n$ is doubled.",
+   "steps": [
+    {
+     "text": "Exact value.",
+     "latex": "\\delta=\\frac{2(10\\,000)(1000)\\ln2}{(70\\,000)(400)}=0.49511\\ \\text{mm}"
+    },
+    {
+     "text": "FE tip displacement $=\\sum_e P h/(EA_{mid,e})$ for $n=1,2,4,8,16$ elements.",
+     "latex": "0.47619,\\ 0.48980,\\ 0.49373,\\ 0.49476,\\ 0.49502\\ \\text{mm}"
+    },
+    {
+     "text": "Errors $\\delta-\\delta_{FE}$ (all positive: the model is too stiff and approaches from below).",
+     "latex": "0.01891,\\ 0.00531,\\ 0.00138,\\ 0.00035,\\ 0.00009\\ \\text{mm}"
+    },
+    {
+     "text": "Observed order $p=\\log_2(e_n/e_{2n})$ for each doubling.",
+     "latex": "p=1.83,\\ 1.95,\\ 1.99,\\ 2.00"
+    }
+   ],
+   "answer": "The error falls by about a factor of 4 for each doubling (observed order near 2, approaching 2.00), consistent with a second-order scheme; the result is within 0.02 per cent of the exact value at $n=16$."
+  },
+  {
+   "type": "text",
+   "markdown": "**Judging convergence.** The quantity of interest (QoI), such as the peak stress, a deflection or a natural frequency, is plotted against the number of elements or degrees of freedom. A converged result shows a **plateau**: successive refinements change the QoI by less than a stated tolerance (commonly 1 to 5 per cent, chosen to match the decision to be made). A single mesh, however fine, never shows convergence; at least three meshes with a systematic size ratio are needed. Stresses converge more slowly than displacements, and a peak stress at a sharp feature can converge slowest of all."
+  },
+  {
+   "type": "worked_example",
+   "title": "Peak stress at a fillet",
+   "prompt": "The following illustrative results come from refinement of a fillet region by halving the element size each time: 500, 2000, 8000 and 32 000 elements gave peak stresses of 212, 238, 247 and 250 MPa. Judge whether the result has converged.",
+   "steps": [
+    {
+     "text": "Differences between successive meshes (MPa) and percentage change relative to the coarser result.",
+     "latex": "\\Delta=26,\\ 9,\\ 3\\ \\text{MPa};\\qquad 12.3\\%,\\ 3.8\\%,\\ 1.2\\%"
+    },
+    {
+     "text": "The differences are shrinking by about a factor of 3 per halving of $h$ (observed order about 1.6), so the sequence is converging.",
+     "latex": "p_{obs}=\\log_2(26/9)=1.53,\\quad \\log_2(9/3)=1.58"
+    },
+    {
+     "text": "Estimate the limit by extrapolation with the observed order $p\\approx1.58$: $S_\\infty\\approx S_4+(S_4-S_3)/(2^{p}-1)$.",
+     "latex": "S_\\infty\\approx250+\\frac{3}{2^{1.58}-1}=251.5\\ \\text{MPa}"
+    },
+    {
+     "text": "Decision: the last refinement changed the peak by only 1.2 per cent, below a 2 per cent tolerance.",
+     "latex": "\\frac{250-247}{247}=1.2\\%"
+    }
+   ],
+   "answer": "The 32 000-element result of 250 MPa is within about 1.5 MPa of the extrapolated limit 252 MPa (less than 1 per cent), so it can be taken as converged for the stated tolerance; the 500-element result of 212 MPa was about 16 per cent too low."
+  },
+  {
+   "type": "text",
+   "markdown": "**Where to refine.** Uniform refinement is wasteful: most of a structure carries smooth, low-gradient stress that is accurate on a coarse mesh. Refine locally where the quantity of interest changes rapidly: fillets, holes, notches, load application points, and contact regions. Grade the mesh so that element sizes change smoothly (neighbouring sizes differing by a factor of about 1.5 to 2), since abrupt changes cause errors. At a **true singularity** (a point load or a sharp re-entrant corner) the stress is theoretically infinite and never converges, so refinement should be judged on stresses a short distance away or on integrated quantities."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Refine until the QoI changes by less than the tolerance between successive meshes, using at least three meshes.",
+    "Concentrate small elements where the field varies quickly; keep large elements elsewhere.",
+    "Use p-refinement (quadratic elements) for smooth, bending-dominated fields; use h-refinement near singularities.",
+    "A coarse mesh that happens to give the 'right' answer has not been shown to be adequate."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Convergence is not correctness",
+   "text": "A converged answer is the exact solution of the **model**, not of reality. Wrong boundary conditions, material data or a modelled singularity converge to the wrong answer very efficiently; verification (mesh convergence) and validation (comparison with measurement) are separate steps."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "h-refinement reduces element size, p-refinement raises the polynomial degree; for smooth problems the stress error scales as $h^p$ and p-refinement converges faster, while singularities and sharp gradients need local h-refinement.",
+    "Convergence is judged by plotting the quantity of interest against element count and checking that successive changes fall below a tolerance, with at least three meshes and a systematic size ratio.",
+    "Refine selectively at stress concentrations with smoothly graded meshes, and do not quote peak stresses at true singularities."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement best distinguishes h-refinement from p-refinement?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "h-refinement reduces the element size with the same shape-function degree; p-refinement raises the shape-function degree on the same mesh"
+    },
+    {
+     "id": "b",
+     "text": "h-refinement raises the polynomial degree; p-refinement reduces the element size"
+    },
+    {
+     "id": "c",
+     "text": "h-refinement changes the material; p-refinement changes the loads"
+    },
+    {
+     "id": "d",
+     "text": "They are the same thing described with different symbols"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "h-refinement reduces the element size with the same shape-function degree; p-refinement raises the shape-function degree on the same mesh",
+   "distractorRationale": {
+    "b": "This swaps the two definitions.",
+    "c": "Neither changes the model's physical inputs.",
+    "d": "They are distinct ways to enrich the approximation, with different convergence behaviour."
+   },
+   "explanation": "In h-refinement the mesh becomes finer with the same element type; in p-refinement the same mesh is kept and each element uses a higher-degree polynomial. Combined, they give hp-refinement.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For a smooth solution analysed with linear (first-degree) elements, how does the displacement error change when the element size is halved?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It falls by about a factor of 4"
+    },
+    {
+     "id": "b",
+     "text": "It falls by about a factor of 2"
+    },
+    {
+     "id": "c",
+     "text": "It does not change"
+    },
+    {
+     "id": "d",
+     "text": "It increases"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It falls by about a factor of 4",
+   "distractorRationale": {
+    "b": "A factor of 2 describes the stress or strain error, which scales as $h^p=h$.",
+    "c": "The error should decrease as the mesh is refined.",
+    "d": "Refinement reduces discretisation error for a well-posed smooth problem."
+   },
+   "explanation": "Displacement error is $O(h^{p+1})$ and stress error is $O(h^{p})$. For linear elements ($p=1$), halving $h$ divides the displacement error by 4 and the stress error by 2, which is why stresses need finer meshes than displacements.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A static analysis reports peak stresses of 118, 131 and 134 MPa on three meshes, each with half the element size of the previous one. What is the sound conclusion?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The differences are shrinking (13 then 3 MPa), so it is converging; the last change is about 2 per cent, so the finest mesh is probably adequate for a 5 per cent tolerance"
+    },
+    {
+     "id": "b",
+     "text": "The result has converged to 118 MPa"
+    },
+    {
+     "id": "c",
+     "text": "The solver is unstable because the stress increases with refinement"
+    },
+    {
+     "id": "d",
+     "text": "Stress cannot be converged by mesh refinement"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The differences are shrinking (13 then 3 MPa), so it is converging; the last change is about 2 per cent, so the finest mesh is probably adequate for a 5 per cent tolerance",
+   "distractorRationale": {
+    "b": "The coarsest result is the least accurate, not the converged one.",
+    "c": "A monotonic approach to a limit is normal for a converging model.",
+    "d": "Stress at smooth locations does converge; only true singularities do not."
+   },
+   "explanation": "Successive changes of 13 and 3 MPa show a rapidly decreasing difference, and the final change is 2.3 per cent of the previous value. Whether that is acceptable depends on the tolerance chosen for the decision, here 5 per cent.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A plate with a hole under tension is to be analysed. Where should the mesh be refined most?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Near the hole edge, where the stress gradient is steep, with a smooth transition to coarser elements away from it"
+    },
+    {
+     "id": "b",
+     "text": "Uniformly over the whole plate, to be safe"
+    },
+    {
+     "id": "c",
+     "text": "Only at the clamped edge, regardless of the hole"
+    },
+    {
+     "id": "d",
+     "text": "Away from the hole, where the stress is lowest"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Near the hole edge, where the stress gradient is steep, with a smooth transition to coarser elements away from it",
+   "distractorRationale": {
+    "b": "Uniform refinement wastes effort in smooth regions and still may not resolve the hole well enough.",
+    "c": "Clamped-edge effects are separate and the hole is the feature of interest.",
+    "d": "Low-stress regions are accurate even on coarse meshes."
+   },
+   "explanation": "Errors are largest where the field changes rapidly. The hole edge has a stress gradient from the peak to the nominal value over roughly one hole radius, so a graded mesh with small elements there is efficient and accurate.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "For a sharp re-entrant corner modelled as a mathematical point, the peak stress at the corner converges to a finite value as the mesh is refined.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "At an idealised sharp re-entrant corner the linear elastic stress is singular and grows without bound as the mesh is refined, so there is no finite limit to converge to. Report the stress at a small distance from the corner, or model a small radius, instead of quoting the nodal peak.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A 3D tetrahedral model has 20 000 elements. If the element size is halved everywhere (uniform h-refinement), approximately how many elements result?",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o1"
+   ],
+   "correctValue": 160000.0,
+   "tolerance": 1000.0,
+   "unit": "elements",
+   "explanation": "In three dimensions halving the linear size increases the number of elements by $2^3=8$, so $20\\,000\\times8=160\\,000$. This steep growth is why uniform refinement of 3D models is expensive and local refinement is preferred.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Two successive meshes give peak stresses of 238 MPa and 246 MPa. Compute the percentage change of the finer result relative to the coarser one.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o2"
+   ],
+   "correctValue": 3.361344537815126,
+   "tolerance": 0.05,
+   "unit": "percent",
+   "explanation": "The change is $(246-238)/238=0.0336$, or 3.36 per cent. Compared with a typical 2 per cent tolerance this is not yet converged, so another refinement is justified.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "The exact value of a quantity is 1.000 and FE meshes with $n=4$ and $n=8$ elements give 0.960 and 0.990. Assuming the same convergence rate continues, compute the observed order of convergence $p=\\log_2(e_4/e_8)$ where $e$ is the error.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o2"
+   ],
+   "correctValue": 2.0,
+   "tolerance": 0.02,
+   "unit": "(dimensionless)",
+   "explanation": "The errors are $e_4=0.040$ and $e_8=0.010$, so the ratio is 4 and $p=\\log_2(4)=2.0$. The error falls by a factor of 4 per doubling, consistent with a second-order convergence rate.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare h-refinement and p-refinement: state how each reduces error, when each is preferred, and one drawback of each.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o1"
+   ],
+   "markingGuide": [
+    "h: smaller elements of the same type, error falls algebraically ($h^p$ for stress); preferred near singularities, sharp gradients and complex geometry",
+    "p: raise polynomial degree on the same mesh; for smooth solutions convergence is exponential in $p$, preferred in bending or smooth fields",
+    "h drawback: more elements and remeshing, steep cost increase in 3D",
+    "p drawback: more DOFs per element, needs accurate curved geometry; does not remove a singularity",
+    "hp-refinement combines both"
+   ],
+   "explanation": "Both enrich the approximation space: h by finer resolution, p by richer functions. Smooth fields favour p, localised features favour h, and many codes combine the two.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "You are reviewing a stress analysis of a fillet in which only one mesh was run. Describe how you would establish whether the peak stress is converged, how you would decide where to refine, and what you would do if the peak keeps rising at every refinement.",
+   "objectiveIds": [
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o2",
+    "ug.mce-computational-methods-fea.meshing-and-convergence.mesh-refinement.o3"
+   ],
+   "markingGuide": [
+    "Run at least three meshes with a systematic size ratio and plot the quantity of interest against element count or DOFs",
+    "Judge the plateau using the percentage change between meshes against a stated tolerance; optionally extrapolate using the observed order",
+    "Refine locally in the fillet and other high-gradient regions, with graded transition, not uniformly",
+    "If the peak does not converge, suspect a singularity (sharp corner, point load); remodel with a realistic radius or distributed load, or assess stress at a distance",
+    "Check that results away from the fillet and global quantities (reaction, deflection) are also unchanged"
+   ],
+   "explanation": "A single mesh cannot show convergence because there is no reference for the error. A systematic study gives a trend and an estimate of the remaining error, while a peak that keeps rising signals a geometric singularity or a modelling problem and not a meshing problem.",
+   "board": "internal"
+  }
+ ]
+}

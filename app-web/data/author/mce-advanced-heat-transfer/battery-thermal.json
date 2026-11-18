@@ -1,0 +1,382 @@
+{
+ "lessonTitle": "Battery Thermal Behaviour: Heat Generation, Technology Comparison and Adiabatic Rise",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A delivery van with a 60 kWh battery climbs a long hill at full current on a hot afternoon. The battery management system quietly cuts power by a third. No cell has failed: the pack simply reached its temperature limit because the current flowing through its internal resistance turned several hundred watts into heat in a sealed box with no airflow."
+  },
+  {
+   "type": "text",
+   "markdown": "A battery is not a perfect voltage source. Each cell has an **internal resistance** $R_{int}$ (ohm) made up of electrode, electrolyte and contact resistances. When a current $I$ (A) flows, the voltage drop $IR_{int}$ is dissipated as heat inside the cell, at a rate $I^2R_{int}$ (W). This ohmic heating occurs during both discharge and charge, and it grows with the square of the current. (Reversible entropic heating and side reactions also exist but are smaller at high current and are not treated here.)"
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Heat generation in a battery",
+   "text": "The ohmic heat generation rate is $\\dot Q=I^2R_{int}$ in W. For a pack of $n_s$ cells in series and $n_p$ strings in parallel, with cell resistance $R_{cell}$, the pack resistance is $R_{pack}=n_sR_{cell}/n_p$ and the pack current is shared among the parallel strings."
+  },
+  {
+   "type": "math",
+   "latex": "\\dot Q=I^2R_{pack},\\qquad R_{pack}=\\frac{n_s}{n_p}R_{cell}",
+   "caption": "Series cells add resistance; parallel strings divide it"
+  },
+  {
+   "type": "worked_example",
+   "title": "Heat generated in a pack",
+   "prompt": "A pack has 96 cells in series and 4 strings in parallel. Each cell has $R_{cell}=1.2$ m$\\Omega$ (typical). The pack delivers 150 A at an average terminal voltage of 350 V. Find the pack resistance, the heat generation rate and the fraction of the electrical output power that it represents.",
+   "steps": [
+    {
+     "text": "Pack resistance.",
+     "latex": "R_{pack}=\\frac{96}{4}\\times1.2\\times10^{-3}=28.8\\ \\mathrm{m\\Omega}"
+    },
+    {
+     "text": "Heat generation.",
+     "latex": "\\dot Q=I^2R=150^2\\times0.0288=648\\ \\mathrm{W}"
+    },
+    {
+     "text": "Output power and fraction lost.",
+     "latex": "P_{out}=350\\times150=52.5\\ \\mathrm{kW},\\quad \\frac{\\dot Q}{P_{out}}=1.23\\ \\%"
+    }
+   ],
+   "answer": "The pack generates 648 W of heat, only 1.2 % of the output power; the efficiency is high but the heat is concentrated in a small sealed volume."
+  },
+  {
+   "type": "text",
+   "markdown": "Technologies are compared on three numbers. **Specific energy** (Wh/kg) is the energy stored per unit mass, and sets range. **Specific power** (W/kg) is the maximum power per unit mass, and sets acceleration or burst capability. **Round-trip efficiency** is the ratio of energy delivered on discharge to energy supplied on charge, and sets the energy that is wasted as heat in each cycle."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Technology",
+    "Specific energy (Wh/kg)",
+    "Specific power (W/kg)",
+    "Round-trip efficiency"
+   ],
+   "rows": [
+    [
+     "Lead-acid",
+     "30 to 40",
+     "100 to 200",
+     "70 to 85 %"
+    ],
+    [
+     "Nickel-metal hydride",
+     "60 to 100",
+     "200 to 500",
+     "65 to 80 %"
+    ],
+    [
+     "Lithium-ion (NMC or LFP)",
+     "120 to 250",
+     "300 to 1500",
+     "90 to 95 %"
+    ],
+    [
+     "Supercapacitor",
+     "3 to 10",
+     "5000 to 15000",
+     "95 % or higher"
+    ]
+   ],
+   "caption": "Typical ranges only; actual products vary by design and operating conditions."
+  },
+  {
+   "type": "text",
+   "markdown": "If heat cannot leave the pack, it accumulates. In the **adiabatic** limit, with no cooling, all the heat goes into the thermal mass of the pack, so the temperature rises linearly with time. This gives an upper bound on the temperature rise that a design must satisfy, and it indicates how long the pack can run before cooling is required."
+  },
+  {
+   "type": "math",
+   "latex": "m c_p\\frac{dT}{dt}=I^2R_{pack}\\ \\Rightarrow\\ \\Delta T=\\frac{I^2R_{pack}\\,t}{m\\,c_p}",
+   "caption": "$m$ pack mass (kg); $c_p$ average specific heat (about 900 to 1100 J/kg K for lithium-ion cells); $t$ time (s)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Temperature rise with no cooling",
+   "prompt": "The pack above has mass 120 kg and average $c_p=1000$ J/kg K (typical). It discharges at 150 A for 20 minutes starting at 25 $^\\circ$C. Find the temperature rise and the time at which it would reach 60 $^\\circ$C with no cooling.",
+   "steps": [
+    {
+     "text": "Heat capacity of the pack.",
+     "latex": "mc_p=120\\times1000=1.2\\times10^{5}\\ \\mathrm{J/K}"
+    },
+    {
+     "text": "Energy dissipated in 20 minutes (1200 s).",
+     "latex": "E=648\\times1200=777.6\\ \\mathrm{kJ}"
+    },
+    {
+     "text": "Temperature rise.",
+     "latex": "\\Delta T=\\frac{777600}{1.2\\times10^{5}}=6.48\\ \\mathrm{K}"
+    },
+    {
+     "text": "Time to rise by 35 K.",
+     "latex": "t=\\frac{35\\times1.2\\times10^{5}}{648}=6481\\ \\mathrm{s}=108\\ \\mathrm{min}"
+    }
+   ],
+   "answer": "The pack warms by 6.5 K in 20 minutes and would take about 108 minutes to reach 60 $^\\circ$C without cooling, so short duty cycles are safe but sustained load is not."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Heat generation scales as $I^2$: doubling current quadruples the heat.",
+    "Temperature rise rate scales inversely with thermal mass $mc_p$.",
+    "Cold cells have higher internal resistance, so they generate more heat per ampere at low temperature.",
+    "Most Li-ion cells are kept between about 15 and 35 $^\\circ$C for best life and must not exceed roughly 60 $^\\circ$C (typical limits; always check the datasheet)."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Adiabatic is a worst case, not a prediction",
+   "text": "The adiabatic formula ignores conduction and convection from the pack, so it overestimates the temperature rise, but it is a safe design check. It also assumes uniform temperature, while local hot spots near connections can be well above the average."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Energy density and thermal limit go together",
+   "text": "High specific energy cells store more energy per kilogram but also have less thermal mass per unit energy, so the same loss gives a larger temperature rise. Cooling is therefore as essential as capacity in high-energy packs."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Ohmic heating in a battery is $\\dot Q=I^2R_{int}$; for a pack $R_{pack}=n_sR_{cell}/n_p$.",
+    "Technologies differ in specific energy, specific power and round-trip efficiency: lithium-ion leads for energy and efficiency, supercapacitors for power.",
+    "Without cooling, temperature rise is $\\Delta T=I^2R_{pack}t/(mc_p)$, an upper bound.",
+    "Temperature limits require thermal management, particularly at high current or sustained duty."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A battery module has an internal resistance of 0.050 ohm and carries a current of 80 A. Find the rate of heat generation in W.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o1"
+   ],
+   "correctValue": 320.0,
+   "tolerance": 3.0,
+   "unit": "W",
+   "explanation": "The heat rate is I^2 R = 80^2 x 0.050 = 320 W. Reducing the current to 40 A would cut this to 80 W because of the square-law dependence.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 5 Ah cell with internal resistance 2.0 milliohm is discharged at a 3C rate, which is 3 x 5 = 15 A. Find the heat generated in the cell in W.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o1"
+   ],
+   "correctValue": 0.45,
+   "tolerance": 0.02,
+   "unit": "W",
+   "explanation": "With R = 2.0e-3 ohm, Q = I^2 R = 15^2 x 2.0e-3 = 0.45 W per cell. A pack of 100 such cells in series would generate 45 W at this current.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A battery pack of mass 40 kg and average specific heat 950 J/kg K generates 500 W of heat during a 15 minute fast charge. Assuming no heat leaves the pack, find the temperature rise in K.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o3"
+   ],
+   "correctValue": 11.8421,
+   "tolerance": 0.3,
+   "unit": "K",
+   "explanation": "The energy dissipated is 500 x 900 s = 450 kJ and the thermal mass is 40 x 950 = 38 000 J/K, so the rise is 11.8 K. Real packs warm less because of cooling, so this is an upper bound.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A storage cell is charged with 5.00 kWh of electrical energy and delivers 4.35 kWh on discharge. Find the round-trip efficiency in percent.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o2"
+   ],
+   "correctValue": 87.0,
+   "tolerance": 0.5,
+   "unit": "%",
+   "explanation": "The round-trip efficiency is energy out divided by energy in: 4.35/5.00 = 0.87, or 87 %. The missing 0.65 kWh was dissipated as heat, mainly I^2 R heating during charge and discharge.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An electric bus needs very high power for short bursts when regenerative braking, but only a few watt-hours per kilogram of stored energy for each burst. Which technology is best suited to this buffer duty?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A supercapacitor, because it has very high specific power and efficiency, despite its low specific energy"
+    },
+    {
+     "id": "b",
+     "text": "Lead-acid, because it has the highest specific power"
+    },
+    {
+     "id": "c",
+     "text": "Lithium-ion, because it has the highest specific energy and so is best for every duty"
+    },
+    {
+     "id": "d",
+     "text": "None, because a battery cannot deliver high power"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A supercapacitor, because it has very high specific power and efficiency, despite its low specific energy",
+   "distractorRationale": {
+    "b": "Lead-acid specific power is moderate, and its efficiency is lower than the alternatives.",
+    "c": "High specific energy is not the key requirement for short bursts; specific power and cycle life are.",
+    "d": "Batteries deliver high power, but supercapacitors are better for rapid, repeated bursts."
+   },
+   "explanation": "Burst duty is a power problem, not an energy problem. Supercapacitors offer thousands of W/kg at very high efficiency, whereas their energy per kilogram is far below a battery's, which is acceptable for a short-duration buffer.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement about specific energy is correct for common battery technologies?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Lithium-ion has several times the specific energy of lead-acid, so for the same stored energy the pack is lighter"
+    },
+    {
+     "id": "b",
+     "text": "Lead-acid has higher specific energy than lithium-ion, so it is used in portable devices"
+    },
+    {
+     "id": "c",
+     "text": "All batteries have about the same specific energy, around 100 Wh/kg"
+    },
+    {
+     "id": "d",
+     "text": "Supercapacitors have the highest specific energy of all storage devices"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Lithium-ion has several times the specific energy of lead-acid, so for the same stored energy the pack is lighter",
+   "distractorRationale": {
+    "b": "The opposite is true: lead-acid is heavy for its stored energy.",
+    "c": "Specific energy varies widely, from about 30 to 250 Wh/kg across the common types.",
+    "d": "Supercapacitors have very low specific energy but very high specific power."
+   },
+   "explanation": "Typical lithium-ion cells reach 120 to 250 Wh/kg while lead-acid reaches 30 to 40 Wh/kg. A given amount of energy is therefore stored in a much lighter pack with lithium-ion.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A fast-charging protocol doubles the current through a battery pack of fixed resistance. How does the heat generation rate change, to first order?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It increases by a factor of four, because heat generation scales as $I^2$"
+    },
+    {
+     "id": "b",
+     "text": "It doubles, because heat is proportional to current"
+    },
+    {
+     "id": "c",
+     "text": "It is unchanged, because the resistance is fixed"
+    },
+    {
+     "id": "d",
+     "text": "It increases eightfold, because heat scales as $I^3$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It increases by a factor of four, because heat generation scales as $I^2$",
+   "distractorRationale": {
+    "b": "Ohmic heat is proportional to the square of the current.",
+    "c": "The resistance is fixed, but the heat rate depends on the square of current.",
+    "d": "The exponent is two, not three; $I^3$ is the scaling for pumping power in flows."
+   },
+   "explanation": "The heat generation rate is $I^2R$, so doubling $I$ gives $(2I)^2R=4I^2R$. This quadratic sensitivity is why fast charging needs strong cooling.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two packs generate the same heat and have the same specific heat, but pack B has twice the mass of pack A. With no cooling, how do their temperature rise rates compare?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Pack B warms at half the rate of pack A, because the rate is inversely proportional to the thermal mass"
+    },
+    {
+     "id": "b",
+     "text": "Pack B warms twice as fast, because it has more cells"
+    },
+    {
+     "id": "c",
+     "text": "Both warm at the same rate, because the specific heat is the same"
+    },
+    {
+     "id": "d",
+     "text": "Pack B warms four times slower, because heat generation scales with mass squared"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Pack B warms at half the rate of pack A, because the rate is inversely proportional to the thermal mass",
+   "distractorRationale": {
+    "b": "The same heat is spread over more mass, so the rate falls.",
+    "c": "The rate depends on mass as well as specific heat, $dT/dt=\\dot Q/(mc_p)$.",
+    "d": "Heat generation is the same by assumption and the rate scales with $1/m$, not $1/m^2$."
+   },
+   "explanation": "In the adiabatic model $dT/dt=\\dot Q/(mc_p)$, so doubling $m$ at fixed $\\dot Q$ halves the rate. Thermal mass buys time, but it does not remove the heat.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare lithium-ion batteries, lead-acid batteries and supercapacitors on specific energy, specific power and round-trip efficiency, and say which you would choose for a vehicle needing long range and which for a regenerative braking buffer.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o2"
+   ],
+   "markingGuide": [
+    "Lithium-ion: highest specific energy (about 120 to 250 Wh/kg) and high efficiency (90 to 95 %)",
+    "Lead-acid: low specific energy (30 to 40 Wh/kg), moderate power, lower efficiency (70 to 85 %), heavy",
+    "Supercapacitor: very low specific energy, very high specific power, efficiency of 95 % or higher",
+    "Long range depends on specific energy, so lithium-ion is chosen",
+    "Regenerative burst buffer depends on power and cycle life, so a supercapacitor (or high-power cell) is chosen"
+   ],
+   "explanation": "Range is limited by specific energy and burst capability by specific power, and no one technology leads in both. Efficiency matters because the lost energy is dissipated as heat inside the store.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A battery pack generates 400 W of heat during a long climb. Explain how you would estimate the temperature rise without cooling, describe the limitations of that estimate, and suggest what cooling measures would be needed.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o3",
+    "ug.mce-advanced-heat-transfer.energy-storage.battery-thermal.o1"
+   ],
+   "markingGuide": [
+    "Applies energy balance $mc_p\\,dT/dt=I^2R$ to estimate $dT/dt$ and $\\Delta T=I^2Rt/(mc_p)$",
+    "Quotes typical $c_p$ about 900 to 1100 J/kg K and total pack mass",
+    "Notes this is an upper bound because heat is lost to surroundings and assumes uniform temperature",
+    "Notes hot spots, resistance dependence on temperature, and neglect of entropic heat",
+    "Suggests air or liquid cooling, cold plates, phase change material, or reducing current; considers temperature limit of roughly 60 degrees Celsius"
+   ],
+   "explanation": "Adiabatic heating gives a conservative estimate of how fast the pack warms. Because the pack is not truly uniform or insulated, the real behaviour needs a thermal model, but the estimate shows whether cooling is needed.",
+   "board": "internal"
+  }
+ ]
+}

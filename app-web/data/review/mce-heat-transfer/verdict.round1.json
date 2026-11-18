@@ -1,0 +1,43 @@
+{
+  "subjectId": "ug.mce-heat-transfer",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "Overall quality is high. I recomputed every numeric key and worked example in Python (conduction resistances, fins and critical radius, lumped capacitance, one-term roots zeta1 and C1 for all table rows, semi-infinite erf and effusivity contact temperatures, finite-difference nodal and Gauss-Seidel iterates, explicit stability limits, Hilpert, Dittus-Boelter, laminar plate, natural convection correlations, Zuber including the LN2 case, Nusselt condensation, LMTD, effectiveness-NTU, radiation networks and shields) and all keys, tolerances and units agree with the stated data. Correlation constants, validity ranges, the n = 0.4 heating / 0.3 cooling exponents and sign conventions are correct. No answer-key errors were found, and no tab or control characters, literal \\uXXXX text, [object Object], garbled characters, placeholder steps or stale option-letter references were found. The problems are four prose-level statements, two of which are factually reversed or false (cable hook, full-thickness warning). This is an AI review only; the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-heat-transfer.steady-conduction.fins-and-critical-radius",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Hook says \"on a thin electrical cable, wrapping on more insulation can make it run hotter, not cooler.\" Below the critical radius, added insulation increases heat loss, so the cable runs cooler. This contradicts the lesson's own callout (\"an advantage for cooling\") and question q002's explanation (\"keeps the wire cooler\").",
+      "suggestedFix": "Reword the hook to say that on a thin cable extra insulation can increase heat loss and keep it cooler, or that it can lose more heat rather than less."
+    },
+    {
+      "subtopicId": "ug.mce-heat-transfer.transient-conduction.semi-infinite-and-charts",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Warning callout: \"Using the full thickness quadruples Fo and gives a time four times too short.\" With L replaced by the full thickness 2L, Fo = alpha t/L^2 is reduced by a factor of 4 for a given t, and the time computed from t = Fo L^2/alpha is four times too long. Bi is also doubled. The stated direction is reversed. q002's explanation (\"changes the time by a factor of four\") is correct and does not conflict.",
+      "suggestedFix": "Say that using the full thickness as L makes Fo four times too small for a given time, and a time computed from t = Fo L^2/alpha four times too long (Bi is also doubled, which changes zeta1 and C1)."
+    },
+    {
+      "subtopicId": "ug.mce-heat-transfer.numerical-conduction.finite-difference-transient",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Worked example (c) says \"The surface node is the most restrictive, and the smallest limit governs the whole grid.\" The computed limits are (a) 0.128 s, (b) 0.064 s and (c) 0.128 s, so (c) is not the most restrictive; the 2-D interior limit (b) is the smallest. The surface limit (0.1279 s) is only about 0.2% below the 1-D interior limit because Bi is tiny. The answer line (\"Use the smallest relevant limit\") is correct but the sentence contradicts the numbers.",
+      "suggestedFix": "Say that the surface limit is slightly stricter than the 1-D interior limit (0.1279 s vs 0.1282 s) for the same dimensionality, and that the 2-D interior limit (0.064 s) governs if the grid is 2-D. Alternatively use a 2-D convective node, Fo(2+Bi) <= 1/2, for part (c)."
+    },
+    {
+      "subtopicId": "ug.mce-heat-transfer.boiling-and-condensation.condensation",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "The caption and worked example treat plain Nusselt (0.943) theory as applying up to Re_delta of about 1800 (\"below the laminar limit of about 1800, so Nusselt's theory applies\"). The smooth-film Nusselt result is strictly valid to Re_delta of about 30. For 30 < Re_delta < 1800 (wavy-laminar), as in the Re_delta = 223 and 268 cases here, ripples raise h and Nusselt's expression is conservative (typically under-predicting by roughly 10 to 20%).",
+      "suggestedFix": "State that Nusselt is exact for Re_delta up to about 30 and a conservative estimate in the wavy-laminar range up to about 1800, and note that the 223 and 268 results are therefore conservative."
+    },
+    {
+      "subtopicId": "ug.mce-heat-transfer.boiling-and-condensation.condensation",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Worked example \"Condensate flow from the heat removed\": \"condensate leaves at 85 $^\\circ$C wall temperature (a 15 K difference)\". It conflates the wall temperature with the condensate exit temperature. The 0.68 c_p dT term in h'fg comes from the film temperature profile with dT = Tsat - Ts, not from the temperature at which condensate leaves.",
+      "suggestedFix": "Restate the prompt as \"on a wall held at 85 $^\\circ$C (T_sat - T_s = 15 K)\" and say that the 0.68 factor accounts for subcooling within the film."
+    }
+  ]
+}

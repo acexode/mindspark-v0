@@ -1,0 +1,383 @@
+{
+ "lessonTitle": "Power Transmission and Statically Indeterminate Shafts",
+ "estimatedMinutes": 45,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A wind-turbine gearbox output shaft turns slowly but pushes tens of kilonewton metres into the generator, while the high-speed shaft carrying the same power is slender. The same power calls for very different shafts depending on speed, because power is torque times angular speed."
+  },
+  {
+   "type": "text",
+   "markdown": "A rotating shaft transmits **power** $P = T\\omega$, where $T$ is torque (N m) and $\\omega$ the angular speed (rad/s). With a speed of $n$ revolutions per minute, $\\omega = 2\\pi n/60$. With $P$ in watts and $T$ in N m, power in kW is $P=T\\omega/1000$. Once the torque is known, the diameter follows from the torsion formula and an allowable shear stress $\\tau_{\\text{allow}}$ (typically a fraction of yield stress, chosen with a safety factor)."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "From power to diameter",
+   "text": "For a solid shaft, $\\tau_{\\max}=16T/(\\pi d^3)$, so the minimum diameter is $d=\\left(16T/(\\pi\\tau_{\\text{allow}})\\right)^{1/3}$. Doubling torque for the same stress increases the diameter by only $2^{1/3}=1.26$."
+  },
+  {
+   "type": "math",
+   "latex": "P=T\\omega=\\frac{2\\pi n T}{60},\\qquad d_{\\min}=\\left(\\frac{16\\,T}{\\pi\\,\\tau_{\\text{allow}}}\\right)^{1/3}",
+   "caption": "$P$ in W, $T$ in N m, $n$ in rev/min; use $T$ in N mm with $\\tau$ in MPa to get $d$ in mm."
+  },
+  {
+   "type": "worked_example",
+   "title": "Sizing a shaft for a motor",
+   "prompt": "A shaft must transmit 75 kW at 1500 rev/min. The allowable shear stress is 50 MPa. Find the torque and the minimum solid diameter.",
+   "steps": [
+    {
+     "text": "Angular speed.",
+     "latex": "\\omega=\\frac{2\\pi(1500)}{60}=157.1\\ \\text{rad/s}"
+    },
+    {
+     "text": "Torque from power.",
+     "latex": "T=\\frac{P}{\\omega}=\\frac{75\\,000}{157.1}=477.5\\ \\text{N m}=4.775\\times10^{5}\\ \\text{N mm}"
+    },
+    {
+     "text": "Minimum diameter.",
+     "latex": "d=\\left(\\frac{16\\times4.775\\times10^{5}}{\\pi\\times50}\\right)^{1/3}=36.5\\ \\text{mm}"
+    }
+   ],
+   "answer": "T = 477.5 N m and the shaft diameter must be at least 36.5 mm (a standard size above this would be chosen, for example 38 mm)."
+  },
+  {
+   "type": "text",
+   "markdown": "**Statically indeterminate shafts.** If a shaft is fixed at both ends and a torque $T_0$ is applied at an intermediate section, the two reaction torques $T_A$ and $T_B$ cannot be found from $T_A+T_B=T_0$ alone. Compatibility requires the net rotation of one end relative to the other to be zero, so the twist of segment AC equals (in magnitude) the twist of segment CB: $T_A L_1/(G J_1)=T_B L_2/(G J_2)$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Shaft fixed at both ends",
+   "prompt": "A uniform shaft of length 1.0 m is fixed at both ends. A torque of 900 N m is applied at section C, 0.4 m from the left end A. Find the end reactions.",
+   "steps": [
+    {
+     "text": "Equilibrium about the axis.",
+     "latex": "T_A+T_B=900\\ \\text{N m}"
+    },
+    {
+     "text": "Compatibility: A and B do not rotate, so twist in AC (due to T_A) equals twist in CB (due to T_B); GJ is constant.",
+     "latex": "\\frac{T_A(0.4)}{GJ}=\\frac{T_B(0.6)}{GJ}\\ \\Rightarrow\\ 0.4T_A=0.6T_B"
+    },
+    {
+     "text": "Solve.",
+     "latex": "T_A=900\\times\\frac{0.6}{1.0}=540\\ \\text{N m},\\quad T_B=360\\ \\text{N m}"
+    }
+   ],
+   "answer": "The reactions are 540 N m at A and 360 N m at B; the nearer, shorter and stiffer part takes more."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Solid shaft",
+    "Hollow shaft (same torque capacity)"
+   ],
+   "rows": [
+    [
+     "Stress distribution",
+     "Linear, zero at axis",
+     "Linear, material near axis is lightly stressed"
+    ],
+    [
+     "Material near the axis",
+     "Present but little used",
+     "Removed"
+    ],
+    [
+     "Mass for same capacity",
+     "Larger",
+     "Smaller"
+    ],
+    [
+     "Cost / disadvantage",
+     "Simple to make",
+     "Larger outer diameter, thin walls may buckle"
+    ]
+   ],
+   "caption": "Solid versus hollow shafts"
+  },
+  {
+   "type": "text",
+   "markdown": "**Hollow versus solid.** Material near the axis carries little stress, so removing it costs little strength but saves much weight. For the same material and allowable stress, equal torque capacity requires equal $J/c$. Mass per unit length is proportional to the cross-sectional area."
+  },
+  {
+   "type": "worked_example",
+   "title": "Mass saving of a hollow shaft",
+   "prompt": "A solid shaft of diameter 60 mm is to be replaced by a hollow shaft of outer diameter 75 mm with the same torque capacity and the same material. Find the inner diameter and the ratio of masses.",
+   "steps": [
+    {
+     "text": "Equal capacity means equal J/c. For the solid shaft J/c = pi d^3/16; compare (d_o^4 - d_i^4)/d_o = d^3.",
+     "latex": "d_o^4-d_i^4=d^3 d_o=216\\,000\\times75=1.62\\times10^{7}"
+    },
+    {
+     "text": "Solve for the inner diameter with d_o^4 = 3.164e7.",
+     "latex": "d_i=\\left(3.164\\times10^{7}-1.62\\times10^{7}\\right)^{1/4}=62.7\\ \\text{mm}"
+    },
+    {
+     "text": "Mass ratio equals area ratio.",
+     "latex": "\\frac{m_h}{m_s}=\\frac{75^2-62.7^2}{60^2}=0.471"
+    }
+   ],
+   "answer": "The hollow shaft has di = 62.7 mm and weighs only about 47 percent of the solid shaft, saving more than half of the mass."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Check thin walls",
+   "text": "Highly hollow shafts save the most mass but have thin walls that may buckle or be unable to carry stress concentrations at keyways. Use SI-consistent units, and remember that rpm must be converted to rad/s before using P = T omega."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Power transmitted is P = T omega with omega = 2 pi n/60; the same power needs a bigger torque, and a bigger shaft, at lower speed.",
+    "A shaft fixed at both ends is indeterminate: equilibrium gives T_A + T_B = T_0 and compatibility sets the net twist across the whole shaft to zero.",
+    "A hollow shaft gives the same torque capacity as a solid one with much less mass because the central material is lightly stressed."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A shaft turns at 600 rev/min. What is its angular speed in rad/s?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "62.8"
+    },
+    {
+     "id": "b",
+     "text": "600"
+    },
+    {
+     "id": "c",
+     "text": "10"
+    },
+    {
+     "id": "d",
+     "text": "3770"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "62.8",
+   "distractorRationale": {
+    "a": "Correct: 2 pi x 600/60 = 62.8 rad/s.",
+    "b": "This is the number of revolutions per minute, not rad/s.",
+    "c": "This is rev/s, not rad/s.",
+    "d": "This is rad per minute (2 pi x 600), not per second."
+   },
+   "explanation": "Convert revolutions per minute to rad/s using omega = 2 pi n/60. For n = 600 this gives 62.8 rad/s, the value to use in P = T omega.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A solid shaft transmits a given power at speed n and is sized for a fixed allowable shear stress. If the speed is halved while the power is unchanged, by what factor must the diameter increase?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "2.00"
+    },
+    {
+     "id": "b",
+     "text": "1.41"
+    },
+    {
+     "id": "c",
+     "text": "1.26"
+    },
+    {
+     "id": "d",
+     "text": "0.79"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "1.26",
+   "distractorRationale": {
+    "a": "Assumes diameter proportional to torque.",
+    "b": "Uses a square-root relation.",
+    "c": "Correct: T doubles, d scales as T^(1/3) = 1.26.",
+    "d": "Wrong direction: lower speed needs a larger shaft."
+   },
+   "explanation": "For constant power, T = P/omega doubles when speed is halved. Since d is proportional to T^(1/3), the diameter grows by 2^(1/3) = 1.26.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A uniform shaft is fixed at both ends and a torque T_0 is applied at its mid-length. What is the reaction torque at each end?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "T_0/2"
+    },
+    {
+     "id": "b",
+     "text": "T_0"
+    },
+    {
+     "id": "c",
+     "text": "T_0/4"
+    },
+    {
+     "id": "d",
+     "text": "2 T_0"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "T_0/2",
+   "distractorRationale": {
+    "a": "Correct: symmetry plus compatibility gives equal reactions.",
+    "b": "Would need one end carrying the entire torque.",
+    "c": "No basis from equilibrium.",
+    "d": "Reactions together equal T_0 and cannot exceed it."
+   },
+   "explanation": "Equilibrium requires T_A + T_B = T_0. By symmetry (equal lengths, same GJ), the twist in each half is the same only if the reactions are equal, so each is T_0/2.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Why can a hollow shaft carry the same torque as a solid shaft with considerably less mass?",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The shear stress in a hollow shaft is uniform across the wall"
+    },
+    {
+     "id": "b",
+     "text": "Hollow shafts have a larger shear modulus"
+    },
+    {
+     "id": "c",
+     "text": "The stress is zero in a hollow shaft"
+    },
+    {
+     "id": "d",
+     "text": "Material near the axis is lightly stressed, so removing it hardly reduces J/c"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Material near the axis is lightly stressed, so removing it hardly reduces J/c",
+   "distractorRationale": {
+    "a": "The stress still varies with radius, though less across a thin wall.",
+    "b": "G is a material property, not shape.",
+    "c": "Stress is non-zero in the walls.",
+    "d": "Correct: stress is proportional to radius, so inner material contributes little to torque."
+   },
+   "explanation": "Shear stress and the contribution to torque are proportional to r and r^2 respectively, so material close to the axis adds little to J. Moving material outwards raises J/c for a given mass.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "True or false: for a fixed torque, the power transmitted by a shaft is proportional to its rotational speed.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "Since P = T omega, doubling speed at constant torque doubles the power. This is why high-speed shafts of the same power carry smaller torque.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A motor delivers 22 kW at 900 rev/min through a solid shaft. The allowable shear stress is 40 MPa. Find the minimum shaft diameter in mm.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o1"
+   ],
+   "correctValue": 30.98,
+   "tolerance": 0.3,
+   "unit": "mm",
+   "explanation": "omega = 94.25 rad/s, T = 22 000/94.25 = 233.4 N m. d = (16 x 233 400/(pi x 40))^(1/3) = 31.0 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A shaft is fixed at both ends. Segment AC (diameter 30 mm, length 0.5 m) and segment CB (diameter 20 mm, length 0.5 m) are made of the same material. A torque of 1000 N m is applied at C. Find the magnitude of the reaction torque at end B in N m.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o2"
+   ],
+   "correctValue": 164.9,
+   "tolerance": 2.0,
+   "unit": "N m",
+   "explanation": "Compatibility: T_A L/(GJ_1) = T_B L/(GJ_2), so T_A/T_B = J_1/J_2 = (30/20)^4 = 5.06. With T_A + T_B = 1000, T_B = 1000/6.06 = 164.9 N m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A solid shaft is replaced by a hollow shaft of the same material with the same torque capacity, whose inner diameter is 0.8 times its outer diameter. Find the mass of the hollow shaft as a percentage of the solid shaft's mass.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o3"
+   ],
+   "correctValue": 51.2,
+   "tolerance": 0.5,
+   "unit": "percent",
+   "explanation": "Equal capacity gives d_o^3(1 - 0.8^4) = d^3, so d_o = 1.193 d. Area ratio = 1.193^2 x (1 - 0.64) = 0.512, i.e. 51.2 percent.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why, for the same power, a shaft running at low speed must be larger than one running at high speed. Include the relevant equations.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o1"
+   ],
+   "markingGuide": [
+    "States P = T omega",
+    "Deduces T = P/omega, so lower omega gives higher torque",
+    "Relates diameter to torque through tau_max = 16T/(pi d^3)",
+    "Concludes d is proportional to T^(1/3), so larger diameter at low speed",
+    "Mentions the need to convert rev/min to rad/s"
+   ],
+   "explanation": "Because power is torque times speed, a slow shaft must carry more torque. The torsion formula then requires a larger diameter to keep the shear stress within the allowable value.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe how the reactions of a circular shaft fixed at both ends and loaded by a torque at an intermediate section are found, and why the problem is statically indeterminate.",
+   "objectiveIds": [
+    "ug.mce-mechanics-of-materials.torsion-of-shafts.power-transmission-and-indeterminate-torsion.o2"
+   ],
+   "markingGuide": [
+    "Equilibrium gives one equation T_A + T_B = T_0 with two unknowns",
+    "Identifies the problem as statically indeterminate",
+    "Compatibility: net relative rotation between the fixed ends is zero",
+    "Writes twist in each segment as T L/(GJ) and equates them",
+    "Solves the pair of equations to give both reaction torques"
+   ],
+   "explanation": "Statics alone only fixes the sum of the end torques. The geometric condition that the ends cannot rotate relative to each other provides the second equation.",
+   "board": "internal"
+  }
+ ]
+}

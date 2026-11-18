@@ -1,0 +1,375 @@
+{
+ "lessonTitle": "LMTD and Effectiveness-NTU Methods for Heat Exchangers",
+ "estimatedMinutes": 50,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 300 kW oil cooler on a hydraulic press must hold oil below 70 degrees Celsius using plant water. Two engineers size it: one knows all four fluid temperatures and wants the area, the other knows the exchanger area and wants the outlet temperatures. They need different methods, and picking the wrong one means an iteration that never needed to happen."
+  },
+  {
+   "type": "text",
+   "markdown": "A heat exchanger transfers heat $Q$ (W) between a hot stream (inlet $T_{h,i}$, outlet $T_{h,o}$) and a cold stream ($T_{c,i}$, $T_{c,o}$) through an area $A$ (m$^2$) with overall coefficient $U$ (W/m$^2$ K). Each stream has a **heat capacity rate** $C=\\dot m c_p$ (W/K). The temperature difference between streams varies along the exchanger, so the driving force must be averaged."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Log mean temperature difference (LMTD)",
+   "text": "The LMTD is the mean temperature difference that makes $Q=UA\\,\\Delta T_{lm}$ exact for a pure counterflow or parallel flow exchanger with constant $U$ and $C$: $\\Delta T_{lm}=(\\Delta T_1-\\Delta T_2)/\\ln(\\Delta T_1/\\Delta T_2)$, where $\\Delta T_1$ and $\\Delta T_2$ are the stream differences at the two ends."
+  },
+  {
+   "type": "math",
+   "latex": "Q=UA\\,\\Delta T_{lm},\\qquad \\Delta T_{lm}=\\frac{\\Delta T_1-\\Delta T_2}{\\ln(\\Delta T_1/\\Delta T_2)}",
+   "caption": "Parallel flow: $\\Delta T_1=T_{h,i}-T_{c,i}$, $\\Delta T_2=T_{h,o}-T_{c,o}$. Counterflow: $\\Delta T_1=T_{h,i}-T_{c,o}$, $\\Delta T_2=T_{h,o}-T_{c,i}$"
+  },
+  {
+   "type": "worked_example",
+   "title": "LMTD for counterflow and parallel flow",
+   "prompt": "A 150 kW oil cooler cools oil from 120 to 70 $^\\circ$C using water heated from 20 to 60 $^\\circ$C, with $U=350$ W/m$^2$K. Compare the LMTD and the required area for counterflow and parallel flow.",
+   "steps": [
+    {
+     "text": "Counterflow end differences: hot inlet meets cold outlet, hot outlet meets cold inlet.",
+     "latex": "\\Delta T_1=120-60=60,\\quad\\Delta T_2=70-20=50,\\quad \\Delta T_{lm}=\\frac{60-50}{\\ln(60/50)}=54.8\\ \\mathrm{K}"
+    },
+    {
+     "text": "Parallel flow end differences: both inlets meet, both outlets meet.",
+     "latex": "\\Delta T_1=120-20=100,\\quad\\Delta T_2=70-60=10,\\quad \\Delta T_{lm}=\\frac{100-10}{\\ln(100/10)}=39.1\\ \\mathrm{K}"
+    },
+    {
+     "text": "Solve for area in each case with $A=Q/(U\\Delta T_{lm})$.",
+     "latex": "A_{cf}=\\frac{150000}{350\\times54.8}=7.81\\ \\mathrm{m^2},\\quad A_{pf}=\\frac{150000}{350\\times39.1}=10.96\\ \\mathrm{m^2}"
+    }
+   ],
+   "answer": "Counterflow LMTD is 54.8 K against 39.1 K for parallel flow, so counterflow needs 7.81 m$^2$ against 10.96 m$^2$, about 29 % less area."
+  },
+  {
+   "type": "text",
+   "markdown": "The LMTD method needs all four terminal temperatures, or enough information to find them from an energy balance $Q=C_h(T_{h,i}-T_{h,o})=C_c(T_{c,o}-T_{c,i})$. If the outlet temperatures are unknown, as in rating an existing exchanger, the LMTD equation is implicit and requires iteration. The **effectiveness-NTU method** avoids this. **Effectiveness** is the ratio of actual to maximum possible heat transfer, $\\varepsilon=Q/Q_{max}$ with $Q_{max}=C_{min}(T_{h,i}-T_{c,i})$, and the **number of transfer units** is $NTU=UA/C_{min}$. The heat-capacity-rate ratio is $C_r=C_{min}/C_{max}$."
+  },
+  {
+   "type": "math",
+   "latex": "\\varepsilon_{cf}=\\frac{1-e^{-NTU(1-C_r)}}{1-C_re^{-NTU(1-C_r)}},\\qquad \\varepsilon_{pf}=\\frac{1-e^{-NTU(1+C_r)}}{1+C_r}",
+   "caption": "Counterflow and parallel flow; for counterflow with $C_r=1$, $\\varepsilon=NTU/(1+NTU)$"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity known",
+    "Quantity wanted",
+    "Best method",
+    "Reason"
+   ],
+   "rows": [
+    [
+     "All four temperatures, duty, $U$",
+     "Area $A$",
+     "LMTD",
+     "Direct, no iteration"
+    ],
+    [
+     "Inlet temperatures, flow rates, $UA$",
+     "Outlet temperatures, duty",
+     "$\\varepsilon$-NTU",
+     "Outlets not needed as inputs"
+    ],
+    [
+     "Inlet temperatures, flow rates, required duty",
+     "Area $A$",
+     "Either; $\\varepsilon$-NTU is direct",
+     "$\\varepsilon$ from $Q$, then $NTU$ from chart or formula"
+    ],
+    [
+     "One stream changes phase ($C_r=0$)",
+     "Any",
+     "$\\varepsilon=1-e^{-NTU}$",
+     "Independent of flow arrangement"
+    ]
+   ],
+   "caption": "Selecting a method according to which quantities are known."
+  },
+  {
+   "type": "worked_example",
+   "title": "Outlet temperatures by the effectiveness-NTU method",
+   "prompt": "A counterflow exchanger has $UA=3600$ W/K. Hot oil enters at 130 $^\\circ$C with $C_h=2400$ W/K; water enters at 25 $^\\circ$C with $C_c=4200$ W/K. Find the outlet temperatures.",
+   "steps": [
+    {
+     "text": "Identify $C_{min}$, $C_r$ and NTU.",
+     "latex": "C_{min}=2400,\\ C_r=2400/4200=0.5714,\\ NTU=3600/2400=1.50"
+    },
+    {
+     "text": "Evaluate the counterflow effectiveness.",
+     "latex": "\\varepsilon=\\frac{1-e^{-1.5(1-0.5714)}}{1-0.5714\\,e^{-1.5(1-0.5714)}}=0.6779"
+    },
+    {
+     "text": "Heat rate from effectiveness.",
+     "latex": "Q=\\varepsilon C_{min}(T_{h,i}-T_{c,i})=0.6779\\times2400\\times105=170.8\\ \\mathrm{kW}"
+    },
+    {
+     "text": "Outlet temperatures from energy balances.",
+     "latex": "T_{h,o}=130-\\frac{170826}{2400}=58.8\\ ^\\circ\\mathrm{C},\\quad T_{c,o}=25+\\frac{170826}{4200}=65.7\\ ^\\circ\\mathrm{C}"
+    }
+   ],
+   "answer": "Oil leaves at 58.8 $^\\circ$C and water at 65.7 $^\\circ$C after transferring 170.8 kW; no iteration was needed."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Counterflow gives the largest LMTD and the highest effectiveness for a given $UA$ among the basic arrangements.",
+    "Parallel flow can never take the cold outlet above the hot outlet, so its effectiveness is limited to $1/(1+C_r)$.",
+    "Shell-and-tube and cross-flow units use $Q=UAF\\Delta T_{lm,cf}$ with a correction factor $F\\le1$ from charts, or their own $\\varepsilon$-NTU relations.",
+    "$C_{min}$ is the stream with the smaller $\\dot m c_p$; it is the stream that changes temperature most."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Always label the ends",
+   "text": "The commonest LMTD mistake is pairing the wrong ends. Draw the temperature profiles first: in counterflow the hot inlet faces the cold outlet; in parallel flow the two inlets face each other."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "LMTD, $\\Delta T_{lm}=(\\Delta T_1-\\Delta T_2)/\\ln(\\Delta T_1/\\Delta T_2)$, gives the mean driving force; counterflow gives a larger value than parallel flow for the same terminals.",
+    "The $\\varepsilon$-NTU method uses $\\varepsilon=Q/(C_{min}\\Delta T_{max})$ and $NTU=UA/C_{min}$ with arrangement-specific $\\varepsilon(NTU,C_r)$ relations.",
+    "Use LMTD when all terminal temperatures are known; use $\\varepsilon$-NTU when inlets and $UA$ are known and outlets are wanted.",
+    "For phase change on one side $C_r=0$ and $\\varepsilon=1-e^{-NTU}$ regardless of arrangement."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Two exchangers have identical inlet and outlet temperatures for both streams, one in counterflow and one in parallel flow, and identical $U$ and duty. Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The counterflow unit has the larger LMTD and therefore needs the smaller area"
+    },
+    {
+     "id": "b",
+     "text": "The parallel flow unit has the larger LMTD and therefore needs the smaller area"
+    },
+    {
+     "id": "c",
+     "text": "Both have the same LMTD because the terminal temperatures are identical"
+    },
+    {
+     "id": "d",
+     "text": "The counterflow unit has the larger LMTD but needs the larger area to compensate"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The counterflow unit has the larger LMTD and therefore needs the smaller area",
+   "distractorRationale": {
+    "b": "Parallel flow has a very small end difference at the outlet, which reduces its LMTD, so the sign is reversed.",
+    "c": "LMTD depends on how the ends are paired, not only on the set of temperatures.",
+    "d": "$A=Q/(U\\Delta T_{lm})$, so a larger LMTD reduces, not raises, the area."
+   },
+   "explanation": "For the same terminal temperatures the counterflow end differences are more even, giving a larger log mean. Since $A=Q/(U\\Delta T_{lm})$, the larger LMTD means a smaller area, which is why counterflow is the preferred arrangement.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A counterflow exchanger cools oil from 150 degrees Celsius to 90 degrees Celsius using water heated from 30 to 80 degrees Celsius. Calculate the log mean temperature difference in K.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o1"
+   ],
+   "correctValue": 64.8716,
+   "tolerance": 0.3,
+   "unit": "K",
+   "explanation": "For counterflow the end differences are 150-80 = 70 K and 90-30 = 60 K, so the LMTD is (70-60)/ln(70/60) = 64.87 K. Because the two end differences are close, the result is near their arithmetic mean of 65 K.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Hot water cools from 95 to 60 degrees Celsius while heating a cold stream from 20 to 45 degrees Celsius in a PARALLEL flow exchanger. Calculate the log mean temperature difference in K.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o1"
+   ],
+   "correctValue": 37.2801,
+   "tolerance": 0.3,
+   "unit": "K",
+   "explanation": "In parallel flow the inlets face each other, so the end differences are 95-20 = 75 K and 60-45 = 15 K. The LMTD is (75-15)/ln(75/15) = 37.28 K, well below the arithmetic mean of 45 K because the outlet end difference is small.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A counterflow exchanger has UA = 4500 W/K. The hot stream has heat capacity rate 3000 W/K and enters at 140 degrees Celsius; the cold stream has heat capacity rate 6000 W/K and enters at 25 degrees Celsius. Use the effectiveness-NTU method to find the cold stream outlet temperature in degrees Celsius.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o2"
+   ],
+   "correctValue": 64.7202,
+   "tolerance": 0.4,
+   "unit": "degrees Celsius",
+   "explanation": "C_min = 3000 W/K, so NTU = 1.5 and Cr = 0.5; the counterflow effectiveness is 0.6908. Then Q = 0.6908 x 3000 x 115 = 238.3 kW and the cold outlet is 25 + 238321/6000 = 64.7 degrees Celsius (hot outlet 60.6 degrees Celsius).",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What is the maximum possible effectiveness of a parallel flow heat exchanger with equal heat capacity rates ($C_r=1$), however large the area?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "1.0, because infinite area allows the hot stream to cool to the cold inlet temperature"
+    },
+    {
+     "id": "b",
+     "text": "0.5, because the two streams approach a common outlet temperature midway between the inlets"
+    },
+    {
+     "id": "c",
+     "text": "0.67, because $\\varepsilon=NTU/(1+NTU)$ at NTU = 2"
+    },
+    {
+     "id": "d",
+     "text": "0.25, because parallel flow transfers a quarter of $Q_{max}$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "0.5, because the two streams approach a common outlet temperature midway between the inlets",
+   "distractorRationale": {
+    "a": "That is only possible in counterflow; in parallel flow the streams converge to a common temperature.",
+    "c": "That is the counterflow, $C_r=1$ expression at one particular NTU, not the parallel limit.",
+    "d": "No such fixed fraction exists; the limit is $1/(1+C_r)=0.5$."
+   },
+   "explanation": "For parallel flow with $C_r=1$, $\\varepsilon=(1-e^{-2NTU})/2$, which tends to 0.5 as NTU increases (it is 0.500 at NTU = 50). Both streams approach the same outlet temperature, which is halfway between the inlet temperatures when the heat capacity rates are equal.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "You are rating an existing exchanger of known area and known $U$. The two inlet temperatures and the two flow rates are known; the outlet temperatures are not. Which method avoids iteration?",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "LMTD, because $Q=UA\\Delta T_{lm}$ can be solved directly"
+    },
+    {
+     "id": "b",
+     "text": "LMTD, because the outlet temperatures can be assumed equal to the inlet temperatures"
+    },
+    {
+     "id": "c",
+     "text": "Effectiveness-NTU, because NTU and $C_r$ are known from the given data and $\\varepsilon$ gives the duty directly"
+    },
+    {
+     "id": "d",
+     "text": "Neither method works without the outlet temperatures"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Effectiveness-NTU, because NTU and $C_r$ are known from the given data and $\\varepsilon$ gives the duty directly",
+   "distractorRationale": {
+    "a": "The LMTD depends on the unknown outlet temperatures, so the equation is implicit and needs iteration.",
+    "b": "That assumption is not valid and would give $\\Delta T_{lm}$ with no physical meaning.",
+    "d": "The $\\varepsilon$-NTU method is designed exactly for this situation."
+   },
+   "explanation": "With $UA$ and the flow rates known, $NTU=UA/C_{min}$ and $C_r$ follow immediately, so $\\varepsilon$ and $Q=\\varepsilon C_{min}(T_{h,i}-T_{c,i})$ can be calculated without knowing the outlets. The LMTD route would need guess-and-check.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Steam condensing at constant temperature heats a stream of air in a heat exchanger. For this case ($C_{max}\\to\\infty$, $C_r=0$), the effectiveness is",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o2",
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$\\varepsilon=NTU/(1+NTU)$ for counterflow only"
+    },
+    {
+     "id": "b",
+     "text": "$\\varepsilon=1$ for any NTU"
+    },
+    {
+     "id": "c",
+     "text": "$\\varepsilon=0.5$ for parallel flow and 1 for counterflow"
+    },
+    {
+     "id": "d",
+     "text": "$\\varepsilon=1-e^{-NTU}$ for any flow arrangement"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "$\\varepsilon=1-e^{-NTU}$ for any flow arrangement",
+   "distractorRationale": {
+    "a": "That is the $C_r=1$ counterflow result, not $C_r=0$.",
+    "b": "Effectiveness reaches 1 only as NTU tends to infinity.",
+    "c": "These limits depend on $C_r=1$ and large NTU, not on a condensing stream."
+   },
+   "explanation": "When one fluid condenses its temperature is constant, so its heat capacity rate is effectively infinite and $C_r=0$. The effectiveness formulas for every arrangement then reduce to $1-e^{-NTU}$, which is why arrangement does not matter for condensers and boilers.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Define effectiveness and NTU, and explain why the effectiveness-NTU method is preferred to the LMTD method when outlet temperatures are unknown.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o2",
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o3"
+   ],
+   "markingGuide": [
+    "Effectiveness $\\varepsilon=Q/Q_{max}$ with $Q_{max}=C_{min}(T_{h,i}-T_{c,i})$",
+    "$NTU=UA/C_{min}$, a dimensionless size of the exchanger relative to the smaller capacity rate",
+    "Mentions $C_r=C_{min}/C_{max}$ and that $\\varepsilon=f(NTU,C_r,$ arrangement$)$",
+    "States that LMTD requires the outlet temperatures, which are unknown, so the equation must be solved iteratively",
+    "States that $\\varepsilon$-NTU uses only inlet temperatures, flow rates and $UA$, giving a direct calculation of $Q$ and outlets"
+   ],
+   "explanation": "Effectiveness compares the actual duty with the thermodynamic maximum, and NTU measures how large the exchanger is relative to the weaker stream. Since both are built from inlet data, the method needs no guessed outlet temperature, which is its main advantage for rating.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain why counterflow needs less area than parallel flow for the same terminal temperatures, and explain why a parallel flow exchanger cannot cool the hot stream below the cold stream's outlet temperature.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o1",
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o2"
+   ],
+   "markingGuide": [
+    "Counterflow keeps a more uniform temperature difference along the length, so its LMTD is larger",
+    "Parallel flow has a large difference at the inlet end and a very small one at the outlet end, lowering the log mean",
+    "$A=Q/(U\\Delta T_{lm})$ so a larger LMTD gives a smaller area",
+    "In parallel flow the streams approach each other in the flow direction and, with finite area, both tend toward a common outlet temperature",
+    "Therefore the cold outlet cannot exceed the hot outlet, limiting effectiveness, whereas counterflow allows $T_{c,o}>T_{h,o}$"
+   ],
+   "explanation": "Since the average driving force is larger in counterflow, less area is needed for the same duty. In parallel flow the end temperature difference collapses toward zero, limiting how much heat can be exchanged however large the exchanger.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A counterflow water-to-water exchanger must transfer 90 kW. The hot stream cools from 80 to 50 degrees Celsius and the cold stream is heated from 15 to 35 degrees Celsius. With an overall coefficient of 500 W/m^2 K, find the required heat transfer area in m^2.",
+   "objectiveIds": [
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o1",
+    "ug.mce-advanced-heat-transfer.heat-exchanger-design.lmtd-ntu.o3"
+   ],
+   "correctValue": 4.52366,
+   "tolerance": 0.1,
+   "unit": "m^2",
+   "explanation": "All four temperatures are known, so LMTD is the direct method. The end differences are 80-35 = 45 K and 50-15 = 35 K, giving LMTD = 39.79 K and A = 90000/(500 x 39.79) = 4.52 m^2.",
+   "board": "internal"
+  }
+ ]
+}

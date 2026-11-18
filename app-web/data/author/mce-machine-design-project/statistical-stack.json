@@ -1,0 +1,403 @@
+{
+ "lessonTitle": "Statistical Stack-Up and Fits",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "An electric motor housing is assembled from five machined parts, each toleranced at plus or minus 0.10 mm. Adding the tolerances gives a possible gap variation of plus or minus 0.50 mm, so the designer specifies expensive grinding to keep it small. Yet in production the gap never varies by more than about 0.25 mm. The worst case is real but extremely rare, and a statistical method describes what actually happens."
+  },
+  {
+   "type": "text",
+   "markdown": "A **tolerance stack-up** predicts how the tolerances of individual dimensions combine in an assembly gap or length. The worst-case method assumes every dimension sits at its extreme at the same time, in the worst direction; it guarantees that every assembly works but often demands very tight, expensive tolerances. The **statistical method** recognises that dimensions vary randomly and independently, so extremes rarely coincide, and allows looser tolerances at a small, quantified risk of an assembly being out of limits."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Root-sum-square (RSS) tolerance",
+   "text": "For a chain of $n$ independent dimensions with tolerances $\\pm t_i$, the statistical (RSS) tolerance on the resulting gap or length is the square root of the sum of the squared tolerances. It assumes the dimensions are independent, centred on their nominal values, and that each tolerance corresponds to about three standard deviations of a normal distribution ($t_i\\approx3\\sigma_i$)."
+  },
+  {
+   "type": "math",
+   "latex": "t_{\\mathrm{RSS}}=\\sqrt{\\sum_{i=1}^{n}t_i^{2}},\\qquad t_{\\mathrm{WC}}=\\sum_{i=1}^{n}t_i",
+   "caption": "t_i are the individual bilateral tolerances (mm), t_WC is the worst-case tolerance and t_RSS the statistical tolerance on the assembly dimension, both as a plus-or-minus value."
+  },
+  {
+   "type": "worked_example",
+   "title": "RSS compared with worst case",
+   "prompt": "A gap has nominal value 0.60 mm and is formed by four independent dimensions with tolerances $\\pm0.10$, $\\pm0.15$, $\\pm0.05$ and $\\pm0.20$ mm. Find the worst-case and RSS tolerances and the limits of the gap.",
+   "steps": [
+    {
+     "text": "Worst case: add the four tolerances arithmetically, since all may act together.",
+     "latex": "t_{\\mathrm{WC}}=0.10+0.15+0.05+0.20=0.50\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Statistical case: square each tolerance, add, and take the square root.",
+     "latex": "t_{\\mathrm{RSS}}=\\sqrt{0.10^2+0.15^2+0.05^2+0.20^2}=\\sqrt{0.075}=0.274\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Limits: worst case $0.60\\pm0.50$ gives 0.10 to 1.10 mm; RSS gives $0.60\\pm0.274$, or 0.326 to 0.874 mm."
+    },
+    {
+     "text": "Under the stated assumptions about 99.7% of assemblies lie within the RSS limits, so roughly 3 in 1000 would fall outside."
+    }
+   ],
+   "answer": "Worst case $\\pm0.50$ mm; RSS $\\pm0.274$ mm, a reduction of about 45%."
+  },
+  {
+   "type": "text",
+   "markdown": "**Fits.** For a shaft in a hole, the designer chooses a *fit* rather than individual tolerances. In the standard ISO system a hole is designated by a letter and a grade (H7), a shaft likewise (g6, h6, k6, p6). Three families exist. A **clearance fit** always leaves a gap, so the shaft rotates or slides (a running or sliding fit). A **transition fit** may give either a small clearance or a small interference, used for accurate location with light assembly force. An **interference fit** always leaves the shaft larger than the hole, so the parts are pressed together and transmit load by friction. The limits of size come from the standard's tables; here we use values stated in the question."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Fit family",
+    "Typical designation (hole basis)",
+    "Behaviour",
+    "Typical use"
+   ],
+   "rows": [
+    [
+     "Clearance, running",
+     "H7/f7 and looser",
+     "Always a gap",
+     "Journal bearings, sliding parts"
+    ],
+    [
+     "Clearance, locational",
+     "H7/g6, H7/h6",
+     "Small guaranteed gap or zero",
+     "Accurate sliding location, pilots"
+    ],
+    [
+     "Transition",
+     "H7/k6",
+     "Small clearance or small interference",
+     "Location with light tapping"
+    ],
+    [
+     "Interference",
+     "H7/p6 and tighter",
+     "Always interference",
+     "Permanent press fits, torque transfer"
+    ]
+   ],
+   "caption": "Selecting a fit family. Designations are illustrative; limit values come from the standard tables."
+  },
+  {
+   "type": "worked_example",
+   "title": "Limits of a clearance fit",
+   "prompt": "A hole has limits 25.000 to 25.021 mm and a shaft has limits 24.980 to 24.993 mm (illustrative). Find the minimum and maximum clearance and state the family of the fit.",
+   "steps": [
+    {
+     "text": "Minimum clearance occurs with the largest shaft in the smallest hole.",
+     "latex": "c_{\\min}=25.000-24.993=0.007\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Maximum clearance occurs with the smallest shaft in the largest hole.",
+     "latex": "c_{\\max}=25.021-24.980=0.041\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Both values are positive, so this is always a clearance fit: the shaft can always be inserted, and the fit is a close locational type."
+    }
+   ],
+   "answer": "Clearance between 0.007 mm and 0.041 mm: a clearance fit."
+  },
+  {
+   "type": "text",
+   "markdown": "**Comparing and accepting risk.** The worst-case result guarantees fit for 100% of assemblies, at the price of tight tolerances and cost. The statistical result is typically much smaller for chains of many dimensions, because $t_{\\mathrm{RSS}}$ grows like $\\sqrt n$ while $t_{\\mathrm{WC}}$ grows like $n$. It carries a **risk**: a small fraction of assemblies (about 0.27% under the ideal assumptions) can fall outside the limits, and more if the process is off-centre or the dimensions are not independent. The statistical method is justified when production volumes are high, the process is known to be capable and centred, and the cost of the occasional out-of-limit assembly (rework or scrap) is small."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Draw the dimension chain and list every tolerance.",
+    "Compute $t_{\\mathrm{WC}}$ and $t_{\\mathrm{RSS}}$ and the resulting gap limits.",
+    "Compare both with the functional requirement of the gap.",
+    "If only the RSS result meets the requirement, state the fraction of assemblies at risk and who accepts it.",
+    "Choose fits from the standard family that matches the function: running, locating or permanent."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Know the assumptions",
+   "text": "RSS assumes independence and centring. A shifted process mean or a common cause such as thermal expansion affecting several dimensions makes RSS optimistic."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Tolerance on the sum, not the sum of tolerances",
+   "text": "Tolerances add arithmetically in the worst case but in quadrature in the statistical case, so five equal tolerances of $\\pm t$ give $\\pm5t$ worst case but only $\\pm2.24t$ statistically."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The RSS tolerance is $\\sqrt{\\sum t_i^2}$ for independent, centred dimensions and is always smaller than or equal to the worst-case sum.",
+    "Clearance, transition and interference fits are selected by function: running or sliding, accurate location, or permanent press fit.",
+    "Using RSS accepts a small, quantified risk of out-of-limit assemblies, justified only by process capability, volume and the cost of rework."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which condition is required for the RSS method to give a valid prediction of assembly variation?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The dimensions vary independently and are centred on their nominal values"
+    },
+    {
+     "id": "b",
+     "text": "All dimensions are at their maximum limits at the same time"
+    },
+    {
+     "id": "c",
+     "text": "The dimensions are always larger than nominal"
+    },
+    {
+     "id": "d",
+     "text": "All tolerances are identical"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The dimensions vary independently and are centred on their nominal values",
+   "distractorRationale": {
+    "a": "Correct: independence and centring are the key assumptions.",
+    "b": "That describes the worst case, not the statistical case.",
+    "c": "A bias of all dimensions would violate centring.",
+    "d": "Equal tolerances are not required."
+   },
+   "explanation": "RSS combines random, independent variations. Biased or correlated dimensions break the quadrature rule and the prediction becomes optimistic.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For the same chain of dimensions, how does the RSS tolerance compare with the worst-case tolerance?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is smaller than or equal to it, and smaller whenever more than one non-zero tolerance is present"
+    },
+    {
+     "id": "b",
+     "text": "It is always larger"
+    },
+    {
+     "id": "c",
+     "text": "It is always equal"
+    },
+    {
+     "id": "d",
+     "text": "It is always zero"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is smaller than or equal to it, and smaller whenever more than one non-zero tolerance is present",
+   "distractorRationale": {
+    "a": "Correct: $\\sqrt{\\sum t_i^2}\\le\\sum t_i$.",
+    "b": "The quadrature sum cannot exceed the arithmetic sum.",
+    "c": "Equality holds only when a single tolerance is present.",
+    "d": "It is not zero unless every tolerance is zero."
+   },
+   "explanation": "Squaring and summing then taking the root gives a value below the plain sum whenever two or more tolerances are non-zero. The statistical method is therefore less conservative.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A ball-bearing inner ring must stay fixed on a shaft and transmit torque by friction without a key. Which kind of fit is appropriate?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "An interference fit"
+    },
+    {
+     "id": "b",
+     "text": "A loose running clearance fit"
+    },
+    {
+     "id": "c",
+     "text": "A sliding clearance fit"
+    },
+    {
+     "id": "d",
+     "text": "A transition fit that may become a clearance"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "An interference fit",
+   "distractorRationale": {
+    "a": "Correct: a guaranteed interference gives the contact pressure needed to carry the load.",
+    "b": "A loose fit would allow the ring to creep.",
+    "c": "A sliding fit allows movement.",
+    "d": "A transition fit could leave a clearance and allow creep."
+   },
+   "explanation": "Friction transfer needs contact pressure, so the shaft must be always larger than the hole. Only an interference fit guarantees this.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A locating dowel must position a cover accurately but be assembled by hand with a light tap and removed during service. Which fit family is the best choice?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Transition fit"
+    },
+    {
+     "id": "b",
+     "text": "Heavy press interference fit"
+    },
+    {
+     "id": "c",
+     "text": "Loose running clearance"
+    },
+    {
+     "id": "d",
+     "text": "Fit with a large guaranteed gap"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Transition fit",
+   "distractorRationale": {
+    "a": "Correct: it gives accurate location with a small clearance or small interference.",
+    "b": "A heavy press fit would make service removal difficult.",
+    "c": "Loose clearance would not locate accurately.",
+    "d": "A large gap cannot locate."
+   },
+   "explanation": "A transition fit balances accurate location and ease of assembly. Neither a heavy press nor a loose gap meets both requirements.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A design accepts an RSS-based tolerance instead of worst case. Which statement correctly describes the risk accepted?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A small fraction of assemblies may fall outside the gap limits, so rework or scrap must be acceptable"
+    },
+    {
+     "id": "b",
+     "text": "No assembly can ever be out of limits"
+    },
+    {
+     "id": "c",
+     "text": "Every assembly will fail"
+    },
+    {
+     "id": "d",
+     "text": "The risk is only that the drawing becomes harder to read"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "A small fraction of assemblies may fall outside the gap limits, so rework or scrap must be acceptable",
+   "distractorRationale": {
+    "a": "Correct: statistical methods trade a small known risk for looser tolerances.",
+    "b": "That would be true for worst case, not RSS.",
+    "c": "The risk is small, not total failure.",
+    "d": "The risk is a physical out-of-limit assembly, not readability."
+   },
+   "explanation": "RSS limits cover about 99.7% under ideal assumptions, so a few assemblies may lie outside. The decision rests on the cost of those few compared with the cost of tighter tolerances.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Three independent dimensions in a chain have tolerances $\\pm0.08$ mm, $\\pm0.12$ mm and $\\pm0.06$ mm. Find the RSS tolerance on the resulting gap in mm (plus or minus).",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o1"
+   ],
+   "correctValue": 0.156205,
+   "tolerance": 0.002,
+   "unit": "mm",
+   "explanation": "The sum of squares is $0.0064+0.0144+0.0036=0.0244$ and its root is 0.156 mm. The worst-case sum would be 0.26 mm.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A press-fit pair has hole limits 30.000 mm to 30.021 mm and shaft limits 30.028 mm to 30.041 mm (illustrative values). Find the maximum interference in mm.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o2"
+   ],
+   "correctValue": 0.041,
+   "tolerance": 0.001,
+   "unit": "mm",
+   "explanation": "The maximum interference occurs with the largest shaft in the smallest hole, $30.041-30.000=0.041$ mm. The minimum is $30.028-30.021=0.007$ mm, so the fit is interference throughout.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A stack has six independent dimensions, each toleranced $\\pm0.05$ mm. By what percentage is the RSS tolerance smaller than the worst-case tolerance?",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o1",
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o3"
+   ],
+   "correctValue": 59.175171,
+   "tolerance": 0.2,
+   "unit": "%",
+   "explanation": "The worst case is $6\\times0.05=0.30$ mm and the RSS value is $0.05\\sqrt6=0.1225$ mm. The saving is $(0.30-0.1225)/0.30=59.2\\%$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Choose and justify a fit family (clearance, transition or interference) for each of: (a) a hydraulic piston rod sliding in a bush, (b) a gear pressed on a shaft to transmit torque without a key, (c) a location pin for a jig that is removed and refitted many times.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o2"
+   ],
+   "markingGuide": [
+    "(a) Clearance fit, running or sliding, so that the rod can move and be lubricated",
+    "(b) Interference fit, giving contact pressure and friction to carry torque",
+    "(c) Transition or close locational clearance fit, for accurate and repeatable location with easy removal",
+    "Each choice linked to function (motion, load transfer, location)",
+    "Notes that limit values come from the standard tables",
+    "States the consequence of the wrong family"
+   ],
+   "explanation": "The fit family follows from what the joint must do. Clearance allows motion, interference transmits load, and a transition fit allows precise location.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A gap has nominal size 0.30 mm and must never be below 0.10 mm in at least 99.7% of assemblies. It is formed by three independent dimensions with tolerances $\\pm0.06$, $\\pm0.09$ and $\\pm0.12$ mm. Evaluate the worst-case and RSS results, decide whether the requirement is met by each, and state the risk accepted if you use RSS.",
+   "objectiveIds": [
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o1",
+    "ug.mce-machine-design-project.tolerance-stack.statistical-stack.o3"
+   ],
+   "markingGuide": [
+    "Worst-case tolerance $0.06+0.09+0.12=0.27$ mm, minimum gap $0.30-0.27=0.03$ mm, which is below 0.10 mm so worst case fails",
+    "RSS tolerance $\\sqrt{0.06^2+0.09^2+0.12^2}=\\sqrt{0.0261}=0.162$ mm, minimum gap $0.138$ mm, which meets 0.10 mm",
+    "Statement that the RSS result holds for about 99.7% of assemblies under independence and centring",
+    "Risk accepted: about 0.3% (roughly 3 in 1000) of assemblies may be outside limits, more if off-centre or correlated",
+    "Possible response: process control, inspection or tighter tolerance on the largest contributor"
+   ],
+   "explanation": "The worst-case method fails the requirement while the statistical method passes it. The price is a small, quantified chance of an out-of-limit assembly, which the project must explicitly accept.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,394 @@
+{
+ "lessonTitle": "Specifying an Isolator for a Rotating Machine",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A 400 kg air compressor bolted straight to a first-floor slab sends a hum through the whole office above. Put the right springs underneath it and the hum drops by a factor of ten. This unit is about choosing those springs."
+  },
+  {
+   "type": "text",
+   "markdown": "A machine of total mass $M$ (kg) is mounted on isolators of total stiffness $k$ (N/m) and damping ratio $\\zeta$. A rotating unbalance of eccentric mass $m_e$ (kg) at radius $e$ (m) turning at angular speed $\\omega$ (rad/s) produces a vertical force of amplitude $F_0=m_ee\\omega^2$ (N) on the machine. Part of this reaches the foundation through the spring and the damper. The ratio of transmitted force amplitude $F_T$ to applied force amplitude $F_0$ is the **force transmissibility** $TR$. Isolator selection means choosing $k$ (and sometimes $\\zeta$) so that $TR$ is acceptably small at the operating speed."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Force transmissibility",
+   "text": "$TR=F_T/F_0$ (dimensionless), where $F_T$ is the amplitude of the total force (spring plus damper) transmitted to the foundation. It depends on the frequency ratio $r=\\omega/\\omega_n$ with $\\omega_n=\\sqrt{k/M}$ (rad/s) and on $\\zeta$. The isolation efficiency is $1-TR$."
+  },
+  {
+   "type": "math",
+   "latex": "TR=\\sqrt{\\frac{1+(2\\zeta r)^2}{(1-r^2)^2+(2\\zeta r)^2}}\\;\\xrightarrow{\\ \\zeta\\to0\\ }\\;\\frac{1}{r^2-1},\\qquad F_T=TR\\cdot m_ee\\omega^2",
+   "caption": "Force transmissibility and transmitted force for a rotating machine"
+  },
+  {
+   "type": "text",
+   "markdown": "**Why the formula is that one.** The force reaching the foundation is $kx+c\\dot{x}$, the sum of a spring force in phase with displacement and a damper force $90^\\circ$ ahead. Their amplitudes are $kX$ and $c\\omega X$ and they add in quadrature: $F_T=X\\sqrt{k^2+(c\\omega)^2}=kX\\sqrt{1+(2\\zeta r)^2}$. Dividing by $F_0$ and using $X=(F_0/k)M$ with $M$ the forced-response magnification gives the expression above. For $r>\\sqrt2$, $TR<1$: the isolator reduces the force. Beyond that, increasing $r$ (a softer mount or heavier machine) reduces $TR$ further."
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a stiffness for a target",
+   "prompt": "A 400 kg machine runs at 1800 rpm. Choose total isolator stiffness so that the transmitted force is 10 % of the applied force. Neglect damping. Also find the static deflection.",
+   "steps": [
+    {
+     "text": "Convert the speed: 1 rpm is 2 pi/60 rad/s.",
+     "latex": "\\omega=1800\\times2\\pi/60=188.5\\ \\text{rad/s}\\ (30\\ \\text{Hz})"
+    },
+    {
+     "text": "For an undamped isolator TR = 1/(r^2 - 1), so r^2 = 1 + 1/TR.",
+     "latex": "r^2=1+1/0.1=11,\\quad r=3.317"
+    },
+    {
+     "text": "Required natural frequency, then stiffness.",
+     "latex": "\\omega_n=\\omega/r=56.83\\ \\text{rad/s}\\ (9.05\\ \\text{Hz}),\\quad k=M\\omega_n^2=400\\times3230=1.292 x 10^6\\ \\text{N/m}"
+    },
+    {
+     "text": "Static deflection under the machine weight, using omega_n squared = g/delta_st.",
+     "latex": "\\delta_{st}=g/\\omega_n^2=9.81/3230=3.04\\ \\text{mm}"
+    }
+   ],
+   "answer": "k is about 1.29 x 10^6 N/m in total (for example four mounts of 3.23 x 10^5 N/m), giving fn = 9.0 Hz and a static deflection of 3.0 mm."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Design variable",
+    "Effect of increasing it",
+    "Effect on transmitted force at $r>\\sqrt2$"
+   ],
+   "rows": [
+    [
+     "Stiffness $k$",
+     "Raises $\\omega_n$, lowers $r$",
+     "Increases"
+    ],
+    [
+     "Machine mass $M$",
+     "Lowers $\\omega_n$, raises $r$",
+     "Decreases"
+    ],
+    [
+     "Damping ratio $\\zeta$",
+     "Lowers resonance peak",
+     "Increases (damper transmits force directly)"
+    ],
+    [
+     "Operating speed $\\omega$",
+     "Raises $r$",
+     "Decreases $TR$, but $F_0\\propto\\omega^2$ rises"
+    ],
+    [
+     "Static deflection $\\delta_{st}$",
+     "Lowers $\\omega_n$ ($\\omega_n=\\sqrt{g/\\delta_{st}}$)",
+     "Decreases"
+    ]
+   ],
+   "caption": "Design trade-offs for an isolator mounting"
+  },
+  {
+   "type": "worked_example",
+   "title": "Transmitted force from a rotating machine",
+   "prompt": "A 500 kg machine on mounts of total stiffness 2 x 10^6 N/m has a rotating unbalance of 2.0 kg at 50 mm radius at 1200 rpm. Find the force amplitude transmitted to the floor for damping ratios 0.02 and 0.10.",
+   "steps": [
+    {
+     "text": "Unbalance force amplitude.",
+     "latex": "\\omega=125.66\\ \\text{rad/s},\\quad F_0=m_ee\\omega^2=2.0\\times0.05\\times125.66^2=1579\\ \\text{N}"
+    },
+    {
+     "text": "Frequency ratio.",
+     "latex": "\\omega_n=\\sqrt{2 x 10^6/500}=63.25\\ \\text{rad/s},\\quad r=1.987"
+    },
+    {
+     "text": "Transmissibility for each damping ratio, then transmitted force.",
+     "latex": "TR(0.02)=0.3402,\\ F_T=537\\ \\text{N};\\quad TR(0.10)=0.3618,\\ F_T=571\\ \\text{N}"
+    },
+    {
+     "text": "Compare: at r just under 2 the heavier damping gives more transmitted force, so for steady running the lighter damping is better.",
+     "latex": null
+    }
+   ],
+   "answer": "F_T is about 537 N for zeta = 0.02 and 571 N for zeta = 0.10."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find the lowest steady operating speed in rad/s: this is the worst case for isolation.",
+    "Pick a target $TR$ and compute $r=\\sqrt{1+1/TR}$ (undamped).",
+    "Compute $\\omega_n=\\omega/r$ and total stiffness $k=M\\omega_n^2$.",
+    "Check static deflection and stability, and make sure start-up and run-down through resonance are brief or damped enough."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "The damping trade-off",
+   "text": "Damping reduces the amplitude when the machine passes through resonance during start-up and run-down, but at operating speeds above $\\sqrt2\\,\\omega_n$ it increases the transmitted force. Real isolators therefore have modest damping, typically a ratio of 0.05 to 0.2 (typical values), which is a compromise."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Isolation fails below root two",
+   "text": "If the operating speed is below $\\sqrt2\\,\\omega_n$, softening the mounts moves the system closer to resonance and makes things worse. Isolation needs the natural frequency well below the lowest excitation frequency."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Force transmissibility $TR=\\sqrt{[1+(2\\zeta r)^2]/[(1-r^2)^2+(2\\zeta r)^2]}$; undamped $TR=1/(r^2-1)$ for $r>\\sqrt2$.",
+    "Target $TR$ sets $r$, then $\\omega_n=\\omega/r$ and $k=M\\omega_n^2$; static deflection is $g/\\omega_n^2$.",
+    "Transmitted force is $F_T=TR\\,m_ee\\omega^2$.",
+    "Damping limits the resonant peak but raises transmission above $r=\\sqrt2$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "An undamped isolator has a frequency ratio of 3 at the operating speed. The force transmissibility is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.125, meaning 87.5 % isolation"
+    },
+    {
+     "id": "b",
+     "text": "0.333, meaning 66.7 % isolation"
+    },
+    {
+     "id": "c",
+     "text": "0.111, meaning 88.9 % isolation"
+    },
+    {
+     "id": "d",
+     "text": "8, meaning the force is amplified eightfold"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.125, meaning 87.5 % isolation",
+   "distractorRationale": {
+    "a": "Correct: For undamped mounts TR = 1/(r^2 - 1) = 1/(9 - 1) = 0.125.",
+    "b": "That is 1/r, which omits the r squared in the formula.",
+    "c": "That is 1/r^2; the formula uses r^2 minus 1.",
+    "d": "That is the reciprocal and would imply amplification, whereas r above root two isolates."
+   },
+   "explanation": "For undamped mounts TR = 1/(r^2 - 1) = 1/(9 - 1) = 0.125. The isolation efficiency is 1 - 0.125 = 87.5 %.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A rotor has an eccentric mass of 0.8 kg at a radius of 40 mm and runs at 3000 rpm. Find the amplitude of the rotating unbalance force in newtons.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o3"
+   ],
+   "correctValue": 3158.27,
+   "tolerance": 31.5827,
+   "unit": "N",
+   "explanation": "The angular speed is 3000 x 2 pi/60 = 314.16 rad/s. The force amplitude is m e omega^2 = 0.8 x 0.04 x 314.16^2 = 3158 N.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A designer increases the damping of a machine mounting. The machine runs permanently at a speed well above the isolator natural frequency (frequency ratio 4) and passes through resonance only briefly at start-up. What is the effect of the increase?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Both the start-up peak and the running transmitted force fall"
+    },
+    {
+     "id": "b",
+     "text": "The resonant peak at start-up falls, but the force transmitted at the running speed rises"
+    },
+    {
+     "id": "c",
+     "text": "The start-up peak rises and the running transmitted force falls"
+    },
+    {
+     "id": "d",
+     "text": "Neither changes, because damping affects only the free decay"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The resonant peak at start-up falls, but the force transmitted at the running speed rises",
+   "distractorRationale": {
+    "a": "Above root two, damping increases transmitted force.",
+    "b": "Correct: Damping bounds the resonant response, so the start-up peak is lower.",
+    "c": "Damping lowers the resonant peak, not raises it.",
+    "d": "Damping changes both the resonance peak and the transmissibility above it."
+   },
+   "explanation": "Damping bounds the resonant response, so the start-up peak is lower. At r = 4 the transmissibility rises with damping, for example from 0.068 at zeta = 0.02 to 0.125 at zeta = 0.2, because the damper carries force directly to the foundation.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 120 kg machine runs at 2400 rpm. Neglecting damping, find the total isolator stiffness in N/m needed to reduce the transmitted force to 20 % of the applied force.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o1"
+   ],
+   "correctValue": 1263310.0,
+   "tolerance": 25266.2,
+   "unit": "N/m",
+   "explanation": "The angular speed is 251.33 rad/s. For undamped isolation r^2 = 1 + 1/TR = 1 + 5 = 6, so r = 2.449. The natural frequency is 251.33/2.449 = 102.60 rad/s and k = M omega_n^2 = 1.263 x 10^6 N/m.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 300 kg machine on mounts of total stiffness 4 x 10^5 N/m and damping ratio 0.05 has a rotating unbalance of m e = 0.06 kg m (eccentric mass times radius) and runs at 1500 rpm. Find the transmitted force amplitude in newtons.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o3",
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o2"
+   ],
+   "correctValue": 92.0353,
+   "tolerance": 1.84071,
+   "unit": "N",
+   "explanation": "The angular speed is 157.08 rad/s and the natural frequency is sqrt(4 x 10^5/300) = 36.51 rad/s, so r = 4.302. The unbalance force is m e omega^2 = 1480 N. TR = 0.0622, so F_T = 92.0 N.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A machine mount deflects 16 mm statically under the machine weight. Using g = 9.81 m/s^2, the natural frequency of the machine on the mount is about",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "24.8 Hz"
+    },
+    {
+     "id": "b",
+     "text": "7.88 Hz"
+    },
+    {
+     "id": "c",
+     "text": "3.94 Hz"
+    },
+    {
+     "id": "d",
+     "text": "0.78 Hz"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "3.94 Hz",
+   "distractorRationale": {
+    "a": "That is the angular frequency in rad/s, not in Hz.",
+    "b": "That doubles the frequency; the 2 pi conversion has been applied wrongly.",
+    "c": "Correct: Because omega_n^2 = k/M = g/delta_st, omega_n = sqrt(9.81/0.016) = 24.76 rad/s.",
+    "d": "That inserts the deflection in millimetres into a formula that needs metres."
+   },
+   "explanation": "Because omega_n^2 = k/M = g/delta_st, omega_n = sqrt(9.81/0.016) = 24.76 rad/s. Dividing by 2 pi gives 3.94 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain the trade-off in choosing the damping of a machine isolator, relating it to the transmissibility curve and to the way a machine starts up and runs.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o2"
+   ],
+   "markingGuide": [
+    "Resonance occurs near r = 1, where transmissibility peaks at about 1/(2 zeta)",
+    "More damping lowers the resonant peak, which matters during start-up and run-down",
+    "Above r = sqrt(2), transmissibility increases with damping because the damper force is transmitted directly",
+    "So the steady running isolation is better with light damping",
+    "Typical compromise is moderate damping (zeta of about 0.05 to 0.2)",
+    "Where machine runs only above resonance and starts quickly, lighter damping is preferred; with long dwell near resonance, heavier damping is needed"
+   ],
+   "explanation": "Damping limits the resonant peak but raises the high-frequency transmitted force. The choice depends on how long the machine spends near resonance compared with running speed.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A machine is mounted on isolators that give poor isolation at its running speed. Which single change would reduce the transmitted force, assuming the running speed is above root two times the natural frequency?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o1",
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Raise the isolator stiffness so that the natural frequency rises"
+    },
+    {
+     "id": "b",
+     "text": "Raise the damping ratio to the critical value"
+    },
+    {
+     "id": "c",
+     "text": "Move the running speed down towards the natural frequency"
+    },
+    {
+     "id": "d",
+     "text": "Lower the isolator stiffness so that the natural frequency falls further below the running speed"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Lower the isolator stiffness so that the natural frequency falls further below the running speed",
+   "distractorRationale": {
+    "a": "A stiffer mount lowers r and moves the system towards resonance.",
+    "b": "Heavy damping increases transmission above root two.",
+    "c": "Lowering the speed lowers r and brings the machine nearer to resonance.",
+    "d": "Correct: For r above root two the transmissibility falls as r rises, and r = omega/omega_n increases when the stiffness falls."
+   },
+   "explanation": "For r above root two the transmissibility falls as r rises, and r = omega/omega_n increases when the stiffness falls. A softer mounting therefore reduces the force sent to the foundation, subject to static deflection limits.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A 600 kg fan unit runs at a steady 900 rpm. The structure engineer requires the transmitted force to be no more than 10 % of the unbalance force. Neglecting damping, find the required total mount stiffness and the static deflection, and describe one practical concern with the result.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o1",
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o3"
+   ],
+   "markingGuide": [
+    "Speed 94.25 rad/s (15.0 Hz)",
+    "r^2 = 1 + 1/TR = 11, r = 3.317",
+    "omega_n = 28.42 rad/s, i.e. 4.52 Hz",
+    "k = M omega_n^2 = 4.845 x 10^5 N/m (or less)",
+    "Static deflection = g/omega_n^2 = 12.1 mm",
+    "Concern: the machine passes through resonance at start-up and run-down, so damping or fast transit is needed; also soft mounts allow large static deflection and sway, may need stops"
+   ],
+   "explanation": "The speed is 94.2 rad/s and r = 3.32, so omega_n = 28.4 rad/s and k = 4.845 x 10^5 N/m. The static deflection is 12.1 mm, which is acceptable but means the machine will pass through its resonance at about 4.5 Hz while starting.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "If an isolator gives a force transmissibility of 0.05, then 95 % of the applied force is prevented from reaching the foundation.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.isolation.isolator-specification.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The isolation efficiency is 1 - TR = 1 - 0.05 = 0.95, which is 95 %. The transmissibility is the fraction of the applied force amplitude that reaches the foundation.",
+   "board": "internal"
+  }
+ ]
+}

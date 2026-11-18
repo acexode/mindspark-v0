@@ -1,0 +1,390 @@
+{
+ "lessonTitle": "Free Vibration of Single-Degree-of-Freedom Systems",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A washing-machine drum on its suspension springs rocks several times after you slam the lid, then settles. How fast it rocks and how quickly it dies away are set by just three numbers: mass, stiffness and damping."
+  },
+  {
+   "type": "text",
+   "markdown": "A **single-degree-of-freedom (SDOF)** system is one mass $m$ (kg) restrained by a linear spring of stiffness $k$ (N/m) and a viscous damper of coefficient $c$ (N s/m). Pull the mass aside and release it, with no external force: this is **free vibration**. The spring tries to restore equilibrium, the mass overshoots because of its inertia, and the damper removes energy on every cycle. Newton's second law gives $m\\ddot{x}+c\\dot{x}+kx=0$, where $x$ (m) is the displacement from equilibrium."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Natural frequency and damping ratio",
+   "text": "With no damper ($c=0$) the mass oscillates forever at the undamped natural frequency $\\omega_n=\\sqrt{k/m}$ in rad/s; the same motion in hertz is $f_n=\\omega_n/2\\pi$. The damping ratio $\\zeta=c/c_c$ compares the actual damper with the critical value $c_c=2\\sqrt{km}$ (N s/m). $\\zeta$ is dimensionless."
+  },
+  {
+   "type": "math",
+   "latex": "\\omega_n=\\sqrt{\\frac{k}{m}},\\qquad f_n=\\frac{\\omega_n}{2\\pi},\\qquad \\zeta=\\frac{c}{2\\sqrt{km}},\\qquad \\omega_d=\\omega_n\\sqrt{1-\\zeta^2}",
+   "caption": "Natural frequencies and damping ratio (rad/s, Hz, dimensionless, rad/s)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Natural frequency of a suspended drum",
+   "prompt": "A drum assembly of mass 12 kg is carried on springs whose combined stiffness is 48000 N/m. Neglecting damping, find the natural frequency in rad/s and Hz.",
+   "steps": [
+    {
+     "text": "The springs act together on the same mass, so use the combined stiffness given: k = 48 000 N/m.",
+     "latex": null
+    },
+    {
+     "text": "Apply the formula for the undamped natural frequency in rad/s.",
+     "latex": "\\omega_n=\\sqrt{48000/12}=\\sqrt{4000}=63.25\\ \\text{rad/s}"
+    },
+    {
+     "text": "Convert to hertz by dividing by 2 pi.",
+     "latex": "f_n=63.25/(2\\pi)=10.07\\ \\text{Hz}"
+    }
+   ],
+   "answer": "omega_n = 63.25 rad/s, f_n = 10.07 Hz."
+  },
+  {
+   "type": "text",
+   "markdown": "**Underdamped, critical and overdamped motion.** The form of the solution of the equation of motion depends only on $\\zeta$. If $\\zeta<1$ the system is *underdamped*: it oscillates at the damped frequency $\\omega_d=\\omega_n\\sqrt{1-\\zeta^2}$ inside a decaying exponential envelope. If $\\zeta=1$ it is *critically damped*: the fastest return to rest with no overshoot. If $\\zeta>1$ it is *overdamped*: a slow, non-oscillatory creep back. Most machine structures have $\\zeta$ between 0.01 and 0.1, so they are strongly underdamped."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Damping ratio",
+    "Classification",
+    "Free response",
+    "Typical example"
+   ],
+   "rows": [
+    [
+     "$\\zeta=0$",
+     "Undamped",
+     "Constant-amplitude oscillation at $\\omega_n$",
+     "Idealised model only"
+    ],
+    [
+     "$0<\\zeta<1$",
+     "Underdamped",
+     "Decaying oscillation at $\\omega_d$",
+     "Steel frame, car body ($\\zeta\\approx0.3$)"
+    ],
+    [
+     "$\\zeta=1$",
+     "Critically damped",
+     "Fastest return, no overshoot",
+     "Door closer, instrument pointer"
+    ],
+    [
+     "$\\zeta>1$",
+     "Overdamped",
+     "Slow monotonic return",
+     "Heavy hydraulic damper"
+    ]
+   ],
+   "caption": "Free-vibration regimes (typical values)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Logarithmic decrement.** For an underdamped record, the ratio of successive peaks is constant. Define $\\delta=\\ln(x_n/x_{n+1})$. Substituting the solution gives $\\delta=2\\pi\\zeta/\\sqrt{1-\\zeta^2}$, which inverts to $\\zeta=\\delta/\\sqrt{4\\pi^2+\\delta^2}$. Because one peak ratio is noisy, measure over $N$ cycles: $\\delta=\\frac{1}{N}\\ln(x_0/x_N)$. This assumes viscous damping, for which the ratio really is constant."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta=\\frac{1}{N}\\ln\\frac{x_0}{x_N}=\\frac{2\\pi\\zeta}{\\sqrt{1-\\zeta^2}}\\;\\Rightarrow\\;\\zeta=\\frac{\\delta}{\\sqrt{4\\pi^2+\\delta^2}}",
+   "caption": "Logarithmic decrement (dimensionless)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Damping from a decay record",
+   "prompt": "A free-decay trace of a 3.0 kg block on a 27000 N/m spring shows a peak of 8.0 mm that falls to 2.1 mm after 5 complete cycles. Find the damping ratio, the damping coefficient and the damped frequency.",
+   "steps": [
+    {
+     "text": "Use the multi-cycle logarithmic decrement.",
+     "latex": "\\delta=\\tfrac{1}{5}\\ln(8.0/2.1)=0.2675"
+    },
+    {
+     "text": "Invert the decrement to get the damping ratio.",
+     "latex": "\\zeta=\\frac{0.2675}{\\sqrt{4\\pi^2+0.2675^2}}=0.0425"
+    },
+    {
+     "text": "Natural frequency is sqrt(k/m) = 94.87 rad/s and the critical damping is 2 sqrt(km) = 569.2 N s/m, so the damper is c = zeta times c_c.",
+     "latex": "c=0.0425\\times569.2=24.2\\ \\text{N s/m}"
+    },
+    {
+     "text": "The damped frequency is slightly lower than the natural frequency.",
+     "latex": "\\omega_d=94.87\\sqrt{1-0.0425^2}=94.78\\ \\text{rad/s}"
+    }
+   ],
+   "answer": "delta = 0.2675, zeta = 0.0425 (about 4.3 %), c = 24.2 N s/m, omega_d = 94.78 rad/s."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Find $m$ and $k$ (or the static deflection $\\delta_{st}$, since $\\omega_n=\\sqrt{g/\\delta_{st}}$ for a hanging mass) and compute $\\omega_n$ in rad/s.",
+    "Convert to Hz only when asked: $f_n=\\omega_n/2\\pi$.",
+    "Measure peaks over several cycles, take $\\delta=\\frac1N\\ln(x_0/x_N)$ and then $\\zeta$.",
+    "Compare $\\zeta$ with 1 to classify the regime, and compute $\\omega_d$ if the oscillation rate is needed."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Do not mix rad/s and Hz: $\\omega_n$ and $f_n$ differ by a factor of $2\\pi$. For small damping $\\zeta\\approx\\delta/2\\pi$ is a good shortcut, but it overestimates $\\zeta$ noticeably once $\\delta$ exceeds about 0.5. Also remember that mass and stiffness must be in kg and N/m before you take the square root."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Undamped natural frequency is $\\omega_n=\\sqrt{k/m}$ in rad/s and $f_n=\\omega_n/2\\pi$ in Hz; it depends only on mass and stiffness.",
+    "The damping ratio $\\zeta=c/(2\\sqrt{km})$ classifies free motion: underdamped below 1, critical at 1, overdamped above 1.",
+    "The logarithmic decrement $\\delta=\\frac1N\\ln(x_0/x_N)$ gives $\\zeta=\\delta/\\sqrt{4\\pi^2+\\delta^2}$ for a viscous system.",
+    "Light damping lowers the oscillation frequency only slightly: $\\omega_d=\\omega_n\\sqrt{1-\\zeta^2}$."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A spring-mass system has a certain natural frequency. The mass is doubled and the spring is unchanged. What happens to the natural frequency?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It halves exactly"
+    },
+    {
+     "id": "b",
+     "text": "It doubles"
+    },
+    {
+     "id": "c",
+     "text": "It falls to about 0.707 of its original value"
+    },
+    {
+     "id": "d",
+     "text": "It is unchanged because stiffness is unchanged"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It falls to about 0.707 of its original value",
+   "distractorRationale": {
+    "a": "Frequency goes as the inverse square root of mass, not the inverse of mass.",
+    "b": "A heavier mass lowers the frequency; it cannot raise it.",
+    "c": "Correct: Since omega_n = sqrt(k/m), doubling m multiplies the frequency by 1/sqrt(2), about 0.707.",
+    "d": "The frequency depends on both k and m, so a change in mass changes it."
+   },
+   "explanation": "Since omega_n = sqrt(k/m), doubling m multiplies the frequency by 1/sqrt(2), about 0.707. The square root is why a large change in mass produces only a modest change in frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A compressor of mass 250 kg rests on mounts whose total vertical stiffness is 1.6e6 N/m. Neglecting damping, find the vertical natural frequency in Hz.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o1"
+   ],
+   "correctValue": 12.7324,
+   "tolerance": 0.05,
+   "unit": "Hz",
+   "explanation": "omega_n = sqrt(k/m) = sqrt(6400) = 80.00 rad/s. Dividing by 2 pi gives f_n = 12.73 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A 2 kg mass sits on a 5000 N/m spring with a viscous damper of 260 N s/m. How is the free motion classified?",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Underdamped, because the damping ratio is 1.30"
+    },
+    {
+     "id": "b",
+     "text": "Overdamped, because the damping ratio is 1.30"
+    },
+    {
+     "id": "c",
+     "text": "Critically damped, because the damping ratio is 1.0"
+    },
+    {
+     "id": "d",
+     "text": "Underdamped, because the damper coefficient is smaller than the spring stiffness"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Overdamped, because the damping ratio is 1.30",
+   "distractorRationale": {
+    "a": "A damping ratio above 1 cannot give oscillation; the value computed is greater than 1.",
+    "b": "Correct: The critical coefficient is 2 sqrt(km) = 2 sqrt(10000) = 200 N s/m.",
+    "c": "The critical damping coefficient is 200 N s/m here, not 260 N s/m, so the ratio is not 1.",
+    "d": "Comparing c with k is meaningless: they have different units. The comparison is c with 2 sqrt(km)."
+   },
+   "explanation": "The critical coefficient is 2 sqrt(km) = 2 sqrt(10000) = 200 N s/m. The damping ratio is 260/200 = 1.30, which exceeds 1, so the mass creeps back to rest without oscillating.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A free-decay record of a lightly damped bracket shows a peak of 5.0 mm. Three complete cycles later the peak is 1.0 mm. Find the damping ratio (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o2"
+   ],
+   "correctValue": 0.0850738,
+   "tolerance": 0.002,
+   "unit": "dimensionless",
+   "explanation": "The logarithmic decrement over three cycles is (1/3) ln(5.0/1.0) = 0.5365. Then zeta = delta / sqrt(4 pi^2 + delta^2) = 0.0851.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A structure has a damping ratio of 0.05. Compared with its undamped natural frequency, its damped natural frequency is",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o2",
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "lower by about 5 %"
+    },
+    {
+     "id": "b",
+     "text": "higher by about 5 %"
+    },
+    {
+     "id": "c",
+     "text": "exactly equal, because damping never affects frequency"
+    },
+    {
+     "id": "d",
+     "text": "lower by roughly 0.1 %, which is negligible for most purposes"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "lower by roughly 0.1 %, which is negligible for most purposes",
+   "distractorRationale": {
+    "a": "The reduction is about zeta squared over two, roughly 0.125 %, not zeta itself.",
+    "b": "Damping reduces the oscillation frequency; it never raises it.",
+    "c": "Damping changes omega_d by the factor sqrt(1 - zeta^2); this is close to, but not exactly, 1.",
+    "d": "Correct: The damped frequency is omega_n sqrt(1 - zeta^2) = omega_n sqrt(0.9975), which is 0.99875 omega_n, a reduction of about 0.125 %."
+   },
+   "explanation": "The damped frequency is omega_n sqrt(1 - zeta^2) = omega_n sqrt(0.9975), which is 0.99875 omega_n, a reduction of about 0.125 %. For light damping the difference is far below normal measurement accuracy, so omega_d is often replaced by omega_n.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A student measures two adjacent peaks of a decay record and obtains a ratio of 1.05, from which she computes the damping ratio. Explain why measuring over many cycles is better and state the assumption that makes the logarithmic decrement method valid.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o2"
+   ],
+   "markingGuide": [
+    "Adjacent peaks differ very little, so reading error is a large fraction of the small difference",
+    "Averaging over N cycles, delta = (1/N) ln(x0/xN), reduces the relative error",
+    "The method assumes viscous damping, so the ratio of successive peaks is constant",
+    "Under Coulomb or hysteretic damping the ratio would drift, so the N-cycle average would not be a single zeta",
+    "Then zeta = delta / sqrt(4 pi^2 + delta^2)"
+   ],
+   "explanation": "Measuring over N cycles spreads the same reading error over a much larger overall amplitude change. It works because viscous damping gives a constant peak ratio; if the ratio drifts the damping is not viscous.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 0.8 kg block on an unknown spring is released and oscillates with a damped period of 0.25 s. Successive peaks are in the ratio 1.6. Assuming viscous damping, find the spring stiffness in N/m.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o1",
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o2"
+   ],
+   "correctValue": 508.151,
+   "tolerance": 10.163,
+   "unit": "N/m",
+   "explanation": "The decrement is ln(1.6) = 0.4700, giving zeta = 0.0746. The damped frequency is 2 pi / 0.25 = 25.13 rad/s, so omega_n = omega_d / sqrt(1 - zeta^2) = 25.20 rad/s and k = m omega_n^2 = 508.2 N/m.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A mass hangs from a spring and stretches it by 4.0 mm under its own weight. Taking g = 9.81 m/s^2, the natural frequency of vertical vibration is about",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "49.5 Hz"
+    },
+    {
+     "id": "b",
+     "text": "0.003 Hz"
+    },
+    {
+     "id": "c",
+     "text": "7.9 Hz"
+    },
+    {
+     "id": "d",
+     "text": "2.5 Hz"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "7.9 Hz",
+   "distractorRationale": {
+    "a": "That is the value in rad/s; it has not been divided by 2 pi.",
+    "b": "That inverts the ratio under the square root.",
+    "c": "Correct: With static deflection delta_st = mg/k, omega_n = sqrt(k/m) = sqrt(g/delta_st) = sqrt(9.81/0.004) = 49.5 rad/s.",
+    "d": "That uses a deflection of 40 mm, ten times too large."
+   },
+   "explanation": "With static deflection delta_st = mg/k, omega_n = sqrt(k/m) = sqrt(g/delta_st) = sqrt(9.81/0.004) = 49.5 rad/s. Dividing by 2 pi gives 7.9 Hz.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A mass-spring-damper has a fixed mass and stiffness while the damper coefficient is increased gradually from zero to well beyond its critical value. Describe how the free response changes, including what happens to the oscillation frequency.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o3"
+   ],
+   "markingGuide": [
+    "At c = 0 the response is a constant-amplitude oscillation at omega_n",
+    "For 0 < zeta < 1 the response oscillates at omega_d = omega_n sqrt(1 - zeta^2), lower than omega_n, with an exponentially decaying envelope that decays faster as zeta rises",
+    "At zeta = 1 the oscillation disappears and the mass returns fastest without overshoot",
+    "For zeta > 1 the response is non-oscillatory and the return to equilibrium becomes slower again as damping increases",
+    "Critical damping coefficient is c_c = 2 sqrt(km)"
+   ],
+   "explanation": "As damping grows, the decay envelope tightens and the frequency drops slightly until oscillation stops at zeta = 1. Beyond that the response is slower again because the heavy damper resists the motion.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A system with a damping ratio of exactly 1.0 will oscillate about equilibrium with a decaying amplitude.",
+   "objectiveIds": [
+    "ug.mce-machine-dynamics-vibrations.sdof-vibration.sdof-free.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "At zeta = 1 the damped frequency omega_d = omega_n sqrt(1 - zeta^2) is zero, so there is no oscillation. The mass returns to equilibrium in the shortest time without overshoot.",
+   "board": "internal"
+  }
+ ]
+}

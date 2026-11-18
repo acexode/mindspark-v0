@@ -1,0 +1,408 @@
+{
+ "lessonTitle": "Cams and Linkages: Follower Motion and Four-Bar Kinematics",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A cam on a packaging machine must push a pusher 30 mm forward in a third of a revolution and then hold it perfectly still while a seal is made. A four-bar linkage on the same machine must swing a gate through a fixed angle, yet jams if its geometry is wrong. Both problems are solved by drawing a displacement diagram and checking a few link lengths."
+  },
+  {
+   "type": "text",
+   "markdown": "A **cam** is a rotating (or sliding) body whose profile drives a **follower** through a prescribed motion. The designer specifies the follower motion first, as a **displacement diagram** $s(\\theta)$ of follower lift $s$ against cam rotation angle $\\theta$, and then derives the profile. A typical cycle is **rise - dwell - return - dwell**: the follower rises a total lift $h$ over a cam angle $\\beta_1$, stays at rest during a dwell, then returns over angle $\\beta_2$. Together the segments must add up to $360^\\circ$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Follower motion laws",
+   "text": "In **uniform motion** $s$ is linear in $\\theta$ (infinite acceleration at the ends of the stroke, so only used with blending). In **simple harmonic motion (SHM)** the follower follows half a cosine wave. In **cycloidal motion** acceleration is continuous, which suits high speeds. Here $h$ is the total lift in m, $\\beta$ the cam angle for that segment in rad and $\\theta$ the angle measured from the start of the segment."
+  },
+  {
+   "type": "math",
+   "latex": "s_{\\text{rise}}=\\frac{h}{2}\\left[1-\\cos\\left(\\frac{\\pi\\theta}{\\beta}\\right)\\right],\\qquad s_{\\text{return}}=\\frac{h}{2}\\left[1+\\cos\\left(\\frac{\\pi\\theta}{\\beta}\\right)\\right]",
+   "caption": "SHM rise and return: at $\\theta=0$ the rise has $s=0$ and at $\\theta=\\beta$ it has $s=h$."
+  },
+  {
+   "type": "worked_example",
+   "title": "SHM rise displacement",
+   "prompt": "A knife-edge follower rises $h=30$ mm with SHM while the cam turns $\\beta=120^\\circ$. Find the lift when the cam has turned $\\theta=90^\\circ$ from the start of the rise.",
+   "steps": [
+    {
+     "text": "Write the SHM rise law and insert $h$, $\\beta$ and $\\theta$.",
+     "latex": "s=\\frac{30}{2}\\left[1-\\cos\\left(\\frac{\\pi\\cdot 90}{120}\\right)\\right]"
+    },
+    {
+     "text": "The argument is $\\pi\\theta/\\beta=0.75\\pi$ rad, i.e. $135^\\circ$, and $\\cos 135^\\circ=-0.7071$.",
+     "latex": "s=15\\,[1-(-0.7071)]"
+    },
+    {
+     "text": "Evaluate the bracket.",
+     "latex": "s=15\\times1.7071=25.6\\ \\text{mm}"
+    }
+   ],
+   "answer": "s = 25.6 mm. The follower is already 85 percent of the way up after only 75 percent of the rise angle, as expected because SHM moves fastest in the middle."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Rise-return law",
+    "Displacement shape",
+    "Acceleration at ends of stroke"
+   ],
+   "rows": [
+    [
+     "Uniform",
+     "Straight line",
+     "Infinite (impulsive)"
+    ],
+    [
+     "SHM",
+     "Half cosine",
+     "Finite, but jumps"
+    ],
+    [
+     "Cycloidal",
+     "Smoothed sinusoid",
+     "Zero, continuous"
+    ]
+   ],
+   "caption": "Comparison of common follower laws (typical qualitative behaviour)."
+  },
+  {
+   "type": "text",
+   "markdown": "Now turn to **linkages**. A four-bar linkage has four pin-jointed links: a fixed **ground** link, an input **crank** (or rocker), a floating **coupler** and an output **rocker** (or crank). Whether the input link can turn through a full revolution is decided by **Grashof's condition**. Let $s$ be the shortest and $l$ the longest link length and $p$, $q$ the other two."
+  },
+  {
+   "type": "math",
+   "latex": "s+l\\le p+q",
+   "caption": "Grashof condition (lengths in the same unit)."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Classifying a Grashof four-bar",
+   "text": "If $s+l<p+q$, the shortest link can rotate fully relative to the others. Fixing the link **adjacent** to the shortest gives a **crank-rocker**. Fixing the **shortest** link gives a **double-crank** (drag link). Fixing the link **opposite** the shortest gives a **double-rocker** (the coupler is the shortest link, and it still rotates fully relative to the frame). If $s+l>p+q$ the linkage is non-Grashof and every inversion is a double-rocker. If $s+l=p+q$ it is a change-point linkage that can fold flat."
+  },
+  {
+   "type": "worked_example",
+   "title": "Grashof test of a linkage",
+   "prompt": "A four-bar has link lengths 40 mm, 100 mm, 70 mm and 90 mm. The 90 mm link is the ground and the 40 mm link is the input. Classify it.",
+   "steps": [
+    {
+     "text": "Identify $s=40$, $l=100$, and $p,q=70,90$.",
+     "latex": "s=40,\\ l=100,\\ p+q=160"
+    },
+    {
+     "text": "Compare sums.",
+     "latex": "s+l=140<160"
+    },
+    {
+     "text": "The inequality holds, so the shortest link rotates fully. The shortest link (40 mm) is adjacent to the ground (90 mm), so the linkage is a crank-rocker."
+    }
+   ],
+   "answer": "Grashof, crank-rocker: the 40 mm crank turns continuously and the 70 mm link rocks."
+  },
+  {
+   "type": "text",
+   "markdown": "**Transmission angle.** The angle $\\mu$ between the coupler and the output link (taken as the acute value, $\\le 90^\\circ$) measures how well the coupler force turns the output link. The component of coupler force perpendicular to the output link, which produces output torque, is $F\\sin\\mu$, while the component along the link, $F\\cos\\mu$, only loads the pin and bearing. For crank length $a$, coupler $b$, output $c$, ground $d$ and crank angle $\\theta$ from the ground line, the cosine rule gives the following."
+  },
+  {
+   "type": "math",
+   "latex": "\\cos\\mu=\\frac{b^{2}+c^{2}-a^{2}-d^{2}+2ad\\cos\\theta}{2bc}",
+   "caption": "If this gives an obtuse angle, use its supplement $180^\\circ-\\mu$ as the transmission angle."
+  },
+  {
+   "type": "worked_example",
+   "title": "Transmission angle extremes",
+   "prompt": "For the linkage above ($a=40$, $b=100$, $c=70$, $d=90$ mm), find the transmission angle when the crank lies along the ground line at $\\theta=0^\\circ$ and again at $\\theta=180^\\circ$.",
+   "steps": [
+    {
+     "text": "At $\\theta=0^\\circ$ the numerator is $10000+4900-1600-8100+2\\cdot40\\cdot90=12400$.",
+     "latex": "\\cos\\mu=\\frac{12400}{2\\cdot100\\cdot70}=0.8857"
+    },
+    {
+     "text": "So $\\mu=27.7^\\circ$.",
+     "latex": "\\mu_{0}=27.7^\\circ"
+    },
+    {
+     "text": "At $\\theta=180^\\circ$ the numerator is $14900-1600-8100-7200=-2000$, so $\\cos\\mu=-0.1429$ and $\\mu=98.2^\\circ$. The acute transmission angle is its supplement.",
+     "latex": "\\mu_{180}=180^\\circ-98.2^\\circ=81.8^\\circ"
+    }
+   ],
+   "answer": "The minimum is 27.7 degrees at $\\theta=0^\\circ$ and the other extreme is 81.8 degrees. For a crank-rocker the minimum occurs when the crank is aligned with the ground link."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common error",
+   "text": "Do not apply Grashof's inequality to the lengths of only three links, and do not forget that the classification (crank-rocker, double-crank, double-rocker) depends on **which link is grounded**, not just on the lengths."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "A displacement diagram specifies follower lift against cam angle; SHM rise is $s=\\tfrac{h}{2}[1-\\cos(\\pi\\theta/\\beta)]$ and the return uses a plus sign.",
+    "Grashof's condition $s+l\\le p+q$ decides whether a link can fully rotate; the grounded link decides the type.",
+    "The transmission angle from the cosine rule measures force transfer: near $90^\\circ$ is best, small values cause binding."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A cam with SHM rise raises its follower by a total lift $h$ over a rise angle $\\beta$. What is the follower lift exactly halfway through the rise angle, $\\theta=\\beta/2$?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$h/4$"
+    },
+    {
+     "id": "b",
+     "text": "$h\\,(1-\\cos 45^\\circ)$"
+    },
+    {
+     "id": "c",
+     "text": "$h/2$"
+    },
+    {
+     "id": "d",
+     "text": "$0.707\\,h$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$h/2$",
+   "distractorRationale": {
+    "a": "This uses a linear law of $\\theta/\\beta$ squared; SHM gives $\\cos(\\pi/2)=0$ so the bracket is 1.",
+    "b": "This confuses the argument $\\pi\\theta/\\beta$ with $\\theta/\\beta$ in degrees.",
+    "c": "Correct.",
+    "d": "This is $\\sin 45^\\circ$ and is not part of the SHM rise law."
+   },
+   "explanation": "At $\\theta=\\beta/2$ the argument is $\\pi/2$, so $\\cos(\\pi/2)=0$ and $s=\\tfrac{h}{2}(1-0)=h/2$. By symmetry of the cosine curve, the midpoint of the rise angle always gives the midpoint of the lift.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A cam follower returns with SHM from a lift of $h=36$ mm to zero while the cam turns from $210^\\circ$ to $360^\\circ$ (so $\\beta=150^\\circ$ for the return). Using $s=\\tfrac{h}{2}[1+\\cos(\\pi\\theta/\\beta)]$ with $\\theta$ measured from the start of the return, find the follower lift in mm when the cam angle is $300^\\circ$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o1"
+   ],
+   "correctValue": 12.4377,
+   "tolerance": 0.1,
+   "unit": "mm",
+   "explanation": "The return has run for $\\theta=300^\\circ-210^\\circ=90^\\circ$, so $\\pi\\theta/\\beta=0.6\\pi$ rad ($108^\\circ$) and $\\cos108^\\circ=-0.3090$. Then $s=18(1-0.3090)=12.44$ mm, so the follower has returned about 65 percent of its stroke.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement is the Grashof condition for a planar four-bar linkage, with $s$ the shortest, $l$ the longest and $p$, $q$ the remaining link lengths?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$s+p\\le l+q$"
+    },
+    {
+     "id": "b",
+     "text": "$s+l\\le p+q$"
+    },
+    {
+     "id": "c",
+     "text": "$s+q+p\\le l$"
+    },
+    {
+     "id": "d",
+     "text": "$s\\times l\\le p\\times q$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$s+l\\le p+q$",
+   "distractorRationale": {
+    "a": "This pairs the shortest with a middle link, which does not test the extreme lengths.",
+    "b": "Correct.",
+    "c": "This is the condition for the longest link being too long for the linkage to close at all.",
+    "d": "The condition is on sums of lengths, not products."
+   },
+   "explanation": "Grashof's law states that if the sum of the shortest and longest lengths does not exceed the sum of the other two, at least one link can rotate fully relative to the others. Otherwise every inversion is a double-rocker.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A four-bar has link lengths 30 mm, 55 mm, 60 mm and 75 mm. The 30 mm link is fixed as the frame. Which type of mechanism results?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Crank-rocker"
+    },
+    {
+     "id": "b",
+     "text": "Double-rocker (Grashof)"
+    },
+    {
+     "id": "c",
+     "text": "Non-Grashof triple-rocker"
+    },
+    {
+     "id": "d",
+     "text": "Double-crank (drag link)"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Double-crank (drag link)",
+   "distractorRationale": {
+    "a": "A crank-rocker needs the shortest link to be adjacent to the fixed link, not fixed itself.",
+    "b": "A Grashof double-rocker needs the link opposite the shortest to be fixed.",
+    "c": "$30+75=105<115=55+60$, so the linkage is Grashof.",
+    "d": "Correct."
+   },
+   "explanation": "Here $s+l=30+75=105$ is less than $p+q=55+60=115$, so the linkage is Grashof. With the shortest link fixed, both links pinned to it can rotate fully, giving a double-crank or drag link.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Three links of a four-bar have lengths 30 mm, 60 mm and 80 mm. The fourth link has length $x$ and is the longest link in the assembly. Find the largest $x$ in mm for which the linkage still satisfies Grashof's condition.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o2"
+   ],
+   "correctValue": 110,
+   "tolerance": 0.5,
+   "unit": "mm",
+   "explanation": "With $x$ longest, $s=30$ and $l=x$, and the other two are 60 and 80. Grashof requires $30+x\\le60+80=140$, so $x\\le110$ mm. At exactly 110 mm the linkage is a change-point mechanism.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A four-bar linkage works near a position where the transmission angle is only $8^\\circ$. What is the likely consequence?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Most of the coupler force acts along the output link, so output torque is small and the pin loads are large"
+    },
+    {
+     "id": "b",
+     "text": "The output link gets the maximum possible torque"
+    },
+    {
+     "id": "c",
+     "text": "The linkage becomes a double-crank"
+    },
+    {
+     "id": "d",
+     "text": "The coupler force is perpendicular to the output link"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Most of the coupler force acts along the output link, so output torque is small and the pin loads are large",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Output torque scales with $\\sin\\mu$, which is near zero at $8^\\circ$.",
+    "c": "The mechanism type depends on link lengths and the grounded link, not on $\\mu$.",
+    "d": "That would require $\\mu=90^\\circ$."
+   },
+   "explanation": "The tangential component producing torque on the output link is $F\\sin\\mu$, which is only about 14 percent of $F$ at $8^\\circ$. The radial component $F\\cos\\mu$ nearly equals $F$ and loads the pin without moving the link, so the linkage is close to binding.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A crank-rocker has crank $a=40$ mm, coupler $b=110$ mm, rocker $c=90$ mm and ground link $d=100$ mm. Using the cosine rule, find the transmission angle in degrees when the crank is perpendicular to the ground line ($\\theta=90^\\circ$).",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o3"
+   ],
+   "correctValue": 64.2565,
+   "tolerance": 0.3,
+   "unit": "degrees",
+   "explanation": "The diagonal squared is $a^2+d^2=1600+10000=11600$ mm$^2$. Then $\\cos\\mu=(110^2+90^2-11600)/(2\\cdot110\\cdot90)=8600/19800=0.4343$, giving $\\mu=64.2^\\circ$, which is already acute so no supplement is needed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain why a minimum transmission angle of about $40^\\circ$ is commonly specified for a four-bar linkage, and say what happens physically as the transmission angle approaches $0^\\circ$ or $180^\\circ$.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o3"
+   ],
+   "markingGuide": [
+    "States that only the component of coupler force perpendicular to the output link, $F\\sin\\mu$, produces torque",
+    "States that the component $F\\cos\\mu$ along the output link only loads the pin and bearing",
+    "Notes that small $\\mu$ means low torque, high friction and bearing loads and poor control",
+    "Explains that at $\\mu=0$ or $180^\\circ$ the linkage is at a toggle where the output cannot be driven by the coupler (binding or locking)",
+    "Mentions $40^\\circ$ as a rule of thumb, not an exact limit"
+   ],
+   "explanation": "The useful torque scales with $\\sin\\mu$ and friction grows as the radial component rises. A rule-of-thumb limit of about $40^\\circ$ keeps $\\sin\\mu\\ge0.64$, so the mechanism transmits force acceptably.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "In a crank-rocker four-bar linkage, at which crank position does the transmission angle reach its minimum value?",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o2",
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "When the crank is perpendicular to the coupler"
+    },
+    {
+     "id": "b",
+     "text": "When the crank is collinear with the ground link, at one of the two aligned positions"
+    },
+    {
+     "id": "c",
+     "text": "When the coupler is parallel to the rocker"
+    },
+    {
+     "id": "d",
+     "text": "When the rocker is at mid-swing"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "When the crank is collinear with the ground link, at one of the two aligned positions",
+   "distractorRationale": {
+    "a": "The extreme depends on the diagonal length between crank pin and rocker pin, which is not governed by this angle.",
+    "b": "Correct.",
+    "c": "This is a dead-centre type position of the rocker, not where the minimum $\\mu$ occurs.",
+    "d": "Mid-swing is not where the diagonal is extreme."
+   },
+   "explanation": "From $\\cos\\mu=(b^2+c^2-D^2)/(2bc)$, where $D$ is the diagonal joining the crank pin to the ground pivot of the rocker, extreme transmission angles occur when $D$ is extreme. That happens when the crank lies along the ground line, so the minimum $\\mu$ is at one of those two aligned positions.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A cam is specified as follows: rise 25 mm by SHM during $0^\\circ$ to $90^\\circ$, dwell for $60^\\circ$, return 25 mm by SHM over $120^\\circ$, then dwell for the remainder of the revolution. Describe, with the key coordinates, how you would plot the follower displacement diagram.",
+   "objectiveIds": [
+    "ug.mce-dynamics-2.gears-cams-linkages.cams-and-linkages.o1"
+   ],
+   "markingGuide": [
+    "Calculates the final dwell as $360-90-60-120=90^\\circ$",
+    "Draws the axes with cam angle on the horizontal axis ($0^\\circ$ to $360^\\circ$) and lift on the vertical axis (0 to 25 mm)",
+    "Plots the rise as a half-cosine from $(0^\\circ,0)$ to $(90^\\circ,25)$ using $s=\\tfrac{h}{2}[1-\\cos(\\pi\\theta/\\beta)]$, with a value such as 12.5 mm at $45^\\circ$",
+    "Shows a horizontal line at 25 mm from $90^\\circ$ to $150^\\circ$ for the dwell",
+    "Plots the return from $(150^\\circ,25)$ to $(270^\\circ,0)$ using the plus sign cosine law, then a horizontal line at 0 mm to $360^\\circ$"
+   ],
+   "explanation": "Segments are plotted one after the other with zero slope at the ends of each SHM segment. The segment angles must total $360^\\circ$, which fixes the last dwell at $90^\\circ$.",
+   "board": "internal"
+  }
+ ]
+}

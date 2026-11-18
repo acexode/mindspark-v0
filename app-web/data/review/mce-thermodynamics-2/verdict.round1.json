@@ -1,0 +1,80 @@
+{
+  "subjectId": "ug.mce-thermodynamics-2",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 14,
+  "summary": "Overall quality is high. Every numeric key, worked example and marking-guide figure was recomputed independently in Python (psychrometrics, mixtures, combustion and flame temperature, Otto/Diesel, mep and engine power, Brayton real/regenerative/intercooled, vapour compression and flash chamber, Rankine reheat and regeneration, exergy and Gouy-Stodola) and all agree with the keys within tolerance. Steam properties (8 MPa/500 C, 2 MPa reheat, 15 MPa/600 C, 1.2/1.0/0.7 MPa extraction, 10 kPa) and the R-134a 0.14/0.8 MPa states match the standard tables as I know them, and the physical sanity checks pass (efficiencies below Carnot, non-negative entropy generation and exergy destruction, first-law closure). One factual error (the description of constant-RH curves on the psychrometric chart) and a few minor problems remain, mostly an inconsistent worked-example basis, a flash-chamber data set that does not match any real refrigerant, and small table/wording defects. No tab or control characters, literal \\uXXXX escapes, placeholder steps, '[object Object]' or garbled non-Latin text were found. This is an AI review; the course still needs a subject-matter expert before engineering reliance, and the property values flagged as written from memory should be confirmed against a published table set.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.psychrometrics.humid-air-properties",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Chart description says \"Curves of constant relative humidity rise to the left\". On a psychrometric chart (omega versus dry-bulb T) the constant-RH and saturation curves rise to the right, since omega at a given RH increases with temperature.",
+      "suggestedFix": "Change to \"Curves of constant relative humidity rise to the right (concave upward), with the saturation curve (phi = 100%) as the upper-left boundary\"."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.psychrometrics.humid-air-properties",
+      "questionId": "ug.mce-thermodynamics-2.psychrometrics.humid-air-properties.q009",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "The stem refers to a \"polished metal plate\" but the marking guide and explanation say the air next to \"the glass\" mists and the dew point is when \"the glass just mists\".",
+      "suggestedFix": "Use the same object throughout (plate/surface or glass). Numbers are correct: Pg(12 C) about 1.40 kPa, Pg(24 C) about 2.98 kPa, RH about 47%."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.combustion-and-gas-mixtures.ideal-gas-mixtures",
+      "severity": "minor",
+      "category": "consistency",
+      "problem": "Worked example 'Mass fractions to mole fractions' says \"Moles per 100 kg of mixture\" but lists n = 0.0214, 0.0078, 0.0034 kmol (which are per 1 kg; per 100 kg they are 2.142, 0.781, 0.341 kmol). The next step then computes Mm = 100/0.0326 = 30.64, which as written is 3067. Final mole fractions, Mm = 30.64 and R = 0.2714 are correct.",
+      "suggestedFix": "Either use a 1 kg basis throughout and write Mm = 1/0.0326 = 30.64 kg/kmol, or keep 100 kg and quote n = 2.142, 0.781, 0.341, total 3.264 kmol, Mm = 100/3.264."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.combustion-and-gas-mixtures.combustion-energy-balance",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Sensible-enthalpy table (author-flagged as from memory): CO2, N2 and O2 values agree with the standard ideal-gas tables to within about 0.05% (e.g. N2 56 140/63 360/70 640, O2 59 180/66 800/74 500). The H2O column (72 790, 83 150, 93 740) is about 0.1 to 0.15% above the usual tabulated values (about 72 690, 83 040, 93 600 relative to 298 K). The effect on T_ad is only a few kelvin (the methane result 2327 K and the ethane key 2113 K stay within tolerance), so the data are plausible but unverified.",
+      "suggestedFix": "Check the H2O column against JANAF or the Cengel ideal-gas tables (A-23) and correct it, or state the source. Re-derive the 2327 K and 2112.9 K answers if the values change."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.combustion-and-gas-mixtures.combustion-energy-balance",
+      "questionId": "ug.mce-thermodynamics-2.combustion-and-gas-mixtures.combustion-energy-balance.q009",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Marking guide says a condensing boiler's efficiency \"should be quoted against the HHV, while a non-condensing boiler is usually quoted against the LHV\". Basis conventions differ by region (UK/Europe commonly quote on LHV, giving more than 100% for condensing boilers). Stated as a rule it is over-firm.",
+      "suggestedFix": "Say that on an HHV basis a condensing boiler stays below 100%, whereas on an LHV basis it can exceed 100% because it recovers latent heat; the basis must always be stated."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Bullet: \"The ideal r_p,opt for max work is the geometric mean of the minimum and maximum temperature ratios.\" It is the temperature ratio T2/T1 = r_p^((k-1)/k) = sqrt(T3/T1) that is the geometric mean (equivalently T2 = sqrt(T1 T3)), not the pressure ratio itself.",
+      "suggestedFix": "Rewrite: \"At the optimum the compressor exit temperature is the geometric mean of the extreme temperatures, T2 = sqrt(T1 T3), so r_p^((k-1)/k) = sqrt(T3/T1)\"."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Flash-chamber data (author-flagged as from memory) in the worked example (hf = 80, hg = 237 kJ/kg at the intermediate pressure, h1 = 230) and in q008 (hf = 84, hg = 240) imply hfg of about 156 kJ/kg. For R-134a, hf of 80 to 84 kJ/kg (about 20 C) goes with hg near 260 kJ/kg, and hg of about 237 kJ/kg (about -22 C) goes with hf near 30 kJ/kg, so these pairs do not match R-134a or any other refrigerant in the lesson's table. The arithmetic is internally consistent (x = 0.1911, m_LP = 0.0667, m_HP = 0.0824 kg/s; x = 0.2179, HP flow 0.0505 kg/s) but the data are not realistic.",
+      "suggestedFix": "Replace with real R-134a values at a consistent intermediate pressure (e.g. about 0.32 MPa: hf about 55 and hg about 252 kJ/kg on the Cengel basis) and recompute the answers, or explicitly label the fluid as hypothetical."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants",
+      "severity": "minor",
+      "category": "clarity",
+      "problem": "Refrigerant table: for R-744 (CO2) the \"Latent heat at NBP\" column holds \"low critical temperature about 31 C\", which is not a latent heat (CO2 has no normal boiling point at 1 atm).",
+      "suggestedFix": "Put a latent-heat value at a stated reference temperature (e.g. about 230 kJ/kg at 0 C) or \"n/a\" in that cell, and move the critical-temperature remark to the features column."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.refrigerant-and-cycle-variants",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Hook states that -30 C evaporating and 45 C condensing gives \"a pressure ratio near 10\". For R-134a it is about 1.16 MPa / 0.084 MPa, roughly 14; for ammonia about 15. (q010 uses 0.12 to 1.2 MPa, a ratio of exactly 10, which is a different case.)",
+      "suggestedFix": "Say \"a pressure ratio of about 14 to 15\" or \"well above 10\"."
+    },
+    {
+      "subtopicId": "ug.mce-thermodynamics-2.refrigeration-and-heat-pumps.vapour-compression",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "R-134a states in the cold-store example (h1 = 244.5, h2 = 272.0, h3 = 88.8) and in q006/q007 (h1 = 235.3, h2 = 272.0, h3 = 101.6) are described as representative and appear to be taken from different cycles; h1 = 235.3 (evaporator near -25 C) with h3 = 101.6 (condenser about 35 C) would normally give an isentropic compressor work nearer 40 kJ/kg than 36.7. The 0.14/0.8 MPa example (239.16, 275.39, 95.47, COP 3.97) is correct. Plausible but unverified.",
+      "suggestedFix": "Take h1, h2 and h3 for a single stated cycle from the R-134a tables (give evaporating and condensing pressures), and recompute q007 (2.196 kW) if the values change."
+    }
+  ]
+}

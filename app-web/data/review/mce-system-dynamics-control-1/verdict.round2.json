@@ -1,0 +1,22 @@
+{
+  "subjectId": "ug.mce-system-dynamics-control-1",
+  "reviewer": "content-reviewer",
+  "unitsReviewed": 16,
+  "summary": "Round 2 full review of all 16 units. Every numeric key, worked example and table was recomputed independently with a script (Routh arrays and root counts, breakaway points, centroids, crossings, margins and the zeta/PM/overshoot table, Bode values, Ziegler-Nichols, partial fractions, physical models, and the Euler/RK4 and saturated-servo simulations including 16.6/35.1/2.6 percent overshoot and 5.74/13.78/3.16 s settling); all reproduce. All round-1 fixes were checked and hold: the general centroid rule (-1.667 to -1.5 with a zero at -2, unchanged at -2 in root-locus-design q006, -3.33 to -4.5 with a zero at -1), the 'two poles and one zero, three in total' wording, root-locus-design q007's reasoning, the windup upper-bound wording, the 60 degree phase in the frequency-response hook, the thermal q006 definition of c, and the 1.1630 peak. One new factual error remains in the Bode callout (the resonant-corner error is stated for the wrong damping ratios), plus one minor imprecision in the DC-motor warning that was only partly fixed. The string scan found no tabs or control characters, no non-ASCII text, no format placeholders, no e+06 numbers, no bare x or \\times10 outside math, no placeholder steps and no stale option-letter references. This is an AI review only: the course still needs a subject-matter expert before engineering reliance.",
+  "issues": [
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.frequency-response-and-bode.bode-plots",
+      "severity": "major",
+      "category": "factual",
+      "problem": "Common-slips callout says the error at the corner of an underdamped second-order factor is 20log10(1/(2 zeta)), 'about 14 dB for zeta=0.2 and 20 dB for zeta=0.1'. The formula is right but the numbers are not: zeta=0.2 gives 20log10(2.5)=7.96 dB, zeta=0.1 gives 20log10(5)=13.98 dB, and 20 dB corresponds to zeta=0.05.",
+      "suggestedFix": "Write 'about 8 dB for zeta=0.2, 14 dB for zeta=0.1 and 20 dB for zeta=0.05'."
+    },
+    {
+      "subtopicId": "ug.mce-system-dynamics-control-1.modelling-physical-systems.mechanical-and-electrical-models",
+      "severity": "minor",
+      "category": "factual",
+      "problem": "Common-slips callout says forgetting the back-emf term means 'the speed response from voltage loses its first-order lag and looks like an integrator, and position looks like a double integrator'. With friction b non-zero (the lesson uses b=1e-5) and L neglected the model is still first-order, with tau=J/b (5 s here), so it is only integrator-like when b is zero or on time scales much shorter than J/b.",
+      "suggestedFix": "Say that without back-emf the motor loses the electrical damping K^2/R and becomes far too slow (tau=J/b), approaching a pure integrator only when b is negligible, so position looks like an integrator in series with a very slow lag or, for b=0, a double integrator."
+    }
+  ]
+}

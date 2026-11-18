@@ -1,0 +1,409 @@
+{
+ "lessonTitle": "Embedded Controller Implementation",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A student's balancing-robot firmware runs a beautiful controller, but every few seconds the robot twitches and falls. The control law is correct; the code occasionally takes longer than one sample period to finish, so a sample is missed and the next one arrives late. On a computer the schedule is an afterthought. In an embedded controller the schedule is part of the design, and it can be calculated before the first line is flashed."
+  },
+  {
+   "type": "text",
+   "markdown": "A digital controller assumes a fixed sample period $T$: the difference equation is derived for samples exactly $T$ apart. Firmware must therefore be organised around a **timer interrupt** that fires every $T$ seconds, and not around a main loop that waits an arbitrary time. A loop with `delay(10 ms)` at its end has a period of 10 ms *plus* the execution time of the code, which varies; the timer interrupt gives a fixed period regardless of execution time, as long as the work fits within the period."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Fixed-step control loop",
+   "text": "Each timer tick the firmware (1) reads the sensors, (2) computes the control output from the current controller state and the new measurement, (3) writes the actuator output, and finally (4) updates the controller state for the next sample. Doing the output computation first and the state update last keeps the delay between sampling and actuation as short as possible and constant."
+  },
+  {
+   "type": "text",
+   "markdown": "For a controller with state $x_c$, error $e$ and output $u$, the discrete difference equations are $x_c[k+1]=A_dx_c[k]+B_de[k]$ and $u[k]=C_dx_c[k]+D_de[k]$. The corresponding pseudocode for the interrupt service routine is shown below."
+  },
+  {
+   "type": "text",
+   "markdown": "```\nconst T = 0.001          # sample period (s), set by the hardware timer\nstate xc = 0             # controller state, persistent between calls\n\non timer_interrupt every T:\n    y  = adc_read()                  # 1. sample the sensor\n    e  = r - y                       #    error from the current reference\n    u  = Cd*xc + Dd*e                # 2. output from current state\n    u  = clamp(u, u_min, u_max)      #    respect actuator limits\n    dac_write(u)                     # 3. actuate promptly\n    xc = Ad*xc + Bd*e                # 4. update state for next sample\n    if timer_overrun(): fault()      #    detect a missed deadline\n```"
+  },
+  {
+   "type": "worked_example",
+   "title": "Writing the loop for a given controller",
+   "prompt": "A lag-type controller has $x_c[k+1]=0.9x_c[k]+0.1e[k]$ and $u[k]=2x_c[k]+0.5e[k]$, with $T=5$ ms. At $k=0$, $x_c=0$ and $e=1$; at $k=1$, $e=0.8$. Write the update order and find $u[0]$, $u[1]$.",
+   "steps": [
+    {
+     "text": "Output before update: at $k=0$ the output uses the current state $x_c[0]=0$ and the new error.",
+     "latex": "u[0]=2(0)+0.5(1)=0.5"
+    },
+    {
+     "text": "Then update the state for the next sample.",
+     "latex": "x_c[1]=0.9(0)+0.1(1)=0.1"
+    },
+    {
+     "text": "At $k=1$: output with $x_c[1]=0.1$ and $e[1]=0.8$.",
+     "latex": "u[1]=2(0.1)+0.5(0.8)=0.6"
+    },
+    {
+     "text": "State update for $k=2$, again after the output has been written.",
+     "latex": "x_c[2]=0.9(0.1)+0.1(0.8)=0.17"
+    }
+   ],
+   "answer": "$u[0]=0.5$, $u[1]=0.6$, with the states $x_c[1]=0.1$ and $x_c[2]=0.17$. Updating the state before computing $u$ would change the answer and add a sample of delay."
+  },
+  {
+   "type": "text",
+   "markdown": "**Computation time budget.** The loop must finish, in the worst case, well within $T$, with margin for other interrupts. The number of processor cycles available per sample is $f_{clk}T$. The cycles used are the sum of the operations in the worst-case path: arithmetic (a floating-point multiply-add on a core without a floating-point unit can cost over a hundred cycles, but a few on a core with one), converter reads, interrupt entry and exit. The **worst-case execution time** (WCET) is the quantity that must be compared with $T$, not the average."
+  },
+  {
+   "type": "math",
+   "latex": "t_{WCET}=\\frac{N_{cycles,worst}}{f_{clk}},\\qquad U=\\frac{t_{WCET}}{T}\\ (\\text{utilisation}),\\qquad T_{min}=\\frac{t_{WCET}}{U_{max}}",
+   "caption": "Time budget. A utilisation limit $U_{max}$ of about 0.5 to 0.7 leaves slack for other tasks and jitter."
+  },
+  {
+   "type": "worked_example",
+   "title": "Budget for a four-state controller",
+   "prompt": "A 100 MHz microcontroller without a floating-point unit runs a four-state controller ($A_d$ is $4\\times4$, one input, one output) at $T=1$ ms. A multiply-accumulate (MAC) costs 150 cycles. Converter read and write cost 1500 cycles and the interrupt overhead is 200 cycles. Find the WCET, utilisation and the minimum period for $U_{max}=0.5$.",
+   "steps": [
+    {
+     "text": "Count the MACs: state update has $4\\times4+4\\times1=20$ and the output has $4+1=5$.",
+     "latex": "N_{MAC}=25,\\quad 25\\times150=3750\\ \\mathrm{cycles}"
+    },
+    {
+     "text": "Add converters and interrupt overhead.",
+     "latex": "N=3750+1500+200=5450\\ \\mathrm{cycles}"
+    },
+    {
+     "text": "Convert to time and compare with the cycles available per sample, $f_{clk}T=10^5$.",
+     "latex": "t_{WCET}=5450/10^8=54.5\\ \\mu\\mathrm{s},\\quad U=5.45\\%"
+    },
+    {
+     "text": "For $U_{max}=0.5$ the smallest allowed period and the corresponding rate are",
+     "latex": "T_{min}=54.5/0.5=109\\ \\mu\\mathrm{s}\\ \\Rightarrow\\ f_{max}\\approx9174\\ \\mathrm{Hz}"
+    }
+   ],
+   "answer": "WCET about 54.5 microseconds, utilisation 5.5% at 1 kHz, and the loop could run no faster than about 9.2 kHz with the 50% limit."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Implementation choice",
+    "Speed",
+    "Precision / risk",
+    "Typical use"
+   ],
+   "rows": [
+    [
+     "Floating point, hardware FPU",
+     "Fast (a few cycles per MAC)",
+     "Wide dynamic range, little scaling effort",
+     "Modern controllers, higher-order designs"
+    ],
+    [
+     "Floating point, software emulation",
+     "Slow (over 100 cycles per MAC)",
+     "Same as above but a large time cost",
+     "Only if the rate is low"
+    ],
+    [
+     "Fixed point (integer arithmetic)",
+     "Fast on simple cores",
+     "Overflow and rounding must be scaled by hand",
+     "Cost-sensitive, high-rate loops"
+    ]
+   ],
+   "caption": "Arithmetic choices and their trade-offs for the control loop."
+  },
+  {
+   "type": "text",
+   "markdown": "**Verifying the implementation.** Passing a simulation does not prove the firmware is correct. The standard check is to apply the same step reference to the real system and to the simulation model, record both responses on the same time axis, and compare numbers: rise time, overshoot, settling time and final value, plus the rms difference between the two curves. Agreement within a stated tolerance verifies the implementation; a systematic difference points to something missing from the model or an error in the code."
+  },
+  {
+   "type": "worked_example",
+   "title": "Comparing simulated and measured step responses",
+   "prompt": "At times $t=0.1,0.2,0.4,0.8,1.2$ s the simulation predicts $y=[0.35, 0.82, 1.12, 1.0, 1.0]$ and the hardware gives $y=[0.3, 0.78, 1.18, 1.03, 1.0]$ for a unit step. The acceptance criteria are rms error $\\le0.05$ and overshoot within 3 percentage points. Does the implementation pass?",
+   "steps": [
+    {
+     "text": "Absolute differences at the five instants:",
+     "latex": "|\\Delta y|=[0.05, 0.04, 0.06, 0.03, 0.0]"
+    },
+    {
+     "text": "RMS difference:",
+     "latex": "y_{rms}=\\sqrt{\\tfrac{1}{5}\\sum\\Delta y^2}=0.0415\\le0.05\\ \\text{(pass)}"
+    },
+    {
+     "text": "Overshoot from the peak values: simulation 1.12 gives 12%; measurement 1.18 gives 18%.",
+     "latex": "\\Delta\\mathrm{OS}=18-12=6\\ \\text{percentage points}>3\\ \\text{(fail)}"
+    },
+    {
+     "text": "Interpretation: the shape matches but the hardware is less damped (higher overshoot) than the simulation. A typical cause is an unmodelled delay (sample-and-hold, computation) that removes phase margin. Add it to the model, or measure the real loop timing, and compare again.",
+     "latex": "\\text{extra lag in hardware}"
+    }
+   ],
+   "answer": "Fails the overshoot criterion even though the rms error passes: the measured loop has less phase margin than the simulated one, so the model (or the timing) must be corrected."
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Measure the timing, do not assume it",
+   "text": "Toggle a spare pin at the start and end of the interrupt and read it on an oscilloscope: the pulse width is the real execution time, its jitter is the period variation, and the gap between the ADC trigger and the DAC update is the real computation delay to use in your model."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Averages hide missed deadlines",
+   "text": "A loop whose average execution time is 20% of the period can still occasionally take longer than the period if a rare branch (for example an anti-windup or logging routine) executes. Budget for the worst-case path, and add an overrun detector that puts the actuators in a safe state."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Implement the loop in a periodic timer interrupt: read, compute the output from the current state, write the output, then update the state.",
+    "The worst-case execution time $t_{WCET}=N_{cycles}/f_{clk}$ must be well below $T$; the utilisation $U=t_{WCET}/T$ should stay below about 0.5 to 0.7.",
+    "Verify by comparing simulated and measured step responses on metrics (overshoot, rise time, settling, rms difference); a systematic mismatch usually means unmodelled delay or an implementation error."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Why should a digital control loop be run from a hardware timer interrupt rather than from a main loop ending in a fixed delay?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The interrupt makes the code run faster"
+    },
+    {
+     "id": "b",
+     "text": "The interrupt removes the need for anti-aliasing"
+    },
+    {
+     "id": "c",
+     "text": "The interrupt gives a fixed sample period regardless of how long the code takes, as long as it finishes in time"
+    },
+    {
+     "id": "d",
+     "text": "A main loop cannot read an ADC"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "The interrupt gives a fixed sample period regardless of how long the code takes, as long as it finishes in time",
+   "distractorRationale": {
+    "a": "The timer does not speed up the processor; it only triggers at fixed times.",
+    "b": "Aliasing depends on the sampling rate and the signal, not the trigger mechanism.",
+    "c": "A delay at the end of a loop adds to the variable execution time.",
+    "d": "A main loop can read an ADC, but its period is poorly controlled."
+   },
+   "explanation": "The difference equations assume samples exactly $T$ apart. A timer interrupt provides that, whereas a loop with a delay has period equal to the delay plus a variable execution time.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "In a fixed-step control loop, which order of operations keeps the sample-to-actuation delay shortest?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Read the sensor, compute and write the output, then update the controller state"
+    },
+    {
+     "id": "b",
+     "text": "Update the state, then read the sensor, then write the output"
+    },
+    {
+     "id": "c",
+     "text": "Write the output first from the previous error, then read the sensor"
+    },
+    {
+     "id": "d",
+     "text": "Read the sensor, update the state, compute the output, write it"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Read the sensor, compute and write the output, then update the controller state",
+   "distractorRationale": {
+    "a": "The state update is not needed for the current output, so it is done last.",
+    "b": "The output would be written late, after the state computation.",
+    "c": "The output would not use the new measurement.",
+    "d": "This computes the output with the wrong (future) state and delays the write."
+   },
+   "explanation": "The output depends only on the current state and the new error, so it can be written before the state update. Postponing the update reduces the delay between sampling and actuation.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which quantity must be less than the sample period for the loop to run reliably?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The average execution time of the routine"
+    },
+    {
+     "id": "b",
+     "text": "The worst-case execution time of the interrupt routine, including interrupt overhead"
+    },
+    {
+     "id": "c",
+     "text": "The best-case execution time"
+    },
+    {
+     "id": "d",
+     "text": "The time constant of the plant"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The worst-case execution time of the interrupt routine, including interrupt overhead",
+   "distractorRationale": {
+    "a": "An average can be well below the period while a rare path still overruns.",
+    "b": "A single overrun causes a missed or late sample.",
+    "c": "The best case says nothing about the risky path.",
+    "d": "The plant time constant is unrelated to the schedule, although it influences the choice of $T$."
+   },
+   "explanation": "Deadlines are missed on the worst path, so the budget must be computed with the worst-case number of cycles. Average and best-case times can hide rare long executions.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A hardware step response has a larger overshoot than the simulation with the same gains, but the same final value. Which is the most likely cause?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "A larger final-value error in the sensor"
+    },
+    {
+     "id": "b",
+     "text": "The ADC having too many bits"
+    },
+    {
+     "id": "c",
+     "text": "The controller having too much integral action only at steady state"
+    },
+    {
+     "id": "d",
+     "text": "Unmodelled delay such as sample-and-hold and computation time, which reduces the phase margin"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Unmodelled delay such as sample-and-hold and computation time, which reduces the phase margin",
+   "distractorRationale": {
+    "a": "The final values agree, so the steady-state gain is correct.",
+    "b": "Resolution would add small steps or noise but not systematic overshoot.",
+    "c": "This would affect the tail and final error, not specifically the overshoot of the main response.",
+    "d": "Extra lag lowers damping and increases overshoot."
+   },
+   "explanation": "A matching final value shows the low-frequency gain is right, while higher overshoot shows less damping. This is the signature of additional phase lag from a delay that the simulation left out.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: a control loop that ends with a 10 ms delay call has an exact 10 ms sample period.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "The period equals the delay plus the time the code takes to run, which can vary from cycle to cycle. A hardware timer interrupt is needed for a fixed period.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A microcontroller runs at 80 MHz and the control loop has a sample period of 2 ms. How many clock cycles are available per sample?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o3"
+   ],
+   "correctValue": 160000.0,
+   "tolerance": 100.0,
+   "unit": "cycles",
+   "explanation": "Cycles per sample $=f_{clk}T=80\\times10^6\\times2\\times10^{-3}=160{,}000$. The worst-case code must use only a fraction of this to leave margin.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A controller needs 40 multiply-accumulates at 120 cycles each, plus 2500 cycles for I/O and interrupt overhead, on a 50 MHz processor. Find the worst-case execution time in microseconds.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o3"
+   ],
+   "correctValue": 146.0,
+   "tolerance": 0.5,
+   "unit": "microseconds",
+   "explanation": "The cycle count is $40\\times120+2500=7300$, so $t=7300/(50\\times10^6)=146\\ \\mu\\mathrm{s}$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "The worst-case execution time of a controller is 85 microseconds. To leave slack for other tasks the utilisation must not exceed 50%. What is the highest sampling frequency, in Hz, that satisfies this?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o3"
+   ],
+   "correctValue": 5882.352941,
+   "tolerance": 5.0,
+   "unit": "Hz",
+   "explanation": "$T_{min}=t_{WCET}/U_{max}=85/0.5=170\\ \\mu\\mathrm{s}$, so $f_{max}=1/170\\ \\mu\\mathrm{s}\\approx5882$ Hz. A lower rate is better if the control design allows it.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Write pseudocode for a fixed-sample-time interrupt routine implementing the controller $x_c[k+1]=0.9x_c[k]+0.1e[k]$, $u[k]=2x_c[k]+0.5e[k]$, including actuator limits and the order of the state update. Explain why the order matters.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o1"
+   ],
+   "markingGuide": [
+    "Timer interrupt at fixed period $T$ (not a delay-based loop).",
+    "Reads the sensor and forms the error $e=r-y$.",
+    "Computes $u=2x_c+0.5e$ from the current state, clamps it to actuator limits, and writes it.",
+    "Then updates $x_c=0.9x_c+0.1e$ after the output has been written.",
+    "Explains that updating first would use the wrong state and delay the output."
+   ],
+   "explanation": "Inside a periodic timer ISR the code reads the sensor, forms $e$, computes $u=2x_c+0.5e$ from the old state, clamps and writes it, and only then updates $x_c=0.9x_c+0.1e$. The order keeps $u[k]$ consistent with the difference equation and keeps the delay from sampling to actuation short.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A tuned loop shows a simulated step response with 10% overshoot and 0.5 s rise time, while the hardware gives 22% overshoot and the same rise time and final value. Describe a verification and diagnosis plan, including how you would measure the loop timing, and the corrections you would try.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o2",
+    "ug.mce-control-engineering.control-hardware.embedded-implementation.o3"
+   ],
+   "markingGuide": [
+    "Notes the matching rise time and final value show the gain is right but damping is reduced (phase margin lost).",
+    "Suspects unmodelled delay (sample and hold, computation, filtering) or an implementation difference such as a different sample period.",
+    "Measures timing with a spare output pin and oscilloscope: execution time, jitter and the delay between ADC trigger and DAC update.",
+    "Adds the measured delay and hold to the simulation and checks that the model reproduces the 22% overshoot.",
+    "Corrections: shorten the computation, raise the sample rate, reduce gain or add phase lead; re-test against stated tolerances (rms error and overshoot)."
+   ],
+   "explanation": "The same rise time and final value but higher overshoot show that the hardware has less damping, which indicates extra delay. Measuring the timing with a pin toggle gives the real computation delay and jitter; adding them to the model should reproduce the overshoot, after which the gains or sample rate can be changed to restore the margin.",
+   "board": "internal"
+  }
+ ]
+}

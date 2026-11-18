@@ -1,0 +1,406 @@
+{
+ "lessonTitle": "Thermal and Fluid Models: Capacitance, Resistance and Linearisation",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A cast-aluminium heating block on a laboratory hotplate takes nearly half an hour to warm up, while a thin-film sensor on the same hotplate reaches temperature in seconds. A coolant header tank drains slowly when its outlet valve is nearly shut and quickly when it is open. Both behaviours are first-order: a store (thermal mass or tank area) charging or draining through a resistance (convection or a valve), and the time constant is simply their product."
+  },
+  {
+   "type": "text",
+   "markdown": "Thermal and fluid systems are modelled with the same lumped idea used for electrical circuits. A **capacitance** stores a conserved quantity (heat energy or liquid volume), and a **resistance** relates the flow of that quantity to a driving difference (temperature or head). The conservation law for the stored quantity gives the differential equation: rate of change of storage equals inflow minus outflow."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Domain",
+    "Effort (potential)",
+    "Flow",
+    "Capacitance",
+    "Resistance",
+    "Time constant"
+   ],
+   "rows": [
+    [
+     "Electrical",
+     "Voltage $v$ (V)",
+     "Current $i$ (A)",
+     "$C$ (F)",
+     "$R$ ($\\Omega$)",
+     "$\\tau=RC$"
+    ],
+    [
+     "Thermal",
+     "Temperature $T$ (K)",
+     "Heat flow $q$ (W)",
+     "$C_{th}=mc_p$ (J/K)",
+     "$R_{th}=1/(hA)$ (K/W)",
+     "$\\tau=R_{th}C_{th}$"
+    ],
+    [
+     "Liquid level",
+     "Head $h$ (m)",
+     "Volume flow $q$ (m$^3$/s)",
+     "$C_f=A$ (m$^2$)",
+     "$R_f=\\Delta h/\\Delta q$ (s/m$^2$)",
+     "$\\tau=R_fA$"
+    ]
+   ],
+   "caption": "Capacitance, resistance and time constant in three domains"
+  },
+  {
+   "type": "text",
+   "markdown": "**Thermal body with convective loss.** Consider a body of mass $m$ (kg) and specific heat $c_p$ (J/(kg K)) at a uniform temperature $T$ (K) (the lumped assumption, valid when internal conduction is much faster than surface convection). It receives heater power $q_{in}$ (W) and loses heat by convection to surroundings at $T_\\infty$ with heat-transfer coefficient $h$ (W/(m$^2$ K)) over area $A$ (m$^2$). The energy balance is below. Writing $\\theta=T-T_\\infty$ gives $C_{th}\\dot\\theta+\\theta/R_{th}=q_{in}$, a first-order system with DC gain $R_{th}=1/(hA)$ (K/W) and time constant $\\tau=C_{th}R_{th}$."
+  },
+  {
+   "type": "math",
+   "latex": "mc_p\\frac{dT}{dt}=q_{in}-hA\\,(T-T_\\infty)\\quad\\Rightarrow\\quad \\frac{\\Theta(s)}{Q_{in}(s)}=\\frac{1/(hA)}{\\tau s+1},\\ \\ \\tau=\\frac{mc_p}{hA}",
+   "caption": "Energy balance and transfer function from heater power to temperature rise above ambient."
+  },
+  {
+   "type": "worked_example",
+   "title": "A heated block",
+   "prompt": "An aluminium block of mass $m=0.5$ kg (typical $c_p=900$ J/(kg K)) loses heat with $h=15$ W/(m$^2$ K) over $A=0.04$ m$^2$. It is heated by $q_{in}=30$ W from ambient. Find the time constant, the steady-state temperature rise, and the rise after 600 s.",
+   "steps": [
+    {
+     "text": "Capacitance: $C_{th}=mc_p=0.5\\times900=450$ J/K. Conductance: $hA=15\\times0.04=0.6$ W/K, so $R_{th}=1/0.6=1.667$ K/W.",
+     "latex": "C_{th}=450\\ \\text{J/K},\\quad hA=0.6\\ \\text{W/K}"
+    },
+    {
+     "text": "Time constant: $\\tau=C_{th}/(hA)=450/0.6=750$ s (12.5 min).",
+     "latex": "\\tau=\\frac{450}{0.6}=750\\ \\text{s}"
+    },
+    {
+     "text": "Steady-state rise: set $\\dot\\theta=0$, so $\\theta_{ss}=q_{in}/(hA)=30/0.6=50$ K.",
+     "latex": "\\theta_{ss}=\\frac{30}{0.6}=50\\ \\text{K}"
+    },
+    {
+     "text": "Rise at 600 s: $\\theta=50(1-e^{-600/750})=50(1-0.4493)=27.5$ K. The 90% time is $2.303\\times750=1727$ s (about 29 min).",
+     "latex": "\\theta(600)=50(1-e^{-0.8})=27.5\\ \\text{K}"
+    }
+   ],
+   "answer": "$\\tau=750$ s, $\\theta_{ss}=50$ K and $\\theta(600\\ \\text{s})=27.5$ K; the block needs about 29 minutes to reach 90% of its final rise."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "text",
+   "markdown": "**Liquid level in a tank.** A tank of constant cross-section $A$ (m$^2$) has inflow $q_{in}$ (m$^3$/s) and outflow $q_{out}$ through a resistive outlet. Conservation of volume gives $A\\,dh/dt=q_{in}-q_{out}$. For a laminar (linear) resistance, $q_{out}=h/R$, with $R$ in s/m$^2$, so the tank is a first-order system with time constant $\\tau=AR$ and DC gain $R$. A turbulent orifice or valve gives the nonlinear relation $q_{out}=k\\sqrt{h}$ instead."
+  },
+  {
+   "type": "math",
+   "latex": "A\\frac{dh}{dt}=q_{in}-\\frac{h}{R}\\quad\\Rightarrow\\quad \\frac{H(s)}{Q_{in}(s)}=\\frac{R}{AR\\,s+1},\\qquad h_{ss}=Rq_{in}",
+   "caption": "Tank with linear outflow resistance."
+  },
+  {
+   "type": "text",
+   "markdown": "**Linearisation.** Most real component equations are nonlinear, but the transfer-function tools require linear ones. If $y=f(x)$ and the system operates near a steady point $(x_0,y_0)$, the first-order Taylor expansion gives $y\\approx y_0+f'(x_0)(x-x_0)$. In terms of deviations $\\delta x=x-x_0$ and $\\delta y=y-y_0$ the model is $\\delta y=f'(x_0)\\,\\delta x$, with a slope that depends on the operating point. The linearised model is accurate only for small excursions about $x_0$."
+  },
+  {
+   "type": "math",
+   "latex": "\\delta y\\approx\\left.\\frac{df}{dx}\\right|_{x_0}\\delta x,\\qquad \\text{for }q=k\\sqrt h:\\ \\ \\frac{1}{R}=\\left.\\frac{dq}{dh}\\right|_{h_0}=\\frac{k}{2\\sqrt{h_0}}=\\frac{q_0}{2h_0}",
+   "caption": "Linearisation and the equivalent resistance of an orifice outlet."
+  },
+  {
+   "type": "worked_example",
+   "title": "Linearising an orifice-drained tank",
+   "prompt": "A tank of area $A=0.5$ m$^2$ drains through $q_{out}=k\\sqrt h$ with $k=0.002$ m$^{5/2}$/s. It operates at $h_0=1.0$ m. Find the linearised resistance, the time constant and the transfer function. Then check the prediction for a 10% rise in inflow.",
+   "steps": [
+    {
+     "text": "Operating flow: $q_0=0.002\\sqrt{1.0}=0.002$ m$^3$/s, which is also the steady inflow.",
+     "latex": "q_0=0.002\\ \\text{m}^3/\\text{s}"
+    },
+    {
+     "text": "Slope: $dq/dh=k/(2\\sqrt{h_0})=0.002/2=0.001$ m$^2$/s, so $R=1/0.001=1000$ s/m$^2$.",
+     "latex": "\\frac{1}{R}=0.001\\ \\text{m}^2/\\text{s}\\ \\Rightarrow\\ R=1000"
+    },
+    {
+     "text": "Time constant $\\tau=AR=0.5\\times1000=500$ s, and the linearised model is $A\\,\\delta\\dot h=\\delta q_{in}-\\delta h/R$, with $H/Q=1000/(500s+1)$ (m per m$^3$/s).",
+     "latex": "\\frac{\\delta H}{\\delta Q_{in}}=\\frac{1000}{500s+1}"
+    },
+    {
+     "text": "Check: a 10% rise in inflow is $\\delta q_{in}=0.0002$ m$^3$/s, so $\\delta h_{ss}=R\\,\\delta q_{in}=0.2$ m. The exact nonlinear steady state is $h=(0.0022/0.002)^2=1.21$ m, a rise of 0.21 m, so the linear model is within 5%.",
+     "latex": "\\delta h_{ss}=0.2\\ \\text{m}\\ \\text{(linear)},\\quad 0.21\\ \\text{m}\\ \\text{(exact)}"
+    }
+   ],
+   "answer": "$R=1000$ s/m$^2$, $\\tau=500$ s, $H/Q_{in}=1000/(500s+1)$; the linearised prediction (0.20 m) is within 5% of the exact nonlinear rise (0.21 m) for a 10% inflow change."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Choose the stored quantity (energy or volume) and write the conservation law for the lumped body.",
+    "Write the flow relationships (convection, outlet valve) in terms of the driving difference.",
+    "If a relationship is nonlinear, linearise it about the operating point using $f'(x_0)$.",
+    "Use deviation variables to obtain a first-order model $\\tau\\dot y+y=Ku$ with $\\tau=RC$.",
+    "Check the assumptions (uniform temperature, constant area, small deviations)."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common slips",
+   "text": "Mixing absolute and deviation variables: the transfer function relates deviations from the operating point, not absolute values. The resistance of a turbulent valve changes with the operating level, so $R$ (and $\\tau$) from one operating point cannot be reused at another. For thermal systems, use $T_\\infty$ as the reference or write the model in $\\theta=T-T_\\infty$; do not drop the ambient term. The lumped model fails if the Biot number $hL/k_s$ is not small."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Same structure everywhere",
+   "text": "A capacitance filled through a resistance is a first-order lag with $\\tau=RC$ in every domain, so the step-response results (63.2% at $\\tau$, 90% at $2.3\\tau$) transfer directly from electrical circuits to heating blocks and tanks."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Thermal body with convective loss: $mc_p\\dot T=q_{in}-hA(T-T_\\infty)$, a first-order system with $\\tau=mc_p/(hA)$ and DC gain $1/(hA)$ K/W.",
+    "Tank with resistive outflow: $A\\dot h=q_{in}-q_{out}$, with $q_{out}=h/R$ giving $\\tau=AR$ and $h_{ss}=Rq_{in}$.",
+    "Linearising $y=f(x)$ about $(x_0,y_0)$ gives $\\delta y=f'(x_0)\\delta x$; for $q=k\\sqrt h$ the resistance is $R=2\\sqrt{h_0}/k=2h_0/q_0$.",
+    "Linearised models hold for small deviations around the operating point only."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A steel component of mass 2 kg (take $c_p=500$ J/(kg K), a typical value) cools in air with a convective conductance $hA=4$ W/K. Find the thermal time constant of the lumped model in seconds.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o1"
+   ],
+   "correctValue": 250,
+   "tolerance": 2,
+   "unit": "s",
+   "explanation": "The thermal capacitance is $C_{th}=mc_p=2\\times500=1000$ J/K, and the time constant is $\\tau=C_{th}/(hA)=1000/4=250$ s. The lumped model assumes a uniform temperature inside the component.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A body of heat capacity $C=mc_p$ is heated at $q$ watts and loses heat by convection with conductance $hA$ to ambient at $T_\\infty$. Which differential equation gives its temperature $T$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$C\\,\\dot T=q-hA\\,(T-T_\\infty)$"
+    },
+    {
+     "id": "b",
+     "text": "$C\\,\\dot T=q+hA\\,(T-T_\\infty)$"
+    },
+    {
+     "id": "c",
+     "text": "$hA\\,\\dot T=q-C\\,(T-T_\\infty)$"
+    },
+    {
+     "id": "d",
+     "text": "$C\\,\\dot T=q-hA\\,T$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$C\\,\\dot T=q-hA\\,(T-T_\\infty)$",
+   "distractorRationale": {
+    "a": "Correct: stored energy rate equals heater input minus convective loss, which is proportional to the excess over ambient.",
+    "b": "The convective term has the wrong sign: it removes heat when $T>T_\\infty$.",
+    "c": "The capacitance and conductance have been interchanged, so the units are inconsistent.",
+    "d": "The loss is proportional to $T-T_\\infty$, not $T$; this version drops the ambient temperature."
+   },
+   "explanation": "The energy balance is $C\\dot T=q_{in}-q_{loss}$ with $q_{loss}=hA(T-T_\\infty)$. In steady state $T-T_\\infty=q/(hA)$, which has units of K when $hA$ is in W/K.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A tank is fed at a steady $q_{in}=0.004$ m$^3$/s and drains through a laminar outlet with resistance $R=250$ s/m$^2$ (so $q_{out}=h/R$). Find the steady-state liquid level in metres.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o2"
+   ],
+   "correctValue": 1.0,
+   "tolerance": 0.01,
+   "unit": "m",
+   "explanation": "At steady state $q_{out}=q_{in}$, so $h/R=0.004$ and $h=Rq_{in}=250\\times0.004=1.0$ m. The tank area affects only how long it takes to get there, through $\\tau=AR$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A prismatic tank of cross-section $A$ has inflow $q_{in}$ and outflow $q_{out}=h/R$. Which differential equation describes the level $h$?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$A\\,\\dot h=q_{in}-h/R$"
+    },
+    {
+     "id": "b",
+     "text": "$A\\,\\dot h=q_{in}+h/R$"
+    },
+    {
+     "id": "c",
+     "text": "$\\dot h=A\\,(q_{in}-h/R)$"
+    },
+    {
+     "id": "d",
+     "text": "$R\\,\\dot h=q_{in}-A\\,h$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$A\\,\\dot h=q_{in}-h/R$",
+   "distractorRationale": {
+    "a": "Correct: the volume balance $A\\dot h=q_{in}-q_{out}$ with $q_{out}=h/R$.",
+    "b": "The outflow must be subtracted, since it removes liquid.",
+    "c": "The area multiplies $\\dot h$ (volume change rate), not the right-hand side.",
+    "d": "The terms are mismatched: $R$ and $A$ are interchanged, so the units do not match."
+   },
+   "explanation": "Conservation of volume gives $A\\dot h=q_{in}-q_{out}$. Substituting the linear outlet law gives $A\\dot h+h/R=q_{in}$, so the time constant is $AR$ and the DC gain is $R$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A tank outlet obeys $q_{out}=0.003\\sqrt h$ (SI units, $h$ in m and $q$ in m$^3$/s). Linearise about the operating level $h_0=0.64$ m and give the slope $dq_{out}/dh$ at that point in litres per second per metre (L/s per m; 1 m$^3$ = 1000 L).",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o3"
+   ],
+   "correctValue": 1.875,
+   "tolerance": 0.05,
+   "unit": "L/s per m",
+   "explanation": "The derivative is $dq/dh=0.003/(2\\sqrt h)$. At $h_0=0.64$ m, $\\sqrt{0.64}=0.8$, so the slope is $0.003/1.6=0.001875$ m$^2$/s, which is 1.875 L/s per m. The linearised resistance is $R=1/0.001875=533$ s/m$^2$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A drag force on a moving carriage is $F=0.8\\,v^2$ (N, with $v$ in m/s). It operates near $v_0=5$ m/s. What is the linearised damping coefficient $dF/dv$ at this operating point?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$8$ N s/m"
+    },
+    {
+     "id": "b",
+     "text": "$4$ N s/m"
+    },
+    {
+     "id": "c",
+     "text": "$20$ N s/m"
+    },
+    {
+     "id": "d",
+     "text": "$0.8$ N s/m"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$8$ N s/m",
+   "distractorRationale": {
+    "a": "Correct: $dF/dv=2\\times0.8\\times5=8$ N s/m.",
+    "b": "This forgets the factor 2 from differentiating $v^2$ (it gives $0.8\\times5$).",
+    "c": "This is the operating force $F_0=0.8\\times25=20$ N, not the slope.",
+    "d": "This is the coefficient in the nonlinear law, not the slope at $v_0$."
+   },
+   "explanation": "Linearisation uses the derivative at the operating point: $\\delta F=(dF/dv)|_{v_0}\\delta v=2cv_0\\,\\delta v$, where $c=0.8$ N s$^2$/m$^2$ is the coefficient in $F=cv^2$. The effective damping therefore grows with speed, and the model is valid only for small speed deviations about 5 m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A linearised model obtained about an operating point $(x_0,y_0)$ is reliable for small deviations from that point but may be inaccurate for large excursions.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "The first-order Taylor expansion neglects second- and higher-order terms, which grow with the size of the deviation. For example, an orifice-drained tank linearised at 1.0 m predicts the response to a 10% inflow change within 5%, but would give larger errors for a doubling of the flow.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "The cross-sectional area of a tank with a laminar outlet resistance $R$ is doubled (same $R$ and same inflow). Which statement is correct?",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The time constant doubles and the steady-state level is unchanged"
+    },
+    {
+     "id": "b",
+     "text": "The time constant is unchanged and the steady-state level doubles"
+    },
+    {
+     "id": "c",
+     "text": "Both the time constant and steady-state level double"
+    },
+    {
+     "id": "d",
+     "text": "The steady-state level halves and the time constant halves"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The time constant doubles and the steady-state level is unchanged",
+   "distractorRationale": {
+    "a": "Correct: $\\tau=AR$ doubles; $h_{ss}=Rq_{in}$ does not depend on $A$.",
+    "b": "$h_{ss}=Rq_{in}$ does not depend on $A$, so it does not double.",
+    "c": "Only the time constant is proportional to $A$.",
+    "d": "The level and time constant do not halve when $A$ doubles."
+   },
+   "explanation": "The storage capacity (area) affects how long it takes to reach a steady level, $\\tau=AR$, but at steady state the inflow equals the outflow $h/R$, so the level $Rq_{in}$ is independent of $A$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Derive a first-order model for a lumped body heated by a power $q_{in}$ and cooled by convection to ambient, state the assumptions, and obtain the time constant and DC gain. Explain how the same structure appears for a tank with a resistive outlet.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o1",
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o2"
+   ],
+   "markingGuide": [
+    "Energy balance $mc_p\\dot T=q_{in}-hA(T-T_\\infty)$",
+    "Assumptions: uniform body temperature (small Biot number), constant $h$, $c_p$ and $T_\\infty$",
+    "Deviation form $\\tau\\dot\\theta+\\theta=q_{in}/(hA)$ with $\\tau=mc_p/(hA)$ and DC gain $1/(hA)$ K/W",
+    "Tank: $A\\dot h=q_{in}-h/R$, so $\\tau=AR$ and gain $R$",
+    "Identifies capacitance and resistance correspondence ($mc_p\\leftrightarrow A$, $1/(hA)\\leftrightarrow R$)"
+   ],
+   "explanation": "A complete answer emphasises the conservation law followed by a constitutive (flow-resistance) law. Recognising the common $\\tau=RC$ structure lets thermal and fluid results be read from the first-order response.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Explain how to linearise the nonlinear outflow $q_{out}=k\\sqrt h$ of a tank about an operating level $h_0$, give the resulting equivalent resistance, and discuss how the time constant of the linearised tank depends on the operating point and when the linear model should not be trusted.",
+   "objectiveIds": [
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o2",
+    "ug.mce-system-dynamics-control-1.modelling-physical-systems.thermal-and-fluid-models.o3"
+   ],
+   "markingGuide": [
+    "Takes the Taylor expansion $\\delta q=(dq/dh)|_{h_0}\\delta h$ with slope $k/(2\\sqrt{h_0})$",
+    "Equivalent resistance $R=2\\sqrt{h_0}/k=2h_0/q_0$",
+    "Linearised equation $A\\delta\\dot h=\\delta q_{in}-\\delta h/R$ with $\\tau=AR$",
+    "$R$ and $\\tau$ increase with $\\sqrt{h_0}$ so the tank is slower at higher levels",
+    "Linear model is valid only for small deviations; large changes in level or inflow change $R$ and give errors"
+   ],
+   "explanation": "The linearised time constant is not a property of the tank alone but of the tank and the chosen operating level. For large excursions the nonlinear equation should be simulated directly.",
+   "board": "internal"
+  }
+ ]
+}

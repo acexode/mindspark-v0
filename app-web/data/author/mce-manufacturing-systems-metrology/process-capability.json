@@ -1,0 +1,437 @@
+{
+ "lessonTitle": "Process Capability: Cp, Cpk and Fraction Nonconforming",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A grinding cell makes pump shafts to 25.00 mm plus or minus 0.05 mm. A control chart says the process is stable, and the average diameter is 25.018 mm with a standard deviation of 0.012 mm. The customer asks: how many of your shafts will be out of tolerance, and what would it take to make that fraction negligible? A stable process is not necessarily a capable one, and capability indices answer the question in a single number."
+  },
+  {
+   "type": "text",
+   "markdown": "**Process capability** compares the width of the specification, what the customer allows, with the width of the process spread, what the process delivers. It applies to a process that is already **in statistical control** (a stable, predictable distribution) and whose measurements are approximately **normally distributed**; both assumptions should be checked before an index is quoted. The spread of a normal process containing about 99.73% of output is $6\\sigma$, from $\\mu-3\\sigma$ to $\\mu+3\\sigma$."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Cp and Cpk",
+   "text": "$C_p=\\dfrac{USL-LSL}{6\\sigma}$ measures potential capability: the specification width divided by the process spread, ignoring where the process is centred. $C_{pk}=\\min(C_{pu},C_{pl})$ measures actual capability, with $C_{pu}=\\dfrac{USL-\\mu}{3\\sigma}$ and $C_{pl}=\\dfrac{\\mu-LSL}{3\\sigma}$: the distance from the mean to the nearer specification limit, in units of $3\\sigma$. Here $USL$ and $LSL$ are the upper and lower specification limits, $\\mu$ the process mean and $\\sigma$ its standard deviation."
+  },
+  {
+   "type": "math",
+   "latex": "C_p=\\frac{USL-LSL}{6\\sigma},\\qquad C_{pk}=\\min\\!\\left(\\frac{USL-\\mu}{3\\sigma},\\;\\frac{\\mu-LSL}{3\\sigma}\\right)",
+   "caption": "C_pk is never larger than C_p; they are equal only when the process mean is exactly midway between the limits."
+  },
+  {
+   "type": "worked_example",
+   "title": "Capability of the grinding process",
+   "prompt": "Spec $25.00\\pm0.05$ mm, so $LSL=24.95$ mm and $USL=25.05$ mm. The process has $\\mu=25.018$ mm and $\\sigma=0.012$ mm. Find $C_p$, $C_{pu}$, $C_{pl}$ and $C_{pk}$.",
+   "steps": [
+    {
+     "text": "Specification width and process spread.",
+     "latex": "USL-LSL=0.100\\ \\text{mm},\\qquad 6\\sigma=0.072\\ \\text{mm}"
+    },
+    {
+     "text": "Potential capability ignores centring.",
+     "latex": "C_p=\\frac{0.100}{0.072}=1.39"
+    },
+    {
+     "text": "Distances from the mean to each limit, divided by $3\\sigma=0.036$ mm.",
+     "latex": "C_{pu}=\\frac{25.050-25.018}{0.036}=0.89,\\qquad C_{pl}=\\frac{25.018-24.950}{0.036}=1.89"
+    },
+    {
+     "text": "Actual capability is the smaller of the two.",
+     "latex": "C_{pk}=\\min(0.89,\\,1.89)=0.89"
+    }
+   ],
+   "answer": "$C_p=1.39$ but $C_{pk}=0.89$: the spread would fit the tolerance comfortably, but the mean sits close to the upper limit."
+  },
+  {
+   "type": "text",
+   "markdown": "**Fraction outside tolerance.** If the process is normal, the fraction beyond a limit is found from the standard normal cumulative distribution $\\Phi(z)$, where $z$ is the distance from the mean to the limit divided by $\\sigma$. The total non-conforming fraction is the sum of the tails above $USL$ and below $LSL$."
+  },
+  {
+   "type": "math",
+   "latex": "p_{\\text{out}}=\\Phi\\!\\left(-\\frac{USL-\\mu}{\\sigma}\\right)+\\Phi\\!\\left(-\\frac{\\mu-LSL}{\\sigma}\\right)",
+   "caption": "Phi is the standard normal cumulative distribution function (values from tables or software). Valid for a stable, normally distributed process."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Capability index (centred process)",
+    "Distance to limits",
+    "Fraction outside, both tails",
+    "Rough meaning"
+   ],
+   "rows": [
+    [
+     "$C_{pk}=0.67$",
+     "$\\pm2\\sigma$",
+     "4.6%",
+     "Poor"
+    ],
+    [
+     "$C_{pk}=1.00$",
+     "$\\pm3\\sigma$",
+     "0.27% (2700 ppm)",
+     "Marginal"
+    ],
+    [
+     "$C_{pk}=1.33$",
+     "$\\pm4\\sigma$",
+     "63 ppm",
+     "Commonly accepted minimum"
+    ],
+    [
+     "$C_{pk}=1.67$",
+     "$\\pm5\\sigma$",
+     "about 0.6 ppm",
+     "High capability"
+    ]
+   ],
+   "caption": "For a centred, stable, normal process. The acceptance threshold (for example 1.33) varies by customer and industry."
+  },
+  {
+   "type": "worked_example",
+   "title": "Fraction out of tolerance, before and after re-centring",
+   "prompt": "For the process of the previous example, find the fraction of shafts out of tolerance, and the fraction if the mean were re-centred to 25.000 mm with $\\sigma$ unchanged.",
+   "steps": [
+    {
+     "text": "Current process: the upper limit is $z=(25.050-25.018)/0.012=2.67$ standard deviations above the mean; the lower limit is $z=5.67$ below.",
+     "latex": "p_{\\text{out}}=\\Phi(-2.67)+\\Phi(-5.67)=0.00383+0.0000000073"
+    },
+    {
+     "text": "Re-centred process: both limits are $0.050/0.012=4.17$ standard deviations from the mean.",
+     "latex": "p_{\\text{out}}=2\\,\\Phi(-4.17)=2\\times0.0000155=0.000031"
+    }
+   ],
+   "answer": "Currently about 0.38% (3830 ppm) are out of tolerance; after re-centring about 31 ppm, with $C_{pk}$ rising from 0.89 to $C_p=1.39$."
+  },
+  {
+   "type": "text",
+   "markdown": "**Re-centre or reduce variation?** $C_p$ and $C_{pk}$ together say what to do. If $C_p$ is satisfactory but $C_{pk}$ is much lower, the spread fits but the mean is off-centre: **adjust the process mean** (a tool offset, a fixture setting), a quick and cheap action. If $C_p$ itself is low, no amount of centring can make the spread fit the tolerance: **reduce variation** (better machine, tooling, material, or control of the process), which is harder and costlier."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Situation",
+    "Diagnosis",
+    "Action"
+   ],
+   "rows": [
+    [
+     "$C_p$ high, $C_{pk}$ low",
+     "Spread fits, process off-centre",
+     "Re-centre the mean"
+    ],
+    [
+     "$C_p$ low, $C_{pk}\\approx C_p$",
+     "Process is centred but too variable",
+     "Reduce variation"
+    ],
+    [
+     "$C_p$ low, $C_{pk}$ even lower",
+     "Both problems",
+     "Re-centre first (quick win), then reduce variation"
+    ],
+    [
+     "$C_p$ and $C_{pk}$ both high",
+     "Capable",
+     "Maintain with control charts"
+    ]
+   ],
+   "caption": "Decision guide."
+  },
+  {
+   "type": "worked_example",
+   "title": "Variation reduction instead of centring",
+   "prompt": "For the grinding process, what would $C_{pk}$ be if $\\sigma$ were halved to 0.006 mm while the mean stays at 25.018 mm?",
+   "steps": [
+    {
+     "text": "Distances to the limits are unchanged; $3\\sigma=0.018$ mm.",
+     "latex": "C_{pu}=\\frac{0.032}{0.018}=1.78,\\qquad C_{pl}=\\frac{0.068}{0.018}=3.78"
+    },
+    {
+     "text": "Take the minimum.",
+     "latex": "C_{pk}=1.78"
+    }
+   ],
+   "answer": "Halving $\\sigma$ lifts $C_{pk}$ from 0.89 to 1.78, but re-centring alone gave 1.39. Re-centring is cheaper, and in this case sufficient for 1.33 capability."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Index values need stable normal data",
+   "text": "$C_p$ and $C_{pk}$ computed from a process that is out of control, or from clearly non-normal data, can badly mislead. Establish control first (with a control chart), and use a method suited to the distribution if it is skewed."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "$C_p=(USL-LSL)/6\\sigma$ is potential capability; $C_{pk}=\\min(C_{pu},C_{pl})$ includes centring and is never larger than $C_p$.",
+    "For a stable normal process the fraction out of tolerance is $\\Phi(-z_{\\text{upper}})+\\Phi(-z_{\\text{lower}})$, with $z$ the limit distance over $\\sigma$.",
+    "A high $C_p$ with low $C_{pk}$ means re-centre the mean; a low $C_p$ means reduce variation."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A drilled hole has a specification of $12.00\\pm0.04$ mm and the process has a standard deviation of $\\sigma=0.008$ mm. Calculate the potential capability index $C_p$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o1"
+   ],
+   "correctValue": 1.67,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "The tolerance width is $0.08$ mm and the process spread is $6\\sigma=0.048$ mm. $C_p=0.08/0.048=1.667$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A turned diameter has specification limits 39.70 mm and 40.30 mm. The process mean is 40.12 mm and the standard deviation is 0.05 mm. Calculate $C_{pk}$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o1"
+   ],
+   "correctValue": 1.2,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "The distances from the mean are $40.30-40.12=0.18$ mm to the upper limit and $40.12-39.70=0.42$ mm to the lower limit. Dividing by $3\\sigma=0.15$ mm gives 1.20 and 2.80, and $C_{pk}$ is the smaller, 1.20.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A process is centred at 10.00 mm with $\\sigma=0.025$ mm and a specification of $10.00\\pm0.06$ mm. Assuming a normal distribution, find the percentage of parts outside the specification. (The standard normal tail beyond $z=2.4$ is 0.00820.)",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o2"
+   ],
+   "correctValue": 1.64,
+   "tolerance": 0.03,
+   "unit": "per cent",
+   "explanation": "Each limit is at $z=0.06/0.025=2.4$ standard deviations, so the fraction beyond each is 0.00820. The total is $2\\times0.00820=0.0164$, or 1.64%.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A process has $C_p=1.5$ and $C_{pk}=0.9$. What does the difference between them indicate?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The process spread is narrow enough, but the mean is off-centre toward one limit"
+    },
+    {
+     "id": "b",
+     "text": "The process spread is too wide for the tolerance"
+    },
+    {
+     "id": "c",
+     "text": "The measurement system is faulty, since $C_{pk}$ must equal $C_p$"
+    },
+    {
+     "id": "d",
+     "text": "The process is out of statistical control"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The process spread is narrow enough, but the mean is off-centre toward one limit",
+   "distractorRationale": {
+    "a": "$C_p$ ignores centring and $C_{pk}$ includes it, so a large gap signals an off-centre mean.",
+    "b": "A high $C_p$ means the spread fits within the tolerance.",
+    "c": "$C_{pk}$ equals $C_p$ only for a perfectly centred process, so a difference is normal.",
+    "d": "The indices say nothing about control; stability must be checked separately."
+   },
+   "explanation": "With $C_p=1.5$ the spread would fit inside the tolerance with margin, but $C_{pk}=0.9$ shows the mean is close enough to one limit to cause rejects. The fix is to move the mean toward the midpoint.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A centred, stable, normally distributed process has $C_p=C_{pk}=1.33$. Approximately what fraction of output is outside the specification?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 63 parts per million"
+    },
+    {
+     "id": "b",
+     "text": "About 0.27%"
+    },
+    {
+     "id": "c",
+     "text": "About 32 parts per million"
+    },
+    {
+     "id": "d",
+     "text": "About 1 part in a billion"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "About 63 parts per million",
+   "distractorRationale": {
+    "a": "With $C_{pk}=1.33$ the limits are $\\pm4\\sigma$ from the mean, and the two tails sum to 63 ppm.",
+    "b": "This corresponds to $C_{pk}=1.00$, with limits at $\\pm3\\sigma$.",
+    "c": "This is only one tail; the two tails of a centred process add.",
+    "d": "This is far too small for limits at $\\pm4\\sigma$."
+   },
+   "explanation": "A centred process has limits at $3C_{pk}\\sigma=4\\sigma$. Each tail beyond $4\\sigma$ is 31.7 ppm and the total of both tails is 63 ppm.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A process has $C_p=1.8$ but $C_{pk}=0.7$ and is producing rejects at the upper limit. What action is most sensible first?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Adjust the process mean toward the middle of the tolerance, such as through a tool offset"
+    },
+    {
+     "id": "b",
+     "text": "Buy a more precise machine to cut the spread"
+    },
+    {
+     "id": "c",
+     "text": "Widen the specification limits"
+    },
+    {
+     "id": "d",
+     "text": "Do nothing until $C_p$ falls"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Adjust the process mean toward the middle of the tolerance, such as through a tool offset",
+   "distractorRationale": {
+    "a": "A large gap between $C_p$ and $C_{pk}$ shows that centring is the problem.",
+    "b": "The spread is already narrower than the tolerance, so more precision would not fix the off-centre mean.",
+    "c": "The specification belongs to the customer or design and should not be widened to fit the process.",
+    "d": "$C_p$ is already high; the problem is $C_{pk}$."
+   },
+   "explanation": "Moving the mean costs little and lifts $C_{pk}$ up toward $C_p$, here 1.8. Reducing variation would be an expensive solution to a problem that does not exist.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A centred process has $C_p=C_{pk}=0.85$. What should be done to reach a $C_{pk}$ of 1.33?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Re-centre the mean, since $C_{pk}$ depends on the mean"
+    },
+    {
+     "id": "b",
+     "text": "Reduce the process variation, because centring cannot improve a centred process"
+    },
+    {
+     "id": "c",
+     "text": "Tighten the specification, because this raises the index"
+    },
+    {
+     "id": "d",
+     "text": "Do nothing; an index below 1 only matters when the mean is off-centre"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Reduce the process variation, because centring cannot improve a centred process",
+   "distractorRationale": {
+    "a": "The process is already centred; moving the mean would reduce $C_{pk}$.",
+    "b": "With $C_p=C_{pk}$ the process is centred, so only a smaller $\\sigma$ can raise the index.",
+    "c": "Narrower limits lower both indices.",
+    "d": "An index of 0.85 means rejects even for a perfectly centred process."
+   },
+   "explanation": "$C_{pk}=\\min(C_{pu},C_{pl})$ already equals $C_p$, its maximum, so the only way to improve is to reduce $\\sigma$. To go from 0.85 to 1.33 the standard deviation must fall by a factor of $0.85/1.33=0.64$.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement about $C_p$ and $C_{pk}$ is always true?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$C_{pk}$ is less than or equal to $C_p$"
+    },
+    {
+     "id": "b",
+     "text": "$C_{pk}$ is always greater than $C_p$"
+    },
+    {
+     "id": "c",
+     "text": "$C_p$ depends on the process mean"
+    },
+    {
+     "id": "d",
+     "text": "$C_{pk}$ can be negative only if the process is stable"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$C_{pk}$ is less than or equal to $C_p$",
+   "distractorRationale": {
+    "a": "The minimum of two one-sided indices cannot exceed their average, which is $C_p$.",
+    "b": "$C_{pk}$ takes the worse side, so it cannot be larger.",
+    "c": "$C_p$ uses only the spread and specification width.",
+    "d": "$C_{pk}$ is negative when the mean lies outside a limit, whatever the stability."
+   },
+   "explanation": "$C_p$ is the average of $C_{pu}$ and $C_{pl}$, so the smaller of the two is at most $C_p$. They are equal only when the mean is at the exact centre.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A bore is specified at $75.00\\pm0.06$ mm. A stable, normal process has mean 75.04 mm and standard deviation 0.015 mm. Calculate $C_p$ and $C_{pk}$, estimate the fraction of bores out of tolerance (given $\\Phi(-1.333)=0.0912$ and $\\Phi(-6.67)\\approx0$), and say what the fraction would be after perfect re-centring, using the fact that the tails at $\\pm4\\sigma$ total 63 ppm.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o1",
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o2"
+   ],
+   "markingGuide": [
+    "$LSL=74.94$, $USL=75.06$; $C_p=0.12/(6\\times0.015)=1.33$",
+    "$C_{pu}=(75.06-75.04)/0.045=0.44$, $C_{pl}=(75.04-74.94)/0.045=2.22$, $C_{pk}=0.44$",
+    "Upper limit at $z=0.02/0.015=1.33$ standard deviations; the fraction out is about 9.1%",
+    "Lower tail negligible",
+    "After re-centring, limits at $\\pm0.06/0.015=\\pm4\\sigma$ so about 63 ppm",
+    "Interprets: re-centring converts $C_{pk}$ from 0.44 to 1.33"
+   ],
+   "explanation": "$C_p=1.33$ but $C_{pk}=0.44$, and about 9.1% of bores are above the upper limit because the mean is near that limit. Re-centring to 75.00 mm puts both limits at $\\pm4\\sigma$, reducing the fraction to about 63 ppm.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Machine A has $C_p=1.6$ and $C_{pk}=0.8$. Machine B has $C_p=0.9$ and $C_{pk}=0.9$. Recommend an improvement action for each, explain why they differ, and say which machine would reach $C_{pk}=1.33$ more cheaply.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.spc.process-capability.o3"
+   ],
+   "markingGuide": [
+    "Machine A: spread fits but the mean is off-centre; re-centre the mean (offset adjustment)",
+    "After re-centring A, $C_{pk}$ rises toward $C_p=1.6$, above 1.33",
+    "Machine B: centred ($C_p=C_{pk}$) but spread too wide; must reduce variation",
+    "Reducing variation needs process or machine improvement, costlier and slower",
+    "A reaches 1.33 more cheaply",
+    "Notes the stable and normal assumptions"
+   ],
+   "explanation": "Machine A's gap between $C_p$ and $C_{pk}$ shows an off-centre mean, which a simple offset adjustment fixes, lifting $C_{pk}$ toward 1.6. Machine B is centred but too variable, so only reducing its standard deviation, which is much more expensive, can raise its index.",
+   "board": "internal"
+  }
+ ]
+}

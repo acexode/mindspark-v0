@@ -1,0 +1,411 @@
+{
+ "lessonTitle": "CAM Toolpaths and Cutting Parameters",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A CAM programmer opens a 6061 aluminium bracket in CAM software and is asked for a program that finishes in eight minutes with a mirror-like wall. The software will happily accept any spindle speed and feed rate, but the wrong ones burn the cutter, chatter the wall or take twenty minutes. Spindle speed, feed rate and the choice of roughing and finishing strategies are three numbers and one decision that turn geometry into a good machining plan."
+  },
+  {
+   "type": "text",
+   "markdown": "The machine controller needs spindle speed in revolutions per minute (rpm) and feed rate in millimetres per minute, but the cutting process cares about two other quantities: the **cutting speed** $V_c$, the surface speed of the cutting edge past the work, and the **feed per tooth** $f_z$, the thickness of material each tooth removes per revolution. Tool makers publish recommended $V_c$ and $f_z$ for each tool and work material pair (typical values only; always check the tool data). The CAM system converts them to rpm and feed rate."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Cutting speed and spindle speed",
+   "text": "Cutting speed $V_c$ (m/min) is the distance the cutting edge travels over the work surface per minute. For a rotating tool of diameter $D$ (mm), the spindle speed is $N=1000V_c/(\\pi D)$ in rpm. The factor 1000 converts millimetres to metres. The formula assumes the full diameter $D$ is cutting; for a ball-end mill at shallow depth the effective diameter is smaller."
+  },
+  {
+   "type": "math",
+   "latex": "N=\\frac{1000\\,V_c}{\\pi D}\\qquad F=f_z\\,z\\,N",
+   "caption": "N spindle speed (rpm), V_c cutting speed (m/min), D tool diameter (mm), F feed rate (mm/min), f_z feed per tooth (mm/tooth), z number of teeth (flutes)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Spindle speed and feed rate for an end mill",
+   "prompt": "Rough-cutting aluminium with a 16 mm diameter, 4-flute end mill. The tool data recommend $V_c=120$ m/min and $f_z=0.08$ mm/tooth. Find $N$ and $F$.",
+   "steps": [
+    {
+     "text": "Convert cutting speed to spindle speed.",
+     "latex": "N=\\frac{1000\\times120}{\\pi\\times16}=2387\\ \\text{rpm}"
+    },
+    {
+     "text": "Feed per revolution is feed per tooth times the number of teeth.",
+     "latex": "f=0.08\\times4=0.32\\ \\text{mm/rev}"
+    },
+    {
+     "text": "Feed rate is feed per revolution times spindle speed.",
+     "latex": "F=0.32\\times2387=764\\ \\text{mm/min}"
+    }
+   ],
+   "answer": "$N\\approx2390$ rpm and $F\\approx764$ mm/min."
+  },
+  {
+   "type": "text",
+   "markdown": "**Direction of the effects.** At the same $V_c$, a bigger tool must turn slower (rpm falls as $1/D$). At fixed $f_z$ and $z$, feed rate is proportional to spindle speed, so doubling rpm doubles $F$ but leaves chip thickness unchanged. Raising $F$ while holding rpm fixed thickens each chip and increases cutting force. Controllers also have a maximum spindle speed and a maximum feed rate, so the lower limit sets what you can actually run."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Speed fixes tool life, feed fixes chip load",
+   "text": "$V_c$ mostly governs heat and tool wear; $f_z$ governs chip thickness, force and, for finishing, surface texture. Change one at a time and recompute the other."
+  },
+  {
+   "type": "text",
+   "markdown": "**Roughing and finishing strategies.** *Roughing* removes most of the stock quickly: large depth and width of cut, high material removal rate, and toolpaths such as adaptive (constant-engagement) clearing or offset pocketing. It leaves a uniform allowance, typically 0.2 to 0.5 mm, because roughing leaves a poor surface and some deflection error. *Finishing* takes one or two light passes at the final size with low depth of cut, small stepover and finishing feeds, to meet dimensions and surface finish."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Aspect",
+    "Roughing",
+    "Finishing"
+   ],
+   "rows": [
+    [
+     "Goal",
+     "Maximum material removal rate",
+     "Final size and surface finish"
+    ],
+    [
+     "Depth and width of cut",
+     "Large",
+     "Small, light"
+    ],
+    [
+     "Feed per tooth",
+     "Larger",
+     "Smaller"
+    ],
+    [
+     "Stock left behind",
+     "0.2 to 0.5 mm (typical)",
+     "None"
+    ],
+    [
+     "Toolpath type",
+     "Adaptive clearing, offset pocketing, zig-zag",
+     "Contour passes, parallel or constant-scallop passes"
+    ],
+    [
+     "Typical tool",
+     "Larger diameter, fewer faces",
+     "Sharp, small corner radius or ball-end"
+    ]
+   ],
+   "caption": "Typical differences between roughing and finishing."
+  },
+  {
+   "type": "math",
+   "latex": "R_a\\approx\\frac{f^{2}}{32\\,r_n}",
+   "caption": "Theoretical turning roughness: f feed per revolution (mm/rev), r_n tool nose radius (mm), R_a in mm. Valid for a sharp, rigid tool and feed small compared with nose radius; real finish is usually somewhat worse."
+  },
+  {
+   "type": "worked_example",
+   "title": "Feed needed to meet a finish target in turning",
+   "prompt": "A finishing turning pass uses an insert with nose radius $r_n=0.8$ mm. Find the largest feed per revolution that achieves $R_a\\le0.8\\ \\mu\\text{m}$ using the theoretical formula.",
+   "steps": [
+    {
+     "text": "Rearrange the roughness formula for feed.",
+     "latex": "f=\\sqrt{32\\,r_n\\,R_a}"
+    },
+    {
+     "text": "Convert the target to millimetres: $0.8\\ \\mu\\text{m}=0.0008$ mm, then substitute.",
+     "latex": "f=\\sqrt{32\\times0.8\\times0.0008}=\\sqrt{0.02048}"
+    },
+    {
+     "text": "Evaluate the square root to get the largest allowable feed.",
+     "latex": "f=0.143\\ \\text{mm/rev}"
+    }
+   ],
+   "answer": "Use a feed of about 0.14 mm/rev or less. Check: at $f=0.2$ mm/rev the same insert gives $R_a=0.0016$ mm (1.56 micrometres), too rough."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Halving the feed per revolution cuts the theoretical roughness by a factor of four, because $R_a\\propto f^2$.",
+    "Doubling the nose radius halves the theoretical roughness at the same feed, but raises cutting force and can induce chatter.",
+    "In 3D milling with a ball-end tool, the scallop height left between passes is about $s^2/(8R)$ for stepover $s$ and ball radius $R$, so halving stepover cuts scallop height by four.",
+    "Smaller stepover and feed lengthen the machining time, so finishing is applied only where the finish is required."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "exam-tip",
+   "title": "Check units first",
+   "text": "Cutting speed is in m/min but diameter is in mm. The factor 1000 in the spindle formula is the unit conversion. A result that is 1000 times too large or small is a sign it was dropped."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Spindle speed is $N=1000V_c/(\\pi D)$ and feed rate is $F=f_zzN$; recompute both whenever tool diameter or flute count changes.",
+    "Roughing maximises removal rate and leaves a small allowance; finishing uses light cuts and fine feeds to meet size and finish.",
+    "Theoretical roughness scales with $f^2/r_n$ in turning, and scallop height scales with stepover squared in ball-end finishing."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A 25 mm diameter end mill is run at a cutting speed of 200 m/min. Calculate the spindle speed in rpm.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o1"
+   ],
+   "correctValue": 2546,
+   "tolerance": 10,
+   "unit": "rpm",
+   "explanation": "$N=1000V_c/(\\pi D)=1000\\times200/(\\pi\\times25)$. This gives about 2546 rpm, which is within a typical machine spindle range.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 50 mm diameter shell mill with 6 inserts (teeth) is run at a cutting speed of 180 m/min with a feed per tooth of 0.12 mm. Find the table feed rate in mm/min.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o1",
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o2"
+   ],
+   "correctValue": 825,
+   "tolerance": 3,
+   "unit": "mm/min",
+   "explanation": "First $N=1000\\times180/(\\pi\\times50)=1146$ rpm. Then $F=f_zzN=0.12\\times6\\times1146\\approx825$ mm/min.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A turning finish pass uses a nose radius of 1.2 mm and a feed of 0.15 mm/rev. Using the theoretical formula, compute the arithmetic average roughness $R_a$ in micrometres.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o3"
+   ],
+   "correctValue": 0.586,
+   "tolerance": 0.01,
+   "unit": "micrometres",
+   "explanation": "$R_a=f^2/(32r_n)=0.15^2/(32\\times1.2)=0.0225/38.4=0.000586$ mm. This is 0.586 micrometres, a theoretical lower bound for the finish.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A programmer replaces a 10 mm diameter end mill by a 20 mm diameter end mill of the same material and keeps the same recommended cutting speed. What should happen to the spindle speed?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It should be doubled, because a larger tool needs more rotation to cut"
+    },
+    {
+     "id": "b",
+     "text": "It should be unchanged, because cutting speed does not depend on diameter"
+    },
+    {
+     "id": "c",
+     "text": "It should be halved, because spindle speed is inversely proportional to tool diameter at constant cutting speed"
+    },
+    {
+     "id": "d",
+     "text": "It should be quadrupled, because cutting power scales with diameter squared"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It should be halved, because spindle speed is inversely proportional to tool diameter at constant cutting speed",
+   "distractorRationale": {
+    "a": "At constant surface speed a larger circumference passes the work faster, so fewer rpm are needed.",
+    "b": "Cutting speed is surface speed, which does depend on diameter and rpm together.",
+    "c": "$N=1000V_c/(\\pi D)$ is inversely proportional to $D$, so doubling $D$ halves $N$.",
+    "d": "No such squared relationship exists in the spindle speed formula."
+   },
+   "explanation": "The edge of a larger tool travels faster for the same rpm, so to keep $V_c$ constant the spindle must slow. Running the larger tool at the original rpm would double the cutting speed and overheat the cutting edge.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A programmer raises the spindle speed by 25% on a 3-flute cutter but forgets to change the feed rate. The feed per tooth was 0.10 mm. What is the feed per tooth now?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "0.08 mm, because the same feed rate is spread over more teeth passes"
+    },
+    {
+     "id": "b",
+     "text": "0.125 mm, because feed per tooth rises with spindle speed"
+    },
+    {
+     "id": "c",
+     "text": "0.10 mm, because feed per tooth is fixed by the tool"
+    },
+    {
+     "id": "d",
+     "text": "0.075 mm, because the feed per tooth falls by the number of flutes"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "0.08 mm, because the same feed rate is spread over more teeth passes",
+   "distractorRationale": {
+    "a": "With $F$ and $z$ fixed, $f_z=F/(zN)$, so a 25% rise in $N$ gives $0.10/1.25=0.08$ mm.",
+    "b": "Feed per tooth falls when rpm rises at constant feed rate; each tooth takes a thinner chip.",
+    "c": "Feed per tooth is set by $F/(zN)$, so it changes when $N$ changes.",
+    "d": "The change is by the factor 1/1.25, not by the flute count."
+   },
+   "explanation": "Feed rate and spindle speed determine chip thickness. Raising rpm at fixed $F$ thins the chip, which can cause rubbing rather than cutting and shorten tool life.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A turning finish pass gives $R_a=1.6\\ \\mu\\text{m}$ at the current feed. By what factor should the feed per revolution be changed to obtain a theoretical $R_a$ of 0.4 micrometres with the same insert?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Quarter the feed, because the roughness must fall to a quarter"
+    },
+    {
+     "id": "b",
+     "text": "Halve the feed, because $R_a$ is proportional to $f^2$"
+    },
+    {
+     "id": "c",
+     "text": "Reduce the feed by one quarter, because roughness is proportional to feed"
+    },
+    {
+     "id": "d",
+     "text": "Double the feed, because a smoother surface needs a larger chip"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Halve the feed, because $R_a$ is proportional to $f^2$",
+   "distractorRationale": {
+    "a": "Roughness scales with the square of the feed, so quartering the feed would cut it sixteen-fold, wasting machining time.",
+    "b": "$R_a\\propto f^2$, so a fourfold reduction in $R_a$ needs a halving of the feed.",
+    "c": "Roughness is not linear in feed; this would leave about 0.56 of the original, still far above target.",
+    "d": "Larger feed gives a rougher surface in turning."
+   },
+   "explanation": "Because roughness depends on the square of feed, the required feed change is $\\sqrt{0.4/1.6}=0.5$. The price is that the pass takes twice as long.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "In finishing a curved surface with a ball-end mill, the CAM programmer halves the stepover (distance between adjacent passes). What happens to the scallop height and the machining time?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Scallop height falls to about a quarter and machining time roughly doubles"
+    },
+    {
+     "id": "b",
+     "text": "Scallop height halves and machining time halves"
+    },
+    {
+     "id": "c",
+     "text": "Scallop height is unchanged and machining time doubles"
+    },
+    {
+     "id": "d",
+     "text": "Scallop height falls to a quarter and machining time is unchanged"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Scallop height falls to about a quarter and machining time roughly doubles",
+   "distractorRationale": {
+    "a": "Scallop height $\\approx s^2/(8R)$ falls fourfold, while twice as many passes take about twice as long.",
+    "b": "Scallop height varies with the square of stepover, and halving stepover doubles the number of passes.",
+    "c": "Stepover directly controls the ridge left between passes.",
+    "d": "Twice as many passes are needed, so time does not stay constant."
+   },
+   "explanation": "Stepover reduces the ridge between passes quadratically but increases path length linearly. This is why finishing strategies keep a fine stepover only on surfaces that need a good finish.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which pair correctly describes roughing and finishing toolpath goals?",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Roughing reaches final size; finishing removes bulk material"
+    },
+    {
+     "id": "b",
+     "text": "Both aim for the highest possible material removal rate"
+    },
+    {
+     "id": "c",
+     "text": "Roughing uses the lightest cuts to avoid tool wear"
+    },
+    {
+     "id": "d",
+     "text": "Roughing maximises material removal rate and leaves a small allowance; finishing removes the allowance with light cuts to reach size and finish"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Roughing maximises material removal rate and leaves a small allowance; finishing removes the allowance with light cuts to reach size and finish",
+   "distractorRationale": {
+    "a": "This reverses the roles of the two operations.",
+    "b": "Finishing prioritises accuracy and surface finish, not removal rate.",
+    "c": "Roughing uses the heaviest cuts the machine and tool can support.",
+    "d": "Roughing removes bulk; finishing meets dimensions and finish."
+   },
+   "explanation": "The allowance left by roughing, typically a few tenths of a millimetre, is removed by the finishing pass. This division lets the finishing tool cut lightly and cleanly, so deflection and wear affect the final surface less.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A 12 mm, 3-flute end mill must cut mild steel at a recommended $V_c=90$ m/min and $f_z=0.05$ mm/tooth, but the machine spindle is limited to 2000 rpm. Calculate the ideal spindle speed and feed rate, state what the limit forces you to do, and give the resulting feed rate if you run at the limit while keeping the same chip thickness.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o1",
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o2"
+   ],
+   "markingGuide": [
+    "Ideal $N=1000\\times90/(\\pi\\times12)=2387$ rpm",
+    "Ideal $F=0.05\\times3\\times2387=358$ mm/min",
+    "Recognises 2387 rpm exceeds the 2000 rpm limit so cutting speed falls to $\\pi\\times12\\times2000/1000=75.4$ m/min",
+    "Feed rate at the limit with same $f_z$: $F=0.05\\times3\\times2000=300$ mm/min",
+    "States that chip thickness is preserved while cutting speed is lower (tool life is not harmed)"
+   ],
+   "explanation": "The ideal speed is $N=2387$ rpm, which the machine cannot reach, so it runs at 2000 rpm (75.4 m/min). Keeping $f_z$ constant gives $F=0.05\\times3\\times2000=300$ mm/min, preserving chip thickness at a lower cutting speed.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A pocket in an aluminium housing has a floor that must achieve a surface roughness of about 1.6 micrometres $R_a$ and walls that need only general finish. Outline a roughing and finishing strategy: state the tool and cut parameters you would vary for each stage and justify them.",
+   "objectiveIds": [
+    "ug.mce-manufacturing-systems-metrology.cnc-cam.cam-toolpaths.o3"
+   ],
+   "markingGuide": [
+    "Roughing with a larger end mill using adaptive or offset pocketing to maximise removal rate",
+    "Leaves a uniform finishing allowance (typically 0.2 to 0.5 mm)",
+    "Finishing floor with light depth, fine stepover and reduced feed per tooth",
+    "Tool with a sharp corner radius or ball-end chosen to control scallop height, and stepover reduced to cut scallop height",
+    "Walls get one finish pass only, saving time",
+    "Mentions trading time against finish and checking the finish achieved"
+   ],
+   "explanation": "A good plan removes the bulk fast with a large tool and leaves an allowance, then finishes the floor with fine stepover and feed because roughness depends on stepover and feed. The walls need no fine finishing, which saves machining time.",
+   "board": "internal"
+  }
+ ]
+}

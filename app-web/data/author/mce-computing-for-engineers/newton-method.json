@@ -1,0 +1,393 @@
+{
+ "lessonTitle": "Newton-Raphson and Convergence",
+ "estimatedMinutes": 35,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The Colebrook equation gives the friction factor of turbulent pipe flow, but it contains the friction factor $f$ on both sides inside a logarithm, so it cannot be rearranged to give $f$ directly. Every pipe-network program solves it numerically, and the method of choice is Newton-Raphson, which usually needs only three or four iterations."
+  },
+  {
+   "type": "text",
+   "markdown": "Newton-Raphson finds a root of $g(x)=0$ by replacing the curve with its **tangent line** at the current guess $x_n$ and moving to where that tangent crosses zero. The tangent at $x_n$ has slope $g'(x_n)$ and passes through $(x_n,g(x_n))$, so it reaches zero at $x_{n+1}=x_n-g(x_n)/g'(x_n)$. Repeating this refines the guess. Unlike bisection it needs no bracket, but it needs the derivative and a reasonable starting guess."
+  },
+  {
+   "type": "math",
+   "latex": "x_{n+1}=x_n-\\frac{g(x_n)}{g'(x_n)}",
+   "caption": "Newton-Raphson update. It requires g'(x_n) not to be zero."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Quadratic convergence",
+   "text": "If $e_n=x_n-r$ is the error and the root is simple, then near the root $e_{n+1}\\approx C\\,e_n^{2}$ with $C=g''(r)/\\big(2g'(r)\\big)$. The error is squared at each step, so the number of correct digits roughly **doubles** per iteration."
+  },
+  {
+   "type": "text",
+   "markdown": "For the Colebrook equation, $\\dfrac{1}{\\sqrt f}=-2\\log_{10}\\!\\left(\\dfrac{\\varepsilon}{3.7D}+\\dfrac{2.51}{Re\\sqrt f}\\right)$, with relative roughness $\\varepsilon/D$ and Reynolds number $Re$, it is convenient to work with $x=1/\\sqrt f$. Then the root-finding function and its derivative are given below, where $a=\\varepsilon/(3.7D)$ and $b=2.51/Re$."
+  },
+  {
+   "type": "math",
+   "latex": "g(x)=x+2\\log_{10}(a+bx),\\qquad g'(x)=1+\\frac{2}{\\ln 10}\\,\\frac{b}{a+bx}",
+   "caption": "Colebrook equation as g(x) = 0 with x = 1/sqrt(f)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Newton iterations for the Colebrook equation",
+   "prompt": "Find $f$ for $Re=10^5$ and $\\varepsilon/D=0.001$, starting from $x_0=7$ (that is, $f\\approx0.020$).",
+   "steps": [
+    {
+     "text": "Constants: $a=0.001/3.7=2.703\\times10^{-4}$ and $b=2.51/10^5=2.51\\times10^{-5}$.",
+     "latex": "a=2.703\\times10^{-4},\\quad b=2.51\\times10^{-5}"
+    },
+    {
+     "text": "At $x_0=7$: $a+bx_0=2.703\\times10^{-4}+1.757\\times10^{-4}=4.460\\times10^{-4}$, $\\log_{10}=-3.3507$, so $g(7)=7-6.7014=0.2986$. The derivative is $g'(7)=1+0.8686\\times(2.51\\times10^{-5}/4.460\\times10^{-4})=1.0489$.",
+     "latex": "g(7)=0.2986,\\quad g'(7)=1.0489"
+    },
+    {
+     "text": "Update: $x_1=7-0.2986/1.0489=6.7153$. At $x_1$, $g=-1.1\\times10^{-4}$ and $g'=1.0497$, so $x_2=6.7153+0.00011/1.0497=6.71541$.",
+     "latex": "x_1=6.7153,\\quad x_2=6.71541"
+    },
+    {
+     "text": "Next, $g(x_2)\\approx-1.6\\times10^{-11}$, so $x_3$ agrees with $x_2$ to 10 digits. The error went roughly $0.3\\to10^{-4}\\to10^{-11}$, showing quadratic convergence."
+    },
+    {
+     "text": "Convert back: $f=1/x^2=1/6.71541^2=0.02217$.",
+     "latex": "f=\\frac{1}{x^{2}}=0.02217"
+    }
+   ],
+   "answer": "f = 0.0222 after three iterations."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Property",
+    "Bisection",
+    "Newton-Raphson"
+   ],
+   "rows": [
+    [
+     "Needs",
+     "A bracket with a sign change",
+     "Starting guess and derivative"
+    ],
+    [
+     "Convergence order",
+     "Linear (error halves each step)",
+     "Quadratic (digits roughly double)"
+    ],
+    [
+     "Guaranteed to converge?",
+     "Yes, for continuous $f$ with a bracket",
+     "No; depends on the starting guess"
+    ],
+    [
+     "Function evaluations per step",
+     "1",
+     "2 (function and derivative)"
+    ],
+    [
+     "Iterations for $10^{-12}$ from error $0.1$",
+     "about 37",
+     "about 4"
+    ]
+   ],
+   "caption": "Convergence and robustness compared."
+  },
+  {
+   "type": "text",
+   "markdown": "Newton's method can fail. If $g'(x_n)\\approx0$ the step is enormous. If the starting guess is far from the root, or the function has a flat or oscillating region, the iterates can wander, **diverge**, or cycle. These failures are a reason to check the first few steps and to cap the iteration count."
+  },
+  {
+   "type": "worked_example",
+   "title": "A cycling example",
+   "prompt": "Apply Newton's method to $g(x)=x^3-2x+2$ from $x_0=0$.",
+   "steps": [
+    {
+     "text": "Derivative: $g'(x)=3x^2-2$. At $x_0=0$: $g=2$ and $g'=-2$."
+    },
+    {
+     "text": "First step: $x_1=0-2/(-2)=1$. At $x_1=1$: $g=1-2+2=1$ and $g'=3-2=1$.",
+     "latex": "x_1=0-\\frac{2}{-2}=1"
+    },
+    {
+     "text": "Second step: $x_2=1-1/1=0$. We are back at the start, so the iteration cycles $0\\to1\\to0\\to\\dots$ and never converges, even though a real root exists near $x=-1.77$.",
+     "latex": "x_2=1-\\frac{1}{1}=0"
+    }
+   ],
+   "answer": "The iterates alternate between 0 and 1, so Newton diverges (cycles) from x0 = 0."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "Write the problem as $g(x)=0$ and derive $g'(x)$ carefully.",
+    "Choose a physically sensible starting guess (for Colebrook, $f\\approx0.02$).",
+    "Stop when $|x_{n+1}-x_n|$ is below a tolerance, and set a maximum iteration count.",
+    "Check that $g'(x_n)$ is not near zero before dividing.",
+    "If Newton fails, use a bracketing method to get close, then switch to Newton."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Newton is fast but not safe",
+   "text": "Quadratic convergence only applies near a simple root. Far from the root Newton may converge slowly, jump to another root, or diverge. For $g(x)=x^{1/3}$, every start gives $x_{n+1}=-2x_n$, which moves away from the root at $x=0$ at each step."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Newton-Raphson updates x_{n+1} = x_n - g(x_n)/g'(x_n), using the tangent line.",
+    "Near a simple root it converges quadratically: the number of correct digits roughly doubles each step.",
+    "For Colebrook, solve in x = 1/sqrt(f) with g(x) = x + 2 log10(a + b x); three or four iterations suffice.",
+    "Newton can diverge or cycle (g' near zero, poor starting guess); bisection is slower but guaranteed."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Newton's method is applied to the Colebrook equation for $Re=5\\times10^4$ and $\\varepsilon/D=0.002$ in the form $g(x)=0$ with $x=1/\\sqrt f$. At $x_0=6$ it gives $g(6)=-0.1496$ and $g'(6)=1.0518$. Compute the friction factor $f=1/x_1^2$ from the first Newton iterate $x_1$ (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o1"
+   ],
+   "correctValue": 0.0265,
+   "tolerance": 0.0001,
+   "unit": "dimensionless",
+   "explanation": "The Newton step is x1 = 6 - (-0.1496)/1.0518 = 6 + 0.1422 = 6.1422. Then f = 1/x1^2 = 1/37.73 = 0.02651.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which formula is the Newton-Raphson update for solving $g(x)=0$?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$x_{n+1}=(x_n+x_{n-1})/2$"
+    },
+    {
+     "id": "b",
+     "text": "$x_{n+1}=x_n+g(x_n)\\,g'(x_n)$"
+    },
+    {
+     "id": "c",
+     "text": "$x_{n+1}=x_n-g(x_n)/g'(x_n)$"
+    },
+    {
+     "id": "d",
+     "text": "$x_{n+1}=x_n-g'(x_n)/g(x_n)$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$x_{n+1}=x_n-g(x_n)/g'(x_n)$",
+   "distractorRationale": {
+    "c": "Correct: the tangent-line root.",
+    "d": "The ratio is inverted, which has the wrong units.",
+    "a": "This is the bisection midpoint formula for two previous points.",
+    "b": "Multiplying value and slope does not locate the tangent's zero."
+   },
+   "explanation": "The tangent at x_n crosses zero at x_n - g(x_n)/g'(x_n). The step is the function value divided by the slope.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Newton's method is applied to $g(x)=x^3-12x+5$. Which starting guess causes an immediate failure?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$x_0=5$"
+    },
+    {
+     "id": "b",
+     "text": "$x_0=0$"
+    },
+    {
+     "id": "c",
+     "text": "$x_0=2$"
+    },
+    {
+     "id": "d",
+     "text": "$x_0=3$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$x_0=2$",
+   "distractorRationale": {
+    "c": "Correct: g'(2) = 0, so the update is undefined.",
+    "b": "g'(0) = -12, which is fine.",
+    "d": "g'(3) = 15, which is fine.",
+    "a": "g'(5) = 63, which is fine."
+   },
+   "explanation": "The derivative is g'(x) = 3x^2 - 12, which is zero at x = 2 and x = -2. Starting at 2 would divide by zero, and starting near it would send the iterate very far away.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "Newton's method is applied to $g(x)=x^{1/3}$ (the real cube root, sign preserved), whose only root is $x=0$. The update simplifies to $x_{n+1}=-2x_n$. Starting from $x_0=0.5$, what is $x_2$?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o2"
+   ],
+   "correctValue": 2,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "Each step multiplies x by -2: x1 = -1.0 and x2 = +2.0. The iterates grow in magnitude, so Newton diverges from the root at 0 instead of converging.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does 'quadratic convergence' of Newton's method mean in practice?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Two iterations are always enough"
+    },
+    {
+     "id": "b",
+     "text": "The method works for any starting guess"
+    },
+    {
+     "id": "c",
+     "text": "The error is halved with each iteration"
+    },
+    {
+     "id": "d",
+     "text": "The number of correct digits roughly doubles with each iteration"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The number of correct digits roughly doubles with each iteration",
+   "distractorRationale": {
+    "d": "Correct: the number of correct digits doubles.",
+    "c": "Halving per step is linear convergence (bisection).",
+    "a": "The number of iterations depends on the starting error and tolerance.",
+    "b": "Quadratic convergence is local and needs a good start."
+   },
+   "explanation": "With e_{n+1} approximately C e_n^2, an error of 10^-3 becomes about 10^-6 and then 10^-12. Bisection, by contrast, only halves the bracket each step.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A root has a starting error of 0.1. Newton's method has $e_{n+1}\\approx e_n^2$ (take $C=1$) and bisection halves its bracket width, starting from width 0.1. About how many iterations does each need to reach an error below $10^{-12}$?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Newton about 4; bisection about 37"
+    },
+    {
+     "id": "b",
+     "text": "Both about 12"
+    },
+    {
+     "id": "c",
+     "text": "Newton about 6; bisection about 100"
+    },
+    {
+     "id": "d",
+     "text": "Newton about 37; bisection about 4"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Newton about 4; bisection about 37",
+   "distractorRationale": {
+    "a": "Correct: Newton squares the error; bisection halves it.",
+    "d": "This reverses the two methods.",
+    "b": "Equal counts ignore the different convergence orders.",
+    "c": "Newton does not need 6 iterations here, and bisection needs fewer than 100."
+   },
+   "explanation": "For Newton the errors are 1e-2, 1e-4, 1e-8, 1e-16, so 4 iterations are enough. Bisection needs 0.1/2^n < 1e-12, so n > log2(1e11) = 36.5, i.e. 37.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Near a simple root, a Newton iteration has $e_{n+1}\\approx0.8\\,e_n^2$ (e in metres). The initial error is $e_0=0.1$ m. What is the error $e_2$ in metres?",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o3"
+   ],
+   "correctValue": 5.12e-05,
+   "tolerance": 1e-06,
+   "unit": "m",
+   "explanation": "First e1 = 0.8 x (0.1)^2 = 0.8 x 0.01 = 0.008 m. Then e2 = 0.8 x (0.008)^2 = 0.8 x 6.4e-5 = 5.12e-5 m.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "Newton's method converges to a root of any continuous function, regardless of the starting guess.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "False",
+   "explanation": "Newton's method depends on the derivative and the starting guess. It can diverge, cycle between points, or jump to a different root if the guess is poor or the derivative is near zero.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Describe how you would set up and carry out Newton-Raphson iterations to find the friction factor from the Colebrook equation for a given $Re$ and relative roughness. Include the unknown chosen, the function and derivative, the starting guess, the stopping criterion and the final step.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o1"
+   ],
+   "markingGuide": [
+    "Choose x = 1/sqrt(f) as the unknown to remove the f inside the logarithm",
+    "Define g(x) = x + 2 log10(a + b x) with a = (eps/D)/3.7 and b = 2.51/Re",
+    "Derivative g'(x) = 1 + (2/ln10) b/(a + b x)",
+    "Starting guess from a typical f (about 0.02, so x about 7) or an explicit approximation",
+    "Iterate x_{n+1} = x_n - g/g' until |x_{n+1} - x_n| is below a tolerance, with an iteration limit",
+    "Convert back: f = 1/x^2"
+   ],
+   "explanation": "Using x = 1/sqrt(f) gives a smooth function that Newton handles well. A sensible starting guess and a quadratic convergence rate give an accurate answer in only a few iterations.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Compare Newton-Raphson and bisection for solving a single nonlinear equation. State one advantage of each, one failure mode of Newton's method, and describe a strategy that combines them.",
+   "objectiveIds": [
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o2",
+    "ug.mce-computing-for-engineers.root-finding.newton-method.o3"
+   ],
+   "markingGuide": [
+    "Newton advantage: quadratic convergence, few iterations",
+    "Bisection advantage: guaranteed convergence once a sign-change bracket is known; no derivative needed",
+    "Newton failure: g' near zero, a poor starting guess leading to divergence or cycling",
+    "Bisection is linear: error halves each step, so it needs many more iterations",
+    "Hybrid: use bisection to get a close guess or maintain a bracket, then use Newton for fast final convergence (as in Brent-type methods)"
+   ],
+   "explanation": "Bisection trades speed for certainty, and Newton trades certainty for speed. Combining the two uses the bracket for safety and the tangent step for rapid refinement.",
+   "board": "internal"
+  }
+ ]
+}

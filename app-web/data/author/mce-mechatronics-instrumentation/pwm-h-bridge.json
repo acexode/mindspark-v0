@@ -1,0 +1,410 @@
+{
+ "lessonTitle": "PWM and H-Bridge Drives",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A robot arm joint motor spins smoothly from a 24 V battery at any speed from zero to full, yet the transistors driving it are only ever fully on or fully off. Switching a transistor on and off thousands of times per second, rather than throttling it, is what lets the drive stay cool and small."
+  },
+  {
+   "type": "text",
+   "markdown": "A transistor that is partly on dissipates large power, because it carries current while dropping voltage. A transistor that is fully on drops little voltage, and one that is fully off carries no current, so both cases waste little. **Pulse-width modulation (PWM)** exploits this: the supply is switched on and off rapidly, and the motor's inductance and mechanical inertia average the pulses to a smooth effective voltage."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Duty cycle",
+   "text": "With period $T$ (seconds) and on-time $t_{on}$, the **duty cycle** is $D=t_{on}/T$ (between 0 and 1) and the PWM frequency is $f=1/T$. The average voltage across the motor is the supply voltage times the duty cycle, for an ideal switch."
+  },
+  {
+   "type": "math",
+   "latex": "V_{avg}=D\\,V_s,\\qquad D=\\frac{t_{on}}{T},\\qquad f=\\frac{1}{T}",
+   "caption": "Average voltage of an ideal PWM drive"
+  },
+  {
+   "type": "worked_example",
+   "title": "Duty cycle and average voltage",
+   "prompt": "A 24 V supply drives a brushed motor with winding resistance 2 $\\Omega$ at duty cycle 0.35 and a back-EMF of 6 V. Find the average voltage, the average current and the on-time at 20 kHz.",
+   "steps": [
+    {
+     "text": "Average voltage is duty times supply.",
+     "latex": "V_{avg}=0.35\\times24=8.4\\ \\text{V}"
+    },
+    {
+     "text": "Average current is the voltage difference over the resistance.",
+     "latex": "I=\\frac{8.4-6}{2}=1.2\\ \\text{A}"
+    },
+    {
+     "text": "Period at 20 kHz is $50\\ \\mu$s, so on-time is 0.35 of it.",
+     "latex": "t_{on}=0.35\\times50\\ \\mu\\text{s}=17.5\\ \\mu\\text{s}"
+    }
+   ],
+   "answer": "The motor sees 8.4 V on average, draws 1.2 A, and the transistor is on for 17.5 microseconds of each 50 microsecond period."
+  },
+  {
+   "type": "text",
+   "markdown": "**The H-bridge.** To reverse a motor we must reverse the voltage across it. An H-bridge has four switches (Q1 and Q2 forming the left leg from supply to ground, Q3 and Q4 the right leg), with the motor connected between the leg midpoints. Closing the diagonal pair Q1 and Q4 applies +V to the motor (forward); closing the other diagonal Q3 and Q2 applies −V (reverse). Closing both low-side switches (or both high-side) shorts the motor terminals, which brakes it."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Q1 (high-left)",
+    "Q2 (low-left)",
+    "Q3 (high-right)",
+    "Q4 (low-right)",
+    "Motor result"
+   ],
+   "rows": [
+    [
+     "On",
+     "Off",
+     "Off",
+     "On",
+     "Forward drive"
+    ],
+    [
+     "Off",
+     "On",
+     "On",
+     "Off",
+     "Reverse drive"
+    ],
+    [
+     "Off",
+     "On",
+     "Off",
+     "On",
+     "Brake (terminals shorted)"
+    ],
+    [
+     "Off",
+     "Off",
+     "Off",
+     "Off",
+     "Coast (freewheel through diodes)"
+    ],
+    [
+     "On",
+     "On",
+     "any",
+     "any",
+     "Shoot-through: supply short circuit"
+    ]
+   ],
+   "caption": "H-bridge switch states"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Shoot-through",
+   "text": "If the high-side and low-side switches of the same leg are on together, even for a few hundred nanoseconds, they form a short circuit across the supply and can destroy the transistors. Switches turn off more slowly than the command, so drivers insert a **dead time** in which both switches are off before the opposite switch turns on."
+  },
+  {
+   "type": "math",
+   "latex": "\\Delta I_{pp}\\approx\\frac{V_s\\,D\\,(1-D)}{L\\,f},\\qquad P_{sw}\\approx\\tfrac{1}{2}\\,V_s\\,I\\,(t_r+t_f)\\,f",
+   "caption": "Peak-to-peak current ripple (L motor inductance in henries) and switching loss per transistor (t_r and t_f rise and fall times)"
+  },
+  {
+   "type": "text",
+   "markdown": "**Choosing the PWM frequency.** Three effects compete. (1) A higher $f$ reduces current ripple, since the inductor has less time to change current. (2) A higher $f$ raises switching loss, proportional to $f$. (3) Frequencies below about 20 kHz lie in the audible range and make the motor whine, so most drives run above 20 kHz unless the losses are too high. The ripple formula is an approximation that assumes a constant back-EMF and a freewheeling current path."
+  },
+  {
+   "type": "worked_example",
+   "title": "Ripple and switching loss",
+   "prompt": "A drive uses $V_s=24$ V, $D=0.5$, a motor inductance $L=2$ mH, $f=20$ kHz, current 5 A, and transistors with $t_r+t_f=100$ ns. Find the ripple, the switching loss per transistor and the dead-time fraction for a 500 ns dead time.",
+   "steps": [
+    {
+     "text": "Peak-to-peak ripple.",
+     "latex": "\\Delta I_{pp}=\\frac{24\\times0.5\\times0.5}{2\\times10^{-3}\\times20\\,000}=0.15\\ \\text{A}"
+    },
+    {
+     "text": "Switching loss per transistor.",
+     "latex": "P_{sw}=\\tfrac12(24)(5)(100\\times10^{-9})(20\\,000)=0.12\\ \\text{W}"
+    },
+    {
+     "text": "At 100 kHz the loss rises in proportion to $f$, to 0.60 W per transistor, and the ripple falls to 0.03 A."
+    },
+    {
+     "text": "Dead time as a fraction of the 50 microsecond period.",
+     "latex": "\\frac{0.5\\ \\mu\\text{s}}{50\\ \\mu\\text{s}}=1\\%"
+    }
+   ],
+   "answer": "Ripple 0.15 A pp and 0.12 W loss at 20 kHz; five times the frequency gives one-fifth the ripple but five times the switching loss. Dead time costs about 1 percent of the period."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Frequency is a compromise",
+   "text": "Pick the lowest frequency that is inaudible (above about 20 kHz) and gives acceptable ripple; go higher only if ripple demands it and the transistors can dissipate the switching loss."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "The average motor voltage of a PWM drive is $D V_s$.",
+    "An H-bridge reverses the motor by switching the diagonal pair that conducts; both switches in one leg must never be on together.",
+    "Dead time prevents shoot-through; during it, current flows through the body diodes.",
+    "PWM frequency trades ripple (falls as $1/f$) against switching loss (rises with $f$) and audible noise (below about 20 kHz)."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A 12 V supply drives a motor with an ideal PWM stage at 25 percent duty cycle. What is the average voltage across the motor?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "12 V"
+    },
+    {
+     "id": "b",
+     "text": "3 V"
+    },
+    {
+     "id": "c",
+     "text": "25 V"
+    },
+    {
+     "id": "d",
+     "text": "6 V"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "3 V",
+   "distractorRationale": {
+    "a": "This is the supply voltage, which would require 100 percent duty.",
+    "b": "Correct: duty cycle times supply voltage.",
+    "c": "This treats 25 percent as 25 volts and has no physical meaning.",
+    "d": "This is 50 percent duty, which is not the value stated."
+   },
+   "explanation": "The average voltage is $D V_s=0.25\\times12=3$ V. The motor's inductance and inertia smooth the pulses into this average.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What is shoot-through in an H-bridge?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The motor current reverses direction"
+    },
+    {
+     "id": "b",
+     "text": "The PWM duty cycle exceeds 100 percent"
+    },
+    {
+     "id": "c",
+     "text": "Back-EMF exceeds the supply voltage"
+    },
+    {
+     "id": "d",
+     "text": "Both transistors of the same leg conduct at once, shorting the supply"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "Both transistors of the same leg conduct at once, shorting the supply",
+   "distractorRationale": {
+    "a": "Reversing current is normal operation.",
+    "b": "Duty cycle is limited to 100 percent.",
+    "c": "Back-EMF is a motor effect, unrelated to the leg short.",
+    "d": "Correct: a short across the supply through one leg."
+   },
+   "explanation": "When the high-side and low-side switches of one leg are both on, a low-resistance path from supply to ground forms. The resulting large current can destroy the transistors and the supply.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "An H-bridge is running a motor forward with the left high-side and right low-side switches closed. How is the direction reversed?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Open that diagonal pair, wait the dead time, then close the other diagonal pair"
+    },
+    {
+     "id": "b",
+     "text": "Close all four switches together"
+    },
+    {
+     "id": "c",
+     "text": "Close the two high-side switches only"
+    },
+    {
+     "id": "d",
+     "text": "Increase the PWM frequency"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Open that diagonal pair, wait the dead time, then close the other diagonal pair",
+   "distractorRationale": {
+    "a": "Correct: switch the diagonals with a dead time.",
+    "b": "Closing all four causes shoot-through in both legs.",
+    "c": "Both high-side switches on gives a brake or short, not reversal.",
+    "d": "Frequency does not change polarity."
+   },
+   "explanation": "Reversing the polarity across the motor requires the opposite diagonal pair to conduct. A dead time between turning one pair off and the other on prevents shoot-through.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A drive's PWM frequency is raised from 4 kHz to 25 kHz. Which result is expected?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Audible whine increases and switching loss falls"
+    },
+    {
+     "id": "b",
+     "text": "Audible whine disappears and current ripple falls, but switching losses rise"
+    },
+    {
+     "id": "c",
+     "text": "Average motor voltage rises by a factor of 6"
+    },
+    {
+     "id": "d",
+     "text": "Dead time becomes unnecessary"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Audible whine disappears and current ripple falls, but switching losses rise",
+   "distractorRationale": {
+    "a": "Higher frequency moves the tone out of the audible band, not into it.",
+    "b": "Correct: quieter, lower ripple, higher switching loss.",
+    "c": "Average voltage depends on duty cycle only.",
+    "d": "Dead time is still needed, and is a larger fraction of a shorter period."
+   },
+   "explanation": "Above about 20 kHz the switching tone is beyond human hearing, ripple varies as $1/f$ so it falls, and switching loss is proportional to $f$ so it rises. The average voltage is set by the duty cycle, not the frequency.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "During the dead time of an H-bridge leg, both transistors in the leg are off but the motor current continues to flow. Where does it flow?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Through the gate of the transistors"
+    },
+    {
+     "id": "b",
+     "text": "Through the body or freewheel diodes of the transistors"
+    },
+    {
+     "id": "c",
+     "text": "Nowhere, because inductor current stops instantly"
+    },
+    {
+     "id": "d",
+     "text": "Through the PWM generator"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Through the body or freewheel diodes of the transistors",
+   "distractorRationale": {
+    "a": "Gates carry no power current.",
+    "b": "Correct: the diodes provide the freewheeling path.",
+    "c": "Inductor current cannot change instantaneously, so it cannot stop at once.",
+    "d": "The signal generator is not part of the power path."
+   },
+   "explanation": "Motor inductance forces the current to continue in the same direction, so it flows through whichever freewheel diode provides a path to the supply or ground. This is why drives include diodes across each transistor.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A 48 V supply drives a motor through an ideal PWM stage at duty cycle 0.625. Calculate the average motor voltage in volts.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o1"
+   ],
+   "correctValue": 30,
+   "tolerance": 0.1,
+   "unit": "V",
+   "explanation": "The average voltage is $D V_s=0.625\\times48=30$ V. The ideal-switch assumption ignores transistor voltage drops.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "What duty cycle, as a fraction between 0 and 1, gives an average voltage of 9.0 V from a 24 V supply (ideal switches)?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o1"
+   ],
+   "correctValue": 0.375,
+   "tolerance": 0.005,
+   "unit": "dimensionless",
+   "explanation": "Since $V_{avg}=D V_s$, $D=9/24=0.375$. This corresponds to 37.5 percent on-time.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A drive with $V_s=36$ V runs at $D=0.5$ with a motor inductance of 1.5 mH and PWM frequency 16 kHz. Using $\\Delta I_{pp}\\approx V_s D(1-D)/(Lf)$, find the peak-to-peak current ripple in amps.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o3"
+   ],
+   "correctValue": 0.375,
+   "tolerance": 0.01,
+   "unit": "A",
+   "explanation": "The numerator is $36\\times0.5\\times0.5=9$ V and the denominator is $1.5\\times10^{-3}\\times16\\,000=24$ ohm (henry times hertz), so the ripple is $9/24=0.375$ A. Raising the frequency would reduce this ripple in proportion.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Describe how an H-bridge drives a motor in both directions with PWM speed control. Explain shoot-through, how dead time prevents it, and what dead time costs.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o1",
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o2"
+   ],
+   "markingGuide": [
+    "Describes the four switches and the diagonal pairs giving forward and reverse polarity (2 marks)",
+    "Explains PWM duty on the conducting pair sets average voltage and speed (1 mark)",
+    "Defines shoot-through as both switches in one leg on, shorting the supply (2 marks)",
+    "Explains dead time ensures both switches are off before the opposite one turns on, allowing for slow turn-off; current flows through body diodes (2 marks)",
+    "States the cost: a small loss of effective duty and some output distortion, growing with frequency (1 mark)"
+   ],
+   "explanation": "The diagonal pairs set direction and PWM duty sets speed. A dead time with all switches off prevents shoot-through at the cost of a small loss of effective duty.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A motor has inductance 0.8 mH on a 24 V supply and needs peak-to-peak current ripple no greater than 0.2 A at $D=0.5$. Find the minimum PWM frequency, compare it with the audible limit, estimate the switching loss per transistor at 8 A with $t_r+t_f=120$ ns, and discuss the trade-off.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.motor-drives.pwm-h-bridge.o3"
+   ],
+   "markingGuide": [
+    "Uses $f\\ge V_sD(1-D)/(L\\,\\Delta I)=6/(0.8\\times10^{-3}\\times0.2)=37.5$ kHz (2 marks)",
+    "Notes 37.5 kHz is above the audible limit of about 20 kHz, so noise is not a problem (1 mark)",
+    "Computes $P_{sw}=\\tfrac12(24)(8)(120\\times10^{-9})(37\\,500)=0.43$ W per transistor (2 marks)",
+    "Discusses trade-off: higher frequency lowers ripple and noise but raises switching loss and dead-time fraction (2 marks)",
+    "Concludes with a justified choice such as 40 kHz and notes ripple only drops with $1/f$ (1 mark)"
+   ],
+   "explanation": "Ripple falls as 1/f, so meeting 0.2 A requires at least 37.5 kHz. This is inaudible and costs about 0.43 W of switching loss per transistor, which is acceptable.",
+   "board": "internal"
+  }
+ ]
+}

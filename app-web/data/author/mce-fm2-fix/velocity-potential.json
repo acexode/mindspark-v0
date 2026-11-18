@@ -1,0 +1,388 @@
+{
+ "lessonTitle": "Velocity Potential and Elementary Flows",
+ "estimatedMinutes": 40,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The air swirling into a vacuum-cleaner nozzle, the water draining out of a bathtub and the flow around the end of a wing tip can all be sketched, to a first approximation, by adding together a handful of simple flow patterns whose formulas fit on one line. Each pattern is a solution of one linear equation, so the engineer can build realistic flows with arithmetic. This unit introduces the building blocks and the test for whether a flow can be treated this way."
+  },
+  {
+   "type": "text",
+   "markdown": "Many flows of low-viscosity fluids away from walls are well described by **ideal** (inviscid) flow. If the flow is also **irrotational**, meaning fluid elements do not rotate as they move, the velocity can be obtained from a scalar function, the **velocity potential** $\\phi$. Together with the stream function $\\psi$ (for two-dimensional incompressible flow) this gives two scalar functions from which the velocity follows by differentiation."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Vorticity and irrotational flow",
+   "text": "In two dimensions the vorticity (twice the local rotation rate of a fluid element) is $\\zeta=\\dfrac{\\partial v}{\\partial x}-\\dfrac{\\partial u}{\\partial y}$ (1/s). A flow is **irrotational** if $\\zeta=0$ everywhere. Then there exists a potential $\\phi$ with $\\mathbf V=\\nabla\\phi$, i.e. $u=\\partial\\phi/\\partial x$, $v=\\partial\\phi/\\partial y$ in Cartesian coordinates and $v_r=\\partial\\phi/\\partial r$, $v_\\theta=\\frac1r\\partial\\phi/\\partial\\theta$ in polar coordinates."
+  },
+  {
+   "type": "math",
+   "latex": "u=\\frac{\\partial\\phi}{\\partial x}=\\frac{\\partial\\psi}{\\partial y},\\qquad v=\\frac{\\partial\\phi}{\\partial y}=-\\frac{\\partial\\psi}{\\partial x},\\qquad \\nabla^2\\phi=0,\\quad\\nabla^2\\psi=0",
+   "caption": "Potential and stream function: Cauchy-Riemann relations; both satisfy Laplace's equation for 2D incompressible irrotational flow"
+  },
+  {
+   "type": "text",
+   "markdown": "Continuity for incompressible flow, $\\nabla\\cdot\\mathbf V=0$, substituted into $\\mathbf V=\\nabla\\phi$ gives $\\nabla^2\\phi=0$ (Laplace's equation). Irrotationality substituted into $u=\\psi_y$, $v=-\\psi_x$ gives $\\nabla^2\\psi=0$. Lines of constant $\\phi$ (**equipotentials**) and of constant $\\psi$ (streamlines) cross at right angles. Because Laplace's equation is linear, solutions can be superposed."
+  },
+  {
+   "type": "worked_example",
+   "title": "Velocity components from a potential",
+   "prompt": "An ideal two-dimensional flow has the velocity potential phi = 4x + x^2 - y^2 (SI units). Find u and v, verify that the flow is incompressible, find the stream function with psi = 0 at the origin, and find the velocity at (x, y) = (1, 2) m.",
+   "steps": [
+    {
+     "text": "Differentiate the potential to get the velocity components.",
+     "latex": "u=\\frac{\\partial\\phi}{\\partial x}=4+2x,\\qquad v=\\frac{\\partial\\phi}{\\partial y}=-2y"
+    },
+    {
+     "text": "Check continuity: du/dx + dv/dy = 2 + (-2) = 0, so the flow is incompressible; this also reflects Laplace's equation for phi.",
+     "latex": "\\frac{\\partial u}{\\partial x}+\\frac{\\partial v}{\\partial y}=2-2=0"
+    },
+    {
+     "text": "Integrate u = dpsi/dy with respect to y, then fix the function of x using v = -dpsi/dx: -2y - g'(x) = -2y so g' = 0.",
+     "latex": "\\psi=4y+2xy"
+    },
+    {
+     "text": "At (1, 2): the components and speed follow from the formulas above.",
+     "latex": "u=4+2(1)=6\\ \\text{m/s},\\quad v=-2(2)=-4\\ \\text{m/s},\\quad |\\mathbf V|=7.21\\ \\text{m/s}"
+    }
+   ],
+   "answer": "u = 4 + 2x, v = -2y, psi = 4y + 2xy; at (1, 2) m: V = (6, -4) m/s, speed 7.21 m/s."
+  },
+  {
+   "type": "text",
+   "markdown": "**Elementary flows.** Three simple solutions are the building blocks. (i) A **uniform stream** of speed $U$ along $x$: $\\phi=Ux$, $\\psi=Uy$. (ii) A **source** (or **sink** if $m<0$) of strength $m$ (m$^2$/s, the volume flow per unit depth), at the origin: the fluid moves radially outward with $v_r=m/(2\\pi r)$ since the flow $2\\pi r\\,v_r$ across any circle equals $m$. (iii) A **free (irrotational) vortex** of circulation $\\Gamma$ (m$^2$/s): the fluid circles the origin with $v_\\theta=\\Gamma/(2\\pi r)$, so that $2\\pi r\\,v_\\theta=\\Gamma$ is the same on every circle. Both the source and the vortex are singular at $r=0$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Flow",
+    "Velocity potential $\\phi$",
+    "Stream function $\\psi$",
+    "Velocity"
+   ],
+   "rows": [
+    [
+     "Uniform stream ($+x$)",
+     "$Ux$",
+     "$Uy$",
+     "$u=U,\\ v=0$"
+    ],
+    [
+     "Source ($m>0$) / sink ($m<0$)",
+     "$\\dfrac{m}{2\\pi}\\ln r$",
+     "$\\dfrac{m}{2\\pi}\\theta$",
+     "$v_r=\\dfrac{m}{2\\pi r},\\ v_\\theta=0$"
+    ],
+    [
+     "Free vortex (counter-clockwise $\\Gamma>0$)",
+     "$\\dfrac{\\Gamma}{2\\pi}\\theta$",
+     "$-\\dfrac{\\Gamma}{2\\pi}\\ln r$",
+     "$v_r=0,\\ v_\\theta=\\dfrac{\\Gamma}{2\\pi r}$"
+    ]
+   ],
+   "caption": "Elementary plane potential flows (polar coordinates; strengths m and Gamma in m^2/s)"
+  },
+  {
+   "type": "worked_example",
+   "title": "A source and the pressure field around it",
+   "prompt": "A line source of strength 0.80 m^2/s discharges water (density 998 kg/m^3) into an unbounded ideal flow. Find the radial speed at r = 0.25 m and r = 1.00 m, and the pressure difference between those radii using Bernoulli's equation.",
+   "steps": [
+    {
+     "text": "Radial speed from the source formula at the two radii.",
+     "latex": "v_r=\\frac{m}{2\\pi r}:\\quad v_a=\\frac{0.80}{2\\pi(0.25)}=0.5093\\ \\text{m/s},\\quad v_b=\\frac{0.80}{2\\pi(1.00)}=0.1273\\ \\text{m/s}"
+    },
+    {
+     "text": "Bernoulli's equation along a streamline (horizontal flow, no body force): p + rho V^2/2 is constant, so the pressure rises with radius as the speed falls.",
+     "latex": "p_b-p_a=\\tfrac12\\rho\\left(v_a^2-v_b^2\\right)=\\tfrac12(998)\\left(0.2594-0.0162\\right)=121.3\\ \\text{Pa}"
+    }
+   ],
+   "answer": "v(0.25 m) = 0.5093 m/s, v(1.00 m) = 0.1273 m/s, and the pressure at r = 1.00 m is 121.3 Pa higher."
+  },
+  {
+   "type": "text",
+   "markdown": "**Testing for irrotationality.** Given a velocity field, compute $\\zeta=\\partial v/\\partial x-\\partial u/\\partial y$. For example, $u=x^2-y^2$, $v=-2xy$ gives $\\zeta=-2y-(-2y)=0$, so the flow is irrotational (and also incompressible, since $2x-2x=0$); it has the potential $\\phi=x^3/3-xy^2$. The simple shear $u=3y$, $v=0$ has $\\zeta=-3$ s$^{-1}$, so it is rotational: elements spin as they are sheared, and no potential exists. For the free vortex, $v_\\theta=\\Gamma/(2\\pi r)$, the vorticity (in polar form $\\zeta=\\frac1r\\frac{d(rv_\\theta)}{dr}$) is zero for every $r>0$ because $rv_\\theta$ is constant. The fluid circulates but does not rotate; the origin is the only singular point."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Test for continuity: $\\partial u/\\partial x+\\partial v/\\partial y=0$.",
+    "Test for irrotationality: $\\partial v/\\partial x-\\partial u/\\partial y=0$.",
+    "If both hold, find $\\phi$ or $\\psi$ by integration and check Laplace's equation.",
+    "Obtain velocities from $u=\\phi_x=\\psi_y$ and $v=\\phi_y=-\\psi_x$.",
+    "Add elementary flows to build complex ones, since the equations are linear."
+   ]
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Pressure from Bernoulli everywhere",
+   "text": "In irrotational flow Bernoulli's equation $p+\\tfrac12\\rho V^2+\\rho gz=\\text{const}$ holds between any two points in the flow, not only along a single streamline. So once the velocity field is known from $\\phi$, the pressure field follows immediately."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Mind the singularities",
+   "text": "The source and the free vortex have infinite velocity at $r=0$. Real fluid never behaves this way: near the centre of a real vortex viscosity forces solid-body rotation (a vortex core), and real sources have a finite size. Use the formulas only outside such regions."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "For irrotational flow, $\\mathbf V=\\nabla\\phi$, giving $u=\\partial\\phi/\\partial x$, $v=\\partial\\phi/\\partial y$; with $\\psi$, $u=\\psi_y$, $v=-\\psi_x$.",
+    "Incompressible irrotational flows satisfy Laplace's equation, $\\nabla^2\\phi=\\nabla^2\\psi=0$, so elementary solutions can be added.",
+    "Source: $v_r=m/(2\\pi r)$; free vortex: $v_\\theta=\\Gamma/(2\\pi r)$; uniform stream: $\\phi=Ux$, $\\psi=Uy$.",
+    "A flow is irrotational if $\\zeta=\\partial v/\\partial x-\\partial u/\\partial y=0$; the free vortex is irrotational everywhere except the centre."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For an irrotational two-dimensional flow with velocity potential phi(x, y), how are the Cartesian velocity components obtained?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "u = d(phi)/dx + d(phi)/dy and v = 0"
+    },
+    {
+     "id": "b",
+     "text": "u = d(phi)/dy and v = -d(phi)/dx"
+    },
+    {
+     "id": "c",
+     "text": "u = -d(phi)/dx and v = d(phi)/dy"
+    },
+    {
+     "id": "d",
+     "text": "u = d(phi)/dx and v = d(phi)/dy"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "u = d(phi)/dx and v = d(phi)/dy",
+   "distractorRationale": {
+    "a": "This does not produce a vector field; the components are the separate partial derivatives.",
+    "b": "This is how u and v follow from the stream function, with u = dpsi/dy and v = -dpsi/dx.",
+    "c": "The potential is defined with a positive gradient, V = grad phi, so no minus sign appears.",
+    "d": "Correct: the velocity is the gradient of the potential."
+   },
+   "explanation": "The velocity potential is defined by $\\mathbf V=\\nabla\\phi$, so $u=\\partial\\phi/\\partial x$ and $v=\\partial\\phi/\\partial y$. The stream function, by contrast, uses $u=\\partial\\psi/\\partial y$, $v=-\\partial\\psi/\\partial x$.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "An ideal plane flow has the velocity potential phi = 0.5 x^3 - 1.5 x y^2 (SI units). Find the speed in m/s at the point (x, y) = (2.0 m, 1.0 m).",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o1"
+   ],
+   "correctValue": 7.5,
+   "tolerance": 0.02,
+   "unit": "m/s",
+   "explanation": "u = d(phi)/dx = 1.5 x^2 - 1.5 y^2 = 6.0 - 1.5 = 4.5 m/s and v = d(phi)/dy = -3 x y = -6.0 m/s. The speed is sqrt(4.5^2 + 6.0^2) = 7.50 m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A line source of strength 2.5 m^2/s (volume flow per unit depth) is located at the origin of an ideal incompressible flow. Find the radial velocity at a distance r = 0.40 m in m/s.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o2"
+   ],
+   "correctValue": 0.994718,
+   "tolerance": 0.005,
+   "unit": "m/s",
+   "explanation": "Continuity requires 2 pi r v_r = m, so v_r = m/(2 pi r) = 2.5/(2 pi x 0.40) = 0.9947 m/s.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A free vortex of circulation 6.0 m^2/s turns water in a horizontal plane. Find the tangential velocity at r = 1.5 m from the centre in m/s.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o2"
+   ],
+   "correctValue": 0.63662,
+   "tolerance": 0.005,
+   "unit": "m/s",
+   "explanation": "For a free vortex v_theta = Gamma/(2 pi r) = 6.0/(2 pi x 1.5) = 0.6366 m/s. The speed falls inversely with distance.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What does a negative strength m mean for a source-type potential flow v_r = m/(2 pi r)?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The flow is compressible"
+    },
+    {
+     "id": "b",
+     "text": "The fluid circulates clockwise"
+    },
+    {
+     "id": "c",
+     "text": "The flow is rotational"
+    },
+    {
+     "id": "d",
+     "text": "The fluid flows radially inward: it is a sink"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The fluid flows radially inward: it is a sink",
+   "distractorRationale": {
+    "a": "A sink is still incompressible; mass is removed at the singular point only.",
+    "b": "Circulation about a point is described by the vortex strength, not by the source strength.",
+    "c": "The sign of m does not alter irrotationality; both are irrotational.",
+    "d": "Correct: a sink is a source with negative strength."
+   },
+   "explanation": "With $m<0$ the radial velocity is negative, meaning fluid flows towards the origin, i.e. a sink. The flow remains irrotational and incompressible away from the origin.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which of the following two-dimensional velocity fields is irrotational? (x and y in metres, velocities in m/s.)",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "u = y^2, v = x"
+    },
+    {
+     "id": "b",
+     "text": "u = 2x + 3y, v = 3x - 2y"
+    },
+    {
+     "id": "c",
+     "text": "u = 2x + 3y, v = -3x - 2y"
+    },
+    {
+     "id": "d",
+     "text": "u = 3y, v = 0"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "u = 2x + 3y, v = 3x - 2y",
+   "distractorRationale": {
+    "a": "dv/dx = 1 and du/dy = 2y, which is zero only on the line y = 0.5.",
+    "b": "Correct: dv/dx = 3 and du/dy = 3, so the vorticity is zero.",
+    "c": "dv/dx = -3 and du/dy = 3 gives a vorticity of -6 per second.",
+    "d": "This simple shear has vorticity -3 per second."
+   },
+   "explanation": "The test is $\\zeta=\\partial v/\\partial x-\\partial u/\\partial y=0$. Only the field $u=2x+3y$, $v=3x-2y$ gives $3-3=0$; the other fields give $1-2y$ ($u=y^2$, $v=x$), $-6$ ($u=2x+3y$, $v=-3x-2y$) and $-3$ ($u=3y$, $v=0$).",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 1,
+   "stem": "A free vortex flow v_theta = Gamma/(2 pi r) is irrotational at every point except the centre, even though the fluid circulates around it.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "For this field $rv_\\theta=\\Gamma/2\\pi$ is constant, so the polar-coordinate vorticity $\\frac1r\\frac{d(rv_\\theta)}{dr}$ vanishes for $r>0$. The fluid elements travel in circles but do not spin about their own centres.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "How does the speed in a free vortex vary with the distance r from its centre?",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It is inversely proportional to r"
+    },
+    {
+     "id": "b",
+     "text": "It is inversely proportional to r squared"
+    },
+    {
+     "id": "c",
+     "text": "It is constant"
+    },
+    {
+     "id": "d",
+     "text": "It is directly proportional to r"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "It is inversely proportional to r",
+   "distractorRationale": {
+    "a": "Correct: v_theta = Gamma/(2 pi r).",
+    "b": "That is the dependence of the source or doublet strength terms, not the free vortex.",
+    "c": "A free vortex has a speed that varies with radius.",
+    "d": "This is solid-body rotation (a rotational flow), not a free vortex."
+   },
+   "explanation": "The circulation $2\\pi rv_\\theta=\\Gamma$ is the same around every circle, so $v_\\theta=\\Gamma/(2\\pi r)$: it falls as $1/r$ and rises without bound as $r\\to0$, where a real vortex has a viscous core.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "For a two-dimensional, incompressible, irrotational flow show that the velocity potential and the stream function both satisfy Laplace's equation, and that equipotential lines are perpendicular to streamlines.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o1",
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o3"
+   ],
+   "markingGuide": [
+    "Irrotational: dv/dx - du/dy = 0, so a potential exists with u = dphi/dx, v = dphi/dy",
+    "Continuity du/dx + dv/dy = 0 with u, v from phi gives d2phi/dx2 + d2phi/dy2 = 0",
+    "Stream function u = dpsi/dy, v = -dpsi/dx satisfies continuity automatically",
+    "Irrotationality with psi gives -d2psi/dx2 - d2psi/dy2 = 0, i.e. Laplace's equation",
+    "Cauchy-Riemann relations dphi/dx = dpsi/dy and dphi/dy = -dpsi/dx",
+    "Gradients of phi and psi are perpendicular: (u, v) . (-v, u) = 0, so lines of constant phi and psi intersect at right angles"
+   ],
+   "explanation": "Substituting $u=\\phi_x$, $v=\\phi_y$ into continuity gives $\\nabla^2\\phi=0$, and substituting $u=\\psi_y$, $v=-\\psi_x$ into the zero-vorticity condition gives $\\nabla^2\\psi=0$. Because $\\nabla\\phi\\cdot\\nabla\\psi=\\phi_x\\psi_x+\\phi_y\\psi_y=-uv+vu=0$, the lines of constant $\\phi$ and $\\psi$ are orthogonal.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A spiral flow is formed by superposing a source of strength 1.2 m^2/s and a counter-clockwise free vortex of circulation 4.0 m^2/s, both at the origin. (a) Write the velocity components. (b) Calculate the radial and tangential velocities and the speed at r = 0.80 m, and the angle of the velocity to the radial direction. (c) Show that this flow is irrotational for r > 0.",
+   "objectiveIds": [
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o2",
+    "ug.mce-fluid-mechanics-2.potential-flow.velocity-potential.o3"
+   ],
+   "markingGuide": [
+    "Superposition: v_r = m/(2 pi r), v_theta = Gamma/(2 pi r)",
+    "At r = 0.80 m: v_r = 0.2387 m/s and v_theta = 0.7958 m/s",
+    "Speed = sqrt(v_r^2 + v_theta^2) = 0.8308 m/s",
+    "Angle to the radial direction = atan(v_theta/v_r) = 73.3 degrees (constant for all r)",
+    "Vorticity = (1/r) d(r v_theta)/dr = 0 since r v_theta = Gamma/(2 pi) is constant (and v_r gives no vorticity)",
+    "Therefore irrotational for r > 0, so the flow derives from phi = (m/2pi) ln r + (Gamma/2pi) theta"
+   ],
+   "explanation": "At r = 0.80 m the radial speed is 0.2387 m/s and the tangential speed 0.7958 m/s, giving a speed of 0.8308 m/s at 73.3 degrees to the radius. The product r v_theta is constant, so the polar vorticity vanishes and the superposed flow is irrotational away from the origin.",
+   "board": "internal"
+  }
+ ]
+}

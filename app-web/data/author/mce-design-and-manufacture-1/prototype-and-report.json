@@ -1,0 +1,396 @@
+{
+ "lessonTitle": "Prototype Testing and Reporting: Verifying Against the Specification",
+ "estimatedMinutes": 25,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "The team's tablet stand looks great and the client loves it. On the lab bench, a 15 N press on the arm deflects it 1.6 mm, within the 2.0 mm limit; but the stand weighs 0.43 kg, over the 0.40 kg target. Nobody wrote the target down, so nobody noticed until the final review. A prototype only helps if its results are compared, line by line, with the written requirements."
+  },
+  {
+   "type": "text",
+   "markdown": "A **prototype** is a built model used to answer a question about a design. **Verification** asks whether the prototype meets the specification, one measurable requirement at a time. The outcome of each test is recorded in a table so that anyone reading the report can see what was measured, how, and whether the requirement was met."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Requirement verification table",
+   "text": "A verification table has one row per requirement and columns for: requirement ID, requirement with its target value, test method, measured result (with units), pass or fail, and a comment or action. Each measured result is compared with the target, and the margin is reported where useful."
+  },
+  {
+   "type": "text",
+   "markdown": "Test methods must match the requirements. A mass limit is checked by weighing; a stiffness limit by applying a known load and measuring the deflection with a dial gauge or ruler; a time limit by repeated timing, reporting the mean. Where a result is a mean of repeated trials, say how many were taken, since one trial is weak evidence."
+  },
+  {
+   "type": "worked_example",
+   "title": "Tabulating prototype results against requirements",
+   "prompt": "A tablet stand is specified: R1 holds a 1.5 kg tablet tilted at 30 degrees without tipping; R2 mass at most 0.40 kg; R3 arm deflection at most 2.0 mm under a 15 N press. Measured: R1 held; R2 0.43 kg; R3 1.6 mm. Tabulate the outcomes and find the margins.",
+   "steps": [
+    {
+     "text": "List the requirements, targets and measured results in a table with pass or fail.",
+     "latex": "\\text{R1: held}\\rightarrow\\text{pass};\\ \\text{R2: }0.43>0.40\\rightarrow\\text{fail};\\ \\text{R3: }1.6<2.0\\rightarrow\\text{pass}"
+    },
+    {
+     "text": "Mass exceeds the limit by 0.03 kg, which is 7.5 % of the limit, so R2 fails.",
+     "latex": "\\frac{0.43-0.40}{0.40}\\times100=7.5\\%"
+    },
+    {
+     "text": "Deflection is below the limit by 0.4 mm, a margin of 20 % of the limit, so R3 passes with some margin.",
+     "latex": "\\frac{2.0-1.6}{2.0}\\times100=20\\%"
+    },
+    {
+     "text": "Record an action for the failure: reduce mass by thinning the base or changing material, then retest R2 and R3 because stiffness may fall.",
+     "latex": "\\text{Action: redesign and retest R2, R3}"
+    }
+   ],
+   "answer": "Two requirements pass and R2 fails by 7.5 %; the report states the failure and the planned action."
+  },
+  {
+   "type": "text",
+   "markdown": "A **design report** is read by someone who was not on the team. Its job is to let that reader follow each decision and find the evidence for it. A typical structure moves from the problem to the solution to the evidence."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Title page and summary (what was done and the main result).",
+    "Introduction and brief: the need and the client.",
+    "Specification: numbered, measurable requirements.",
+    "Concept generation and selection: options and the reason for the choice.",
+    "Detail design: drawings, calculations, materials and tolerances.",
+    "Manufacturing plan and prototype build.",
+    "Test results against the specification (verification table).",
+    "Discussion, conclusions and recommendations; references and appendices."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Every decision needs evidence",
+   "text": "State each design decision, the alternatives considered, and the evidence (calculation, test or comparison matrix). Number figures and tables, refer to them in the text, and keep raw data in appendices so the main text stays readable."
+  },
+  {
+   "type": "text",
+   "markdown": "A **manufacturing plan** says how each part will be made. For every part it lists the part and drawing number, the stock material and size, the ordered operations, the machine and tools for each operation, the work-holding, and the inspection step. Order matters: for a turned part, face and centre the stock, turn the diameters, then chamfer and part off."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Part",
+    "Stock",
+    "Operation sequence",
+    "Machine and tools",
+    "Check"
+   ],
+   "rows": [
+    [
+     "Spindle (drawing 03)",
+     "Steel bar 20 mm diameter",
+     "1 Face end; 2 Turn to 16 mm; 3 Chamfer; 4 Part off at 60 mm",
+     "Centre lathe; knife tool; parting tool",
+     "Micrometer on 16 mm"
+    ],
+    [
+     "Base plate (drawing 05)",
+     "Aluminium sheet 4 mm",
+     "1 Mark out; 2 Drill 6 mm holes; 3 Saw and file edges",
+     "Pillar drill; 6 mm drill; hacksaw",
+     "Steel rule and calipers"
+    ]
+   ],
+   "caption": "Extract from a manufacturing plan."
+  },
+  {
+   "type": "math",
+   "latex": "n=\\left\\lfloor\\frac{L_{bar}-L_{rem}}{\\ell_{part}+\\ell_{face}+\\ell_{kerf}}\\right\\rfloor",
+   "caption": "Number of parts per bar: bar length less the unusable length held in the chuck, divided by part length plus facing allowance and parting kerf."
+  },
+  {
+   "type": "worked_example",
+   "title": "Stock planning for a turned part",
+   "prompt": "A 3000 mm steel bar is used for parts 60 mm long. Each part needs 1 mm facing on each end and a 3 mm parting kerf. 60 mm of the bar cannot be used because it is held in the chuck. How many parts can be cut?",
+   "steps": [
+    {
+     "text": "Length consumed by each part: part length plus facing on both ends plus kerf.",
+     "latex": "\\ell=60+1+1+3=65\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Usable bar length after the chuck remainder.",
+     "latex": "3000-60=2940\\ \\mathrm{mm}"
+    },
+    {
+     "text": "Divide and round down to whole parts: 2940/65 = 45.2, so 45.",
+     "latex": "n=\\lfloor 45.2\\rfloor=45"
+    }
+   ],
+   "answer": "45 parts per bar; the plan should also state the stock size ordered, for example 3 m lengths."
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Do not hide failed tests",
+   "text": "A report that omits failed requirements cannot be trusted. State each failure, its cause and the corrective action. A failed requirement with a plan is far better than an unreported one."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Verification compares each measured result with its target in a table with requirement, test method, measured value, pass or fail, and action.",
+    "A design report follows the logic from brief and specification, through concepts, detail design and manufacture, to tests and conclusions, with evidence for each decision.",
+    "A manufacturing plan lists for each part the stock, operations in order, machines and tools, work-holding and inspection."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A requirement states that a clamp must grip with a force of at least 200 N. Which entry in the verification table is the most useful?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Target 200 N; test: load cell reading at the jaws; measured 214 N; pass; margin 7 %"
+    },
+    {
+     "id": "b",
+     "text": "The clamp seems strong enough"
+    },
+    {
+     "id": "c",
+     "text": "Passed all tests"
+    },
+    {
+     "id": "d",
+     "text": "Measured 214 with no units or method"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Target 200 N; test: load cell reading at the jaws; measured 214 N; pass; margin 7 %",
+   "distractorRationale": {
+    "b": "This gives no number, method or comparison.",
+    "c": "This gives no result for the individual requirement.",
+    "d": "The result has no units or method, so it cannot be checked."
+   },
+   "explanation": "A verification table needs the target, the method, the measured value with units and a pass or fail judgement. The first entry gives all of these and a margin.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A prototype of a door stop has a requirement of mass at most 2.0 kg, and the prototype measures 2.15 kg. What is the correct way to record and respond?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Record as a fail with the measured value and plan a design change and retest"
+    },
+    {
+     "id": "b",
+     "text": "Record as a pass because the difference is small"
+    },
+    {
+     "id": "c",
+     "text": "Leave it out of the report to avoid confusing the reader"
+    },
+    {
+     "id": "d",
+     "text": "Change the requirement to 2.2 kg without stating a reason"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Record as a fail with the measured value and plan a design change and retest",
+   "distractorRationale": {
+    "b": "Any result above the limit is a fail, however small.",
+    "c": "Omitting a failure makes the report untrustworthy.",
+    "d": "Changing the target to fit the result is not acceptable without justification and client agreement."
+   },
+   "explanation": "The measured mass exceeds the requirement, so the requirement is not met, and the report must say so. The team should propose a corrective action and retest.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which ordering of sections lets a reader follow the reasoning of a design report?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Brief and specification, concepts and selection, detail design, manufacture, test results, conclusions"
+    },
+    {
+     "id": "b",
+     "text": "Conclusions, test results, brief, detail design, concepts"
+    },
+    {
+     "id": "c",
+     "text": "Detail design, specification, conclusions, concepts, brief"
+    },
+    {
+     "id": "d",
+     "text": "Test results, brief, manufacture, concepts, conclusions"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Brief and specification, concepts and selection, detail design, manufacture, test results, conclusions",
+   "distractorRationale": {
+    "b": "The conclusions need to follow the evidence rather than precede it.",
+    "c": "Detail design before the specification and concepts hides why it was chosen.",
+    "d": "The results make no sense before the reader knows the design and requirements."
+   },
+   "explanation": "A report should follow the logic of the project: the problem, then the options and choice, then the design, then evidence that it works. The conclusion draws on that evidence.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a manufacturing plan of a turned pin made from bar, which sequence of operations is most sensible?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Face the end, turn the diameter, chamfer, then part off"
+    },
+    {
+     "id": "b",
+     "text": "Part off, turn the diameter, face the end, chamfer"
+    },
+    {
+     "id": "c",
+     "text": "Chamfer, part off, face the end, turn the diameter"
+    },
+    {
+     "id": "d",
+     "text": "Turn the diameter, part off, then face both ends"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Face the end, turn the diameter, chamfer, then part off",
+   "distractorRationale": {
+    "b": "Parting off first leaves nothing held in the chuck to turn.",
+    "c": "Parting off before turning and facing leaves a loose part.",
+    "d": "Facing after parting off requires a second set-up."
+   },
+   "explanation": "A turned part is faced to give a datum, turned and chamfered while still held by the bar, and parted off last. This order keeps the part supported in the chuck.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which information is required for each part in a manufacturing plan?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Stock material and size, ordered operations, machine and tools, and inspection step"
+    },
+    {
+     "id": "b",
+     "text": "Only the part name"
+    },
+    {
+     "id": "c",
+     "text": "Only the cost of the material"
+    },
+    {
+     "id": "d",
+     "text": "The client's name and the project schedule"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "Stock material and size, ordered operations, machine and tools, and inspection step",
+   "distractorRationale": {
+    "b": "A name alone does not tell the workshop how to make the part.",
+    "c": "Cost is not enough to produce the part.",
+    "d": "These are project administration, not manufacturing instructions."
+   },
+   "explanation": "The plan must let a technician make the part without guessing: what stock to cut, which operations in which order, which machines and tools, and how to check the result. A name or a cost alone gives the workshop nothing to work from.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A prototype is timed five times: 48.1, 46.7, 47.9, 49.0 and 48.3 seconds. The requirement is at most 52 s. What is the margin between the mean time and the requirement, in seconds?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o1"
+   ],
+   "correctValue": 4.0,
+   "tolerance": 0.1,
+   "unit": "s",
+   "explanation": "The mean time is $(48.1+46.7+47.9+49.0+48.3)/5=48.0$ s. The requirement is 52 s, so the margin is $52-48.0=4.0$ s and the requirement is met.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 2000 mm bar is used to turn parts 85 mm long. Each part uses 1 mm of facing at each end and a 3 mm parting kerf, and 60 mm of the bar is left in the chuck and cannot be used. How many whole parts can be made from one bar?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o3"
+   ],
+   "correctValue": 21,
+   "tolerance": 0.5,
+   "unit": "parts",
+   "explanation": "Each part consumes $85+1+1+3=90$ mm, and the usable length is $2000-60=1940$ mm. Dividing gives 21.6, and only whole parts count, so 21 can be made.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A manufacturing plan calls for steel bar of diameter 30 mm cut to 120 mm long for one part. Take steel density as 7850 kg/m$^3$. What is the mass of the stock for one part in kg?",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o3"
+   ],
+   "correctValue": 0.666,
+   "tolerance": 0.005,
+   "unit": "kg",
+   "explanation": "The volume is $\\pi\\times0.03^2/4\\times0.12=8.48\\times10^{-5}$ m^3. Multiplying by the density gives 0.666 kg of stock for the part.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A prototype door closer is tested against three requirements. R1: closing time at most 6.0 s, measured 5.4 s. R2: mass at most 0.80 kg, measured 0.74 kg. R3: handle force at most 20 N, measured 23 N. Present the results as a verification table, state which requirements are met, and recommend actions.",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o1"
+   ],
+   "markingGuide": [
+    "Table with requirement, target, method, measured value with units, pass or fail",
+    "R1 pass with margin of 0.6 s, R2 pass with margin of 0.06 kg",
+    "R3 fails by 3 N, which is 15 % over the limit",
+    "Action for R3: change the design (spring, lever length) and retest",
+    "Notes that R1 and R2 should be rechecked after any change"
+   ],
+   "explanation": "The table must compare each measured value with its target and record pass or fail. The failed requirement needs a corrective action and a retest, and the changes should be rechecked against the other requirements.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Outline the structure of a design report for a team project and explain how the structure lets a reader follow the decisions and evidence.",
+   "objectiveIds": [
+    "ug.mce-design-and-manufacture-1.team-project-and-reporting.prototype-and-report.o2"
+   ],
+   "markingGuide": [
+    "Lists the main sections: summary, brief and specification, concepts and selection, detail design, manufacture, test results, conclusions",
+    "Explains that each section builds on the previous one in logical order",
+    "Decisions supported by evidence such as calculations, test data or decision matrices",
+    "Figures and tables are numbered and referenced; raw data in appendices",
+    "Conclusions refer back to the specification"
+   ],
+   "explanation": "A good report mirrors the design process, so the reader meets the problem, the options, the reasoning, and the evidence in that order. Numbered figures, referenced tables and appendices keep the evidence traceable.",
+   "board": "internal"
+  }
+ ]
+}

@@ -1,0 +1,420 @@
+{
+ "lessonTitle": "Sensor-Actuator Loop Design",
+ "estimatedMinutes": 30,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A self-balancing desk lamp arm holds its position with a potentiometer, a microcontroller and a small motor. When someone unplugs the potentiometer during testing, the input pin floats to zero volts, the controller concludes the arm has dropped to its lowest position, and it drives the motor hard upward into the stop. A closed loop is only as safe as its handling of bad sensor data."
+  },
+  {
+   "type": "text",
+   "markdown": "A **sensor-actuator loop** repeats three steps every period $T$ (seconds): sample the sensor, compute the control action, and update the actuator. Three design questions follow: how fast should the loop run (**rate**), does every step finish in time (**timing budget**), and what happens when something breaks (**limits and fault handling**). This unit treats them in turn."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Loop rate selection",
+   "text": "A sampled controller can only respond to changes slower than a fraction of its sample rate. As a typical rule of thumb, choose the loop rate $f_{loop}$ about 10 to 20 times the desired closed-loop (or plant) bandwidth $f_{bw}$ in hertz, and make sure the sensor produces new data at least that often; a slower sensor makes the loop re-use stale data."
+  },
+  {
+   "type": "math",
+   "latex": "f_{loop}\\approx(10\\text{ to }20)\\,f_{bw},\\qquad T=\\frac{1}{f_{loop}},\\qquad f_{sensor}\\ge f_{loop}",
+   "caption": "Rule of thumb for loop rate (typical guideline, not a law)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Choosing a loop rate",
+   "prompt": "A position loop must have a closed-loop bandwidth of 5 Hz. The sensor updates at 200 Hz. Choose the loop rate and check the delay penalty if the total sensing-to-actuation delay is 2.5 ms.",
+   "steps": [
+    {
+     "text": "Loop rate: choose 20 times the bandwidth.",
+     "latex": "f_{loop}=20\\times5=100\\ \\text{Hz},\\quad T=10\\ \\text{ms}"
+    },
+    {
+     "text": "Sensor check: 200 Hz exceeds 100 Hz, so each loop iteration sees fresh data."
+    },
+    {
+     "text": "A pure delay $t_d$ adds phase lag at the crossover frequency $f_c$ (degrees).",
+     "latex": "\\phi=360\\,f_c\\,t_d=360\\times5\\times0.0025=4.5^\\circ"
+    }
+   ],
+   "answer": "Use 100 Hz (10 ms period); the sensor is fast enough and the 2.5 ms delay costs only about 4.5 degrees of phase at 5 Hz."
+  },
+  {
+   "type": "text",
+   "markdown": "**Timing budget.** Everything that happens between the moment the sensor value is captured and the moment the actuator output changes adds delay. List each step with its worst-case time: ADC acquisition and conversion, filtering, control computation, output register update and driver propagation. Their sum must fit inside the period with room to spare, and their delay also appears as phase lag. A sampled output held until the next update adds an average further delay of $T/2$."
+  },
+  {
+   "type": "math",
+   "latex": "t_{loop}=t_{ADC}+t_{filter}+t_{control}+t_{out}\\ \\le\\ T,\\qquad \\phi\\approx360\\,f_c\\,(t_{loop}+T/2)",
+   "caption": "Timing budget and the phase lag it causes at crossover f_c (degrees; times in seconds)"
+  },
+  {
+   "type": "worked_example",
+   "title": "Building a timing budget",
+   "prompt": "A 200 Hz loop (T = 5 ms) reads four ADC channels at 120 microseconds each, runs filtering and PID in 350 microseconds, updates the PWM register in 50 microseconds and the driver adds 10 microseconds. Find the total time, the slack and the phase lag at a 10 Hz crossover.",
+   "steps": [
+    {
+     "text": "Add the ADC time: four channels.",
+     "latex": "4\\times120=480\\ \\mu\\text{s}"
+    },
+    {
+     "text": "Add computation, output and driver delays.",
+     "latex": "t_{loop}=480+350+50+10=890\\ \\mu\\text{s}=0.89\\ \\text{ms}"
+    },
+    {
+     "text": "Slack in the 5 ms period.",
+     "latex": "5-0.89=4.11\\ \\text{ms}\\ (\\text{utilisation }17.8\\%)"
+    },
+    {
+     "text": "Phase lag including the half-period hold delay of 2.5 ms.",
+     "latex": "\\phi=360\\times10\\times(0.00089+0.0025)=12.2^\\circ"
+    }
+   ],
+   "answer": "The loop needs 0.89 ms of the 5 ms period, leaving ample slack, and the delay costs about 12 degrees of phase at 10 Hz."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Fault",
+    "Symptom at the controller",
+    "Detection",
+    "Safe response"
+   ],
+   "rows": [
+    [
+     "Sensor unplugged",
+     "Input stuck at 0 V or full scale",
+     "Reading outside a valid window (live zero)",
+     "Disable actuator, raise fault"
+    ],
+    [
+     "Sensor stuck",
+     "Value never changes while output moves",
+     "Stale-data check, compare with expected response",
+     "Disable or switch to backup"
+    ],
+    [
+     "Noise spike",
+     "Single jump beyond physical rate",
+     "Rate-of-change limit",
+     "Reject sample, hold last valid for a few cycles"
+    ],
+    [
+     "Controller overrun",
+     "Loop finishes late",
+     "Watchdog or timing check",
+     "Reset to safe output"
+    ],
+    [
+     "Command out of range",
+     "Output beyond actuator ability",
+     "Output limit (saturation)",
+     "Clamp output; handle integrator windup"
+    ]
+   ],
+   "caption": "Typical faults and protective measures"
+  },
+  {
+   "type": "text",
+   "markdown": "**Limits and safe state.** Define the **safe state** of the actuator first (motor off, valve closed, heater off). Then add layers: *range check* the sensor reading against a valid window so that a disconnected input is recognised; *rate and stale checks* to catch impossible changes; *output limits* on the command; and a *watchdog* that returns to the safe state if the loop stops running. A sensor with a *live zero* (for example, 0.5 V to 4.5 V as its valid span) lets 0 V and 5 V be recognised as faults rather than valid readings."
+  },
+  {
+   "type": "worked_example",
+   "title": "Setting a validity window",
+   "prompt": "A position sensor gives 0.5 V to 4.5 V over its travel on a 5 V, 12-bit ADC. Choose fault thresholds with a margin and the controller action.",
+   "steps": [
+    {
+     "text": "Valid codes: $0.5/5\\times4096=410$ to $4.5/5\\times4096=3686$.",
+     "latex": "\\text{code}=\\frac{V}{5}\\times4096"
+    },
+    {
+     "text": "Fault thresholds with 0.25 V margin: below $0.25/5\\times4096=205$ or above $4.75/5\\times4096=3891$ counts.",
+     "latex": "205\\ \\text{and}\\ 3891"
+    },
+    {
+     "text": "An unplugged input with a pull-down resistor reads near 0 counts, below 205, so the fault flag is set."
+    },
+    {
+     "text": "On fault: set the PWM duty to zero (motor off), latch the fault until reset and report it."
+    }
+   ],
+   "answer": "Fault if the code is below 205 or above 3891; the controller forces the output to zero and latches the fault."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Never keep driving on the last good value",
+   "text": "Re-using the last valid reading after a fault hides the failure; the actuator may run for a long time with no feedback. Go to the safe state and make the fault visible."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Choose loop rate about 10 to 20 times the bandwidth, and make the sensor at least as fast as the loop.",
+    "Sum worst-case ADC, computation, output and driver times; the total must fit in the period and its delay costs phase lag $360 f_c t_d$.",
+    "Define the safe state, then add range checks, rate checks, output limits and a watchdog.",
+    "A live-zero sensor range lets a disconnected sensor be distinguished from a valid reading."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A closed-loop bandwidth of 10 Hz is required. Which loop rate follows the usual rule of thumb?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "About 15 Hz"
+    },
+    {
+     "id": "b",
+     "text": "About 20 Hz"
+    },
+    {
+     "id": "c",
+     "text": "About 100 to 200 Hz"
+    },
+    {
+     "id": "d",
+     "text": "About 2 Hz"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "About 100 to 200 Hz",
+   "distractorRationale": {
+    "a": "This is only 1.5 times the bandwidth, giving poor performance.",
+    "b": "Twice the bandwidth is the theoretical Nyquist limit, not a practical control rate.",
+    "c": "Correct: 10 to 20 times the bandwidth.",
+    "d": "This is below the bandwidth and cannot track the signal."
+   },
+   "explanation": "The rule of thumb is a loop rate 10 to 20 times the bandwidth, which gives 100 to 200 Hz here. A rate near twice the bandwidth leaves too much delay and phase lag.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "A controller runs at 500 Hz but its sensor produces a new reading only at 100 Hz. What is the consequence?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The controller gains extra resolution"
+    },
+    {
+     "id": "b",
+     "text": "The controller uses stale data in four of every five iterations, so the effective feedback rate is 100 Hz"
+    },
+    {
+     "id": "c",
+     "text": "The sensor automatically speeds up"
+    },
+    {
+     "id": "d",
+     "text": "Nothing, because repeating the data improves the loop"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The controller uses stale data in four of every five iterations, so the effective feedback rate is 100 Hz",
+   "distractorRationale": {
+    "a": "Repeating a reading adds no resolution.",
+    "b": "Correct: the effective feedback rate is the sensor's rate.",
+    "c": "The sensor's rate is a hardware property.",
+    "d": "Repeated data adds delay rather than improvement."
+   },
+   "explanation": "A loop cannot respond to information it has not received, so the feedback is updated at 100 Hz and the other iterations re-use the same value. This adds delay and may harm stability without any benefit.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Which list is the best set of items for the timing budget of one control iteration?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Only the control calculation time"
+    },
+    {
+     "id": "b",
+     "text": "ADC acquisition and conversion, filtering, control calculation, output update and driver delay, each at worst-case time"
+    },
+    {
+     "id": "c",
+     "text": "Only the average ADC conversion time"
+    },
+    {
+     "id": "d",
+     "text": "The clock frequency of the microcontroller"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "ADC acquisition and conversion, filtering, control calculation, output update and driver delay, each at worst-case time",
+   "distractorRationale": {
+    "a": "The calculation is only one part of the chain.",
+    "b": "Correct: all steps at worst-case times.",
+    "c": "Average times give no guarantee for the worst case.",
+    "d": "Clock frequency is an input to the step times, not a budget item."
+   },
+   "explanation": "Every step between capturing the measurement and changing the actuator contributes delay, and the budget must use worst-case values to be safe. Omitting any step underestimates the total.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A controller reads a sensor whose valid output is 0.5 V to 4.5 V and measures 0.02 V. What should the software do?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Use it as the lowest valid reading"
+    },
+    {
+     "id": "b",
+     "text": "Average it with the previous reading"
+    },
+    {
+     "id": "c",
+     "text": "Treat it as a sensor fault and drive the actuator to its safe state"
+    },
+    {
+     "id": "d",
+     "text": "Ignore it and wait for the next sample"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Treat it as a sensor fault and drive the actuator to its safe state",
+   "distractorRationale": {
+    "a": "The value is outside the valid span so it cannot be the lowest valid reading.",
+    "b": "Averaging mixes good and faulty data and hides the fault.",
+    "c": "Correct: out-of-window reading is a fault.",
+    "d": "Ignoring it leaves the actuator running without valid feedback."
+   },
+   "explanation": "A reading below the valid window indicates a wiring fault or failed sensor, not a real measurement. Using it would produce a wrong control action, so the actuator goes to its safe state and the fault is flagged.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 3,
+   "stem": "A heater controller uses a temperature sensor whose output is 0 V at 0 degrees C. When the sensor is unplugged, a pull-down resistor makes the input read 0 V. What is the danger and the best design fix?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The controller shuts down immediately, which is safe; no change needed"
+    },
+    {
+     "id": "b",
+     "text": "The controller thinks it is very cold and heats at full power; use a sensor with a live-zero offset so 0 V is recognisable as a fault"
+    },
+    {
+     "id": "c",
+     "text": "The ADC is damaged; add a larger pull-down"
+    },
+    {
+     "id": "d",
+     "text": "The sensor reads high; add a filter"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "The controller thinks it is very cold and heats at full power; use a sensor with a live-zero offset so 0 V is recognisable as a fault",
+   "distractorRationale": {
+    "a": "The controller does not shut itself down; it interprets the reading as very cold.",
+    "b": "Correct: live zero turns an unplugged input into a detectable fault.",
+    "c": "The ADC input is not damaged by 0 V.",
+    "d": "A filter does not address the missing signal."
+   },
+   "explanation": "A true zero-volt valid reading cannot be distinguished from a disconnected input, so the controller sees a cold plant and applies maximum heat. A live-zero range (such as 0.5 V at the bottom of the span) makes 0 V an invalid, detectable condition.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "A plant needs a closed-loop bandwidth of 8 Hz. Using a loop rate of 15 times the bandwidth, calculate the loop period in milliseconds.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o1"
+   ],
+   "correctValue": 8.33,
+   "tolerance": 0.05,
+   "unit": "ms",
+   "explanation": "The loop rate is $15\\times8=120$ Hz, so the period is $1/120=8.33$ ms. A faster rate reduces delay but demands more computation time.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A 2 ms control loop takes 4 ADC conversions of 85 microseconds each, 420 microseconds of computation and 60 microseconds for the output update. How much slack is left in the period, in milliseconds?",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o2"
+   ],
+   "correctValue": 1.18,
+   "tolerance": 0.01,
+   "unit": "ms",
+   "explanation": "The conversions take 340 microseconds, so the total is $340+420+60=820$ microseconds. The slack is $2.0-0.82=1.18$ ms.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A 250 Hz loop (period 4 ms) has a sensing-to-output delay of 0.9 ms, plus an average half-period delay from the held output. The crossover frequency is 15 Hz. Using $\\phi=360 f_c t_d$ with $t_d=0.9\\ \\text{ms}+T/2$, find the phase lag in degrees.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o1",
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o2"
+   ],
+   "correctValue": 15.66,
+   "tolerance": 0.2,
+   "unit": "degrees",
+   "explanation": "The total delay is $0.9+2.0=2.9$ ms, so $\\phi=360\\times15\\times0.0029=15.66^\\circ$. This lag must be subtracted from the loop's phase margin.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "Explain how to choose the loop rate for a sensor-actuator loop given the plant bandwidth and sensor update rate. Describe what goes wrong if the rate is too low or if the sensor is slower than the loop.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o1"
+   ],
+   "markingGuide": [
+    "States the rule of thumb of 10 to 20 times the bandwidth (1 mark)",
+    "Too slow a rate gives delay and phase lag, poor tracking and possible instability (2 marks)",
+    "Too fast a rate costs computation and may exceed the timing budget, with little benefit (1 mark)",
+    "Sensor must update at least as fast as the loop; otherwise stale data is re-used and the effective rate is the sensor rate (2 marks)",
+    "Mentions anti-aliasing or filtering before sampling (1 mark)"
+   ],
+   "explanation": "A rate of 10 to 20 times the bandwidth keeps delay small; a sensor slower than the loop just limits the feedback rate to the sensor's own.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A conveyor speed loop reads a tachometer voltage that is valid between 1.0 V and 9.0 V on a 10 V analogue input. Describe the fault handling that makes a cut tachometer cable bring the conveyor drive to a safe state. Include range checks, rate checks, output limits, the safe state and a watchdog.",
+   "objectiveIds": [
+    "ug.mce-mechatronics-instrumentation.integration-lab.sensor-actuator-loop.o3"
+   ],
+   "markingGuide": [
+    "Defines the safe state: motor off or braked, PWM duty zero (1 mark)",
+    "Range check against the valid window, with margin, flags a disconnected input reading near 0 V or 5 V (2 marks)",
+    "Rate-of-change or stale-data check to catch spikes and stuck sensors (2 marks)",
+    "Output limits (saturation) and handling of integrator windup (1 mark)",
+    "Watchdog returns to the safe state if the loop stops; the fault latches until reset and is reported (2 marks)"
+   ],
+   "explanation": "A live-zero range check detects the cut cable, and the controller forces the output to the safe state and latches the fault. Rate checks, output limits and a watchdog cover other failures.",
+   "board": "internal"
+  }
+ ]
+}

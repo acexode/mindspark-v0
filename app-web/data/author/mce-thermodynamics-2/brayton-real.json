@@ -1,0 +1,412 @@
+{
+ "lessonTitle": "The Real Brayton Cycle: Efficiencies and Optimum Pressure Ratio",
+ "estimatedMinutes": 28,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A jet engine for a small business aircraft must be both light and fuel-efficient. Its designer picks a compressor pressure ratio around 25, yet a ground-power gas turbine of the same turbine-entry temperature may use 12. The right choice depends on what is being optimised: specific work (engine size) or thermal efficiency (fuel burn). Real compressor and turbine losses change both answers."
+  },
+  {
+   "type": "text",
+   "markdown": "The ideal Brayton cycle consists of isentropic compression, constant-pressure heat addition, isentropic expansion and constant-pressure heat rejection. In an air-standard analysis with constant specific heats, its thermal efficiency depends only on the pressure ratio $r_p$ and rises without limit as $r_p$ increases. But the **specific work** does not: it has a maximum at an intermediate pressure ratio, because the turbine-entry temperature $T_3$ is limited by materials."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Thermal efficiency vs specific work",
+   "text": "Thermal efficiency $\\eta = w_{net}/q_{in}$ measures fuel use per unit of useful work. Specific work $w_{net}$ (kJ per kg of air) measures how much power a given airflow produces, and so how large and heavy the machine must be for a given power. They peak at different pressure ratios."
+  },
+  {
+   "type": "math",
+   "latex": "\\eta_{ideal} = 1 - \\frac{1}{r_p^{(k-1)/k}} \\qquad w_{net} = c_p T_1\\left[\\frac{T_3}{T_1}\\left(1 - \\frac{1}{r_p^{(k-1)/k}}\\right) - \\left(r_p^{(k-1)/k} - 1\\right)\\right]",
+   "caption": "Ideal cycle, $k = c_p/c_v = 1.4$ and $c_p = 1.005$ kJ/(kg K) for air. $T$ in K."
+  },
+  {
+   "type": "math",
+   "latex": "\\frac{dw_{net}}{dr_p} = 0 \\;\\Rightarrow\\; r_{p,opt} = \\left(\\frac{T_3}{T_1}\\right)^{k/[2(k-1)]} \\qquad \\text{(ideal)},\\qquad r_{p,opt} = \\left(\\eta_C\\,\\eta_T\\,\\frac{T_3}{T_1}\\right)^{k/[2(k-1)]} \\quad \\text{(real)}",
+   "caption": "For $k = 1.4$ the exponent is $k/[2(k-1)] = 1.75$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Optimum pressure ratio for maximum work",
+   "prompt": "Air enters the compressor at $T_1 = 300$ K. Turbine-entry temperature is $T_3 = 1400$ K. For the ideal cycle, find the pressure ratio that maximises net work, the net work and the thermal efficiency. Assume $k = 1.4$, $c_p = 1.005$ kJ/(kg K).",
+   "steps": [
+    {
+     "text": "Apply the optimum formula.",
+     "latex": "r_{p,opt} = (1400/300)^{1.75} = 14.82"
+    },
+    {
+     "text": "Isentropic temperatures at this pressure ratio, using $T_2 = T_1 r_p^{0.2857}$ and $T_4 = T_3 / r_p^{0.2857}$.",
+     "latex": "T_2 = 648.1\\ \\mathrm{K},\\quad T_4 = 648.1\\ \\mathrm{K}"
+    },
+    {
+     "text": "Net work.",
+     "latex": "w_{net} = 1.005[(1400 - 648.1) - (648.1 - 300)] = 405.9\\ \\mathrm{kJ/kg}"
+    },
+    {
+     "text": "Thermal efficiency.",
+     "latex": "\\eta = 1 - 1/r_p^{0.2857} = 0.5371"
+    }
+   ],
+   "answer": "r_p,opt = 14.82; w_net = 405.9 kJ/kg; thermal efficiency = 53.7%. Note that efficiency here is far below the Carnot value for 300 K and 1400 K."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "worked_example",
+   "title": "Real cycle with component efficiencies",
+   "prompt": "A gas turbine has $T_1 = 300$ K, $T_3 = 1400$ K and $r_p = 10$, compressor isentropic efficiency $\\eta_C = 0.80$ and turbine isentropic efficiency $\\eta_T = 0.85$. Find $T_2$, $T_4$, net work and thermal efficiency. Assume $k = 1.4$, $c_p = 1.005$ kJ/(kg K).",
+   "steps": [
+    {
+     "text": "Isentropic compressor exit temperature and then the actual one.",
+     "latex": "T_{2s} = 300(10)^{0.2857} = 579.2\\ \\mathrm{K},\\quad T_2 = 300 + (579.2 - 300)/0.80 = 649.0\\ \\mathrm{K}"
+    },
+    {
+     "text": "Isentropic turbine exit temperature and then the actual one.",
+     "latex": "T_{4s} = 1400/10^{0.2857} = 725.1\\ \\mathrm{K},\\quad T_4 = 1400 - 0.85(1400-725.1) = 826.4\\ \\mathrm{K}"
+    },
+    {
+     "text": "Specific works and heat input.",
+     "latex": "w_c = 350.8,\\ w_t = 576.5,\\ w_{net} = 225.8\\ \\mathrm{kJ/kg},\\quad q_{in} = 754.7\\ \\mathrm{kJ/kg}"
+    },
+    {
+     "text": "Thermal efficiency.",
+     "latex": "\\eta = 225.8/754.7 = 0.2991"
+    }
+   ],
+   "answer": "T2 = 649.0 K, T4 = 826.4 K, w_net = 225.8 kJ/kg, efficiency = 29.9% (compared with 48.2% ideal at the same pressure ratio)."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Quantity",
+    "Effect of lower $\\eta_C$ and $\\eta_T$",
+    "Effect of raising $T_3$"
+   ],
+   "rows": [
+    [
+     "Compressor work",
+     "Increases (more work to reach same $r_p$)",
+     "No change"
+    ],
+    [
+     "Turbine work",
+     "Decreases",
+     "Increases"
+    ],
+    [
+     "Net work",
+     "Drops sharply; often 30 to 50% lower",
+     "Increases strongly"
+    ],
+    [
+     "Thermal efficiency",
+     "Drops",
+     "Increases at a given $r_p$"
+    ],
+    [
+     "Optimum $r_p$ for max work",
+     "Decreases (factor $\\eta_C\\eta_T$)",
+     "Increases"
+    ]
+   ],
+   "caption": "Effect of real-machine losses and turbine inlet temperature."
+  },
+  {
+   "type": "text",
+   "markdown": "Because the net work is the difference of two large quantities (turbine work minus compressor work), a modest loss in each can wipe out a large fraction of the useful output. This is why gas turbines need efficient aerodynamic components: for $r_p = 10$, $T_3 = 1400$ K and efficiencies of 0.80 and 0.85 the net work falls from about 398 to 226 kJ/kg."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "Which optimum?",
+   "text": "Maximum specific work gives the smallest engine for a given power (important in aircraft); maximum thermal efficiency, which occurs at a higher pressure ratio, minimises fuel cost (important in baseload generation). Real engines choose between these, with the pressure ratio set by cost and weight."
+  },
+  {
+   "type": "list",
+   "style": "bullet",
+   "items": [
+    "$T_3$ is limited by blade materials and cooling, typically 1300 to 1600 K for modern industrial turbines.",
+    "The air-standard assumption (constant $c_p$) overstates efficiency; real values are lower because of variable $c_p$, pressure losses and heat addition from combustion.",
+    "The ideal $r_{p,opt}$ for max work is the geometric mean of the minimum and maximum temperature ratios.",
+    "A gas turbine back-work ratio is about 40 to 60%, much higher than a steam plant."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Common errors",
+   "text": "Do not apply the efficiency to the temperature rise in the wrong direction: $T_2 = T_1 + (T_{2s}-T_1)/\\eta_C$ (divide for the compressor), $T_4 = T_3 - \\eta_T(T_3 - T_{4s})$ (multiply for the turbine). Use kelvin in all temperature ratios."
+  },
+  {
+   "type": "summary",
+   "points": [
+    "Ideal efficiency $1 - r_p^{-(k-1)/k}$ rises with $r_p$ but specific work peaks at $r_{p,opt} = (\\eta_C\\eta_T T_3/T_1)^{k/[2(k-1)]}$.",
+    "Real compressor and turbine efficiencies cut net work and thermal efficiency strongly.",
+    "Thermal efficiency measures fuel use; specific work measures engine size.",
+    "The pressure ratios for maximum work and for maximum efficiency are different."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "Which statement correctly distinguishes thermal efficiency from specific work for a gas turbine?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Efficiency is net work per unit air mass; specific work is net work per unit heat input"
+    },
+    {
+     "id": "b",
+     "text": "They are the same quantity expressed in different units"
+    },
+    {
+     "id": "c",
+     "text": "Efficiency is net work per unit heat input; specific work is net work per unit mass of air and sets the engine size for a given power"
+    },
+    {
+     "id": "d",
+     "text": "Specific work depends only on the compressor and efficiency only on the turbine"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "Efficiency is net work per unit heat input; specific work is net work per unit mass of air and sets the engine size for a given power",
+   "distractorRationale": {
+    "a": "Swaps the two definitions.",
+    "b": "They are different measures that peak at different pressure ratios.",
+    "c": "Correct.",
+    "d": "Both depend on all components."
+   },
+   "explanation": "Thermal efficiency is the ratio $w_{net}/q_{in}$, which governs fuel consumption. Specific work $w_{net}$ per kg of air determines how much air flow, and so how large an engine, is required for a target power.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "For an ideal Brayton cycle with constant specific heats, the pressure ratio that maximises net work is",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$(T_3/T_1)^{k/[2(k-1)]}$"
+    },
+    {
+     "id": "b",
+     "text": "$(T_3/T_1)^{k/(k-1)}$"
+    },
+    {
+     "id": "c",
+     "text": "$T_3/T_1$"
+    },
+    {
+     "id": "d",
+     "text": "$(T_1/T_3)^{k/[2(k-1)]}$"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "$(T_3/T_1)^{k/[2(k-1)]}$",
+   "distractorRationale": {
+    "a": "Correct.",
+    "b": "Missing the factor 2; this is the pressure ratio at which net work is zero.",
+    "c": "Wrong exponent; ignores the isentropic relation.",
+    "d": "Inverted ratio gives a value below 1."
+   },
+   "explanation": "Setting $dw_{net}/dr_p = 0$ gives the compressor exit temperature equal to $\\sqrt{T_1 T_3}$, so $r_p = (T_3/T_1)^{k/[2(k-1)]}$. The pressure ratio at which net work vanishes is $(T_3/T_1)^{k/(k-1)}$, the square of this.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "A gas turbine's compressor isentropic efficiency falls from 0.88 to 0.78 at constant pressure ratio, inlet temperature and turbine-entry temperature. What happens to the compressor exit temperature and the net work?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The compressor exit temperature falls and the net work rises"
+    },
+    {
+     "id": "b",
+     "text": "The compressor exit temperature is unchanged and the net work falls"
+    },
+    {
+     "id": "c",
+     "text": "The compressor exit temperature rises and the net work rises"
+    },
+    {
+     "id": "d",
+     "text": "The compressor exit temperature rises and the net work falls"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The compressor exit temperature rises and the net work falls",
+   "distractorRationale": {
+    "a": "This reverses the effect of irreversibility.",
+    "b": "Exit temperature depends on $\\eta_C$.",
+    "c": "The compressor absorbs more work, so net work falls.",
+    "d": "Correct."
+   },
+   "explanation": "With lower $\\eta_C$, $T_2 = T_1 + (T_{2s} - T_1)/\\eta_C$ is higher and the compressor absorbs more work per kg. The turbine work is nearly unchanged, so the net work drops.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Engine A has a pressure ratio of 8 and a specific work of 330 kJ/kg; Engine B has a pressure ratio of 25 and a specific work of 280 kJ/kg with a higher thermal efficiency. A military aircraft needs a compact engine for a given thrust; a utility generates baseload power. Which choice is most appropriate?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "Engine B for both because efficiency always dominates"
+    },
+    {
+     "id": "b",
+     "text": "Engine A for the aircraft (higher specific work gives a smaller engine) and Engine B for the baseload plant (lower fuel use)"
+    },
+    {
+     "id": "c",
+     "text": "Engine A for both because it has the higher work"
+    },
+    {
+     "id": "d",
+     "text": "Engine B for the aircraft and Engine A for the baseload plant"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "Engine A for the aircraft (higher specific work gives a smaller engine) and Engine B for the baseload plant (lower fuel use)",
+   "distractorRationale": {
+    "a": "Aircraft weight and size depend on specific work.",
+    "b": "Correct.",
+    "c": "Baseload plants value fuel cost, so efficiency matters more.",
+    "d": "Reverses the roles."
+   },
+   "explanation": "Specific work sets the airflow, and so the size and weight, of an engine for a given power. Fuel cost depends on thermal efficiency, so the two applications weigh the two measures differently.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "For a fixed compressor inlet temperature $T_1$, what happens to the pressure ratio for maximum specific work when the turbine-entry temperature $T_3$ is raised?",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "It decreases"
+    },
+    {
+     "id": "b",
+     "text": "It is unchanged"
+    },
+    {
+     "id": "c",
+     "text": "It increases"
+    },
+    {
+     "id": "d",
+     "text": "It becomes equal to 1"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "It increases",
+   "distractorRationale": {
+    "a": "The optimum depends on $(T_3/T_1)$ to a positive power.",
+    "b": "$T_3$ appears in the formula.",
+    "c": "Correct.",
+    "d": "That would give no compression."
+   },
+   "explanation": "Since $r_{p,opt} = (T_3/T_1)^{k/[2(k-1)]}$ with a positive exponent, a higher $T_3$ raises the optimum pressure ratio. That is why advanced engines with hotter turbines use higher pressure ratios.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "An ideal gas turbine has compressor inlet $T_1 = 288$ K and turbine entry $T_3 = 1200$ K. Taking $k = 1.4$, find the pressure ratio for maximum net work (dimensionless).",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o1"
+   ],
+   "correctValue": 12.1515,
+   "tolerance": 0.1,
+   "unit": "dimensionless",
+   "explanation": "$r_{p,opt} = (1200/288)^{1.75} = (4.1667)^{1.75} = 12.15$. The result is quoted in dimensionless and is of a physically reasonable magnitude.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "Air at 290 K enters a compressor with pressure ratio 8 and isentropic efficiency 0.82. Using $k = 1.4$, find the actual compressor exit temperature in K.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o2"
+   ],
+   "correctValue": 576.9753,
+   "tolerance": 1.0,
+   "unit": "K",
+   "explanation": "Isentropic exit $T_{2s} = 290 \\times 8^{0.2857} = 525.3$ K. Actual $T_2 = 290 + (525.3 - 290)/0.82 = 577.0$ K.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A gas turbine operates with $T_1 = 295$ K, $T_3 = 1300$ K, pressure ratio 12, compressor efficiency 0.82 and turbine efficiency 0.88. Using $k = 1.4$ and $c_p = 1.005$ kJ/(kg K) (constant), calculate the thermal efficiency as a percentage.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o2"
+   ],
+   "correctValue": 33.107,
+   "tolerance": 0.3,
+   "unit": "%",
+   "explanation": "$T_{2s} = 295\\times12^{0.2857} = 600.0$ K, $T_2 = 667.0$ K. $T_{4s} = 1300/12^{0.2857} = 639.2$ K, $T_4 = 718.5$ K. $w_c = 373.8$, $w_t = 584.5$, $w_{net} = 210.6$ kJ/kg, $q_{in} = 1.005(1300 - 667.0) = 636.2$ kJ/kg, so $\\eta = 0.3311$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "A student claims that the best gas turbine is the one with the highest pressure ratio because the ideal cycle efficiency $1 - r_p^{-(k-1)/k}$ increases with $r_p$. Explain why this is incomplete, and describe what limits the useful pressure ratio.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o3"
+   ],
+   "markingGuide": [
+    "Ideal efficiency indeed increases monotonically with $r_p$",
+    "Specific work has a maximum at an intermediate $r_p$, then falls to zero when compressor exit temperature reaches $T_3$",
+    "Net work per kg determines engine size and power for a given airflow",
+    "Turbine entry temperature $T_3$ limits the temperature rise in the combustor, so very high $r_p$ leaves little heat addition",
+    "Real component efficiencies reduce both efficiency and work, so net work can drop sharply at high $r_p$",
+    "Concludes that the choice is a trade between size/work and fuel efficiency"
+   ],
+   "explanation": "Ideal efficiency alone ignores the fall in net work and the metallurgical limit on $T_3$. At very high pressure ratios the compressor absorbs almost all the turbine work, so net output vanishes.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "Derive the pressure ratio for maximum net work of an ideal Brayton cycle in terms of $T_1$, $T_3$ and $k$. Then show how isentropic efficiencies $\\eta_C$ and $\\eta_T$ modify this result, and compute the optimum ratio for $T_1 = 300$ K, $T_3 = 1500$ K, $\\eta_C = 0.85$ and $\\eta_T = 0.90$ with $k = 1.4$.",
+   "objectiveIds": [
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o1",
+    "ug.mce-thermodynamics-2.gas-turbine-cycles.brayton-real.o2"
+   ],
+   "markingGuide": [
+    "Writes $w_{net} = c_p[(T_3 - T_4) - (T_2 - T_1)]$ with $T_2 = T_1 x$ and $T_4 = T_3/x$ where $x = r_p^{(k-1)/k}$",
+    "Differentiates: $dw/dx = c_p(T_3/x^2 - T_1) = 0$ so $x = \\sqrt{T_3/T_1}$",
+    "Hence $r_{p,opt} = (T_3/T_1)^{k/[2(k-1)]}$",
+    "With efficiencies, the stage work is $\\eta_T T_3(1 - 1/x) - T_1(x - 1)/\\eta_C$ and $x = \\sqrt{\\eta_C \\eta_T T_3/T_1}$",
+    "Hence $r_{p,opt} = (\\eta_C\\eta_T T_3/T_1)^{1.75}$",
+    "Numerical: $(0.85\\times0.90\\times5)^{1.75} = (3.825)^{1.75} = 10.46$",
+    "Notes the optimum falls when efficiencies fall"
+   ],
+   "explanation": "Setting the derivative to zero gives $x = \\sqrt{T_3/T_1}$ for the ideal cycle, and including $\\eta_C \\eta_T$ gives $x = \\sqrt{\\eta_C \\eta_T T_3/T_1}$. For the given data $r_{p,opt} = 10.46$.",
+   "board": "internal"
+  }
+ ]
+}

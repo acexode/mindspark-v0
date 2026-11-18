@@ -1,0 +1,408 @@
+{
+ "lessonTitle": "Pole Placement",
+ "estimatedMinutes": 32,
+ "blocks": [
+  {
+   "type": "hook",
+   "text": "A small inverted-pendulum rig falls over unless the controller commands motor torque within a few milliseconds. The pendulum's open-loop pole sits in the right half-plane, yet one matrix gain $K$ computed on paper can move it to a stable place. How far to move it is a design choice with a price: placing the poles further left makes the response faster, but the motor has to work much harder to get there."
+  },
+  {
+   "type": "text",
+   "markdown": "For $\\dot x=Ax+Bu$ with full state measurement, **state feedback** applies $u=-Kx$ so that the closed loop becomes $\\dot x=(A-BK)x$. The closed-loop poles are the eigenvalues of $A-BK$, and the gain row $K$ (for a single input) is the quantity we design. The big result: if $(A,B)$ is controllable, $K$ can be chosen to place the $n$ closed-loop poles at *any* desired locations (complex ones in conjugate pairs)."
+  },
+  {
+   "type": "callout",
+   "variant": "definition",
+   "title": "Pole placement",
+   "text": "Given desired closed-loop poles $p_1,\\dots,p_n$, form the desired characteristic polynomial $\\alpha(s)=\\prod(s-p_i)$. Pole placement chooses $K$ so that $\\det(sI-A+BK)=\\alpha(s)$. For a controllable single-input system $K$ is unique."
+  },
+  {
+   "type": "math",
+   "latex": "\\det\\!\\big(sI-(A-BK)\\big)=s^{n}+\\alpha_{n-1}s^{n-1}+\\cdots+\\alpha_0",
+   "caption": "Match coefficients of this closed-loop characteristic polynomial with the desired one to find $K$."
+  },
+  {
+   "type": "worked_example",
+   "title": "Placing the poles of an unstable plant",
+   "prompt": "A plant has $A=\\begin{bmatrix}0&1\\\\2&-1\\end{bmatrix}$, $B=\\begin{bmatrix}0\\\\1\\end{bmatrix}$ (open-loop eigenvalues are the roots of $s^2+s-2=0$, i.e. $1$ and $-2$). Find $K=[k_1\\;k_2]$ giving closed-loop poles at $-3\\pm j4$.",
+   "steps": [
+    {
+     "text": "Desired polynomial: $(s+3-j4)(s+3+j4)=(s+3)^2+16$.",
+     "latex": "\\alpha(s)=s^2+6s+25"
+    },
+    {
+     "text": "With $B=[0\\;1]^T$ only the second row of $A$ changes: $A-BK=\\begin{bmatrix}0&1\\\\2-k_1&-1-k_2\\end{bmatrix}$. Its characteristic polynomial is",
+     "latex": "s^2+(1+k_2)s+(k_1-2)"
+    },
+    {
+     "text": "Match coefficients: $1+k_2=6$ and $k_1-2=25$.",
+     "latex": "k_2=5,\\quad k_1=27"
+    },
+    {
+     "text": "Check: $A-BK=\\begin{bmatrix}0&1\\\\-25&-6\\end{bmatrix}$ has trace $-6$ and determinant $25$, so the poles are $-3\\pm j4$ as required.",
+     "latex": "K=[27\\;\\;5]"
+    }
+   ],
+   "answer": "$K=[27\\;\\;5]$, giving closed-loop poles at $-3\\pm j4$."
+  },
+  {
+   "type": "text",
+   "markdown": "**Where to put the poles.** The second-order specifications link directly to the pole position $p=-\\sigma\\pm j\\omega_d$. With natural frequency $\\omega_n$ and damping ratio $\\zeta$ (so $\\sigma=\\zeta\\omega_n$ and $\\omega_d=\\omega_n\\sqrt{1-\\zeta^2}$), a pair of dominant poles gives percentage overshoot $\\mathrm{OS}=100\\,e^{-\\pi\\zeta/\\sqrt{1-\\zeta^2}}$ and 2% settling time $t_s\\approx 4/\\sigma$. Overshoot sets the *angle* of the poles from the negative real axis; settling time sets how far left they lie."
+  },
+  {
+   "type": "math",
+   "latex": "\\zeta=\\frac{-\\ln(\\mathrm{OS}/100)}{\\sqrt{\\pi^{2}+\\ln^{2}(\\mathrm{OS}/100)}},\\qquad \\sigma=\\frac{4}{t_s},\\qquad \\omega_d=\\sigma\\,\\frac{\\sqrt{1-\\zeta^{2}}}{\\zeta}",
+   "caption": "Pole position from overshoot and 2% settling time (dominant-pair approximation)."
+  },
+  {
+   "type": "worked_example",
+   "title": "Poles from a specification",
+   "prompt": "Place the poles for $\\mathrm{OS}\\le10\\%$ and 2% settling time $t_s=1.0$ s on the plant $A=\\begin{bmatrix}0&1\\\\0&-2\\end{bmatrix}$, $B=\\begin{bmatrix}0\\\\1\\end{bmatrix}$.",
+   "steps": [
+    {
+     "text": "Damping ratio from the overshoot:",
+     "latex": "\\zeta=\\frac{-\\ln 0.1}{\\sqrt{\\pi^2+\\ln^2 0.1}}=0.5912"
+    },
+    {
+     "text": "Real part from the settling time:",
+     "latex": "\\sigma=4/1.0=4\\ \\mathrm{s^{-1}}"
+    },
+    {
+     "text": "Imaginary part from the pole angle:",
+     "latex": "\\omega_d=\\sigma\\sqrt{1-\\zeta^2}/\\zeta=5.458\\ \\mathrm{rad/s}"
+    },
+    {
+     "text": "The desired polynomial is $(s+\\sigma)^2+\\omega_d^2=s^2+2\\sigma s+\\sigma^2+\\omega_d^2$. The closed-loop polynomial of the plant is $s^2+(2+k_2)s+k_1$.",
+     "latex": "s^2+8s+45.784"
+    },
+    {
+     "text": "Match coefficients.",
+     "latex": "k_2=8-2=6,\\quad k_1=45.78"
+    }
+   ],
+   "answer": "Poles at $-4\\pm j5.46$, giving $K\\approx[45.8\\;\\;6]$."
+  },
+  {
+   "type": "table",
+   "headers": [
+    "Design",
+    "$\\omega_n$ (rad/s)",
+    "$\\zeta$",
+    "Gain $K=[\\omega_n^2\\;\\;2\\zeta\\omega_n]$",
+    "Initial effort $|u(0)|$ for $x(0)=[0.1\\;0]^T$"
+   ],
+   "rows": [
+    [
+     "Slow",
+     "2",
+     "0.7",
+     "[4, 2.8]",
+     "0.4"
+    ],
+    [
+     "Fast",
+     "8",
+     "0.7",
+     "[64, 11.2]",
+     "6.4"
+    ]
+   ],
+   "caption": "Double-integrator plant $\\ddot y=u$ with two pole designs. Quadrupling the natural frequency raises the position gain sixteen-fold."
+  },
+  {
+   "type": "worked_example",
+   "title": "Control effort versus pole distance",
+   "prompt": "For the double integrator $\\ddot y=u$ (states $y$ and $\\dot y$), compare the gain and the starting control effort for $\\omega_n=2$ rad/s and $\\omega_n=8$ rad/s with $\\zeta=0.7$, if the initial position error is $0.1$ m and the initial velocity is zero.",
+   "steps": [
+    {
+     "text": "The closed loop is $\\ddot y+k_2\\dot y+k_1y=0$, so $k_1=\\omega_n^2$ and $k_2=2\\zeta\\omega_n$.",
+     "latex": "K_{slow}=[4\\;\\;2.8],\\quad K_{fast}=[64\\;\\;11.2]"
+    },
+    {
+     "text": "The initial effort is $|u(0)|=k_1\\times 0.1$ since the velocity is zero.",
+     "latex": "|u(0)|_{slow}=0.4,\\quad |u(0)|_{fast}=6.4"
+    },
+    {
+     "text": "The ratio is $(8/2)^2=16$: effort scales with $\\omega_n^2$ for the same initial error.",
+     "latex": "6.4/0.4=16"
+    }
+   ],
+   "answer": "Quadrupling the speed of response costs sixteen times the initial control effort (in the same units), which quickly meets actuator saturation."
+  },
+  {
+   "type": "callout",
+   "variant": "key-point",
+   "title": "The price of speed",
+   "text": "The gain entries grow like $\\omega_n^2$ (position) and $\\omega_n$ (velocity) in this example, and generally grow rapidly as poles move left. Larger gains mean larger peak actuator effort, greater sensitivity to sensor noise and unmodelled dynamics, and earlier saturation. Choose the slowest poles that meet the specification."
+  },
+  {
+   "type": "list",
+   "style": "number",
+   "items": [
+    "Check controllability of $(A,B)$ first; if the rank test fails, pole placement cannot move every pole.",
+    "Convert the specification into dominant poles: $\\zeta$ from overshoot, $\\sigma=4/t_s$ from settling time.",
+    "Match coefficients of $\\det(sI-A+BK)$ with the desired polynomial (or use Ackermann's formula).",
+    "Simulate with the real actuator limits and note the peak control effort before accepting the design."
+   ]
+  },
+  {
+   "type": "callout",
+   "variant": "warning",
+   "title": "Dominant-pole formulas are approximations",
+   "text": "The overshoot and settling formulas are exact only for a pure second-order system. If the other closed-loop poles are not much faster than the dominant pair, or if the closed loop has zeros, the real response will deviate. Verify by simulation."
+  },
+  {
+   "type": "check",
+   "questionId": "q001"
+  },
+  {
+   "type": "summary",
+   "points": [
+    "State feedback $u=-Kx$ gives closed-loop poles at the eigenvalues of $A-BK$; for a controllable plant $K$ can place them anywhere.",
+    "Overshoot fixes the pole angle through $\\zeta$, and settling time fixes the real part through $\\sigma=4/t_s$.",
+    "Moving poles further left raises the gain and control effort roughly with $\\omega_n^2$, so speed is limited by actuators and noise."
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "What must be true of $(A,B)$ for state feedback to be able to place all closed-loop poles at arbitrary locations?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The pair must be controllable"
+    },
+    {
+     "id": "b",
+     "text": "The matrix $A$ must be stable"
+    },
+    {
+     "id": "c",
+     "text": "The plant must be observable"
+    },
+    {
+     "id": "d",
+     "text": "$B$ must be a square invertible matrix"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "The pair must be controllable",
+   "distractorRationale": {
+    "a": "Controllability is the necessary and sufficient condition for arbitrary pole placement.",
+    "b": "An unstable $A$ is the usual reason for using feedback in the first place.",
+    "c": "Observability is needed to estimate states, not to place poles with full state feedback.",
+    "d": "With a single input, $B$ is a column vector and cannot be square for $n>1$."
+   },
+   "explanation": "Arbitrary pole placement requires that the input can influence every mode, which is exactly controllability. Stability of $A$ and observability are irrelevant to this specific property.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 1,
+   "stem": "After applying $u=-Kx$ to $\\dot x=Ax+Bu$, which matrix has the closed-loop poles as its eigenvalues?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$A+BK$"
+    },
+    {
+     "id": "b",
+     "text": "$A-KB$"
+    },
+    {
+     "id": "c",
+     "text": "$A-BK$"
+    },
+    {
+     "id": "d",
+     "text": "$K-AB$"
+    }
+   ],
+   "correctOptionId": "c",
+   "correctOptionText": "$A-BK$",
+   "distractorRationale": {
+    "a": "The sign is wrong for the negative-feedback convention $u=-Kx$.",
+    "b": "The dimensions do not match for a single-input system with $K$ a row vector.",
+    "c": "Substituting $u=-Kx$ gives $\\dot x=(A-BK)x$.",
+    "d": "This has no relation to the closed-loop dynamics."
+   },
+   "explanation": "Substituting the control law into the state equation replaces $u$ by $-Kx$, giving $(A-BK)x$. The dimensions work because $K$ is a row of length $n$ and $B$ is a column.",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "Two designs have dominant poles at $-5\\pm j5$ and $-5\\pm j15$. Which has the smaller overshoot and why?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o2"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "$-5\\pm j15$, because the imaginary part is larger"
+    },
+    {
+     "id": "b",
+     "text": "$-5\\pm j5$, because its damping ratio is higher"
+    },
+    {
+     "id": "c",
+     "text": "They are equal because the real parts are the same"
+    },
+    {
+     "id": "d",
+     "text": "Neither; overshoot is set only by the gain $K$"
+    }
+   ],
+   "correctOptionId": "b",
+   "correctOptionText": "$-5\\pm j5$, because its damping ratio is higher",
+   "distractorRationale": {
+    "a": "A larger imaginary part at the same real part means more oscillation and a lower damping ratio.",
+    "b": "The ratio $\\sigma/\\omega_n$ is $0.707$ for the first and about $0.316$ for the second.",
+    "c": "Settling time depends on the real part, but overshoot depends on the pole angle.",
+    "d": "The gain determines the poles, and the poles determine the overshoot."
+   },
+   "explanation": "Overshoot depends on the damping ratio $\\zeta=\\sigma/\\omega_n$. For the first pair $\\omega_n=\\sqrt{50}$, so $\\zeta=0.707$ (about 4% overshoot); for the second $\\omega_n=\\sqrt{250}$, $\\zeta=0.316$ (about 35% overshoot).",
+   "board": "internal"
+  },
+  {
+   "type": "mcq",
+   "difficulty": 2,
+   "stem": "What happens to the gains and actuator effort when the desired closed-loop poles are moved much further into the left half-plane?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o3"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "The gains decrease because the system is more stable"
+    },
+    {
+     "id": "b",
+     "text": "The gains are unchanged because $K$ depends only on $A$"
+    },
+    {
+     "id": "c",
+     "text": "Only the steady-state error changes"
+    },
+    {
+     "id": "d",
+     "text": "The gains and peak control effort increase, so saturation and noise problems get worse"
+    }
+   ],
+   "correctOptionId": "d",
+   "correctOptionText": "The gains and peak control effort increase, so saturation and noise problems get worse",
+   "distractorRationale": {
+    "a": "Stability margin does not reduce the effort needed to move the state faster.",
+    "b": "$K$ is found from $A$, $B$ and the desired poles, so it changes with them.",
+    "c": "Steady-state error depends on reference tracking design, not on this relocation alone.",
+    "d": "Faster dynamics demand more effort from the actuator and amplify sensor noise."
+   },
+   "explanation": "Matching coefficients shows that $K$ grows with the desired polynomial coefficients, roughly as $\\omega_n^2$ for position gain. The extra gain means larger peak commands and more sensitivity to measurement noise.",
+   "board": "internal"
+  },
+  {
+   "type": "true_false",
+   "difficulty": 2,
+   "stem": "True or false: for a controllable single-input plant, there is exactly one gain row $K$ that places the closed-loop poles at a given set of $n$ locations.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o1"
+   ],
+   "options": [
+    {
+     "id": "a",
+     "text": "True"
+    },
+    {
+     "id": "b",
+     "text": "False"
+    }
+   ],
+   "correctOptionId": "a",
+   "correctOptionText": "True",
+   "explanation": "For a single input there are exactly $n$ unknowns in $K$ and $n$ polynomial coefficients to match, giving a unique solution when $(A,B)$ is controllable. With several inputs the gain is no longer unique.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 1,
+   "stem": "Dominant closed-loop poles are at $-5\\pm j8$ (rad/s). Estimate the 2% settling time in seconds using $t_s\\approx4/\\sigma$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o2"
+   ],
+   "correctValue": 0.8,
+   "tolerance": 0.01,
+   "unit": "s",
+   "explanation": "The real part of the poles is $\\sigma=5$ s$^{-1}$, so $t_s\\approx4/5=0.8$ s. The imaginary part affects the oscillation frequency but not the settling envelope.",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 2,
+   "stem": "A plant has $A=\\begin{bmatrix}0&1\\\\-5&-2\\end{bmatrix}$ and $B=\\begin{bmatrix}0\\\\4\\end{bmatrix}$. With $u=-Kx$, $K=[k_1\\;\\;k_2]$, the poles are to be placed at $-4\\pm j3$. Find $k_2$ (dimensionless units).",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o1"
+   ],
+   "correctValue": 1.5,
+   "tolerance": 0.01,
+   "unit": "dimensionless",
+   "explanation": "The desired polynomial is $(s+4)^2+9=s^2+8s+25$. The closed loop is $A-BK=\\begin{bmatrix}0&1\\\\-5-4k_1&-2-4k_2\\end{bmatrix}$ with polynomial $s^2+(2+4k_2)s+(5+4k_1)$, so $2+4k_2=8$ gives $k_2=1.5$ (and $k_1=5$).",
+   "board": "internal"
+  },
+  {
+   "type": "numeric",
+   "difficulty": 3,
+   "stem": "A design requires overshoot of at most 5% and a 2% settling time of at most 0.5 s. The settling requirement fixes the real part of the dominant poles at $-8$ s$^{-1}$ (using $t_s=4/\\sigma$). What is the largest imaginary part $\\omega_d$, in rad/s, of the pole pair $-8\\pm j\\omega_d$ that still meets the 5% overshoot limit?",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o2"
+   ],
+   "correctValue": 8.389515,
+   "tolerance": 0.1,
+   "unit": "rad/s",
+   "explanation": "For 5% overshoot $\\zeta=-\\ln0.05/\\sqrt{\\pi^2+\\ln^20.05}=0.6901$. Since $\\omega_d=\\sigma\\sqrt{1-\\zeta^2}/\\zeta$ and larger $\\omega_d$ lowers $\\zeta$, the limit is $8\\times0.7237/0.6901=8.39$ rad/s.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 2,
+   "stem": "An unstable plant has $A=\\begin{bmatrix}0&1\\\\10&0\\end{bmatrix}$ and $B=\\begin{bmatrix}0\\\\2\\end{bmatrix}$. (i) Check controllability. (ii) Find $K$ placing both poles at $-6$.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o1"
+   ],
+   "markingGuide": [
+    "Computes $AB=[2\\;\\;0]^T$ and $\\mathcal{C}=\\begin{bmatrix}0&2\\\\2&0\\end{bmatrix}$ with determinant $-4\\neq0$, so controllable.",
+    "Forms $A-BK=\\begin{bmatrix}0&1\\\\10-2k_1&-2k_2\\end{bmatrix}$ with polynomial $s^2+2k_2s+(2k_1-10)$.",
+    "Desired polynomial $(s+6)^2=s^2+12s+36$.",
+    "Matches coefficients: $k_2=6$ and $k_1=23$."
+   ],
+   "explanation": "The controllability matrix has determinant $-4$, so poles can be placed. Matching $s^2+2k_2s+2k_1-10$ with $s^2+12s+36$ gives $k_2=6$ and $k_1=23$.",
+   "board": "internal"
+  },
+  {
+   "type": "theory",
+   "difficulty": 3,
+   "stem": "A designer wants to triple the closed-loop natural frequency of a double-integrator positioner (keeping the damping ratio fixed) to make it three times faster. Predict the change in the gains $k_1$ and $k_2$ in $u=-Kx$, discuss the effect on actuator effort and noise, and say how you would decide whether to accept the faster design.",
+   "objectiveIds": [
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o3",
+    "ug.mce-control-engineering.state-feedback-observers.pole-placement.o2"
+   ],
+   "markingGuide": [
+    "States that for the double integrator $k_1=\\omega_n^2$ and $k_2=2\\zeta\\omega_n$.",
+    "Concludes $k_1$ increases by a factor of 9 and $k_2$ by a factor of 3.",
+    "Notes the peak initial effort for a given error rises ninefold, so saturation and rate limits are reached sooner.",
+    "Notes increased noise amplification and sensitivity to unmodelled dynamics from larger gains.",
+    "Says the decision should compare the specification and actuator limits, choosing the slowest design that meets specification, verified in simulation with limits."
+   ],
+   "explanation": "Since $k_1=\\omega_n^2$ and $k_2=2\\zeta\\omega_n$, tripling $\\omega_n$ multiplies $k_1$ by 9 and $k_2$ by 3, so the initial effort for the same error is nine times larger. Larger gains amplify noise and reach saturation sooner, so the design should be the slowest one that satisfies the specification.",
+   "board": "internal"
+  }
+ ]
+}
