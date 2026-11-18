@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { MathText } from "@/components/ui/math-text";
 import { ContentBlockView } from "@/features/lesson/components/content-block";
 import { buildContentIndex } from "@/lib/content/loader";
 
@@ -83,5 +84,19 @@ describe("every seeded lesson is free of raw notation leaks", () => {
     }
 
     expect(offenders).toEqual([]);
+  });
+});
+
+describe("MathText delimiters", () => {
+  it("renders bracket and paren delimiters as maths, not raw LaTeX", () => {
+    const { container } = render(
+      <MathText text={String.raw`Use \[\text{Translation} = \frac{a}{b} \times 100\] where \(a\) is in mm.`} />,
+    );
+    expect(container.querySelectorAll(".katex").length).toBe(2);
+    expect(container.textContent).not.toContain(String.raw`\frac`);
+  });
+  it("leaves an unclosed delimiter as plain text while streaming", () => {
+    const { container } = render(<MathText text={String.raw`so \[\frac{a}`} />);
+    expect(container.querySelector(".katex")).toBeNull();
   });
 });

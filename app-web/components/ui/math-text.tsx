@@ -10,7 +10,11 @@ export function MathText({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         part.type === "math" ? (
-          <span key={i} dangerouslySetInnerHTML={{ __html: renderLatex(part.value, false) }} />
+          <span
+            key={i}
+            className={part.display ? "math-block" : undefined}
+            dangerouslySetInnerHTML={{ __html: renderLatex(part.value, part.display) }}
+          />
         ) : (
           <span key={i} dangerouslySetInnerHTML={{ __html: renderEmphasis(part.value) }} />
         ),
@@ -31,9 +35,17 @@ function renderLatex(latex: string, displayMode: boolean): string {
   }
 }
 
-function splitMath(text: string): Array<{ type: "text" | "math"; value: string }> {
-  const parts: Array<{ type: "text" | "math"; value: string }> = [];
-  const pattern = /\$([^$]+)\$/g;
+type Part = { type: "text"; value: string } | { type: "math"; value: string; display: boolean };
+
+/**
+ * Finds `$$…$$`, `\[…\]` (display) and `\(…\)`, `$…$` (inline). Models often write the backslash
+ * forms, so all four are accepted. An unclosed delimiter (a reply still streaming) stays plain text.
+ */
+const MATH_PATTERN = /\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\\\(([\s\S]+?)\\\)|\$([^$]+)\$/g;
+
+function splitMath(text: string): Part[] {
+  const parts: Part[] = [];
+  const pattern = new RegExp(MATH_PATTERN.source, "g");
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
@@ -41,7 +53,8 @@ function splitMath(text: string): Array<{ type: "text" | "math"; value: string }
     if (match.index > lastIndex) {
       parts.push({ type: "text", value: text.slice(lastIndex, match.index) });
     }
-    parts.push({ type: "math", value: match[1] });
+    const display = match[1] !== undefined || match[2] !== undefined;
+    parts.push({ type: "math", value: (match[1] ?? match[2] ?? match[3] ?? match[4]).trim(), display });
     lastIndex = match.index + match[0].length;
   }
 
