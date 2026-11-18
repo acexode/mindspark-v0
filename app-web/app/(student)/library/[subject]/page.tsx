@@ -1,7 +1,10 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
-import { getLesson, getQuestions, resolveSubjectSlug } from "@/lib/content/loader";
+import { getContentIndex, getLesson, getQuestions, resolveSubjectSlug } from "@/lib/content/loader";
+import { courseAvailability, isDraftContent } from "@/lib/content/availability";
+import { DraftBadge } from "@/components/ui/draft-badge";
+import { CoursePreparing } from "@/features/study/components/course-preparing";
 import { progressionContextFor, subjectProgression } from "@/lib/content/topic-progress";
 import { buildSubjectOverview } from "@/lib/content/study-overview";
 import { TOPIC_PRACTICE_UNLOCK_PERCENT } from "@/lib/domain/mastery/progression";
@@ -72,6 +75,9 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
           </Link>
         </div>
       </header>
+
+      {isUndergraduate && <CoursePreparing availability={courseAvailability(getContentIndex(), raw.id)} />}
+      {isDraftContent(raw.level, raw.provenance) && <DraftBadge />}
 
       <section className="subject-summary" aria-label={`Your progress in ${subject.name}`}>
         <div className="subject-summary-trail">

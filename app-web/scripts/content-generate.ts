@@ -8,6 +8,7 @@
  *   npx tsx scripts/content-generate.ts --subject accounting
  *   npx tsx scripts/content-generate.ts --programme bsc-computer-science --year Year1
  *   npx tsx scripts/content-generate.ts --limit 2 --questions 10
+ *   npx tsx scripts/content-generate.ts --pending   (drain courses students enrolled in: generation_requests)
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -17,6 +18,7 @@ import { buildContentIndex, idSlug } from "../lib/content/loader";
 import { isPlaceholderExplanation } from "../lib/content/explanations";
 import { argValue, chatJson, hasFlag, loadEnvLocal, mapPool, usageTotals } from "./lib/openai";
 import { dbPath, openContentDb, upsertDoc } from "../lib/content/db";
+import { listPendingRequests, markRequest } from "../lib/content/generation-requests";
 import type { DatabaseSync } from "node:sqlite";
 
 const SUBJECTS_DIR = path.join(process.cwd(), "content/subjects");
@@ -771,7 +773,12 @@ async function main(): Promise<void> {
   const questionOverride = Number(argValue("--questions") ?? "0");
   const limit = Number(argValue("--limit") ?? "0");
   const force = hasFlag("--force");
+  const drainPending = hasFlag("--pending");
   const concurrency = Number(process.env.CONTENT_GENERATE_CONCURRENCY ?? "3");
+
+  const queueDb = drainPending ? openContentDb(dbPath()) : null;
+  const pendingIds = drainPending ? new Set((queueDb ? listPendingRequests(queueDb) : []).map((r) => r.subjectId)) : null;
+  if (pendingIds) console.log(`--pending: ${pendingIds.size} requested course(s)`);
 
   const index = buildContentIndex();
   if (index.errors.length > 0) {
@@ -805,6 +812,7 @@ async function main(): Promise<void> {
   /** Subjects that live only in the content database (no directory in the repo). */
   for (const subject of index.subjects) {
     if (onDisk.has(subject.id)) continue;
+    if (pendingIds && !pendingIds.has(subject.id)) continue;
     if (only && only !== subject.id && only !== idSlug(subject.id) && only !== subject.name.toLowerCase()) continue;
     if (programme && !(subject.programmes ?? []).includes(programme)) continue;
     for (const topic of subject.topics) {
@@ -848,6 +856,8 @@ async function main(): Promise<void> {
 
   console.log(`${jobs.length} subtopics in scope, ${pending.length} missing content, generating ${queue.length} (concurrency ${concurrency})`);
   if (queue.length === 0) {
+    if (queueDb && pendingIds) for (const id of pendingIds) markRequest(queueDb, id, "done");
+    queueDb?.close();
     console.log("Nothing to generate.");
     return;
   }
@@ -855,6 +865,7 @@ async function main(): Promise<void> {
   let wrote = 0;
   let failed = 0;
   let protectedCount = 0;
+  const failedSubjects = new Set<string>();
   await mapPool(queue, concurrency, async (job, position) => {
     const label = `${position + 1}/${queue.length} ${job.subtopic.id}`;
     try {
@@ -870,6 +881,7 @@ async function main(): Promise<void> {
       }
     } catch (error) {
       failed += 1;
+      failedSubjects.add(job.subject.id);
       console.error(`FAIL   ${label}`);
       console.error(`       ${error instanceof Error ? error.message : error}`);
     }
@@ -879,6 +891,10 @@ async function main(): Promise<void> {
     const subjectId = queue[0]?.subject.id;
     if (subjectId) db.prepare("UPDATE documents SET review_status = 'unreviewed' WHERE kind = 'subject' AND id = ?").run(subjectId);
     console.log("review status reset to unreviewed: re-run the reviewer on this course");
+  }
+  if (queueDb && pendingIds) {
+    for (const id of pendingIds) markRequest(queueDb, id, failedSubjects.has(id) ? "failed" : "done");
+    queueDb.close();
   }
   db?.close();
   console.log(

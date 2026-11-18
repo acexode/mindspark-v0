@@ -14,6 +14,8 @@ import { LessonPlayer } from "@/features/lesson/components/lesson-player";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { experienceFor } from "@/lib/domain/student/experience";
 import { EmptyState } from "@/components/ui/empty-state";
+import { DraftBadge } from "@/components/ui/draft-badge";
+import { isDraftContent } from "@/lib/content/availability";
 
 export default async function LessonPage({
   params,
@@ -82,6 +84,7 @@ export default async function LessonPage({
 
   return (
     <div className="lesson-page" style={{ ["--accent" as string]: subject.accentColor }}>
+      {isDraftContent(subject.level, lesson.provenance) && <DraftBadge />}
       <LessonPlayer
         lesson={lesson}
         checkQuestions={checkQuestions}

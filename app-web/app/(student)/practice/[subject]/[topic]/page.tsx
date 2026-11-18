@@ -14,6 +14,8 @@ import { experienceFor } from "@/lib/domain/student/experience";
 import { answeredIdsFor, coverageOf, coveredSubtopicIds, partitionByAnswered } from "@/lib/domain/student/coverage";
 import { PracticeSession } from "@/features/practice/components/practice-session";
 import { EmptyState } from "@/components/ui/empty-state";
+import { DraftBadge } from "@/components/ui/draft-badge";
+import { isDraftContent } from "@/lib/content/availability";
 
 export const dynamic = "force-dynamic";
 
@@ -115,6 +117,7 @@ export default async function TopicPracticePage({
 
   return (
     <div className="page" style={{ ["--accent" as string]: subject.accentColor }}>
+      {allQuestions.some((q) => isDraftContent(subject.level, q.provenance)) && <DraftBadge />}
       <PracticeSession
         title={subtopic ? subtopic.name : topic.name}
         scopeLabel={scopeLabel}

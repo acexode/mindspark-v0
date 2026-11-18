@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getQuestionById, getSubject } from "@/lib/content/loader";
+import { getContentIndex, getQuestionById, getSubject } from "@/lib/content/loader";
+import { requestGenerationIfNeeded } from "@/lib/content/generation-requests";
 import { filterSubjectForClass } from "@/lib/content/class-visibility";
 import { gradeAnswer, type SubmittedAnswer } from "@/lib/domain/assessment/grading";
 import { applyEvidence, getRecord } from "@/lib/domain/mastery/mastery";
@@ -75,6 +76,12 @@ function normalizeProfileInput(input: OnboardingInput) {
   };
 }
 
+/** Never generates in-request: only queues a durable request the operator drains offline. */
+function requestGenerationForCourses(subjectIds: string[]): void {
+  const index = getContentIndex();
+  for (const id of subjectIds) requestGenerationIfNeeded(index, id);
+}
+
 function revalidateStudentPaths() {
   revalidatePath("/home");
   revalidatePath("/library");
@@ -97,6 +104,7 @@ export async function saveOnboarding(input: OnboardingInput): Promise<{ ok: bool
     lastActiveDate: new Date().toISOString().slice(0, 10),
   }));
 
+  requestGenerationForCourses(next.selectedSubjectIds);
   revalidateStudentPaths();
   return { ok: true };
 }
@@ -113,6 +121,7 @@ export async function updateStudentProfile(input: OnboardingInput): Promise<{ ok
     lastActiveDate: new Date().toISOString().slice(0, 10),
   }));
 
+  requestGenerationForCourses(next.selectedSubjectIds);
   revalidateStudentPaths();
   return { ok: true };
 }
@@ -237,6 +246,7 @@ export async function addSubject(subjectId: string): Promise<void> {
       ? current
       : { ...current, selectedSubjectIds: [...current.selectedSubjectIds, subjectId] },
   );
+  requestGenerationForCourses([subjectId]);
   revalidatePath("/library");
 }
 

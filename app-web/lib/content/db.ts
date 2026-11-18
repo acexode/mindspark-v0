@@ -43,6 +43,13 @@ CREATE TABLE IF NOT EXISTS assets (
   attribution TEXT,
   source_url TEXT
 );
+-- Durable queue of "a student enrolled in a course with ungenerated units".
+-- The operator drains it offline: scripts/content-generate.ts --pending.
+CREATE TABLE IF NOT EXISTS generation_requests (
+  subject_id   TEXT PRIMARY KEY,
+  requested_at TEXT NOT NULL DEFAULT (datetime('now')),
+  status       TEXT NOT NULL DEFAULT 'pending'
+);
 `;
 
 // Loaded through createRequire so the bundler does not try to resolve the

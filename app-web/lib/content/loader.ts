@@ -140,6 +140,17 @@ export function buildContentIndex(): ContentIndex {
   return index;
 }
 
+/** The database review_status is authoritative: human_verified rows are shown as verified (no draft label). */
+function applyHumanVerified(doc: unknown): void {
+  const mark = (node: unknown) => {
+    const provenance = (node as { provenance?: { verified: boolean } } | null)?.provenance;
+    if (provenance) provenance.verified = true;
+  };
+  mark(doc);
+  const questions = (doc as { questions?: unknown[] } | null)?.questions;
+  if (Array.isArray(questions)) questions.forEach(mark);
+}
+
 function registerSubject(index: ContentIndex, subject: Subject): void {
   index.subjects.push(subject);
   index.subjectById.set(subject.id, subject);
@@ -180,6 +191,7 @@ function loadFromDatabase(index: ContentIndex): void {
         index.errors.push({ file: `db:${row.kind}:${row.id}`, message: formatZod(result.error) });
         return null;
       }
+      if (row.reviewStatus === "human_verified") applyHumanVerified(result.data);
       return result.data;
     };
 
