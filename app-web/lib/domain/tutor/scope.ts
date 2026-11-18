@@ -79,6 +79,10 @@ Message: "the answer is 45000"
 STUDY
 Message: "Explain it simply"
 STUDY
+Message: "Give me a worked example"
+STUDY
+Message: "What are the common mistakes here?"
+STUDY
 Message: "How do I draw a rectangle in AutoCAD?"
 STUDY
 Message: "My AutoCAD keeps crashing when I try to plot"
@@ -92,12 +96,20 @@ OTHER
 Message: "What phone should I buy?"
 OTHER`;
 
-export function buildScopeCheckMessages(context: Pick<TutorContext, "userMessage" | "history">): {
+export function buildScopeCheckMessages(
+  context: Pick<TutorContext, "userMessage" | "history"> & Partial<Pick<TutorContext, "subjectName" | "topicName" | "subtopicName">>,
+): {
   system: string;
   prompt: string;
 } {
   const lastTutorTurn = [...(context.history ?? [])].reverse().find((turn) => turn.role === "tutor");
-  const lead = lastTutorTurn ? `The tutor's last message was: "${lastTutorTurn.text.slice(0, 300)}"\n` : "";
+  const focus = context.subtopicName ?? context.topicName ?? context.subjectName;
+  const where = focus
+    ? `The student is studying: ${focus}. Questions about it, and short follow-ups such as "what are the common mistakes here?", are STUDY.
+`
+    : "";
+  const lead = where + (lastTutorTurn ? `The tutor's last message was: "${lastTutorTurn.text.slice(0, 300)}"
+` : "");
   return { system: CLASSIFIER_SYSTEM, prompt: `${lead}Message: "${(context.userMessage ?? "").slice(0, 500)}"` };
 }
 

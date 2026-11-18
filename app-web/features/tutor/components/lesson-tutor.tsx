@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { TutorMode } from "@/lib/domain/tutor/fallback";
 import { AskTutorPanel, type AskTutorScope } from "./ask-tutor-panel";
-import { chipsFor, useTutorLevel } from "./tutor-tone";
+import { chipLabel } from "@/lib/domain/tutor/suggestions";
+import { chipsFor, useTutorLevel, type TutorChip } from "./tutor-tone";
 
 interface LessonTutorProps {
   scope: Omit<AskTutorScope, "surface" | "question">;
@@ -37,6 +38,31 @@ export function LessonTutor({ scope, heading, fullTutorHref }: LessonTutorProps)
     setLaunch({ key: Date.now(), prompt, mode, quiz });
   }
 
+  const [suggested, setSuggested] = useState<string[] | null>(null);
+  const { subjectName, subtopicId, topicId } = scope;
+
+  // The server reads this unit's lesson and has the model write the questions; failures keep the generic chips.
+  useEffect(() => {
+    const controller = new AbortController();
+    setSuggested(null);
+    fetch("/api/v1/tutor/suggestions", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ subjectName, subtopicId, topicId }),
+      signal: controller.signal,
+    })
+      .then((r) => (r.ok ? r.json() : { questions: [] }))
+      .then((data: { questions?: string[] }) => setSuggested(Array.isArray(data.questions) ? data.questions : []))
+      .catch(() => {});
+    return () => controller.abort();
+  }, [subjectName, subtopicId, topicId]);
+
+  const chips: TutorChip[] =
+    suggested && suggested.length > 0
+      ? suggested.map((q) => ({ label: chipLabel(q), prompt: q, mode: "explain" as const }))
+      : chipsFor(level, "lesson").slice(0, 3);
+  const loading = suggested === null;
+
   useEffect(() => {
     if (launch && dialogRef.current && !dialogRef.current.open) dialogRef.current.showModal();
   }, [launch]);
@@ -49,13 +75,18 @@ export function LessonTutor({ scope, heading, fullTutorHref }: LessonTutorProps)
           <p>{casual ? "It knows exactly what you're reading, so ask away." : "The tutor is grounded in this unit's lesson."}</p>
         </div>
         <div className="ask-tutor-chips">
-          {chipsFor(level, "lesson")
-            .slice(0, 3)
-            .map((chip) => (
-              <button key={chip.label} type="button" className="tutor-chip" onClick={() => open(chip.prompt, chip.mode, chip.quiz)}>
-                {chip.label}
-              </button>
-            ))}
+          {chips.map((chip) => (
+            <button
+              key={chip.prompt}
+              type="button"
+              className="tutor-chip"
+              title={chip.prompt}
+              aria-busy={loading}
+              onClick={() => open(chip.prompt, chip.mode, chip.quiz)}
+            >
+              {chip.label}
+            </button>
+          ))}
           <button type="button" className="secondary-action" onClick={() => open()}>
             Type my own
           </button>

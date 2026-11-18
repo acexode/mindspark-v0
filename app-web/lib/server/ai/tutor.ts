@@ -6,6 +6,7 @@ import { guardedStream } from "@/lib/domain/tutor/guarded-stream";
 import { checkScope, offTopicReply } from "@/lib/domain/tutor/scope";
 import { tutorProviders, type ProviderName } from "./providers";
 import { isStudyMessage } from "./scope-check";
+import { isSuggestedQuestion } from "./suggestions";
 
 export type { TutorContext };
 
@@ -44,7 +45,10 @@ function scopeReply(context: TutorContext): TutorReply {
 
 /** Free pattern check first, then a short model check; off-topic messages never reach the tutor prompt. */
 async function withinScope(context: TutorContext): Promise<boolean> {
-  return checkScope(context.userMessage).allowed && (await isStudyMessage(context));
+  if (!checkScope(context.userMessage).allowed) return false;
+  // A question this server wrote from the lesson itself is on topic by construction.
+  if (isSuggestedQuestion(context, context.userMessage)) return true;
+  return isStudyMessage(context);
 }
 
 function singleChunkStream(text: string): ReadableStream<Uint8Array> {
