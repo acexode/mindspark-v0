@@ -2,7 +2,7 @@ import type { TutorContext } from "./fallback";
 
 export const SUGGESTION_COUNT = 3;
 const MAX_QUESTION_CHARS = 140;
-const QUESTION_START = /^(why|how|what|when|where|which|who|can|could|does|do|did|is|are|was|were|should|would|will)/i;
+const QUESTION_START = /^(why|how|what|when|where|which|who|can|could|does|do|did|is|are|was|were|should|would|will)\b/i;
 
 export type SuggestionFocus = Pick<
   TutorContext,
