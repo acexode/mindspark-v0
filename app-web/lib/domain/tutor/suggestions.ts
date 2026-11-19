@@ -1,7 +1,8 @@
 import type { TutorContext } from "./fallback";
 
 export const SUGGESTION_COUNT = 3;
-const MAX_QUESTION_CHARS = 110;
+const MAX_QUESTION_CHARS = 140;
+const QUESTION_START = /^(why|how|what|when|where|which|who|can|could|does|do|did|is|are|was|were|should|would|will)/i;
 
 export type SuggestionFocus = Pick<
   TutorContext,
@@ -20,11 +21,11 @@ Rules:
 - Write exactly ${SUGGESTION_COUNT} questions, one per line, no numbering, no bullets, no extra text.
 - Each question must name or clearly depend on a specific idea, term, number or step from the lesson text. Never write generic questions such as "Give me an example".
 - Vary them: one asking why or how something works, one about a worked example, step or calculation, one about a common mistake or confusion.
-- Each question is under ${MAX_QUESTION_CHARS} characters, phrased the way a student would say it, and ends with a question mark.
+- Each question is under 110 characters, phrased the way a student would say it, and ends with a question mark.
 - Use only facts in the lesson text. Do not invent content.`;
 
   const objectives = focus.objectives.length ? `Objectives:\n${focus.objectives.map((o) => `- ${o}`).join("\n")}\n\n` : "";
-  const lesson = focus.groundingText ? `Lesson text:\n${focus.groundingText.slice(0, 3500)}` : "No lesson text is available; use the objectives.";
+  const lesson = focus.groundingText ? `Lesson text:\n${focus.groundingText.slice(0, 2500)}` : "No lesson text is available; use the objectives.";
   return { system, prompt: `Subject: ${focus.subjectName}\nUnit: ${unit}\n\n${objectives}${lesson}\n\nThe ${SUGGESTION_COUNT} questions:` };
 }
 
@@ -37,11 +38,14 @@ export function parseSuggestions(text: string): string[] {
       .replace(/^\s*(?:[-*•]|\d+[.)])\s*/, "")
       .replace(/^["'“”]+|["'“”]+$/g, "")
       .trim();
-    if (line.length < 12 || line.length > MAX_QUESTION_CHARS || !line.endsWith("?")) continue;
-    const key = line.toLowerCase();
+    if (line.length < 12 || line.length > MAX_QUESTION_CHARS) continue;
+    // Small models often forget the question mark; accept a clear question and add it.
+    if (!line.endsWith("?") && !(QUESTION_START.test(line) && line.length >= 15)) continue;
+    const question = line.endsWith("?") ? line : `${line.replace(/[.:;,]+$/, "")}?`;
+    const key = question.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push(line);
+    out.push(question);
     if (out.length === SUGGESTION_COUNT) break;
   }
   return out;

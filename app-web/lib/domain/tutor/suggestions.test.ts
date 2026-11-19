@@ -29,3 +29,11 @@ describe("chipLabel / suggestionKey", () => {
     expect(suggestionKey({ subjectName: "A", topicName: "B", subtopicName: "C" })).toBe("A|B|C");
   });
 });
+
+describe("parseSuggestions leniency for small models", () => {
+  it("adds a missing question mark to a clear question", () => {
+    expect(parseSuggestions("How does the periosteum help a fracture heal.\nExplain fractures in general")).toEqual([
+      "How does the periosteum help a fracture heal?",
+    ]);
+  });
+});

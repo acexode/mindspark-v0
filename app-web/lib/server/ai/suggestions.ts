@@ -34,7 +34,7 @@ export async function suggestQuestions(context: TutorContext): Promise<string[]>
 
   const job = (async () => {
     const questions = await generate(buildSuggestionMessages(context));
-    if (questions.length >= 2) {
+    if (questions.length >= 1) {
       if (cache.size >= MAX_CACHE) cache.delete(cache.keys().next().value as string);
       cache.set(key, questions);
     }
@@ -67,13 +67,13 @@ async function generate({ system, prompt }: { system: string; prompt: string }):
           model: provider.model,
           system,
           prompt,
-          maxTokens: 220,
+          maxTokens: 160,
           temperature: 0.4,
           maxRetries: 0,
           abortSignal: AbortSignal.timeout(Math.max(provider.timeoutMs, GENERATE_TIMEOUT_MS)),
         });
         const questions = parseSuggestions(text);
-        if (questions.length >= 2) return questions;
+        if (questions.length >= 1) return questions;
       } catch {
         // Try the next provider.
       }
