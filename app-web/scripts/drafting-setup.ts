@@ -3,7 +3,7 @@
  * Works on Windows, macOS and Linux. Run with `npm run drafting:setup`.
  */
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, rmSync } from "node:fs";
 import path from "node:path";
 
 const dir = path.join(process.cwd(), "drafting");
@@ -35,6 +35,15 @@ const python = findPython();
 if (!python) {
   console.error("Python 3.9 or newer was not found.\nInstall it from https://www.python.org/downloads/ (on Windows tick \"Add python.exe to PATH\"), then run this again.");
   process.exit(1);
+}
+
+// A venv remembers the Python that made it. If that Python was upgraded or removed, the venv is dead: rebuild it.
+if (existsSync(venvPython)) {
+  const alive = spawnSync(venvPython, ["-c", "import sys"], { encoding: "utf8" });
+  if (alive.error || alive.status !== 0) {
+    console.log("The existing Python environment points at a Python that is no longer installed. Rebuilding it ...");
+    rmSync(venv, { recursive: true, force: true });
+  }
 }
 
 if (!existsSync(venvPython)) {
