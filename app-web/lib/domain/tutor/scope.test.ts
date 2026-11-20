@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildScopeCheckMessages, checkScope, offTopicReply, readScopeVerdict } from "./scope";
+import { buildScopeCheckMessages, checkScope, offTopicReply, readScopeVerdict, usesLessonVocabulary } from "./scope";
 
 const blocked = (message: string) => checkScope(message).allowed === false;
 
@@ -85,5 +85,27 @@ describe("tutor scope guard", () => {
     const reply = offTopicReply({ educationLevel: "secondary", subjectName: "Maths", subtopicName: "Fractions" });
     expect(reply).toContain("Fractions");
     expect(offTopicReply({ educationLevel: "undergraduate", subjectName: "CSC101" })).toContain("CSC101");
+  });
+});
+
+describe("usesLessonVocabulary", () => {
+  const unit = {
+    subjectName: "Orthopaedics",
+    topicName: "Fracture Assessment",
+    subtopicName: "Fracture Assessment and Management",
+    objectives: ["Calculate translation percentage of a displaced distal radius fracture"],
+    groundingText: "The periosteum and cortical bone width are measured on the radiograph.",
+  };
+  it("accepts an ordinary question that uses lesson words", () => {
+    expect(usesLessonVocabulary("How is the translation percentage worked out for a radius fracture?", unit)).toBe(true);
+    expect(usesLessonVocabulary("what does the periosteum do", unit)).toBe(true);
+  });
+  it("does not accept generic words that appear in any lesson", () => {
+    expect(usesLessonVocabulary("Please explain this to me", unit)).toBe(false);
+    expect(usesLessonVocabulary("What should I eat tonight?", unit)).toBe(false);
+  });
+  it("sends creative requests to the model check even when they use lesson words", () => {
+    expect(usesLessonVocabulary("Write me a love poem about a fracture", unit)).toBe(false);
+    expect(usesLessonVocabulary("tell a joke about the periosteum", unit)).toBe(false);
   });
 });

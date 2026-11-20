@@ -127,3 +127,38 @@ export function offTopicReply(
     ? `I can only help with your coursework. Shall we get back to ${focus}? You could ask for a worked example, or have me test you on it.`
     : `Ha, that one's outside my lane 😅 I'm only here to help you study. Let's get back to ${focus}! Try "Explain it simply" or "Quiz me 🎯".`;
 }
+
+const STOPWORDS = new Set(
+  `about above after again also another because before being between both could does doing done each either else even ever every from give gives given have having here hence how however into just like make many might more most much must need only other over please really same should show shows since some such take tell than that their them then there these they thing things this those through under until upon very want were what when where whether which while whom whose will with within without would your yours`.split(/\s+/),
+);
+
+/** Creative-writing and entertainment asks. Never waved through on lesson words alone: they go to the model check. */
+const CREATIVE_TASK = /\b(poem|poems|poetry|song|songs|lyrics|rap|haiku|limerick|joke|jokes|riddle|story|stories|fiction|roast|essay\s+for\s+me|write\s+me)\b/i;
+
+function stem(word: string): string {
+  return word.replace(/(?:ing|es|ed|s)$/, "");
+}
+
+function contentWords(text: string): string[] {
+  return (text.toLowerCase().match(/[a-z][a-z-]{3,}/g) ?? []).filter((w) => !STOPWORDS.has(w)).map(stem);
+}
+
+/**
+ * True when the message plainly talks about this unit: it uses at least one real word from the
+ * unit's name, objectives or lesson text, and is not a creative-writing or entertainment request.
+ * Lets the tutor skip the slow model-based scope check for ordinary study questions. The pattern
+ * checks (rule override, off-topic) always run before this, and the tutor prompt keeps its own rule.
+ */
+export function usesLessonVocabulary(
+  message: string | undefined,
+  context: Pick<TutorContext, "subjectName" | "topicName" | "subtopicName" | "objectives" | "groundingText">,
+): boolean {
+  if (!message || CREATIVE_TASK.test(message)) return false;
+  const asked = new Set(contentWords(message));
+  if (asked.size === 0) return false;
+  const lesson = new Set(
+    contentWords([context.subjectName, context.topicName, context.subtopicName, ...context.objectives, context.groundingText ?? ""].filter(Boolean).join(" ")),
+  );
+  for (const word of asked) if (lesson.has(word)) return true;
+  return false;
+}

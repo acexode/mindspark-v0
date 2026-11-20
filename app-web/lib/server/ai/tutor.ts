@@ -3,7 +3,7 @@ import { generateText, streamText } from "ai";
 import { getDeterministicTutorResponse, PROMPT_VERSION, type TutorContext } from "@/lib/domain/tutor/fallback";
 import { buildMessages, buildSystemPrompt } from "@/lib/domain/tutor/prompt";
 import { guardedStream } from "@/lib/domain/tutor/guarded-stream";
-import { checkScope, offTopicReply } from "@/lib/domain/tutor/scope";
+import { checkScope, offTopicReply, usesLessonVocabulary } from "@/lib/domain/tutor/scope";
 import { tutorProviders, type ProviderName } from "./providers";
 import { isStudyMessage } from "./scope-check";
 import { isSuggestedQuestion } from "./suggestions";
@@ -48,6 +48,8 @@ async function withinScope(context: TutorContext): Promise<boolean> {
   if (!checkScope(context.userMessage).allowed) return false;
   // A question this server wrote from the lesson itself is on topic by construction.
   if (isSuggestedQuestion(context, context.userMessage)) return true;
+  // A message that talks about this unit in its own words does not need the extra (slow) model check.
+  if (usesLessonVocabulary(context.userMessage, context)) return true;
   return isStudyMessage(context);
 }
 
