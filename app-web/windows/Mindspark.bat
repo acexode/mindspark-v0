@@ -10,6 +10,9 @@ if errorlevel 1 (
 rem Keep the AI tutor's model in memory for as long as Mindspark runs. Ollama normally unloads it after
 rem 5 minutes idle, which makes the next question wait for a slow reload.
 set "OLLAMA_KEEP_ALIVE=-1"
+rem Faster prompt reading on CPU. These only apply when this launcher starts Ollama itself; an Ollama already running keeps its old settings until it is restarted.
+set "OLLAMA_FLASH_ATTENTION=1"
+set "OLLAMA_KV_CACHE_TYPE=q8_0"
 set "OLLAMA_URL=http://localhost:11434"
 set "OLLAMA_MODEL_NAME=llama3.2:3b"
 if exist ".env.local" (
