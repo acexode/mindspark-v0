@@ -16,6 +16,7 @@ export function describeProviderFailure(error: unknown): string {
 
 const LABELS = { ollama: "The model on this laptop", cloud: "The online model", ai: "OpenAI" } as const;
 
-export function failureNote(provider: keyof typeof LABELS, error: unknown): string {
-  return `${LABELS[provider]} is unavailable: ${describeProviderFailure(error)}.`;
+export function failureNote(provider: keyof typeof LABELS, error: unknown, modelId?: string): string {
+  const model = modelId && provider !== "ollama" ? ` (${modelId})` : "";
+  return `${LABELS[provider]}${model} is unavailable: ${describeProviderFailure(error)}.`;
 }

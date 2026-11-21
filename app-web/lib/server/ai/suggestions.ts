@@ -33,7 +33,7 @@ export async function suggestQuestions(context: TutorContext): Promise<string[]>
   if (running) return running;
 
   const job = (async () => {
-    const questions = await generate(buildSuggestionMessages(context), context.studentCloudKey);
+    const questions = await generate(buildSuggestionMessages(context), context.studentCloudKey, context.studentCloudModel);
     if (questions.length >= 1) {
       if (cache.size >= MAX_CACHE) cache.delete(cache.keys().next().value as string);
       cache.set(key, questions);
@@ -47,7 +47,7 @@ export async function suggestQuestions(context: TutorContext): Promise<string[]>
 
 async function suggestFollowUps(context: TutorContext): Promise<string[]> {
   const asked = new Set((context.history ?? []).filter((t) => t.role === "student").map((t) => t.text.trim().toLowerCase()));
-  const questions = (await generate(buildFollowUpMessages(context, context.history ?? []), context.studentCloudKey)).filter((q) => !asked.has(q.toLowerCase()));
+  const questions = (await generate(buildFollowUpMessages(context, context.history ?? []), context.studentCloudKey, context.studentCloudModel)).filter((q) => !asked.has(q.toLowerCase()));
   if (questions.length > 0) {
     const key = suggestionKey(context);
     const set = followUps.get(key) ?? new Set<string>();
@@ -59,9 +59,9 @@ async function suggestFollowUps(context: TutorContext): Promise<string[]> {
   return questions;
 }
 
-async function generate({ system, prompt }: { system: string; prompt: string }, studentCloudKey?: string): Promise<string[]> {
+async function generate({ system, prompt }: { system: string; prompt: string }, studentCloudKey?: string, studentCloudModel?: string): Promise<string[]> {
   {
-    for (const provider of tutorProviders(process.env, studentCloudKey)) {
+    for (const provider of tutorProviders(process.env, studentCloudKey, studentCloudModel)) {
       try {
         const { text } = await generateText({
           model: provider.model,

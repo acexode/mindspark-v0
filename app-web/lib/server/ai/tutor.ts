@@ -58,8 +58,8 @@ async function withinScope(context: TutorContext): Promise<boolean> {
 }
 
 /** Server log line for an operator; the reason is short and carries no key, prompt or response body. */
-function logSkipped(provider: ProviderName, error: unknown): string {
-  const note = failureNote(provider, error);
+function logSkipped(provider: ProviderName, error: unknown, modelId?: string): string {
+  const note = failureNote(provider, error, modelId);
   console.warn(`[tutor] ${note}`);
   return note;
 }
@@ -77,7 +77,7 @@ export async function generateTutorTurn(context: TutorContext): Promise<TutorRep
   if (!(await withinScope(context))) return scopeReply(context);
 
   const notes: string[] = [];
-  for (const provider of tutorProviders(process.env, context.studentCloudKey)) {
+  for (const provider of tutorProviders(process.env, context.studentCloudKey, context.studentCloudModel)) {
     try {
       const { text } = await generateText({
         model: provider.model,
@@ -94,10 +94,10 @@ export async function generateTutorTurn(context: TutorContext): Promise<TutorRep
         const strategy = context.alternateExplanation ? "alternate-representation" : "socratic";
         return { response, strategy, promptVersion: PROMPT_VERSION, source: provider.name, note: notes.join(" ") || undefined };
       }
-      notes.push(logSkipped(provider.name, new Error("empty reply")));
+      notes.push(logSkipped(provider.name, new Error("empty reply"), provider.modelId));
     } catch (error) {
       // Unreachable, model not pulled, or timed out — try the next provider.
-      notes.push(logSkipped(provider.name, error));
+      notes.push(logSkipped(provider.name, error, provider.modelId));
     }
   }
 
@@ -118,7 +118,7 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
   if (!(await withinScope(context))) return redirect();
 
   const notes: string[] = [];
-  for (const provider of tutorProviders(process.env, context.studentCloudKey)) {
+  for (const provider of tutorProviders(process.env, context.studentCloudKey, context.studentCloudModel)) {
     // The SDK reports API errors (bad key, rate limit) through onError and then just ends the stream; keep the cause.
     let streamError: unknown;
     // `timeoutMs` now bounds the wait for the FIRST token (a cold model load plus reading the prompt),
@@ -146,7 +146,7 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
       clearTimeout(firstTokenTimer);
       if (first.done || !first.value) {
         controller.abort();
-        notes.push(logSkipped(provider.name, streamError ?? new Error("empty reply")));
+        notes.push(logSkipped(provider.name, streamError ?? new Error("empty reply"), provider.modelId));
         continue;
       }
 
@@ -161,7 +161,7 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
       return { source: provider.name, promptVersion: PROMPT_VERSION, stream, note: notes.join(" ") || undefined };
     } catch (error) {
       // Unreachable, model not pulled, or no first token in time — fall through to the next provider.
-      notes.push(logSkipped(provider.name, streamError ?? error));
+      notes.push(logSkipped(provider.name, streamError ?? error, provider.modelId));
       clearTimeout(firstTokenTimer);
       clearTimeout(ceilingTimer);
       controller.abort();

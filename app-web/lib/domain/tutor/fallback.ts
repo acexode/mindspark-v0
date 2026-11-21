@@ -37,6 +37,8 @@ export interface TutorContext {
   question?: TutorQuestionContext;
   /** Server-only: the student's own online-model key. Never put in a prompt or a response. */
   studentCloudKey?: string;
+  /** Server-only: the model chosen for that key from what the provider says it can use. */
+  studentCloudModel?: string;
 }
 
 export const PROMPT_VERSION = "tutor-v3.0.0";

@@ -8,6 +8,8 @@ export type ProviderName = "ollama" | "cloud" | "ai";
 
 export interface TutorProvider {
   name: ProviderName;
+  /** The model id sent to the provider, kept so a failure note can name it. */
+  modelId: string;
   model: LanguageModelV1;
   timeoutMs: number;
 }
@@ -36,11 +38,12 @@ export function providerOrder(env: Record<string, string | undefined> = process.
  * The "cloud" provider is any OpenAI-compatible hosted API (Groq, Google AI Studio, OpenRouter, Cerebras, ...),
  * enabled by setting CLOUD_AI_BASE_URL, CLOUD_AI_API_KEY and CLOUD_AI_MODEL together.
  */
-export function tutorProviders(env: Record<string, string | undefined> = process.env, studentCloudKey?: string): TutorProvider[] {
+export function tutorProviders(env: Record<string, string | undefined> = process.env, studentCloudKey?: string, studentCloudModel?: string): TutorProvider[] {
   const baseUrl = (env.OLLAMA_BASE_URL ?? "http://localhost:11434").replace(/\/+$/, "");
   const available: Partial<Record<ProviderName, TutorProvider>> = {
     ollama: {
       name: "ollama",
+      modelId: env.OLLAMA_MODEL ?? DEFAULT_OLLAMA_MODEL,
       // Ollama ignores the key; the SDK just requires one.
       model: createOpenAI({ baseURL: `${baseUrl}/v1`, apiKey: "ollama" })(env.OLLAMA_MODEL ?? DEFAULT_OLLAMA_MODEL),
       timeoutMs: Number(env.OLLAMA_TIMEOUT_MS) || 60_000,
@@ -50,10 +53,11 @@ export function tutorProviders(env: Record<string, string | undefined> = process
   // The student's own key (saved on their profile) wins over the machine-wide one, so each student's usage is theirs.
   const cloudKey = studentCloudKey ?? env.CLOUD_AI_API_KEY;
   const cloudBase = studentCloudKey ? (env.CLOUD_AI_BASE_URL ?? STUDENT_CLOUD_BASE_URL) : env.CLOUD_AI_BASE_URL;
-  const cloudModel = studentCloudKey ? (env.CLOUD_AI_MODEL ?? STUDENT_CLOUD_MODEL) : env.CLOUD_AI_MODEL;
+  const cloudModel = studentCloudKey ? (studentCloudModel ?? env.CLOUD_AI_MODEL ?? STUDENT_CLOUD_MODEL) : env.CLOUD_AI_MODEL;
   if (cloudKey && cloudBase && cloudModel) {
     available.cloud = {
       name: "cloud",
+      modelId: cloudModel,
       model: createOpenAI({ baseURL: cloudBase.replace(/\/+$/, ""), apiKey: cloudKey })(cloudModel),
       timeoutMs: Number(env.CLOUD_AI_TIMEOUT_MS) || 25_000,
     };
@@ -62,6 +66,7 @@ export function tutorProviders(env: Record<string, string | undefined> = process
   if (env.OPENAI_API_KEY) {
     available.ai = {
       name: "ai",
+      modelId: env.OPENAI_TUTOR_MODEL ?? "gpt-4o-mini",
       model: createOpenAI({ apiKey: env.OPENAI_API_KEY })(env.OPENAI_TUTOR_MODEL ?? "gpt-4o-mini"),
       timeoutMs: 30_000,
     };

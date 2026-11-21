@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { isPlausibleApiKey, STUDENT_CLOUD_BASE_URL, STUDENT_CLOUD_MODEL } from "@/lib/domain/tutor/cloud-key";
+import { chooseCloudModel, isPlausibleApiKey, STUDENT_CLOUD_BASE_URL } from "@/lib/domain/tutor/cloud-key";
 import { clearTutorKey, setTutorKey } from "@/lib/server/profile/tutor-key-store";
 
 export interface TutorKeyResult {
@@ -15,7 +15,6 @@ export interface TutorKeyResult {
  */
 async function verify(key: string): Promise<TutorKeyResult> {
   const baseUrl = (process.env.CLOUD_AI_BASE_URL ?? STUDENT_CLOUD_BASE_URL).replace(/\/+$/, "");
-  const model = process.env.CLOUD_AI_MODEL ?? STUDENT_CLOUD_MODEL;
   try {
     const response = await fetch(`${baseUrl}/models`, {
       headers: { authorization: `Bearer ${key}` },
@@ -30,13 +29,14 @@ async function verify(key: string): Promise<TutorKeyResult> {
     }
     const body = (await response.json().catch(() => null)) as { data?: Array<{ id?: string }> } | null;
     const ids = body?.data?.map((m) => m.id) ?? [];
-    if (ids.length > 0 && !ids.includes(model)) {
-      return {
-        ok: true,
-        message: `Key saved and accepted, but the model "${model}" is not on your account. Ask whoever set up Mindspark to change CLOUD_AI_MODEL.`,
-      };
+    const model = chooseCloudModel(ids as string[], process.env.CLOUD_AI_MODEL);
+    if (ids.length > 0 && !model) {
+      return { ok: true, message: "Key saved and accepted, but it has no chat model the tutor can use. The laptop's model will answer." };
     }
-    return { ok: true, message: "Key saved. The tutor will use the online model first, and this laptop's model if it is unavailable." };
+    return {
+      ok: true,
+      message: `Key saved. The tutor will use the online model${model ? ` (${model})` : ""} first, and this laptop's model if it is unavailable.`,
+    };
   } catch {
     return { ok: true, message: "Key saved, but there was no internet to check it. It will be tried on your next question." };
   }

@@ -6,6 +6,7 @@ import type { TutorContext, TutorQuestionContext } from "@/lib/domain/tutor/fall
 import { buildGroundingText } from "@/lib/domain/tutor/grounding";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
 import { getTutorKey } from "@/lib/server/profile/tutor-key-store";
+import { resolveCloudModel } from "@/lib/server/ai/cloud-models";
 import type { TutorRequest } from "./request";
 
 /** Resolves a validated request into everything the model may see. Ids are looked up here, never trusted. */
@@ -17,6 +18,7 @@ export async function buildTutorContext(request: TutorRequest): Promise<TutorCon
   const topicEntry = !entry && request.topicId ? getTopic(request.topicId) : null;
   const lesson = subtopicId ? getLesson(subtopicId) : null;
   const studentCloudKey = (await getTutorKey()) ?? undefined;
+  const studentCloudModel = studentCloudKey ? await resolveCloudModel(studentCloudKey) : undefined;
 
   const groundingText = lesson ? buildGroundingText(lesson.blocks) || undefined : undefined;
 
@@ -35,6 +37,7 @@ export async function buildTutorContext(request: TutorRequest): Promise<TutorCon
     history: request.history,
     question: question ? questionContext(question, request.studentAnswer ?? {}) : undefined,
     studentCloudKey,
+    studentCloudModel,
   };
 }
 

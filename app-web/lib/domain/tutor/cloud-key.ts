@@ -11,3 +11,19 @@ export function isPlausibleApiKey(value: string): boolean {
 export function maskApiKey(key: string): string {
   return `••••••••${key.slice(-4)}`;
 }
+
+/** Best first. Plain chat models: the reasoning models spend the reply budget thinking and can come back empty. */
+export const PREFERRED_CLOUD_MODELS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-20b"];
+
+/** Speech, safety and embedding models that are listed beside the chat models but cannot answer a question. */
+const NOT_A_CHAT_MODEL = /whisper|tts|orpheus|guard|safeguard|embed|moderation|transcri/i;
+
+/**
+ * Picks the model to ask from what the student's key can actually use. The operator's configured model wins when it is
+ * available; otherwise the first preferred chat model; otherwise any chat model. Null when the list has nothing usable.
+ */
+export function chooseCloudModel(available: string[], configured?: string): string | null {
+  if (configured && available.includes(configured)) return configured;
+  const chat = available.filter((id) => !NOT_A_CHAT_MODEL.test(id));
+  return PREFERRED_CLOUD_MODELS.find((id) => chat.includes(id)) ?? chat[0] ?? null;
+}
