@@ -1,6 +1,6 @@
 import type { TutorRequest } from "@/features/tutor/server/request";
 
-export type TutorSource = "ollama" | "ai" | "fallback" | "scope";
+export type TutorSource = "ollama" | "cloud" | "ai" | "fallback" | "scope";
 
 const OFFLINE_TEXT = "I can't reach the tutor right now. Check your connection and try again.";
 

@@ -147,6 +147,30 @@ End-to-end browser tests (`npm run test:e2e`) are optional. They need `npx playw
 All undergraduate content is AI-drafted and AI-reviewed. A clinician or engineer still has to verify it before
 students rely on it. Several clinical doses and legal statements are marked for source checks in the review files.
 
+## Optional: use an online model for the tutor
+
+The tutor can use a hosted model instead of (or as a fallback for) the local one. Any OpenAI-compatible API works.
+Add three lines to `app-web/.env.local` (all three are required), then restart the app:
+
+```
+CLOUD_AI_BASE_URL=https://api.groq.com/openai/v1
+CLOUD_AI_API_KEY=<your key>
+CLOUD_AI_MODEL=<a model name from the provider's list>
+TUTOR_PROVIDER_ORDER=cloud,ollama
+```
+
+`TUTOR_PROVIDER_ORDER` is the order tried, first to last. Without it the order is `ollama,cloud,openai`, so the online model
+is only used when Ollama fails. With `cloud,ollama` the online model answers first and Ollama is the backup when the
+provider is down or the daily free limit runs out; with no network the app falls back to the built-in guidance.
+
+Things to know before you use it with students:
+
+- The student's question and the lesson text are sent to the provider. Some free tiers keep prompts to improve their
+  products, so read the provider's data policy first, especially for students under 18.
+- Free tiers have daily and per-minute limits, and each question can use two or three calls (the answer, the starter
+  questions and the follow-ups). Check the current limits on the provider's own page; they change.
+- Never commit `.env.local`.
+
 ## Backing up and moving the database later
 
 ```bash
