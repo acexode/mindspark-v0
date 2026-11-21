@@ -3,12 +3,16 @@ import { toSelectableSubjects } from "@/features/onboarding/lib/selectable-subje
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { ProfileSummary } from "@/features/profile/components/profile-summary";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
+import { getTutorKey } from "@/lib/server/profile/tutor-key-store";
+import { TutorKeyCard } from "@/features/profile/components/tutor-key-card";
+import { maskApiKey } from "@/lib/domain/tutor/cloud-key";
 import { experienceFor } from "@/lib/domain/student/experience";
 
 export const metadata = { title: "Profile — Mindspark" };
 
 export default async function ProfilePage() {
   const profile = await readProfileOrDefault();
+  const tutorKey = await getTutorKey();
   const subjects = toSelectableSubjects(getSubjects());
   const programmes = getProgrammes();
   const gamified = experienceFor(profile).gamification;
@@ -31,6 +35,8 @@ export default async function ProfilePage() {
           <ProfileForm profile={profile} subjects={subjects} programmes={programmes} />
         </article>
       </div>
+
+      <TutorKeyCard maskedKey={tutorKey ? maskApiKey(tutorKey) : null} />
     </section>
   );
 }

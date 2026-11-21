@@ -1,6 +1,7 @@
 import "server-only";
 import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModelV1 } from "ai";
+import { STUDENT_CLOUD_BASE_URL, STUDENT_CLOUD_MODEL } from "@/lib/domain/tutor/cloud-key";
 
 /** "ollama" is the local model, "cloud" is any OpenAI-compatible hosted API, "ai" is OpenAI itself. */
 export type ProviderName = "ollama" | "cloud" | "ai";
@@ -16,9 +17,10 @@ const DEFAULT_ORDER: ProviderName[] = ["ollama", "cloud", "ai"];
 const ORDER_NAMES: Record<string, ProviderName> = { ollama: "ollama", local: "ollama", cloud: "cloud", online: "cloud", openai: "ai", ai: "ai" };
 
 /** `TUTOR_PROVIDER_ORDER=cloud,ollama` puts the hosted model first. Unknown names are ignored; unlisted providers are not used. */
-export function providerOrder(env: Record<string, string | undefined> = process.env): ProviderName[] {
+export function providerOrder(env: Record<string, string | undefined> = process.env, hasStudentKey = false): ProviderName[] {
   const raw = env.TUTOR_PROVIDER_ORDER?.trim();
-  if (!raw) return DEFAULT_ORDER;
+  // A student who saved their own key asked for the online model: it goes first unless the operator set an order.
+  if (!raw) return hasStudentKey ? ["cloud", "ollama", "ai"] : DEFAULT_ORDER;
   const order = raw
     .split(",")
     .map((part) => ORDER_NAMES[part.trim().toLowerCase()])
@@ -34,7 +36,7 @@ export function providerOrder(env: Record<string, string | undefined> = process.
  * The "cloud" provider is any OpenAI-compatible hosted API (Groq, Google AI Studio, OpenRouter, Cerebras, ...),
  * enabled by setting CLOUD_AI_BASE_URL, CLOUD_AI_API_KEY and CLOUD_AI_MODEL together.
  */
-export function tutorProviders(env: Record<string, string | undefined> = process.env): TutorProvider[] {
+export function tutorProviders(env: Record<string, string | undefined> = process.env, studentCloudKey?: string): TutorProvider[] {
   const baseUrl = (env.OLLAMA_BASE_URL ?? "http://localhost:11434").replace(/\/+$/, "");
   const available: Partial<Record<ProviderName, TutorProvider>> = {
     ollama: {
@@ -45,10 +47,14 @@ export function tutorProviders(env: Record<string, string | undefined> = process
     },
   };
 
-  if (env.CLOUD_AI_BASE_URL && env.CLOUD_AI_API_KEY && env.CLOUD_AI_MODEL) {
+  // The student's own key (saved on their profile) wins over the machine-wide one, so each student's usage is theirs.
+  const cloudKey = studentCloudKey ?? env.CLOUD_AI_API_KEY;
+  const cloudBase = studentCloudKey ? (env.CLOUD_AI_BASE_URL ?? STUDENT_CLOUD_BASE_URL) : env.CLOUD_AI_BASE_URL;
+  const cloudModel = studentCloudKey ? (env.CLOUD_AI_MODEL ?? STUDENT_CLOUD_MODEL) : env.CLOUD_AI_MODEL;
+  if (cloudKey && cloudBase && cloudModel) {
     available.cloud = {
       name: "cloud",
-      model: createOpenAI({ baseURL: env.CLOUD_AI_BASE_URL.replace(/\/+$/, ""), apiKey: env.CLOUD_AI_API_KEY })(env.CLOUD_AI_MODEL),
+      model: createOpenAI({ baseURL: cloudBase.replace(/\/+$/, ""), apiKey: cloudKey })(cloudModel),
       timeoutMs: Number(env.CLOUD_AI_TIMEOUT_MS) || 25_000,
     };
   }
@@ -61,7 +67,7 @@ export function tutorProviders(env: Record<string, string | undefined> = process
     };
   }
 
-  return providerOrder(env)
+  return providerOrder(env, Boolean(studentCloudKey))
     .map((name) => available[name])
     .filter((provider): provider is TutorProvider => Boolean(provider));
 }

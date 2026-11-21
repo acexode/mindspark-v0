@@ -20,3 +20,15 @@ describe("tutorProviders", () => {
     expect(providerOrder({ TUTOR_PROVIDER_ORDER: "nonsense" })).toEqual(["ollama", "cloud", "ai"]);
   });
 });
+
+describe("a student's own key", () => {
+  it("enables the cloud provider with Groq defaults and puts it first", () => {
+    expect(tutorProviders({}, "gsk_student_key_1234567890").map((p) => p.name)).toEqual(["cloud", "ollama"]);
+  });
+  it("beats the machine-wide key and keeps an operator-set order", () => {
+    expect(tutorProviders({ ...cloud, TUTOR_PROVIDER_ORDER: "ollama,cloud" }, "student_key_abcdefghij").map((p) => p.name)).toEqual(["ollama", "cloud"]);
+  });
+  it("changes nothing for a student without a key", () => {
+    expect(tutorProviders({}, undefined).map((p) => p.name)).toEqual(["ollama"]);
+  });
+});

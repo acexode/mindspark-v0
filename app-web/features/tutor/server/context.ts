@@ -5,6 +5,7 @@ import { gradeAnswer, type SubmittedAnswer } from "@/lib/domain/assessment/gradi
 import type { TutorContext, TutorQuestionContext } from "@/lib/domain/tutor/fallback";
 import { buildGroundingText } from "@/lib/domain/tutor/grounding";
 import { readProfileOrDefault } from "@/lib/server/profile/store";
+import { getTutorKey } from "@/lib/server/profile/tutor-key-store";
 import type { TutorRequest } from "./request";
 
 /** Resolves a validated request into everything the model may see. Ids are looked up here, never trusted. */
@@ -15,6 +16,7 @@ export async function buildTutorContext(request: TutorRequest): Promise<TutorCon
   const entry = subtopicId ? getSubtopic(subtopicId) : null;
   const topicEntry = !entry && request.topicId ? getTopic(request.topicId) : null;
   const lesson = subtopicId ? getLesson(subtopicId) : null;
+  const studentCloudKey = (await getTutorKey()) ?? undefined;
 
   const groundingText = lesson ? buildGroundingText(lesson.blocks) || undefined : undefined;
 
@@ -32,6 +34,7 @@ export async function buildTutorContext(request: TutorRequest): Promise<TutorCon
     mode: request.mode,
     history: request.history,
     question: question ? questionContext(question, request.studentAnswer ?? {}) : undefined,
+    studentCloudKey,
   };
 }
 

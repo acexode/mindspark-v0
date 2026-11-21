@@ -35,6 +35,8 @@ export interface TutorContext {
   mode?: TutorMode;
   history?: TutorTurn[];
   question?: TutorQuestionContext;
+  /** Server-only: the student's own online-model key. Never put in a prompt or a response. */
+  studentCloudKey?: string;
 }
 
 export const PROMPT_VERSION = "tutor-v3.0.0";

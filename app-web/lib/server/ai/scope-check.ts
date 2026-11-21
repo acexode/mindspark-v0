@@ -11,11 +11,11 @@ const CHECK_TIMEOUT_MS = 20_000;
  * answers, the message is allowed and the tutor's own prompt still applies, so an outage
  * never blocks a student from legitimate help.
  */
-export async function isStudyMessage(context: Pick<TutorContext, "userMessage" | "history" | "subjectName" | "topicName" | "subtopicName">): Promise<boolean> {
+export async function isStudyMessage(context: Pick<TutorContext, "userMessage" | "history" | "subjectName" | "topicName" | "subtopicName" | "studentCloudKey">): Promise<boolean> {
   if (!context.userMessage?.trim()) return true;
   const { system, prompt } = buildScopeCheckMessages(context);
 
-  for (const provider of tutorProviders()) {
+  for (const provider of tutorProviders(process.env, context.studentCloudKey)) {
     try {
       const { text } = await generateText({
         model: provider.model,

@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { cookies } from "next/headers";
 import { DEFAULT_STUDENT_PROFILE, type StudentProfile } from "@/lib/domain/student/types";
+import { clearTutorKeyFor } from "./tutor-key-store";
 
 /**
  * Development persistence. File-backed so a profile survives dev-server
@@ -92,5 +93,6 @@ export async function resetProfile(): Promise<void> {
   const store = readAll();
   delete store[sessionId];
   writeAll(store);
+  clearTutorKeyFor(sessionId); // a reset student must not leave their key behind
   jar.delete(SESSION_COOKIE);
 }

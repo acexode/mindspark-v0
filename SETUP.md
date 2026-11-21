@@ -162,6 +162,7 @@ TUTOR_PROVIDER_ORDER=cloud,ollama
 `TUTOR_PROVIDER_ORDER` is the order tried, first to last. Without it the order is `ollama,cloud,openai`, so the online model
 is only used when Ollama fails. With `cloud,ollama` the online model answers first and Ollama is the backup when the
 provider is down or the daily free limit runs out; with no network the app falls back to the built-in guidance.
+**Per-student keys:** instead of one shared key, each student can open Profile, paste their own key under "Faster online tutor" and save. It is used only for that student, goes first, and falls back to the laptop model. The key is stored as plain text in `app-web/.dev-data/tutor-keys.json` (not in git, not part of the profile) and is deleted if the student resets their profile.
 
 Things to know before you use it with students:
 

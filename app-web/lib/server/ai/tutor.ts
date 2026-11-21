@@ -65,7 +65,7 @@ function singleChunkStream(text: string): ReadableStream<Uint8Array> {
 export async function generateTutorTurn(context: TutorContext): Promise<TutorReply> {
   if (!(await withinScope(context))) return scopeReply(context);
 
-  for (const provider of tutorProviders()) {
+  for (const provider of tutorProviders(process.env, context.studentCloudKey)) {
     try {
       const { text } = await generateText({
         model: provider.model,
@@ -103,7 +103,7 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
 
   if (!(await withinScope(context))) return redirect();
 
-  for (const provider of tutorProviders()) {
+  for (const provider of tutorProviders(process.env, context.studentCloudKey)) {
     // `timeoutMs` now bounds the wait for the FIRST token (a cold model load plus reading the prompt),
     // not the whole reply. Once words are flowing, silence between chunks is what is watched.
     const controller = new AbortController();
