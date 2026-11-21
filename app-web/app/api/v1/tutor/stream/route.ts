@@ -9,13 +9,14 @@ export async function POST(request: NextRequest) {
   const parsed = tutorRequestSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid tutor request" }, { status: 400 });
 
-  const { source, promptVersion, stream } = await streamTutorTurn(await buildTutorContext(parsed.data));
+  const { source, promptVersion, stream, note } = await streamTutorTurn(await buildTutorContext(parsed.data));
   return new Response(stream, {
     headers: {
       "content-type": "text/plain; charset=utf-8",
       "cache-control": "no-store",
       "x-tutor-source": source,
       "x-tutor-prompt-version": promptVersion,
+      ...(note ? { "x-tutor-note": encodeURIComponent(note) } : {}),
     },
   });
 }

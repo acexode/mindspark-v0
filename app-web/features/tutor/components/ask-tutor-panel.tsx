@@ -74,6 +74,7 @@ export function AskTutorPanel({ scope, variant = "compact", fullTutorHref, autoS
     startTransition(async () => {
       let replyStarted = false;
       let finalText = "";
+      let note: string | undefined;
       const source = await streamReply(
         {
           subjectName: scope.subjectName,
@@ -96,8 +97,11 @@ export function AskTutorPanel({ scope, variant = "compact", fullTutorHref, autoS
             firstChunk ? [...m, { role: "tutor", text: reply }] : [...m.slice(0, -1), { role: "tutor", text: reply }],
           );
         },
+        (text) => {
+          note = text;
+        },
       );
-      setMessages((m) => [...m.slice(0, -1), { ...m[m.length - 1], source }]);
+      setMessages((m) => [...m.slice(0, -1), { ...m[m.length - 1], source, note }]);
       // Hints, explanations and checks often end by posing a question; what the student types next is their attempt at it.
       setAwaitingAnswer(asksQuestion || (source !== "scope" && endsWithQuestion(finalText)));
       if (source !== "scope" && source !== "fallback" && finalText && !isQuestion) {

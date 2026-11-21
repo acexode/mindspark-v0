@@ -9,7 +9,11 @@ const OFFLINE_TEXT = "I can't reach the tutor right now. Check your connection a
  * Resolves with the provider that answered; a network failure resolves as "fallback"
  * with a plain message so the panel never throws.
  */
-export async function streamReply(request: TutorRequest, onText: (text: string) => void): Promise<TutorSource> {
+export async function streamReply(
+  request: TutorRequest,
+  onText: (text: string) => void,
+  onNote?: (note: string) => void,
+): Promise<TutorSource> {
   try {
     const response = await fetch("/api/v1/tutor/stream", {
       method: "POST",
@@ -19,6 +23,8 @@ export async function streamReply(request: TutorRequest, onText: (text: string) 
     if (!response.ok || !response.body) throw new Error("tutor request failed");
 
     const source = (response.headers.get("x-tutor-source") as TutorSource | null) ?? "fallback";
+    const note = response.headers.get("x-tutor-note");
+    if (note && onNote) onNote(decodeURIComponent(note));
     const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
     let text = "";
     for (;;) {

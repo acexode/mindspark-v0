@@ -7,6 +7,8 @@ import type { TutorSource } from "./stream-reply";
 
 export interface TutorMessage extends TutorTurn {
   source?: TutorSource;
+  /** Why a preferred model was skipped, shown so a bad key or a used-up free limit is not silent. */
+  note?: string;
 }
 
 interface TutorMessagesProps {
@@ -40,6 +42,12 @@ export function TutorMessages({ messages, pending, empty, showSpeaker = false, c
           <div className="tutor-message-body">
             <MathText text={message.text} />
             {message.source === "fallback" && <span className="tutor-source">Offline guidance</span>}
+            {message.role === "tutor" && message.note && message.source !== "scope" && (
+              <span className="tutor-source is-note" title={message.note}>
+                {message.note}
+              </span>
+            )}
+            {message.source === "cloud" && <span className="tutor-source">Online model</span>}
           </div>
         </div>
       ))}

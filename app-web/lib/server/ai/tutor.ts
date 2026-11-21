@@ -4,6 +4,7 @@ import { getDeterministicTutorResponse, PROMPT_VERSION, type TutorContext } from
 import { buildMessages, buildSystemPrompt } from "@/lib/domain/tutor/prompt";
 import { guardedStream } from "@/lib/domain/tutor/guarded-stream";
 import { checkScope, offTopicReply, usesLessonVocabulary } from "@/lib/domain/tutor/scope";
+import { failureNote } from "@/lib/domain/tutor/provider-errors";
 import { tutorProviders, type ProviderName } from "./providers";
 import { isStudyMessage } from "./scope-check";
 import { isSuggestedQuestion } from "./suggestions";
@@ -16,11 +17,14 @@ export interface TutorReply {
   promptVersion: string;
   /** "scope" is a deliberate redirect, not a failure: the UI must not call it offline guidance. */
   source: ProviderName | "fallback" | "scope";
+  /** Why a provider ahead of the one that answered was skipped, in words a student can read. */
+  note?: string;
 }
 
 export interface TutorStream {
   source: TutorReply["source"];
   promptVersion: string;
+  note?: string;
   stream: ReadableStream<Uint8Array>;
 }
 
@@ -53,6 +57,13 @@ async function withinScope(context: TutorContext): Promise<boolean> {
   return isStudyMessage(context);
 }
 
+/** Server log line for an operator; the reason is short and carries no key, prompt or response body. */
+function logSkipped(provider: ProviderName, error: unknown): string {
+  const note = failureNote(provider, error);
+  console.warn(`[tutor] ${note}`);
+  return note;
+}
+
 function singleChunkStream(text: string): ReadableStream<Uint8Array> {
   return new ReadableStream({
     start(controller) {
@@ -65,6 +76,7 @@ function singleChunkStream(text: string): ReadableStream<Uint8Array> {
 export async function generateTutorTurn(context: TutorContext): Promise<TutorReply> {
   if (!(await withinScope(context))) return scopeReply(context);
 
+  const notes: string[] = [];
   for (const provider of tutorProviders(process.env, context.studentCloudKey)) {
     try {
       const { text } = await generateText({
@@ -80,14 +92,16 @@ export async function generateTutorTurn(context: TutorContext): Promise<TutorRep
       const response = text.trim();
       if (response) {
         const strategy = context.alternateExplanation ? "alternate-representation" : "socratic";
-        return { response, strategy, promptVersion: PROMPT_VERSION, source: provider.name };
+        return { response, strategy, promptVersion: PROMPT_VERSION, source: provider.name, note: notes.join(" ") || undefined };
       }
-    } catch {
+      notes.push(logSkipped(provider.name, new Error("empty reply")));
+    } catch (error) {
       // Unreachable, model not pulled, or timed out — try the next provider.
+      notes.push(logSkipped(provider.name, error));
     }
   }
 
-  return fallbackReply(context);
+  return { ...fallbackReply(context), note: notes.join(" ") || undefined };
 }
 
 /**
@@ -103,7 +117,10 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
 
   if (!(await withinScope(context))) return redirect();
 
+  const notes: string[] = [];
   for (const provider of tutorProviders(process.env, context.studentCloudKey)) {
+    // The SDK reports API errors (bad key, rate limit) through onError and then just ends the stream; keep the cause.
+    let streamError: unknown;
     // `timeoutMs` now bounds the wait for the FIRST token (a cold model load plus reading the prompt),
     // not the whole reply. Once words are flowing, silence between chunks is what is watched.
     const controller = new AbortController();
@@ -119,7 +136,9 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
         temperature: TEMPERATURE,
         maxRetries: 0,
         abortSignal: controller.signal,
-        onError: () => {},
+        onError: (event) => {
+          streamError = (event as { error?: unknown }).error ?? event;
+        },
       });
 
       const chunks = result.textStream[Symbol.asyncIterator]();
@@ -127,6 +146,7 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
       clearTimeout(firstTokenTimer);
       if (first.done || !first.value) {
         controller.abort();
+        notes.push(logSkipped(provider.name, streamError ?? new Error("empty reply")));
         continue;
       }
 
@@ -138,9 +158,10 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
         onEnd: () => clearTimeout(ceilingTimer),
       });
 
-      return { source: provider.name, promptVersion: PROMPT_VERSION, stream };
-    } catch {
+      return { source: provider.name, promptVersion: PROMPT_VERSION, stream, note: notes.join(" ") || undefined };
+    } catch (error) {
       // Unreachable, model not pulled, or no first token in time — fall through to the next provider.
+      notes.push(logSkipped(provider.name, streamError ?? error));
       clearTimeout(firstTokenTimer);
       clearTimeout(ceilingTimer);
       controller.abort();
@@ -148,5 +169,5 @@ export async function streamTutorTurn(context: TutorContext): Promise<TutorStrea
   }
 
   const { response } = fallbackReply(context);
-  return { source: "fallback", promptVersion: PROMPT_VERSION, stream: singleChunkStream(response) };
+  return { source: "fallback", promptVersion: PROMPT_VERSION, stream: singleChunkStream(response), note: notes.join(" ") || undefined };
 }
